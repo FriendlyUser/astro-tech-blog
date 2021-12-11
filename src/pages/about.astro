@@ -95,9 +95,8 @@ allPosts = allPosts.sort((a, b) => new Date(b.publishDate).valueOf() - new Date(
        <BlogHeader />
         <div class="wrapper">
                 <main class="content">
-            <section aria-label="Blog post list">
-            {allPosts.map(p => <BlogPostPreview post={p} />)}
-            </section>
+            <h2>Github Projects</h2>
+            <GithubRepos client:visible />
             </main>
         </div>
 </body>

@@ -13,5 +13,9 @@
     "@astrojs/renderer-vue": "^0.2.1",
     "astro": "^0.21.12",
     "tailwindcss": "^3.0.1"
+  },
+  "dependencies": {
+    "@astrojs/renderer-preact": "^0.3.2",
+    "vue-material-design-icons": "^5.0.0"
   }
 }

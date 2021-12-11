@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="github-repos-container">
         <github-repo
             v-for="project in projects"
             :project=project
@@ -8,6 +8,15 @@
     </div>
 </template>
 
+<style scoped>
+.github-repos-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.flex-gap > div {
+  margin: 12px;
+}
+</style>
 <script>
 import GithubRepo from './GithubRepo.vue'
 import GithubProjects from '../../data/repos.json'
