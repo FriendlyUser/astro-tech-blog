@@ -58,6 +58,8 @@ jobs:
           git config --global user.name "David Li"
           git add . -f
           git commit -m "Publishing GitHub Pages  ***NO_CI***"
+          git remote set-url github https://FriendlyUser:${{secrets.API_TOKEN}}@github.com/FriendlyUser.github.io.git
+          git push github master --force
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
@@ -65,17 +67,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
           BRANCH: gh-pages
           FOLDER: dist
-       # Push to your pages repo
-      - name: Push to pages repo
-        uses: cpina/github-action-push-to-another-repository@v1.3
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.MAIN_REPO_TOKEN }}
-        with:
-          source-directory: 'dist'
-          destination-github-username: 'FriendlyUser'
-          destination-repository-name: 'FriendlyUser.github.io'
-          user-email: davidli012345@gmail.com
-          commit-message: Deploy ORIGIN_COMMIT
-          target-branch: master
+
 
         
