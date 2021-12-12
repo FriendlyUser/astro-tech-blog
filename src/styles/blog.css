@@ -283,3 +283,7 @@
     font-size: 1rem;
   }
   
+  .navbar-right-item {
+    display: flex;
+    align-items: center;
+  }

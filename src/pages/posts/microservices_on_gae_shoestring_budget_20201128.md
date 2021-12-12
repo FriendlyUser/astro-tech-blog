@@ -21,7 +21,7 @@ Before we can begin making microservices, we need to enable the google app engin
 
 ### Enabling App Engine Api
 The url is at, remember to replace `project_id` with your google cloud platform project.
-https://console.developers.google.com/apis/api/appengine.googleapis.com/overview?project=${project_id}
+`https://console.developers.google.com/apis/api/appengine.googleapis.com/overview?project=${project_id}`
 
 ![Enabled App Engine](/imgs/2020/11/app_engine_enabled.png)
 

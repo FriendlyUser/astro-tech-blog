@@ -1,0 +1,57 @@
+name: Build Main Site
+# Don't want to burn my private minutes at this point
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '30 21 * * 5'
+
+env:
+  GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MAIN_SECRET_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }} # this is a special github token that has full access.
+
+jobs:
+  make_website:
+    name: Generate Website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: denolib/setup-deno@v2
+        with:
+          deno-version: v1.3
+      - run: |
+          cd scripts
+          ls
+          echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
+          deno --version
+          deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
+          cd ../../
+      - uses: actions/setup-node@v2-beta
+        name: setup node
+        with:
+          node-version: '12'
+      - name: intall astro
+        run: npm install
+
+      - name: update config
+        run: |
+          sed -i 's/astro-tech-blog\///g' astro.config.mjs
+          sed -i 's/astro-tech-blog//g' src/components/BlogHeader.astro
+          sed -i 's/\/astro-tech-blog//g' src/components/BlogPostPreview.astro
+          npm run build
+      
+      - name: update gh pages
+        run: |
+          cd dist
+          git init
+          echo google.com, pub-2479144310234386, DIRECT, f08c47fec0942fa0 > ads.txt
+          git config --global user.email "davidli012345@gmail.com"
+          git config --global user.name "David Li"
+          git add . -f
+          git commit -m "Publishing GitHub Pages  ***NO_CI***"
+          git remote add origin https://FriendlyUser:${{ secrets.MAIN_REPO_TOKEN }}@github.com/FriendlyUser/FriendlyUser.github.io.git
+          git push origin HEAD:refs/heads/master --force
+
+        
