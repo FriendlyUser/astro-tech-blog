@@ -30,6 +30,7 @@ jobs:
           echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
           deno --version
           deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
+          rm -rf .env
           cd ../
 
       - uses: actions/setup-node@v2
@@ -38,13 +39,12 @@ jobs:
           node-version: '14'
       # Install dependencies with npm
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       # Build the project and add .nojekyll file to supress default behaviour
       - name: Build
         run: |
-          npm run build
-          touch ./dist/.nojekyll
+          yarn run build
       # Push to your pages repo
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
