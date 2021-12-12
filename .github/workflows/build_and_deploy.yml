@@ -26,7 +26,6 @@ jobs:
           deno-version: v1.3
       - run: |
           cd scripts
-          ls
           echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
           deno --version
           deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
