@@ -59,15 +59,21 @@ jobs:
           git add . -f
           git commit -m "Publishing GitHub Pages  ***NO_CI***"
 
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
        # Push to your pages repo
       - name: Push to pages repo
-        uses: cpina/github-action-push-to-another-repository@main
+        uses: cpina/github-action-push-to-another-repository@v1.2
         env:
           API_TOKEN_GITHUB: ${{ secrets.MAIN_REPO_TOKEN }}
         with:
           source-directory: 'dist'
           destination-github-username: ${{ github.actor }}
-          destination-repository-name: ${{ env.deployToRepo }}
+          destination-repository-name: FriendlyUser.github.io
           user-email: ${{ env.githubEmail }}
           commit-message: Deploy ORIGIN_COMMIT
           target-branch: master
