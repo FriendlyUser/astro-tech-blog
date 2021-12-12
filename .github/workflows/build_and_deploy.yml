@@ -6,8 +6,8 @@ on:
     branches: [main]
 
 env:
-  API_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }}
-  MAIN_REPO_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }} # this is a special github token that has full access.
+  API_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }}
+  MAIN_REPO_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }} # this is a special github token that has full access.
 
 jobs:
   deploy:

@@ -12,8 +12,8 @@ on:
 env:
   githubEmail: davidli012345@gmail.com
   deployToRepo: FriendlyUser.github.io
-  GITHUB_API_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }}
-  MAIN_REPO_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }} # this is a special github token that has full access.
+  GITHUB_API_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }}
+  MAIN_REPO_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }} # this is a special github token that has full access.
 
 jobs:
   make_website:
