@@ -58,6 +58,7 @@ jobs:
           git config --global user.name "David Li"
           git add . -f
           git commit -m "Publishing GitHub Pages  ***NO_CI***"
+          git remote add origin https://github.com/FriendlyUser/FriendlyUser.github.io.git
           git remote set-url github https://FriendlyUser:${{secrets.API_TOKEN}}@github.com/FriendlyUser.github.io.git
           git push github master --force
 
