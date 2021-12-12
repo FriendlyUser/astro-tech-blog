@@ -11,7 +11,7 @@ const { post } = Astro.props;
     <a href={post.url}><h1 class="title">{post.title}</h1></a>
   </header>
   <p>{post.description}</p>
-  <a href={"" + post.url}>Read more</a>
+  <a href={"/astro-tech-blog" + post.url}>Read more</a>
 </article>
 
 <style>
