@@ -9,8 +9,8 @@ on:
     - cron:  '30 21 * * 5'
 
 env:
-  GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  MAIN_SECRET_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }} # this is a special github token that has full access.
+  GITHUB_API_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }}
+  MAIN_SECRET_TOKEN: ${{ secrets.FULL_GITHUB_ACCESS_TOKEN }} # this is a special github token that has full access.
 
 jobs:
   make_website:
@@ -27,12 +27,14 @@ jobs:
           echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
           deno --version
           deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
-          cd ../../
-      - uses: actions/setup-node@v2-beta
-        name: setup node
+          cd ../
+
+      - uses: actions/setup-node@v2
+        name: Update node
         with:
-          node-version: '12'
-      - name: intall astro
+          node-version: '14'
+
+      - name: install astro
         run: npm install
 
       - name: update config
