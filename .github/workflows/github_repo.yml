@@ -61,6 +61,7 @@ jobs:
           git remote add origin https://github.com/FriendlyUser/FriendlyUser.github.io.git
           git remote set-url github https://FriendlyUser:${{secrets.API_TOKEN}}@github.com/FriendlyUser.github.io.git
           git push github master --force
+          cd ../
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
