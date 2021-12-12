@@ -72,7 +72,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.MAIN_REPO_TOKEN }}
         with:
           source-directory: 'dist'
-          destination-github-username: ${{ github.actor }}
+          destination-github-username: FriendlyUser
           destination-repository-name: FriendlyUser.github.io
           user-email: ${{ env.githubEmail }}
           commit-message: Deploy ORIGIN_COMMIT
