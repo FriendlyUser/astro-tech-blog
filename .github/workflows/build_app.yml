@@ -1,4 +1,4 @@
-name: Build Main Site
+name: Build For Github
 # Don't want to burn my private minutes at this point
 on:
   push:
@@ -12,7 +12,6 @@ on:
 env:
   githubEmail: davidli012345@gmail.com
   deployToRepo: FriendlyUser.github.io
-  GITHUB_API_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }}
   MAIN_REPO_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }} # this is a special github token that has full access.
 
 jobs:
@@ -28,7 +27,7 @@ jobs:
       - run: |
           cd scripts
           ls
-          echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
+          echo GITHUB_API_TOKEN=$MAIN_REPO_TOKEN > .env
           deno --version
           deno run --allow-read --allow-write --allow-env --allow-net mods.ts
           rm -rf .env
@@ -44,9 +43,6 @@ jobs:
 
       - name: update config
         run: |
-          sed -i 's/astro-tech-blog\///g' astro.config.mjs
-          sed -i 's/astro-tech-blog//g' src/components/BlogHeader.astro
-          sed -i 's/\/astro-tech-blog//g' src/components/BlogPostPreview.astro
           npm run build
       
       - name: update gh pages
@@ -58,9 +54,14 @@ jobs:
           git config --global user.name "David Li"
           git add . -f
           git commit -m "Publishing GitHub Pages ***NO_CI***"
-          git remote add origin https://github.com/FriendlyUser/FriendlyUser.github.io.git
-          git remote set-url origin https://FriendlyUser:$MAIN_REPO_TOKEN@github.com/FriendlyUser/FriendlyUser.github.io.git
-          git push origin master --force
           cd ../
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
+
 
         
