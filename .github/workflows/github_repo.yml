@@ -67,14 +67,14 @@ jobs:
           FOLDER: dist
        # Push to your pages repo
       - name: Push to pages repo
-        uses: cpina/github-action-push-to-another-repository@v1.2
+        uses: cpina/github-action-push-to-another-repository@v1.3
         env:
           API_TOKEN_GITHUB: ${{ secrets.MAIN_REPO_TOKEN }}
         with:
           source-directory: 'dist'
-          destination-github-username: FriendlyUser
-          destination-repository-name: FriendlyUser.github.io
-          user-email: ${{ env.githubEmail }}
+          destination-github-username: 'FriendlyUser'
+          destination-repository-name: 'FriendlyUser.github.io'
+          user-email: davidli012345@gmail.com
           commit-message: Deploy ORIGIN_COMMIT
           target-branch: master
 
