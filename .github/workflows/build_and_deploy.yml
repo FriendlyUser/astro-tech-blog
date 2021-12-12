@@ -31,6 +31,11 @@ jobs:
           deno --version
           deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
           cd ../
+
+      - uses: actions/setup-node@v2
+        name: Update node
+        with:
+          node-version: '14'
       # Install dependencies with npm
       - name: Install dependencies
         run: npm install
