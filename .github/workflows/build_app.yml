@@ -10,7 +10,6 @@ on:
     - cron:  '30 21 * * 5'
 
 env:
-  githubEmail: davidli012345@gmail.com
   deployToRepo: FriendlyUser.github.io
   MAIN_REPO_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }} # this is a special github token that has full access.
 
@@ -45,17 +44,6 @@ jobs:
         run: |
           npm run build
       
-      - name: update gh pages
-        run: |
-          cd dist
-          git init
-          echo google.com, pub-2479144310234386, DIRECT, f08c47fec0942fa0 > ads.txt
-          git config --global user.email "davidli012345@gmail.com"
-          git config --global user.name "David Li"
-          git add . -f
-          git commit -m "Publishing GitHub Pages ***NO_CI***"
-          cd ../
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
