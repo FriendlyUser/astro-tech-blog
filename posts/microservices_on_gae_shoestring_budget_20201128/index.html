@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="en"><head>
+    
+<!-- Global Metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+
+<!-- Primary Meta Tags -->
+<title>How to setup microservices in gae as cheaply as possible</title>
+<meta name="title" content="How to setup microservices in gae as cheaply as possible">
+<meta name="description" content="My explaination to my google app engine template repo.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url">
+<meta property="og:title" content="How to setup microservices in gae as cheaply as possible">
+<meta property="og:description" content="My explaination to my google app engine template repo.">
+<meta property="og:image" content="https://astro.build/social.jpg?v=1">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url">
+<meta property="twitter:title" content="How to setup microservices in gae as cheaply as possible">
+<meta property="twitter:description" content="My explaination to my google app engine template repo.">
+<meta property="twitter:image" content="https://astro.build/social.jpg?v=1">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&amp;family=IBM+Plex+Sans:wght@400;700&amp;display=swap">
+
+    <link rel="stylesheet" href="../../assets/docker_hub_to_github_packages.571d8fed.css"><link rel="stylesheet" href="../../assets/blog.5adf3fa9.css">
+  
+
+</head>
+
+  <body>
+    
+
+<header class="wrapper astro-BL3X4NI5">
+  <article class="astro-BL3X4NI5">
+    <h1 class="astro-BL3X4NI5">
+      <a href="/" class="astro-BL3X4NI5">
+        <svg class="logo astro-BL3X4NI5" width="32" height="32" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            #flame {
+              fill: #ff5d01;
+            }
+            #a {
+              fill: #000014;
+            }
+          </style>
+          <title>Logo</title>
+          <path id="a" fill-rule="evenodd" clip-rule="evenodd" d="M163.008 18.929c1.944 2.413 2.935 5.67 4.917 12.181l43.309 142.27a180.277 180.277 0 00-51.778-17.53l-28.198-95.29a3.67 3.67 0 00-7.042.01l-27.857 95.232a180.225 180.225 0 00-52.01 17.557l43.52-142.281c1.99-6.502 2.983-9.752 4.927-12.16a15.999 15.999 0 016.484-4.798c2.872-1.154 6.271-1.154 13.07-1.154h31.085c6.807 0 10.211 0 13.086 1.157a16.004 16.004 0 016.487 4.806z" class="astro-BL3X4NI5"></path>
+          <path id="flame" fill-rule="evenodd" clip-rule="evenodd" d="M168.19 180.151c-7.139 6.105-21.39 10.268-37.804 10.268-20.147 0-37.033-6.272-41.513-14.707-1.602 4.835-1.961 10.367-1.961 13.902 0 0-1.056 17.355 11.015 29.426 0-6.268 5.081-11.349 11.349-11.349 10.743 0 10.731 9.373 10.721 16.977v.679c0 11.542 7.054 21.436 17.086 25.606a23.27 23.27 0 01-2.339-10.2c0-11.008 6.463-15.107 13.974-19.87 5.976-3.79 12.616-8.001 17.192-16.449a31.024 31.024 0 003.743-14.82c0-3.299-.513-6.479-1.463-9.463z" class="astro-BL3X4NI5"></path>
+        </svg>
+        <span class="astro-BL3X4NI5">My Blog</span>
+      </a>
+    </h1>
+    <a href="/about" class="astro-BL3X4NI5">
+      About Me
+    </a> &nbsp; &nbsp;
+    <div class="navbar-right-item astro-BL3X4NI5">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="astro-BL3X4NI5"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" class="astro-BL3X4NI5"></path></svg> &nbsp;
+     <a href="https://github.com/FriendlyUser" class="astro-BL3X4NI5">
+        Github
+      </a>
+    </div>
+  </article>
+</header>
+
+    <div class="wrapper">
+      
+<div class="layout astro-XBXO4BCQ">
+  <article class="content astro-XBXO4BCQ">
+  <div class="astro-XBXO4BCQ">
+    <header class="astro-XBXO4BCQ">
+      
+      <p class="publish-date astro-XBXO4BCQ"></p>
+      <h1 class="title astro-XBXO4BCQ">How to setup microservices in gae as cheaply as possible</h1>
+      
+<div class="author astro-BL6UQIAR">
+  <p class="astro-BL6UQIAR"><a href="https://github.com/FriendlyUser" class="astro-BL6UQIAR">@FriendlyUser</a></p>
+</div>
+
+    </header>
+    <main class="astro-XBXO4BCQ">
+      <h1 id="summary">Summary</h1><p>This tutorial will cover how to make microservices in google app engine using google cloud build. This is intended to only provide a boilerplate for microservices with google cloud platform and not a description of how to code a REST api.</p><p>Before we can begin making microservices, we need to enable the google app engine api for the given project. If you dont have an account, you can sign up for a free trial at <a href="https://cloud.google.com/free/">google cloud</a>. After creating a project we need to</p><ul>
+<li>enable the api app engine in google cloud platform for the given project</li>
+<li>create an app engine project</li>
+<li>give default cloud build service permission to deploy to app engine</li>
+</ul><h3 id="enabling-app-engine-api">Enabling App Engine Api</h3><p>The url is at, remember to replace <code data-astro-raw="">project_id</code> with your google cloud platform project.
+<code data-astro-raw="">https://console.developers.google.com/apis/api/appengine.googleapis.com/overview?project=${project_id}</code></p><p><img src="/imgs/2020/11/app_engine_enabled.png" alt="Enabled App Engine"></p><p>After enabling the api we need to create an google app engine application.</p><h3 id="creating-app-engine-application">Creating app engine application</h3><p>If you already have an app engine application, you can skip this step.</p><ul>
+<li>Go to the sidebar and find -&gt; App Engine -&gt; Create application.</li>
+<li>You can ignore the get started prompt.</li>
+</ul><p>After creating an app engine application, we need to update the default google cloud service account to have access to google app engine.</p><h3 id="updating-cloud-build-permissions">Updating cloud build permissions</h3><p>The default Cloud Build service account does not allow access to deploy App Engine. You need to enable the Cloud Build service account to perform actions such as deploy.</p><p>The Cloud Build service account is formatted like this:</p><p>[PROJECT_NUMBER]@cloudbuild.gserviceaccount.com</p><ul>
+<li>Go to the Google Cloud Console -&gt; IAM &amp; admin -&gt; IAM.</li>
+<li>Locate the service account and click the pencil icon.</li>
+<li>Add the role “App Engine Deployer” and “Service Account User” to the service account.</li>
+</ul><p>Wait a couple of minutes for the service account to update globally and then try again.</p><p><img src="/imgs/2020/11/google_app_engine_service.png" alt="Enabled App Engine"></p><p>For simplicity, I have copied the boilerplate for the google app engine fastapi.</p><p>The contents of <code data-astro-raw="">main.py</code> as is follows.</p><pre class="language-python"><code data-astro-raw="" class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
+
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># domain where this api is hosted for example : localhost:5000/docs to see swagger documentation automagically generated.</span>
+
+
+<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>get</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">home</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"message"</span><span class="token punctuation">:</span> <span class="token string">"Hello TutLinks.com"</span><span class="token punctuation">}</span></code></pre><p>To deploy this application to google cloud platform we have a simple <code data-astro-raw="">fastapi.yaml</code> file to configure the version of python and the start command. The url for the api microservice will be prepended with <code data-astro-raw="">api-dot</code>.</p><pre class="language-null"><code data-astro-raw="" class="language-null">service: api
+runtime: python37
+
+basic_scaling:
+    max_instances: 1
+    idle_timeout: 10m
+
+resources:
+    cpu: 1
+    memory_gb: 1
+    disk_size_gb: 1
+
+entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker pyfastapi:app</code></pre><p>Basic scaling can be changed as needed, these are the defaults that works for me.</p><pre class="language-yaml"><code data-astro-raw="" class="language-yaml"><span class="token key atrule">steps</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"gcr.io/cloud-builders/gcloud"</span>
+    <span class="token key atrule">id</span><span class="token punctuation">:</span> deploy_go
+    <span class="token key atrule">args</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"app"</span><span class="token punctuation">,</span> <span class="token string">"deploy"</span><span class="token punctuation">,</span> <span class="token string">"goapp.yaml"</span><span class="token punctuation">]</span>
+    <span class="token key atrule">timeout</span><span class="token punctuation">:</span> <span class="token string">"600s"</span>
+  
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"gcr.io/cloud-builders/gcloud"</span>
+    <span class="token key atrule">id</span><span class="token punctuation">:</span> deploy_dash
+    <span class="token key atrule">args</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"app"</span><span class="token punctuation">,</span> <span class="token string">"deploy"</span><span class="token punctuation">,</span> <span class="token string">"fastapi.yaml"</span><span class="token punctuation">]</span>
+    <span class="token key atrule">timeout</span><span class="token punctuation">:</span> <span class="token string">"600s"</span>
+    <span class="token key atrule">dir</span><span class="token punctuation">:</span> python/api</code></pre><p>This will build the default app service and the fast api service in the <code data-astro-raw="">python/api</code> directory. Each push will make a new version in app engine. Personally, I do not feel the need to delete old app versions at the moment.</p><p>Another useful step that runs is the cleanup stage. To decrease build times and a bunch of old docker images that are no longer needed. This is just a personal preference to pay no money to google.</p><pre class="language-yaml"><code data-astro-raw="" class="language-yaml">  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'gcr.io/cloud-builders/gcloud'</span>
+    <span class="token key atrule">entrypoint</span><span class="token punctuation">:</span> bash
+    <span class="token key atrule">id</span><span class="token punctuation">:</span> cleanup2
+    <span class="token key atrule">args</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'-c'</span>
+      <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+        now=$(date --date="next Friday" +"%Y-%m-%d")
+        chmod +x gcrgc.sh
+        ./gcrgc.sh us.gcr.io/$PROJECT_ID/app-engine-tmp/build-cache/ttl-7d/python-cache $now
+        ./gcrgc.sh us.gcr.io/$PROJECT_ID/app-engine-tmp/app/ttl-2h $now</span>
+    <span class="token key atrule">waitFor</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> deploy_dash
+      <span class="token punctuation">-</span> deploy_api
+    <span class="token key atrule">dir</span><span class="token punctuation">:</span> scripts</code></pre><p>If the google cloud build is successfully, congratulations, you have successfully deployed microservices to google app engine.</p><p>For the full source code, you can visit <a href="https://github.com/FriendlyUser/gae-microservices-template">github</a>.</p>
+    </main>
+  </div>
+  </article>
+</div>
+
+
+
+    </div>
+  </body></html>
