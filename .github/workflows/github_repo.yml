@@ -57,16 +57,16 @@ jobs:
           git config --global user.email "davidli012345@gmail.com"
           git config --global user.name "David Li"
           git add . -f
-          git commit -m "Publishing GitHub Pages  ***NO_CI***"
+          git commit -m "Publishing GitHub Pages ***NO_CI***"
           git remote add origin https://github.com/FriendlyUser/FriendlyUser.github.io.git
-          git remote set-url origin https://FriendlyUser:${{secrets.API_TOKEN}}@github.com/FriendlyUser/FriendlyUser.github.io.git
+          git remote set-url origin https://FriendlyUser:${{secrets.GITHUB_API_TOKEN}}@github.com/FriendlyUser/FriendlyUser.github.io.git
           git push origin master --force
           cd ../
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_API_TOKEN }}
           BRANCH: gh-pages
           FOLDER: dist
 
