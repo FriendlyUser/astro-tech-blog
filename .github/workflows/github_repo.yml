@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: denolib/setup-deno@v2
         with:
           deno-version: v1.3
@@ -29,7 +30,8 @@ jobs:
           ls
           echo GITHUB_API_TOKEN=$GITHUB_API_TOKEN > .env
           deno --version
-          deno run --allow-read --allow-write --allow-env --allow-net mods.ts 
+          deno run --allow-read --allow-write --allow-env --allow-net mods.ts
+          rm -rf .env
           cd ../
 
       - uses: actions/setup-node@v2
