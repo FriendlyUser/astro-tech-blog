@@ -47,3 +47,9 @@ One option is to create patch packages that will automatically make changes to o
 If you have no choice, you may have to upgrade your entire app and switch things out to something that works. This solution is not ideal, but you may have no other choice.
 
 Ideally, you would be able to at least build it locally as the required dependencies exist on your computer.
+
+## Alternative to jcenter
+
+The react native team expected jitpack to replace jcenter.
+
+jitpack is a website that can build gradle projects from github repositories.
