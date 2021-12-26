@@ -1,6 +1,6 @@
 ---
 import BlogPostPreview from '../../components/BlogPostPreview.astro';
-import Layout from '../../layouts/BlogPost.astro'
+import BlogHeader from '../../components/BlogHeader.astro';
 
 const allPosts = Astro.fetchContent('./*.md');
 export async function getStaticPaths({ paginate, rss }) {
