@@ -11,6 +11,15 @@ const {title, description, publishDate, author, heroImage, permalink, alt} = con
   <head>
     <BaseHead title={title} description={description} permalink={permalink} />
     <link rel="stylesheet" href={Astro.resolve('../styles/blog.css')} />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-2479144310234386",
+      enable_page_level_ads: true
+    });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
   </head>
 
   <body>
