@@ -6,6 +6,7 @@ title: What I did to transfer docker images from dockerhub to ghcr
 description: Transferring images from dockerhub with ghcr with code included.
 alt: dockerhub tags to github package registry
 tags: ["docker", "ghcr"]
+pubDate: Mon, 11 Dec 2020 13:00:00 GMT
 ---
 
 
