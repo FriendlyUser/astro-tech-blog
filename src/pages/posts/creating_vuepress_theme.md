@@ -6,6 +6,7 @@ setup: |
   import Cool from '../../components/Author.astro'
 date: 2018-11-12T00:00:00
 lastmod: 2018-11-12T00:00:00
+pubDate: Mon, 11 Nov 2018 13:00:00 GMT
 draft: false
 
 # Authors. Comma separated list, e.g. `["Bob Smith", "David Jones"]`.

@@ -6,6 +6,7 @@ tags: ["wsl2", "windows store"]
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
+pubDate: Mon, 11 Jan 2021 13:00:00 GMT
 ---
 
 # Summary

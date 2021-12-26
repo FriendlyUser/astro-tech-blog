@@ -6,6 +6,8 @@ tags: ["wordpress", "simply static"]
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
+
+pubDate: Mon, 11 Dec 2020 13:00:00 GMT
 ---
 
 # Summary
