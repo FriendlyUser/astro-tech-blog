@@ -1,7 +1,7 @@
 ---
-title: Suggestions on how to deal with the depreciation of jcenter/bintray
-description: My Thoughts on what todo with jcenter/bintray going down.
-alt: Bintray Removed
+title: building ticker app with plotly dash
+description: Building stock ticker app with plotly dash
+alt: Stock Ticker app
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
