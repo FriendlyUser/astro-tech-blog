@@ -164,7 +164,6 @@ From the Previous Article we covered how to make basic dash UI and some callback
 The full code is available on [github](https://github.com/FriendlyUser/dash-stock-ticker/tree/Part-2).
 
 ```python
-
 import yfinance as yf
 # Add another dropdown to get the values
 @app.callback(
@@ -238,7 +237,6 @@ In addition to having a Procfile, a requirements.txt file is required so
 
 
 ```bash
-
 dash_core_components==1.5.1
 dash_html_components==1.0.2
 dash==1.6.1
@@ -256,10 +254,7 @@ Just push up your changes and you will see the deployed app.
 Although functionally, the app is complete, it looks somewhat ugly and could be restyled, previously for dash apps you needed to host css externally, but now can instead `*.css` files in code under the `assets` folder.
 
 
-```
-
-/* Grid
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+```css
 .container {
   position: relative;
   width: 100%;
@@ -344,12 +339,6 @@ Although functionally, the app is complete, it looks somewhat ugly and could be 
 
 }
 
-
-/* Base Styles
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
-/* NOTE
-html is set to 62.5% so that all the REM measurements throughout Skeleton
-are based on 10px sizing. So basically 1.5rem = 15px :) */
 html {
   font-size: 62.5%; }
 body {
@@ -359,9 +348,6 @@ body {
   font-family: "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: rgb(50, 50, 50); }
 
-
-/* Typography
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 0;
@@ -539,9 +525,6 @@ ol ul {
 li {
   margin-bottom: 1rem; }
 
-
-/* Tables
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
 table {
   border-collapse: collapse;
 }
@@ -558,8 +541,6 @@ td:last-child:not(.CalendarDay) {
   padding-right: 0; }
 
 
-/* Spacing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
 button,
 .button {
   margin-bottom: 0rem; }
@@ -578,9 +559,7 @@ p,
 ul,
 ol {
   margin-bottom: 0.75rem; }
-
-/* Utilities
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+ 
 .u-full-width {
   width: 100%;
   box-sizing: border-box; }
@@ -593,8 +572,6 @@ ol {
   float: left; }
 
 
-/* Misc
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
 hr {
   margin-top: 3rem;
   margin-bottom: 3.5rem;
@@ -602,8 +579,6 @@ hr {
   border-top: 1px solid #E1E1E1; }
 
 
-/* Clearing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 /* Self Clearing Goodness */
 .container:after,
@@ -614,14 +589,6 @@ hr {
   clear: both; }
 
 
-/* Media Queries
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
-/*
-Note: The best way to structure the use of media queries is to create the queries
-near the relevant code. For example, if you wanted to change the styles for buttons
-on small devices, paste the mobile query code up in the buttons section and style it
-there.
-*/
 
 
 /* Larger than mobile */
