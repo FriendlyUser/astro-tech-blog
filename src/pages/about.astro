@@ -14,10 +14,7 @@ interface MarkdownFrontmatter {
 // You can write any JavaScript/TypeScript that you'd like here.
 // It will run during the build, but never in the browser.
 // All variables are available to use in the HTML template below.
-let title = 'My Astro Site';
-
-let allPosts = await Astro.fetchContent('./posts/*.md');
-allPosts = allPosts.sort((a, b) => new Date(b.publishDate).valueOf() - new Date(a.publishDate).valueOf());
+let title = 'About Me';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/core-concepts/astro-components/
@@ -28,9 +25,9 @@ allPosts = allPosts.sort((a, b) => new Date(b.publishDate).valueOf() - new Date(
     <meta name="viewport" content="width=device-width">
     <title>{title}</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href={Astro.resolve('../styles/global.css')}>
-    <link rel="stylesheet" href={Astro.resolve('../styles/home.css')}>
-    <link rel="stylesheet" href={Astro.resolve('../styles/blog.css')} />
+    <link rel="stylesheet" href={'../styles/global.css'}>
+    <link rel="stylesheet" href={'../styles/home.css'}>
+    <link rel="stylesheet" href={'../styles/blog.css'} />
 
     <style>
         header {

@@ -10,7 +10,7 @@ const {title, description, publishDate, author, heroImage, permalink, alt} = con
 <html lang={ content.lang || 'en' }>
   <head>
     <BaseHead title={title} description={description} permalink={permalink} />
-    <link rel="stylesheet" href={Astro.resolve('../styles/blog.css')} />
+    <link rel="stylesheet" href={'../styles/blog.css'} />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
     (adsbygoogle = window.adsbygoogle || []).push({
