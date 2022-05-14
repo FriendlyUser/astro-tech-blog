@@ -8,5 +8,8 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [preact(), react(), vue(), tailwind(), sitemap()]
+  integrations: [preact(), react(), vue(), tailwind(), sitemap()],
+  build: {
+    site: "https://friendlyuser.github.io"
+  }
 });
