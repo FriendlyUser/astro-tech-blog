@@ -20,6 +20,7 @@
     "vue": "^3.2.33"
   },
   "dependencies": {
+    "@astrojs/rss": "^0.2.0",
     "preact": "^10.7.2",
     "vue-material-design-icons": "^5.0.0"
   }

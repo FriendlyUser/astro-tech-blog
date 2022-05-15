@@ -3,26 +3,13 @@ import BlogPostPreview from '../../components/BlogPostPreview.astro';
 import BlogHeader from '../../components/BlogHeader.astro';
 
 const allPosts = await Astro.glob('./*.md');
-export async function getStaticPaths({ paginate, rss }) {
+export async function getStaticPaths({ paginate }) {
   const allPosts = await Astro.glob('./*.md');
-  const sortedPosts = allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedPosts = allPosts.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-  rss({
-    title: `FriendlyUser's | Blog`,
-    description: 'Simple Tech Blog for coder',
-    customData: `<language>en-us</language>`,
-    site: "https://friendlyuser.github.io",
-    items: sortedPosts.map(item => ({
-      title: item.title,
-      description: item.description,
-      link: item.url,
-      pubDate: item.date,
-    })),
+  return paginate(sortedPosts, {
+    pageSize: 50
   })
-
-    return paginate(sortedPosts, {
-      pageSize: 50
-    })
 }
 ---
 

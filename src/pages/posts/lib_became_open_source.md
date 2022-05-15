@@ -7,8 +7,6 @@ tags: ["python", "mlfinlab"]
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'  
-
-
 pubDate: Mon, 11 July 2020 13:00:00 GMT
 ---
 
