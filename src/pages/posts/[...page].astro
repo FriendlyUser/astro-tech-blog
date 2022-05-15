@@ -11,6 +11,7 @@ export async function getStaticPaths({ paginate, rss }) {
     title: `FriendlyUser's | Blog`,
     description: 'Simple Tech Blog for coder',
     customData: `<language>en-us</language>`,
+    site: "https://friendlyuser.github.io",
     items: sortedPosts.map(item => ({
       title: item.title,
       description: item.description,
