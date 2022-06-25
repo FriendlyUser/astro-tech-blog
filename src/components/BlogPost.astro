@@ -9,7 +9,7 @@ export interface Props {
 	alt: string;
 }
 
-const { title, author, publishDate, heroImage, alt } = Astro.props;
+const { title, author, publishDate, heroImage, alt, tags } = Astro.props;
 ---
 
 <div class="layout">
@@ -19,6 +19,28 @@ const { title, author, publishDate, heroImage, alt } = Astro.props;
 				{heroImage && <img width="720" height="420" class="hero-image" loading="lazy" src={heroImage} alt={alt} />}
 				<p class="publish-date">{publishDate}</p>
 				<h1 class="title">{title}</h1>
+				{tags?.map(tag => {
+					let color = "";
+					if (tag === "python") {
+						color = "green";
+					} 
+					if (tag === "dash" ) {
+						color = "blue"
+					}
+					if (tag === "vuepress") {
+						color = "purple"
+					}
+					if (tag === "openapi") {
+						color = "yellow"
+					}
+					if (!color) {
+						color = "black"
+					}
+					const className = `bg-${color}-100 text-${color}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-${color}-200 dark:text-${color}-800`
+					return (
+						<a href={`/topic/${tag}`}><span class={className}>{tag}</span></a>
+					)
+				})}
 				<Author name="@FriendlyUser" href="https://friendlyuser.github.io" />
 			</header>
 			<main>

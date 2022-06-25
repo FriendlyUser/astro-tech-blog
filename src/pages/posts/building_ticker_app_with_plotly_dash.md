@@ -6,6 +6,7 @@ setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
 pubDate: Wed, 15 Dec 2019 13:00:00 GMT
+tags: ["python", "dash"]
 ---
 
 ## Part I
