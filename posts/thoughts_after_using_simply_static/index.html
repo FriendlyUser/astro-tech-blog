@@ -33,7 +33,7 @@
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.20b80c4f.css"></link><script type="module" src="/entry.701f7b444.js" astro-script="/posts/thoughts_after_using_simply_static/script-0"></script>
+  <link rel="stylesheet" href="/assets/asset.80dd6ec7.css"></link><script type="module" src="/entry.701f7b444.js" astro-script="/posts/thoughts_after_using_simply_static/script-0"></script>
 </head>
 
   <body>
@@ -75,14 +75,14 @@
         <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
           Share
       </a>   -->
-      <div class="layout astro-PSRXP5LY">
-	<article class="content astro-PSRXP5LY">
-		<div class="astro-PSRXP5LY">
-			<header class="astro-PSRXP5LY">
+      <div class="layout astro-56AFBK7X">
+	<article class="content astro-56AFBK7X">
+		<div class="astro-56AFBK7X">
+			<header class="astro-56AFBK7X">
 				
-				<p class="publish-date astro-PSRXP5LY"></p>
-				<h1 class="title astro-PSRXP5LY">What I learned about using the simply static wordpress plugin</h1>
-				<a href="/topic/wordpress" class="astro-PSRXP5LY"><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-PSRXP5LY">wordpress</span></a><a href="/topic/simply static" class="astro-PSRXP5LY"><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-PSRXP5LY">simply static</span></a>
+				<p class="publish-date astro-56AFBK7X"></p>
+				<h1 class="title astro-56AFBK7X">What I learned about using the simply static wordpress plugin</h1>
+				<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-56AFBK7X"><a href="/topic/wordpress" class="astro-56AFBK7X">wordpress</a></span><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-56AFBK7X"><a href="/topic/simply static" class="astro-56AFBK7X">simply static</a></span>
 				<div class="author astro-KO5QTRDP">
 	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
 </div>
@@ -90,7 +90,7 @@
 
 
 			</header>
-			<main class="astro-PSRXP5LY">
+			<main class="astro-56AFBK7X">
 				<h1 id="summary">Summary</h1><p>Although simply static has not been recently used, it still is an excellent package for converting a wordpress site to a static website.</p><p>The installation of simply static was fairly straightforward and the UI is intuitive, I would prefer to have a cli interface, but its not a deal breaker. I would prefer to build the project inside a CI/CD pipeline.</p><p>One disadvantage of simply static settings, is it does not take glob arguments, this could be because I was using <code>php7.3</code> which has some minor bugs with simply static, but gets the job done. With simply static deploy, you can easily deploy your generated simply static site to s3. This requires you to have an updated configuration in <code>wp-config.php</code>. I attempted to use environment variables in <code>wp-config.php</code>, but that did not work so well, so I hardcoded it and in my CI/CD pipeline, I replaced the contents of the values in my pipeline.</p><p>Overall, simply static deploy with simply static is an excellent way to quickly deploy static sites with wordpress. Even with a pagebuilder - elementor pro, it works quite well. Again I had to include a number of hardcoded paths and assets, but outside of that, it works fine.</p><p>Below is a simple python script to preview the existing urls after exporting the site pages to xml.</p><p>This can also be adapted to replace the url paths.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #FF7B72">import</span><span style="color: #C9D1D9"> xml.etree.ElementTree </span><span style="color: #FF7B72">as</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">ET</span></span>
 <span class="line"><span style="color: #FF7B72">import</span><span style="color: #C9D1D9"> re</span></span>
 <span class="line"><span style="color: #C9D1D9">root </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">ET</span><span style="color: #C9D1D9">.parse(</span><span style="color: #A5D6FF">&#39;site.WordPress.2020-12-07.xml&#39;</span><span style="color: #C9D1D9">)</span></span>
