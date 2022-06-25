@@ -38,7 +38,7 @@ const { title, author, publishDate, heroImage, alt, tags } = Astro.props;
 					}
 					const className = `bg-${color}-100 text-${color}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-${color}-200 dark:text-${color}-800`
 					return (
-						<a href={`/topic/${tag}`}><span class={className}>{tag}</span></a>
+					<span class={className}><a href={`/topic/${tag}`}>{tag}</a></span>
 					)
 				})}
 				<Author name="@FriendlyUser" href="https://friendlyuser.github.io" />
