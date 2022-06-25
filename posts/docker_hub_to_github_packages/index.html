@@ -33,7 +33,7 @@
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.7be3d787.css"></link><script type="module" src="/entry.701f7b446.js" astro-script="/posts/docker_hub_to_github_packages/script-0"></script>
+  <link rel="stylesheet" href="/assets/asset.20b80c4f.css"></link><script type="module" src="/entry.701f7b445.js" astro-script="/posts/docker_hub_to_github_packages/script-0"></script>
 </head>
 
   <body>
@@ -75,13 +75,14 @@
         <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
           Share
       </a>   -->
-      <div class="layout astro-WV4VEUQT">
-	<article class="content astro-WV4VEUQT">
-		<div class="astro-WV4VEUQT">
-			<header class="astro-WV4VEUQT">
+      <div class="layout astro-PSRXP5LY">
+	<article class="content astro-PSRXP5LY">
+		<div class="astro-PSRXP5LY">
+			<header class="astro-PSRXP5LY">
 				
-				<p class="publish-date astro-WV4VEUQT"></p>
-				<h1 class="title astro-WV4VEUQT">What I did to transfer docker images from dockerhub to ghcr</h1>
+				<p class="publish-date astro-PSRXP5LY"></p>
+				<h1 class="title astro-PSRXP5LY">What I did to transfer docker images from dockerhub to ghcr</h1>
+				<a href="/topic/docker" class="astro-PSRXP5LY"><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-PSRXP5LY">docker</span></a><a href="/topic/ghcr" class="astro-PSRXP5LY"><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-PSRXP5LY">ghcr</span></a>
 				<div class="author astro-KO5QTRDP">
 	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
 </div>
@@ -89,7 +90,7 @@
 
 
 			</header>
-			<main class="astro-WV4VEUQT">
+			<main class="astro-PSRXP5LY">
 				<p>Recently I wanted to transfer docker images from dockerhub to github package registry.</p><p>I wanted to transfer my docker images to github. One reason was for having a  backup after dockerhub changed image pull limits for unauthenicated users.</p><p>I used github codespaces because I did not want to pull large images. I could not use the example script given at <a href="https://gist.github.com/pjbgf/065b621b576c7762451c5b13c6e8ba48/raw/617bb8596c508a26fbb73d1e2a7010c3fb2a6bad/move-docker-image-to-private-acr.sh">move-docker-image-to-private-acr.sh</a>.</p><p>The downsides of this approach is that my codespace did not have enough space to pull down all the images and repush. My images are quite large as they contain ctan and latex.</p><p>Working on a new script, I found a simple way to transfer my docker images to github package registry.</p><p>I will walk through the code I used.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #8B949E">#!/bin/sh</span></span>
 <span class="line"><span style="color: #C9D1D9">original_image=</span><span style="color: #A5D6FF">&quot;grandfleet/dolwarp&quot;</span></span>
 <span class="line"><span style="color: #8B949E"># github packages expects a project and then an image for that project</span></span>
