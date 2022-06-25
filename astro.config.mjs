@@ -12,4 +12,5 @@ export default defineConfig({
   build: {
     site: "https://friendlyuser.github.io"
   },
+  site: 'https://friendlyuser.github.io',
 });
