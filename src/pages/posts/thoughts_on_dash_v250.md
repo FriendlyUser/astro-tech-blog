@@ -5,7 +5,7 @@ alt: OpenApi Type Extraction
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
-pubDate: Wed, 14 May 2022 13:00:00 GMT
+pubDate: Friday, 24 June 2022 13:00:00 GMT
 ---
 
 Your job as an engineer is to find the data and put it in a way that makes sense to understand your students' brains. Data science is based around how much you would like to understand those brain processes. You could even use a computer's cognitive function as an indicator.
@@ -24,6 +24,5 @@ Dash v2.0.0 combines the other standard dash packages into the main dash library
 
 Unsurprising dash .net is still in alpha release which should surprise no one.
 
-Analyses need to be done using many different techniques. For example, if you have the concept of an R, you could choose to use a dataset for statistics or an analysis of a large number of variables. It doesn't have to be the only factor you use and as such should be done in a systematic way. The problem will ultimately always be about data and getting the most relevant insights from it.
 
 Overall, dash is a powerful framework and migration from v1.2.0 was easy for me, for a new project I would just make a new project and import it piecewise.
