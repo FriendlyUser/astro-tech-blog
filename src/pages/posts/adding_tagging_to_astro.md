@@ -1,6 +1,6 @@
 ---
-title: How to add
-description: My Thoughts on what todo with jcenter/bintray going down.
+title: How to add tags to astro
+description: How I implemented tags for my blog
 alt: Tagging in Astro
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
