@@ -11,8 +11,6 @@ export async function getStaticPaths({ paginate }) {
     pageSize: 50
   })
 }
-import "../../styles/global.css";
-import "../../styles/home.css";
 ---
 
 <html lang="en">
@@ -24,15 +22,6 @@ import "../../styles/home.css";
     <link rel="stylesheet" href="../../styles/global.css">
     <link rel="stylesheet" href="../../styles/home.css">
     <link rel="stylesheet" href="../../styles/blog.css" />
-
-    <style>
-        header {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            max-width: min(100%, 68ch);
-        }
-    </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
     (adsbygoogle = window.adsbygoogle || []).push({
