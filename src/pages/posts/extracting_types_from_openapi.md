@@ -6,6 +6,7 @@ setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'
 pubDate: Wed, 14 May 2022 13:00:00 GMT
+tags: ["openapi"]
 ---
 
 # Summary

@@ -12,6 +12,30 @@ const { post } = Astro.props;
 		<a href={post.url}><h1 class="title">{post.frontmatter.title}</h1></a>
 	</header>
 	<p>{post.frontmatter.description}</p>
+	<div>
+	{post?.frontmatter?.tags?.map(tag => {
+		let color = "";
+		if (tag === "python") {
+			color = "green";
+		} 
+		if (tag === "dash" ) {
+			color = "blue"
+		}
+		if (tag === "vuepress") {
+			color = "purple"
+		}
+		if (tag === "openapi") {
+			color = "yellow"
+		}
+		if (!color) {
+			color = "black"
+		}
+		const className = `bg-${color}-100 text-${color}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-${color}-200 dark:text-${color}-800`
+		return (
+		<span class={className}><a href={`/tags/${tag}`}>{tag}</a></span>
+		)
+	})}
+	</div>
 	<a href={post.url}>Read more</a>
 </article>
 

@@ -2,26 +2,58 @@
 import BlogPostPreview from '../../components/BlogPostPreview.astro';
 import BlogHeader from '../../components/BlogHeader.astro';
 
-const allPosts = await Astro.glob('./*.md');
-export async function getStaticPaths({ paginate }) {
-  const allPosts = await Astro.glob('./*.md');
-  const sortedPosts = allPosts.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+const allPosts = await Astro.glob('../posts/*.md');
 
-  return paginate(sortedPosts, {
-    pageSize: 50
-  })
+export async function getStaticPaths() {
+  const allPosts = await Astro.glob('../posts/*.md');
+  // get all tags
+  const tags = allPosts.map(post => {
+    const tags = post.frontmatter.tags;
+    return tags;
+  }).reduce((acc, val) => acc.concat(val), []);
+
+  // get unique tags
+  const uniqueTags = [...new Set(tags)];
+  // map to params
+  const paths = uniqueTags.map(tag => {
+    return {
+      params: {
+        tag
+      }
+    }
+  });
+  return paths;
 }
+
+const { tag } = Astro.params;
+
+// filter pages by tag
+const posts = allPosts.filter(post => {
+  const tags = post.frontmatter.tags;
+  return tags.includes(tag);
+}).sort((a, b) => {
+  return new Date(b.frontmatter.date) - new Date(a.frontmatter.date);
+}).filter(post => post !== null);
 ---
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <title>List of Blogs</title>
+    <title>List of Tags</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" href="../../styles/global.css">
     <link rel="stylesheet" href="../../styles/home.css">
     <link rel="stylesheet" href="../../styles/blog.css" />
+
+    <style>
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            max-width: min(100%, 68ch);
+        }
+    </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
     (adsbygoogle = window.adsbygoogle || []).push({
@@ -78,7 +110,7 @@ export async function getStaticPaths({ paginate }) {
         <div class="wrapper">
                 <main class="content">
             <section aria-label="Blog post list">
-            {allPosts.map(p => <BlogPostPreview post={p} />)}
+              {posts.map(p => <BlogPostPreview post={p} />)}
             </section>
             </main>
         </div>
