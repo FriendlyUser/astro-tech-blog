@@ -64,13 +64,11 @@ This causes issues and crashes with the loaded image, very difficult to debug, m
 One additional feature of interest is the download logic. `dart:io` is not supported on web, as a result I needed to have a reach around for the download logic, in case the anchor element is throwing error for mobile complication I will need to conditionally render it based on the situtation or use a dynamic import only for web.
 
 ```dart
-    if (kIsWeb) {
               downloadButton = _html.AnchorElement(
                 href:
                     "$header,$base64String")
               ..setAttribute("download", "file.png")
               ..click()
-            } 
 ```
 
 Overall adapting the flutter code to the web is a bit of a challenge, but I am confident that I have a solid foundation to build upon.
@@ -107,3 +105,77 @@ jobs:
 ```
 
 This action will build web for flutter 3.0.3 and then deploy it to the branch that will be displayed on github pages.
+
+In order to have platform specific implementations, the best way is to have nested imports
+
+```dart
+import 'package:rm_img_bg/download_button_main.dart'
+if (dart.library.html) 'package:rm_img_bg/download_button_web.dart';
+```
+
+Make sure the functions and classes are defined the same
+
+```dart
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:html' as _html;
+import 'dart:typed_data';
+
+
+class DownloadButtonProps {
+    List<int> imageInBytes;
+    DownloadButtonProps({ required this.imageInBytes});
+  }
+
+class DownloadButton extends StatelessWidget {
+
+  final DownloadButtonProps data;
+  const DownloadButton({Key? key, required this.data}): super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    String base64String = base64Encode(Uint8List.fromList(data.imageInBytes));
+    String header = "data:image/png;base64"; 
+    return ElevatedButton(
+      onPressed: () => {
+        // saveFile(uploadedImage.toString())
+          {
+            _html.AnchorElement(
+              href:
+                  "$header,$base64String")
+            ..setAttribute("download", "file.png")
+            ..click()
+          }
+      },
+      child: const Text("Save File"),
+    );
+  }
+}
+```
+
+Mobile (todo)
+```dart
+import 'package:flutter/material.dart';
+
+class DownloadButtonProps {
+    List<int> imageInBytes;
+    DownloadButtonProps({ required this.imageInBytes});
+}
+
+class DownloadButton extends StatelessWidget {
+
+  final DownloadButtonProps data;
+  const DownloadButton({Key? key, required this.data}): super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => {
+        // saveFile(uploadedImage.toString())
+          {
+            print("DO SOMETHING HERE")
+          }
+      },
+      child: const Text("Save File"),
+    );
+  }
+}
+```
