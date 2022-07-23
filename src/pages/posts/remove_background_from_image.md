@@ -179,3 +179,5 @@ class DownloadButton extends StatelessWidget {
   }
 }
 ```
+
+Next post is available at [Part II](/posts/remove_background_from_image_II)
