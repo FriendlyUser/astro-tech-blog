@@ -155,4 +155,5 @@ I also updated the floating action button to return if the remove.bg api returns
     child: const Icon(Icons.camera_alt),
 ```
 
-In the next article I will cover setting up fastlane to automatical deploy the app to google play.
+In the next article I will cover setting up fastlane to deploy the app to the google play store.
+
