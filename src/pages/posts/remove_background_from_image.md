@@ -152,7 +152,9 @@ class DownloadButton extends StatelessWidget {
 }
 ```
 
-Mobile (todo)
+This is my initial logic for the mobile download button, will be fleshed out in part II.
+
+Right now it only works on web, but I am working on a mobile implementation.
 ```dart
 import 'package:flutter/material.dart';
 
