@@ -6,6 +6,7 @@ import GithubRepos from '../components/homepage/GithubRepos.vue'
 import BaseHead from '../components/BaseHead.astro';
 import BlogHeader from '../components/BlogHeader.astro';
 import BlogPostPreview from '../components/BlogPostPreview.astro';
+import Footer from "../components/Footer.astro";
 
 interface MarkdownFrontmatter {
   publishDate: number;
@@ -96,5 +97,6 @@ let title = 'About Me';
             <GithubRepos client:visible />
             </main>
         </div>
+        <Footer />  
 </body>
 </html>
