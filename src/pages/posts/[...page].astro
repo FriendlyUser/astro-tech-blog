@@ -80,7 +80,7 @@ const { page } = Astro.props;
 <body>
        <BlogHeader />
         <div class="wrapper">
-                <main class="content">
+                <main class="content" data-pagefind-body>
             <section aria-label="Blog post list">
             {page?.data.map(p => <BlogPostPreview post={p} />)}
             </section>
