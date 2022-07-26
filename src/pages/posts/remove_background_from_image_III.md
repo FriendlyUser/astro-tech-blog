@@ -15,7 +15,7 @@ Following the instructions at fastlane and github actions is far better as they 
 
 Keep in mind in order to deploy using fastlane you must manually upload at least once to google play developer.
 
-```yml
+```yaml
 name: Flutter Android/ Windows
 on:
   push:
@@ -54,7 +54,7 @@ This will generate an apk and aab when you push to the main branch or a specific
 
 Afterwards we can only trigger fastlane events for certain branches.
 
-```yml
+```yaml
 
       - run: flutter build appbundle
       - run: echo $GPLAY_KEY_B64 | base64 --decode > android/pc-api-7819418006086265513-297-141698a71862.json
