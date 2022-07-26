@@ -96,9 +96,9 @@ allPosts = allPosts?.slice(0,5)?.sort((a, b) => new Date(b.frontmatter.pubDate).
             <section aria-label="Blog post list">
             {allPosts.map(p => <BlogPostPreview post={p} />)}
             </section>
-            </main>
             <a href="/posts/">More Posts</a>
+            <Footer />
+            </main>
         </div>
-        <Footer />
 </body>
 </html>
