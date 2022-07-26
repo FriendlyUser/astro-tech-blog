@@ -3,6 +3,7 @@
 // You can import components from any supported Framework here!
 import BlogHeader from '../components/BlogHeader.astro';
 import BlogPostPreview from '../components/BlogPostPreview.astro';
+import Footer from "../components/Footer.astro";
 
 interface MarkdownFrontmatter {
   publishDate: number;
@@ -14,7 +15,7 @@ interface MarkdownFrontmatter {
 let title = 'My Astro Site';
 
 let allPosts = await Astro.glob('./posts/*.md');
-allPosts = allPosts.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Date(a.frontmatter.pubDate).valueOf());
+allPosts = allPosts?.slice(0,5)?.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Date(a.frontmatter.pubDate).valueOf());
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/core-concepts/astro-components/
@@ -95,7 +96,10 @@ allPosts = allPosts.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - n
             <section aria-label="Blog post list">
             {allPosts.map(p => <BlogPostPreview post={p} />)}
             </section>
+            <a href="/posts/">More Posts</a>
+            <Footer />
             </main>
         </div>
+        <div data-pagefind-body></div>
 </body>
 </html>

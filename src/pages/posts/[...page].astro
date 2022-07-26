@@ -1,6 +1,8 @@
 ---
 import BlogPostPreview from '../../components/BlogPostPreview.astro';
 import BlogHeader from '../../components/BlogHeader.astro';
+import Pagination from "../../components/Pagination.astro";
+import Footer from "../../components/Footer.astro";
 
 const allPosts = await Astro.glob('./*.md');
 export async function getStaticPaths({ paginate }) {
@@ -8,9 +10,11 @@ export async function getStaticPaths({ paginate }) {
   const sortedPosts = allPosts.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
   return paginate(sortedPosts, {
-    pageSize: 50
+    pageSize: 5
   })
 }
+
+const { page } = Astro.props;
 ---
 
 <html lang="en">
@@ -76,10 +80,12 @@ export async function getStaticPaths({ paginate }) {
 <body>
        <BlogHeader />
         <div class="wrapper">
-                <main class="content">
+                <main class="content" data-pagefind-body>
             <section aria-label="Blog post list">
-            {allPosts.map(p => <BlogPostPreview post={p} />)}
+            {page?.data.map(p => <BlogPostPreview post={p} />)}
             </section>
+            <Pagination page={page} />
+            <Footer />
             </main>
         </div>
 </body>

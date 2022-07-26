@@ -1,0 +1,29 @@
+---
+/*
+export interface Props {
+    url: {
+        prev: number,
+        next: number
+    };
+}
+*/
+const { page } = Astro.props;
+---
+<div class="page-actions">
+    {page.url.prev && <a class="font-size-1" href={page.url.prev} title="Go to Previous">&larr; Prev</a>}
+    {page.url.next && <a class="font-size-1" href={page.url.next} title="Go to Next">Next &rarr;</a>}
+</div>
+<style>
+    .page-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+    /* .action-gotox {
+        font-size: 1.3rem;
+        line-height: 1.3rem;
+        font-weight: bold;
+    } */
+</style>
