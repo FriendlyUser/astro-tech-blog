@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v2
         name: Update node
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: install astro
         run: npm install
