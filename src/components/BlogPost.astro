@@ -41,7 +41,7 @@ const { title, author, publishDate, heroImage, alt, tags } = Astro.props;
 						}
 						const className = `bg-${color}-100 text-${color}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-${color}-200 dark:text-${color}-800`
 						return (
-						<span class={className}><p href={`/tags/${tag}`}>{tag}</p></span>
+						<span class={className}><a href={`/tags/${tag}`}>{tag}</a></span>
 						)
 					})}
 					</div>
