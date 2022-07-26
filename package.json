@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "postbuild": "pagefind --source dist --bundle-dir public",
+    "postbuild": "pagefind --source dist",
     "preview": "astro preview"
   },
   "devDependencies": {
