@@ -33,7 +33,7 @@
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.ea25776a.css"></link><script type="module" src="/entry.701f7b449.js" astro-script="/posts/extracting_types_from_openapi/script-0"></script>
+  <link rel="stylesheet" href="/assets/asset.a9c392e8.css"></link><script type="module" src="/entry.701f7b449.js" astro-script="/posts/extracting_types_from_openapi/script-0"></script>
 </head>
 
   <body>
@@ -75,24 +75,24 @@
         <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
           Share
       </a>   -->
-      <div class="layout astro-RIREK42R">
-	<article class="content astro-RIREK42R">
-		<div class="astro-RIREK42R">
-			<header class="astro-RIREK42R">
+      <div class="layout astro-FTYJ6LBH">
+	<article class="content astro-FTYJ6LBH">
+		<div class="astro-FTYJ6LBH">
+			<header class="astro-FTYJ6LBH">
 				
-				<p class="publish-date astro-RIREK42R"></p>
-				<h1 class="title astro-RIREK42R">Extracting types automatically from typescript-axios openapi generator</h1>
+				<p class="publish-date astro-FTYJ6LBH"></p>
+				<h1 class="title astro-FTYJ6LBH">Extracting types automatically from typescript-axios openapi generator</h1>
 				<div class="author astro-KO5QTRDP">
 	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
 </div>
 
 
 
-				<div class="tag-list astro-RIREK42R">
-					<span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-800 astro-RIREK42R"><p href="/tags/openapi" class="astro-RIREK42R">openapi</p></span>
+				<div class="tag-list astro-FTYJ6LBH">
+					<span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-800 astro-FTYJ6LBH"><a href="/tags/openapi" class="astro-FTYJ6LBH">openapi</a></span>
 					</div>
 			</header>
-			<main class="astro-RIREK42R">
+			<main class="astro-FTYJ6LBH">
 				<h1 id="summary">Summary</h1><p>An OpenAPI file allows you to describe your entire API and as a result automatically produce clients to interact with them.</p><p>Previously, the implementation of the openapi client was poor as types were missing and inconsistent. Since then, the typing has been fixed, but in the meanwhile I shall go over my code to extract types from the outputted files.</p><p>First we read the produced api file, go through line by line, for typescript/javascript, the types will be annotated with the keyword export. Since we are only looking for types we can ignore any functions or async calls.</p><p>We also ignore any comments and perform brace matching in order to know when a type ends.</p><p>With all this information we can extract all the lines that has types and move them into another file.</p><h2 id="full-source-code">Full Source Code</h2><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #FF7B72">with</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">open</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&#39;api.ts&#39;</span><span style="color: #C9D1D9">) </span><span style="color: #FF7B72">as</span><span style="color: #C9D1D9"> f:</span></span>
 <span class="line"><span style="color: #C9D1D9">    lines </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> f.readlines()</span></span>
 <span class="line"></span>
