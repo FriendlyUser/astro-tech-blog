@@ -56,6 +56,7 @@ jobs:
           echo google.com, pub-2479144310234386, DIRECT, f08c47fec0942fa0 > ads.txt
           git config --global user.email "davidli012345@gmail.com"
           git config --global user.name "David Li"
+          echo > .nojekyll
           git add . -f
           git commit -m "Publishing GitHub Pages ***NO_CI***"
           git remote add origin https://github.com/FriendlyUser/FriendlyUser.github.io.git
