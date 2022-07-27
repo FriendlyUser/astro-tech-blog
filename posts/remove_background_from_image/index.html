@@ -33,7 +33,7 @@
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.a9c392e8.css"></link><script type="module" src="/entry.701f7b4410.js" astro-script="/posts/remove_background_from_image/script-0"></script>
+  <link rel="stylesheet" href="/assets/asset.7ce60f7e.css"></link><script type="module" src="/entry.701f7b4410.js" astro-script="/posts/remove_background_from_image/script-0"></script>
 </head>
 
   <body>
@@ -75,24 +75,24 @@
         <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
           Share
       </a>   -->
-      <div class="layout astro-FTYJ6LBH">
-	<article class="content astro-FTYJ6LBH">
-		<div class="astro-FTYJ6LBH">
-			<header class="astro-FTYJ6LBH">
+      <div class="layout astro-KXQKI52O">
+	<article class="content astro-KXQKI52O">
+		<div class="astro-KXQKI52O">
+			<header class="astro-KXQKI52O">
 				
-				<p class="publish-date astro-FTYJ6LBH"></p>
-				<h1 class="title astro-FTYJ6LBH">Flutter Remove background from image web app Part I</h1>
+				<p class="publish-date astro-KXQKI52O"></p>
+				<h1 class="title astro-KXQKI52O">Flutter Remove background from image web app Part I</h1>
 				<div class="author astro-KO5QTRDP">
 	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
 </div>
 
 
 
-				<div class="tag-list astro-FTYJ6LBH">
-					<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-FTYJ6LBH"><a href="/tags/flutter" class="astro-FTYJ6LBH">flutter</a></span>
+				<div class="tag-list astro-KXQKI52O">
+					<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-KXQKI52O"><a href="/tags/flutter" class="astro-KXQKI52O">flutter</a></span>
 					</div>
 			</header>
-			<main class="astro-FTYJ6LBH">
+			<main data-pagefind-body class="astro-KXQKI52O">
 				<p>Full code for this post can be seen at <a href="https://github.com/FriendlyUser/remove_bg_flutter_app/tree/483074e626afb9118213a5942bcfac1e3cbb6493">github</a>.</p><p>In order to familarize myself with flutter, I decided to create a flutter 3 project that allowed me to remove background images from photos.</p><p>Using the excellent remove bg api (limit to 50 api calls a month for free tier), I can simply send an image over and then display it to the user.</p><p>Due to my lack of familarity with the flutter ecosystem, I ran into a number of issues.</p><p>The first one is due to the <code>dio</code> http library in flutter. Calling the remove.bg api returns a file in bytes, but unless you specific bytes in the http request, you get a string that cannot be used for anything/.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">var</span><span style="color: #C9D1D9"> formData </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">FormData</span><span style="color: #C9D1D9">();</span></span>
 <span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">var</span><span style="color: #C9D1D9"> dio </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Dio</span><span style="color: #C9D1D9">();</span></span>
 <span class="line"><span style="color: #C9D1D9">    </span><span style="color: #8B949E">// flutter add api token</span></span>
