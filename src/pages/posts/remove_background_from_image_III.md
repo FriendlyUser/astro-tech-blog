@@ -6,7 +6,7 @@ tags: ["flutter"]
 setup: |
   import Layout from '../../layouts/BlogPost.astro'
   import Cool from '../../components/Author.astro'  
-pubDate: Sunday, 23 July 2022 13:00:00 GMT
+pubDate: Sunday, 26 July 2022 13:00:00 GMT
 ---
 
 In this article I will cover how to use fastlane with github actions to automatically deploy your app.
