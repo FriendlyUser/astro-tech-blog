@@ -283,7 +283,13 @@
     font-size: 1rem;
   }
   
-  .navbar-right-item {
+  .footer-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .footer-item {
     display: flex;
     align-items: center;
   }

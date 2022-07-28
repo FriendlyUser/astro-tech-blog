@@ -8,7 +8,7 @@
     </div>
     <div class="project-card-footer">
       <div class="project-card-footer-container">
-        <div>
+        <div class="basic-flex">
           <StarOutline />
           <a :href="project.stargazers_url" class="github-project-plain-links">
             <span>{{ project.stargazers_count }} </span>
@@ -66,6 +66,10 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.basic-flex {
+  display: flex;
 }
 </style>
 <!-- Map Language to icon-->
