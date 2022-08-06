@@ -2,11 +2,10 @@
 title: Thoughts on dash v2.5.0
 description: After updating a project to dash v2.5.0
 alt: Thoughts on dash v2.5.0
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Friday, 24 June 2022 13:00:00 GMT
 tags: ["python", "dash"]
+imgSrc: '/imgs/2022/dashv250_upgrade.png'
 ---
 
 Your job as an engineer is to find the data and put it in a way that makes sense to understand your students' brains. Data science is based around how much you would like to understand those brain processes. You could even use a computer's cognitive function as an indicator.

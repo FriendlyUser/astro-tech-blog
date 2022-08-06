@@ -2,11 +2,11 @@
 title: Suggestions on how to deal with the depreciation of jcenter/bintray
 description: My Thoughts on what todo with jcenter/bintray going down.
 alt: Bintray Removed
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Wed, 15 Dec 2021 13:00:00 GMT
 tags: ["dev ops"]
+imgSrc: '/assets/images/image-post.jpeg'
+imgAlt: 'Image post 6'
 ---
 
 # Summary

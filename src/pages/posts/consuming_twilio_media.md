@@ -2,11 +2,11 @@
 title: How to consume twilio conversations media
 description: A simple explaination of how I consume twilio conversation media
 alt: Tagging in Astro
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Monday, 15 July 2022 13:00:00 GMT
 tags: ["twilio", "typescript"]
+imgSrc: '/assets/images/image-post4.jpeg'
+imgAlt: 'Image post 4'
 ---
 
 # Summary

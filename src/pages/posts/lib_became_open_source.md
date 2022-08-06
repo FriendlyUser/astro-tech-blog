@@ -4,10 +4,10 @@ description: Here I explain what my actions when an open source library got take
 alt: my first blog post
 img: /imgs/2020/08/mlfinlab_research_wayback_machine.png
 tags: ["python", "mlfinlab"]
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'  
+layout: '@/templates/BasePost.astro'
 pubDate: Mon, 11 July 2020 13:00:00 GMT
+imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
+imgAlt: 'Image post 3'
 ---
 
 As an programmer and an inspiring investor, I have tried to automate a lot of the web scrapping, analysis and notifications for certain stocks. One of the best open-source libraries I discovered mid 2020 was `mlfinlab`. Around August 2020, they decided to switch over to a closed source model, luckily I had opened an issue and made a fork for a small typo. 

@@ -1,0 +1,21 @@
+---
+import { BlogPost, CustomIFrontMatter } from '@/partials/BlogPost';
+import Base from '@/templates/Base.astro';
+import { AppConfig } from '@/utils/AppConfig';
+import BottomSection from '../partials/BottomSection.astro';
+
+export interface Props {
+  content: CustomIFrontMatter;
+}
+
+const { content } = Astro.props as Props;
+const title = `${content.title} - ${AppConfig.site_name}`;
+---
+
+<Base head={{ title, description: content.description }}>
+  <BlogPost frontmatter={content}>
+    <slot></slot>
+  </BlogPost>
+
+  <BottomSection />
+</Base>

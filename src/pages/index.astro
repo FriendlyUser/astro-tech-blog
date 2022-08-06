@@ -1,105 +1,26 @@
 ---
-// Component Imports
-// You can import components from any supported Framework here!
-import BlogHeader from '../components/BlogHeader.astro';
-import BlogPostPreview from '../components/BlogPostPreview.astro';
-import Footer from "../components/Footer.astro";
+// import { CTA } from '@/partials/CTA';
+import { Hero } from '@/partials/Hero';
+import { ProjectList } from '@/partials/ProjectList';
+import { RecentPosts } from '@/partials/RecentPosts';
+import Base from '@/templates/Base.astro';
+import { AppConfig } from '@/utils/AppConfig';
+import { sortByDate } from '@/utils/Posts';
+import { CustomIFrontMatter } from '@/partials/BlogPost';
+import BottomSection from '../partials/BottomSection.astro';
 
-interface MarkdownFrontmatter {
-  publishDate: number;
-}
-// Component Script:
-// You can write any JavaScript/TypeScript that you'd like here.
-// It will run during the build, but never in the browser.
-// All variables are available to use in the HTML template below.
-let title = 'My Astro Site';
+const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/*.md');
+const sortedPosts = sortByDate(allPosts);
+const lastThreePosts = sortedPosts.slice(0, 3);
 
-let allPosts = await Astro.glob('./posts/*.md');
-allPosts = allPosts?.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Date(a.frontmatter.pubDate).valueOf())?.slice(0,5);
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/core-concepts/astro-components/
+const { title } = AppConfig;
+const { description } = AppConfig;
 ---
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>{title}</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="../styles/global.css">
-    <link rel="stylesheet" href="../styles/home.css">
-    <link rel="stylesheet" href="../styles/blog.css" />
 
-    <style>
-        header {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            max-width: min(100%, 68ch);
-        }
-    </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: "ca-pub-2479144310234386",
-      enable_page_level_ads: true
-    });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<Base head={{ title, description }}>
+  <Hero />
+  <ProjectList />
+  <RecentPosts postList={lastThreePosts} />
+  <BottomSection />
 
-      gtag('config', 'UA-119155027-6');
-    </script>
-    <style>
-      header {
-        width: 100%;
-        height: 100%;
-        background-color: var(--theme-bg-offset);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .content {
-        margin-top: 4rem;
-        margin-bottom: 8rem;
-      }
-
-      .content :global(main > * + *) {
-        margin-top: 1rem;
-      }
-
-      .intro {
-        padding-bottom: 4rem;
-        margin-bottom: 2rem;
-        border-bottom: 4px solid var(--theme-divider);
-      }
-
-      .intro > * {
-        margin: 0;
-      }
-
-      .latest {
-        font-size: 2.5rem;
-        font-weight: 700;
-      }
-    </style>
-</head>
-<body>
-       <BlogHeader />
-        <div class="wrapper">
-                <main class="content">
-            <section aria-label="Blog post list">
-            {allPosts.map(p => <BlogPostPreview post={p} />)}
-            <a href="/posts/">More Posts</a>
-            </section>
-            <Footer />
-            </main>
-        </div>
-        <div data-pagefind-body></div>
-</body>
-</html>
+</Base>

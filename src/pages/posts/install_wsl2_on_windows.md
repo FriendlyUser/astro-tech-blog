@@ -3,10 +3,10 @@ title: Details to install wsl2 on windows without using the windows store
 description: A summary of lessons learned from installing wsl2 with a broken windows store app.
 alt: dockerhub tags to github package registry
 tags: ["wsl2", "windows store"]
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Mon, 11 Jan 2021 13:00:00 GMT
+imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
+imgAlt: 'Image post 3'
 ---
 
 # Summary

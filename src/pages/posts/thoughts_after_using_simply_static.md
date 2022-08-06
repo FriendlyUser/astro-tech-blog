@@ -3,10 +3,8 @@ title: What I learned about using the simply static wordpress plugin
 description: What I learned about using the simply static wordpress plugin
 alt: Simply static wordpress plugin
 tags: ["wordpress", "simply static"]
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
-
+layout: '@/templates/BasePost.astro'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png'
 pubDate: Mon, 11 Dec 2020 13:00:00 GMT
 ---
 

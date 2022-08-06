@@ -2,11 +2,11 @@
 title: building ticker app with plotly dash
 description: Building stock ticker app with plotly dash
 alt: Stock Ticker app
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Wed, 15 Dec 2019 13:00:00 GMT
 tags: ["python", "dash"]
+imgSrc: '/assets/images/image-post3.jpeg'
+imgAlt: 'Image post 3'
 ---
 
 ## Part I

@@ -3,10 +3,9 @@ title: Flutter Remove background from image web app Part III
 description: Automatical update app using fastlane
 alt: my first blog post
 tags: ["flutter"]
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'  
+layout: '@/templates/BasePost.astro'
 pubDate: Sunday, 26 July 2022 13:00:00 GMT
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png'
 ---
 
 In this article I will cover how to use fastlane with github actions to automatically deploy your app.

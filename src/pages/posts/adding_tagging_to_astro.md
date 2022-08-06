@@ -2,11 +2,11 @@
 title: How to add tags to astro
 description: How I implemented tags for my blog
 alt: Tagging in Astro
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
 pubDate: Sunday, 26 June 2021 13:00:00 GMT
 tags: ["astro"]
+layout: '@/templates/BasePost.astro'
+imgSrc: '/assets/images/image-post6.jpeg'
+imgAlt: 'Image post 6'
 ---
 
 # Summary

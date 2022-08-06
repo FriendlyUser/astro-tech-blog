@@ -2,12 +2,10 @@
 title: Initial Thoughts after using dotnet interactive
 description: My Thoughts on what todo with jcenter/bintray going down.
 alt: Bintray Removed
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Author from '../../components/Author.astro'
-
+layout: '@/templates/BasePost.astro'
 pubDate: Mon, 11 Dec 2021 13:00:00 GMT
 tags: ["dotnet"]
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png'
 ---
 
 # Summary

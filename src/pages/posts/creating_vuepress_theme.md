@@ -1,9 +1,7 @@
 ---
 title: "Updating Vuepress Theme Cool"
 subtitle: "Fixing issues in theme :rocket:"
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 date: 2018-11-12T00:00:00
 lastmod: 2018-11-12T00:00:00
 pubDate: Mon, 11 Nov 2018 13:00:00 GMT
@@ -39,6 +37,8 @@ image:
   preview_only: false
 
 type: "post"
+imgSrc: '/assets/images/image-post3.jpeg'
+imgAlt: 'Image post 3'
 ---
 
 

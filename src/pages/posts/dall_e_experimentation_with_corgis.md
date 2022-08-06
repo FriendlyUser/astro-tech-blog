@@ -2,11 +2,11 @@
 title: Thoughts after using dall-e
 description: My thoughts after early testing dall-e
 alt: Tagging in Astro
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Thursday, 21 July 2022 13:00:00 GMT
 tags: ["dall-e", "typescript"]
+imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
+imgAlt: 'Image post 3'
 ---
 
 # Summary

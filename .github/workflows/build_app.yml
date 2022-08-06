@@ -5,13 +5,10 @@ on:
     branches:
       - master
       - main
+      - feature/*
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '30 21 * * 5'
-
-env:
-  deployToRepo: FriendlyUser.github.io
-  MAIN_REPO_TOKEN: ${{ secrets.NEW_ACCESS_TOKEN }} # this is a special github token that has full access.
 
 jobs:
   make_website:

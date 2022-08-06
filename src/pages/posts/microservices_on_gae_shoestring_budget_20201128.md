@@ -4,9 +4,9 @@ description: My explaination to my google app engine template repo.
 alt: App Engine Blog Post
 img: /imgs/2020/11/app_engine_enabled.png
 tags: ["gae", "microservices"]
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
+imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
+imgAlt: 'Image post 3'
 
 pubDate: Mon, 11 Nov 2020 13:00:00 GMT
 ---

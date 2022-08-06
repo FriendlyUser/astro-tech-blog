@@ -2,11 +2,11 @@
 title: Extracting types automatically from typescript-axios openapi generator
 description: My Thoughts on what todo with jcenter/bintray going down.
 alt: OpenApi Type Extraction
-setup: |
-  import Layout from '../../layouts/BlogPost.astro'
-  import Cool from '../../components/Author.astro'
+layout: '@/templates/BasePost.astro'
 pubDate: Wed, 14 May 2022 13:00:00 GMT
 tags: ["openapi"]
+imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
+imgAlt: 'Corgi Tree'
 ---
 
 # Summary
