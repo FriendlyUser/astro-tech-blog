@@ -45,8 +45,6 @@ jobs:
       - name: update config
         run: |
           sed -i 's/astro-tech-blog\///g' astro.config.mjs
-          sed -i 's/astro-tech-blog//g' src/components/BlogHeader.astro
-          sed -i 's/\/astro-tech-blog//g' src/components/BlogPostPreview.astro
           npm run build
       
       - name: update gh pages
