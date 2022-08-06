@@ -17,17 +17,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: denolib/setup-deno@v2
-        with:
-          deno-version: v1.3
-      - run: |
-          cd scripts
-          ls
-          echo GITHUB_API_TOKEN=$MAIN_REPO_TOKEN > .env
-          deno --version
-          deno run --allow-read --allow-write --allow-env --allow-net mods.ts
-          rm -rf .env
-          cd ../
+      # - uses: denolib/setup-deno@v2
+      #   with:
+      #     deno-version: v1.3
+      # - run: |
+      #     cd scripts
+      #     ls
+      #     echo GITHUB_API_TOKEN=$MAIN_REPO_TOKEN > .env
+      #     deno --version
+      #     deno run --allow-read --allow-write --allow-env --allow-net mods.ts
+      #     rm -rf .env
+      #     cd ../
 
       - uses: actions/setup-node@v2
         name: Update node
