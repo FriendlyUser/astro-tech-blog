@@ -1,19 +1,16 @@
 ---
-import type {
-  FrontmatterPage,
-  IFrontmatter,
-} from 'astro-boilerplate-components';
 import {
   BlogGallery,
-  NewerOlderPagination,
   PaginationHeader,
   Section,
 } from 'astro-boilerplate-components';
 
+import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
-import { sortByDate } from '@/utils/Posts';
-import { CustomIFrontMatter } from '@/partials/BlogPost';
 import { AppConfig } from '@/utils/AppConfig';
+import { sortByDate } from '@/utils/Posts';
+
+import BottomSection from '../../partials/BottomSection.astro';
 
 type GetStaticPaths = {
   paginate: any;
@@ -24,61 +21,59 @@ export async function getStaticPaths() {
   const allPosts = await Astro.glob<CustomIFrontMatter>('../posts/*.md');
   const sortedPosts = sortByDate(allPosts);
   // get all tags
-  const tags = sortedPosts.map(post => {
-    const tags = post.frontmatter?.tags;
-    return tags;
-  }).reduce((acc, val) => acc.concat(val), []);
+  const tags = sortedPosts
+    .map((post) => {
+      const tags = post.frontmatter?.tags;
+      return tags;
+    })
+    .reduce((acc, val) => acc.concat(val), []);
 
   // get unique tags
   const uniqueTags = [...new Set(tags)];
   // map to params
-  const paths = uniqueTags.map(tag => {
+  const paths = uniqueTags.map((tag) => {
     return {
       params: {
         tag,
-      }
-    }
+      },
+    };
   });
   return paths;
 }
-
-interface Props {
-  tag: string;
-}
-
 
 const { tag } = Astro.params;
 
 const titleSuffix = ` - ${AppConfig.site_name}`;
 const titleBase = `Blog page ${tag}`;
 const title = titleBase + titleSuffix;
-const description =
-  'Page filled with posts based on tag.';
+const description = 'Page filled with posts based on tag.';
 
- const posts = allPosts.filter(post => {
-  const tags = post.frontmatter.tags;
-  return tags.includes(tag as string);
-}).filter(post => post !== null);
+const posts = allPosts
+  .filter((post) => {
+    const { tags } = post.frontmatter;
+    return tags.includes(tag as string);
+  })
+  .filter((post) => post !== null);
 
 // .sort((a, b) => { return new Date(b.frontmatter?.pubDate) - new Date(a.frontmatter?.pubDate);
 ---
- 
- <Base head={{ title, description }}>
-   <Section>
-     <PaginationHeader
-       title={`${tag} posts`}
-       description={`All posts with the tag ${tag}.`}
-     />
-   </Section>
- 
-   <Section>
-     <BlogGallery postList={posts} />
-   </Section>
- 
-   <!-- <Section>
+
+<Base head={{ title, description }}>
+  <Section>
+    <PaginationHeader
+      title={`${tag} posts`}
+      description={`All posts with the tag ${tag}.`}
+    />
+  </Section>
+
+  <Section>
+    <BlogGallery postList={posts} />
+  </Section>
+
+  <!-- <Section>
      <NewerOlderPagination page={page} />
    </Section> -->
-   <div data-pagefind-body />
- 
-   <BottomSection />
- </Base>
+  <div data-pagefind-body></div>
+
+  <BottomSection />
+</Base>
