@@ -168,7 +168,8 @@ const pageFindUiText = '#000000';
       }
 
       function showSlides(n) {
-        let i;
+        try {
+          let i;
         let slides = document.getElementsByClassName('mySlides');
         let dots = document.getElementsByClassName('demo');
         let captionText = document.getElementById('caption');
@@ -187,6 +188,9 @@ const pageFindUiText = '#000000';
         slides[slideIndex - 1].style.display = 'block';
         dots[slideIndex - 1].className += ' active';
         captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
       }
     </script>
   </head>
