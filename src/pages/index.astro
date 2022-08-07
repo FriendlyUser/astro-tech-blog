@@ -1,12 +1,13 @@
 ---
 // import { CTA } from '@/partials/CTA';
+import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import { Hero } from '@/partials/Hero';
 import { ProjectList } from '@/partials/ProjectList';
 import { RecentPosts } from '@/partials/RecentPosts';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
-import { CustomIFrontMatter } from '@/partials/BlogPost';
+
 import BottomSection from '../partials/BottomSection.astro';
 
 const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/*.md');
@@ -23,4 +24,5 @@ const { description } = AppConfig;
   <RecentPosts postList={lastThreePosts} />
   <BottomSection />
 
+  <div data-pagefind-body></div>
 </Base>
