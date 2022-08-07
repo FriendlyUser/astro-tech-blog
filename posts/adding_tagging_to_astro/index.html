@@ -1,164 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Global Metadata --><meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to add tags to astro - Astro Tech Blog</title>
+    <meta name="description" content="How I implemented tags for my blog">
+    <meta name="author" content="David Li">
 
-<!-- Primary Meta Tags -->
-<title>How to add tags to astro</title>
-<meta name="title" content="How to add tags to astro">
-<meta name="description" content="How I implemented tags for my blog">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url">
-<meta property="og:title" content="How to add tags to astro">
-<meta property="og:description" content="How I implemented tags for my blog">
-<meta property="og:image" content="https://astro.build/social.png?v=1">
-
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url">
-<meta property="twitter:title" content="How to add tags to astro">
-<meta property="twitter:description" content="How I implemented tags for my blog">
-<meta property="twitter:image" content="https://astro.build/social.png?v=1">
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;700&display=swap">
-
-    <link rel="stylesheet" href="../styles/blog.css">
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.96e7c21d.css"></link><script type="module" src="/entry.701f7b4412.js" astro-script="/posts/adding_tagging_to_astro/script-0"></script>
-</head>
-
-  <body>
     
+  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.2b7c8484.css" /><script type="module" src="/astro-tech-blog/entry.c49a0958.js"></script>
+</head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
 
-<header class="wrapper astro-JM5VFH4U">
-  <article class="astro-JM5VFH4U">
-    <h3 class="astro-JM5VFH4U">
-      <a href="/astro-tech-blog" class="astro-JM5VFH4U">
-        <svg class="logo astro-JM5VFH4U" width="32" height="32" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <style>
-            #flame {
-              fill: #ff5d01;
-            }
-            #a {
-              fill: #000014;
-            }
-          </style>
-          <title>Logo</title>
-          <path id="a" fill-rule="evenodd" clip-rule="evenodd" d="M163.008 18.929c1.944 2.413 2.935 5.67 4.917 12.181l43.309 142.27a180.277 180.277 0 00-51.778-17.53l-28.198-95.29a3.67 3.67 0 00-7.042.01l-27.857 95.232a180.225 180.225 0 00-52.01 17.557l43.52-142.281c1.99-6.502 2.983-9.752 4.927-12.16a15.999 15.999 0 016.484-4.798c2.872-1.154 6.271-1.154 13.07-1.154h31.085c6.807 0 10.211 0 13.086 1.157a16.004 16.004 0 016.487 4.806z" class="astro-JM5VFH4U"></path>
-          <path id="flame" fill-rule="evenodd" clip-rule="evenodd" d="M168.19 180.151c-7.139 6.105-21.39 10.268-37.804 10.268-20.147 0-37.033-6.272-41.513-14.707-1.602 4.835-1.961 10.367-1.961 13.902 0 0-1.056 17.355 11.015 29.426 0-6.268 5.081-11.349 11.349-11.349 10.743 0 10.731 9.373 10.721 16.977v.679c0 11.542 7.054 21.436 17.086 25.606a23.27 23.27 0 01-2.339-10.2c0-11.008 6.463-15.107 13.974-19.87 5.976-3.79 12.616-8.001 17.192-16.449a31.024 31.024 0 003.743-14.82c0-3.299-.513-6.479-1.463-9.463z" class="astro-JM5VFH4U"></path>
-        </svg>
-        <span class="astro-JM5VFH4U">My Blog</span>
-      </a>
-    </h3>
-    <a href="/about" class="astro-JM5VFH4U">
-      About Me
-    </a> &nbsp; &nbsp;
-    <div class="basic-flex astro-JM5VFH4U">
-		<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px" class="astro-JM5VFH4U"><path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z" class="astro-JM5VFH4U"></path></svg> &nbsp;
-     <a href="/search" class="astro-JM5VFH4U">
-        Search
-      </a>
-    </div>
-  </article>
-</header>
-    <div class="wrapper">
-      <!-- <a href={window.location.href}>
-        <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
-          Share
-      </a>   -->
-      <div class="layout astro-KXQKI52O">
-	<article class="content astro-KXQKI52O">
-		<div class="astro-KXQKI52O">
-			<header class="astro-KXQKI52O">
-				
-				<p class="publish-date astro-KXQKI52O"></p>
-				<h1 class="title astro-KXQKI52O">How to add tags to astro</h1>
-				<div class="author astro-KO5QTRDP">
-	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
-</div>
-
-
-
-				<div class="tag-list astro-KXQKI52O">
-					<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-KXQKI52O"><a href="/tags/astro" class="astro-KXQKI52O">astro</a></span>
-					</div>
-			</header>
-			<main data-pagefind-body class="astro-KXQKI52O">
-				<h1 id="summary">Summary</h1><p>While adding tags to my personal blog, I was surprised at how easy it is. For each individual post, I have noticed how easy it is. To start, add the tag to each individual blog post in markdown, this is similar to how other frameworks like hugo academic expect posts to be tagged.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #7EE787">title</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">How to add tags to astro</span></span>
-<span class="line"><span style="color: #7EE787">description</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">My Thoughts on what todo with jcenter/bintray going down.</span></span>
-<span class="line"><span style="color: #7EE787">alt</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">Tagging in Astro</span><span style="color: #C9D1D9"> </span></span>
-<span class="line"><span style="color: #7EE787">pubDate</span><span style="color: #C9D1D9">: </span><span style="color: #A5D6FF">Sat, 26 June 2022 13:00:00 GMT</span></span>
-<span class="line"><span style="color: #7EE787">tags</span><span style="color: #C9D1D9">: [</span><span style="color: #A5D6FF">&quot;astro&quot;</span><span style="color: #C9D1D9">]</span></span></code></pre><p>Afterwards, for the astro component that render the page, you can extract the prop passed in.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #c9d1d9">const {content} = Astro.props;</span></span>
-<span class="line"><span style="color: #c9d1d9">const {title, description, publishDate, author, heroImage, permalink, alt, tags} = content;</span></span></code></pre><p>Tags will be an array of strings.</p><p>In order to render the tags, you can loop through an array and display different colours based on the tags.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">{tags?.</span><span style="color: #D2A8FF">map</span><span style="color: #C9D1D9">(</span><span style="color: #FFA657">tag</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">let</span><span style="color: #C9D1D9"> color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;&quot;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (tag </span><span style="color: #FF7B72">===</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;python&quot;</span><span style="color: #C9D1D9">) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;green&quot;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">    } </span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (tag </span><span style="color: #FF7B72">===</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;dash&quot;</span><span style="color: #C9D1D9"> ) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;blue&quot;</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (tag </span><span style="color: #FF7B72">===</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;vuepress&quot;</span><span style="color: #C9D1D9">) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;purple&quot;</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (tag </span><span style="color: #FF7B72">===</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;openapi&quot;</span><span style="color: #C9D1D9">) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;yellow&quot;</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (</span><span style="color: #FF7B72">!</span><span style="color: #C9D1D9">color) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        color </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;black&quot;</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">className</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">`bg-${</span><span style="color: #C9D1D9">color</span><span style="color: #A5D6FF">}-100 text-${</span><span style="color: #C9D1D9">color</span><span style="color: #A5D6FF">}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-${</span><span style="color: #C9D1D9">color</span><span style="color: #A5D6FF">}-200 dark:text-${</span><span style="color: #C9D1D9">color</span><span style="color: #A5D6FF">}-800`</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> (</span></span>
-<span class="line"><span style="color: #C9D1D9">    &lt;</span><span style="color: #7EE787">span</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">class</span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9">{className}&gt;&lt;</span><span style="color: #7EE787">p</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">href</span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9">{</span><span style="color: #A5D6FF">`/tags/${</span><span style="color: #C9D1D9">tag</span><span style="color: #A5D6FF">}`</span><span style="color: #C9D1D9">}&gt;{tag}&lt;/</span><span style="color: #7EE787">p</span><span style="color: #C9D1D9">&gt;&lt;/</span><span style="color: #7EE787">span</span><span style="color: #C9D1D9">&gt;</span></span>
-<span class="line"><span style="color: #C9D1D9">    )</span></span>
-<span class="line"><span style="color: #C9D1D9">})}</span></span></code></pre><p>In my case I am using tailwind to display different labels, but anything will do.</p><p>After this step, tags should be displayed on your posts and during the preview for your posts.</p><p>However, its common to want to see all posts in a particular category.</p><p>For static site generators like next.js and astro, you have to define all the paths in a dynamic route.</p><p>So we need to grab all the posts and all the unique tags. Then get all the posts with the tag corresponding to that particular route. Sample code provided below.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">allPosts</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> Astro.</span><span style="color: #D2A8FF">glob</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&#39;../posts/*.md&#39;</span><span style="color: #C9D1D9">);</span></span>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">How to add tags to astro</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Jun 26, 2021</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/astro">astro<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/assets/images/image-post6.jpeg" alt="Image post 6" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><h1 id="summary">Summary</h1><p>While adding tags to my personal blog, I was surprised at how easy it is. For each individual post, I have noticed how easy it is. To start, add the tag to each individual blog post in markdown, this is similar to how other frameworks like hugo academic expect posts to be tagged.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">title</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">How to add tags to astro</span></span>
+<span class="line"><span style="color: #F92672">description</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">My Thoughts on what todo with jcenter/bintray going down.</span></span>
+<span class="line"><span style="color: #F92672">alt</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Tagging in Astro</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F92672">pubDate</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Sat, 26 June 2022 13:00:00 GMT</span></span>
+<span class="line"><span style="color: #F92672">tags</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">&quot;astro&quot;</span><span style="color: #F8F8F2">]</span></span></code></pre><p>Afterwards, for the astro component that render the page, you can extract the prop passed in.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">const {content} = Astro.props;</span></span>
+<span class="line"><span style="color: #F8F8F2">const {title, description, publishDate, author, heroImage, permalink, alt, tags} = content;</span></span></code></pre><p>Tags will be an array of strings.</p><p>In order to render the tags, you can loop through an array and display different colours based on the tags.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{tags?.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">tag</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;&quot;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (tag </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;python&quot;</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;green&quot;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (tag </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;dash&quot;</span><span style="color: #F8F8F2"> ) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;blue&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (tag </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;vuepress&quot;</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;purple&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (tag </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;openapi&quot;</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;yellow&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">color) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        color </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;black&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> className </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`bg-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">color</span><span style="color: #F92672">}</span><span style="color: #E6DB74">-100 text-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">color</span><span style="color: #F92672">}</span><span style="color: #E6DB74">-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">color</span><span style="color: #F92672">}</span><span style="color: #E6DB74">-200 dark:text-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">color</span><span style="color: #F92672">}</span><span style="color: #E6DB74">-800`</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &lt;</span><span style="color: #F92672">span</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">class</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">className</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&gt;&lt;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F92672">={</span><span style="color: #E6DB74">`/tags/</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">tag</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&gt;</span><span style="color: #F92672">{</span><span style="color: #F8F8F2">tag</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&lt;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">&gt;&lt;/</span><span style="color: #F92672">span</span><span style="color: #F8F8F2">&gt;</span></span>
+<span class="line"><span style="color: #F8F8F2">    )</span></span>
+<span class="line"><span style="color: #F8F8F2">})}</span></span></code></pre><p>In my case I am using tailwind to display different labels, but anything will do.</p><p>After this step, tags should be displayed on your posts and during the preview for your posts.</p><p>However, its common to want to see all posts in a particular category.</p><p>For static site generators like next.js and astro, you have to define all the paths in a dynamic route.</p><p>So we need to grab all the posts and all the unique tags. Then get all the posts with the tag corresponding to that particular route. Sample code provided below.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> allPosts </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> Astro.</span><span style="color: #A6E22E">glob</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&#39;../posts/*.md&#39;</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #FF7B72">export</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">async</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">function</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">getStaticPaths</span><span style="color: #C9D1D9">() {</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">allPosts</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> Astro.</span><span style="color: #D2A8FF">glob</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&#39;../posts/*.md&#39;</span><span style="color: #C9D1D9">);</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #8B949E">// get all tags</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">tags</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> allPosts.</span><span style="color: #D2A8FF">map</span><span style="color: #C9D1D9">(</span><span style="color: #FFA657">post</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">tags</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> post.frontmatter.tags;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> tags;</span></span>
-<span class="line"><span style="color: #C9D1D9">  }).</span><span style="color: #D2A8FF">reduce</span><span style="color: #C9D1D9">((</span><span style="color: #FFA657">acc</span><span style="color: #C9D1D9">, </span><span style="color: #FFA657">val</span><span style="color: #C9D1D9">) </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> acc.</span><span style="color: #D2A8FF">concat</span><span style="color: #C9D1D9">(val), []);</span></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getStaticPaths</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> allPosts </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> Astro.</span><span style="color: #A6E22E">glob</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&#39;../posts/*.md&#39;</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// get all tags</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> tags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> allPosts.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">post</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> tags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> post.frontmatter.tags;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> tags;</span></span>
+<span class="line"><span style="color: #F8F8F2">  }).</span><span style="color: #A6E22E">reduce</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">acc</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">val</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> acc.</span><span style="color: #A6E22E">concat</span><span style="color: #F8F8F2">(val), []);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #8B949E">// get unique tags</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">uniqueTags</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> [</span><span style="color: #FF7B72">...new</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Set</span><span style="color: #C9D1D9">(tags)];</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #8B949E">// map to params</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">paths</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> uniqueTags.</span><span style="color: #D2A8FF">map</span><span style="color: #C9D1D9">(</span><span style="color: #FFA657">tag</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">      params: {</span></span>
-<span class="line"><span style="color: #C9D1D9">        tag</span></span>
-<span class="line"><span style="color: #C9D1D9">      }</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">  });</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> paths;</span></span>
-<span class="line"><span style="color: #C9D1D9">}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// get unique tags</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> uniqueTags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #F92672">...new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Set</span><span style="color: #F8F8F2">(tags)];</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// map to params</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> paths </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> uniqueTags.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">tag</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">      params: {</span></span>
+<span class="line"><span style="color: #F8F8F2">        tag</span></span>
+<span class="line"><span style="color: #F8F8F2">      }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> paths;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> { </span><span style="color: #79C0FF">tag</span><span style="color: #C9D1D9"> } </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> Astro.params;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> { tag } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Astro.params;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #8B949E">// filter pages by tag</span></span>
-<span class="line"><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">posts</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> allPosts.</span><span style="color: #D2A8FF">filter</span><span style="color: #C9D1D9">(</span><span style="color: #FFA657">post</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">tags</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> post.frontmatter.tags;</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> tags.</span><span style="color: #D2A8FF">includes</span><span style="color: #C9D1D9">(tag);</span></span>
-<span class="line"><span style="color: #C9D1D9">}).</span><span style="color: #D2A8FF">sort</span><span style="color: #C9D1D9">((</span><span style="color: #FFA657">a</span><span style="color: #C9D1D9">, </span><span style="color: #FFA657">b</span><span style="color: #C9D1D9">) </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">new</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Date</span><span style="color: #C9D1D9">(b.frontmatter.date) </span><span style="color: #FF7B72">-</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">new</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Date</span><span style="color: #C9D1D9">(a.frontmatter.date);</span></span>
-<span class="line"><span style="color: #C9D1D9">}).</span><span style="color: #D2A8FF">filter</span><span style="color: #C9D1D9">(</span><span style="color: #FFA657">post</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> post </span><span style="color: #FF7B72">!==</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">null</span><span style="color: #C9D1D9">);</span></span></code></pre><p>Hopefully this post gives you an idea on how to implement a tagging system in astro.</p><p>TODO</p><ul>
+<span class="line"><span style="color: #88846F">// filter pages by tag</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> posts </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> allPosts.</span><span style="color: #A6E22E">filter</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">post</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> tags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> post.frontmatter.tags;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> tags.</span><span style="color: #A6E22E">includes</span><span style="color: #F8F8F2">(tag);</span></span>
+<span class="line"><span style="color: #F8F8F2">}).</span><span style="color: #A6E22E">sort</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">a</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">b</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Date</span><span style="color: #F8F8F2">(b.frontmatter.date) </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Date</span><span style="color: #F8F8F2">(a.frontmatter.date);</span></span>
+<span class="line"><span style="color: #F8F8F2">}).</span><span style="color: #A6E22E">filter</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">post</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=&gt;</span><span style="color: #F8F8F2"> post </span><span style="color: #F92672">!==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span></code></pre><p>Hopefully this post gives you an idea on how to implement a tagging system in astro.</p><p>TODO</p><ul>
 <li>figure out how to have tag specific rss feeds, dont think this is easily possible at the moment.</li>
-</ul>
-			</main>
-		</div>
-	</article>
-</div>
-
-
-
+</ul></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="w-full flex">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight  focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="max-w-lg">
+        <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+        <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
     </div>
+    <div id="search"></div>
+    
+</div></div>
+
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>.</div></div></div>
   </body></html>

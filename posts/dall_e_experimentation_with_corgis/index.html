@@ -1,109 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Global Metadata --><meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thoughts after using dall-e - Astro Tech Blog</title>
+    <meta name="description" content="My thoughts after early testing dall-e">
+    <meta name="author" content="David Li">
 
-<!-- Primary Meta Tags -->
-<title>Thoughts after using dall-e</title>
-<meta name="title" content="Thoughts after using dall-e">
-<meta name="description" content="My thoughts after early testing dall-e">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url">
-<meta property="og:title" content="Thoughts after using dall-e">
-<meta property="og:description" content="My thoughts after early testing dall-e">
-<meta property="og:image" content="https://astro.build/social.png?v=1">
-
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url">
-<meta property="twitter:title" content="Thoughts after using dall-e">
-<meta property="twitter:description" content="My thoughts after early testing dall-e">
-<meta property="twitter:image" content="https://astro.build/social.png?v=1">
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;700&display=swap">
-
-    <link rel="stylesheet" href="../styles/blog.css">
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.96e7c21d.css"></link><script type="module" src="/entry.701f7b444.js" astro-script="/posts/dall_e_experimentation_with_corgis/script-0"></script>
+    
+  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.2b7c8484.css" /><script type="module" src="/astro-tech-blog/entry.c49a0958.js"></script>
 </head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
 
-  <body>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">Thoughts after using dall-e</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Jul 21, 2022</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dall-e">dall-e<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/typescript">typescript<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/corgiNextToThePyramids.jpeg" alt="Image post 3" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><h1 id="summary">Summary</h1><p>After experimenting with <code>dall-e</code> I realised how powerful it can be. I attempted to upload some of the images to make money off it, but failed.</p><p><style >
     
 
-<header class="wrapper astro-JM5VFH4U">
-  <article class="astro-JM5VFH4U">
-    <h3 class="astro-JM5VFH4U">
-      <a href="/astro-tech-blog" class="astro-JM5VFH4U">
-        <svg class="logo astro-JM5VFH4U" width="32" height="32" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <style>
-            #flame {
-              fill: #ff5d01;
+    .astro-imagetools-picture-E3E3F973 {
+      --opacity: 1;
+      --z-index: 0;
+    }
+
+    
+            .astro-imagetools-picture-E3E3F973 img {
+              z-index: 1;
+              position: relative;
             }
-            #a {
-              fill: #000014;
+          
+
+    .astro-imagetools-picture-E3E3F973::after {
+      inset: 0;
+      content: "";
+      left: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transition: opacity 1s;
+      opacity: var(--opacity);
+      z-index: var(--z-index);
+    }
+  
+        .astro-imagetools-picture-E3E3F973 img {
+          object-fit: cover;
+          object-position: 50% 50%;
+        }
+
+        .astro-imagetools-picture-E3E3F973::after {
+          background-size: cover;
+          background-image: url("data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAUABQDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAUGBwT/xAAoEAACAQMDAwIHAAAAAAAAAAABAgMABBEFBiESQVExYQcTFDJCUqH/xAAXAQADAQAAAAAAAAAAAAAAAAABAwQF/8QAHxEAAgICAQUAAAAAAAAAAAAAAAECEhEUAwQhIkHw/9oADAMBAAIRAxEAPwDS/irvYW8Umj6e5E5PTdSI4PQP0B8nv4HHeqVsfea6JdNDfxG5sJSCyYGYzn7lHnyK5G2NqsjB/roCxOSWDHJqR1vbE15Pc2to0UcgZWZyuTMB+XHp64x7ZqJ9T5WRYuKNas1OTdGh4je2+VPE6hg0MPUBnsceh9qVisWxNdRcRXqKpOcB3X+AUpm4vsiteJfJ2a5tpIHYqksRyU4I7cHtVcs2l0lEitZ5Sqr0Zcgkgc8nGaUrOLFFWz7Jp9TuQsZJViy5JI9zSlKdFLAG+5//2Q==");
+          background-position: 50% 50%;
+        }
+      </style><picture
+    
+    class="astro-imagetools-picture astro-imagetools-picture-E3E3F973"
+    style="position: relative; display: inline-block; ; max-width: 100%; height: auto;"
+    ><source
+            srcset="/astro-tech-blog/assets/corgiNextToThePyramids@320w.828d203a.avif 320w, /astro-tech-blog/assets/corgiNextToThePyramids@672w.8eee7630.avif 672w, /astro-tech-blog/assets/corgiNextToThePyramids@907w.2ef5834b.avif 907w, /astro-tech-blog/assets/corgiNextToThePyramids@1024w.3b93d72b.avif 1024w"
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            width="1024"
+            height="1024"
+            type="image/avif"
+            
+          />
+<source
+            srcset="/astro-tech-blog/assets/corgiNextToThePyramids@320w.a545bfec.webp 320w, /astro-tech-blog/assets/corgiNextToThePyramids@672w.0fff444d.webp 672w, /astro-tech-blog/assets/corgiNextToThePyramids@907w.678b26bf.webp 907w, /astro-tech-blog/assets/corgiNextToThePyramids@1024w.af666589.webp 1024w"
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            width="1024"
+            height="1024"
+            type="image/webp"
+            
+          />
+<img
+    
+    src="/astro-tech-blog/assets/corgiNextToThePyramids@1024w.9f19de4a.jpeg"
+    alt="Corgi next to pyramids"
+    srcset="/astro-tech-blog/assets/corgiNextToThePyramids@320w.d30c10fd.jpeg 320w, /astro-tech-blog/assets/corgiNextToThePyramids@672w.bf79b8d6.jpeg 672w, /astro-tech-blog/assets/corgiNextToThePyramids@907w.e081d842.jpeg 907w, /astro-tech-blog/assets/corgiNextToThePyramids@1024w.9f19de4a.jpeg 1024w"
+    sizes="(min-width: 1024px) 1024px, 100vw"
+    width="1024"
+    height="1024"
+    loading="lazy"
+    decoding="async"
+    class="astro-imagetools-img"
+    style="display: inline-block; overflow: hidden; vertical-align: middle; ; max-width: 100%; height: auto;"
+    onload="parentElement.style.setProperty('--z-index', 1);parentElement.style.setProperty('--opacity', 0);"
+  />
+  </picture>
+</p><p><style >
+    
+
+    .astro-imagetools-picture-328E82E6 {
+      --opacity: 1;
+      --z-index: 0;
+    }
+
+    
+            .astro-imagetools-picture-328E82E6 img {
+              z-index: 1;
+              position: relative;
             }
-          </style>
-          <title>Logo</title>
-          <path id="a" fill-rule="evenodd" clip-rule="evenodd" d="M163.008 18.929c1.944 2.413 2.935 5.67 4.917 12.181l43.309 142.27a180.277 180.277 0 00-51.778-17.53l-28.198-95.29a3.67 3.67 0 00-7.042.01l-27.857 95.232a180.225 180.225 0 00-52.01 17.557l43.52-142.281c1.99-6.502 2.983-9.752 4.927-12.16a15.999 15.999 0 016.484-4.798c2.872-1.154 6.271-1.154 13.07-1.154h31.085c6.807 0 10.211 0 13.086 1.157a16.004 16.004 0 016.487 4.806z" class="astro-JM5VFH4U"></path>
-          <path id="flame" fill-rule="evenodd" clip-rule="evenodd" d="M168.19 180.151c-7.139 6.105-21.39 10.268-37.804 10.268-20.147 0-37.033-6.272-41.513-14.707-1.602 4.835-1.961 10.367-1.961 13.902 0 0-1.056 17.355 11.015 29.426 0-6.268 5.081-11.349 11.349-11.349 10.743 0 10.731 9.373 10.721 16.977v.679c0 11.542 7.054 21.436 17.086 25.606a23.27 23.27 0 01-2.339-10.2c0-11.008 6.463-15.107 13.974-19.87 5.976-3.79 12.616-8.001 17.192-16.449a31.024 31.024 0 003.743-14.82c0-3.299-.513-6.479-1.463-9.463z" class="astro-JM5VFH4U"></path>
-        </svg>
-        <span class="astro-JM5VFH4U">My Blog</span>
-      </a>
-    </h3>
-    <a href="/about" class="astro-JM5VFH4U">
-      About Me
-    </a> &nbsp; &nbsp;
-    <div class="basic-flex astro-JM5VFH4U">
-		<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px" class="astro-JM5VFH4U"><path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z" class="astro-JM5VFH4U"></path></svg> &nbsp;
-     <a href="/search" class="astro-JM5VFH4U">
-        Search
-      </a>
-    </div>
-  </article>
-</header>
-    <div class="wrapper">
-      <!-- <a href={window.location.href}>
-        <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
-          Share
-      </a>   -->
-      <div class="layout astro-KXQKI52O">
-	<article class="content astro-KXQKI52O">
-		<div class="astro-KXQKI52O">
-			<header class="astro-KXQKI52O">
-				
-				<p class="publish-date astro-KXQKI52O"></p>
-				<h1 class="title astro-KXQKI52O">Thoughts after using dall-e</h1>
-				<div class="author astro-KO5QTRDP">
-	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
-</div>
+          
 
+    .astro-imagetools-picture-328E82E6::after {
+      inset: 0;
+      content: "";
+      left: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transition: opacity 1s;
+      opacity: var(--opacity);
+      z-index: var(--z-index);
+    }
+  
+        .astro-imagetools-picture-328E82E6 img {
+          object-fit: cover;
+          object-position: 50% 50%;
+        }
 
+        .astro-imagetools-picture-328E82E6::after {
+          background-size: cover;
+          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAACXBIWXMAAAsTAAALEwEAmpwYAAACg0lEQVQ4jX2Uy08TURTG+1+41oSNK+KeRGMwJiYawk6DCxUsICTKxsYobkjaULANaQjaEIuplgWS0NJULaXQDYjPQNNSpYBIiy2von3MfR1zZjrTaTGeTCYzc+/v9NzvfKcGxhle1YHf5O94V18rl7rHUIZreN0+fgzWQoWVVMd/XJdZqUUrR4X1W/4VleS8nEXhDRVKfaIYEmOUcUYZo4QwSrV1rttrqJJEXhBCAABSksQoAQAhhL4EpsFVKSkFgLXlmG946E8BMQowM+5eDLzBdJTUHE5XNmOMILDoDX24dd43YtnY+j039WrmxoWI4ynC5L8wleHkykq4oz1yty7q6YmY6j52XV3yBbEKSqrEU8pWRSJciN3NH+mtlL2zu/5E/YPOnobTZ40NjaHgJwCQJEIp1cQrw5wzwOAEINpvmmxpDo6YnNbB1iaT+bFjynJ7etyPy4wCoJaCl1tu4JwXi6Xv31Lp1H42czho87aearRevlYsbnwJvMsfJT0997rPtPT1e9eTO9lsLpHYPsrlhcA2GgBEOrX30j0/5gqPOoMDNp9nYsnSN/HENhmeWxgd9fc+9LwejwzY/U5ncGxs1uUKJVa3ZQko9llwDgAHe7m1zexzs9t+8tydS/dbrjuG7IE247ObV3qtdReHjeZ4MrOT3pe7XpZYNglHxZQUq8vrXc293hdvY/GfHW2O+fno+9nP7U2P5qYX8NiarRV7VixHZUtxkTkslAhKiOIAcIDMYb4kUSIRSlBqrbcVWK2ACk6x44QUCkVsD6GojoJVR8UkmklxEnRjyNF4BEekdnxI2ST68asZcL0ftWfB8UzVsDrr+r+L4/MOjO/Cr6/x2F9ofUHP0TGGCwAAAABJRU5ErkJggg==");
+          background-position: 50% 50%;
+        }
+      </style><picture
+    
+    class="astro-imagetools-picture astro-imagetools-picture-328E82E6"
+    style="position: relative; display: inline-block; ; max-width: 100%; height: auto;"
+    ><source
+            srcset="/astro-tech-blog/assets/corgiPlane@320w.b3b81224.avif 320w, /astro-tech-blog/assets/corgiPlane@672w.0ff7ca36.avif 672w, /astro-tech-blog/assets/corgiPlane@907w.f9a8fc35.avif 907w, /astro-tech-blog/assets/corgiPlane@1024w.79b64e72.avif 1024w"
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            width="1024"
+            height="1024"
+            type="image/avif"
+            
+          />
+<source
+            srcset="/astro-tech-blog/assets/corgiPlane@320w.92ad90e7.webp 320w, /astro-tech-blog/assets/corgiPlane@672w.ff913ed9.webp 672w, /astro-tech-blog/assets/corgiPlane@907w.4124b24a.webp 907w, /astro-tech-blog/assets/corgiPlane@1024w.a67baf50.webp 1024w"
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            width="1024"
+            height="1024"
+            type="image/webp"
+            
+          />
+<img
+    
+    src="/astro-tech-blog/assets/corgiPlane@1024w.c2dcbe5f.png"
+    alt="Corgi Plane"
+    srcset="/astro-tech-blog/assets/corgiPlane@320w.0df47f22.png 320w, /astro-tech-blog/assets/corgiPlane@672w.7e9eb492.png 672w, /astro-tech-blog/assets/corgiPlane@907w.be91f3aa.png 907w, /astro-tech-blog/assets/corgiPlane@1024w.c2dcbe5f.png 1024w"
+    sizes="(min-width: 1024px) 1024px, 100vw"
+    width="1024"
+    height="1024"
+    loading="lazy"
+    decoding="async"
+    class="astro-imagetools-img"
+    style="display: inline-block; overflow: hidden; vertical-align: middle; ; max-width: 100%; height: auto;"
+    onload="parentElement.style.setProperty('--z-index', 1);parentElement.style.setProperty('--opacity', 0);"
+  />
+  </picture>
+</p><p><style >
+    
 
-				<div class="tag-list astro-KXQKI52O">
-					<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-KXQKI52O"><a href="/tags/dall-e" class="astro-KXQKI52O">dall-e</a></span><span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-KXQKI52O"><a href="/tags/typescript" class="astro-KXQKI52O">typescript</a></span>
-					</div>
-			</header>
-			<main data-pagefind-body class="astro-KXQKI52O">
-				<h1 id="summary">Summary</h1><p>After experimenting with <code>dall-e</code> I realised how powerful it can be. I attempted to upload some of the images to make money off it, but failed.</p><p><img src="/imgs/2022/dall-e/corgiNextToThePyramids.jpeg" alt="Corgi next to pyramids"></p><p><img src="/imgs/2022/dall-e/corgiPlane.png" alt="Corgi Plane"></p><p><img src="/imgs/2022/dall-e/CorgiUpInATree.jpeg" alt="Corgi Up in a Tree"></p><p>The watermark available in every photo makes it hard to sell on stock sites. Other requirements such as no tag ids make it harder to sell and/or get approved for licensing.</p><p>Instead I will make posts on my blog with various dall-e images. I thought about generating a few automatic videos with the labels and the generated image, but its still difficult with the watermarked images.</p><p>As for income generation, since images need to be approved by humans, its going to be hard to resell these images, as a result my commerization efforts should be focussed on adding them to a blog or having users download them from my site directly for a fee.</p><p>Honestly, its hard to make money on the internet.</p><h2 id="weaknesses-of-dall-e">Weaknesses of dall-e</h2><p>From my personal testing I found the following:</p><ul>
+    .astro-imagetools-picture-D3B2B605 {
+      --opacity: 1;
+      --z-index: 0;
+    }
+
+    
+            .astro-imagetools-picture-D3B2B605 img {
+              z-index: 1;
+              position: relative;
+            }
+          
+
+    .astro-imagetools-picture-D3B2B605::after {
+      inset: 0;
+      content: "";
+      left: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transition: opacity 1s;
+      opacity: var(--opacity);
+      z-index: var(--z-index);
+    }
+  
+        .astro-imagetools-picture-D3B2B605 img {
+          object-fit: cover;
+          object-position: 50% 50%;
+        }
+
+        .astro-imagetools-picture-D3B2B605::after {
+          background-size: cover;
+          background-image: url("data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAUABQDASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAQGAgMFB//EACgQAAEDBAIABAcAAAAAAAAAAAECAxEABAUSBiExQVFhBxMUIjJxkf/EABgBAAIDAAAAAAAAAAAAAAAAAAIDAAEF/8QAHREAAgEEAwAAAAAAAAAAAAAAAAECAxEhMRQyUf/aAAwDAQACEQMRAD8A53wjeYZ41yDG3jTC3XXG30ka7JiRJ2B68B13MVYsdxhOYfvX8W2hCrYo1WgpSpxyJUFa9p8yB7Hvxrz3AfN49mEXqUqctHIbuDuEnQkEwYMEdGQJ6q1Z5t+3+r5LxXJNnMXK1lm/ZOg1SfuQmfygGOxFZl9N6JGnGcd5KVm7du1yC0PNBSiAsblUhKuwP4aVnfuHJ3Tl7mbgv37x2dc6TsrzMDoUq3AXxl6RBcOm1hTiiNyCCfH3/dTnHXF2NqlxxbiG0aISsyECQevTszSlHBYCpdEbWLRtxlLiiZVPp5Ej09qUpTopWCbP/9k=");
+          background-position: 50% 50%;
+        }
+      </style><picture
+    
+    class="astro-imagetools-picture astro-imagetools-picture-D3B2B605"
+    style="position: relative; display: inline-block; ; max-width: 100%; height: auto;"
+    ><source
+            srcset="/astro-tech-blog/assets/CorgiUpInATree@320w.ab4ee922.avif 320w, /astro-tech-blog/assets/CorgiUpInATree@870w.1d3dc22c.avif 870w, /astro-tech-blog/assets/CorgiUpInATree@1360w.f0962fe2.avif 1360w, /astro-tech-blog/assets/CorgiUpInATree@1788w.253bf88a.avif 1788w, /astro-tech-blog/assets/CorgiUpInATree@2155w.7fb014c0.avif 2155w, /astro-tech-blog/assets/CorgiUpInATree@2460w.2b188bd2.avif 2460w, /astro-tech-blog/assets/CorgiUpInATree@2705w.9a1e16eb.avif 2705w, /astro-tech-blog/assets/CorgiUpInATree@2889w.632a14fe.avif 2889w, /astro-tech-blog/assets/CorgiUpInATree@3011w.a67a2b4e.avif 3011w, /astro-tech-blog/assets/CorgiUpInATree@3072w.7dff3391.avif 3072w"
+            sizes="(min-width: 3072px) 3072px, 100vw"
+            width="3072"
+            height="3072"
+            type="image/avif"
+            
+          />
+<source
+            srcset="/astro-tech-blog/assets/CorgiUpInATree@320w.e691c79f.webp 320w, /astro-tech-blog/assets/CorgiUpInATree@870w.23065a37.webp 870w, /astro-tech-blog/assets/CorgiUpInATree@1360w.ceb2bba8.webp 1360w, /astro-tech-blog/assets/CorgiUpInATree@1788w.f971c176.webp 1788w, /astro-tech-blog/assets/CorgiUpInATree@2155w.24ee5a10.webp 2155w, /astro-tech-blog/assets/CorgiUpInATree@2460w.c5c8b783.webp 2460w, /astro-tech-blog/assets/CorgiUpInATree@2705w.5607972d.webp 2705w, /astro-tech-blog/assets/CorgiUpInATree@2889w.98dbc4f6.webp 2889w, /astro-tech-blog/assets/CorgiUpInATree@3011w.60b79193.webp 3011w, /astro-tech-blog/assets/CorgiUpInATree@3072w.36f1c2c0.webp 3072w"
+            sizes="(min-width: 3072px) 3072px, 100vw"
+            width="3072"
+            height="3072"
+            type="image/webp"
+            
+          />
+<img
+    
+    src="/astro-tech-blog/assets/CorgiUpInATree@3072w.498b22ea.jpeg"
+    alt="Corgi Up in a Tree"
+    srcset="/astro-tech-blog/assets/CorgiUpInATree@320w.3aa672bf.jpeg 320w, /astro-tech-blog/assets/CorgiUpInATree@870w.2e84e718.jpeg 870w, /astro-tech-blog/assets/CorgiUpInATree@1360w.6ae8ba3b.jpeg 1360w, /astro-tech-blog/assets/CorgiUpInATree@1788w.1d4f2f17.jpeg 1788w, /astro-tech-blog/assets/CorgiUpInATree@2155w.6735dded.jpeg 2155w, /astro-tech-blog/assets/CorgiUpInATree@2460w.1c4557bf.jpeg 2460w, /astro-tech-blog/assets/CorgiUpInATree@2705w.ed4dda56.jpeg 2705w, /astro-tech-blog/assets/CorgiUpInATree@2889w.e482a022.jpeg 2889w, /astro-tech-blog/assets/CorgiUpInATree@3011w.dd06bc16.jpeg 3011w, /astro-tech-blog/assets/CorgiUpInATree@3072w.498b22ea.jpeg 3072w"
+    sizes="(min-width: 3072px) 3072px, 100vw"
+    width="3072"
+    height="3072"
+    loading="lazy"
+    decoding="async"
+    class="astro-imagetools-img"
+    style="display: inline-block; overflow: hidden; vertical-align: middle; ; max-width: 100%; height: auto;"
+    onload="parentElement.style.setProperty('--z-index', 1);parentElement.style.setProperty('--opacity', 0);"
+  />
+  </picture>
+</p><p>The watermark available in every photo makes it hard to sell on stock sites. Other requirements such as no tag ids make it harder to sell and/or get approved for licensing.</p><p>Instead I will make posts on my blog with various dall-e images. I thought about generating a few automatic videos with the labels and the generated image, but its still difficult with the watermarked images.</p><p>As for income generation, since images need to be approved by humans, its going to be hard to resell these images, as a result my commerization efforts should be focussed on adding them to a blog or having users download them from my site directly for a fee.</p><p>Honestly, its hard to make money on the internet.</p><h2 id="weaknesses-of-dall-e">Weaknesses of dall-e</h2><p>From my personal testing I found the following:</p><ul>
 <li>Dall-e struggles with human faces at times.</li>
 <li>some of the images generated have gliberrish text.</li>
 <li>fails to generate various of anime movie posters.</li>
-</ul><p>Overall, dall-e is quite a powerful tool used for image generation butyou need to be careful with it. The watermark makes it difficult to sell on stock sites and get approved for licensing.</p>
-			</main>
-		</div>
-	</article>
-</div>
-
-
-
+</ul><p>Overall, dall-e is quite a powerful tool used for image generation butyou need to be careful with it. The watermark makes it difficult to sell on stock sites and get approved for licensing.</p></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="w-full flex">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight  focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="max-w-lg">
+        <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+        <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
     </div>
+    <div id="search"></div>
+    
+</div></div>
+
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>.</div></div></div>
   </body></html>

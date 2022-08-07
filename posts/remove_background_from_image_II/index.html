@@ -1,223 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Global Metadata --><meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutter Remove background from image web app Part II - Astro Tech Blog</title>
+    <meta name="description" content="WIP web app that allows the user to download an image after the remove.bg api has been applied.">
+    <meta name="author" content="David Li">
 
-<!-- Primary Meta Tags -->
-<title>Flutter Remove background from image web app Part II</title>
-<meta name="title" content="Flutter Remove background from image web app Part II">
-<meta name="description" content="WIP web app that allows the user to download an image after the remove.bg api has been applied.">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url">
-<meta property="og:title" content="Flutter Remove background from image web app Part II">
-<meta property="og:description" content="WIP web app that allows the user to download an image after the remove.bg api has been applied.">
-<meta property="og:image" content="https://astro.build/social.png?v=1">
-
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url">
-<meta property="twitter:title" content="Flutter Remove background from image web app Part II">
-<meta property="twitter:description" content="WIP web app that allows the user to download an image after the remove.bg api has been applied.">
-<meta property="twitter:image" content="https://astro.build/social.png?v=1">
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;700&display=swap">
-
-    <link rel="stylesheet" href="../styles/blog.css">
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-  <link rel="stylesheet" href="/assets/asset.96e7c21d.css"></link><script type="module" src="/entry.701f7b447.js" astro-script="/posts/remove_background_from_image_II/script-0"></script>
-</head>
-
-  <body>
     
+  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.2b7c8484.css" /><script type="module" src="/astro-tech-blog/entry.c49a0958.js"></script>
+</head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
 
-<header class="wrapper astro-JM5VFH4U">
-  <article class="astro-JM5VFH4U">
-    <h3 class="astro-JM5VFH4U">
-      <a href="/astro-tech-blog" class="astro-JM5VFH4U">
-        <svg class="logo astro-JM5VFH4U" width="32" height="32" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <style>
-            #flame {
-              fill: #ff5d01;
-            }
-            #a {
-              fill: #000014;
-            }
-          </style>
-          <title>Logo</title>
-          <path id="a" fill-rule="evenodd" clip-rule="evenodd" d="M163.008 18.929c1.944 2.413 2.935 5.67 4.917 12.181l43.309 142.27a180.277 180.277 0 00-51.778-17.53l-28.198-95.29a3.67 3.67 0 00-7.042.01l-27.857 95.232a180.225 180.225 0 00-52.01 17.557l43.52-142.281c1.99-6.502 2.983-9.752 4.927-12.16a15.999 15.999 0 016.484-4.798c2.872-1.154 6.271-1.154 13.07-1.154h31.085c6.807 0 10.211 0 13.086 1.157a16.004 16.004 0 016.487 4.806z" class="astro-JM5VFH4U"></path>
-          <path id="flame" fill-rule="evenodd" clip-rule="evenodd" d="M168.19 180.151c-7.139 6.105-21.39 10.268-37.804 10.268-20.147 0-37.033-6.272-41.513-14.707-1.602 4.835-1.961 10.367-1.961 13.902 0 0-1.056 17.355 11.015 29.426 0-6.268 5.081-11.349 11.349-11.349 10.743 0 10.731 9.373 10.721 16.977v.679c0 11.542 7.054 21.436 17.086 25.606a23.27 23.27 0 01-2.339-10.2c0-11.008 6.463-15.107 13.974-19.87 5.976-3.79 12.616-8.001 17.192-16.449a31.024 31.024 0 003.743-14.82c0-3.299-.513-6.479-1.463-9.463z" class="astro-JM5VFH4U"></path>
-        </svg>
-        <span class="astro-JM5VFH4U">My Blog</span>
-      </a>
-    </h3>
-    <a href="/about" class="astro-JM5VFH4U">
-      About Me
-    </a> &nbsp; &nbsp;
-    <div class="basic-flex astro-JM5VFH4U">
-		<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30px" height="30px" class="astro-JM5VFH4U"><path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z" class="astro-JM5VFH4U"></path></svg> &nbsp;
-     <a href="/search" class="astro-JM5VFH4U">
-        Search
-      </a>
-    </div>
-  </article>
-</header>
-    <div class="wrapper">
-      <!-- <a href={window.location.href}>
-        <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px"><path d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/></svg> 
-          Share
-      </a>   -->
-      <div class="layout astro-KXQKI52O">
-	<article class="content astro-KXQKI52O">
-		<div class="astro-KXQKI52O">
-			<header class="astro-KXQKI52O">
-				
-				<p class="publish-date astro-KXQKI52O"></p>
-				<h1 class="title astro-KXQKI52O">Flutter Remove background from image web app Part II</h1>
-				<div class="author astro-KO5QTRDP">
-	<p class="astro-KO5QTRDP"><a href="https://friendlyuser.github.io" class="astro-KO5QTRDP">@FriendlyUser</a></p>
-</div>
-
-
-
-				<div class="tag-list astro-KXQKI52O">
-					<span class="bg-black-100 text-black-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-black-200 dark:text-black-800 astro-KXQKI52O"><a href="/tags/flutter" class="astro-KXQKI52O">flutter</a></span>
-					</div>
-			</header>
-			<main data-pagefind-body class="astro-KXQKI52O">
-				<p>Full code for this post can be seen at <a href="https://github.com/FriendlyUser/remove_bg_flutter_app/tree/483074e626afb9118213a5942bcfac1e3cbb6493">github</a>.</p><p>Continuing from the previous post, I decided to add mobile support for the flutter project.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (kIsWeb) {</span></span>
-<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Scaffold</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">          appBar</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">AppBar</span><span style="color: #C9D1D9">(title</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&#39;Display the Picture&#39;</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #8B949E">// The image is stored as a file on the device. Use the `Image.file`</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #8B949E">// constructor with the given path to display the image.</span></span>
-<span class="line"><span style="color: #C9D1D9">          body</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Container</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">              child</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Row</span><span style="color: #C9D1D9">(children</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> [</span></span>
-<span class="line"><span style="color: #C9D1D9">            </span><span style="color: #79C0FF">Column</span><span style="color: #C9D1D9">(children</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> [</span></span>
-<span class="line"><span style="color: #C9D1D9">              </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&quot;Original Image&quot;</span><span style="color: #C9D1D9">),</span></span>
-<span class="line"><span style="color: #C9D1D9">              image,</span></span>
-<span class="line"><span style="color: #C9D1D9">            ]),</span></span>
-<span class="line"><span style="color: #C9D1D9">            </span><span style="color: #79C0FF">Column</span><span style="color: #C9D1D9">(children</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> [</span></span>
-<span class="line"><span style="color: #C9D1D9">              </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&quot;Background Removed Image&quot;</span><span style="color: #C9D1D9">),</span></span>
-<span class="line"><span style="color: #C9D1D9">              otherImage,</span></span>
-<span class="line"><span style="color: #C9D1D9">              downloadButton,</span></span>
-<span class="line"><span style="color: #C9D1D9">            ]),</span></span>
-<span class="line"><span style="color: #C9D1D9">          ])));</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">Flutter Remove background from image web app Part II</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Jul 23, 2022</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-sky-400 text-sky-900"> <a href="/tags/flutter">flutter<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png" alt="Image post 3" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><p>Full code for this post can be seen at <a href="https://github.com/FriendlyUser/remove_bg_flutter_app/tree/483074e626afb9118213a5942bcfac1e3cbb6493">github</a>.</p><p>Continuing from the previous post, I decided to add mobile support for the flutter project.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (kIsWeb) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Scaffold</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          appBar</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">AppBar</span><span style="color: #F8F8F2">(title</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&#39;Display the Picture&#39;</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// The image is stored as a file on the device. Use the `Image.file`</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// constructor with the given path to display the image.</span></span>
+<span class="line"><span style="color: #F8F8F2">          body</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Container</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">              child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Row</span><span style="color: #F8F8F2">(children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF; font-style: italic">Column</span><span style="color: #F8F8F2">(children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">              </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Original Image&quot;</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">              image,</span></span>
+<span class="line"><span style="color: #F8F8F2">            ]),</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF; font-style: italic">Column</span><span style="color: #F8F8F2">(children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">              </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Background Removed Image&quot;</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">              otherImage,</span></span>
+<span class="line"><span style="color: #F8F8F2">              downloadButton,</span></span>
+<span class="line"><span style="color: #F8F8F2">            ]),</span></span>
+<span class="line"><span style="color: #F8F8F2">          ])));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #8B949E">// add bigger font and padding on the item.</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #8B949E">// extra padding on the save file item</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Scaffold</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">        appBar</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">AppBar</span><span style="color: #C9D1D9">(title</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&#39;Display the Picture&#39;</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// The image is stored as a file on the device. Use the `Image.file`</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// constructor with the given path to display the image.</span></span>
-<span class="line"><span style="color: #C9D1D9">        body</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">SingleChildScrollView</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">            child</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Column</span><span style="color: #C9D1D9">(children</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> [</span></span>
-<span class="line"><span style="color: #C9D1D9">              </span><span style="color: #8B949E">// Original Image with 16 font and padding of 16</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&quot;Original Image&quot;</span><span style="color: #C9D1D9">, style</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">TextStyle</span><span style="color: #C9D1D9">(fontSize</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">16</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">Padding</span><span style="color: #C9D1D9">(padding</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">EdgeInsets</span><span style="color: #C9D1D9">.</span><span style="color: #D2A8FF">symmetric</span><span style="color: #C9D1D9">(vertical</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">4</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          image,</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&quot;Background Removed Image&quot;</span><span style="color: #C9D1D9">, style</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">TextStyle</span><span style="color: #C9D1D9">(fontSize</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">16</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">Padding</span><span style="color: #C9D1D9">(padding</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">EdgeInsets</span><span style="color: #C9D1D9">.</span><span style="color: #D2A8FF">symmetric</span><span style="color: #C9D1D9">(vertical</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">4</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          otherImage,</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">Padding</span><span style="color: #C9D1D9">(padding</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">EdgeInsets</span><span style="color: #C9D1D9">.</span><span style="color: #D2A8FF">symmetric</span><span style="color: #C9D1D9">(vertical</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">4</span><span style="color: #C9D1D9">)),</span></span>
-<span class="line"><span style="color: #C9D1D9">          downloadButton,</span></span>
-<span class="line"><span style="color: #C9D1D9">        ])));</span></span></code></pre><p>Oftentimes this involves conditional rendering based on the platform. Essentially for desktop have the images next to each other and for mobile, have the user scroll down to see the original and the image removed from the background.</p><p>I think simply using the remove.bg site would be better in most cases, but its interesting to have an app do it on the go.</p><p>Future improvements could include</p><ul>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// add bigger font and padding on the item.</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// extra padding on the save file item</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Scaffold</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        appBar</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">AppBar</span><span style="color: #F8F8F2">(title</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&#39;Display the Picture&#39;</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// The image is stored as a file on the device. Use the `Image.file`</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// constructor with the given path to display the image.</span></span>
+<span class="line"><span style="color: #F8F8F2">        body</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">SingleChildScrollView</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Column</span><span style="color: #F8F8F2">(children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">              </span><span style="color: #88846F">// Original Image with 16 font and padding of 16</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Original Image&quot;</span><span style="color: #F8F8F2">, style</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">TextStyle</span><span style="color: #F8F8F2">(fontSize</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">16</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">Padding</span><span style="color: #F8F8F2">(padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">EdgeInsets</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">symmetric</span><span style="color: #F8F8F2">(vertical</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          image,</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Background Removed Image&quot;</span><span style="color: #F8F8F2">, style</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">TextStyle</span><span style="color: #F8F8F2">(fontSize</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">16</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">Padding</span><span style="color: #F8F8F2">(padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">EdgeInsets</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">symmetric</span><span style="color: #F8F8F2">(vertical</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          otherImage,</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">Padding</span><span style="color: #F8F8F2">(padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">EdgeInsets</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">symmetric</span><span style="color: #F8F8F2">(vertical</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">          downloadButton,</span></span>
+<span class="line"><span style="color: #F8F8F2">        ])));</span></span></code></pre><p>Oftentimes this involves conditional rendering based on the platform. Essentially for desktop have the images next to each other and for mobile, have the user scroll down to see the original and the image removed from the background.</p><p>I think simply using the remove.bg site would be better in most cases, but its interesting to have an app do it on the go.</p><p>Future improvements could include</p><ul>
 <li>adding a button to the image to enlarge the image.</li>
 <li>change the save logic around to let the user select the file name.</li>
-</ul><p>As flutter supports multiple platforms, some features are not fully supported cross platform.</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"><span style="color: #FF7B72">import</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&#39;package:flutter/material.dart&#39;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #FF7B72">import</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&#39;package:path_provider/path_provider.dart&#39;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #FF7B72">import</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&#39;dart:io&#39;</span><span style="color: #C9D1D9">;</span></span>
+</ul><p>As flutter supports multiple platforms, some features are not fully supported cross platform.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#39;package:flutter/material.dart&#39;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#39;package:path_provider/path_provider.dart&#39;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#39;dart:io&#39;</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #FF7B72">class</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">DownloadButtonProps</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">List</span><span style="color: #C9D1D9">&lt;</span><span style="color: #79C0FF">int</span><span style="color: #C9D1D9">&gt; imageInBytes;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">DownloadButtonProps</span><span style="color: #C9D1D9">({ </span><span style="color: #FF7B72">required</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">this</span><span style="color: #C9D1D9">.imageInBytes});</span></span>
-<span class="line"><span style="color: #C9D1D9">}</span></span>
+<span class="line"><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">DownloadButtonProps</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">List</span><span style="color: #F8F8F2">&lt;</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">&gt; imageInBytes;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">DownloadButtonProps</span><span style="color: #F8F8F2">({ </span><span style="color: #F92672">required</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.imageInBytes});</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #FF7B72">class</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">DownloadButton</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">extends</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">StatelessWidget</span><span style="color: #C9D1D9"> {</span></span>
+<span class="line"><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">DownloadButton</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">StatelessWidget</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">final</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">DownloadButtonProps</span><span style="color: #C9D1D9"> data;</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">DownloadButton</span><span style="color: #C9D1D9">({</span><span style="color: #79C0FF">Key</span><span style="color: #FF7B72">?</span><span style="color: #C9D1D9"> key, </span><span style="color: #FF7B72">required</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">this</span><span style="color: #C9D1D9">.data})</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">super</span><span style="color: #C9D1D9">(key</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> key);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">DownloadButtonProps</span><span style="color: #F8F8F2"> data;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">DownloadButton</span><span style="color: #F8F8F2">({</span><span style="color: #66D9EF; font-style: italic">Key</span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> key, </span><span style="color: #F92672">required</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.data})</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">super</span><span style="color: #F8F8F2">(key</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> key);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #79C0FF">Future</span><span style="color: #C9D1D9">&lt;</span><span style="color: #79C0FF">String</span><span style="color: #C9D1D9">&gt; </span><span style="color: #D2A8FF">getFilePath</span><span style="color: #C9D1D9">() </span><span style="color: #FF7B72">async</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">Directory</span><span style="color: #FF7B72">?</span><span style="color: #C9D1D9"> appDocumentsDirectory; </span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">try</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">      appDocumentsDirectory </span><span style="color: #FF7B72">??=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">getExternalStorageDirectory</span><span style="color: #C9D1D9">();</span></span>
-<span class="line"><span style="color: #C9D1D9">    } </span><span style="color: #FF7B72">catch</span><span style="color: #C9D1D9"> (e) {</span></span>
-<span class="line"><span style="color: #C9D1D9">      </span><span style="color: #D2A8FF">print</span><span style="color: #C9D1D9">(e);</span></span>
-<span class="line"><span style="color: #C9D1D9">    }</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #D2A8FF">print</span><span style="color: #C9D1D9">(appDocumentsDirectory);</span></span>
-<span class="line"><span style="color: #C9D1D9">    appDocumentsDirectory </span><span style="color: #FF7B72">??=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">getApplicationDocumentsDirectory</span><span style="color: #C9D1D9">();</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">String</span><span style="color: #C9D1D9"> appDocumentsPath </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> appDocumentsDirectory.path;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #8B949E">// random file name to avoid overwriting existing files.</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">String</span><span style="color: #C9D1D9"> fileName </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&#39;${</span><span style="color: #79C0FF">DateTime</span><span style="color: #A5D6FF">.</span><span style="color: #D2A8FF">now</span><span style="color: #A5D6FF">().</span><span style="color: #79C0FF">millisecondsSinceEpoch</span><span style="color: #A5D6FF">}.jpg&#39;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #79C0FF">String</span><span style="color: #C9D1D9"> filePath </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&#39;$</span><span style="color: #79C0FF">appDocumentsPath</span><span style="color: #A5D6FF">/$</span><span style="color: #79C0FF">fileName</span><span style="color: #A5D6FF">&#39;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #D2A8FF">print</span><span style="color: #C9D1D9">(filePath);</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> filePath;</span></span>
-<span class="line"><span style="color: #C9D1D9">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">Future</span><span style="color: #F8F8F2">&lt;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">&gt; </span><span style="color: #A6E22E">getFilePath</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">Directory</span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> appDocumentsDirectory; </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">try</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">      appDocumentsDirectory </span><span style="color: #F92672">??=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getExternalStorageDirectory</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">catch</span><span style="color: #F8F8F2"> (e) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">print</span><span style="color: #F8F8F2">(e);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">print</span><span style="color: #F8F8F2">(appDocumentsDirectory);</span></span>
+<span class="line"><span style="color: #F8F8F2">    appDocumentsDirectory </span><span style="color: #F92672">??=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getApplicationDocumentsDirectory</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> appDocumentsPath </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> appDocumentsDirectory.path;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// random file name to avoid overwriting existing files.</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> fileName </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#39;${</span><span style="color: #66D9EF; font-style: italic">DateTime</span><span style="color: #E6DB74">.</span><span style="color: #A6E22E">now</span><span style="color: #E6DB74">().</span><span style="color: #FD971F; font-style: italic">millisecondsSinceEpoch</span><span style="color: #E6DB74">}.jpg&#39;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> filePath </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#39;$</span><span style="color: #FD971F; font-style: italic">appDocumentsPath</span><span style="color: #E6DB74">/$</span><span style="color: #FD971F; font-style: italic">fileName</span><span style="color: #E6DB74">&#39;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">print</span><span style="color: #F8F8F2">(filePath);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> filePath;</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #FF7B72">@override</span></span>
-<span class="line"><span style="color: #C9D1D9">  </span><span style="color: #79C0FF">Widget</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">build</span><span style="color: #C9D1D9">(</span><span style="color: #79C0FF">BuildContext</span><span style="color: #C9D1D9"> context) {</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">ElevatedButton</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">      onPressed</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> () </span><span style="color: #FF7B72">async</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// saveFile(uploadedImage.toString())</span></span>
-<span class="line"><span style="color: #C9D1D9">        {</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #79C0FF">File</span><span style="color: #C9D1D9"> file </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">File</span><span style="color: #C9D1D9">(</span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">getFilePath</span><span style="color: #C9D1D9">());</span></span>
-<span class="line"><span style="color: #C9D1D9">          </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> file.</span><span style="color: #D2A8FF">writeAsBytes</span><span style="color: #C9D1D9">(data.imageInBytes);</span></span>
-<span class="line"><span style="color: #C9D1D9">        }</span></span>
-<span class="line"><span style="color: #C9D1D9">      },</span></span>
-<span class="line"><span style="color: #C9D1D9">      child</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Text</span><span style="color: #C9D1D9">(</span><span style="color: #A5D6FF">&quot;Save File&quot;</span><span style="color: #C9D1D9">),</span></span>
-<span class="line"><span style="color: #C9D1D9">    );</span></span>
-<span class="line"><span style="color: #C9D1D9">  }</span></span>
-<span class="line"><span style="color: #C9D1D9">}</span></span></code></pre><p>I also updated the floating action button to return if the remove.bg api returns a string (likely an error message)</p><pre class="astro-code" style="background-color: #0d1117; overflow-x: auto;"><code><span class="line"></span>
-<span class="line"><span style="color: #C9D1D9"> floatingActionButton</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">FloatingActionButton</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">    </span><span style="color: #8B949E">// Provide an onPressed callback.</span></span>
-<span class="line"><span style="color: #C9D1D9">    onPressed</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> () </span><span style="color: #FF7B72">async</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// Take the Picture in a try / catch block. If anything goes wrong,</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// catch the error.</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">try</span><span style="color: #C9D1D9"> {</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// Ensure that the camera is initialized.</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> _initializeControllerFuture;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">Widget</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">build</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">BuildContext</span><span style="color: #F8F8F2"> context) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">ElevatedButton</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">      onPressed</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// saveFile(uploadedImage.toString())</span></span>
+<span class="line"><span style="color: #F8F8F2">        {</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF; font-style: italic">File</span><span style="color: #F8F8F2"> file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">File</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getFilePath</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> file.</span><span style="color: #A6E22E">writeAsBytes</span><span style="color: #F8F8F2">(data.imageInBytes);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">      child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;Save File&quot;</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">    );</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre><p>I also updated the floating action button to return if the remove.bg api returns a string (likely an error message)</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> floatingActionButton</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">FloatingActionButton</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Provide an onPressed callback.</span></span>
+<span class="line"><span style="color: #F8F8F2">    onPressed</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Take the Picture in a try / catch block. If anything goes wrong,</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// catch the error.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">try</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Ensure that the camera is initialized.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> _initializeControllerFuture;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// Attempt to take a picture and get the file `image`</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// where it was saved.</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">final</span><span style="color: #C9D1D9"> image </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> _controller.</span><span style="color: #D2A8FF">takePicture</span><span style="color: #C9D1D9">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Attempt to take a picture and get the file `image`</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// where it was saved.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> _controller.</span><span style="color: #A6E22E">takePicture</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">final</span><span style="color: #C9D1D9"> uploadedImageResp </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> </span><span style="color: #D2A8FF">uploadImage</span><span style="color: #C9D1D9">(image);</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// If the picture was taken, display it on a new screen.</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">if</span><span style="color: #C9D1D9"> (uploadedImageResp.runtimeType </span><span style="color: #FF7B72">==</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">String</span><span style="color: #C9D1D9">) {</span></span>
-<span class="line"><span style="color: #C9D1D9">            errorMessage </span><span style="color: #FF7B72">=</span><span style="color: #C9D1D9"> </span><span style="color: #A5D6FF">&quot;Failed to upload image&quot;</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">            </span><span style="color: #FF7B72">return</span><span style="color: #C9D1D9">;</span></span>
-<span class="line"><span style="color: #C9D1D9">        }</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// if response is type string, then its an error and show, set message</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #FF7B72">await</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Navigator</span><span style="color: #C9D1D9">.</span><span style="color: #D2A8FF">of</span><span style="color: #C9D1D9">(context).</span><span style="color: #D2A8FF">push</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">            </span><span style="color: #79C0FF">MaterialPageRoute</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">            builder</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> (context) </span><span style="color: #FF7B72">=&gt;</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">DisplayPictureScreen</span><span style="color: #C9D1D9">(</span></span>
-<span class="line"><span style="color: #C9D1D9">                </span><span style="color: #8B949E">// Pass the automatically generated path to</span></span>
-<span class="line"><span style="color: #C9D1D9">                </span><span style="color: #8B949E">// the DisplayPictureScreen widget.</span></span>
-<span class="line"><span style="color: #C9D1D9">                imagePath</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> image.path,</span></span>
-<span class="line"><span style="color: #C9D1D9">                uploadedImage</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> uploadedImageResp),</span></span>
-<span class="line"><span style="color: #C9D1D9">            ),</span></span>
-<span class="line"><span style="color: #C9D1D9">        );</span></span>
-<span class="line"><span style="color: #C9D1D9">        } </span><span style="color: #FF7B72">catch</span><span style="color: #C9D1D9"> (e) {</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #8B949E">// If an error occurs, log the error to the console.</span></span>
-<span class="line"><span style="color: #C9D1D9">        </span><span style="color: #D2A8FF">print</span><span style="color: #C9D1D9">(e);</span></span>
-<span class="line"><span style="color: #C9D1D9">        }</span></span>
-<span class="line"><span style="color: #C9D1D9">    },</span></span>
-<span class="line"><span style="color: #C9D1D9">    child</span><span style="color: #FF7B72">:</span><span style="color: #C9D1D9"> </span><span style="color: #FF7B72">const</span><span style="color: #C9D1D9"> </span><span style="color: #79C0FF">Icon</span><span style="color: #C9D1D9">(</span><span style="color: #79C0FF">Icons</span><span style="color: #C9D1D9">.camera_alt),</span></span></code></pre><p>In the next article I will cover setting up fastlane to deploy the app to the google play store.</p>
-			</main>
-		</div>
-	</article>
-</div>
-
-
-
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> uploadedImageResp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">uploadImage</span><span style="color: #F8F8F2">(image);</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// If the picture was taken, display it on a new screen.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (uploadedImageResp.runtimeType </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            errorMessage </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&quot;Failed to upload image&quot;</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// if response is type string, then its an error and show, set message</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Navigator</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(context).</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF; font-style: italic">MaterialPageRoute</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            builder</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (context) </span><span style="color: #F92672">=&gt;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">DisplayPictureScreen</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F">// Pass the automatically generated path to</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F">// the DisplayPictureScreen widget.</span></span>
+<span class="line"><span style="color: #F8F8F2">                imagePath</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> image.path,</span></span>
+<span class="line"><span style="color: #F8F8F2">                uploadedImage</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> uploadedImageResp),</span></span>
+<span class="line"><span style="color: #F8F8F2">            ),</span></span>
+<span class="line"><span style="color: #F8F8F2">        );</span></span>
+<span class="line"><span style="color: #F8F8F2">        } </span><span style="color: #F92672">catch</span><span style="color: #F8F8F2"> (e) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// If an error occurs, log the error to the console.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">print</span><span style="color: #F8F8F2">(e);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Icon</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">Icons</span><span style="color: #F8F8F2">.camera_alt),</span></span></code></pre><p>In the next article I will cover setting up fastlane to deploy the app to the google play store.</p></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="w-full flex">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight  focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="max-w-lg">
+        <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+        <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
     </div>
+    <div id="search"></div>
+    
+</div></div>
+
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>.</div></div></div>
   </body></html>
