@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="astro-LYRI27HJ">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,11 +18,51 @@
 
     </script>
     
-  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.1c1ec632.css" /><script type="module" src="/astro-tech-blog/entry.dc6b171d.js"></script>
+    
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName('mySlides');
+        let dots = document.getElementsByClassName('demo');
+        let captionText = document.getElementById('caption');
+        if (n > slides.length) {
+          slideIndex = 1;
+        }
+        if (n < 1) {
+          slideIndex = slides.length;
+        }
+        for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = 'none';
+        }
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(' active', '');
+        }
+        slides[slideIndex - 1].style.display = 'block';
+        dots[slideIndex - 1].className += ' active';
+        captionText.innerHTML = dots[slideIndex - 1].alt;
+      }
+    </script>
+  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.8de0df4b.css" /><style>.astro-LYRI27HJ {
+  --pageFindUiPrimary: #0ea5e9;
+  --pageFindUiText: #000000;
+}
+:root{--page-find-ui-primary: var(--pageFindUiPrimary);--page-find-ui-text: var(--pageFindUiText)}</style><script type="module" src="/astro-tech-blog/entry.45560804.js"></script>
 </head>
   <body class="bg-slate-900 text-gray-100">
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
-    <div data-pagefind-body>
+    <div data-pagefind-body class="astro-LYRI27HJ">
       <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">What I did to transfer docker images from dockerhub to ghcr</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Dec 11, 2020</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/docker">docker<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/ghcr">ghcr<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/CorgiUpInATree.jpeg" alt="Corgi Tree" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><p>Recently I wanted to transfer docker images from dockerhub to github package registry.</p><p>I wanted to transfer my docker images to github. One reason was for having a  backup after dockerhub changed image pull limits for unauthenicated users.</p><p>I used github codespaces because I did not want to pull large images. I could not use the example script given at <a href="https://gist.github.com/pjbgf/065b621b576c7762451c5b13c6e8ba48/raw/617bb8596c508a26fbb73d1e2a7010c3fb2a6bad/move-docker-image-to-private-acr.sh">move-docker-image-to-private-acr.sh</a>.</p><p>The downsides of this approach is that my codespace did not have enough space to pull down all the images and repush. My images are quite large as they contain ctan and latex.</p><p>Working on a new script, I found a simple way to transfer my docker images to github package registry.</p><p>I will walk through the code I used.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">#!/bin/sh</span></span>
 <span class="line"><span style="color: #F8F8F2">original_image=</span><span style="color: #E6DB74">&quot;grandfleet/dolwarp&quot;</span></span>
 <span class="line"><span style="color: #88846F"># github packages expects a project and then an image for that project</span></span>
