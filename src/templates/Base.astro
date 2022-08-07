@@ -13,6 +13,9 @@ export interface Props {
 const {
   head: { title, description },
 } = Astro.props as Props;
+
+const pageFindUiPrimary = '#0ea5e9';
+const pageFindUiText = '#000000';
 ---
 
 <html lang="en">
@@ -52,6 +55,139 @@ const {
       gtag('js', new Date());
 
       gtag('config', 'UA-119155027-6');
+    </script>
+    <style define:vars={{ pageFindUiPrimary, pageFindUiText }}>
+      :root {
+        --page-find-ui-primary: var(--pageFindUiPrimary);
+        --page-find-ui-text: var(--pageFindUiText);
+      }
+    </style>
+    <style>
+      /* img {
+            vertical-align: middle;
+        } */
+
+      /* Hide the images by default */
+      .mySlides {
+        display: none;
+      }
+
+      /* Add a pointer when hovering over the thumbnail images */
+      .cursor {
+        cursor: pointer;
+      }
+
+      /* Next & previous buttons */
+      .photoprev,
+      .photonext {
+        cursor: pointer;
+        position: absolute;
+        top: 40%;
+        width: auto;
+        padding: 16px;
+        margin-top: -50px;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      /* Position the "next button" to the right */
+      .photonext {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+      }
+
+      /* On hover, add a black background color with a little bit see-through */
+      .photoprev:hover,
+      .photonext:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      .container {
+        position: relative;
+        width: 100%;
+      }
+
+      /* Number text (1/3 etc) */
+      .numbertext {
+        color: #f2f2f2;
+        font-size: 12px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+      }
+
+      /* Container for image text */
+      .caption-container {
+        text-align: center;
+        background-color: #222;
+        padding: 2px 16px;
+        color: white;
+      }
+
+      .photoRow:after {
+        content: '';
+        display: table;
+        clear: both;
+      }
+
+      /* Six columns side by side */
+      .photoColumn {
+        float: left;
+        width: 16.66%;
+      }
+
+      /* Add a transparency effect for thumnbail images */
+      .demo {
+        opacity: 0.6;
+      }
+
+      .active,
+      .demo:hover {
+        opacity: 1;
+      }
+
+      /* The expanding image container (positioning is needed to position the close button and the text) */
+      .photoContainer {
+        position: relative;
+        display: none;
+      }
+    </style>
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName('mySlides');
+        let dots = document.getElementsByClassName('demo');
+        let captionText = document.getElementById('caption');
+        if (n > slides.length) {
+          slideIndex = 1;
+        }
+        if (n < 1) {
+          slideIndex = slides.length;
+        }
+        for (i = 0; i < slides.length; i++) {
+          slides[i].style.display = 'none';
+        }
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(' active', '');
+        }
+        slides[slideIndex - 1].style.display = 'block';
+        dots[slideIndex - 1].className += ' active';
+        captionText.innerHTML = dots[slideIndex - 1].alt;
+      }
     </script>
   </head>
   <body class="bg-slate-900 text-gray-100">
