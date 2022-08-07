@@ -15,38 +15,50 @@ const {
 } = Astro.props as Props;
 ---
 
-<html lang='en'>
+<html lang="en">
   <head>
-    <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    <meta name='description' content={description} />
-    <meta name='author' content={AppConfig.author} />
+    <meta name="description" content={description} />
+    <meta name="author" content={AppConfig.author} />
 
-    <link rel='alternate' type='application/rss+xml' href='/rss.xml' />
-    <link rel='icon' type='image/x-icon' href='/favicon.ico' />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    >
+
+    </script>
     <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-2479144310234386",
-            enable_page_level_ads: true
-        });
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: 'ca-pub-2479144310234386',
+        enable_page_level_ads: true,
+      });
     </script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"
+    >
 
-        gtag('config', 'UA-119155027-6');
+    </script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119155027-6');
     </script>
   </head>
-  <body class='bg-slate-900 text-gray-100'>
+  <body class="bg-slate-900 text-gray-100">
     <Navbar />
-
-    <slot></slot>
-
+    <div data-pagefind-body>
+      <slot />
+    </div>
     <Footer />
   </body>
 </html>
