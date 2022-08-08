@@ -34,7 +34,7 @@ const Navbar = () => (
 
       <NavMenu>
         <NavMenuItem href="/posts">Blogs</NavMenuItem>
-        <NavMenuItem href="https://github.com/FriendlyUser">GitHub</NavMenuItem>
+        <NavMenuItem href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</NavMenuItem>
         <NavMenuItem href="/photos">Photos</NavMenuItem>
       </NavMenu>
     </NavbarTwoColumns>

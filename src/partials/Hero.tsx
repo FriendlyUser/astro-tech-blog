@@ -48,6 +48,12 @@ const Hero = () => (
               alt="Youtube icon"
             />
           </a>
+          <a href="https://github.com/FriendlyUser">
+            <HeroSocial
+              src="/assets/images/github.png"
+              alt="Github icon"
+            />
+          </a>
         </>
       }
     />
