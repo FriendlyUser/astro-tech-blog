@@ -1,7 +1,8 @@
 import { Section } from 'astro-boilerplate-components';
 
 import { AppConfig } from '@/utils/AppConfig';
-
+// current date in YYYY-MM-DD format
+const date = new Date().toISOString().split('T')[0];
 const Footer = () => (
   <Section>
     <div className="border-t border-gray-600 pt-5">
@@ -16,7 +17,7 @@ const Footer = () => (
         >
           FriendlyUser
         </a>
-        .
+        . Last updated on {date}.
       </div>
     </div>
   </Section>

@@ -7,7 +7,7 @@ on:
       - main
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '30 21 * * 5'
+    - cron:  '30 21 * * 1-6/3'
 
 env:
   githubEmail: davidli012345@gmail.com
