@@ -2,7 +2,7 @@
 title: Thoughts after trying to sell dall-e images on the internet
 description: Attempting to sell dall-e images on the internet
 alt: Tagging in Astro
-pubDate: Sunday, 26 June 2021 13:00:00 GMT
+pubDate: Sunday, 7 August 2022 13:00:00 GMT
 tags: ["astro"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/dall-e/sellDalleImage.png'
