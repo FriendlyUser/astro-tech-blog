@@ -1,1 +1,0 @@
-window.dataLayer=window.dataLayer||[];function e(){dataLayer.push(arguments)}e("js",new Date);e("config","UA-119155027-6");(adsbygoogle=window?.adsbygoogle||[]).push({google_ad_client:"ca-pub-2479144310234386",enable_page_level_ads:!0});window.addEventListener("DOMContentLoaded",a=>{new PagefindUI({element:"#search"})});

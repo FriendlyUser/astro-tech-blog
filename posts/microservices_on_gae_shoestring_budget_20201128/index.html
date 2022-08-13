@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><link rel="stylesheet" href="/astro-tech-blog/assets/71fa888e.f054b690.css" /><script type="module">window.addEventListener("DOMContentLoaded",a=>{new PagefindUI({element:"#search"})});window.dataLayer=window.dataLayer||[];function e(){dataLayer.push(arguments)}e("js",new Date);e("config","UA-119155027-6");(adsbygoogle=window?.adsbygoogle||[]).push({google_ad_client:"ca-pub-2479144310234386",enable_page_level_ads:!0});
+</script><html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,177 +56,56 @@
         }
       }
     </script>
-  <link rel="stylesheet" href="/astro-tech-blog/assets/asset.ad20dfec.css" /><script type="module" src="/astro-tech-blog/entry.c3928074.js"></script>
-</head>
+  <link rel="stylesheet" href="/astro-tech-blog/assets/71fa888e.f054b690.css" /><script type="module">window.addEventListener("DOMContentLoaded",a=>{new PagefindUI({element:"#search"})});window.dataLayer=window.dataLayer||[];function e(){dataLayer.push(arguments)}e("js",new Date);e("config","UA-119155027-6");(adsbygoogle=window?.adsbygoogle||[]).push({google_ad_client:"ca-pub-2479144310234386",enable_page_level_ads:!0});
+</script></head>
   <body class="bg-slate-900 text-gray-100">
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
-      <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">How to setup microservices in gae as cheaply as possible</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Nov 11, 2020</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/gae">gae<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/microservices">microservices<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/corgiNextToThePyramids.jpeg" alt="Image post 3" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><h1 id="summary">Summary</h1><p>This tutorial will cover how to make microservices in google app engine using google cloud build. This is intended to only provide a boilerplate for microservices with google cloud platform and not a description of how to code a REST api.</p><p>Before we can begin making microservices, we need to enable the google app engine api for the given project. If you dont have an account, you can sign up for a free trial at <a href="https://cloud.google.com/free/">google cloud</a>. After creating a project we need to</p><ul>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">How to setup microservices in gae as cheaply as possible</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Nov 11, 2020</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/gae">gae<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/microservices">microservices<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/corgiNextToThePyramids.jpeg" alt="Image post 3" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><h1 id="summary">Summary</h1>
+<p>This tutorial will cover how to make microservices in google app engine using google cloud build. This is intended to only provide a boilerplate for microservices with google cloud platform and not a description of how to code a REST api.</p>
+<p>Before we can begin making microservices, we need to enable the google app engine api for the given project. If you dont have an account, you can sign up for a free trial at <a href="https://cloud.google.com/free/">google cloud</a>. After creating a project we need to</p>
+<ul>
 <li>enable the api app engine in google cloud platform for the given project</li>
 <li>create an app engine project</li>
 <li>give default cloud build service permission to deploy to app engine</li>
-</ul><h3 id="enabling-app-engine-api">Enabling App Engine Api</h3><p>The url is at, remember to replace <code>project_id</code> with your google cloud platform project.
-<code>https://console.developers.google.com/apis/api/appengine.googleapis.com/overview?project=${project_id}</code></p><p><style >
-    
-
-    .astro-imagetools-picture-CB3FA0A9 {
-      --opacity: 1;
-      --z-index: 0;
-    }
-
-    
-            .astro-imagetools-picture-CB3FA0A9 img {
-              z-index: 1;
-              position: relative;
-            }
-          
-
-    .astro-imagetools-picture-CB3FA0A9::after {
-      inset: 0;
-      content: "";
-      left: 0;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      transition: opacity 1s;
-      opacity: var(--opacity);
-      z-index: var(--z-index);
-    }
-  
-        .astro-imagetools-picture-CB3FA0A9 img {
-          object-fit: cover;
-          object-position: 50% 50%;
-        }
-
-        .astro-imagetools-picture-CB3FA0A9::after {
-          background-size: cover;
-          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABs0lEQVQ4jZVTWW7bMBDl/e/ROxToDfJfoAgKqLGtxSJFipbFXX7FjCNVcBu4GeCB2/DNLkIqKMuCZ7IsC26321MIUqaNtRbOOSil8Pb2C8fjEXV9wvF0glSSSf+bMOeMuq6hlIQ2I5QaME0T5nlmxBj/8pg+/0vE+hBCQEoJQCETyCkiBI8YA2KI7P1qoJTyocfi0drXF40v33rYKeLqElzImPwV3nsmWj9+5KXYK5B8r2a8/LjChcKEPhbM0W2Ez3IpVoXZFeRCxFTxhJwp/M+LKCXDh4JeR9hrgnMe1l44V1Ssz0JQIS6XC/SgtrBW0NuqSHuq9oq9Xs55uxcUmrUjzuczE1O7PILunfcbKa160JBSMsw4Ir2TCmKnpm67DsaYrT1o3bcKtdXdk8SEh8MBrz+PqA4dG6TU0T0TUkNXVYWu6zAMA/q+54nppUSvJO+7tmPD9IlAuqemRysnKD3jrCbMLtwJyf22bdE2DaNpG56chs8trxSa1przTITjOMKYEWa0DG1odD1Eek/mPj8rKEzCSrIvzp/K3ltsfeMqU+Ip1LtVA60JehvHxwo/nvf4DQIej4423tyxAAAAAElFTkSuQmCC");
-          background-position: 50% 50%;
-        }
-      </style><picture
-    
-    class="astro-imagetools-picture astro-imagetools-picture-CB3FA0A9"
-    style="position: relative; display: inline-block; ; max-width: 100%; height: auto;"
-    ><source
-            srcset="/astro-tech-blog/assets/app_engine_enabled@320w.cffaa095.avif 320w, /astro-tech-blog/assets/app_engine_enabled@611w.8f0c2d0a.avif 611w, /astro-tech-blog/assets/app_engine_enabled@805w.395305e4.avif 805w, /astro-tech-blog/assets/app_engine_enabled@902w.742e5817.avif 902w"
-            sizes="(min-width: 902px) 902px, 100vw"
-            width="902"
-            height="684"
-            type="image/avif"
-            
-          />
-<source
-            srcset="/astro-tech-blog/assets/app_engine_enabled@320w.6703cb59.webp 320w, /astro-tech-blog/assets/app_engine_enabled@611w.ebb633a0.webp 611w, /astro-tech-blog/assets/app_engine_enabled@805w.d8d26e08.webp 805w, /astro-tech-blog/assets/app_engine_enabled@902w.ac6644be.webp 902w"
-            sizes="(min-width: 902px) 902px, 100vw"
-            width="902"
-            height="684"
-            type="image/webp"
-            
-          />
-<img
-    
-    src="/astro-tech-blog/assets/app_engine_enabled@902w.c5a1c6d1.png"
-    alt="Enabled App Engine"
-    srcset="/astro-tech-blog/assets/app_engine_enabled@320w.582cd7c9.png 320w, /astro-tech-blog/assets/app_engine_enabled@611w.932193ef.png 611w, /astro-tech-blog/assets/app_engine_enabled@805w.57f5ab53.png 805w, /astro-tech-blog/assets/app_engine_enabled@902w.c5a1c6d1.png 902w"
-    sizes="(min-width: 902px) 902px, 100vw"
-    width="902"
-    height="684"
-    loading="lazy"
-    decoding="async"
-    class="astro-imagetools-img"
-    style="display: inline-block; overflow: hidden; vertical-align: middle; ; max-width: 100%; height: auto;"
-    onload="parentElement.style.setProperty('--z-index', 1);parentElement.style.setProperty('--opacity', 0);"
-  />
-  </picture>
-</p><p>After enabling the api we need to create an google app engine application.</p><h3 id="creating-app-engine-application">Creating app engine application</h3><p>If you already have an app engine application, you can skip this step.</p><ul>
+</ul>
+<h3 id="enabling-app-engine-api">Enabling App Engine Api</h3>
+<p>The url is at, remember to replace <code>project_id</code> with your google cloud platform project.
+<code>https://console.developers.google.com/apis/api/appengine.googleapis.com/overview?project=${project_id}</code></p>
+<p><img src="/imgs/2020/11/app_engine_enabled.png" alt="Enabled App Engine"></p>
+<p>After enabling the api we need to create an google app engine application.</p>
+<h3 id="creating-app-engine-application">Creating app engine application</h3>
+<p>If you already have an app engine application, you can skip this step.</p>
+<ul>
 <li>Go to the sidebar and find -> App Engine -> Create application.</li>
 <li>You can ignore the get started prompt.</li>
-</ul><p>After creating an app engine application, we need to update the default google cloud service account to have access to google app engine.</p><h3 id="updating-cloud-build-permissions">Updating cloud build permissions</h3><p>The default Cloud Build service account does not allow access to deploy App Engine. You need to enable the Cloud Build service account to perform actions such as deploy.</p><p>The Cloud Build service account is formatted like this:</p><p>[PROJECT_NUMBER]@cloudbuild.gserviceaccount.com</p><ul>
-<li>Go to the Google Cloud Console -> IAM & admin -> IAM.</li>
+</ul>
+<p>After creating an app engine application, we need to update the default google cloud service account to have access to google app engine.</p>
+<h3 id="updating-cloud-build-permissions">Updating cloud build permissions</h3>
+<p>The default Cloud Build service account does not allow access to deploy App Engine. You need to enable the Cloud Build service account to perform actions such as deploy.</p>
+<p>The Cloud Build service account is formatted like this:</p>
+<p>[PROJECT_NUMBER]@cloudbuild.gserviceaccount.com</p>
+<ul>
+<li>Go to the Google Cloud Console -> IAM &#x26; admin -> IAM.</li>
 <li>Locate the service account and click the pencil icon.</li>
 <li>Add the role “App Engine Deployer” and “Service Account User” to the service account.</li>
-</ul><p>Wait a couple of minutes for the service account to update globally and then try again.</p><p><style >
-    
-
-    .astro-imagetools-picture-CDBB4EDD {
-      --opacity: 1;
-      --z-index: 0;
-    }
-
-    
-            .astro-imagetools-picture-CDBB4EDD img {
-              z-index: 1;
-              position: relative;
-            }
-          
-
-    .astro-imagetools-picture-CDBB4EDD::after {
-      inset: 0;
-      content: "";
-      left: 0;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      transition: opacity 1s;
-      opacity: var(--opacity);
-      z-index: var(--z-index);
-    }
-  
-        .astro-imagetools-picture-CDBB4EDD img {
-          object-fit: cover;
-          object-position: 50% 50%;
-        }
-
-        .astro-imagetools-picture-CDBB4EDD::after {
-          background-size: cover;
-          background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7DAAAOwwHHb6hkAAACIElEQVQ4jZVUW47iMBDMCbnF3IGTcAgkvjkGNyDiDXnZiUMeQFyj6qUzJKDd2ZJaTux0pavLdpCmKXa7HY7HIw6Hg4xFUYDw3mMMzn2aVwR1XQtBnuew1sI5h6ZpJKnrurdQfFrrug4B/hNlWUp8qtp7j2A2m2EymeDr6wvT6RRRFIFVX69XVFUlzww+swKuszV81zmiJ1ytVpjP51gsFlgul/J3SlYyHdu2leT7/Y7b7dbP+1FPRbKaQJDw8XjIM5MVcZxgv98P5rQygh5cLhcENGGz2WC73YoUJvEHlMyPqqqWH5zSFuGpwj5q8eg8mQbVOefAHROwImMMkiSRkU5zge8cSa4VE8xXkvFIBOwNiZikoVvgVd61dMhzA/gfE8ajpylsbhiGiONYIssyqY6VcU0TTpFBuItgXQuZGUmOogjr9fpPhewViRgkoYsMVtn3qAFsBSQ5FQyrIvQgCCGJVKKS6AeaUJUFCpvyjPQECv/aQ7pJyTRDzeEcyTj+SLYIdzGyohVjgKHkOI6FR86yWq6y2QK6zz6qMWUD5BWQFr+QnCSJuMtkDe2jJtSVgyuyN8n+k8vc2HSJ1VE6f6BHUHG8WKy3MdL8F5KNMf124YKSUzrbQSmu8jClR/YXyZ4VWmPkgj2fz0JorXnejQb2uZ2o4unnR2cHLrN3fb/66Xe83nnjqgYV8qBn7oGLueMQtzgmrVwAdcPmvxP8C9/buhCo+x/MdAAAAABJRU5ErkJggg==");
-          background-position: 50% 50%;
-        }
-      </style><picture
-    
-    class="astro-imagetools-picture astro-imagetools-picture-CDBB4EDD"
-    style="position: relative; display: inline-block; ; max-width: 100%; height: auto;"
-    ><source
-            srcset="/astro-tech-blog/assets/google_app_engine_service@320w.1a7fc610.avif 320w, /astro-tech-blog/assets/google_app_engine_service@527w.64bdf2c4.avif 527w"
-            sizes="(min-width: 527px) 527px, 100vw"
-            width="527"
-            height="533"
-            type="image/avif"
-            
-          />
-<source
-            srcset="/astro-tech-blog/assets/google_app_engine_service@320w.fc1b88f4.webp 320w, /astro-tech-blog/assets/google_app_engine_service@527w.6b2adbd0.webp 527w"
-            sizes="(min-width: 527px) 527px, 100vw"
-            width="527"
-            height="533"
-            type="image/webp"
-            
-          />
-<img
-    
-    src="/astro-tech-blog/assets/google_app_engine_service@527w.4c6a24a4.png"
-    alt="Enabled App Engine"
-    srcset="/astro-tech-blog/assets/google_app_engine_service@320w.ff2c4a34.png 320w, /astro-tech-blog/assets/google_app_engine_service@527w.4c6a24a4.png 527w"
-    sizes="(min-width: 527px) 527px, 100vw"
-    width="527"
-    height="533"
-    loading="lazy"
-    decoding="async"
-    class="astro-imagetools-img"
-    style="display: inline-block; overflow: hidden; vertical-align: middle; ; max-width: 100%; height: auto;"
-    onload="parentElement.style.setProperty('--z-index', 1);parentElement.style.setProperty('--opacity', 0);"
-  />
-  </picture>
-</p><p>For simplicity, I have copied the boilerplate for the google app engine fastapi.</p><p>The contents of <code>main.py</code> as is follows.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> fastapi </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> FastAPI</span></span>
+</ul>
+<p>Wait a couple of minutes for the service account to update globally and then try again.</p>
+<p><img src="/imgs/2020/11/google_app_engine_service.png" alt="Enabled App Engine"></p>
+<p>For simplicity, I have copied the boilerplate for the google app engine fastapi.</p>
+<p>The contents of <code>main.py</code> as is follows.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> fastapi </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> FastAPI</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> FastAPI()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># domain where this api is hosted for example : localhost:5000/docs to see swagger documentation automagically generated.</span></span>
 <span class="line"></span>
 <span class="line"></span>
-<span class="line"><span style="color: #A6E22E">@app.get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">&quot;/&quot;</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #A6E22E">@app.get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">home</span><span style="color: #F8F8F2">():</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">&quot;message&quot;</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&quot;Hello TutLinks.com&quot;</span><span style="color: #F8F8F2">}</span></span></code></pre><p>To deploy this application to google cloud platform we have a simple <code>fastapi.yaml</code> file to configure the version of python and the start command. The url for the api microservice will be prepended with <code>api-dot</code>.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">service: api</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">"message"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"Hello TutLinks.com"</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>To deploy this application to google cloud platform we have a simple <code>fastapi.yaml</code> file to configure the version of python and the start command. The url for the api microservice will be prepended with <code>api-dot</code>.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">service: api</span></span>
 <span class="line"><span style="color: #F8F8F2">runtime: python37</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">basic_scaling:</span></span>
@@ -238,30 +117,37 @@
 <span class="line"><span style="color: #F8F8F2">    memory_gb: 1</span></span>
 <span class="line"><span style="color: #F8F8F2">    disk_size_gb: 1</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker pyfastapi:app</span></span></code></pre><p>Basic scaling can be changed as needed, these are the defaults that works for me.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&quot;gcr.io/cloud-builders/gcloud&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker pyfastapi:app</span></span></code></pre>
+<p>Basic scaling can be changed as needed, these are the defaults that works for me.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"gcr.io/cloud-builders/gcloud"</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">deploy_go</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">&quot;app&quot;</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">&quot;deploy&quot;</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">&quot;goapp.yaml&quot;</span><span style="color: #F8F8F2">]</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">timeout</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&quot;600s&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"app"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"deploy"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"goapp.yaml"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">timeout</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"600s"</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span></span>
-<span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&quot;gcr.io/cloud-builders/gcloud&quot;</span></span>
+<span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"gcr.io/cloud-builders/gcloud"</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">deploy_dash</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">&quot;app&quot;</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">&quot;deploy&quot;</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">&quot;fastapi.yaml&quot;</span><span style="color: #F8F8F2">]</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">timeout</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&quot;600s&quot;</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">python/api</span></span></code></pre><p>This will build the default app service and the fast api service in the <code>python/api</code> directory. Each push will make a new version in app engine. Personally, I do not feel the need to delete old app versions at the moment.</p><p>Another useful step that runs is the cleanup stage. To decrease build times and a bunch of old docker images that are no longer needed. This is just a personal preference to pay no money to google.</p><pre class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">&#39;gcr.io/cloud-builders/gcloud&#39;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"app"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"deploy"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"fastapi.yaml"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">timeout</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"600s"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">python/api</span></span></code></pre>
+<p>This will build the default app service and the fast api service in the <code>python/api</code> directory. Each push will make a new version in app engine. Personally, I do not feel the need to delete old app versions at the moment.</p>
+<p>Another useful step that runs is the cleanup stage. To decrease build times and a bunch of old docker images that are no longer needed. This is just a personal preference to pay no money to google.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'gcr.io/cloud-builders/gcloud'</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">entrypoint</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">bash</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">cleanup2</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #E6DB74">&#39;-c&#39;</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #E6DB74">'-c'</span></span>
 <span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">|</span></span>
-<span class="line"><span style="color: #E6DB74">        now=$(date --date=&quot;next Friday&quot; +&quot;%Y-%m-%d&quot;)</span></span>
+<span class="line"><span style="color: #E6DB74">        now=$(date --date="next Friday" +"%Y-%m-%d")</span></span>
 <span class="line"><span style="color: #E6DB74">        chmod +x gcrgc.sh</span></span>
 <span class="line"><span style="color: #E6DB74">        ./gcrgc.sh us.gcr.io/$PROJECT_ID/app-engine-tmp/build-cache/ttl-7d/python-cache $now</span></span>
 <span class="line"><span style="color: #E6DB74">        ./gcrgc.sh us.gcr.io/$PROJECT_ID/app-engine-tmp/app/ttl-2h $now</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">waitFor</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #E6DB74">deploy_dash</span></span>
 <span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #E6DB74">deploy_api</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">scripts</span></span></code></pre><p>If the google cloud build is successfully, congratulations, you have successfully deployed microservices to google app engine.</p><p>For the full source code, you can visit <a href="https://github.com/FriendlyUser/gae-microservices-template">github</a>.</p></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex w-full">
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">scripts</span></span></code></pre>
+<p>If the google cloud build is successfully, congratulations, you have successfully deployed microservices to google app engine.</p>
+<p>For the full source code, you can visit <a href="https://github.com/FriendlyUser/gae-microservices-template">github</a>.</p></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex w-full">
     <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
     <div class="ml-3 max-w-lg bg-slate-300">
       <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
@@ -273,5 +159,5 @@
     </div>
   </div></div>
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-08-12<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-08-13<!-- -->.</div></div></div>
   </body></html>
