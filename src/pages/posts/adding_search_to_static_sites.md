@@ -4,7 +4,7 @@ description: Searching for content using pagefind, I will cover how I added it t
 alt: my first blog post
 tags: ["page-find-ui","astro"]
 layout: '@/templates/BasePost.astro'
-pubDate: Sunday, 26 July 2022 13:00:00 GMT
+pubDate: Sunday, 13 August 2022 13:00:00 GMT
 imgSrc: '/imgs/2022/dall-e/pagefindCorgi.png'
 ---
 
