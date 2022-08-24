@@ -2,7 +2,7 @@
 title: Flutter Remove background from image web app Part I
 description: Web app / mobile app that allows the user to download an image after the remove.bg api has been applied.
 alt: my first blog post
-tags: ["flutter"]
+tags: ["flutter", "remove-bg-app"]
 layout: '@/templates/BasePost.astro' 
 pubDate: Monday, 2 July 2022 13:00:00 GMT
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png'
