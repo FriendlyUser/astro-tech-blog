@@ -65,10 +65,10 @@
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm install pagefind</span></span></code></pre>
 <p>Then in your package.json file make sure you generate the search after your static site is built</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">"scripts"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">"scripts"</span><span style="color: #F8F8F2">: {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F44747">...</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"build"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"astro build"</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"postbuild"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"pagefind --source dist"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"build"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"astro build"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"postbuild"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"pagefind --source dist"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"></span></code></pre>
@@ -79,7 +79,7 @@
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"search"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">class</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"ml-3 p-4"</span><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span>
-<span class="line"><span style="color: #F8F8F2">  window.</span><span style="color: #A6E22E">addEventListener</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'DOMContentLoaded'</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F; font-style: italic">event</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  window.</span><span style="color: #A6E22E">addEventListener</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'DOMContentLoaded'</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">event</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">PagefindUI</span><span style="color: #F8F8F2">({ element: </span><span style="color: #E6DB74">'#search'</span><span style="color: #F8F8F2"> });</span></span>
 <span class="line"><span style="color: #F8F8F2">  });</span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span></code></pre>
@@ -116,5 +116,5 @@
     </div>
   </div></div>
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-08-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-09-01<!-- -->.</div></div></div>
   </body></html>
