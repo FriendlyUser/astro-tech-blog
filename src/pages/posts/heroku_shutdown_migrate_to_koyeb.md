@@ -3,7 +3,7 @@ title: Heroku shutdown how to migrate to koyeb
 description: Basic explaination of how I migrating my discord rss bot to koyeb
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 2 September 2022 13:00:00 GMT
-tags: ["openapi"]
+tags: ["heroku", "koyeb", "javascript"]
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-02 19.10.17 - apartment collapsing while corgi watches.png'
 imgAlt: 'Corgi Apartment Collapsing'
 ---
