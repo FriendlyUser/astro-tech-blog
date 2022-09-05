@@ -1,8 +1,5 @@
 ---
-import type {
-  FrontmatterPage,
-  IFrontmatter,
-} from 'astro-boilerplate-components';
+import type { FrontmatterPage } from 'astro-boilerplate-components';
 import {
   BlogGallery,
   NewerOlderPagination,
@@ -10,18 +7,17 @@ import {
   Section,
 } from 'astro-boilerplate-components';
 
+import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
-import { CustomIFrontMatter } from '@/partials/BlogPost';
-import BottomSection from '../../partials/BottomSection.astro';
 
 type GetStaticPaths = {
   paginate: any;
 }; // Overrides `GetStaticPathsOptions` types from Astro
 
 export async function getStaticPaths({ paginate }: GetStaticPaths) {
-  const allPosts = await Astro.glob<CustomIFrontMatter>('./*.md');
+  const allPosts = await Astro.glob<CustomIFrontMatter>('./**/*.md');
   const sortedPosts = sortByDate(allPosts);
 
   // Return a paginated collection of paths for all posts
@@ -43,8 +39,8 @@ const description =
 <Base head={{ title, description }}>
   <Section>
     <PaginationHeader
-      title='Random title here'
-      description='Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      title="Random title here"
+      description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     />
   </Section>
 
@@ -56,5 +52,4 @@ const description =
     <NewerOlderPagination page={page} />
   </Section>
   <div data-pagefind-body></div>
-
 </Base>
