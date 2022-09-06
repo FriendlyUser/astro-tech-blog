@@ -2,7 +2,7 @@
 title: Analyzing RBC Stock Trades with python
 description: Analyzing rbc stock trades with python
 alt: Applying nlp to various youtube videos
-pubDate: Tuesday, 23 August 2022 13:00:00 GMT
+pubDate: Friday, 5 September 2022 13:00:00 GMT
 tags: ["youtube", "nlp", "python", "astro"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-05 15.52.34 - Kazusa playing the piano at sunset, digital art.png'
