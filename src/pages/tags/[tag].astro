@@ -15,16 +15,16 @@ import BottomSection from '../../partials/BottomSection.astro';
 type GetStaticPaths = {
   paginate: any;
 }; // Overrides `GetStaticPathsOptions` types from Astro
-const allPosts = await Astro.glob<CustomIFrontMatter>('../posts/*.md');
+const allPosts = await Astro.glob<CustomIFrontMatter>('../posts/**/*.md');
 
 export async function getStaticPaths() {
-  const allPosts = await Astro.glob<CustomIFrontMatter>('../posts/*.md');
-  const sortedPosts = sortByDate(allPosts);
+  const thePosts = await Astro.glob<CustomIFrontMatter>('../posts/**/*.md');
+  const sortedPosts = sortByDate(thePosts);
   // get all tags
   const tags = sortedPosts
     .map((post) => {
-      const tags = post.frontmatter?.tags;
-      return tags;
+      const items = post.frontmatter?.tags;
+      return items;
     })
     .reduce((acc, val) => acc.concat(val), []);
 

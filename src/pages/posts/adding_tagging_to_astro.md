@@ -5,7 +5,7 @@ alt: Tagging in Astro
 pubDate: Sunday, 26 June 2021 13:00:00 GMT
 tags: ["astro"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/assets/images/image-post6.jpeg'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-05 15.51.58 - corgi drinking bubble tea.png'
 imgAlt: 'Image post 6'
 ---
 
