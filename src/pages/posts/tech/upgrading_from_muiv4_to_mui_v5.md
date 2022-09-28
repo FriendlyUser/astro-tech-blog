@@ -4,7 +4,7 @@ description: Updating material ui components to the latest version
 pubDate: Tuesday, 27 September 2022 13:00:00 GMT
 tags: ["mui", "javascript"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/public/imgs/2022/dall-e/DALL·E 2022-09-27 19.30.58 - corgi playing basketball.png'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-27 19.30.58 - corgi playing basketball.png'
 ---
 
 Recently at work, I have been upgrading material ui from v4 to v5, here are some of the lessons I learned.
