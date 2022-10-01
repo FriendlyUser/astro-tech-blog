@@ -75,7 +75,7 @@ const useQontoStepIconStyles = makeStyles({
     alignItems: "center",
   },
   active: {
-    color: Colors.SHAIR_GREEN,
+    color: "green",
   },
   circle: {
     width: 8,
@@ -85,7 +85,7 @@ const useQontoStepIconStyles = makeStyles({
     backgroundColor: "white",
   },
   completed: {
-    color: Colors.SHAIR_GREEN,
+    color: "green",
     zIndex: 1,
     fontSize: 18,
   },
@@ -128,7 +128,7 @@ const Root = styled("div")(() => {
       alignItems: "center",
     },
     [`& .${classes.active}`]: {
-      color: Colors.SHAIR_GREEN,
+      color: "green",
     },
     [`& .${classes.circle}`]: {
       width: 8,
@@ -138,7 +138,7 @@ const Root = styled("div")(() => {
       backgroundColor: "white",
     },
     [`& .${classes.completed}`]: {
-      color: Colors.SHAIR_GREEN,
+      color: "green",
       zIndex: 1,
       fontSize: 18,
     },
