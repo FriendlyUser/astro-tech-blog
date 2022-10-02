@@ -14,10 +14,10 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@astrojs/react": "^1.0.0",
-    "@astrojs/rss": "^1.0.0",
+    "@astrojs/react": "^1.1.4",
+    "@astrojs/rss": "^1.0.2",
     "@astrojs/sitemap": "^1.0.0",
-    "@astrojs/tailwind": "^1.0.0",
+    "@astrojs/tailwind": "^2.0.2",
     "@astrojs/vue": "^1.0.0",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
@@ -26,7 +26,7 @@
     "@types/react": "^18.0.12",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
-    "astro": "^1.1.5",
+    "astro": "^1.4.2",
     "astro-eslint-parser": "^0.5.1",
     "astro-imagetools": "^0.6.10",
     "astro-robots-txt": "^0.3.8",

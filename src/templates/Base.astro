@@ -40,6 +40,15 @@ const pageFindUiText = '#000000';
         enable_page_level_ads: true,
       });
     </script>
+    <style is:global>
+      @media print
+      {    
+          .no-print, .no-print *
+          {
+              display: none !important;
+          }
+      }
+    </style>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script
       async
