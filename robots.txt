@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://friendlyuser.github.io/astro-tech-blog/sitemap-index.xml
+Sitemap: https://friendlyuser.github.io/sitemap-index.xml
