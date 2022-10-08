@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to transcribe youtube videos using whispers - Astro Tech Blog</title>
+    <meta name="description" content="How to insert transcripts into videos using whispers">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/astro-tech-blog/assets/3e9f498e.f054b690.css" />
+<link rel="stylesheet" href="/astro-tech-blog/assets/966bf5ee.2f84984c.css" /><script type="module">window.addEventListener("DOMContentLoaded",a=>{new PagefindUI({element:"#search"})});window.dataLayer=window.dataLayer||[];function e(){dataLayer.push(arguments)}e("js",new Date);e("config","UA-119155027-6");(adsbygoogle=window?.adsbygoogle||[]).push({google_ad_client:"ca-pub-2479144310234386",enable_page_level_ads:!0});
+</script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><h1 class="text-center text-3xl font-bold">How to transcribe youtube videos using whispers</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on<!-- --> <!-- -->Oct 5, 2022</div><div class="flex place-content-center pt-2"><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/whispers">whispers<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/openai">openai<!-- --> </a></div></div><div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python">python<!-- --> </a></div></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><h1 id="summary">Summary</h1>
+<p>In order to add transcripts to youtube videos, you can use whispers. Whispers is a new transcription tool from openai. First, we must download the youtube videos, then we can use <code>ffmpeg</code> to convert the audio to mp3. Then we can use the whispers library to transcribe the audio. Keep in mind that whispers also works with mp4 files and requires ffmpeg to be installed.</p>
+<p>I reused some functions from my <code>fdrrt</code> project and so thats why the code is a bit messy. I will clean it up in the future.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_video_metadata</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">video_url</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://www.youtube.com/watch?v=21X5lGlDOfg&#x26;ab_channel=NASA"</span><span style="color: #F8F8F2">)-> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> youtube_dl.YoutubeDL({</span><span style="color: #E6DB74">'outtmpl'</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">%(id)s</span><span style="color: #E6DB74">.</span><span style="color: #AE81FF">%(ext)s</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">}) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> ydl:</span></span>
+<span class="line"><span style="color: #F8F8F2">        info_dict </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ydl.extract_info(video_url, </span><span style="color: #FD971F">download</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        video_title </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> info_dict.get(</span><span style="color: #E6DB74">'title'</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        uploader_id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> info_dict.get(</span><span style="color: #E6DB74">'uploader_id'</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"[youtube] </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">video_title</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">uploader_id</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> info_dict</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parse_metadata</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">metadata</span><span style="color: #F8F8F2">) -> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">    Parse metadata and send to discord.</span></span>
+<span class="line"><span style="color: #E6DB74">    After a video is done recording, </span></span>
+<span class="line"><span style="color: #E6DB74">    it will have both the livestream format and the mp4 format.</span></span>
+<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># send metadata to discord</span></span>
+<span class="line"><span style="color: #F8F8F2">    formats </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> metadata.get(</span><span style="color: #E6DB74">"formats"</span><span style="color: #F8F8F2">, [])</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># filter for ext = mp4</span></span>
+<span class="line"><span style="color: #F8F8F2">    mp4_formats </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [f </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> f </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> formats </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> f.get(</span><span style="color: #E6DB74">"ext"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"mp4"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    format_ids </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">(f.get(</span><span style="color: #E6DB74">"format_id"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)) </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> f </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> mp4_formats]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> livestream_entries :</span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">set</span><span style="color: #F8F8F2">(format_ids).intersection(youtube_livestream_codes)</span></span>
+<span class="line"><span style="color: #F8F8F2">    ):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># get the first one</span></span>
+<span class="line"><span style="color: #F8F8F2">        livestream_entries.sort()</span></span>
+<span class="line"><span style="color: #F8F8F2">        selected_id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> livestream_entries[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    video_entries </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">sorted</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">set</span><span style="color: #F8F8F2">(format_ids).intersection(youtube_mp4_codes))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    is_livestream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(video_entries) </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># use video format id over livestream id if available</span></span>
+<span class="line"><span style="color: #F8F8F2">        selected_id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> video_entries[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">        is_livestream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">False</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># </span><span style="color: #F92672">TODO</span><span style="color: #88846F"> use video format if available</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"selected_id"</span><span style="color: #F8F8F2">: selected_id,</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"is_livestream"</span><span style="color: #F8F8F2">: is_livestream,</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span></code></pre>
+<p>I extract the metadata from the video using <code>youtube-dl</code> and then I parse the metadata to get the format id of the video. I then use that format id to download the video.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_video</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">url</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">config</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">    Get video from start time.</span></span>
+<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># result = subprocess.run()</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># could delay start time by a few seconds to just sync up and capture the full video length</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># but would need to time how long it takes to fetch the video using youtube-dl and other adjustments and start a bit before</span></span>
+<span class="line"><span style="color: #F8F8F2">    filename </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> config.get(</span><span style="color: #E6DB74">"filename"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"livestream01.mp4"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    end </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> config.get(</span><span style="color: #E6DB74">"end"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"00:00:10"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    overlay_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ffmpeg.input(filename)</span></span>
+<span class="line"><span style="color: #F8F8F2">    (</span></span>
+<span class="line"><span style="color: #F8F8F2">        ffmpeg</span></span>
+<span class="line"><span style="color: #F8F8F2">        .input(url, </span><span style="color: #FD971F">t</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">end)</span></span>
+<span class="line"><span style="color: #F8F8F2">        .output(filename)</span></span>
+<span class="line"><span style="color: #F8F8F2">        .run()</span></span>
+<span class="line"><span style="color: #F8F8F2">    )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_all_files</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">url</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">end</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"00:01:30"</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">    metadata </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> get_video_metadata(url)</span></span>
+<span class="line"><span style="color: #F8F8F2">    temp_dict </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> parse_metadata(metadata)</span></span>
+<span class="line"><span style="color: #F8F8F2">    selected_id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> temp_dict.get(</span><span style="color: #E6DB74">"selected_id"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    formats </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> metadata.get(</span><span style="color: #E6DB74">"formats"</span><span style="color: #F8F8F2">, [])</span></span>
+<span class="line"><span style="color: #F8F8F2">    selected_format </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [f </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> f </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> formats </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> f.get(</span><span style="color: #E6DB74">"format_id"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">(selected_id)][</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    format_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> selected_format.get(</span><span style="color: #E6DB74">"url"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    filename </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">metadata.get(</span><span style="color: #E6DB74">'id'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">)</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">.mp4"</span></span>
+<span class="line"><span style="color: #F8F8F2">    filename </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> filename.replace(</span><span style="color: #E6DB74">"-"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    get_video(format_url, {</span><span style="color: #E6DB74">"filename"</span><span style="color: #F8F8F2">: filename, </span><span style="color: #E6DB74">"end"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"00:01:30"</span><span style="color: #F8F8F2">})</span></span></code></pre>
+<p><code>ffmpeg</code> is much more efficient than <code>youtube-dl</code> (outdated) for downloading videos. The library <code>youtube-dl</code> is unoptimized for the new youtube formats.</p>
+<p>The standard <code>ffmpeg</code> command to extract the audio content in a file and save it as an mp3 is:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ffmpeg -i input.mp4 -vn output.mp3</span></span></code></pre>
+<p>To extract the audio from a youtube video, in the standard (srt) format for transcripts, you need to format the timestamps from whisper appropriately</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> whisper</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #F8F8F2">    model </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> whisper.load_model(</span><span style="color: #E6DB74">"small"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    options </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">language</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Japanese"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    transcribe_options </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">task</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"translate"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">**</span><span style="color: #F8F8F2">options)</span></span>
+<span class="line"><span style="color: #F8F8F2">    result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> model.transcribe(</span><span style="color: #E6DB74">"a4Vi7YUp9ws.mp3"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">**</span><span style="color: #F8F8F2">transcribe_options)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> result</span></span></code></pre>
+<p>The code above will load the whispers model and return the result. Then we can parse the result to get the timestamps and the text.</p>
+<p>The code above will convert the timestamps to the srt format. The output will look like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">0</span></span>
+<span class="line"><span style="color: #F8F8F2">00:00:00,000 --> 00:00:06,500</span></span>
+<span class="line"><span style="color: #F8F8F2">I'm a person, I wonder what troubles you?</span></span></code></pre>
+<p>Get all the text segmented, get start and end times, format the start and end times, and then write to a file.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">second_to_timecode</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">x</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">float</span><span style="color: #F8F8F2">) -> </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    hour, x </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">divmod</span><span style="color: #F8F8F2">(x, </span><span style="color: #AE81FF">3600</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    minute, x </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">divmod</span><span style="color: #F8F8F2">(x, </span><span style="color: #AE81FF">60</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    second, x </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">divmod</span><span style="color: #F8F8F2">(x, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    millisecond </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">(x </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1000</span><span style="color: #F8F8F2">.)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">%.2d</span><span style="color: #E6DB74">:</span><span style="color: #AE81FF">%.2d</span><span style="color: #E6DB74">:</span><span style="color: #AE81FF">%.2d</span><span style="color: #E6DB74">,</span><span style="color: #AE81FF">%.3d</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">%</span><span style="color: #F8F8F2"> (hour, minute, second, millisecond)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> __name__ </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"__main__"</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> main()</span></span>
+<span class="line"><span style="color: #F8F8F2">    lines </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> count, segment </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">enumerate</span><span style="color: #F8F8F2">(result.get(</span><span style="color: #E6DB74">"segments"</span><span style="color: #F8F8F2">)):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># print(segment)</span></span>
+<span class="line"><span style="color: #F8F8F2">        start </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> segment.get(</span><span style="color: #E6DB74">"start"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        end </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> segment.get(</span><span style="color: #E6DB74">"end"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        lines.append(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">count</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        lines.append(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">second_to_timecode(start)</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> --> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">second_to_timecode(end)</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        lines.append(segment.get(</span><span style="color: #E6DB74">"text"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">).strip())</span></span>
+<span class="line"><span style="color: #F8F8F2">        lines.append(</span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    words </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">.join(lines)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"transcript.srt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> f:</span></span>
+<span class="line"><span style="color: #F8F8F2">        f.write(words)</span></span></code></pre>
+<p>Finally, you can add the transcript to your video using <code>ffmpeg</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ffmpeg -i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">file_name</span><span style="color: #F92672">></span><span style="color: #F8F8F2">.mp4 -vf subtitles=transcript.srt mysubtitledmovie.mp4</span></span></code></pre>
+<p>For a sample video you can view the output here:</p>
+<p><a href="https://www.youtube.com/watch?v=WkYwji87Fj8">https://www.youtube.com/watch?v=WkYwji87Fj8</a></p>
+<p>In the next post I will cover how to make a video using remotion.</p>
+<h2 id="references">References</h2>
+<p>In the next article I will show to make a simple desktop app using tkinter to transcribe youtube videos, should have basic ui (file uploader).</p>
+<ul>
+<li><a href="https://github.com/FriendlyUser/auto_youtube_caption_system">https://github.com/FriendlyUser/auto_youtube_caption_system</a></li>
+</ul></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search noprint" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-10-08<!-- -->.</div></div></div>
+  </body></html>
