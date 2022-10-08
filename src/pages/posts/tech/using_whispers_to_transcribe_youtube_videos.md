@@ -156,6 +156,9 @@ ffmpeg -i <file_name>.mp4 -vf subtitles=transcript.srt mysubtitledmovie.mp4
 For a sample video you can view the output here:
 
 https://www.youtube.com/watch?v=WkYwji87Fj8
+
+In the next post I will cover how to make a video using remotion.
+
 ## References
 
 In the next article I will show to make a simple desktop app using tkinter to transcribe youtube videos, should have basic ui (file uploader).
