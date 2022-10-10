@@ -33,9 +33,7 @@ const ProjectList = () => (
       />
       <Project
         name=" vuepress-theme-cool-starter"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-        bibendum. Nunc non posuere consectetur, justo erat semper enim, non
-        hendrerit dui odio id enim."
+        description="Starter theme for vuepress which was originally suppose to be named `vuepress-theme-school`."
         link="https://github.com/FriendlyUser/vuepress-theme-cool-starter"
         img={{
           src: '/assets/images/project-web-design.png',
