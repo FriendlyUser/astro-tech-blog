@@ -25,6 +25,8 @@ First create an oauth client for google, you will need gcp credentials for this.
 Afterwards you can just upload your video, I like the existing settings for the script as it allows for easy upload and then editing of the video.
 
 
+For a sample video you can view https://www.youtube.com/watch?v=N2UPkTKd15g
+
 ## References
 
 * https://github.com/FriendlyUser/auto_youtube_caption_system
