@@ -2,9 +2,9 @@
 title: Grabbing list of animes from my anime list using openapi and dotnet
 description: Leveraging openapi and scrapping the openapi schema from redoc, I can generate a dotnet client to grab my anime list.
 alt: my first blog post
-tags: ["dotnet","git"]
+tags: ["dotnet","git", "openapi"]
 layout: '@/templates/BasePost.astro'
-pubDate: Saturday, 17 September 2022 13:00:00 GMT
+pubDate: Friday, 21 October 2022 13:00:00 GMT
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-21 18.23.59 - list of paper.png'
 ---
 
