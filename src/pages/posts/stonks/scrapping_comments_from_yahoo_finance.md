@@ -3,7 +3,7 @@ title: Scrapping comments from Yahoo Finance using dotnet
 description: Explaining how conscrap project grabs comments from yahoo finance using selenium. 
 alt: Explaining how conscrap project grabs comments from yahoo finance using selenium.
 pubDate: Tuesday, 25 October 2022 13:00:00 GMT
-tags: ["dotnet"]
+tags: ["dotnet", "stonks", "selenium"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-25 08.48.53 - man slicing through a bench with a katana'
 imgAlt: 'Conscrap'
