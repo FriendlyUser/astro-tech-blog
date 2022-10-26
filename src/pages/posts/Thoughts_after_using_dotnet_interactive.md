@@ -8,7 +8,7 @@ tags: ["dotnet"]
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboard through the rain, digital art.png'
 ---
 
-# Summary
+## Summary
 
 Recently, I have played a indie game known as Eternal Return which is a battle royale moba which combines elements from various other games. Instead of purchasing items from a shop you craft items and attempt to be the last survivor.
 

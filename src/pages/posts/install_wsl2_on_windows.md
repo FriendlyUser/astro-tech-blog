@@ -9,7 +9,7 @@ imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
 imgAlt: 'Image post 3'
 ---
 
-# Summary
+## Summary
 
 Windows is finally becoming a good alternative to mac osx for developers. With its built in linux support via wsl2, I decided to
 purchase a somewhat powerful windows machine for coding and gaming.

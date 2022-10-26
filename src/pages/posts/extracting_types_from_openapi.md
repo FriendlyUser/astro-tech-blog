@@ -9,7 +9,7 @@ imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
 imgAlt: 'Corgi Tree'
 ---
 
-# Summary
+## Summary
 
  An OpenAPI file allows you to describe your entire API and as a result automatically produce clients to interact with them.
 

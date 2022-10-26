@@ -8,7 +8,7 @@ imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-09 18.23.12 - microphone.png'
 ---
 
 
-# Summary
+## Summary
 
 In order to add transcripts to youtube videos, you can use whispers. Whispers is a new transcription tool from openai. First, we must download the youtube videos, then we can use `ffmpeg` to convert the audio to mp3. Then we can use the whispers library to transcribe the audio. Keep in mind that whispers also works with mp4 files and requires ffmpeg to be installed.
 

@@ -8,7 +8,7 @@ imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-09 18.23.20 - microphone.png'
 ---
 
 
-# Summary
+## Summary
 
 In the [previous post](https://friendlyuser.github.io/posts/tech/using_whispers_to_transcribe_youtube_videos/) I covered how you can use whispers to extract transcript from youtube videos. In this post, I will cover how you can use the in videos generated from remotion.
 

@@ -42,7 +42,7 @@ imgAlt: 'Image post 3'
 ---
 
 
-# Summary of Changes
+## Summary of Changes
 When updating the vuepress theme, I decided to add in markdown-it-admonitions which were partly inspired by the Boostnote admonitions.
 
 In addition, I created the `vuepress-theme-cool-starter` repo in order for users to more easily interact with my vuepress-theme.

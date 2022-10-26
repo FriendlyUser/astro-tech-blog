@@ -8,7 +8,7 @@ imgSrc: '/imgs/2022/dall-e/DALL·E 2022-07-16 19.02.16 - corgi riding a skateboa
 pubDate: Mon, 11 Dec 2020 13:00:00 GMT
 ---
 
-# Summary
+## Summary
 
 Although simply static has not been recently used, it still is an excellent package for converting a wordpress site to a static website.
 

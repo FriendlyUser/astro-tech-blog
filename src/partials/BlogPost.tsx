@@ -16,9 +16,9 @@ const BlogPost = (props: IBlogPostProps) => (
   <Section>
     <main>
       <div>
-        <p className="text-center text-3xl font-bold">
+        <h1 className="text-center text-3xl font-bold">
           {props?.frontmatter.title}
-        </p>
+        </h1>
         <div className="mt-2 text-center text-sm text-gray-400">
           By {AppConfig?.author} on {props?.frontmatter?.pubDate}
         </div>

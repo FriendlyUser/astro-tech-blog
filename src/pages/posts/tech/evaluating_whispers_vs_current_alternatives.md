@@ -8,7 +8,7 @@ imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to t
 ---
 
 
-## Summary
+### Summary
 Recently openai released whispers, a new transcription tool. I wanted to evaluate it against current options like wit.ai and see how it compares.
 
 In order to use whispers for your projects, will you need python 3.7+ and to install a model.

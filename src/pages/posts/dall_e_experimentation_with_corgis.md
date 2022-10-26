@@ -9,7 +9,7 @@ imgSrc: '/imgs/2022/dall-e/corgiNextToThePyramids.jpeg'
 imgAlt: 'Image post 3'
 ---
 
-# Summary
+## Summary
 
 After experimenting with `dall-e` I realised how powerful it can be. I attempted to upload some of the images to make money off it, but failed.
 

@@ -9,7 +9,7 @@ imgSrc: '/assets/images/image-post.jpeg'
 imgAlt: 'Image post 6'
 ---
 
-# Summary
+## Summary
 
 With the shutdown of bintray, it is pretty common to have legacy android apps fail to build since the dependencies can no longer be downloaded.
 

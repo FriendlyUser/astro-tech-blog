@@ -9,7 +9,7 @@ imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-05 15.52.34 - Kazusa playing the pian
 imgAlt: 'rbc stock analyzer'
 ---
 
-# Summary
+## Summary
 
 This post goes over some of the code in my github repo for analyzing rbc stock trades. The code is written in python and uses the pandas library to analyze the data.
 
