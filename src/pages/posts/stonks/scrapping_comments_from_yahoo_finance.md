@@ -5,7 +5,7 @@ alt: Explaining how conscrap project grabs comments from yahoo finance using sel
 pubDate: Tuesday, 25 October 2022 13:00:00 GMT
 tags: ["dotnet", "stonks", "selenium"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-25 08.48.53 - man slicing through a bench with a katana'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-25 08.48.53 - man slicing through a bench with a katana.png'
 imgAlt: 'Conscrap'
 ---
 
