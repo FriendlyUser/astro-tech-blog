@@ -14,61 +14,60 @@ type IBlogPostProps = {
 
 const BlogPost = (props: IBlogPostProps) => (
   <Section>
-    <content>
-      <div>
-        <h1 className="text-center text-3xl font-bold">
-          {props?.frontmatter.title}
-        </h1>
-        <div className="mt-2 text-center text-sm text-gray-400">
-          By {AppConfig?.author} on {props?.frontmatter?.pubDate}
+    <div>
+      <h1 className="text-center text-3xl font-bold">
+        {props?.frontmatter.title}
+      </h1>
+      <div className="mt-2 text-center text-sm text-gray-400">
+        By {AppConfig?.author} on {props?.frontmatter?.pubDate}
+      </div>
+      <div className="flex place-content-center pt-2">
+        {props?.frontmatter?.tags?.map((tag) => {
+          let color;
+          if (tag === 'python') {
+            color = ColorTags.GREEN;
+          }
+          if (tag === 'dash') {
+            color = ColorTags.BLUE;
+          }
+          if (tag === 'vuepress') {
+            color = ColorTags.FUCHSIA;
+          }
+          if (tag === 'openapi') {
+            color = ColorTags.LIME;
+          }
+          if (tag === 'flutter') {
+            color = ColorTags.SKY;
+          }
+          if (!color) {
+            color = ColorTags.CYAN;
+          }
+          return (
+            <Tags color={color}>
+              {' '}
+              <a href={`/tags/${tag}`}>
+                {' '}
+                <category>{tag} </category>{' '}
+              </a>
+            </Tags>
+          );
+        })}
+      </div>
+      <div className="mx-auto mt-5 max-w-prose">
+        <div className="aspect-w-3 aspect-h-2">
+          <img
+            className="h-full w-full rounded-lg object-cover object-center"
+            src={props?.frontmatter.imgSrc}
+            alt={props?.frontmatter.imgAlt}
+            loading="lazy"
+          />
         </div>
-        <div className="flex place-content-center pt-2">
-          {props?.frontmatter?.tags?.map((tag) => {
-            let color;
-            if (tag === 'python') {
-              color = ColorTags.GREEN;
-            }
-            if (tag === 'dash') {
-              color = ColorTags.BLUE;
-            }
-            if (tag === 'vuepress') {
-              color = ColorTags.FUCHSIA;
-            }
-            if (tag === 'openapi') {
-              color = ColorTags.LIME;
-            }
-            if (tag === 'flutter') {
-              color = ColorTags.SKY;
-            }
-            if (!color) {
-              color = ColorTags.CYAN;
-            }
-            return (
-              <category>
-                <Tags color={color}>
-                  {' '}
-                  <a href={`/tags/${tag}`}>{tag} </a>
-                </Tags>
-              </category>
-            );
-          })}
-        </div>
-        <div className="mx-auto mt-5 max-w-prose">
-          <div className="aspect-w-3 aspect-h-2">
-            <img
-              className="h-full w-full rounded-lg object-cover object-center"
-              src={props?.frontmatter.imgSrc}
-              alt={props?.frontmatter.imgAlt}
-              loading="lazy"
-            />
-          </div>
 
-          <div className="prose prose-invert mt-8 prose-img:rounded-lg">
-            {props.children}
-          </div>
+        <div className="prose prose-invert mt-8 prose-img:rounded-lg">
+          <content>{props.children}</content>
         </div>
       </div>
-    </content>
+    </div>
   </Section>
 );
 
