@@ -102,7 +102,7 @@ So I have created two github actions, one dependent on the other.
 
 Cron job to scan youtube files and update the repo with new youtube transcript data.
 
-```yml
+```yaml
 name: Scan YTube
 # Don't want to burn my private minutes at this point
 on:
@@ -165,7 +165,7 @@ jobs:
 
 Build the astro files when the data is succcessful gathered from the python script.
 
-```yml
+```yaml
 # Workflow to build and deploy to your GitHub Pages repo.
 
 # Edit your project details here.

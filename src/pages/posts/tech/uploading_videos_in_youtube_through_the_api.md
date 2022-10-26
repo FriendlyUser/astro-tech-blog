@@ -13,7 +13,7 @@ In order to upload youtube videos to my channel, I needed to use the youtube api
 
 Leverage the script from the internet from makes it pretty simple.
 
-```javscript
+```javascript
 // YouTube API video uploader using JavaScript/Node.js
 // You can find the full visual guide at: https://www.youtube.com/watch?v=gncPwSEzq1s
 // You can find the brief written guide at: https://quanticdev.com/articles/automating-my-youtube-uploads-using-nodejs

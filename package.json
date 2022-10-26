@@ -10,7 +10,6 @@
     "preview": "astro preview",
     "clean": "rimraf dist",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.astro .",
-    "build-types": "tsc --noEmit --pretty",
     "prepare": "husky install"
   },
   "devDependencies": {

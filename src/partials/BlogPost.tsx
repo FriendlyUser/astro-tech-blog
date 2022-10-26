@@ -14,7 +14,7 @@ type IBlogPostProps = {
 
 const BlogPost = (props: IBlogPostProps) => (
   <Section>
-    <main>
+    <content>
       <div>
         <h1 className="text-center text-3xl font-bold">
           {props?.frontmatter.title}
@@ -44,12 +44,12 @@ const BlogPost = (props: IBlogPostProps) => (
               color = ColorTags.CYAN;
             }
             return (
-              <div>
+              <category>
                 <Tags color={color}>
                   {' '}
                   <a href={`/tags/${tag}`}>{tag} </a>
                 </Tags>
-              </div>
+              </category>
             );
           })}
         </div>
@@ -68,7 +68,7 @@ const BlogPost = (props: IBlogPostProps) => (
           </div>
         </div>
       </div>
-    </main>
+    </content>
   </Section>
 );
 

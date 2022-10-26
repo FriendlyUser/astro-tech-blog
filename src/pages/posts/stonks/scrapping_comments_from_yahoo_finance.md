@@ -15,7 +15,7 @@ One of my most useful projects is [conscrap](https://github.com/dli-invest/consc
 
 Like any good web scrapping you have to adhere to rate limits in order to not get blocked.
 
-```cs
+```csharp
 public async static Task FetchStocks(string[] stocks, bool sendDiscord = true, string dataPath = "data")
 {
     bool exists = System.IO.Directory.Exists(dataPath);
@@ -45,7 +45,7 @@ Afterwards it processes each stock in the list of stocks.
 
 In order to process each stock, we need to get all the yahoo comments for that stock.
 
-```cs
+```csharp
 public static List<Types.YahooComment> GetYahooComments(string ticker = "ACT.CN")
 {
     string readText = Browser.GetAllEntries(ticker);
@@ -59,7 +59,7 @@ public static List<Types.YahooComment> GetYahooComments(string ticker = "ACT.CN"
 
 In order to get all entries we use selenium, sort by newest comments, retry again if it failed and then click on the show more button until there are no more comments to show.
 
-```cs
+```csharp
  public static string GetAllEntries(string ticker = "PKK.CN")
 {
     IWebDriver driver = Browser.MkBrowser();
@@ -88,7 +88,7 @@ In order to get all entries we use selenium, sort by newest comments, retry agai
 
 In order to sort by SortByNewestComments we need to click on the sort by newest comments button.
 
-```cs
+```csharp
 public static Boolean SortByNewestComments(IWebDriver driver)
 {
     try
@@ -117,7 +117,7 @@ SO the code above is pretty simple, we just click on the sort button, then click
 
 NExt we need to show all comments.
 
-```cs
+```csharp
 public static void ShowAllComments(IWebDriver driver)
 {
     // sort by newest

@@ -52,7 +52,7 @@ Previously heroku, had a very way to run bots on their server, with koyeb, we ne
 
 Alternatively a basic terraform setup can be made, koyeb was recently added to terraform.
 
-```terraform {
+```yaml {
   required_providers {
     koyeb = {
       source = "koyeb/koyeb"
