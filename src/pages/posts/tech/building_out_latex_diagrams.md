@@ -1,7 +1,6 @@
 ---
 title: How I built out my latex diagrams project
 description: How I build out the latex diagrams project
-pubDate: Saturday, 1 October 2022 13:00:00 GMT
 tags: ["latex", "bash"]
 pubDate: Saturday, 29 October 2022 13:00:00 GMT
 layout: '@/templates/BasePost.astro'
