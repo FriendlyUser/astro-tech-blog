@@ -3,8 +3,6 @@ title: How I built out my latex diagrams project
 description: How I build out the latex diagrams project
 pubDate: Saturday, 1 October 2022 13:00:00 GMT
 tags: ["latex", "bash"]
-title: Evaluating whispers vs current alternatives
-description: Evaluating the new whispers asr text extraction vs current options like wit.ai
 pubDate: Saturday, 29 October 2022 13:00:00 GMT
 layout: '@/templates/BasePost.astro'
 imgSrc: '/images/random.jpeg'
