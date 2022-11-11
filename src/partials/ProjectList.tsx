@@ -18,7 +18,7 @@ const ProjectList = () => (
       <Project
         name="Latex Diagrams"
         description="Latex Diagrams that I have generated for university or have taken from internet."
-        link="https://github.com/FriendlyUser/LatexDiagrams"
+        link="https://grandfleet.eu.org"
         img={{
           src: '/assets/images/project-fire.png',
           alt: 'Project Fire ',
@@ -34,7 +34,7 @@ const ProjectList = () => (
       <Project
         name=" vuepress-theme-cool-starter"
         description="Starter theme for vuepress which was originally suppose to be named `vuepress-theme-school`."
-        link="https://github.com/FriendlyUser/vuepress-theme-cool-starter"
+        link="https://vuepress-theme-cool.js.org/"
         img={{
           src: '/assets/images/project-web-design.png',
           alt: 'Project Web Design',
