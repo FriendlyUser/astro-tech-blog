@@ -182,3 +182,8 @@ jobs:
         lane: deploy
         subdirectory: 'android' 
 ```
+
+
+To view the result of my github actions, you can go to the actions tab in my github repository.
+
+and you can view my code at https://friendlyuser.github.io/trump_quotes/#/
