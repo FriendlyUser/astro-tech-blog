@@ -1,7 +1,7 @@
 ---
 title: Using remotion for game highlights
 description: As I hit titan in erbs I wanted to make a video of the highlights
-pubDate: Saturday, 19 November 2022 13:00:00 GMT
+pubDate: Tuesday, 22 November 2022 13:00:00 GMT
 tags: ["remotion", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-11-19 19.36.15 - game highlights.png'
