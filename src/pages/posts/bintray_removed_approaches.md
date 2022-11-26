@@ -4,7 +4,7 @@ description: My Thoughts on what todo with jcenter/bintray going down.
 alt: Bintray Removed
 layout: '@/templates/BasePost.astro'
 pubDate: Wed, 15 Dec 2021 13:00:00 GMT
-tags: ["dev ops"]
+tags: ["dev ops", "bintray"]
 imgSrc: '/assets/images/image-post.jpeg'
 imgAlt: 'Image post 6'
 ---
