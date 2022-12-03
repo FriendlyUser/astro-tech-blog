@@ -5,7 +5,7 @@ alt: Bintray Removed
 layout: '@/templates/BasePost.astro'
 pubDate: Wed, 15 Nov 2022 13:00:00 GMT
 tags: ["dev ops", "react-native", "bintray"]
-imgSrc: '/assets/2022/dall-e/DALL·E 2022-11-25 19.14.06 - A plush toy pikachu sitting next to a wall.png'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-11-25 19.14.06 - A plush toy pikachu sitting next to a wall.png'
 imgAlt: 'Image post 6'
 ---
 

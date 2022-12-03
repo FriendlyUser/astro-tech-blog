@@ -24,10 +24,10 @@ const BlogPost = (props: IBlogPostProps) => (
       <div className="flex place-content-center pt-2">
         {props?.frontmatter?.tags?.map((tag) => {
           let color;
-          if (tag === 'python') {
+          if (['python', 'strapi'].includes(tag)) {
             color = ColorTags.GREEN;
           }
-          if (tag === 'dash') {
+          if (['dash', 'plotly'].includes(tag)) {
             color = ColorTags.BLUE;
           }
           if (tag === 'vuepress') {
@@ -36,8 +36,17 @@ const BlogPost = (props: IBlogPostProps) => (
           if (tag === 'openapi') {
             color = ColorTags.LIME;
           }
-          if (tag === 'flutter') {
+          if (['flutter', 'remotion'].includes(tag)) {
             color = ColorTags.SKY;
+          }
+          if (['golang'].includes(tag)) {
+            color = ColorTags.ORANGE;
+          }
+          if (['javascript', 'strapi'].includes(tag)) {
+            color = ColorTags.EMERALD;
+          }
+          if (['git', 'docker'].includes(tag)) {
+            color = ColorTags.ZINC;
           }
           if (!color) {
             color = ColorTags.CYAN;
@@ -45,7 +54,7 @@ const BlogPost = (props: IBlogPostProps) => (
           return (
             <Tags color={color}>
               {' '}
-              <a href={`/tags/${tag}`}>
+              <a href={`/tags/${tag}`} style={{ paddingRight: '3px' }}>
                 {' '}
                 <category>{tag} </category>{' '}
               </a>
