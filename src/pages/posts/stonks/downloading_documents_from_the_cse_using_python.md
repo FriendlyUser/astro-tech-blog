@@ -1,13 +1,24 @@
 ---
-title: Analyzing RBC Stock Trades with python
-description: Analyzing rbc stock trades with python
+title: How to download documents from the CSE using python
+description: This covers how to download various documents from the canadian security exchange using python and selenium.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 12 December 2022 13:00:00 GMT
 tags: ["youtube", "nlp", "python", "astro"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-09-05 15.52.34 - Kazusa playing the piano at sunset, digital art.png'
-imgAlt: 'rbc stock analyzer'
+imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-04 09.25.49 - nice looking document on black table with cup.png'
+imgAlt: 'Downloading investor documents from the cse exchange using python'
 ---
+
+# Summary 
+
+Remote Selenium is a way of using the Selenium web automation framework to control a web browser on a remote machine, rather than on the local machine where the Selenium code is running. This allows you to run Selenium tests on a different operating system or in a different environment, such as a continuous integration (CI) server, without having to install a web browser and the Selenium framework on the local machine.
+
+To use remote Selenium, you need to set up a Selenium server on the remote machine, which listens for commands from the local machine and controls the web browser on the remote machine. You can then use the Selenium webdriver API on the local machine to send commands to the Selenium server, which will execute those commands on the remote machine and return the results.
+
+Using remote Selenium can be useful in situations where the local machine does not have the necessary software or resources to run Selenium tests, or where you want to run Selenium tests on multiple machines in parallel to reduce the overall time taken to complete the tests. It can also be useful for running Selenium tests in environments where the local machine does not have direct access to the web browser, such as in a corporate network or on a mobile device.
+
+The Canadian Securities Exchange (CSE) is a stock exchange based in Canada. It is a small-cap market that focuses on listing and trading the securities of small and medium-sized companies, including emerging growth companies, technology and life science companies, and companies in the mining and renewable energy sectors.
+
 
 ```python
 import argparse
@@ -131,3 +142,10 @@ The get_stonk_data_news function takes three arguments: stock_name, which is the
 The function uses the get_news_and_events function from the cad_tickers.sedar.tsx module to retrieve news events for the given company within the specified date range. If no news events are found, the function returns immediately.
 
 If news events are found, the function iterates over the events and downloads the associated PDF files using the get_pdf_from_url function. It uses the tqdm module to display a progress bar while the PDFs are being downloaded. The function also calculates and prints some statistics about the download process, such as the total number of downloads, the total time taken to download the files, and the average time taken to download each file.
+
+
+## References
+
+For more details visit the entire source code available at
+
+https://github.com/dli-invest/cse_file_downloader
