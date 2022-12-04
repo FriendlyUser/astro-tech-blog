@@ -12,7 +12,7 @@ import BottomSection from '../partials/BottomSection.astro';
 
 const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/**/*.md');
 // filter out posts that are created before today
-const posts = allPosts.filter((post) => new Date(post.date) <= new Date());
+const posts = allPosts.filter((post) => new Date(post.publishedAt) <= new Date());
 const sortedPosts = sortByDate(posts);
 const lastThreePosts = sortedPosts.slice(0, 3);
 
