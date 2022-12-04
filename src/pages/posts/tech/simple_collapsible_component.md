@@ -147,3 +147,37 @@ In this example, the Collapsible function is a stateful function component that 
 The function uses the FontAwesomeIcon component from the @fortawesome/react-fontawesome package to display the caret icon. The icon is determined by the value of the collapsed state variable, with a downward-facing caret icon being displayed when the content is collapsed and an upward-facing caret icon being displayed when the content is expanded.
 
 When the component is rendered, the header and caret icon are always visible, but the content element is conditionally rendered.
+
+
+Alternatively we can build a caret using css
+
+```css
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  vertical-align: middle;
+  border-top: solid 5px black;
+  border-right: solid 5px transparent;
+  border-left: solid 5px transparent;
+}
+```
+
+This CSS code defines the styles for an element with the class caret. The caret is implemented using an inline-block element with some CSS styles that define the shape and orientation of the caret.
+
+To use the caret, you would add the caret class to an element in your HTML code, like this:
+
+
+```js
+<div class="caret" />
+```
+
+The caret will be displayed as a downward-facing triangle next to the element to which the caret class is applied. You can change the color of the caret by modifying the border-top property in the CSS code.
+
+This is used in my web components bit repository.
+
+See https://bit.cloud/friendlyuser/web/collapse for more details.
+
+
+If you want to create a collapsible component that is more visually appealing, you could use a library like styled-components to define the styles for your component. This would allow you to create a custom design for your collapsible component without having to write a lot of CSS code.
