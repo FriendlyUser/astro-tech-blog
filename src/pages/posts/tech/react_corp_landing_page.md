@@ -1,3 +1,15 @@
+---
+title: Overview of corporate landing page done in react with microsoft fabric ui
+description: making a corporate landing page in react
+alt: Bintray Removed
+layout: '@/templates/BasePost.astro'
+pubDate: Wed, 30 Nov 2022 13:00:00 GMT
+tags: ["react", "javascript"]
+imgSrc: '/imgs/2022/dall-e/corp_landing.png'
+imgAlt: 'Image post 6'
+---
+
+
 ```css
 @keyframes bounce-1 {
   0%   { transform: translateY(0); }
@@ -199,3 +211,84 @@ The CustomButton and CustomMenuItem components are custom renderers for the comm
 The command bar is rendered using the CommandBar component from the office-ui-fabric-react library. This component allows the developer to specify the items that appear in the command bar and their behavior. The items that appear in the overflow menu (the menu that appears when there are too many items to fit in the command bar) are determined automatically by the CommandBar component.
 
 Overall, this component provides a user-friendly way to access common actions and to toggle between light and dark themes for the page.
+
+
+```js
+import React, { useEffect, useState} from 'react'
+import {
+  DocumentCard,
+  DocumentCardActivity,
+  DocumentCardTitle,
+  DocumentCardLogo,
+  IDocumentCardLogoProps,
+  DocumentCardDetails,
+  IDocumentCardPreviewProps,
+  DocumentCardImage
+} from 'office-ui-fabric-react/lib-commonjs/DocumentCard'
+import { ImageFit } from 'office-ui-fabric-react/lib-commonjs/Image';
+export const InfoRow: React.FunctionComponent = () => {
+  const logoProps: IDocumentCardLogoProps = {
+    logoIcon: 'OutlookLogo'
+  };
+  const imgSrc = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80"
+  const cardStyle = {
+    zIndex: 5,
+    display: 'inline-block',
+    maxWidth: '240px'
+  }
+  return (
+    <div className="ms-Grid" dir="ltr">
+      <div className="ms-Grid-row"  style={{display: 'flex', justifyContent: 'space-around'}}>
+        <div className="ms-Grid-col ms-sm12 ms-md6" style={{display: "inline-block"}} >
+          <DocumentCard
+            aria-label="Document Card."
+            style={{ top: '-50px', zIndex: 5, textAlign: 'center' }}
+          >
+            <DocumentCardImage height={350} imageFit={ImageFit.cover} imageSrc={imgSrc} />
+            <DocumentCardDetails>
+              <DocumentCardTitle title="Providing Value" shouldTruncate />
+              <DocumentCardTitle title="Committed to provided consistent and quality service to all our customers" showAsSecondaryTitle />
+            </DocumentCardDetails>
+          </DocumentCard>
+        </div>
+        <div className="ms-Grid-col ms-sm12 ms-md6" style={{display: "inline-flex", width: "50%", justifyContent: 'center'}}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
+            <DocumentCard
+              aria-label="Document Card."
+              style={cardStyle}
+            >
+              <DocumentCardLogo {...logoProps} />
+              <DocumentCardDetails>
+                <DocumentCardTitle title="Providing Value" shouldTruncate />
+                <DocumentCardTitle title="Committed to provided consistent and quality service to all our customers" showAsSecondaryTitle />
+              </DocumentCardDetails>
+            </DocumentCard>
+            <DocumentCard
+              aria-label="Document Card."
+              style={cardStyle}
+            >
+              <DocumentCardLogo {...logoProps} />
+              <DocumentCardDetails>
+                <DocumentCardTitle title="Providing Value" shouldTruncate />
+                <DocumentCardTitle title="Committed to provided consistent and quality service to all our customers" showAsSecondaryTitle />
+              </DocumentCardDetails>
+            </DocumentCard>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+The code above is a React component that renders a row with two columns. The first column contains a large DocumentCard component with an image. The second column contains two smaller DocumentCard components with icons.
+
+The DocumentCard components are from the office-ui-fabric-react library. These components are used to display documents or other information in a visually appealing way. The DocumentCard component can display a preview image, title, and other details about the document.
+
+The component uses the DocumentCard component from the office-ui-fabric-react library to render the card. It sets the height and imageFit properties on the DocumentCardImage component to control the size and fit of the preview image. The DocumentCardTitle component is used to display the title and secondary title of the document.
+
+Overall, this component provides a user-friendly way to display information about documents or other items in a visually appealing way.
+
+See https://react-corp-page.vercel.app/
+
+for full details
