@@ -120,6 +120,7 @@ To view the full source code please visit
 
 https://huggingface.co/FriendlyUser/en_stonk_pipeline
 
+
 ## Deployment
 Gradio is a free and open-source tool that allows users to quickly and easily create interactive web-based interfaces for machine learning models. With Gradio, users can create a simple interface with a few lines of code, which allows others to test and interact with the model in a web browser. This can be useful for sharing and explaining machine learning models to a broader audience, as well as for collecting feedback and real-world data from users.
 
