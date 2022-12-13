@@ -3,7 +3,7 @@ title: Screenshot utility for mobile apps
 description: This covers how to take screenshots of your mobile app using the ios simulator or android.
 alt: Screenshot utilty for mobile apps
 layout: '@/templates/BasePost.astro'
-pubDate: Wed, 06 January 2022 13:00:00 GMT
+pubDate: Wed, 06 January 2023 13:00:00 GMT
 tags: ["react", "javascript"]
 imgSrc: '/imgs/2022/android_emulator_pixel_3.png'
 imgAlt: 'Image post 6'
