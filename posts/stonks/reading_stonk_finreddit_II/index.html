@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to parse reddit posts with Go periodically part II - Astro Tech Blog</title>
+    <meta name="description" content="Analyzing rbc stock trades with python">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/assets/index.e456dcdf.css" />
+<link rel="stylesheet" href="/assets/index.2f84984c.css" /><script type="module" src="/hoisted.ca324df6.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to parse reddit posts with Go periodically part II</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Friday, 27 Feburary 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/finreddit" style="padding-right:3px"> <category>finreddit<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/reddit" style="padding-right:3px"> <category>reddit<!-- --> </category> </a></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/hear1.png" alt="rbc stock analyzer" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>To login to reddit</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> login </span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/jzelinskie/geddit"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"log"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/util"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// returns oauth session for reddit</span></span>
+<span class="line"><span style="color: #88846F">// or fails - fine for my purposes</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">RedditOAuth</span><span style="color: #F8F8F2">() (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.OAuthSession, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	client_id </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_CLIENT_ID"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	client_secret </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_CLIENT_SECRET"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	password </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_PASSWORD"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	username </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_USERNAME"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	o, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> geddit.</span><span style="color: #66D9EF">NewOAuthSession</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">		client_id,</span></span>
+<span class="line"><span style="color: #F8F8F2">		client_secret,</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #E6DB74">"Stonk Market Scrapper see source https://github.com/dli-invest/finreddit"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #E6DB74">"http://friendlyuser.github.io"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Create new auth token for confidential clients (personal scripts/apps).</span></span>
+<span class="line"><span style="color: #F8F8F2">	err </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> o.</span><span style="color: #66D9EF">LoginAuth</span><span style="color: #F8F8F2">(username, password)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> o, </span><span style="color: #AE81FF">nil</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This package appears to provide a RedditOAuth() function for authenticating with the Reddit API using OAuth2. The function uses the geddit package to create a new OAuth session and then logs in to Reddit using the credentials provided in environment variables (REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, and REDDIT_PASSWORD).</p>
+<p>If the authentication is successful, the function returns a pointer to the geddit.OAuthSession object that was created. If an error occurs, the function logs the error message to the console and returns nil for the session and the error value.</p>
+<p>It’s worth noting that the function uses the util.GetEnvVar() function to read the environment variables, but it is not clear where this function is defined. It is possible that it is defined in another package named util, but it is not shown in the code snippet provided. It would be useful to include the relevant code for this function to understand how it works.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> csvs</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// csv utilties to prevent duplicate entries</span></span>
+<span class="line"><span style="color: #88846F">// probably manually clear out every now and then</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"encoding/csv"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"fmt"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"os"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// read csv from file path</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ReadCsvFile</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) [][]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Open</span><span style="color: #F8F8F2">(filePath)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Unable to read input file "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> filePath, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> f.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    csvReader </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> csv.</span><span style="color: #66D9EF">NewReader</span><span style="color: #F8F8F2">(f)</span></span>
+<span class="line"><span style="color: #F8F8F2">    records, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> csvReader.</span><span style="color: #66D9EF">ReadAll</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Unable to parse file as CSV for "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> filePath, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> records</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendRowToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, data []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">OpenFile</span><span style="color: #F8F8F2">(fileName, os.O_WRONLY</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_CREATE</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_APPEND, </span><span style="color: #AE81FF">0644</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    w </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> csv.</span><span style="color: #66D9EF">NewWriter</span><span style="color: #F8F8F2">(f)</span></span>
+<span class="line"><span style="color: #F8F8F2">    err </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> w.</span><span style="color: #66D9EF">Write</span><span style="color: #F8F8F2">(data)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Append Error"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    w.</span><span style="color: #66D9EF">Flush</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// append rows to csvs</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, data [][]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">OpenFile</span><span style="color: #F8F8F2">(fileName, os.O_WRONLY</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_CREATE</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_APPEND, </span><span style="color: #AE81FF">0644</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">    w </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> csv.</span><span style="color: #66D9EF">NewWriter</span><span style="color: #F8F8F2">(f)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, row</span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> data {</span></span>
+<span class="line"><span style="color: #F8F8F2">        err </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> w.</span><span style="color: #66D9EF">Write</span><span style="color: #F8F8F2">(row)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Append Error"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	w.</span><span style="color: #66D9EF">Flush</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// check if value exists in csv</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">FindInCsv</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, searchValue </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, searchColumn </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    records </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ReadCsvFile</span><span style="color: #F8F8F2">(filePath)</span></span>
+<span class="line"><span style="color: #F8F8F2">    foundValue </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, row</span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> records {</span></span>
+<span class="line"><span style="color: #F8F8F2">        valueInRow </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> row[searchColumn]</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> searchValue </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> valueInRow {</span></span>
+<span class="line"><span style="color: #F8F8F2">            foundValue </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">break</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> foundValue</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This package provide some utility functions for working with CSV (comma-separated values) files in Go. It has functions for reading a CSV file from a file path, appending a row or multiple rows to a CSV file, and checking if a particular value exists in a CSV file.</p>
+<p>The ReadCsvFile() function opens the specified file, reads its contents as a CSV, and returns the records as a slice of slices of strings. The AppendRowToCsv() and AppendToCsv() functions both append data to a CSV file. The former appends a single row, while the latter appends multiple rows. The FindInCsv() function searches for a given value in a particular column of a CSV file and returns a boolean value indicating whether the value was found or not.</p>
+<p>It’s worth noting that these functions do not handle errors very gracefully. They simply print an error message to the console and continue execution, which may not be desirable in all cases. It might be a good idea to modify these functions to return the error value so that the caller can handle it appropriately.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> util</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"log"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"os"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"path/filepath"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"reflect"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"testing"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/types"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"gopkg.in/yaml.v2"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Gets enviroment variable if available</span></span>
+<span class="line"><span style="color: #88846F">// throws error if not available</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">GetEnvVar</span><span style="color: #F8F8F2">(varName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	al, present </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">LookupEnv</span><span style="color: #F8F8F2">(varName)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> present {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> al</span></span>
+<span class="line"><span style="color: #F8F8F2">	} </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> error_message </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Sprintf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Environment Variable: </span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74"> missing"</span><span style="color: #F8F8F2">, varName)</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(error_message)</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ValidateConfigPath</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	s, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Stat</span><span style="color: #F8F8F2">(path)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> s.</span><span style="color: #66D9EF">IsDir</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Errorf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"'</span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74">' is a directory, not a normal file"</span><span style="color: #F8F8F2">, path)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// NewConfig returns a new decoded Config struct</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">NewConfig</span><span style="color: #F8F8F2">(configPath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">types.SearchConfig, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// check if path is valid</span></span>
+<span class="line"><span style="color: #F8F8F2">	err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ValidateConfigPath</span><span style="color: #F8F8F2">(configPath)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Create config structure</span></span>
+<span class="line"><span style="color: #F8F8F2">	config </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">types.SearchConfig{}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Open config file</span></span>
+<span class="line"><span style="color: #F8F8F2">	file, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Open</span><span style="color: #F8F8F2">(configPath)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> file.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Init new YAML decode</span></span>
+<span class="line"><span style="color: #F8F8F2">	d </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> yaml.</span><span style="color: #66D9EF">NewDecoder</span><span style="color: #F8F8F2">(file)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Start YAML decoding from file</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> d.</span><span style="color: #66D9EF">Decode</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">config); err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> config, </span><span style="color: #AE81FF">nil</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MkPathFromStr</span><span style="color: #F8F8F2">(pathStr </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">FromSlash</span><span style="color: #F8F8F2">(pathStr)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> p</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// AssertEqual checks if values are equal</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AssertEqual</span><span style="color: #F8F8F2">(t </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">testing.T, a </span><span style="color: #F92672">interface</span><span style="color: #F8F8F2">{}, b </span><span style="color: #F92672">interface</span><span style="color: #F8F8F2">{}) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> a </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> b {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// debug.PrintStack()</span></span>
+<span class="line"><span style="color: #F8F8F2">	t.</span><span style="color: #66D9EF">Errorf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Received </span><span style="color: #AE81FF">%v</span><span style="color: #E6DB74"> (type </span><span style="color: #AE81FF">%v</span><span style="color: #E6DB74">), expected </span><span style="color: #AE81FF">%v</span><span style="color: #E6DB74"> (type </span><span style="color: #AE81FF">%v</span><span style="color: #E6DB74">)"</span><span style="color: #F8F8F2">, a, reflect.</span><span style="color: #66D9EF">TypeOf</span><span style="color: #F8F8F2">(a), b, reflect.</span><span style="color: #66D9EF">TypeOf</span><span style="color: #F8F8F2">(b))</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This package appears to provide some utility functions for use in Go programs. The functions include:</p>
+<ul>
+<li>GetEnvVar(): Looks up the value of an environment variable and returns it. If the environment variable is not set, the function logs an error message and exits the program.</li>
+<li>ValidateConfigPath(): Checks if the given path is valid and points to a file (not a directory). If the path is invalid, the function returns an error.</li>
+<li>NewConfig(): Takes a path to a YAML configuration file and decodes it into a types.SearchConfig struct. If an error occurs, the function returns nil for the config and the error value.</li>
+<li>MkPathFromStr(): Converts a string representation of a file path to the appropriate format for the current operating system.</li>
+<li>AssertEqual(): Takes two values and checks if they are equal. If the values are not equal, the function logs an error message and fails the current test.</li>
+</ul>
+<p>In terms of a configuration file</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">data</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">csvPath</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">internal/manga.csv</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">subreddits</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F"># HinowaGaCrush has ended</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">HinowaGaCRUSH</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">limit</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">100</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">linkFlairText</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Chapter Release</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">OnePiece</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">limit</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">100</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">linkFlairText</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Current Chapter</span></span></code></pre>
+<p>This appears to be a YAML configuration file that defines a csvPath and a list of subreddits to search for manga releases. For each subreddit, the configuration specifies a name, a limit on the number of search results, and a linkFlairText value to filter the results. In some cases, it also includes a list of phrases to search for in the subreddit.</p>
+<p>The csvPath specifies the path to a CSV file where the search results will be stored. The name, limit, and linkFlairText values are used to search the specified subreddits on Reddit and find posts that match the given criteria. The phrases value (if provided) is used to further filter the search results and only include posts that contain at least one of the specified phrases.</p>
+<p>Overall, this configuration file is used to configure a program that searches Reddit for manga releases and stores the results in a CSV file.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">schedule</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># * is a special character in YAML so you have to quote this string</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">cron</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'50 * * * *'</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #E6DB74">main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">env</span><span style="color: #F8F8F2">: </span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">REDDIT_CLIENT_ID</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.REDDIT_CLIENT_ID }}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">REDDIT_CLIENT_SECRET</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.REDDIT_CLIENT_SECRET }}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">REDDIT_PASSWORD</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.REDDIT_PASSWORD }}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">REDDIT_USERNAME</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.REDDIT_USERNAME }}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">DISCORD_WEBHOOK</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.DISCORD_REDDIT_WEBHOOK}}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Send Updates</span></span>
+<span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">strategy</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">matrix</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">go-version</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">1.15.x</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">platform</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">ubuntu-latest</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">runs-on</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ matrix.platform }}</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Install Go</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">success()</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">actions/setup-go@v2</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">with</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">go-version</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ matrix.go-version }}</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Checkout code</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">actions/checkout@v2</span></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Run job</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">go run cmd/scan_sr/manga.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Commit files</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">commit</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #F92672">|</span></span>
+<span class="line"><span style="color: #E6DB74">        git config --local user.email "action@github.com"</span></span>
+<span class="line"><span style="color: #E6DB74">        git config --local user.name "GitHub Action"</span></span>
+<span class="line"><span style="color: #E6DB74">        git add internal/*.csv</span></span>
+<span class="line"><span style="color: #E6DB74">        git commit -m "Updating csv"</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">continue-on-error</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Push changes</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">ad-m/github-push-action@master</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">continue-on-error</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">with</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">github_token</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.GITHUB_TOKEN }}</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">branch</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ github.ref }}</span></span></code></pre>
+<p>This is a GitHub Actions workflow configuration file that defines a schedule for running the workflow and the steps to execute when the workflow is triggered.</p>
+<p>The workflow is triggered on a schedule (using a cron expression) and when a push event is detected on the main branch. It sets several environment variables (REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_PASSWORD, REDDIT_USERNAME, and DISCORD_WEBHOOK) using values from the repository secrets.</p>
+<p>The workflow defines a single job named run that uses a matrix strategy to run on multiple Go versions and platforms. The job consists of the following steps:</p>
+<ol>
+<li>Install Go using the actions/setup-go@v2 action and the specified Go version.</li>
+<li>Check out the code from the repository.</li>
+<li>Run the cmd/scan_sr/manga.go Go program.</li>
+<li>Commit the updated CSV files.</li>
+<li>Push the changes to the repository using the ad-m/github-push-action@master action.</li>
+</ol>
+<p>Overall, this workflow appears to be used to automatically run a Go program that searches Reddit for manga releases and updates a CSV file in the repository. The updated CSV file is then committed and pushed back to the repository.</p>
+<h2 id="references">References</h2>
+<p>The documentation is available at <a href="https://pkg.go.dev/github.com/dli-invest/finreddit">https://pkg.go.dev/github.com/dli-invest/finreddit</a></p>
+<p>and</p>
+<p><a href="https://github.com/dli-invest/finreddit/blob/main/cmd/scan_sr/manga.yml">https://github.com/dli-invest/finreddit/blob/main/cmd/scan_sr/manga.yml</a></p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search noprint" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-12-13<!-- -->.</div></div></div>
+  </body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to parse reddit posts with Go periodically - Astro Tech Blog</title>
+    <meta name="description" content="Analyzing rbc stock trades with python">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/assets/index.e456dcdf.css" />
+<link rel="stylesheet" href="/assets/index.2f84984c.css" /><script type="module" src="/hoisted.ca324df6.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to parse reddit posts with Go periodically</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Friday, 20 Feburary 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/finreddit" style="padding-right:3px"> <category>finreddit<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/reddit" style="padding-right:3px"> <category>reddit<!-- --> </category> </a></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/hear1.png" alt="rbc stock analyzer" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Finreddit is a simple Reddit cli tool that is written in the Go programming language. It is used to scrape stock-related posts from Reddit based on specified criteria. The bot can be installed by running the cmd/main.go file, which will automatically install the necessary packages. Tests for the cli tool can be run by using the go test command with the appropriate arguments.</p>
+<p>The main function</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// main function logic goes here</span></span>
+<span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> pkg</span></span>
+<span class="line"><span style="color: #88846F">// consider importing https://github.com/FriendlyUser/finfiber/blob/master/pkg/discord/discord.go</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"log"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/login"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/jzelinskie/geddit"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">GetPosts</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">	o, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> login.</span><span style="color: #66D9EF">RedditOAuth</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to initialize Reddit Scrapper"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	log.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(o)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to get subreddit submissions"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	subOpts </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> geddit.ListingOptions{</span></span>
+<span class="line"><span style="color: #F8F8F2">		Time: </span><span style="color: #E6DB74">"day"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">		Limit: </span><span style="color: #AE81FF">1000</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// for every subreddit go through and get submissions</span></span>
+<span class="line"><span style="color: #F8F8F2">	submissions, _ </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> o.</span><span style="color: #66D9EF">SubredditSubmissions</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"investing"</span><span style="color: #F8F8F2">, geddit.NewSubmissions, subOpts)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i, s </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> submissions {</span></span>
+<span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(i, s)</span></span>
+<span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(s.FullID)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This code appears to be a function named GetPosts that uses the geddit package to scrape subreddit submissions from Reddit. The login package is used to authenticate with Reddit and the fmt package is used for printing. The function accepts no arguments and returns no values. It uses the geddit package to retrieve submissions from the “investing” subreddit and print their information to the console.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> reddit</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"log"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"strings"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"time"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/csvs"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/discord"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/login"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/types"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/util"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/jzelinskie/geddit"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// gets submissions a given SRConfiguration</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">GetSubmissions</span><span style="color: #F8F8F2">(session </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.OAuthSession, cfg types.SRConfig) []</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.Submission {</span></span>
+<span class="line"><span style="color: #F8F8F2">	subreddit </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> cfg.Name</span></span>
+<span class="line"><span style="color: #F8F8F2">	limit </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> cfg.Limit</span></span>
+<span class="line"><span style="color: #F8F8F2">	subOpts </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> geddit.ListingOptions{</span></span>
+<span class="line"><span style="color: #F8F8F2">		Limit: limit,</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> cfg.After </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		subOpts.After </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg.After</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	submissions, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> session.</span><span style="color: #66D9EF">SubredditSubmissions</span><span style="color: #F8F8F2">(subreddit, geddit.NewSubmissions, subOpts)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to retrieve subreddit posts for "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> subreddit)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// further filter entries by minScore and minComments</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> validSubmissions </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.Submission{}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, submission </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> submissions {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> submission.NumComments </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> cfg.MinScore </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> submission.NumComments </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> cfg.MinComments </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> submission.Score </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> cfg.MinScore {</span></span>
+<span class="line"><span style="color: #F8F8F2">				validSubmissions </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(validSubmissions, submission)</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">continue</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> cfg.LinkFlairText </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #88846F">// checking for flair</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Contains</span><span style="color: #F8F8F2">(submission.LinkFlairText, cfg.LinkFlairText) {</span></span>
+<span class="line"><span style="color: #F8F8F2">				validSubmissions </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(validSubmissions, submission)</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">continue</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(cfg.Phrases) </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #88846F">// search through phrases</span></span>
+<span class="line"><span style="color: #F8F8F2">			title </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">ToLower</span><span style="color: #F8F8F2">(submission.Title)</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #88846F">// check matches word</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, phrase </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> cfg.Phrases {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #88846F">// check if phrase is contained in title</span></span>
+<span class="line"><span style="color: #F8F8F2">				lowerPhrase </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">ToLower</span><span style="color: #F8F8F2">(phrase)</span></span>
+<span class="line"><span style="color: #F8F8F2">				addSubmission </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Contains</span><span style="color: #F8F8F2">(title, lowerPhrase)</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> addSubmission {</span></span>
+<span class="line"><span style="color: #F8F8F2">					validSubmissions </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(validSubmissions, submission)</span></span>
+<span class="line"><span style="color: #F8F8F2">					</span><span style="color: #F92672">continue</span></span>
+<span class="line"><span style="color: #F8F8F2">				}</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> validSubmissions</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This code defines a package named reddit that contains functions related to scraping and processing data from Reddit. The GetSubmissions function accepts a Reddit session and subreddit configuration and returns a slice of Reddit submissions that match the specified criteria. The ScanSRs function reads subreddit configurations from a file and uses the GetSubmissions function to retrieve subreddit posts. It then processes the retrieved posts and either prints them to the console or sends them to a Discord channel, depending on the configuration.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MapSubmissionToEmbed</span><span style="color: #F8F8F2">(submission </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.Submission) types.DiscordPayload {</span></span>
+<span class="line"><span style="color: #F8F8F2">	description </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Sprintf</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74"> (</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74"> Likes, </span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74"> Comments)"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">		submission.Author,</span></span>
+<span class="line"><span style="color: #F8F8F2">		submission.Score,</span></span>
+<span class="line"><span style="color: #F8F8F2">		submission.NumComments)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// get timestamp</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> dateCreated </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2">(submission.DateCreated)</span></span>
+<span class="line"><span style="color: #F8F8F2">	t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> time.</span><span style="color: #66D9EF">Unix</span><span style="color: #F8F8F2">(dateCreated, </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	timestamp </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> t.</span><span style="color: #66D9EF">Format</span><span style="color: #F8F8F2">(time.RFC3339)</span></span>
+<span class="line"><span style="color: #F8F8F2">	title </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Sprintf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74"> - </span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, submission.Subreddit, submission.Title)</span></span>
+<span class="line"><span style="color: #F8F8F2">	discordEmbed </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []types.DiscordEmbed{{</span></span>
+<span class="line"><span style="color: #F8F8F2">		Title:       title,</span></span>
+<span class="line"><span style="color: #F8F8F2">		Url:         submission.URL,</span></span>
+<span class="line"><span style="color: #F8F8F2">		Description: description,</span></span>
+<span class="line"><span style="color: #F8F8F2">		Timestamp:   timestamp,</span></span>
+<span class="line"><span style="color: #F8F8F2">	}}</span></span>
+<span class="line"><span style="color: #F8F8F2">	discordPayload </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> types.DiscordPayload{Embeds: discordEmbed}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> discordPayload</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This code defines a function named MapSubmissionToEmbed that converts a Reddit submission to a Discord payload. The function accepts a pointer to a geddit.Submission and returns a types.DiscordPayload value. The function uses the fmt package to create a description string based on the submission’s author, score, and number of comments. It then uses the time package to format the submission’s timestamp and create the title for the Discord embed. The function constructs and returns a types.DiscordPayload value using the generated description, timestamp, and title.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> discord </span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"os"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"log"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"encoding/json"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"net/http"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/dli-invest/finreddit/pkg/types"</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"bytes"</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SendWebhook</span><span style="color: #F8F8F2">(discordWebhook types.DiscordPayload) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Response, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">){</span></span>
+<span class="line"><span style="color: #F8F8F2">	discordUrl </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Getenv</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"DISCORD_WEBHOOK"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> discordUrl </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"DISCORD_WEBHOOK not set"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	webhookData, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> json.</span><span style="color: #66D9EF">Marshal</span><span style="color: #F8F8F2">(discordWebhook)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(err)</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"><span style="color: #F8F8F2">	resp, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> http.</span><span style="color: #66D9EF">Post</span><span style="color: #F8F8F2">(discordUrl, </span><span style="color: #E6DB74">"application/json"</span><span style="color: #F8F8F2">, bytes.</span><span style="color: #66D9EF">NewBuffer</span><span style="color: #F8F8F2">(webhookData))</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> resp, err</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This package appears to provide a SendWebhook() function for sending a Discord webhook using the types.DiscordPayload struct. The function takes a types.DiscordPayload struct as an argument and converts it to JSON using the encoding/json package. It then sends the JSON data to the Discord webhook URL specified in the DISCORD_WEBHOOK environment variable using the http.Post() function.</p>
+<p>If the webhook is successfully sent, the function returns the http.Response object and nil for the error value. If an error occurs, it logs the error message to the console and returns nil for the response and the error value.</p>
+<p>In the next article we will cover how to use the finreddit package to scrape Reddit and send the results to a Discord channel and save the results to a csv file.</p>
+<h2 id="references">References</h2>
+<p>The documentation is available at <a href="https://pkg.go.dev/github.com/dli-invest/finreddit">https://pkg.go.dev/github.com/dli-invest/finreddit</a></p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search noprint" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-12-13<!-- -->.</div></div></div>
+  </body></html>
