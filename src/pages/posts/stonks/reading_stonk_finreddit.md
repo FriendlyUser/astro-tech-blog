@@ -1,3 +1,13 @@
+---
+title: How to parse reddit posts with Go periodically
+description: Analyzing rbc stock trades with python
+alt: Applying nlp to various youtube videos
+pubDate: Friday, 20 Feburary 2023 13:00:00 GMT
+tags: ["finreddit", "go", "reddit"]
+layout: '@/templates/BasePost.astro'
+imgSrc: '/imgs/2022/dall-e/hear1.png'
+imgAlt: 'rbc stock analyzer'
+---
 
 
 Finreddit is a simple Reddit cli tool that is written in the Go programming language. It is used to scrape stock-related posts from Reddit based on specified criteria. The bot can be installed by running the cmd/main.go file, which will automatically install the necessary packages. Tests for the cli tool can be run by using the go test command with the appropriate arguments.
@@ -136,6 +146,38 @@ func MapSubmissionToEmbed(submission *geddit.Submission) types.DiscordPayload {
 
 This code defines a function named MapSubmissionToEmbed that converts a Reddit submission to a Discord payload. The function accepts a pointer to a geddit.Submission and returns a types.DiscordPayload value. The function uses the fmt package to create a description string based on the submission's author, score, and number of comments. It then uses the time package to format the submission's timestamp and create the title for the Discord embed. The function constructs and returns a types.DiscordPayload value using the generated description, timestamp, and title.
 
+```go
+package discord 
+
+import (
+	"os"
+	"log"
+	"encoding/json"
+	"net/http"
+	"github.com/dli-invest/finreddit/pkg/types"
+	"bytes"
+)
+
+func SendWebhook(discordWebhook types.DiscordPayload) (*http.Response, error){
+	discordUrl := os.Getenv("DISCORD_WEBHOOK")
+	if discordUrl == "" {
+		log.Fatal("DISCORD_WEBHOOK not set")
+	}
+	webhookData, err := json.Marshal(discordWebhook)
+	if err != nil {
+		log.Fatal(err)
+	}
+	resp, err := http.Post(discordUrl, "application/json", bytes.NewBuffer(webhookData))
+	return resp, err
+}
+```
+
+This package appears to provide a SendWebhook() function for sending a Discord webhook using the types.DiscordPayload struct. The function takes a types.DiscordPayload struct as an argument and converts it to JSON using the encoding/json package. It then sends the JSON data to the Discord webhook URL specified in the DISCORD_WEBHOOK environment variable using the http.Post() function.
+
+If the webhook is successfully sent, the function returns the http.Response object and nil for the error value. If an error occurs, it logs the error message to the console and returns nil for the response and the error value.
+
+
+In the next article we will cover how to use the finreddit package to scrape Reddit and send the results to a Discord channel and save the results to a csv file.
 ## References
 
 The documentation is available at https://pkg.go.dev/github.com/dli-invest/finreddit
