@@ -12,7 +12,15 @@ import BottomSection from '../partials/BottomSection.astro';
 
 const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/**/*.md');
 const sortedPosts = sortByDate(allPosts);
-const lastThreePosts = sortedPosts.slice(0, 3);
+
+// filter out dates that are in the future
+const filteredPosts = sortedPosts.filter((post) => {
+  const postDate = new Date(post.frontmatter.pubDate);
+  const today = new Date();
+  return postDate <= today;
+});
+
+const lastThreePosts = filteredPosts.slice(0, 3);
 
 const { title } = AppConfig;
 const { description } = AppConfig;
