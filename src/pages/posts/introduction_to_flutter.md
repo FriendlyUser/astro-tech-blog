@@ -4,7 +4,7 @@ description: Getting started with flutter
 alt: Bintray Removed
 layout: '@/templates/BasePost.astro'
 pubDate: Wed, 23 March 2023 13:00:00 GMT
-tags: ["dev ops", "bintray"]
+tags: ["flutter", "dart"]
 imgSrc: '/assets/images/image-post.jpeg'
 imgAlt: 'Image post 6'
 ---
