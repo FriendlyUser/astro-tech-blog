@@ -1,5 +1,5 @@
 ---
-title: Building
+title: Building a report with 13F filings
 description: sec filings with python and secedgar
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 14 April 2023 13:00:00 GMT
