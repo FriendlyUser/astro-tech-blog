@@ -45,9 +45,9 @@ This specifies that the exact version 4.17.20 of the lodash package must be used
 To update the packages in your project to the latest compatible version, you can use the npm update command. This will update the packages specified in your package.json to the latest version that satisfies the version constraints you have specified.
 
 ```
-"resolutions": {
-  "astro": "1.4.2"
-},
+  "resolutions": {
+    "astro": "1.4.2"
+  },
 ```
 
 The resolutions field in a package.json file allows you to specify an exact version of a package that should be used in your project, even if the package is not directly required by your project. This can be useful if you want to ensure that a specific version of a package is used throughout your project and all of its dependencies, even if some of those dependencies do not specify a version constraint for the package.
