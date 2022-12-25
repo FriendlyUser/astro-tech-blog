@@ -1,6 +1,6 @@
 ---
-title: Auto suggestions on linkedin are poor
-description: Experimenting with linkedin auto suggestions
+title: Flutter todo list with supabase
+description: Building a simple todo list with supabase
 alt: my first blog post
 tags: ["flutter", "supabase"]
 layout: '@/templates/BasePost.astro'
