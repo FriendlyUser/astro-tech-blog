@@ -57,3 +57,11 @@ For example, in the resolutions field shown in your question, the package astro 
 The resolutions field should be placed at the root level of your package.json file, along with other fields such as dependencies and devDependencies.
 
 It is important to note that the resolutions field is only supported in npm version 6.0.0 or higher. If you are using an earlier version of npm, the resolutions field will be ignored.
+
+In this example a dependency, "astro-boilerplate-components" was still relying on the `astro@v1.0.0-44` package. This was causing an installation error on github actions. I was able to fix this by adding the following to my package.json file:
+
+```
+  "resolutions": {
+    "astro": "1.4.2"
+  },
+```
