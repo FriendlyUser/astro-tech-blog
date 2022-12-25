@@ -2,7 +2,7 @@
 title: Building
 description: sec filings with python and secedgar
 alt: Applying nlp to various youtube videos
-pubDate: Friday, 7 April 2023 13:00:00 GMT
+pubDate: Friday, 14 April 2023 13:00:00 GMT
 tags: ["sec", "python", "secedgar"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-10 21.55.07 - magnifying glass on stonks.png'
