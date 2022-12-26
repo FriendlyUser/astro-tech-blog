@@ -4,8 +4,13 @@ description: Using the beta graphql api for pokeapi to get all the pokemon data
 pubDate: Saturday, 14 May 2023 13:00:00 GMT
 tags: ["graphql", ".net", "polygot"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree'
+imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
 ---
+
+
+For the first post to scrap data, see
+
+https://friendlyuser.github.io/posts/tech/flutter/scrapping_data_for_pokedex/
 
 This code is trying to retrieve a JSON array from the specified URL, parse it into a list of Pokemon objects, and then print out the names of the first 10 Pokemon objects in the list.
 
