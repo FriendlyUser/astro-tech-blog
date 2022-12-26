@@ -5,7 +5,7 @@ alt: git commits with golang
 tags: ["python"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 21 April 2023 13:00:00 GMT
-imgSrc: 'imgs/2023/bear_book_1.png'
+imgSrc: '/imgs/2023/bear_book_1.png'
 ---
 argparse is a Python module that makes it easy to write command-line interfaces. It allows you to specify the arguments that your program should accept in a clean and organized way, and it takes care of handling the input and output for you.
 

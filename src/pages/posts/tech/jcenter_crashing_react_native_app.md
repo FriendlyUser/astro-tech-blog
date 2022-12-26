@@ -22,7 +22,7 @@ For example to update `@react-native-community/geolocation` you would run the fo
 ```bash
 npx patch-package @react-native-community/geolocation
 ```
-```git
+```
 
 diff --git a/node_modules/lottie-react-native/build.gradle b/node_modules/lottie-react-native/build.gradle
 index 184fdbf..2599f31 100644
