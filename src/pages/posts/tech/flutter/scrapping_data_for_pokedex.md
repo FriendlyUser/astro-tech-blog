@@ -4,7 +4,7 @@ description: Using the beta graphql api for pokeapi to get all the pokemon data
 pubDate: Saturday, 7 May 2023 13:00:00 GMT
 tags: ["graphql", "pokeapi", "python"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/dall-e/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
+imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
 ---
 
 
