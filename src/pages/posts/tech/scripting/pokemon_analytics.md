@@ -4,7 +4,7 @@ description: Using the beta graphql api for pokeapi to get all the pokemon data
 pubDate: Saturday, 14 May 2023 13:00:00 GMT
 tags: ["graphql", ".net", "polygot"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
+imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the window at a tree.png'
 ---
 
 
@@ -165,7 +165,7 @@ Here's a breakdown of what each part of the code is doing:
 6. The GenericChart.toChartHTML method is used to generate the HTML code for the chart, and the DisplayExtensions.DisplayAs method is used to display the chart as an HTML page in the console.
 
 
-![pokedex](imgs/2023/pokedex_types.png)
+![pokedex](/imgs/2023/pokedex_types.png)
 
 
 ```cs
@@ -191,7 +191,7 @@ makePlot(groupedPokemonByGeneration, "Generation", "Number", "Number of types by
 
 As you can see new types were adding in gen 6 and gen 2, believe its steel and fairy.
 
-![pokedex](imgs/2023/pokedex_types_by_gen.png)
+![pokedex](/imgs/2023/pokedex_types_by_gen.png)
 
 ```cs
 // starting letters for pokemon plot
