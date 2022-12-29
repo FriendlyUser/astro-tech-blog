@@ -1,6 +1,6 @@
 ---
-title: Using python to scrap data for a pokedex
-description: Using the beta graphql api for pokeapi to get all the pokemon data
+title: Analytics on Pokemon using polygot notebooks
+description: Using .NET scripting to analyze Pokemon data
 pubDate: Saturday, 14 May 2023 13:00:00 GMT
 tags: ["graphql", ".net", "polygot"]
 layout: '@/templates/BasePost.astro'
