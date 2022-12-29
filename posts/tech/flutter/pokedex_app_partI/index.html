@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementing basic pokedex part I - Astro Tech Blog</title>
+    <meta name="description" content="Pokemon app using flutter">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/assets/index.68d93be3.css" />
+<link rel="stylesheet" href="/assets/index.2f84984c.css" /><script type="module" src="/hoisted.e1d2364b.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Implementing basic pokedex part I</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 16 June 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-sky-400 text-sky-900"> <a href="/tags/flutter" style="padding-right:3px"> <category>flutter<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/pokeapi  " style="padding-right:3px"> <category>pokeapi  <!-- --> </category> </a></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/DALL·E 2022-12-29 12.27.48 - ball cartoon on grass red white like pokeball.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>In order to create a pokedex app, the first thing I did is use figma to get a good design and dhiwise to create boilerplate code.</p>
+<p>Converting Figma designs to Flutter code can be important for a number of reasons:</p>
+<p>It helps to bring designs to life: Figma is a design tool that is used to create high-fidelity mockups of user interfaces. By converting these designs to Flutter code, developers can create functional, interactive versions of the designs that can be tested and used in real-world applications.</p>
+<p>It saves time: Manually recreating designs in code can be time-consuming, especially for complex layouts or designs with many elements. By using a tool to automatically generate code from Figma designs, developers can save time and focus on other aspects of development.</p>
+<p>It helps to ensure accuracy: Automated code generation can help to reduce the risk of errors and inconsistencies in the implementation of designs. This can be especially useful for ensuring that designs are implemented consistently across different platforms or devices.</p>
+<p>It facilitates collaboration: Figma is a popular design tool that is used by many designers and developers. By using a tool to convert Figma designs to Flutter code, designers and developers can work together more seamlessly, with designers able to focus on creating high-quality designs and developers able to focus on implementing them in code.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// simple list view with animation</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:flutter/material.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:pokedex/components/empty_card.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'../components/pokemon_card.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'../core/utils/get_data.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">PokemonListView</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">StatefulWidget</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">_PokemonListViewState</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">createState</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">_PokemonListViewState</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">_PokemonListViewState</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">State</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">PokemonListView</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2"> dataList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F92672">></span><span style="color: #F8F8F2">[];</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2"> isLoading </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> pageCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">late</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ScrollController</span><span style="color: #F8F8F2"> _scrollController;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// all pokemone list</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F8F8F2">> allPokemonList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F92672">></span><span style="color: #F8F8F2">[];</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// scroll view right now</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F8F8F2">> pokemonList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F92672">></span><span style="color: #F8F8F2">[];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initState</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">super</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">initState</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">////LOADING FIRST  DATA</span></span>
+<span class="line"><span style="color: #F8F8F2">    _scrollController </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ScrollController</span><span style="color: #F8F8F2">(initialScrollOffset</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5.0</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">      ..</span><span style="color: #A6E22E">addListener</span><span style="color: #F8F8F2">(_scrollListener);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">readJson</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((resultat) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">setState</span><span style="color: #F8F8F2">(() </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> allPokemonList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (resultat));</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">addItemIntoList</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    });</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">dispose</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    _scrollController.</span><span style="color: #A6E22E">dispose</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">super</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">dispose</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This is a Flutter widget that displays a list of Pokémon cards in a grid layout. It uses a ScrollController to listen for scroll events on the list and loads more Pokémon cards as the user scrolls to the bottom of the list. The addItemIntoList method is called when the user scrolls to the bottom of the list and it adds more Pokémon cards to the list by slicing a portion of the allPokemonList and updating the pokemonList with the new slice. The widget also adjusts the number of columns in the grid based on the screen width of the device. The EmptyCard widget is displayed if the allPokemonList is empty.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">Widget</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">build</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">BuildContext</span><span style="color: #F8F8F2"> context) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> columnCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// if allPokemonList is empty then show empty card</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (allPokemonList.isEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">EmptyCard</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// row count based on media query</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">MediaQuery</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(context).size.width </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">600</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      columnCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">MediaQuery</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(context).size.width </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">900</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      columnCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">      columnCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Scaffold</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        appBar</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">AppBar</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          title</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Pokemon List View'</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">        ),</span></span>
+<span class="line"><span style="color: #F8F8F2">        body</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">GridView</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">count</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          controller</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> _scrollController,</span></span>
+<span class="line"><span style="color: #F8F8F2">          scrollDirection</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Axis</span><span style="color: #F8F8F2">.vertical,</span></span>
+<span class="line"><span style="color: #F8F8F2">          crossAxisCount</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> columnCount,</span></span>
+<span class="line"><span style="color: #F8F8F2">          mainAxisSpacing</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10.0</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">          physics</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">AlwaysScrollableScrollPhysics</span><span style="color: #F8F8F2">(),</span></span>
+<span class="line"><span style="color: #F8F8F2">          children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> pokemonList.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">((pokemon) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">PokemonCard</span><span style="color: #F8F8F2">(pokemon);</span></span>
+<span class="line"><span style="color: #F8F8F2">          }).</span><span style="color: #A6E22E">toList</span><span style="color: #F8F8F2">(),</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// padding bottom</span></span>
+<span class="line"><span style="color: #F8F8F2">          padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">EdgeInsets</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">only</span><span style="color: #F8F8F2">(bottom</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">500</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">        ));</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">//// ADDING THE SCROLL LISTINER</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">_scrollListener</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (_scrollController.offset </span><span style="color: #F92672">>=</span></span>
+<span class="line"><span style="color: #F8F8F2">            _scrollController.position.maxScrollExtent </span><span style="color: #F92672">&#x26;&#x26;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">_scrollController.position.outOfRange) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">setState</span><span style="color: #F8F8F2">(() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        isLoading </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (isLoading) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">          pageCount </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pageCount </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #A6E22E">addItemIntoList</span><span style="color: #F8F8F2">(pageCount);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">      });</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">////ADDING DATA INTO ARRAYLIST</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">addItemIntoList</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> pageCount) {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// if allPokemonList is empty return</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (allPokemonList.isEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">return</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> numElements </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// add more for windows platform</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">MediaQuery</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(context).size.width </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">900</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      numElements </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// slice the list from get_data.dart file</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> list </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> allPokemonList.</span><span style="color: #A6E22E">sublist</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, (numElements </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> pageCount) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">setState</span><span style="color: #F8F8F2">(() {</span></span>
+<span class="line"><span style="color: #F8F8F2">      pokemonList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> list;</span></span>
+<span class="line"><span style="color: #F8F8F2">      isLoading </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    });</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span></code></pre>
+<p>This code highlights how to use the ScrollController to listen for scroll events on a list and load more Pokémon cards as the user scrolls to the bottom of the list. The addItemIntoList method is called when the user scrolls to the bottom of the list and it adds more Pokémon cards to the list by slicing a portion of the allPokemonList and updating the pokemonList with the new slice. The widget also adjusts the number of columns in the grid based on the screen width of the device. The EmptyCard widget is displayed if the allPokemonList is empty.</p>
+<p>The PokemonCard widget is a stateless widget that displays a Pokémon card. It uses the Pokemon model to display the Pokémon name, image, and type. The Pokemon model is defined in the models/pokemon.dart file.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:flutter/material.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"package:pokedex/components/custom_image_view.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"package:pokedex/components/touchable_opacity.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"package:pokedex/theme/app_decoration.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"package:pokedex/theme/size_utils.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:badges/badges.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:go_router/go_router.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"../core/utils/get_data.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"../core/utils/image_constant.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"../core/utils/type_to_color.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"../theme/app_style.dart"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// ignore: must_be_immutable</span></span>
+<span class="line"><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">PokemonCard</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">StatelessWidget</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">PokemonCard</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.pokemon);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">Pokemon</span><span style="color: #F8F8F2"> pokemon;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">Widget</span><span style="color: #F8F8F2">> </span><span style="color: #A6E22E">labelsForTypes</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">Pokemon</span><span style="color: #F8F8F2"> mon) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">Widget</span><span style="color: #F8F8F2">> labels </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> type </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> mon.pokemonV2Pokemontypes</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// map type to color</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> typeName </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> type.pokemonV2Type</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">.name </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> colors </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getColorsFromType</span><span style="color: #F8F8F2">(typeName);</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> mainColor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> colors[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> secondaryColor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> colors[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">      labels.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">Chip</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">EdgeInsets</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">all</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">        backgroundColor</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> mainColor.color,</span></span>
+<span class="line"><span style="color: #F8F8F2">        label</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">(typeName,</span></span>
+<span class="line"><span style="color: #F8F8F2">            style</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TextStyle</span><span style="color: #F8F8F2">(color</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> secondaryColor.color, fontSize</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">12</span><span style="color: #F8F8F2">)),</span></span>
+<span class="line"><span style="color: #F8F8F2">      ));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> labels;</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span></code></pre>
+<p>This is a Flutter widget that displays a card for a Pokémon. It takes in a Pokemon object as an argument and displays information about the Pokémon, such as its name, image, and type. The labelsForTypes method is used to generate a list of Chip widgets that display the types of the Pokémon. The Chip widgets use colors that are determined by the TypeToColor class and passed to the getColorsFromType method. The widget also makes use of the CustomImageView, TouchableOpacity, AppDecoration, SizeUtils, Badges, and GoRouter packages.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">@override</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">Widget</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">build</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">BuildContext</span><span style="color: #F8F8F2"> context) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// get name from pokemon or default it to empty string</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2"> name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pokemon.name </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// get id from pokemon or default it to 0</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pokemon.id </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2"> imgSrc </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pokemon.imgSrc </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// scale images and text on desktop</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> fontSize </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">12</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">double</span><span style="color: #F8F8F2"> imgSize </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">72</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">MediaQuery</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(context).size.width </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">900</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      fontSize </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">24</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">      imgSize </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">144</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// get pokemon type</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2"> type </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pokemon.pokemonV2Pokemontypes</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">].pokemonV2Type</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">.name </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// need to center image and boost text size</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// and boost font size</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// image size</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> colors </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getColorsFromType</span><span style="color: #F8F8F2">(type);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> mainColor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> colors[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> secondaryColor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> colors[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// swap based on pokemon type</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Container</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">      decoration</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> mainColor.</span><span style="color: #A6E22E">copyWith</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        borderRadius</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">BorderRadiusStyle</span><span style="color: #F8F8F2">.roundedBorder8,</span></span>
+<span class="line"><span style="color: #F8F8F2">      ),</span></span>
+<span class="line"><span style="color: #F8F8F2">      child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TouchableOpacity</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">        onTap</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () {</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// navigate to pokemon detail page with pokemon id</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// go router</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// Navigator.pushNamed(context, "/pokemon/$id");</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// Navigator.pushNamed(context, "/pokemon/:id");</span></span>
+<span class="line"><span style="color: #F8F8F2">          context.</span><span style="color: #A6E22E">go</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/pokemon/$</span><span style="color: #FD971F">id</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        },</span></span>
+<span class="line"><span style="color: #F8F8F2">        child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Column</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          mainAxisSize</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">MainAxisSize</span><span style="color: #F8F8F2">.min,</span></span>
+<span class="line"><span style="color: #F8F8F2">          crossAxisAlignment</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">CrossAxisAlignment</span><span style="color: #F8F8F2">.center,</span></span>
+<span class="line"><span style="color: #F8F8F2">          mainAxisAlignment</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">MainAxisAlignment</span><span style="color: #F8F8F2">.center,</span></span>
+<span class="line"><span style="color: #F8F8F2">          children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">Container</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">              height</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getVerticalSize</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #AE81FF">83.00</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              width</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getHorizontalSize</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #AE81FF">160.00</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              margin</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getMargin</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                top</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                right</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Stack</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                alignment</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Alignment</span><span style="color: #F8F8F2">.bottomLeft,</span></span>
+<span class="line"><span style="color: #F8F8F2">                children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">                  </span><span style="color: #66D9EF">Align</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                    alignment</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Alignment</span><span style="color: #F8F8F2">.topRight,</span></span>
+<span class="line"><span style="color: #F8F8F2">                    child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Row</span><span style="color: #F8F8F2">(children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">                      ...</span><span style="color: #A6E22E">labelsForTypes</span><span style="color: #F8F8F2">(pokemon),</span></span>
+<span class="line"><span style="color: #F8F8F2">                      </span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                        </span><span style="color: #E6DB74">"# "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> id.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">(),</span></span>
+<span class="line"><span style="color: #F8F8F2">                        overflow</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TextOverflow</span><span style="color: #F8F8F2">.ellipsis,</span></span>
+<span class="line"><span style="color: #F8F8F2">                        textAlign</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TextAlign</span><span style="color: #F8F8F2">.left,</span></span>
+<span class="line"><span style="color: #F8F8F2">                        style</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">AppStyle</span><span style="color: #F8F8F2">.txtPoppinsRegular8Bluegray200.</span><span style="color: #A6E22E">copyWith</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                          height</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1.50</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                        ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                      ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                    ]),</span></span>
+<span class="line"><span style="color: #F8F8F2">                  ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                  </span><span style="color: #66D9EF">CustomImageView</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                    url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> imgSrc,</span></span>
+<span class="line"><span style="color: #F8F8F2">                    height</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getSize</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                      imgSize,</span></span>
+<span class="line"><span style="color: #F8F8F2">                    ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                    width</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getSize</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                      imgSize,</span></span>
+<span class="line"><span style="color: #F8F8F2">                    ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                    alignment</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Alignment</span><span style="color: #F8F8F2">.bottomCenter,</span></span>
+<span class="line"><span style="color: #F8F8F2">                  ),</span></span>
+<span class="line"><span style="color: #F8F8F2">                ],</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">            ),</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">Container</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">              width</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getHorizontalSize</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #AE81FF">104.00</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              padding</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getPadding</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                left</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                top</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F">// right: 40,</span></span>
+<span class="line"><span style="color: #F8F8F2">                bottom</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              decoration</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> secondaryColor,</span></span>
+<span class="line"><span style="color: #F8F8F2">              child</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                name.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">(),</span></span>
+<span class="line"><span style="color: #F8F8F2">                overflow</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TextOverflow</span><span style="color: #F8F8F2">.ellipsis,</span></span>
+<span class="line"><span style="color: #F8F8F2">                textAlign</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TextAlign</span><span style="color: #F8F8F2">.left,</span></span>
+<span class="line"><span style="color: #F8F8F2">                style</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">AppStyle</span><span style="color: #F8F8F2">.txtPoppinsRegular10WhiteA700.</span><span style="color: #A6E22E">copyWith</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                  height</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1.50</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                  </span><span style="color: #88846F">// bold</span></span>
+<span class="line"><span style="color: #F8F8F2">                  fontWeight</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">FontWeight</span><span style="color: #F8F8F2">.w700,</span></span>
+<span class="line"><span style="color: #F8F8F2">                ),</span></span>
+<span class="line"><span style="color: #F8F8F2">              ),</span></span>
+<span class="line"><span style="color: #F8F8F2">            ),</span></span>
+<span class="line"><span style="color: #F8F8F2">          ],</span></span>
+<span class="line"><span style="color: #F8F8F2">        ),</span></span>
+<span class="line"><span style="color: #F8F8F2">      ),</span></span>
+<span class="line"><span style="color: #F8F8F2">    );</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span></code></pre>
+<p>This is the build method for the PokemonCard widget. It defines the layout and visual appearance of the card. The method starts by extracting the name and id of the Pokémon from the pokemon object, as well as the source of the image to display. It then adjusts the font size and image size based on the width of the device. Next, it determines the type of the Pokémon and gets the colors to use for the card based on this type using the getColorsFromType method.</p>
+<p>The method then returns a Container widget that has a border with rounded corners and a colored background determined by the main color. This Container has a child that is a TouchableOpacity widget, which makes the card tappable and navigates to the Pokémon detail page when tapped. The TouchableOpacity widget has a Column as its child, which contains two other widgets: a Container with the Pokémon image and a Container with the Pokémon name. The Pokémon image is displayed using a CustomImageView widget, which takes in the source of the image and displays it with a specified height and width. The Pokémon name is displayed in a Text widget inside a Container with a colored background determined by the secondary color. The Text widget uses the Pokémon name and a specified font style and size.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2022<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2022-12-29<!-- -->.</div></div></div>
+  </body></html>
