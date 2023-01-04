@@ -43,7 +43,7 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.1",
     "lint-staged": "^12.5.0",
-    "pagefind": "^0.7.1",
+    "pagefind": "^0.10.6",
     "prettier": "^2.6.2",
     "prettier-plugin-astro": "^0.5.0",
     "react-dom": "^18.2.0",
