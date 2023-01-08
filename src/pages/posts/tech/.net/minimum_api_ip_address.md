@@ -1,3 +1,11 @@
+---
+title: Minimum api in .net with the ip address
+description: .met ip address api
+pubDate: Saturday, 5 August 2023 13:00:00 GMT
+tags: ["solidity", "dapp"]
+layout: '@/templates/BasePost.astro'
+imgSrc: '/imgs/2023/DALL·E 2023-01-08 14.26.14 - mailbox.png'
+---
 
 
 ASP.NET Core Minimal APIs offer a streamlined way to build efficient HTTP APIs with minimal code and configuration. With this approach, you can create fully functional REST endpoints without the need for traditional scaffolding or unnecessary controllers. Instead, you can declare your API routes and actions fluently, allowing you to quickly build APIs that meet your specific needs. By leveraging the power of ASP.NET Core, you can build APIs that are fast and scalable, and easily incorporate them into your application. Whether you are building a small API for a personal project or a larger API for a business, Minimal APIs provide a powerful and flexible solution for building and deploying your APIs with ease.
