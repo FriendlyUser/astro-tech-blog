@@ -1,5 +1,5 @@
 ---
-title: Implemnenting caching in github actions
+title: Implementing caching in github actions
 description: Leveraging free apis to detect ip addresses
 alt: github action to detect ip addresses
 tags: ["typescript", "github actions", "astro"]
