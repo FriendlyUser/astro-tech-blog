@@ -1,4 +1,6 @@
 ---
+import {Tags } from "astro-boilerplate-components";
+
 import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import { BlogPost } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
@@ -12,11 +14,41 @@ export interface Props {
 
 const { content } = Astro.props as Props;
 const title = `${content.title} - ${AppConfig.site_name}`;
+const projectsData = {
+  "projects": [
+    {
+      "url": "https://github.com/dli-invest/conscrap",
+      "author": "FriendlyUser",
+      "name": "conscrap",
+      "color": "GREEN"
+    }
+  ]
+}
+
+const {projects = []} = content || {}
 ---
 
 <Base head={{ title, description: content.description }}>
   <BlogPost frontmatter={content}>
     <slot />
+    {
+      projectsData?.projects?.map((project) => {
+        if (projects.find((p) => p === project.name)) {
+          return (
+            <>
+              <a href={project.url}>
+                <h3>
+                <Tags color={project.color as any}>
+                  {project.name}
+                </Tags>
+              </h3>
+              </a>
+            </>
+          );
+        }
+        return <></>;
+      })
+    }
   </BlogPost>
 
   <BottomSection />
