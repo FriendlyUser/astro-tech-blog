@@ -32,11 +32,20 @@ const {projects = []} = content || {}
   <BlogPost frontmatter={content}>
     <slot />
     {
+      projects?.length > 0 && (
+        <h5>Related Projects</h5>
+      )
+    }
+    {
       projectsData?.projects?.map((project) => {
-        if (projects.find((p) => p === project.name)) {
+        if (projects?.find((p) => p === project.name)) {
           return (
             <>
-              <a href={project.url}>
+              <a href={project.url} style={{
+                "text-decoration": "none",
+                "width": "200px",
+                "text-align": "center"
+              }}>
                 <h3>
                 <Tags color={project.color as any}>
                   {project.name}

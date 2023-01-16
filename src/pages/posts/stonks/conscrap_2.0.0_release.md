@@ -6,7 +6,7 @@ pubDate: Friday, 25 August 2023 13:00:00 GMT
 tags: ["dotnet", "stonks", "selenium"]
 projects: ["conscrap"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/dall-e/DALL·E 2023-01-16 12.01.55 - Two futuristic towers with a skybridge covered in lush foliage, digital art.png'
+imgSrc: '/imgs/2023/conscrap200.png'
 imgAlt: 'Conscrap'
 ---
 
