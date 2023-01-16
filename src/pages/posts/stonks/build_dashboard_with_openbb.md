@@ -5,7 +5,7 @@ alt: Applying nlp to various youtube videos
 pubDate: Friday, 13 January 2023 13:00:00 GMT
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2023-01-16 10.56.12 - Two futuristic towers with a skybridge covered in lush foliage, digital art.png'
+imgSrc: '/imgs/sample.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
