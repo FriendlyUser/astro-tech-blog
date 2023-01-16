@@ -11,7 +11,7 @@ imgSrc: '/imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png'
 To use caching in a GitHub Actions workflow, you can use the cache action. Here is an example of a workflow that caches the node_modules directory between builds:
 
 
-```yml
+```yaml
 on: push
 
 jobs:
@@ -43,7 +43,7 @@ I added this logic to my personal blog's github action to cache the node_modules
 
 The full workflow is
 
-```yml
+```yaml
 name: Build For Github
 # Don't want to burn my private minutes at this point
 on:

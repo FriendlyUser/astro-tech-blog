@@ -6,6 +6,7 @@ import { AppConfig } from '@/utils/AppConfig';
 
 export interface CustomIFrontMatter extends IFrontmatter {
   tags: string[];
+  projects?: any[];
 }
 type IBlogPostProps = {
   frontmatter: CustomIFrontMatter;

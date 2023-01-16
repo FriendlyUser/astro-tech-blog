@@ -4,6 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import robotsTxt from 'astro-robots-txt';
 import { astroImageTools } from 'astro-imagetools';
+import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
@@ -30,5 +31,6 @@ export default defineConfig({
     sitemap(),
     robotsTxt(),
     astroImageTools,
+    mdx(),
   ],
 });

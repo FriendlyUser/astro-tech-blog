@@ -23,7 +23,7 @@ Here's a breakdown of what each part of the code is doing:
 4. The JsonSerializer.Deserialize method is used to parse the JSON string into a list of Pokemon objects.
 5. The loop iterates through the first 10 Pokemon objects in the list and prints out their names.
 
-```cs
+```csharp
 // load json array from https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,7 @@ for (int i = 0; i < 10; i++)
 
 Then we install the depedencies and run the script
 
-```cs
+```csharp
 #i "nuget:https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json" 
 #i "nuget:https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" 
 #r "nuget: Plotly.NET, 3.0.1"
@@ -91,7 +91,7 @@ The #r directive is used to reference a NuGet package in the project. The first 
 
 These directives are typically used at the top of a .NET script file or in a paket.dependencies file to manage the packages used in a project.
 
-```cs
+```csharp
 using System.Linq;
 using Microsoft.FSharp.Core;
 using Plotly.NET;
@@ -168,7 +168,7 @@ Here's a breakdown of what each part of the code is doing:
 ![pokedex](/imgs/2023/pokedex_types.png)
 
 
-```cs
+```csharp
 // number of pokemon per generation
 
 var groupedPokemonByGeneration = new Dictionary<string, int>();
@@ -193,7 +193,7 @@ As you can see new types were adding in gen 6 and gen 2, believe its steel and f
 
 ![pokedex](/imgs/2023/pokedex_types_by_gen.png)
 
-```cs
+```csharp
 // starting letters for pokemon plot
 
 

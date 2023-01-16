@@ -17,8 +17,8 @@ type GetStaticPaths = {
 }; // Overrides `GetStaticPathsOptions` types from Astro
 
 export async function getStaticPaths({ paginate }: GetStaticPaths) {
-  const allPosts = await Astro.glob<CustomIFrontMatter>('./**/*.md');
-  const sortedPosts = sortByDate(allPosts);
+  const allPosts = await Astro.glob<CustomIFrontMatter>('./**/*.md(x)?');
+  const sortedPosts = sortByDate(allPosts as any);
   // const filteredPosts = sortedPosts.filter((post) => {
   //   const postDate = new Date(post.frontmatter.pubDate);
   //   const today = new Date();
@@ -34,10 +34,9 @@ interface Props {
 
 const { page } = Astro.props as Props;
 const titleSuffix = ` - ${AppConfig.site_name}`;
-const titleBase = `Blog page ${page.currentPage}`;
+const titleBase = `Page ${page.currentPage}`;
 const title = titleBase + titleSuffix;
-const description =
-  'Pagination example built with Astro styled with Tailwind CSS.';
+const description = 'Blog post iteration for Astro styled with Tailwind CSS.';
 ---
 
 <Base head={{ title, description }}>
