@@ -73,122 +73,122 @@
 <li>The JsonSerializer.Deserialize method is used to parse the JSON string into a list of Pokemon objects.</li>
 <li>The loop iterates through the first 10 Pokemon objects in the list and prints out their names.</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">// load json array from https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json</span></span>
-<span class="line"><span style="color: #F8F8F2">using System;</span></span>
-<span class="line"><span style="color: #F8F8F2">using System.Collections.Generic;</span></span>
-<span class="line"><span style="color: #F8F8F2">using System.Net.Http;</span></span>
-<span class="line"><span style="color: #F8F8F2">using System.Text.Json;</span></span>
-<span class="line"><span style="color: #F8F8F2">using System.Text.Json.Serialization;</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">public class PokemonV2Pokemontype</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// load json array from https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Collections</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Generic</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Net</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Http</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Text</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Json</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Text</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Json</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Serialization</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">PokemonV2Pokemontype</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    public PokemonV2Type pokemon_v2_type { get; set; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">PokemonV2Type</span><span style="color: #F8F8F2"> pokemon_v2_type { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">public class PokemonV2Type</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">PokemonV2Type</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    public string name { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    // public int move_damage_class_id { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public int generation_id { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public int id { get; set; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// public int move_damage_class_id { get; set; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> generation_id { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> id { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">public class Pokemon</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Pokemon</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    public string name { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public int id { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public int pokemon_species_id { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public List&#x3C;PokemonV2Pokemontype> pokemon_v2_pokemontypes { get; set; }</span></span>
-<span class="line"><span style="color: #F8F8F2">    public string img_src { get; set; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> id { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> pokemon_species_id { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">PokemonV2Pokemontype</span><span style="color: #F8F8F2">> pokemon_v2_pokemontypes { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> img_src { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">public class PokemonList</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">PokemonList</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    public List&#x3C;Pokemon> pokemon { get; set; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Pokemon</span><span style="color: #F8F8F2">> pokemon { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">// load json array from https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json</span></span>
-<span class="line"><span style="color: #F8F8F2">var client = new HttpClient();</span></span>
-<span class="line"><span style="color: #F8F8F2">var response = client.GetAsync("https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json").Result;</span></span>
-<span class="line"><span style="color: #F8F8F2">var content = response.Content.ReadAsStringAsync().Result;</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">// parse content into a list of Pokemon objects</span></span>
-<span class="line"><span style="color: #F8F8F2">List&#x3C;Pokemon> pokemonList = </span></span>
-<span class="line"><span style="color: #F8F8F2">                JsonSerializer.Deserialize&#x3C;List&#x3C;Pokemon>>(content);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">// print out the first 10 pokemon</span></span>
-<span class="line"><span style="color: #F8F8F2">for (int i = 0; i &#x3C; 10; i++)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// load json array from https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json</span></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> client </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">HttpClient</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> response </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> client.</span><span style="color: #A6E22E">GetAsync</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"https://raw.githubusercontent.com/FriendlyUser/flutter_pokedex/main/scripts/clean_pokemon.json"</span><span style="color: #F8F8F2">).Result;</span></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> content </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> response.Content.</span><span style="color: #A6E22E">ReadAsStringAsync</span><span style="color: #F8F8F2">().Result;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// parse content into a list of Pokemon objects</span></span>
+<span class="line"><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Pokemon</span><span style="color: #F8F8F2">> pokemonList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">                JsonSerializer.</span><span style="color: #A6E22E">Deserialize</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Pokemon</span><span style="color: #F8F8F2">>>(content);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// print out the first 10 pokemon</span></span>
+<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">; i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">; i</span><span style="color: #F92672">++</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    Console.WriteLine(pokemonList[i].name);</span></span>
+<span class="line"><span style="color: #F8F8F2">    Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(pokemonList[i].name);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Then we install the depedencies and run the script</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#i "nuget:https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json" </span></span>
-<span class="line"><span style="color: #F8F8F2">#i "nuget:https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" </span></span>
-<span class="line"><span style="color: #F8F8F2">#r "nuget: Plotly.NET, 3.0.1"</span></span>
-<span class="line"><span style="color: #F8F8F2">#r "nuget: Plotly.NET.Interactive, 3.0.2"</span></span></code></pre>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#i "nuget:https:</span><span style="color: #88846F">//pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json" </span></span>
+<span class="line"><span style="color: #F8F8F2">#i "nuget:https:</span><span style="color: #88846F">//pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" </span></span>
+<span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">r</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"nuget: Plotly.NET, 3.0.1"</span></span>
+<span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">r</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"nuget: Plotly.NET.Interactive, 3.0.2"</span></span></code></pre>
 <p>This code is using the #i and #r directives to install and reference NuGet packages in a .NET project.</p>
 <p>The #i directive is used to install a NuGet package source, which is a location where packages can be found and downloaded. The first #i directive installs the package source for the .NET 7 runtime, and the second #i directive installs the package source for .NET tools.</p>
 <p>The #r directive is used to reference a NuGet package in the project. The first #r directive references the Plotly.NET package, which is a library for creating interactive and animated charts and graphs in .NET. The second #r directive references the Plotly.NET.Interactive package, which provides interactive features for plots created with the Plotly.NET library.</p>
 <p>These directives are typically used at the top of a .NET script file or in a paket.dependencies file to manage the packages used in a project.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">using System.Linq;</span></span>
-<span class="line"><span style="color: #F8F8F2">using Microsoft.FSharp.Core;</span></span>
-<span class="line"><span style="color: #F8F8F2">using Plotly.NET;</span></span>
-<span class="line"><span style="color: #F8F8F2">using static Plotly.NET.GenericChartExtensions;</span></span>
-<span class="line"><span style="color: #F8F8F2">using Plotly.NET.LayoutObjects;</span></span>
-<span class="line"><span style="color: #F8F8F2">// group the pokemon by type, can have duplicates</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">var groupedPokemon = new Dictionary&#x3C;string, int>();</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">foreach (var pokemon in pokemonList)</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">System</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Linq</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Microsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">FSharp</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Core</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Plotly</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">NET</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Plotly</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">NET</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">GenericChartExtensions</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Plotly</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">NET</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">LayoutObjects</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #88846F">// group the pokemon by type, can have duplicates</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> groupedPokemon </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> pokemon </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> pokemonList)</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    foreach (var type in pokemon.pokemon_v2_pokemontypes)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> type </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> pokemon.pokemon_v2_pokemontypes)</span></span>
 <span class="line"><span style="color: #F8F8F2">    {</span></span>
-<span class="line"><span style="color: #F8F8F2">        if (groupedPokemon.ContainsKey(type.pokemon_v2_type.name))</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (groupedPokemon.</span><span style="color: #A6E22E">ContainsKey</span><span style="color: #F8F8F2">(type.pokemon_v2_type.name))</span></span>
 <span class="line"><span style="color: #F8F8F2">        {</span></span>
-<span class="line"><span style="color: #F8F8F2">            groupedPokemon[type.pokemon_v2_type.name] = groupedPokemon[type.pokemon_v2_type.name] + 1;</span></span>
+<span class="line"><span style="color: #F8F8F2">            groupedPokemon[type.pokemon_v2_type.name] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> groupedPokemon[type.pokemon_v2_type.name] </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">        }</span></span>
-<span class="line"><span style="color: #F8F8F2">        else</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">else</span></span>
 <span class="line"><span style="color: #F8F8F2">        {</span></span>
-<span class="line"><span style="color: #F8F8F2">            groupedPokemon.Add(type.pokemon_v2_type.name, 1);</span></span>
+<span class="line"><span style="color: #F8F8F2">            groupedPokemon.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(type.pokemon_v2_type.name, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">        }</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">void makePlot(Dictionary&#x3C;string, int> dataDict, string xTitle, string yTitle, string title, int width = 1280) </span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">makePlot</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">> dataDict, </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> xTitle, </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> yTitle, </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> title, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> width </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1280</span><span style="color: #F8F8F2">) </span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    var x = dataDict.Keys.ToArray();</span></span>
-<span class="line"><span style="color: #F8F8F2">    var y = dataDict.Values.ToArray();</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    LinearAxis xAxis = new LinearAxis();</span></span>
-<span class="line"><span style="color: #F8F8F2">    xAxis.SetValue("title", xTitle);</span></span>
-<span class="line"><span style="color: #F8F8F2">    xAxis.SetValue("showgrid", false);</span></span>
-<span class="line"><span style="color: #F8F8F2">    xAxis.SetValue("showline", true);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    LinearAxis yAxis = new LinearAxis();</span></span>
-<span class="line"><span style="color: #F8F8F2">    yAxis.SetValue("title", yTitle);</span></span>
-<span class="line"><span style="color: #F8F8F2">    yAxis.SetValue("showgrid", false);</span></span>
-<span class="line"><span style="color: #F8F8F2">    yAxis.SetValue("showline", true);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    Layout layout = new Layout();</span></span>
-<span class="line"><span style="color: #F8F8F2">    layout.SetValue("xaxis", xAxis);</span></span>
-<span class="line"><span style="color: #F8F8F2">    layout.SetValue("yaxis", yAxis);</span></span>
-<span class="line"><span style="color: #F8F8F2">    layout.SetValue("title", title);</span></span>
-<span class="line"><span style="color: #F8F8F2">    layout.SetValue("width", width);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    Trace trace = new Trace("bar");</span></span>
-<span class="line"><span style="color: #F8F8F2">    trace.SetValue("x", x);</span></span>
-<span class="line"><span style="color: #F8F8F2">    trace.SetValue("y", y);</span></span>
-<span class="line"><span style="color: #F8F8F2">    trace.SetValue("mode", "markers");</span></span>
-<span class="line"><span style="color: #F8F8F2">    // trace.SetValue("name", characterName);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    var chart = GenericChart.ofTraceObject(true, trace).WithLayout(layout);</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    // figure out how to save static files</span></span>
-<span class="line"><span style="color: #F8F8F2">    var data = GenericChart.toChartHTML(chart);</span></span>
-<span class="line"><span style="color: #F8F8F2">    DisplayExtensions.DisplayAs(data,"text/html");</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> dataDict.Keys.</span><span style="color: #A6E22E">ToArray</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> y </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> dataDict.Values.</span><span style="color: #A6E22E">ToArray</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">LinearAxis</span><span style="color: #F8F8F2"> xAxis </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">LinearAxis</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    xAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"title"</span><span style="color: #F8F8F2">, xTitle);</span></span>
+<span class="line"><span style="color: #F8F8F2">    xAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"showgrid"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    xAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"showline"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">LinearAxis</span><span style="color: #F8F8F2"> yAxis </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">LinearAxis</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    yAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"title"</span><span style="color: #F8F8F2">, yTitle);</span></span>
+<span class="line"><span style="color: #F8F8F2">    yAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"showgrid"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    yAxis.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"showline"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Layout</span><span style="color: #F8F8F2"> layout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Layout</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    layout.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"xaxis"</span><span style="color: #F8F8F2">, xAxis);</span></span>
+<span class="line"><span style="color: #F8F8F2">    layout.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"yaxis"</span><span style="color: #F8F8F2">, yAxis);</span></span>
+<span class="line"><span style="color: #F8F8F2">    layout.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"title"</span><span style="color: #F8F8F2">, title);</span></span>
+<span class="line"><span style="color: #F8F8F2">    layout.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"width"</span><span style="color: #F8F8F2">, width);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Trace</span><span style="color: #F8F8F2"> trace </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Trace</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"bar"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    trace.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"x"</span><span style="color: #F8F8F2">, x);</span></span>
+<span class="line"><span style="color: #F8F8F2">    trace.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"y"</span><span style="color: #F8F8F2">, y);</span></span>
+<span class="line"><span style="color: #F8F8F2">    trace.</span><span style="color: #A6E22E">SetValue</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"mode"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"markers"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// trace.SetValue("name", characterName);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart.</span><span style="color: #A6E22E">ofTraceObject</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">, trace).</span><span style="color: #A6E22E">WithLayout</span><span style="color: #F8F8F2">(layout);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// figure out how to save static files</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart.</span><span style="color: #A6E22E">toChartHTML</span><span style="color: #F8F8F2">(chart);</span></span>
+<span class="line"><span style="color: #F8F8F2">    DisplayExtensions.</span><span style="color: #A6E22E">DisplayAs</span><span style="color: #F8F8F2">(data,</span><span style="color: #E6DB74">"text/html"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2">makePlot(groupedPokemon, "Type", "Number", "Number of pokemon per type (up to generation viii", 1280);</span></span></code></pre>
+<span class="line"><span style="color: #A6E22E">makePlot</span><span style="color: #F8F8F2">(groupedPokemon, </span><span style="color: #E6DB74">"Type"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number of pokemon per type (up to generation viii"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1280</span><span style="color: #F8F8F2">);</span></span></code></pre>
 <p>This code is creating a bar chart using the Plotly.NET library to visualize the number of Pokémon of each type in the pokemonList collection.</p>
 <p>Here’s a breakdown of what each part of the code is doing:</p>
 <ol>
@@ -200,45 +200,45 @@
 <li>The GenericChart.toChartHTML method is used to generate the HTML code for the chart, and the DisplayExtensions.DisplayAs method is used to display the chart as an HTML page in the console.</li>
 </ol>
 <p><img src="/imgs/2023/pokedex_types.png" alt="pokedex"></p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">// number of pokemon per generation</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">var groupedPokemonByGeneration = new Dictionary&#x3C;string, int>();</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">foreach (var pokemon in pokemonList)</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// number of pokemon per generation</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> groupedPokemonByGeneration </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> pokemon </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> pokemonList)</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    if (groupedPokemonByGeneration.ContainsKey(pokemon.pokemon_v2_pokemontypes.First().pokemon_v2_type.generation_id.ToString()))</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (groupedPokemonByGeneration.</span><span style="color: #A6E22E">ContainsKey</span><span style="color: #F8F8F2">(pokemon.pokemon_v2_pokemontypes.</span><span style="color: #A6E22E">First</span><span style="color: #F8F8F2">().pokemon_v2_type.generation_id.</span><span style="color: #A6E22E">ToString</span><span style="color: #F8F8F2">()))</span></span>
 <span class="line"><span style="color: #F8F8F2">    {</span></span>
-<span class="line"><span style="color: #F8F8F2">        groupedPokemonByGeneration[pokemon.pokemon_v2_pokemontypes.First().pokemon_v2_type.generation_id.ToString()] = groupedPokemonByGeneration[pokemon.pokemon_v2_pokemontypes.First().pokemon_v2_type.generation_id.ToString()] + 1;</span></span>
+<span class="line"><span style="color: #F8F8F2">        groupedPokemonByGeneration[pokemon.pokemon_v2_pokemontypes.</span><span style="color: #A6E22E">First</span><span style="color: #F8F8F2">().pokemon_v2_type.generation_id.</span><span style="color: #A6E22E">ToString</span><span style="color: #F8F8F2">()] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> groupedPokemonByGeneration[pokemon.pokemon_v2_pokemontypes.</span><span style="color: #A6E22E">First</span><span style="color: #F8F8F2">().pokemon_v2_type.generation_id.</span><span style="color: #A6E22E">ToString</span><span style="color: #F8F8F2">()] </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
-<span class="line"><span style="color: #F8F8F2">    else</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">else</span></span>
 <span class="line"><span style="color: #F8F8F2">    {</span></span>
-<span class="line"><span style="color: #F8F8F2">        groupedPokemonByGeneration.Add(pokemon.pokemon_v2_pokemontypes.First().pokemon_v2_type.generation_id.ToString(), 1);</span></span>
+<span class="line"><span style="color: #F8F8F2">        groupedPokemonByGeneration.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(pokemon.pokemon_v2_pokemontypes.</span><span style="color: #A6E22E">First</span><span style="color: #F8F8F2">().pokemon_v2_type.generation_id.</span><span style="color: #A6E22E">ToString</span><span style="color: #F8F8F2">(), </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">makePlot(groupedPokemonByGeneration, "Generation", "Number", "Number of types by generation (up to generation viii)", 1280);</span></span></code></pre>
+<span class="line"></span>
+<span class="line"><span style="color: #A6E22E">makePlot</span><span style="color: #F8F8F2">(groupedPokemonByGeneration, </span><span style="color: #E6DB74">"Generation"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number of types by generation (up to generation viii)"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1280</span><span style="color: #F8F8F2">);</span></span></code></pre>
 <p>As you can see new types were adding in gen 6 and gen 2, believe its steel and fairy.</p>
 <p><img src="/imgs/2023/pokedex_types_by_gen.png" alt="pokedex"></p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">// starting letters for pokemon plot</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">var groupedPokemonByFirstLetter = new Dictionary&#x3C;string, int>();</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">foreach (var pokemon in pokemonList)</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// starting letters for pokemon plot</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> groupedPokemonByFirstLetter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> pokemon </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> pokemonList)</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">    var firstLetter = pokemon.name.Substring(0, 1);</span></span>
-<span class="line"><span style="color: #F8F8F2">    if (groupedPokemonByFirstLetter.ContainsKey(firstLetter))</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> firstLetter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pokemon.name.</span><span style="color: #A6E22E">Substring</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (groupedPokemonByFirstLetter.</span><span style="color: #A6E22E">ContainsKey</span><span style="color: #F8F8F2">(firstLetter))</span></span>
 <span class="line"><span style="color: #F8F8F2">    {</span></span>
-<span class="line"><span style="color: #F8F8F2">        groupedPokemonByFirstLetter[firstLetter]++;</span></span>
+<span class="line"><span style="color: #F8F8F2">        groupedPokemonByFirstLetter[firstLetter]</span><span style="color: #F92672">++</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
-<span class="line"><span style="color: #F8F8F2">    else</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">else</span></span>
 <span class="line"><span style="color: #F8F8F2">    {</span></span>
-<span class="line"><span style="color: #F8F8F2">        groupedPokemonByFirstLetter.Add(firstLetter, 1);</span></span>
+<span class="line"><span style="color: #F8F8F2">        groupedPokemonByFirstLetter.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(firstLetter, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">// plot </span></span>
-<span class="line"><span style="color: #F8F8F2">makePlot(groupedPokemonByFirstLetter, "First Letter", "Number", "Number of pokemon by first letter", 1280);</span></span></code></pre>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// plot </span></span>
+<span class="line"><span style="color: #A6E22E">makePlot</span><span style="color: #F8F8F2">(groupedPokemonByFirstLetter, </span><span style="color: #E6DB74">"First Letter"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Number of pokemon by first letter"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1280</span><span style="color: #F8F8F2">);</span></span></code></pre>
 <p><img src="imgs/2023/pokedex_by_first_letter.png" alt="pokedex"></p>
 <h2 id="references">References</h2>
 <p><a href="https://friendlyuser.github.io/pokemon_stats/">https://friendlyuser.github.io/pokemon_stats/</a></p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
@@ -251,5 +251,5 @@
     </div>
   </div></div>
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-01-13<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-01-16<!-- -->.</div></div></div>
   </body></html>
