@@ -67,6 +67,65 @@ export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) =
 
 ```
 ```js
+// import react
+import React, { useEffect, useState } from "react";
+
+export interface SvgInlineProps {
+  url: string;
+  className?: string;
+  style?: React.CSSProperties | undefined;
+}
+// for next.js if icon does not exist this will throw an error
+export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) => {
+  // set the state of the svg to be empty and set the default as false
+  const [svg, setSvg] = useState<string>("");
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isErrored, setIsErrored] = useState(false);
+
+  useEffect(() => {
+    // fetch the url
+    fetch(url)
+      .then((res) => {
+        return res.text();
+      })
+      // set the svg to the text
+      .then((text) => {
+        if (text.includes("html")) {
+          // use fallback svg
+          console.log("file does not exist");
+        } else {
+          setSvg(text);
+        }
+      })
+      // set the error state to true
+      .catch(setIsErrored)
+      .then(() => {
+        return setIsLoaded(true);
+      });
+  }, [url]);
+  return (
+    // add class names for the states
+    <div
+      className={`svgInline svgInline--${isLoaded ? "loaded" : "loading"} ${
+        isErrored ? "svgInline--errored" : ""
+      } ${className || ""}`}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+};
+```
+
+
+1. The component accepts three props: url, className and style.
+2. The component uses the useState hook to set the state of the SVG and the loading state.
+3. The useEffect hook is used to fetch the SVG and set the state.
+4. Then the SVG is set to the state.
+5. If the SVG does not exist, the component will use a fallback SVG.
+6. The component will add a class name for the states: loading, loaded, errored.
+7. The SVG is then rendered using the dangerouslySetInnerHTML prop.
+
+```js
 "use client"; // this is a client component
 import React from "react";
 import classes from "./svgIcon.module.css";
