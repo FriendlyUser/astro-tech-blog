@@ -22,7 +22,50 @@ Accessibility: SVGs can be easily indexed and searched by search engines and scr
 Better for logos and icons: SVGs are perfect for logos and icons because they can be infinitely scaled without losing quality, and they can be easily manipulated with CSS.
 
 In summary, SVGs are a great choice for images that need to be scalable, lightweight and interactive, and logos or icons.
+```js
+import React, { useEffect, useState } from "react";
 
+export interface SvgInlineProps {
+  url: string;
+  className?: string;
+  style?: React.CSSProperties | undefined;
+}
+// for next.js if icon does not exist this will throw an error
+export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) => {
+  const [svg, setSvg] = useState<string>("");
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isErrored, setIsErrored] = useState(false);
+
+  useEffect(() => {
+    fetch(url)
+      .then((res) => {
+        return res.text();
+      })
+      .then((text) => {
+        if (text.includes("html")) {
+          // use fallback svg
+          console.log("file does not exist");
+        } else {
+          setSvg(text);
+        }
+      })
+      .catch(setIsErrored)
+      .then(() => {
+        return setIsLoaded(true);
+      });
+  }, [url]);
+  return (
+    <div
+      className={`svgInline svgInline--${isLoaded ? "loaded" : "loading"} ${
+        isErrored ? "svgInline--errored" : ""
+      } ${className || ""}`}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+};
+
+```
 ```js
 "use client"; // this is a client component
 import React from "react";
