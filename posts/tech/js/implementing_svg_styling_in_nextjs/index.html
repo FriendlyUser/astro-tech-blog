@@ -69,6 +69,62 @@
 <p>Accessibility: SVGs can be easily indexed and searched by search engines and screen readers, making them more accessible to users with disabilities.</p>
 <p>Better for logos and icons: SVGs are perfect for logos and icons because they can be infinitely scaled without losing quality, and they can be easily manipulated with CSS.</p>
 <p>In summary, SVGs are a great choice for images that need to be scalable, lightweight and interactive, and logos or icons.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// import react</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useEffect, useState } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">SvgInlineProps</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  className</span><span style="color: #F92672">?:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  style</span><span style="color: #F92672">?:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">CSSProperties</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">undefined</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #88846F">// for next.js if icon does not exist this will throw an error</span></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SvgInline</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">FC</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">SvgInlineProps</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F">url</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">className</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">style</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// set the state of the svg to be empty and set the default as false</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [svg, setSvg] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">>(</span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [isLoaded, setIsLoaded] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [isErrored, setIsErrored] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">useEffect</span><span style="color: #F8F8F2">(() </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// fetch the url</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(url)</span></span>
+<span class="line"><span style="color: #F8F8F2">      .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">res</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> res.</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">      })</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// set the svg to the text</span></span>
+<span class="line"><span style="color: #F8F8F2">      .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">text</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (text.</span><span style="color: #A6E22E">includes</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"html"</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #88846F">// use fallback svg</span></span>
+<span class="line"><span style="color: #F8F8F2">          console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"file does not exist"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #A6E22E">setSvg</span><span style="color: #F8F8F2">(text);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">      })</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// set the error state to true</span></span>
+<span class="line"><span style="color: #F8F8F2">      .</span><span style="color: #A6E22E">catch</span><span style="color: #F8F8F2">(setIsErrored)</span></span>
+<span class="line"><span style="color: #F8F8F2">      .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(() </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setIsLoaded</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">      });</span></span>
+<span class="line"><span style="color: #F8F8F2">  }, [url]);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// add class names for the states</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">div</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">className</span><span style="color: #F92672">={</span><span style="color: #E6DB74">`svgInline svgInline--</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">isLoaded </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"loaded"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"loading"</span><span style="color: #F92672">}</span><span style="color: #E6DB74"> </span><span style="color: #F92672">${</span></span>
+<span class="line"><span style="color: #F8F8F2">        isErrored </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"svgInline--errored"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">}</span><span style="color: #E6DB74"> </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">className </span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">style</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">dangerouslySetInnerHTML</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{ __html: svg }</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">    /></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span></code></pre>
+<ol>
+<li>The component accepts three props: url, className and style.</li>
+<li>The component uses the useState hook to set the state of the SVG and the loading state.</li>
+<li>The useEffect hook is used to fetch the SVG and set the state.</li>
+<li>Then the SVG is set to the state.</li>
+<li>If the SVG does not exist, the component will use a fallback SVG.</li>
+<li>The component will add a class name for the states: loading, loaded, errored.</li>
+<li>The SVG is then rendered using the dangerouslySetInnerHTML prop.</li>
+</ol>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #E6DB74">"use client"</span><span style="color: #F8F8F2">; </span><span style="color: #88846F">// this is a client component</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react"</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> classes </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./svgIcon.module.css"</span><span style="color: #F8F8F2">;</span></span>
