@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using chatgpt to generate blog posts - Astro Tech Blog</title>
+    <meta name="description" content="AI powered tools can whittle down writing time and making writing blog posts simplier.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/assets/index.3d8bed01.css" />
+<link rel="stylesheet" href="/assets/index.2f84984c.css" /><script type="module" src="/hoisted.e1d2364b.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using chatgpt to generate blog posts</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Mon, 20 September 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python" style="padding-right:3px"> <category>python<!-- --> </category> </a></div><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/chatgpt" style="padding-right:3px"> <category>chatgpt<!-- --> </category> </a></div></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3842597075.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>ChatGPT is a large language model that has been trained using a technique called unsupervised learning, in which the model learns to generate text by being fed a large dataset of text. It is designed to generate human-like responses to prompts, and can be used for a variety of natural language processing tasks, such as language translation, text summarization, and question answering.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> re</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> argparse</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> pyChatGPT </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> ChatGPT</span></span>
+<span class="line"><span style="color: #88846F"># import yaml</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> yaml </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> load, dump, Loader</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> io</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> warnings</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">PIL</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Image</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> stability_sdk </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> client</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> stability_sdk.interfaces.gooseai.generation.generation_pb2 </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> generation</span></span>
+<span class="line"><span style="color: #88846F"># Our Host URL should not be prepended with "https" nor should it have a trailing slash.</span></span>
+<span class="line"><span style="color: #F8F8F2">os.environ[</span><span style="color: #E6DB74">'STABILITY_HOST'</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'grpc.stability.ai:443'</span></span>
+<span class="line"><span style="color: #F8F8F2">os.environ[</span><span style="color: #E6DB74">"STABILITY_KEY"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> os.getenv(</span><span style="color: #E6DB74">"STABILITY_KEY"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_image</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">:</span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">)-> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    prompt </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'imageArgs'</span><span style="color: #F8F8F2">][</span><span style="color: #E6DB74">'prompt'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    stability_api </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> client.StabilityInference(</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">key</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">os.environ[</span><span style="color: #E6DB74">'STABILITY_KEY'</span><span style="color: #F8F8F2">], </span><span style="color: #88846F"># API Key reference.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">verbose</span><span style="color: #F92672">=</span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">, </span><span style="color: #88846F"># Print debug messages.</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">engine</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"stable-diffusion-v1-5"</span><span style="color: #F8F8F2">, </span><span style="color: #88846F"># Set the engine to use for generation. </span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># Available engines: stable-diffusion-v1 stable-diffusion-v1-5 stable-diffusion-512-v2-0 stable-diffusion-768-v2-0 </span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-inpainting-v1-0 stable-inpainting-512-v2-0</span></span>
+<span class="line"><span style="color: #F8F8F2">    )</span></span>
+<span class="line"><span style="color: #F8F8F2">    answers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> stability_api.generate(</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">prompt</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">prompt</span></span>
+<span class="line"><span style="color: #F8F8F2">    )</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> resp </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> answers:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> artifact </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> resp.artifacts:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> artifact.finish_reason </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> generation.</span><span style="color: #AE81FF">FILTER</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                warnings.warn(</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #E6DB74">"Your request activated the API's safety filters and could not be processed."</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #E6DB74">"Please modify the prompt and try again."</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> artifact.type </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> generation.</span><span style="color: #AE81FF">ARTIFACT_IMAGE</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                img </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Image.open(io.BytesIO(artifact.binary))</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># images</span></span>
+<span class="line"><span style="color: #F8F8F2">                img.save(</span><span style="color: #E6DB74">"images"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">(artifact.seed)</span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">".png"</span><span style="color: #F8F8F2">) </span><span style="color: #88846F"># Save our generated images with their seed number as the filename.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_frontmatter</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">)-> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># open output file</span></span>
+<span class="line"><span style="color: #F8F8F2">    output_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'outputFile'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(output_file, </span><span style="color: #E6DB74">'w'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> f:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># write frontmatter</span></span>
+<span class="line"><span style="color: #F8F8F2">        f.write(</span><span style="color: #E6DB74">'---</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># get frontmatter</span></span>
+<span class="line"><span style="color: #F8F8F2">        frontmatter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'frontMatter'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> key, value </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> frontmatter.items():</span></span>
+<span class="line"><span style="color: #F8F8F2">            f.write(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">key</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">value</span><span style="color: #AE81FF">}\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        f.write(</span><span style="color: #E6DB74">'---</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># write body</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pass</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">use_programming_language</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">section_text</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">)-> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># get programming language</span></span>
+<span class="line"><span style="color: #F8F8F2">    programming_language </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'programmingLanguage'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># use regex to find plain ``` and replace with ```programming_language</span></span>
+<span class="line"><span style="color: #F8F8F2">    type_start_line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
+<span class="line"><span style="color: #F8F8F2">    type_end_line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># replace with code blocks with programming language</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># split lines by \n</span></span>
+<span class="line"><span style="color: #F8F8F2">    modified_lines </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
+<span class="line"><span style="color: #F8F8F2">    lines </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> section_text.split(</span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i, line </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">enumerate</span><span style="color: #F8F8F2">(lines):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> line </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'```'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> type_start_line </span><span style="color: #F92672">is</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                type_start_line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> i</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># append modified line</span></span>
+<span class="line"><span style="color: #F8F8F2">                modified_lines.append(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">'```</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">programming_language</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">else</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># odd number of ``` so we are ending a code block</span></span>
+<span class="line"><span style="color: #F8F8F2">                type_start_line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># append modified line</span></span>
+<span class="line"><span style="color: #F8F8F2">                modified_lines.append(</span><span style="color: #E6DB74">'```'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">else</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #88846F"># adjust line if type_start_line is not None</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #88846F"># remove ` at the beginning of the line and the end of the line</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> type_start_line </span><span style="color: #F92672">is</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">not</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># check for ` character at the beginning of the line</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> line[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'`'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                    line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> line[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">:]</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># check for ` character at the end of the line</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> line[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'`'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                    line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> line[:</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">            modified_lines.append(line)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">.join(modified_lines)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_body</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">)-> </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># read CHATGPT_TOKEN from os</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #AE81FF">CHATGPT_SESSION_TOKEN</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> os.getenv(</span><span style="color: #E6DB74">"CHATGPT_TOKEN"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># print(CHATGPT_SESSION_TOKEN)</span></span>
+<span class="line"><span style="color: #F8F8F2">    session_token </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">CHATGPT_SESSION_TOKEN</span><span style="color: #F8F8F2">  </span><span style="color: #88846F"># `__Secure-next-auth.session-token` cookie from https://chat.openai.com/chat</span></span>
+<span class="line"><span style="color: #F8F8F2">    api </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ChatGPT(session_token)  </span><span style="color: #88846F"># auth with session token</span></span>
+<span class="line"><span style="color: #F8F8F2">    output_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'outputFile'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    sections </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'sections'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(output_file, </span><span style="color: #E6DB74">'a'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> f:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> section </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> sections:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #88846F"># check if str or dict</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">isinstance</span><span style="color: #F8F8F2">(section, </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">                resp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> api.send_message(section)</span></span>
+<span class="line"><span style="color: #F8F8F2">                clean_message </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> use_programming_language(cfg, resp[</span><span style="color: #E6DB74">'message'</span><span style="color: #F8F8F2">])</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">else</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># assume dict</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #88846F"># type and src from dict</span></span>
+<span class="line"><span style="color: #F8F8F2">                input_type </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> section[</span><span style="color: #E6DB74">'type'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                src </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> section[</span><span style="color: #E6DB74">'src'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> input_type </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'file'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #88846F"># read src from file</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(src, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> src_file:</span></span>
+<span class="line"><span style="color: #F8F8F2">                        src_text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> src_file.read()</span></span>
+<span class="line"><span style="color: #F8F8F2">                    resp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> api.send_message(src_text)</span></span>
+<span class="line"><span style="color: #F8F8F2">                    clean_message </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> resp[</span><span style="color: #E6DB74">'message'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(clean_message)</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #88846F"># write original text</span></span>
+<span class="line"><span style="color: #F8F8F2">                    programming_language </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'programmingLanguage'</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                    f.write(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"```</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">programming_language</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">src_text</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74"> ```</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">                    f.write(</span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            f.write(clean_message)</span></span>
+<span class="line"><span style="color: #F8F8F2">            f.write(</span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> __name__ </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"__main__"</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    parser </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> argparse.ArgumentParser()</span></span>
+<span class="line"><span style="color: #F8F8F2">    parser.add_argument(</span><span style="color: #E6DB74">'--file'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">type</span><span style="color: #F92672">=</span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">default</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'posts/chatgpt_blog_generation.yml'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    args </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> parser.parse_args()</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># valid files exist</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># argparse for file eventually</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(args.file, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> f:</span></span>
+<span class="line"><span style="color: #F8F8F2">        cfg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> load(f, </span><span style="color: #FD971F">Loader</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">Loader)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># if file exists skip</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># if not run these functions</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> os.path.exists(cfg[</span><span style="color: #E6DB74">'outputFile'</span><span style="color: #F8F8F2">]):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'file exists'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">exit</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># if genImage is true, then makeImage</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> cfg[</span><span style="color: #E6DB74">'imageArgs'</span><span style="color: #F8F8F2">]:</span></span>
+<span class="line"><span style="color: #F8F8F2">        generate_image(cfg)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">pass</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    generate_frontmatter(cfg)</span></span>
+<span class="line"><span style="color: #F8F8F2">    generate_body(cfg) </span></span></code></pre>
+<p>This is a Python script that uses the ChatGPT API, the pyChatGPT library, and the stability_sdk to generate text and images. The script takes in a configuration file in YAML format, which specifies the input text, the output file, and various settings such as the programming language to use for code blocks and the prompt for the image generation.
+It uses the ChatGPT API to generate text in response to prompts specified in the configuration file. The script also uses the stability_sdk to generate images based on the prompt specified in the configuration file. The script also uses the Python Imaging Library (PIL) to save the generated images to a directory. Additionally, it processes the generated text, using regular expressions to replace plain backticks with code blocks in the specified programming language.</p>
+<p>There are several ways to monetize a blog, including the following:</p>
+<ol>
+<li>Advertising: You can place ads on your blog and earn money through pay-per-click or pay-per-impression programs such as Google AdSense.</li>
+<li>Affiliate marketing: You can earn money by promoting other people’s products or services and receiving a commission for every sale made through your unique affiliate link.</li>
+<li>Sponsored posts: You can write posts sponsored by a brand or company and receive payment for the promotion.</li>
+<li>Selling products or services: You can sell your own products or services, such as e-books, courses, or consulting services, directly to your readers.</li>
+<li>Crowdfunding: You can use platforms like Patreon or Kickstarter to raise money from your readers to support your blog or other projects.</li>
+<li>Subscription models: You can offer exclusive content, access to a community or other perks for a recurring fee.</li>
+</ol>
+<p>It’s important to note that monetizing your blog requires consistent, high-quality content, and a sizable audience. It may take some time and effort to grow your blog and monetize it successfully.</p>
+<p>Using AI to generate images can be beneficial in a variety of ways. Some reasons include:</p>
+<ol>
+<li>Automation: AI-generated images can be produced quickly and at scale, reducing the time and resources required to create images manually.</li>
+<li>Variation: AI-generated images can be easily customized to produce a wide range of variations, allowing for greater flexibility in image design.</li>
+<li>Consistency: AI-generated images can be designed to maintain a consistent style or theme, making it easier to maintain a cohesive visual identity across a brand or product.</li>
+<li>Cost-effectiveness: AI-generated images can be less expensive than hiring a professional photographer or graphic designer, making them more accessible to businesses with limited budgets.</li>
+<li>Creative possibilities: AI-generated images can be used in creative ways, such as creating surreal or abstract imagery that would be difficult to achieve through traditional means.</li>
+<li>Personalization: AI-generated images can be used to personalize content for targeted audience, resulting in higher engagement and conversion rates.</li>
+<li>Efficiency: AI-generated images can be used to generate high-quality images for use in various applications, such as product advertising, web design, and mobile apps.</li>
+</ol>
+<p>Using AI to generate images can be beneficial in a variety of ways. Some reasons include:</p>
+<ol>
+<li>Automation: AI-generated images can be produced quickly and at scale, reducing the time and resources required to create images manually.</li>
+<li>Variation: AI-generated images can be easily customized to produce a wide range of variations, allowing for greater flexibility in image design.</li>
+<li>Consistency: AI-generated images can be designed to maintain a consistent style or theme, making it easier to maintain a cohesive visual identity across a brand or product.</li>
+<li>Cost-effectiveness: AI-generated images can be less expensive than hiring a professional photographer or graphic designer, making them more accessible to businesses with limited budgets.</li>
+<li>Creative possibilities: AI-generated images can be used in creative ways, such as creating surreal or abstract imagery that would be difficult to achieve through traditional means.</li>
+<li>Personalization: AI-generated images can be used to personalize content for targeted audience, resulting in higher engagement and conversion rates.</li>
+<li>Efficiency: AI-generated images can be used to generate high-quality images for use in various applications, such as product advertising, web design, and mobile apps.</li>
+</ol>
+<p>AI has the potential to change blog writing in the future by making the process more efficient and personalized. For example, AI-powered writing assistants can help writers generate content faster by suggesting topics, outlining structure, and providing research and data to support their ideas. Additionally, AI-powered content generation can personalize blogs by analyzing audience data and tailoring the content to their interests and preferences. It can also generate images, infographics and videos to supplement the written content. However, it’s important to note that AI-generated content should be carefully evaluated for accuracy and bias, and should be used in conjunction with human editing and oversight to ensure high-quality and ethical results.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-01-26<!-- -->.</div></div></div>
+  </body></html>
