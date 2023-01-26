@@ -2,6 +2,7 @@
 tags: ['linq', '.net']
 title: Introduction to LINQ
 description: LINQ is a powerful tool for querying data. In this post, we'll look at how to use LINQ to query data in C#.
+layout: '@/templates/BasePost.astro'
 pubDate: Mon, 13 September 2023
 imgSrc: '/imgs/2023/359551664.png'
 ---
