@@ -1,5 +1,5 @@
 ---
-tags: ['linq', 'C#']
+tags: ['linq', '.net']
 title: Introduction to LINQ
 description: LINQ is a powerful tool for querying data. In this post, we'll look at how to use LINQ to query data in C#.
 pubDate: Mon, 13 September 2023
