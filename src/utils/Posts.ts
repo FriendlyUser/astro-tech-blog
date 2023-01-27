@@ -1,11 +1,8 @@
-import type { MarkdownInstance } from 'astro-boilerplate-components';
+import type { CollectionEntry } from 'astro:content';
 
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
-
-export const sortByDate = (posts: MarkdownInstance<CustomIFrontMatter>[]) => {
+export const sortByDate = (posts: CollectionEntry<'blog'>[]) => {
   return posts.sort(
     (a, b) =>
-      new Date(b.frontmatter.pubDate).valueOf() -
-      new Date(a.frontmatter.pubDate).valueOf()
+      new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
   );
 };

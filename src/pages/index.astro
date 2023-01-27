@@ -1,21 +1,21 @@
 ---
 // import { CTA } from '@/partials/CTA';
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import { Hero } from '@/partials/Hero';
 import { ProjectList } from '@/partials/ProjectList';
 import { RecentPosts } from '@/partials/RecentPosts';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
+import { getCollection } from 'astro:content';
 
 import BottomSection from '../partials/BottomSection.astro';
 
-const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/**/*.md');
-const sortedPosts = sortByDate(allPosts);
+const collectionPosts = await getCollection('blog');
+const sortedPosts = sortByDate(collectionPosts);
 
 // filter out dates that are in the future
 const filteredPosts = sortedPosts.filter((post) => {
-  const postDate = new Date(post.frontmatter.pubDate);
+  const postDate = new Date(post.data.pubDate);
   const today = new Date();
   return postDate <= today;
 });

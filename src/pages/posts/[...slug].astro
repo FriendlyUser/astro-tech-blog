@@ -26,7 +26,6 @@ interface Props {
 }
 
 const { page } = Astro.props as Props;
-console.log(page);
 const titleSuffix = ` - ${AppConfig.site_name}`;
 const titleBase = `Page ${(page as any).currentPage}`;
 const title = titleBase + titleSuffix;

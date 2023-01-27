@@ -9,7 +9,7 @@ import mdx from '@astrojs/mdx';
 // https://astro.build/config
 export default defineConfig({
   // base: '.', // Set a path prefix.
-  site: 'https://friendlyuser.github.io', // Use to generate your sitemap and canonical URLs in your final build.
+  site: 'https://friendlyuser.github.io/', // Use to generate your sitemap and canonical URLs in your final build.
   // Important!
   // base: '/astro-tech-blog',
   // Only official '@astrojs/*' integrations are currently supported by Astro.

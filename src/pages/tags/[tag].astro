@@ -1,29 +1,25 @@
 ---
+import { getCollection } from 'astro:content';
 import {
-  BlogGallery,
   PaginationHeader,
   Section,
 } from 'astro-boilerplate-components';
 
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
 
 import BottomSection from '../../partials/BottomSection.astro';
+import { BlogGallery } from '@/partials/BlogGalleryWithTags';
 
-type GetStaticPaths = {
-  paginate: any;
-}; // Overrides `GetStaticPathsOptions` types from Astro
-const allPosts = await Astro.glob<CustomIFrontMatter>('../posts/**/*.md(x)?');
-
+const allPosts = await getCollection('blog');
 export async function getStaticPaths() {
-  const thePosts = await Astro.glob<CustomIFrontMatter>('../posts/**/*.md(x)?');
-  const sortedPosts = sortByDate(thePosts as any);
+  const collectionPosts = await getCollection('blog');
+  const sortedPosts = sortByDate(collectionPosts as any);
   // get all tags
   const tags = sortedPosts
     .map((post) => {
-      const items = post.frontmatter?.tags;
+      const items = post.data?.tags;
       return items;
     })
     .reduce((acc, val) => acc.concat(val), []);
@@ -50,7 +46,7 @@ const description = 'Page filled with posts based on tag.';
 
 const posts = allPosts
   .filter((post) => {
-    const { tags } = post.frontmatter;
+    const { tags } = post.data;
     return tags.includes(tag as string);
   })
   .filter((post) => post !== null);
