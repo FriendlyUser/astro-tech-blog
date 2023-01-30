@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="/assets/index.3d8bed01.css" /><p>Liability Driven Investing (LDI) is a portfolio management strategy where the investment decisions are driven by the specific needs of the investor’s liabilities (e.g. pension obligations). The goal is to match the duration, currency, and risk profile of the assets with the liabilities, to minimize the risk of not being able to meet future obligations.</p>
+<p>The risk of high leverage in investing is that it amplifies potential gains, but also increases the risk of losses. If the invested assets underperform, the leveraged positions can result in large losses that exceed the initial investment. Additionally, leveraged investments can be subject to margin calls and other forms of forced selling, which can amplify losses in declining markets. High leverage can also increase the risk of bankruptcy or financial distress.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\documentclass</span><span style="color: #F8F8F2">{standalone}</span></span>
+<span class="line"><span style="color: #66D9EF">\usepackage</span><span style="color: #F8F8F2">[utf8]{inputenc}</span></span>
+<span class="line"><span style="color: #66D9EF">\usepackage</span><span style="color: #F8F8F2">{tikz}</span></span>
+<span class="line"><span style="color: #66D9EF">\usetikzlibrary</span><span style="color: #F8F8F2">{positioning}</span></span>
+<span class="line"><span style="color: #66D9EF">\usepackage</span><span style="color: #F8F8F2">{xcolor}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{document}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{tikzpicture}[node distance=5cm]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\tikzset</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    connector/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">        -latex,</span></span>
+<span class="line"><span style="color: #F8F8F2">        font=</span><span style="color: #66D9EF">\scriptsize</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    connectorReverse/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">        -stealth,</span></span>
+<span class="line"><span style="color: #F8F8F2">        font=</span><span style="color: #66D9EF">\scriptsize</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    rectangle connector/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">        connector,</span></span>
+<span class="line"><span style="color: #F8F8F2">        to path={(</span><span style="color: #66D9EF">\tikztostart</span><span style="color: #F8F8F2">) -- ++(#1,0pt) </span><span style="color: #66D9EF">\tikztonodes</span><span style="color: #F8F8F2"> |- (</span><span style="color: #66D9EF">\tikztotarget</span><span style="color: #F8F8F2">) },</span></span>
+<span class="line"><span style="color: #F8F8F2">        pos=0.5</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    rectangle connector/.default=-2cm,</span></span>
+<span class="line"><span style="color: #F8F8F2">    rectangleReverse connector/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">        connector,</span></span>
+<span class="line"><span style="color: #F8F8F2">        to path={(</span><span style="color: #66D9EF">\tikztotarget</span><span style="color: #F8F8F2">) -- ++(#1,0pt) </span><span style="color: #66D9EF">\tikztonodes</span><span style="color: #F8F8F2"> |- (</span><span style="color: #66D9EF">\tikztostart</span><span style="color: #F8F8F2">) },</span></span>
+<span class="line"><span style="color: #F8F8F2">        pos=0.75</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    rectangleReverse  connector/.default=-2cm,</span></span>
+<span class="line"><span style="color: #F8F8F2">    straight connector/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">        connector,</span></span>
+<span class="line"><span style="color: #F8F8F2">        to path=--(</span><span style="color: #66D9EF">\tikztotarget</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">\tikztonodes</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (company) [shape=rectangle, draw, fill=blue!5, align=left, text width = 7cm,  inner sep=1cm] {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Company} </span><span style="color: #F92672">\\</span></span>
+<span class="line"><span style="color: #F8F8F2">    Employers promise to pay their staff a pension</span></span>
+<span class="line"><span style="color: #F8F8F2">  };</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (pension) [shape=rectangle, draw, fill=blue!5, below of=company, text width = 7cm, align=left, inner sep=1cm] {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Defined Benefit Pension Scheme} </span><span style="color: #F92672">\\</span></span>
+<span class="line"><span style="color: #F8F8F2">    A workplace pension based  on salary and term of employment, rather than how much is paid in. These schemes are increasing rare.</span></span>
+<span class="line"><span style="color: #F8F8F2">  };</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (asset) [shape=rectangle, draw, fill=blue!5, below of=pension,  text width = 7cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Asset Manager} </span><span style="color: #F92672">\\</span></span>
+<span class="line"><span style="color: #F8F8F2">  Appointed by pension scheme trustees to manage assets on their behalf} ;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (fund) [shape=rectangle, draw, fill=blue!5, below of=asset,  text width = 7cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Liability Driven Investment Fund} </span><span style="color: #F92672">\\</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">  A type of fund used by the asset manager to invest the pension scheme's money.</span></span>
+<span class="line"><span style="color: #F8F8F2">  };</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (company) -- (pension);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (pension) -- (asset);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (asset) -- (fund);</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (equities) [shape=rectangle, draw, fill=red!5, below left=3cm and 2cm of fund, text width = 2cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Equities}};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (bonds) [shape=rectangle, draw, fill=red!5, right of=equities, text width = 2cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Bonds}};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (gilts) [shape=rectangle, draw, fill=red!5, right of=bonds, text width = 2cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Gilts}};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (derivatives) [shape=rectangle, draw, fill=red!5, below, right of=gilts, text width = 2cm, align=left, inner sep=1cm] { </span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{Derivatives}};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> [above left=2cm and -5.5cm of equities, align=left, text width=2cm] {Funds can invest in a variety of assets};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> (fwaypoint)[draw=none, below =1.75cm of fund] {};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">% \draw [-] (fund.south) to (fwaypoint);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [-stealth, rectangleReverse connector=2cm] (fund.west) to (equities.north west);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [-stealth, rectangleReverse connector=2cm] (fund.east) to (derivatives.north west);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (bonds.north) to (fund);</span></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (gilts.north) to (fund);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{tikzpicture}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{document}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This is a diagram that demonstrates how the ldi (liability driven investing) is intended to work. I personally do not believe in ldi investing.</p>
+<p>Flow charts are important because they help to:</p>
+<ol>
+<li>Visualize and understand complex processes: Flow charts help to break down a complex process into simple and easily understandable steps.</li>
+<li>Communicate ideas effectively: Flow charts are a visual representation of information, making it easier to convey ideas to others and collaborate effectively.</li>
+<li>Improve efficiency: By mapping out processes and identifying areas for improvement, flow charts can help organizations streamline their workflows and make them more efficient.</li>
+<li>Track progress: Flow charts allow you to see the progress of a project or process and make adjustments if needed.</li>
+<li>Identify bottlenecks: Flow charts help to identify bottlenecks or areas of a process where improvement is needed.</li>
+</ol>
+<p>Overall, flow charts play a crucial role in improving communication, making processes more efficient, and helping to achieve desired outcomes in various settings.</p>
