@@ -2,6 +2,7 @@ import os
 import frontmatter
 import glob
 import requests
+import time 
 
 def publish_to_medium(data):
     token = os.getenv("MEDIUM_TOKEN")
@@ -36,9 +37,9 @@ def publish_to_medium(data):
       print(post_request.status_code)
       print(post_request.text)
 
-def main():
+def make_articles_for_medium():
     basePostFolder = "src/pages"
-    postFolders = ["posts/stonks/web", "posts/stonks/ta"]
+    postFolders = ["posts/stonks/web", "posts/stonks/ta", "posts", "posts/stonks", "posts/tech", "posts/tech/css", "posts/tech/dapps", "posts/tech/flutter", "posts/tech/java", "posts/tech/js", "posts/tech/net", "posts/tech/python", "posts/tech/scripting"]
     # read articles from medium_articles
     created_articles = []
     with open ("scripts/medium_articles.txt", "r") as f:
@@ -47,7 +48,7 @@ def main():
     # find all markdown files in the post folders
     for postFolder in postFolders:
         for post in glob.glob(f"{basePostFolder}/{postFolder}/*.md"):
-            with open(post) as f:
+            with open(post, encoding="utf-8", errors="replace") as f:
               post_contents = frontmatter.loads(f.read())
             # strip basePostFolder from the path
             adjustedPost = post.replace(basePostFolder, "")
@@ -57,9 +58,15 @@ def main():
                 post_contents["slug"] = adjustedPost
                 publish_to_medium(post_contents)
                 created_articles.append(adjustedPost)
+                time.sleep(0.5)
     with open ("scripts/medium_articles.txt", "w") as f:
         for article in created_articles:
             f.write(article + "\n")
 
+def make_articles_for_dev():
+  pass
+
+def main():
+    make_articles_for_medium()
 if __name__ == "__main__":
     main()
