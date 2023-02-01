@@ -1,4 +1,3 @@
 /posts/stonks/ta\natural_gas_ta_with_python.md
-/posts/stonks/web\scrap_from_sec_with_python.md
 /posts/stonks/web\generate_reports_with_13F_filings_with_markdown.md
 /posts/stonks/web\ldi_diagram_in_tex.md
