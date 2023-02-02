@@ -4,6 +4,7 @@ title: Natural Gas Price Analysis with Python
 description: Using Pandas and python we can analyze natural gas prices.
 pubDate: Mon, 27 September 2023
 imgSrc: "/imgs/2023/2223533571.png"
+layout: '@/templates/BasePost.astro'
 ---
 
 Gas prices fluctuate due to a variety of factors, including changes in the cost of crude oil, which is the primary raw material used to produce gasoline, as well as changes in supply and demand for gasoline, taxes, and other costs associated with refining, storing, and transporting gasoline. Additionally, geopolitical events, such as conflicts or natural disasters, can also affect gas prices by disrupting the global oil market.
