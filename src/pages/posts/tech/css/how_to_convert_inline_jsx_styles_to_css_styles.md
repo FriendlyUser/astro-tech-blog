@@ -1,6 +1,6 @@
 ---
-title: Tracking files with a smart contract
-description: react native template for a basic app
+title: Converting React CSS styles to CSS classes
+description: Leverage chatgpt to convert React CSS styles to CSS classes
 pubDate: Saturday, 20 October 2023 13:00:00 GMT
 tags: ["css", "chatgpt"]
 layout: '@/templates/BasePost.astro'
@@ -8,7 +8,7 @@ imgSrc: '/imgs/2023/DALL·E 2022-12-26 21.10.41 - decentralized network diagram 
 ---
 
 
-onverting React CSS styles to CSS classes is important for several reasons:
+Converting React CSS styles to CSS classes is important for several reasons:
 
 Separation of Concerns: By using CSS classes, the styling and layout of a React component can be separated from its functionality. This makes the code easier to maintain and update, as changes to the styling don't affect the component's behavior.
 
