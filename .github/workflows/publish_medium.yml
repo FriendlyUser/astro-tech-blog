@@ -24,12 +24,17 @@ jobs:
           python -m pip install python-frontmatter requests
           python scripts/upload_to_medium.py
       
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: dist
+      # push back to repo all txt files
+      - name: update repo
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add scripts/*.txt
+          git commit -m "Update Medium Posts"
+          git push
+      
+      # push back to repo all txt files
+      
 
 
         
