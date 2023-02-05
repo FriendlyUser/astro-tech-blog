@@ -3,6 +3,8 @@ import frontmatter
 import glob
 import requests
 import time 
+from dateutil.parser import parse
+from datetime import datetime
 
 def publish_to_medium(data):
     token = os.getenv("MEDIUM_TOKEN")
@@ -53,6 +55,17 @@ def make_articles_for_medium():
             # strip basePostFolder from the path
             adjustedPost = post.replace(basePostFolder, "")
             # publish_to_medium(post)
+            # make sure frontMatter has a date in the future
+            # pubDate > currDate
+            try:
+              if parse(post_contents["pubDate"]).replace(tzinfo=None) < datetime.now():
+                  # print(f"Skipping {adjustedPost} because date is in the past")
+                  continue
+              else: 
+                  pass
+            except Exception as e:
+              # print(e)
+              pass
             if adjustedPost not in created_articles:
                 print(f"Publishing {adjustedPost}")
                 post_contents["slug"] = adjustedPost
