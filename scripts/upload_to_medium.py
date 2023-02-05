@@ -35,9 +35,11 @@ def publish_to_medium(data):
 
     if post_request.status_code == requests.codes.created:
       print(post_request)
+      return True
     else:
       print(post_request.status_code)
       print(post_request.text)
+      return False
 
 def make_articles_for_medium():
     basePostFolder = "src/pages"
@@ -69,8 +71,12 @@ def make_articles_for_medium():
             if adjustedPost not in created_articles:
                 print(f"Publishing {adjustedPost}")
                 post_contents["slug"] = adjustedPost
-                publish_to_medium(post_contents)
-                created_articles.append(adjustedPost)
+                isCreated = publish_to_medium(post_contents)
+                if isCreated:
+                  created_articles.append(adjustedPost)
+                else: 
+                  print("Failed to create article")
+                  time.sleep(5)
                 time.sleep(0.5)
     with open ("scripts/medium_articles.txt", "w") as f:
         for article in created_articles:
