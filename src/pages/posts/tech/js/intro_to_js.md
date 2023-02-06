@@ -4,6 +4,7 @@ title: Introduction to javascript free ebook
 description: A free ebook on javascript, node.js and asynchronous programming.
 pubDate: Sunday, 2 Feburary 2023
 imgSrc: '/imgs/2023/2075079294_A_dream_of_a_distant_galaxy__concept_art.png'
+layout: '@/templates/BasePost.astro'
 ---
 KDP (Kindle Direct Publishing) is a self-publishing platform offered by Amazon that allows authors and publishers to independently publish their books, e-books, and other digital content directly to Kindle devices and Amazon's Kindle store. KDP provides a way for authors to reach a large audience and get their content in front of millions of Kindle users without the need for a traditional publisher.
 
