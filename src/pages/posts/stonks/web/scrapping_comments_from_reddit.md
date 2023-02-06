@@ -4,6 +4,7 @@ title: Using golang to filter through reddit posts
 description: Leverage the reddit api to get the latest posts multiple subreddits.
 pubDate: Mon, 7 November 2023
 imgSrc: "/imgs/2023/3493235193_A_dream_of_a_distant_galaxy__concept_art.png"
+projects: ["finreddit"]
 ---
 Reddit is a social news aggregation, web content rating, and discussion website. Users can submit posts, such as text or direct links, and other users can vote on these posts, causing them to rise or fall in popularity. Reddit is organized into communities, known as "subreddits," which cover a vast array of topics and interests.
 
