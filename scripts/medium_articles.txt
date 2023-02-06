@@ -80,3 +80,4 @@
 /posts/tech/scripting/uploading_apks_to_google_drive_in_bitrise.md
 /posts/tech/scripting/using_git_to_filter_for_commits.md
 /posts/tech/python/indeed_parsing.md
+/posts/stonks/web/scrapping_comments_from_reddit.md
