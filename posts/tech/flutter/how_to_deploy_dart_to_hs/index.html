@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="/assets/index.3d8bed01.css" /><p>Docker is useful for deployments because it provides a consistent and reproducible environment for applications to run in, regardless of the host operating system. This makes it easier to deploy, test, and run applications in a variety of environments, from local development machines to production servers. Docker containers encapsulate an application and its dependencies, allowing for easy and reliable deployment, as well as efficient resource utilization. Additionally, Docker images can be stored in a central repository, making it easier to share and distribute applications.</p>
+<p>Dart is a programming language developed by Google and it allows compiling Dart code into a single binary executable. This is achieved using the Dart SDK and the “dart2native” command-line tool, which compiles Dart code into machine code for a specific platform. The resulting binary is standalone and does not require a Dart runtime or interpreter to be installed on the target system. This makes it easy to distribute the application and eliminates the need for users to install any additional dependencies. Additionally, compiling to a single binary can result in faster startup times and improved performance compared to running the application in a Dart runtime.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> import </span><span style="color: #E6DB74">'package:dart_off_server/core.dart'</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> cli;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:alfred/alfred.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'dart:io'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">> arguments) </span><span style="color: #F92672">async</span><span style="color: #F8F8F2">  {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// get port from arguments</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> port </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">7860</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (arguments.isEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Please provide a port number'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    port </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">tryParse</span><span style="color: #F8F8F2">(arguments.first) </span><span style="color: #F92672">??</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">6565</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Alfred</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// print line</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// print('Starting up server: on port $port');</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, (req, res) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">'json_response'</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">});</span></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/text'</span><span style="color: #F8F8F2">, (req, res) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'Text response'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/json'</span><span style="color: #F8F8F2">, (req, res) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">'json_response'</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/jsonExpressStyle'</span><span style="color: #F8F8F2">, (req, res) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    res.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">({</span><span style="color: #E6DB74">'type'</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'traditional_json_response'</span><span style="color: #F8F8F2">});</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/file'</span><span style="color: #F8F8F2">, (req, res) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">File</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'test/files/image.jpg'</span><span style="color: #F8F8F2">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/html'</span><span style="color: #F8F8F2">, (req, res) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    res.headers.contentType </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ContentType</span><span style="color: #F8F8F2">.html;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'&#x3C;html>&#x3C;body>&#x3C;h1>Test HTML&#x3C;/h1>&#x3C;/body>&#x3C;/html>'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"><span style="color: #F8F8F2">   app.</span><span style="color: #A6E22E">post</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/post-route'</span><span style="color: #F8F8F2">, (req, res) </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> req.body; </span><span style="color: #88846F">//JSON body</span></span>
+<span class="line"><span style="color: #F8F8F2">    body </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">; </span><span style="color: #88846F">//true</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">(port); </span><span style="color: #88846F">//Listening on port 6565</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This code is a Dart program that sets up an HTTP server using the “alfred” package. The server listens on a specified port and provides several routes for handling HTTP requests. The routes include handling GET requests for JSON and HTML responses, serving a file, and handling a POST request. The port number is specified as the first argument when running the program, and if no argument is provided, the default port number is 6565. If an invalid argument is provided, the port number will be set to 6565. The code uses the Dart “async” keyword to indicate that the “listen” function is asynchronous and can run concurrently with other parts of the code.</p>
+<p>Docker multi-stage builds are a feature in Docker that allow optimizing the size of the final Docker image by only including the necessary components and dependencies for production. Multi-stage builds involve using multiple “FROM” statements in the Dockerfile to create multiple intermediate images, each of which can be used as a temporary build environment.</p>
+<p>For example, you can use one stage to build your application and its dependencies, and then use another stage to copy only the necessary files (e.g. the compiled binary) into a smaller, minimal base image, such as a runtime-only image. This reduces the size of the final image and minimizes the attack surface by eliminating unnecessary components.</p>
+<p>Here’s an example of a multi-stage build in a Dockerfile:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bash`# Build stage</span></span>
+<span class="line"><span style="color: #F8F8F2">FROM dart AS build</span></span>
+<span class="line"><span style="color: #F8F8F2">WORKDIR /app</span></span>
+<span class="line"><span style="color: #F8F8F2">COPY . .</span></span>
+<span class="line"><span style="color: #F8F8F2">RUN pub get &#x26;&#x26; dart2native main.dart -o myapp</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2"># Production stage</span></span>
+<span class="line"><span style="color: #F8F8F2">FROM alpine</span></span>
+<span class="line"><span style="color: #F8F8F2">WORKDIR /app</span></span>
+<span class="line"><span style="color: #F8F8F2">COPY --from=build /app/myapp /app</span></span>
+<span class="line"><span style="color: #F8F8F2">CMD ["./myapp"]</span></span></code></pre>
+<p>In this example, the first stage uses the <code>dart</code> image as the build environment and compiles the Dart code into a standalone binary. The second stage uses the <code>alpine</code> image as a minimal base image and copies only the compiled binary from the build stage into the final image. The final image only includes the necessary components to run the application, resulting in a smaller and more secure image.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> FROM dart:2.19.1 as builder</span></span>
+<span class="line"><span style="color: #F8F8F2">WORKDIR /app</span></span>
+<span class="line"><span style="color: #F8F8F2">COPY pubspec.yaml pubspec.lock ./</span></span>
+<span class="line"><span style="color: #F8F8F2">RUN dart pub get </span></span>
+<span class="line"><span style="color: #F8F8F2">COPY . .</span></span>
+<span class="line"><span style="color: #F8F8F2">RUN dart compile exe bin/cli.dart -o /app/dart_off_server</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2"># copy server file to basic image to run the app</span></span>
+<span class="line"><span style="color: #F8F8F2">FROM ubuntu:latest</span></span>
+<span class="line"><span style="color: #F8F8F2">WORKDIR /app</span></span>
+<span class="line"><span style="color: #F8F8F2"># RUN apk add --no-cache bash</span></span>
+<span class="line"><span style="color: #F8F8F2">COPY --from=builder /app/dart_off_server /app/dart_off_server</span></span>
+<span class="line"><span style="color: #F8F8F2">RUN ls -la</span></span>
+<span class="line"><span style="color: #F8F8F2">RUN pwd</span></span>
+<span class="line"><span style="color: #F8F8F2">CMD ["/app/dart_off_server"]</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This Dockerfile creates two Docker images: a build environment image and a final image.</p>
+<p>The first stage uses the <code>dart:2.19.1</code> image as the base for the build environment and sets the working directory to <code>/app</code>. It then copies the <code>pubspec.yaml</code> and <code>pubspec.lock</code> files and runs <code>dart pub get</code> to install the dependencies. It then copies the rest of the application files and compiles the Dart code into an executable binary using the <code>dart compile exe</code> command. The resulting binary is saved as <code>dart_off_server</code> in the <code>/app</code> directory.</p>
+<p>The second stage uses the <code>ubuntu:latest</code> image as the base for the final image and sets the working directory to <code>/app</code>. It then copies the <code>dart_off_server</code> binary from the build environment using the <code>COPY --from=builder</code> command. The final image only includes the necessary components to run the application, resulting in a smaller and more secure image.</p>
+<p>The final step in the Dockerfile sets the command to run the application by executing the <code>dart_off_server</code> binary.</p>
+<p>Ideally I would be able to use scratch of equivalent, but that didnt seem to work for hugging space, possibly for security reasons or image verification. Luckily ubuntu is about 30 MB so it is not too bad.
+Dart is a modern, open-source, general-purpose programming language used for both front-end and back-end development. The advantages of using Dart for back-end development include:</p>
+<ol>
+<li>Strong Typing: Dart has a strong type system, making it easier to write reliable code and catch bugs early in the development process.</li>
+<li>Speed: Dart compiles to machine code, making it faster than some other interpreted languages. This can result in improved performance for back-end applications.</li>
+<li>Scalability: Dart is designed for scalability, with features like isolate-based concurrency, making it well-suited for large-scale server-side applications.</li>
+<li>Interoperability: Dart can interface with other technologies and platforms, such as C++ and JavaScript, making it possible to integrate with existing systems and technologies.</li>
+<li>Ecosystem: Dart has a growing ecosystem of packages and tools, making it easier to find solutions to common back-end development problems.</li>
+<li>Easy to Learn: Dart is a relatively new language and has a simple, straightforward syntax that makes it easy for developers to learn and start using it quickly.</li>
+<li>Improved Developer Productivity: With its strong typing and other features, Dart can help developers write code faster and with fewer bugs, resulting in improved productivity and time-to-market for back-end applications.</li>
+</ol>
+<h2 id="references">References</h2>
+<p>To view the code base</p>
+<ul>
+<li><a href="https://friendlyuser-dart-off-server.hf.space/">https://friendlyuser-dart-off-server.hf.space/</a></li>
+<li><a href="https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main">https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main</a></li>
+</ul>
