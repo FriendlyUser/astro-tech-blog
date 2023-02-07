@@ -1,10 +1,6 @@
 name: Publish To Medium
-# Don't want to burn my private minutes at this point
-on:
-  push:
-    branches:
-      - master
-      - main
+# Trigger on demand, wonder if I need the posts published before images will show.
+on: workflow_dispatch
 
 env:
   MEDIUM_TOKEN: ${{ secrets.MEDIUM_TOKEN }}
