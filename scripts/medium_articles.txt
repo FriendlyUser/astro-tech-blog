@@ -82,3 +82,4 @@
 /posts/tech/python/indeed_parsing.md
 /posts/stonks/web/scrapping_comments_from_reddit.md
 /posts/tech/js/intro_to_js.md
+/posts/stonks/web/scrapping_tables_with_pandas.md
