@@ -1,5 +1,5 @@
 ---
-tags: ['dart', 'docker']
+tags: ["dart", "flutter", "huggingspace"]
 title: How I deployed a dart alfred server to hugging space
 description: This blog post covers how to deploy a dart space to hugging space using docker spaces.
 pubDate: Mon, 13 November 2023
