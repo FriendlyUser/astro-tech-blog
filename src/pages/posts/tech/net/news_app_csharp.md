@@ -1,5 +1,5 @@
 ---
-tags: ['googleNews', 'C#']
+tags: ['googleNews', 'dotnet']
 title: Searching for news with google news rss feeds
 description: Here we'll look at how to use google news rss feeds to create custom news rss feeds.
 pubDate: Tues, 7 December 2023
@@ -25,7 +25,6 @@ Note that the Google News RSS feed is subject to change and may not be available
 For the full source code please view
 
 https://github.com/FriendlyUser/news-alert/blob/master/News.cs
-
 
 ```csharp 
  using System;
