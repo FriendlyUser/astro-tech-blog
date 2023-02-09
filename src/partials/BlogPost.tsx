@@ -14,7 +14,7 @@ type IBlogPostProps = {
 };
 
 const BlogPost = (props: IBlogPostProps) => (
-  <Section>
+  <Section key={props.frontmatter.title}>
     <div>
       <h1 className="text-center text-3xl font-bold">
         {props?.frontmatter.title}
@@ -37,7 +37,7 @@ const BlogPost = (props: IBlogPostProps) => (
           if (tag === 'openapi') {
             color = ColorTags.LIME;
           }
-          if (['flutter', 'remotion'].includes(tag)) {
+          if (['flutter', 'remotion', 'dart'].includes(tag)) {
             color = ColorTags.SKY;
           }
           if (['golang'].includes(tag)) {
@@ -49,17 +49,23 @@ const BlogPost = (props: IBlogPostProps) => (
           if (['git', 'docker'].includes(tag)) {
             color = ColorTags.ZINC;
           }
+          if (['react', 'nextjs', 'astro', 'alfred'].includes(tag)) {
+            color = ColorTags.RED;
+          }
           if (!color) {
             color = ColorTags.CYAN;
           }
           return (
-            <Tags color={color}>
-              {' '}
-              <a href={`/tags/${tag}`} style={{ paddingRight: '3px' }}>
+            <>
+              <Tags color={color}>
                 {' '}
-                <category>{tag} </category>{' '}
-              </a>
-            </Tags>
+                <a href={`/tags/${tag}`} style={{ paddingRight: '3px' }}>
+                  {' '}
+                  <category>{tag} </category>
+                </a>
+              </Tags>
+              &nbsp;
+            </>
           );
         })}
       </div>
