@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfred backend with openfoodfacts - Astro Tech Blog</title>
+    <meta name="description" content="Using alfred backend as a wrapper around the openfoodfacts api.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Alfred backend with openfoodfacts</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Mon, 30 November 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/alfred" style="padding-right:3px"> <category>alfred<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-sky-400 text-sky-900"> <a href="/tags/dart" style="padding-right:3px"> <category>dart<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/backend" style="padding-right:3px"> <category>backend<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2421950579.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>This post is related to my last post at <a href="https://friendlyuser.github.io/posts/tech/flutter/how_to_deploy_dart_to_hs.html">https://friendlyuser.github.io/posts/tech/flutter/how_to_deploy_dart_to_hs.html</a>. I will be using the same backend to create a wrapper around the openfoodfacts api. The openfoodfacts api is a free and open source api that provides information about food products. The api is available at <a href="https://world.openfoodfacts.org/data">https://world.openfoodfacts.org/data</a>. The api is available in different languages and I will be using dart.
+Food facts are important for a variety of reasons. First and foremost, they help us understand what we are eating and what nutrients our body is receiving. This information can be used to make informed decisions about our diets, which can impact our health and well-being.</p>
+<p>Food facts also play a role in food labeling, which is regulated by government agencies to ensure that consumers have accurate information about the food they are purchasing. This can include information about ingredients, allergens, and calorie content. This helps consumers with specific dietary needs, such as food allergies or weight management, make informed choices.</p>
+<p>In addition, food facts can be used to promote public health. For example, information about the sodium content of processed foods can be used to raise awareness about the risks of high sodium diets, and promote the consumption of healthier alternatives.</p>
+<p>Overall, food facts are an important tool for empowering consumers to make informed decisions about their diets and for promoting public health.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:openfoodfacts/openfoodfacts.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">Future</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">SearchResult</span><span style="color: #F8F8F2">> </span><span style="color: #A6E22E">search</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">Map</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">> query) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> parametersList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF">Parameter</span><span style="color: #F92672">></span><span style="color: #F8F8F2">[];</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// check for terms in query</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'terms'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> terms </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'terms'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (terms </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> terms.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">SearchTerms</span><span style="color: #F8F8F2">(terms</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> terms.</span><span style="color: #A6E22E">split</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">','</span><span style="color: #F8F8F2">)));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// check for withoutAddictives</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'withoutAdditives'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> withoutAdditives </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'withoutAdditives'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (withoutAdditives </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> withoutAdditives </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"true"</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">WithoutAdditives</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'sort'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> sort </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'sort'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (sort </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> sort.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> option </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">SortOption</span><span style="color: #F8F8F2">.values.</span><span style="color: #A6E22E">firstWhere</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          (e) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> e.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> sort,</span></span>
+<span class="line"><span style="color: #F8F8F2">          orElse</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">SortOption</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">PRODUCT_NAME</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">SortBy</span><span style="color: #F8F8F2">(option</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> option));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'pnnsGroup2'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// print('pnnsGroup2: ${query['pnnsGroup2']}');</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> pnnsGroup2 </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'pnnsGroup2'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (pnnsGroup2 </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> pnnsGroup2.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">       </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> option </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">PnnsGroup2</span><span style="color: #F8F8F2">.values.</span><span style="color: #A6E22E">firstWhere</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">          (e) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> e.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> pnnsGroup2,</span></span>
+<span class="line"><span style="color: #F8F8F2">          orElse</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">PnnsGroup2</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">PIZZA_PIES_AND_QUICHE</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">PnnsGroup2Filter</span><span style="color: #F8F8F2">(pnnsGroup2</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> option));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// page size</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'size'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> size </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'size'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (size </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> size.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">PageSize</span><span style="color: #F8F8F2">(size</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">parse</span><span style="color: #F8F8F2">(size)));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// page number</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'page'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> page </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'page'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (page </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> page.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">PageNumber</span><span style="color: #F8F8F2">(page</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">parse</span><span style="color: #F8F8F2">(page)));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// by tags</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (query.</span><span style="color: #A6E22E">containsKey</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'tags'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> rawTags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> query[</span><span style="color: #E6DB74">'tags'</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (rawTags </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> rawTags.isNotEmpty) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> rawTags.</span><span style="color: #A6E22E">split</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">','</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// iterate over tags</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tag </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> tags) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// check for tag with value</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// check tag</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (tag.</span><span style="color: #A6E22E">contains</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">':'</span><span style="color: #F8F8F2">)) {</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tagParts </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tag.</span><span style="color: #A6E22E">split</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">':'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tagName </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tagParts[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tagValue </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tagParts[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> tagType </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TagFilterType</span><span style="color: #F8F8F2">.values.</span><span style="color: #A6E22E">firstWhere</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">              (e) </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> e.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> tagName,</span></span>
+<span class="line"><span style="color: #F8F8F2">              orElse</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">TagFilterType</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">CATEGORIES</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">          parametersList.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">TagFilter</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">fromType</span><span style="color: #F8F8F2">(tagFilterType</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> tagType, tagName</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> tagValue));</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">      }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">ProductSearchQueryConfiguration</span><span style="color: #F8F8F2"> configuration </span><span style="color: #F92672">=</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">ProductSearchQueryConfiguration</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    parametersList</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> parametersList,</span></span>
+<span class="line"><span style="color: #F8F8F2">    version</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ProductQueryVersion</span><span style="color: #F8F8F2">.v3,</span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">OpenFoodAPIClient</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">searchProducts</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">User</span><span style="color: #F8F8F2">(userId</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">, password</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">    configuration,</span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">mkConfiguration</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">OpenFoodAPIConfiguration</span><span style="color: #F8F8F2">.userAgent </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">UserAgent</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">      name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'dart_off_server'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://friendlyuser-dart-off-server.hf.space/'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">OpenFoodAPIConfiguration</span><span style="color: #F8F8F2">.globalLanguages </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF">OpenFoodFactsLanguage</span><span style="color: #F92672">></span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">OpenFoodFactsLanguage</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">ENGLISH</span></span>
+<span class="line"><span style="color: #F8F8F2">  ];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">OpenFoodAPIConfiguration</span><span style="color: #F8F8F2">.globalCountry </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">OpenFoodFactsCountry</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">CANADA</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This code is written in Dart and makes use of the OpenFoodFacts API to search for food products. The code first checks for various parameters in the <code>query</code> map and adds the relevant filters to the <code>parametersList</code> array. These parameters include search terms, without additives, sort option, food category, page size and number, and tags.</p>
+<p>The code then creates a <code>ProductSearchQueryConfiguration</code> object with the parameters in the <code>parametersList</code> and makes a call to the OpenFoodAPIClient’s <code>searchProducts</code> method to search for products based on the configuration.</p>
+<p>Finally, the code sets the <code>OpenFoodAPIConfiguration</code> user agent and global language and country.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:openfoodfacts/openfoodfacts.dart'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'package:dart_off_server/core.dart'</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> openfood;</span></span>
+<span class="line"><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">> arguments) </span><span style="color: #F92672">async</span><span style="color: #F8F8F2">  { </span></span>
+<span class="line"><span style="color: #F8F8F2"> ...</span></span>
+<span class="line"><span style="color: #F8F8F2"> openfood.</span><span style="color: #A6E22E">mkConfiguration</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Alfred</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> app.</span><span style="color: #F92672">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/food/search'</span><span style="color: #F8F8F2">, (req, res) { </span></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> query </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> req.uri.queryParameters;</span></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> openfood.</span><span style="color: #A6E22E">search</span><span style="color: #F8F8F2">(query).</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((value) { </span></span>
+<span class="line"><span style="color: #F8F8F2">     res.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">(value); }</span></span>
+<span class="line"><span style="color: #F8F8F2">   ).</span><span style="color: #A6E22E">catchError</span><span style="color: #F8F8F2">((error) { </span></span>
+<span class="line"><span style="color: #F8F8F2">     res.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">(error); </span></span>
+<span class="line"><span style="color: #F8F8F2">   }); </span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
+<p>This Dart code defines a REST API endpoint for searching food information.</p>
+<p>The first line imports the openfoodfacts library, which is used for accessing food product information through the OpenFoodFacts API.</p>
+<p>The second line imports the dart_off_server library and creates an alias “openfood”.</p>
+<p>In the main function, the configuration for the OpenFoodFacts API is set up by calling <code>openfood.mkConfiguration()</code>.</p>
+<p>An instance of <code>Alfred</code> is then created and the API endpoint is defined with the line <code>app.get('/food/search', (req, res) { ... }</code>. The endpoint is listening for a GET request to the <code>/food/search</code> URL.</p>
+<p>The <code>req.uri.queryParameters</code> object is used to extract the search parameters passed in the URL query string. The parameters are then passed to <code>openfood.search(query)</code> which performs the search.</p>
+<p>The result of the search is returned as a JSON object to the client using <code>res.json(value)</code>. If an error occurs during the search, it is caught and returned as a JSON object using <code>res.json(error)</code>.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://friendlyuser-dart-off-server.hf.space/food/search?terms=%22Pizza%22">https://friendlyuser-dart-off-server.hf.space/food/search?terms=%22Pizza%22</a> * <a href="https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main">https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main</a></li>
+</ul></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-02-09<!-- -->.</div></div></div>
+  </body></html>
