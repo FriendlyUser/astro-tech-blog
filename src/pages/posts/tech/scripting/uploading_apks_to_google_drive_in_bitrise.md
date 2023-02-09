@@ -4,8 +4,8 @@ description: Uploading apks to google drive in golang from bitrise
 alt: git commits with golang
 tags: ["go","git"]
 layout: '@/templates/BasePost.astro'
-pubDate: Wednesday, 7 April 2022 13:00:00 GMT
-imgSrc: '/imgs/2022/dall-e/upload_icon_cloud.png'
+pubDate: Wednesday, 7 April 2023 13:00:00 GMT
+imgSrc: '/imgs/2023/dall-e/upload_icon_cloud.png'
 ---
 
 Bitrise is a continuous integration and delivery platform that allows you to automate your build, test, and deployment processes. You can define these processes using a combination of pre-built steps and custom scripts written in Bash or Go.
