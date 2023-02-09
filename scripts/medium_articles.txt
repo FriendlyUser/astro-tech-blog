@@ -84,3 +84,4 @@
 /posts/tech/js/intro_to_js.md
 /posts/stonks/web/scrapping_tables_with_pandas.md
 /posts/tech/flutter/how_to_deploy_dart_to_hs.md
+/posts/tech/flutter/alfred_backend_with_open_food_facts_api.md
