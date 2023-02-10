@@ -53,7 +53,7 @@ import os
 input_image = 'input.jpg'
 output_image = 'output.png'
 
-os.system(f'convert {input\_image} {output\_image}')`
+os.system(f'convert {input_image} {output\_image}')`
 ```
 In this example, `convert` is the command-line utility provided by ImageMagick to convert images. The `input_image` variable specifies the path to the input image and `output_image` specifies the path to the output image. The `os.system` function is used to run the `convert` command, which converts the input image to the output image.
 
@@ -70,6 +70,35 @@ subprocess.run(['convert', input_image, output_image])`
 ```
 In this example, the `subprocess.run` function is used to run the `convert` command, and the parameters are passed as a list, rather than as a string. This is a more secure way of calling shell commands, as it avoids shell injection attacks.
 
+
+```python
+import os
+
+def main():
+    dir_list =  os.listdir('.')
+    for full_file_name in dir_list:
+        base_name, extension = os.path.splitext(full_file_name)
+        if extension == '.pdf': # then .pdf file --> convert to image!
+            cmd_str = ' '.join(['convert',
+                                '-density 400',
+                                full_file_name,
+                                '-flatten',
+                                base_name + '.png'])
+            print(cmd_str)  # echo command to terminal
+            os.system(cmd_str)  # execute command
+
+if __name__ == '__main__':
+    main()
+```
+
+This is a Python script that uses the os module to convert all PDF files in the current directory to PNG images using ImageMagick. The main function lists all the files in the current directory using os.listdir, and then loops through each file name in dir_list. If the file extension is '.pdf', the script splits the file name into its base name and extension using os.path.splitext, and then creates a command string using cmd_str that calls ImageMagick's convert utility with the specified options.
+
+The options used in this script are:
+
+- density 400: sets the density of the output image, which affects its resolution.
+- flatten: combines all the layers of the PDF into a single image.
+
+The os.system function is then used to execute the command string, which converts the PDF file to a PNG image. The script prints the command string to the terminal to show what it's doing, and the result is a set of PNG images, one for each PDF file in the directory.
 
 ImageMagick is a versatile and powerful software suite that has many uses, including:
 
