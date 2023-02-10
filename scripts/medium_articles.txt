@@ -85,3 +85,7 @@
 /posts/stonks/web/scrapping_tables_with_pandas.md
 /posts/tech/flutter/how_to_deploy_dart_to_hs.md
 /posts/tech/flutter/alfred_backend_with_open_food_facts_api.md
+/posts/tech/net/news_app_csharp.md
+/posts/tech/python/download_files_from_cse_exchange.md
+/posts/tech/python/convert_pdfs_to_pngs_imagemagick.md
+/posts/tech/scripting/intro_to_github_actions.md
