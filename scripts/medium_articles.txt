@@ -93,3 +93,4 @@
 /posts/tech/js/getting_started_with_node_and_express.md
 /posts/tech/js/async_programming_with_javascript.md
 /posts/tech/scripting/switch_from_circleci_to_githubactions.md
+/posts/stonks/web/generating_stonk_reports_with_python.md
