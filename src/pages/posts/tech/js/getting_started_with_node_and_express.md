@@ -203,3 +203,11 @@ It's important to note that the express.static middleware only serves
 static files. It does not handle dynamic requests, such as those made
 with a form or an AJAX request. To handle dynamic requests, you will
 need to use additional middleware or route handlers.
+
+## References
+
+This content came from a book I generated using chatGPT and a lot of editing.
+
+View on the source material see amazon https://www.amazon.com/dp/B0BSL14M71
+
+For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf

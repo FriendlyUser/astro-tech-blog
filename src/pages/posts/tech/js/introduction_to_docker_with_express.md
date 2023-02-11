@@ -108,3 +108,12 @@ This will start a Docker container based on the my-express-app image,
 and will map port 3000 on the host to port 3000 in the container. The
 Express server will start automatically when the container is started,
 and you will be able to access the server at http://localhost:3000.
+
+
+## References
+
+This content came from a book I generated using chatGPT and a lot of editing.
+
+View on the source material see amazon https://www.amazon.com/dp/B0BSL14M71
+
+For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf
