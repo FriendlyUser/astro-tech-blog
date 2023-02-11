@@ -89,3 +89,7 @@
 /posts/tech/python/download_files_from_cse_exchange.md
 /posts/tech/python/convert_pdfs_to_pngs_imagemagick.md
 /posts/tech/scripting/intro_to_github_actions.md
+/posts/tech/js/introduction_to_docker_with_express.md
+/posts/tech/js/getting_started_with_node_and_express.md
+/posts/tech/js/async_programming_with_javascript.md
+/posts/tech/scripting/switch_from_circleci_to_githubactions.md
