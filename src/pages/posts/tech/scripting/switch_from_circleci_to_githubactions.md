@@ -1,5 +1,5 @@
 ---
-tags: ['latex', 'githubactions', 'circleci']
+tags: ['latex', 'github actions', 'circleci', "ci"]
 title: How I converted circleCi to github actions
 description: For my latex diagrams project I converted the ci from circle to github actions.
 pubDate: Sun, 19 Feb 2023
