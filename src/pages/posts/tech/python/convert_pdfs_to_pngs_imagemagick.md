@@ -4,7 +4,7 @@ title: Converting pdfs to pngs with imagemagick
 description: How to convert from pdf to png by using python with imagemagick.
 pubDate: Mon, 7 December 2023
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2022/DALL·E 2022-12-14 22.06.43 - blank book open on the coffee table.png"
+imgSrc: "/imgs/2022/dall-e/DALL·E 2022-12-14 22.06.43 - blank book open on the coffee table.png"
 ---
 ImageMagick is a software suite to create, edit, and compose bitmap images. It can read, convert and write images in a variety of formats (over 100) including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG, and TIFF. ImageMagick is used to translate, flip, mirror, rotate, scale, shear and transform images, adjust image colors, apply various special effects, or draw text, lines, polyglines, ellipses and Bézier curves.
 
