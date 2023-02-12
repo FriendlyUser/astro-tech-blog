@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to csharp - Astro Tech Blog</title>
+    <meta name="description" content="Explaining the history of csharp and how it is used">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to csharp</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 24 January 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/csharp" style="padding-right:3px"> <category>csharp<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dotnet" style="padding-right:3px"> <category>dotnet<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/118660664.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>C# (pronounced “C-sharp”) is a modern, object-oriented programming language that was developed by Microsoft as part of its .NET initiative. The development of C# began in 1999, led by Anders Hejlsberg, and the first version of the language was released in 2000 as part of Visual Studio .NET.</p>
+<p>C# was designed to be a simple, modern, and type-safe programming language that would appeal to both object-oriented programmers and component-based development. It has its roots in C and C++, but also incorporates features from other languages such as Java and Delphi.</p>
+<p>Since its initial release, C# has become one of the most popular programming languages in the world. It is widely used for developing a variety of applications, including Windows desktop applications, Windows Store apps, web applications, and games. The latest version of the language, C# 9.0, was released in November 2021 as part of .NET 6.0.</p>
+<p>C# has evolved significantly over the years, with each new version introducing new features and improvements to make the language more powerful and expressive. Despite its complex history, C# has maintained a strong focus on simplicity, readability, and developer productivity, and is widely regarded as one of the most versatile and powerful programming languages in use today.</p>
+<p>.NET is a free, open-source, cross-platform framework developed by Microsoft that provides a comprehensive set of tools and libraries for building modern applications. It enables developers to create applications for Windows, Linux, and macOS using a variety of programming languages, including C#, F#, and Visual Basic.</p>
+<p>The .NET framework consists of a common language runtime (CLR), which provides a runtime environment for executing .NET applications, and a set of libraries and APIs for building applications. The framework also includes a large set of class libraries that provide a wide range of functionality, from basic data structures and algorithms to complex graphics and multimedia.</p>
+<p>.NET also provides tools and services for developing, deploying, and managing applications, including an integrated development environment (IDE) and a range of cloud services for hosting, deploying, and scaling applications.</p>
+<p>.NET has been used to build a wide range of applications, including web applications, desktop applications, mobile apps, gaming, and cloud-based solutions. Its popularity stems from its ease of use, cross-platform support, and the ability to write applications in multiple programming languages.</p>
+<p>Overall, .NET is a comprehensive and powerful framework that provides developers with the tools they need to build modern applications, and its continued development and support by Microsoft has made it a popular choice for organizations and individuals alike.</p>
+<p>The .NET Command-Line Interface (CLI) is a cross-platform tool that provides a command-line interface for working with .NET projects and the .NET platform. The .NET CLI is designed to be used in a variety of scenarios, including creating new projects, managing dependencies, building and publishing applications, and more.</p>
+<p>The .NET CLI provides a set of commands for managing .NET projects and solutions, including:</p>
+<ul>
+<li><code>dotnet new</code>: Creates a new .NET project using a template.</li>
+<li><code>dotnet build</code>: Builds a .NET project.</li>
+<li><code>dotnet run</code>: Runs a .NET project.</li>
+<li><code>dotnet test</code>: Runs tests for a .NET project.</li>
+<li><code>dotnet add</code>: Adds a package or reference to a .NET project.</li>
+<li><code>dotnet restore</code>: Downloads dependencies for a .NET project.</li>
+<li><code>dotnet publish</code>: Publishes a .NET project for deployment.</li>
+</ul>
+<p>The .NET CLI is designed to be fast, flexible, and easy to use, and it supports a wide range of .NET-based technologies, including .NET Core, ASP.NET, and Xamarin. The .NET CLI is also designed to be cross-platform, allowing developers to use the same tools and commands across Windows, macOS, and Linux.</p>
+<p>In conclusion, the .NET CLI is a powerful tool for working with .NET projects and solutions, providing developers with a fast and flexible way to manage their projects from the command line.</p>
+<p>In C#, there are several built-in collection types that you can use to store and manipulate collections of data, including lists, dictionaries, and tuples.</p>
+<ol>
+<li>Lists: A list is a collection of objects that can be dynamically resized. Lists are implemented using the <code>List&#x3C;T></code> class in C#, where T is the type of objects stored in the list. For example, you could create a list of integers using <code>List&#x3C;int></code>, or a list of strings using <code>List&#x3C;string></code>. You can add and remove elements from a list, as well as access elements by index. Here is an example of how to use a list in C#:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">scss`</span><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">int</span><span style="color: #F8F8F2">> numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">int</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"><span style="color: #F8F8F2">numbers.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">numbers.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">numbers.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> numbers)</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2"> Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(number);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<ol start="2">
+<li>Dictionaries: A dictionary is a collection of key-value pairs, where each key is unique. Dictionaries are implemented using the <code>Dictionary&#x3C;TKey, TValue></code> class in C#, where TKey is the type of the keys and TValue is the type of the values. For example, you could create a dictionary of strings to integers using <code>Dictionary&#x3C;string, int></code>. You can add and remove elements from a dictionary, as well as access elements by key. Here is an example of how to use a dictionary in C#:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">csharp`</span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">> ages </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Dictionary</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"><span style="color: #F8F8F2">ages.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">ages.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Jane"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">25</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">ages.</span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Jim"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">35</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">foreach</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E; font-weight: bold">KeyValuePair</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">string</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2">> person </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> ages)</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2"> Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(person.Key </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">" is "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> person.Value </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">" years old."</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<ol start="3">
+<li>Tuples: A tuple is a collection of values with multiple components. Tuples are implemented using the <code>ValueTuple</code> class in C#, and they provide a convenient way to group multiple values into a single object. For example, you could use a tuple to return multiple values from a method. Here is an example of how to use a tuple in C#:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go`(</span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> name, </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> age) </span><span style="color: #A6E22E">GetPerson</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">GetPerson</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(person.name </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">" is "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> person.age </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">" years old."</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<p>These are the basics of lists, dictionaries, and tuples in C#. You can use these collections to store and manipulate data in a variety of ways, and they are an essential part of many C# applications.</p>
+<p>Both .NET and Java are popular choices for modern software development, and both offer a wide range of features and tools for building applications. However, there are some key differences between the two that may impact your choice of development platform.</p>
+<ol>
+<li>Language: Java uses the Java programming language, while .NET supports multiple languages, including C#, F#, and Visual Basic. This means that developers familiar with different programming languages can use .NET, while Java requires a deep understanding of the Java language.</li>
+<li>Ecosystem: Java has a large and mature ecosystem, with many libraries and frameworks available for a wide range of applications. .NET also has a large ecosystem, but it may not be as mature as Java’s, especially in certain areas such as machine learning and data science.</li>
+<li>Performance: Both .NET and Java can be used to build high-performance applications, but .NET has the advantage of being designed specifically for Windows, which can result in better performance compared to Java on Windows. On the other hand, Java is known for its ability to run well on different platforms, making it a good choice for cross-platform development.</li>
+<li>Development tools: Both .NET and Java have a wide range of development tools available, including integrated development environments (IDEs), code editors, and debugging tools. However, .NET has the advantage of being tightly integrated with Microsoft Visual Studio, which is widely regarded as one of the best development environments available.</li>
+<li>Enterprise applications: Both .NET and Java are commonly used for enterprise applications, and both have the necessary features and tools to support large and complex projects. However, .NET has the advantage of being tightly integrated with Microsoft technologies, making it a good choice for organizations that use Microsoft products such as Windows and Azure.</li>
+</ol>
+<p>In conclusion, both .NET and Java are capable platforms for modern software development, and the choice between the two will depend on your specific requirements and preferences. If you are already familiar with a particular language, or have specific requirements for performance or tools, that could influence your decision. If you are starting a new project, it may be worth evaluating both platforms to see which one best meets your needs.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-02-12<!-- -->.</div></div></div>
+  </body></html>
