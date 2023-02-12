@@ -95,3 +95,6 @@
 /posts/tech/scripting/switch_from_circleci_to_githubactions.md
 /posts/stonks/web/generating_stonk_reports_with_python.md
 /posts/tech/go/book_api_in_golang.md
+/posts/tech/html_introduction.md
+/posts/tech/net/csharp_introduction.md
+/posts/tech/go/introduction_to_golang.md
