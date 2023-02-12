@@ -1,6 +1,6 @@
 ---
 tags: ['python']
-title: Introduction to csharp
+title: Introduction to python
 description: Explaining the history of csharp and how it is used
 pubDate: Fri, 30 January 2024
 layout: "@/templates/BasePost.astro"
