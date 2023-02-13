@@ -10,8 +10,8 @@ imgSrc: "/imgs/2023/3194903180.png"
 In bash, you can move files using the `mv` command. Here's an example of how you could use `mv` in a script:
 
 
-```go
-bash`#!/bin/bash
+```bash
+#!/bin/bash
 
 # Define the source and destination directories
 src_dir="/path/to/source/directory"
@@ -111,8 +111,8 @@ func main() {
 It looks like you're starting to write a Go program to generate an HTML file that lists all of the files in a directory, and move the generated HTML file to an `outputFolder`. Here's an example of how you could complete this program:
 
 
-```
-go`package main
+```go
+package main
 
 import (
  "fmt"
@@ -130,72 +130,72 @@ func main() {
 
  err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
  if !info.IsDir() {
- htmlFiles = append(htmlFiles, path)
+    htmlFiles = append(htmlFiles, path)
  }
- return nil
+  return nil
  })
 
  if err != nil {
- fmt.Printf("An error occurred while reading files: %s\n", err)
- return
+  fmt.Printf("An error occurred while reading files: %s\n", err)
+  return
  }
 
  tmpl := template.Must(template.New("index").Parse(`
  <html>
- <head>
- <title>List of Files</title>
- </head>
- <body>
- <h1>List of Files</h1>
- <ul>
- {{ range . }}
- <li><a href={{.}}>{{ . }}</a></li>
- {{ end }}
- </ul>
- </body>
- </html>
+  <head>
+  <title>List of Files</title>
+  </head>
+  <body>
+  <h1>List of Files</h1>
+  <ul>
+  {{ range . }}
+  <li><a href={{.}}>{{ . }}</a></li>
+  {{ end }}
+  </ul>
+  </body>
+  </html>
  `))
 
  f, err := os.Create("index.html")
  if err != nil {
- fmt.Printf("An error occurred while creating index.html: %s\n", err)
- return
+  fmt.Printf("An error occurred while creating index.html: %s\n", err)
+  return
  }
  defer f.Close()
 
  if err := tmpl.Execute(f, htmlFiles); err != nil {
- fmt.Printf("An error occurred while executing the template: %s\n", err)
- return
+  fmt.Printf("An error occurred while executing the template: %s\n", err)
+  return
  }
 
  err = os.MkdirAll(outputFolder, os.ModePerm)
  if err != nil {
- fmt.Printf("An error occurred while creating the output folder: %s\n", err)
- return
+  fmt.Printf("An error occurred while creating the output folder: %s\n", err)
+  return
  }
 
  src, err := os.Open("index.html")
  if err != nil {
- fmt.Printf("An error occurred while opening index.html: %s\n", err)
- return
+  fmt.Printf("An error occurred while opening index.html: %s\n", err)
+  return
  }
  defer src.Close()
 
  dst, err := os.Create(filepath.Join(outputFolder, "index.html"))
  if err != nil {
- fmt.Printf("An error occurred while creating the output file: %s\n", err)
- return
+  fmt.Printf("An error occurred while creating the output file: %s\n", err)
+  return
  }
  defer dst.Close()
 
  _, err = io.Copy(dst, src)
  if err != nil {
- fmt.Printf("An error occurred while copying index.html: %s\n", err)
- return
+  fmt.Printf("An error occurred while copying index.html: %s\n", err)
+  return
  }
 
  fmt.Println("Files successfully moved.")
-}`
+}
 ```
 This program
 
@@ -270,7 +270,7 @@ The code you posted creates an HTML file named "index.html" in the "gh-pages" di
 Note that the code also contains error handling to check for any errors that might occur during the file creation and writing process. If an error occurs, the code prints the error message and returns from the main function.
 
 
-```go 
+```yaml
  # run go main.go and install and then deploy to gh-pages
 name: deploy
 
