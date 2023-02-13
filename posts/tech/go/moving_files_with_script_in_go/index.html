@@ -63,16 +63,16 @@
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
       <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Moving files with a script in go</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 7 March 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/script" style="padding-right:3px"> <category>script<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/matlab" style="padding-right:3px"> <category>matlab<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3194903180.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>In bash, you can move files using the <code>mv</code> command. Here’s an example of how you could use <code>mv</code> in a script:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bash</span><span style="color: #E6DB74">`#!/bin/bash</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">#!/bin/bash</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"># Define the source and destination directories</span></span>
-<span class="line"><span style="color: #E6DB74">src_dir="/path/to/source/directory"</span></span>
-<span class="line"><span style="color: #E6DB74">dst_dir="/path/to/destination/directory"</span></span>
+<span class="line"><span style="color: #88846F"># Define the source and destination directories</span></span>
+<span class="line"><span style="color: #F8F8F2">src_dir=</span><span style="color: #E6DB74">"/path/to/source/directory"</span></span>
+<span class="line"><span style="color: #F8F8F2">dst_dir=</span><span style="color: #E6DB74">"/path/to/destination/directory"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"># Use the `</span><span style="color: #F8F8F2">mv</span><span style="color: #E6DB74">` command to move all files from the source directory to the destination directory</span></span>
-<span class="line"><span style="color: #E6DB74">for file in "$src\_dir"/*; do</span></span>
-<span class="line"><span style="color: #E6DB74"> mv "$file" "$dst\_dir"</span></span>
-<span class="line"><span style="color: #E6DB74">done</span></span></code></pre>
+<span class="line"><span style="color: #88846F"># Use the `mv` command to move all files from the source directory to the destination directory</span></span>
+<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> file </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$src</span><span style="color: #E6DB74">\_dir"</span><span style="color: #F8F8F2">/</span><span style="color: #F92672">*;</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">do</span></span>
+<span class="line"><span style="color: #F8F8F2"> mv </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$file</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$dst</span><span style="color: #E6DB74">\_dir"</span></span>
+<span class="line"><span style="color: #F92672">done</span></span></code></pre>
 <p>This script moves all files in the <code>src_dir</code> to the <code>dst_dir</code>. The <code>for</code> loop iterates through all files in <code>src_dir</code> and uses the <code>mv</code> command to move each file to the <code>dst_dir</code>.</p>
 <p>Note: This script will overwrite any existing files in the <code>dst_dir</code> with the same names as the files being moved. If you want to avoid overwriting existing files, you can modify the script to include a check for file existence in the destination directory before moving the file.</p>
 <p>Here’s an example of how you could write a Go program to move files:</p>
@@ -147,90 +147,90 @@
 <span class="line"><span style="color: #E6DB74">	&#x3C;/html></span></span>
 <span class="line"><span style="color: #E6DB74">	`</span><span style="color: #F8F8F2"> </span></span></code></pre>
 <p>It looks like you’re starting to write a Go program to generate an HTML file that lists all of the files in a directory, and move the generated HTML file to an <code>outputFolder</code>. Here’s an example of how you could complete this program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go`package main</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">import (</span></span>
-<span class="line"><span style="color: #F8F8F2"> "fmt"</span></span>
-<span class="line"><span style="color: #F8F8F2"> "html/template"</span></span>
-<span class="line"><span style="color: #F8F8F2"> "io/ioutil"</span></span>
-<span class="line"><span style="color: #F8F8F2"> "os"</span></span>
-<span class="line"><span style="color: #F8F8F2"> "path/filepath"</span></span>
-<span class="line"><span style="color: #F8F8F2"> "strings"</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"html/template"</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"io/ioutil"</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"os"</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"path/filepath"</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"strings"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">func main() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> htmlFiles := []string{}</span></span>
-<span class="line"><span style="color: #F8F8F2"> outputFolder := "gh-pages"</span></span>
-<span class="line"><span style="color: #F8F8F2"> srcDir := "."</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {</span></span>
-<span class="line"><span style="color: #F8F8F2"> if !info.IsDir() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> htmlFiles = append(htmlFiles, path)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> htmlFiles </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{}</span></span>
+<span class="line"><span style="color: #F8F8F2"> outputFolder </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"gh-pages"</span></span>
+<span class="line"><span style="color: #F8F8F2"> srcDir </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"."</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Walk</span><span style="color: #F8F8F2">(srcDir, </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, info os.FileInfo, err </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">info.</span><span style="color: #66D9EF">IsDir</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    htmlFiles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(htmlFiles, path)</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"> return nil</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span></span>
 <span class="line"><span style="color: #F8F8F2"> })</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while reading files: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while reading files: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> tmpl := template.Must(template.New("index").Parse(`</span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;html></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;head></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;title>List of Files&#x3C;/title></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;/head></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;body></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;h1>List of Files&#x3C;/h1></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;ul></span></span>
-<span class="line"><span style="color: #F8F8F2"> {{ range . }}</span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;li>&#x3C;a href={{.}}>{{ . }}&#x3C;/a>&#x3C;/li></span></span>
-<span class="line"><span style="color: #F8F8F2"> {{ end }}</span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;/ul></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;/body></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;/html></span></span>
-<span class="line"><span style="color: #F8F8F2"> `))</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> f, err := os.Create("index.html")</span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while creating index.html: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> tmpl </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> template.</span><span style="color: #66D9EF">Must</span><span style="color: #F8F8F2">(template.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"index"</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Parse</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`</span></span>
+<span class="line"><span style="color: #E6DB74"> &#x3C;html></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;head></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;title>List of Files&#x3C;/title></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;/head></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;body></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;h1>List of Files&#x3C;/h1></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;ul></span></span>
+<span class="line"><span style="color: #E6DB74">  {{ range . }}</span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;li>&#x3C;a href={{.}}>{{ . }}&#x3C;/a>&#x3C;/li></span></span>
+<span class="line"><span style="color: #E6DB74">  {{ end }}</span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;/ul></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;/body></span></span>
+<span class="line"><span style="color: #E6DB74">  &#x3C;/html></span></span>
+<span class="line"><span style="color: #E6DB74"> `</span><span style="color: #F8F8F2">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Create</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"index.html"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while creating index.html: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"> defer f.Close()</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> if err := tmpl.Execute(f, htmlFiles); err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while executing the template: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> f.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> tmpl.</span><span style="color: #66D9EF">Execute</span><span style="color: #F8F8F2">(f, htmlFiles); err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while executing the template: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> err = os.MkdirAll(outputFolder, os.ModePerm)</span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while creating the output folder: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">MkdirAll</span><span style="color: #F8F8F2">(outputFolder, os.ModePerm)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while creating the output folder: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> src, err := os.Open("index.html")</span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while opening index.html: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> src, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"index.html"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while opening index.html: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"> defer src.Close()</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> dst, err := os.Create(filepath.Join(outputFolder, "index.html"))</span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while creating the output file: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> src.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> dst, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Create</span><span style="color: #F8F8F2">(filepath.</span><span style="color: #66D9EF">Join</span><span style="color: #F8F8F2">(outputFolder, </span><span style="color: #E6DB74">"index.html"</span><span style="color: #F8F8F2">))</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while creating the output file: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"> defer dst.Close()</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> _, err = io.Copy(dst, src)</span></span>
-<span class="line"><span style="color: #F8F8F2"> if err != nil {</span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Printf("An error occurred while copying index.html: %s\n", err)</span></span>
-<span class="line"><span style="color: #F8F8F2"> return</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> dst.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> _, err </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> io.</span><span style="color: #66D9EF">Copy</span><span style="color: #F8F8F2">(dst, src)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"An error occurred while copying index.html: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"> fmt.Println("Files successfully moved.")</span></span>
-<span class="line"><span style="color: #F8F8F2">}`</span></span></code></pre>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Files successfully moved."</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This program</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> 	script.</span><span style="color: #66D9EF">FindFiles</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"."</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">FilterScan</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(line </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, w io.Writer) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #88846F">// if line contains html print it</span></span>
@@ -292,37 +292,37 @@
 <li>Finally, the code uses the <code>t.Execute</code> function to write the <code>htmlFiles</code> slice to the “index.html” file. The <code>t.Execute</code> function uses the template defined in the <code>tmpl</code> variable to format the HTML output.</li>
 </ul>
 <p>Note that the code also contains error handling to check for any errors that might occur during the file creation and writing process. If an error occurs, the code prints the error message and returns from the main function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> # run </span><span style="color: #F92672">go</span><span style="color: #F8F8F2"> main.</span><span style="color: #F92672">go</span><span style="color: #F8F8F2"> and install and then deploy to gh</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">pages</span></span>
-<span class="line"><span style="color: #F8F8F2">name: deploy</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># run go main.go and install and then deploy to gh-pages</span></span>
+<span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">deploy</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">on:</span></span>
-<span class="line"><span style="color: #F8F8F2">  push:</span></span>
-<span class="line"><span style="color: #F8F8F2">    branches: [master]</span></span>
+<span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">master</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">jobs:</span></span>
-<span class="line"><span style="color: #F8F8F2">  build:</span></span>
-<span class="line"><span style="color: #F8F8F2">    runs</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">on: ubuntu</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">latest</span></span>
-<span class="line"><span style="color: #F8F8F2">    steps:</span></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> uses: actions</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">checkout@v2</span></span>
+<span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">build</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">runs-on</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">ubuntu-latest</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">actions/checkout@v2</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> name: Set up Go</span></span>
-<span class="line"><span style="color: #F8F8F2">        uses: actions</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">setup</span><span style="color: #F92672">-go</span><span style="color: #F8F8F2">@v2</span></span>
-<span class="line"><span style="color: #F8F8F2">        with:</span></span>
-<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">go-</span><span style="color: #F8F8F2">version: </span><span style="color: #AE81FF">1.19</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Set up Go</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">actions/setup-go@v2</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">go-version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1.19</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> name: Build</span></span>
-<span class="line"><span style="color: #F8F8F2">        run: </span><span style="color: #F92672">|</span></span>
-<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">go</span><span style="color: #F8F8F2"> build </span><span style="color: #F92672">-</span><span style="color: #F8F8F2">o main .</span></span>
-<span class="line"><span style="color: #F8F8F2">          .</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">main</span></span>
-<span class="line"><span style="color: #F8F8F2">          echo google.com, pub</span><span style="color: #F92672">-</span><span style="color: #AE81FF">2479144310234386</span><span style="color: #F8F8F2">, DIRECT, f08c47fec0942fa0 </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> ads.txt</span></span>
-<span class="line"><span style="color: #F8F8F2">          mv ads.txt .</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">gh</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">pages</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Build</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #F92672">|</span></span>
+<span class="line"><span style="color: #E6DB74">          go build -o main .</span></span>
+<span class="line"><span style="color: #E6DB74">          ./main</span></span>
+<span class="line"><span style="color: #E6DB74">          echo google.com, pub-2479144310234386, DIRECT, f08c47fec0942fa0 > ads.txt</span></span>
+<span class="line"><span style="color: #E6DB74">          mv ads.txt ./gh-pages</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> name: Deploy to gh</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">pages</span></span>
-<span class="line"><span style="color: #F8F8F2">        uses:</span></span>
-<span class="line"><span style="color: #F8F8F2">          peaceiris</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">actions</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">gh</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">pages@v3</span></span>
-<span class="line"><span style="color: #F8F8F2">        with:</span></span>
-<span class="line"><span style="color: #F8F8F2">          github_token: ${{ secrets.GITHUB_TOKEN }}</span></span>
-<span class="line"><span style="color: #F8F8F2">          publish_dir: .</span><span style="color: #F92672">/</span><span style="color: #F8F8F2">gh</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">pages</span></span>
+<span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Deploy to gh-pages</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">uses</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #E6DB74">peaceiris/actions-gh-pages@v3</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">github_token</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">${{ secrets.GITHUB_TOKEN }}</span></span>
+<span class="line"><span style="color: #F8F8F2">          </span><span style="color: #F92672">publish_dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">./gh-pages</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
 <p>The code you posted is a GitHub Actions workflow that builds and deploys a Go program to GitHub Pages. Here’s a brief explanation of the code:</p>
 <ul>
