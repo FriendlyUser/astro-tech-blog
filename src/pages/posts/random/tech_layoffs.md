@@ -1,5 +1,5 @@
 ---
-tags: []
+tags: ["tech"]
 title: Thoughts about tech layoffs
 description: AI generated post about tech layoffs.
 pubDate: Mon, 14 March 2023

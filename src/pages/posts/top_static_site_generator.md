@@ -4,6 +4,7 @@ title: Introduction to static site generations
 description: A comparison between static site generations including vuepress, gridsome and astro
 pubDate: Fri, 14 March 2024
 layout: "@/templates/BasePost.astro"
+imgSrc: "/imgs/2022/dall-e/CorgiUpInATree.jpeg"
 ---
 A static site generator is a software tool that generates HTML files for a website and saves them as plain HTML files on a web server. Unlike dynamic websites, which are generated on the fly every time a user requests a page, a static website is pre-generated and the HTML files are already available on the server. The main advantage of a static website is that it can be served quickly and efficiently, without the need for server-side processing, making it an ideal choice for sites that don't require frequent updates or user interaction. Static site generators are often used for blogs, portfolios, documentation sites, and other types of sites that don't require dynamic behavior. They can be built using a variety of programming languages and frameworks, such as Jekyll, Hugo, Gatsby, and many others.
 
