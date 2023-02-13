@@ -136,4 +136,4 @@ The test case then uses the `expect` function to check that the length of the li
 
 ## References
 - https://friendlyuser.github.io/posts/tech/flutter/alfred_backend_with_open_food_facts_api/
-- https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main"
+- https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main
