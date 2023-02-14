@@ -46,6 +46,7 @@
 /posts/tech/parsing_git_commits_with_dotnet.md
 /posts/tech/react_corp_landing_page.md
 /posts/tech/screenshot_utility_for_mobile_apps.md
+/posts/tech/simple_react_collapse.md
 /posts/tech/spaceshooter_in_go.md
 /posts/tech/updating_list_of_entries_in_react.md
 /posts/tech/upgrading_from_muiv4_to_mui_v5.md
@@ -55,6 +56,7 @@
 /posts/tech/video_for_game_highlights.md
 /posts/tech/css/how_to_convert_inline_jsx_styles_to_css_styles.md
 /posts/tech/dapps/tracking_files_with_a_smart_contract.md
+posts/tech/dapps/url_shortener_with_nuxt.md
 /posts/tech/flutter/pokedex_app_partI.md
 /posts/tech/flutter/pokedex_app_partII.md
 /posts/tech/flutter/resume_generation_dart.md
@@ -67,6 +69,7 @@
 /posts/tech/net/intro_to_linq.md
 /posts/tech/net/minimum_api_ip_address.md
 /posts/tech/python/chatgpt_blog_generation.md
+/posts/tech/python/python_introduction
 /posts/tech/scripting/argparse_with_python.md
 /posts/tech/scripting/caching_with_github_actions.md
 /posts/tech/scripting/creating_my_own_subs.md
