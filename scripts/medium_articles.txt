@@ -56,11 +56,12 @@
 /posts/tech/video_for_game_highlights.md
 /posts/tech/css/how_to_convert_inline_jsx_styles_to_css_styles.md
 /posts/tech/dapps/tracking_files_with_a_smart_contract.md
-posts/tech/dapps/url_shortener_with_nuxt.md
+/posts/tech/dapps/url_shortener_with_nuxt.md
 /posts/tech/flutter/pokedex_app_partI.md
 /posts/tech/flutter/pokedex_app_partII.md
 /posts/tech/flutter/resume_generation_dart.md
 /posts/tech/flutter/scrapping_data_for_pokedex.md
+/posts/tech/flutter/dart_lcg.md
 /posts/tech/java/publishing_package_for_java.md
 /posts/tech/js/how_to_use_resolutions_in_package_json.md
 /posts/tech/js/implementing_svg_styling_in_nextjs.md
@@ -69,7 +70,7 @@ posts/tech/dapps/url_shortener_with_nuxt.md
 /posts/tech/net/intro_to_linq.md
 /posts/tech/net/minimum_api_ip_address.md
 /posts/tech/python/chatgpt_blog_generation.md
-/posts/tech/python/python_introduction
+/posts/tech/python/python_introduction.md
 /posts/tech/scripting/argparse_with_python.md
 /posts/tech/scripting/caching_with_github_actions.md
 /posts/tech/scripting/creating_my_own_subs.md
