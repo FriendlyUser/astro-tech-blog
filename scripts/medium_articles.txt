@@ -67,6 +67,7 @@
 /posts/tech/js/implementing_svg_styling_in_nextjs.md
 /posts/tech/js/investing_homepage.md
 /posts/tech/js/what_is_a_package_json_file.md
+/posts/tech/js/vuepress_theme_cool.md
 /posts/tech/net/intro_to_linq.md
 /posts/tech/net/minimum_api_ip_address.md
 /posts/tech/python/chatgpt_blog_generation.md
