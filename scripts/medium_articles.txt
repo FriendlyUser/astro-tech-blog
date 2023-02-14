@@ -102,3 +102,4 @@
 /posts/tech/flutter/steam_top_sellers_in_dart.md
 /posts/tech/go/moving_files_with_script_in_go.md
 /posts/top_static_site_generator.md
+/posts/tech/python/superbowl.md
