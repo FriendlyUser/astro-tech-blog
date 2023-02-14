@@ -56,6 +56,8 @@ def make_articles_for_medium():
               post_contents = frontmatter.loads(f.read())
             # strip basePostFolder from the path
             adjustedPost = post.replace(basePostFolder, "")
+            # convert adjustedPost to linux file path
+            adjustedPost = adjustedPost.replace("\\", "/")
             # publish_to_medium(post)
             # make sure frontMatter has a date in the future
             # pubDate > currDate

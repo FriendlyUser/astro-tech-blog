@@ -2,7 +2,7 @@
 tags: ['dart']
 title: Dart Linear Congruential Generator
 description: Implementation of a linear congruential generator in Dart.
-pubDate: Fri, 21 March 2024
+pubDate: Fri, 21 March 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2617761522.png
 ---

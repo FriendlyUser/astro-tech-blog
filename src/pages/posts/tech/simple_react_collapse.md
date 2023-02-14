@@ -1,9 +1,9 @@
 ---
 title: Simple collapsible component
-description: Describes a simple collapsible component
+description: Describes a simple collapsible component for react
 alt: Screenshot utilty for mobile apps
 layout: '@/templates/BasePost.astro'
-pubDate: Wed, 21 May 2023 13:00:00 GMT
+pubDate: Wed, 21 May 2023
 tags: ["bit", "javascript"]
 imgSrc: '/imgs/2023/man_on_horse.png'
 imgAlt: 'Image post 6'
