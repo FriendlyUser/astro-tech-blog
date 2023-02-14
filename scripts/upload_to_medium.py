@@ -66,7 +66,7 @@ def make_articles_for_medium():
               else: 
                   pass
             except Exception as e:
-              # print(e)
+              print(e)
               pass
             if adjustedPost not in created_articles:
                 print(f"Publishing {adjustedPost}")

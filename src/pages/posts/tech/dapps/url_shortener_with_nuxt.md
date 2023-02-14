@@ -1,6 +1,6 @@
 ---
 title: Url shortener with nuxt
-description: react native template for a basic app
+description: Using solidity to create a url shortener dapp.
 pubDate: Saturday, 20 June 2023 13:00:00 GMT
 tags: ["solidity", "dapp"]
 layout: '@/templates/BasePost.astro'
