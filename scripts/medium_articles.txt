@@ -104,3 +104,4 @@
 /posts/tech/go/moving_files_with_script_in_go.md
 /posts/top_static_site_generator.md
 /posts/tech/python/superbowl.md
+/posts/tech/css/css_animations_in_react.md
