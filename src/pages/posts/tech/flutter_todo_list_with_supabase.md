@@ -4,7 +4,7 @@ description: Building a simple todo list with supabase
 alt: my first blog post
 tags: ["flutter", "supabase"]
 layout: '@/templates/BasePost.astro'
-pubDate: Sunday, 7 Feburary 2023 13:00:00 GMT
+pubDate: Sun, 7 Feburary 2023
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 19.51.13 - fridge with blank paper on it.png'
 ---
 

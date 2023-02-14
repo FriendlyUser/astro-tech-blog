@@ -2,7 +2,7 @@
 tags: ['python', 'latex', 'openbb']
 title: How I generate stock reports with python and latex
 description: Generating premarket and postmarket reports with python and latex
-pubDate: Mon, 20 Feburary 2023
+pubDate: Mon, 20 March 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1678591372_a_blade_in_the_desert_under_the_sun.png"
 ---
