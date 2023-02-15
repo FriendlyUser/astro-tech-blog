@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How I implemented a stock screener in python Part II - Astro Tech Blog</title>
+    <meta name="description" content="A stock screener is a tool that helps you find stocks that meet your criteria. In this post I will show you how I implemented a stock screener in python.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How I implemented a stock screener in python Part II</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 18 April 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python" style="padding-right:3px"> <category>python<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/jsx" style="padding-right:3px"> <category>jsx<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/react" style="padding-right:3px"> <category>react<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2994756722.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>The previous post focused on how to extract ticker symbols using Python, with a code example provided to illustrate the process. The code example demonstrated how to use the Pandas library to read data from a CSV file and apply filters to the data to extract relevant ticker symbols.
+This post covers the logic used in my screeners. The logic is written in Python and is used to filter out stocks that do not meet the criteria of the screener. The logic is stored in a JSON file and is used by the Python code to filter out stocks that do not meet the criteria of the screener.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"High low Technology Stocks"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"type"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"high_low"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"tsx"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"tickers_config"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #E6DB74">"sectors"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"technology"</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"cse"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"tickers_config"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #E6DB74">"industries"</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"CleanTech"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Technology"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"settings"</span><span style="color: #F8F8F2">: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"percent_cutoff"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0.35</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"day_cutoff"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">3</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>This is a configuration file for a program or algorithm that focuses on identifying high and low performing technology stocks on the Toronto Stock Exchange (TSX) and the Canadian Securities Exchange (CSE).</p>
+<p>The program uses the tickers_config settings to filter out stocks in specific sectors and industries. For the TSX, it only considers stocks in the technology sector, while for the CSE, it considers stocks in both CleanTech and Technology industries.</p>
+<p>The settings section defines the parameters used by the algorithm to determine which stocks are considered high or low performing. The percent_cutoff parameter is set to 0.35, which means that stocks with a daily percent change greater than or equal to 0.35% will be considered high performing, while stocks with a daily percent change less than or equal to -0.35% will be considered low performing. The day_cutoff parameter is set to 3, which means that only stocks that have met the high or low performing criteria for at least 3 days will be included in the program’s final output.</p>
+<p>Overall, this configuration file sets the criteria and filters for a program to identify high and low performing technology stocks on the TSX and CSE based on their percent change over a specified number of days.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">Scans for stocks with a change from the low to high with a high number</span></span>
+<span class="line"><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> yfinance </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> yf</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sys</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> dateutil.relativedelta</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> glob</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> json</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> multiprocessing</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> datetime </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> datetime, date</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> stock_screener.util </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> post_webhook</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> stock_screener.interfaces </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> ScannerInterface</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Scanner</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">ScannerInterface</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">__init__</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">tickers</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.tickers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tickers</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg.get(</span><span style="color: #E6DB74">"settings"</span><span style="color: #F8F8F2">, {})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_data</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">ticker</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">day_cutoff</span><span style="color: #F92672">=</span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">) -> pd.DataFrame:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">        Grab daily days for high and low</span></span>
+<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        current_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> datetime.strptime(date.today().strftime(</span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">), </span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        past_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> current_date </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> dateutil.relativedelta.relativedelta(</span><span style="color: #FD971F">days</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">day_cutoff)</span></span>
+<span class="line"><span style="color: #F8F8F2">        sys.stdout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(os.devnull, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> yf.download(ticker, past_date, current_date)</span></span>
+<span class="line"><span style="color: #F8F8F2">        sys.stdout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> sys.__stdout__</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> data</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">find_anomaly</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">data</span><span style="color: #F8F8F2">: pd.DataFrame, </span><span style="color: #FD971F">PERCENT_CUTOFF</span><span style="color: #F92672">=</span><span style="color: #AE81FF">0.40</span><span style="color: #F8F8F2">) -> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">        max_value </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data[</span><span style="color: #E6DB74">"High"</span><span style="color: #F8F8F2">].max()</span></span>
+<span class="line"><span style="color: #F8F8F2">        min_value </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data[</span><span style="color: #E6DB74">"Low"</span><span style="color: #F8F8F2">].min()</span></span>
+<span class="line"><span style="color: #F8F8F2">        value_diff </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">abs</span><span style="color: #F8F8F2">(max_value </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> min_value)</span></span>
+<span class="line"><span style="color: #F8F8F2">        max_per_diff </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> value_diff </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> max_value</span></span>
+<span class="line"><span style="color: #F8F8F2">        min_per_diff </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> value_diff </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> min_value</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> max_per_diff </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">PERCENT_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">or</span><span style="color: #F8F8F2"> min_per_diff </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">PERCENT_CUTOFF</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            Direction </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"N/A"</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">try</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> data.empty </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #88846F"># first open</span></span>
+<span class="line"><span style="color: #F8F8F2">                    d_open </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data[</span><span style="color: #E6DB74">"Open"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #88846F"># last close</span></span>
+<span class="line"><span style="color: #F8F8F2">                    d_close </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data[</span><span style="color: #E6DB74">"Close"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                    Direction </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"up"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> d_close </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> d_open </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"down"</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">except</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Exception</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> e:</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(e)</span></span>
+<span class="line"><span style="color: #F8F8F2">            d </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">Max</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">max_value,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">Min</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">min_value,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">Diff</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">value_diff,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">MaxPercentDiff</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">max_per_diff,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">MinPercentDiff</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">min_per_diff,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #FD971F">Direction</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">Direction,</span></span>
+<span class="line"><span style="color: #F8F8F2">            )</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">else</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            d </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">Max</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">max_value, </span><span style="color: #FD971F">Min</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">min_value, </span><span style="color: #FD971F">Diff</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">value_diff)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> d</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_match</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">ticker</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">        get match for ticker</span></span>
+<span class="line"><span style="color: #E6DB74">        for the past five days</span></span>
+<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">PERCENT_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"percent_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">0.35</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"day_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        ticker_data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_data(ticker, </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        d </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.find_anomaly(ticker_data, </span><span style="color: #AE81FF">PERCENT_CUTOFF</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> d.get(</span><span style="color: #E6DB74">"MaxPercentDiff"</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">or</span><span style="color: #F8F8F2"> d.get(</span><span style="color: #E6DB74">"MinPercentDiff"</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">            d[</span><span style="color: #E6DB74">"Ticker"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker</span></span>
+<span class="line"><span style="color: #F8F8F2">            d[</span><span style="color: #E6DB74">"Max % Diff"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">round</span><span style="color: #F8F8F2">(d[</span><span style="color: #E6DB74">"MaxPercentDiff"</span><span style="color: #F8F8F2">], </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            d[</span><span style="color: #E6DB74">"Min % Diff"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">round</span><span style="color: #F8F8F2">(d[</span><span style="color: #E6DB74">"MinPercentDiff"</span><span style="color: #F8F8F2">], </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            d[</span><span style="color: #E6DB74">"Diff"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">round</span><span style="color: #F8F8F2">(d[</span><span style="color: #E6DB74">"Diff"</span><span style="color: #F8F8F2">], </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> d</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_func</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">        Main function for the unusual volume scanner</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E6DB74">        .. todo</span></span>
+<span class="line"><span style="color: #E6DB74">          Determine if this is the best place to send discord messages</span></span>
+<span class="line"><span style="color: #E6DB74">          probably with seperation of concerns, no.</span></span>
+<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        cpus </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> multiprocessing.cpu_count()</span></span>
+<span class="line"><span style="color: #F8F8F2">        title </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg.get(</span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> multiprocessing.Pool(cpus) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> p:</span></span>
+<span class="line"><span style="color: #F8F8F2">            positive_scans </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> p.map(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_match, </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.tickers)</span></span>
+<span class="line"><span style="color: #F8F8F2">        post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"**</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">title</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">**"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        not_none_values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">filter</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">__ne__</span><span style="color: #F8F8F2">, positive_scans)</span></span>
+<span class="line"><span style="color: #F8F8F2">        list_of_values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(not_none_values)</span></span>
+<span class="line"><span style="color: #F8F8F2">        post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"Length: **</span><span style="color: #AE81FF">{</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(list_of_values)</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">**"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        content_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.DataFrame(list_of_values).reindex(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #FD971F">columns</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"Ticker"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"Max"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"Min"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"Diff"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"MaxPercentDiff"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"MinPercentDiff"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #E6DB74">"Direction"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">            ]</span></span>
+<span class="line"><span style="color: #F8F8F2">        )</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> content_df.empty </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"**</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">title</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">**"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span></span>
+<span class="line"><span style="color: #F8F8F2">        content_str </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> content_df.to_string(</span><span style="color: #FD971F">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># move later, just return df</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> chunk </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">            content_str[i : i </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1950</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(content_str), </span><span style="color: #AE81FF">1950</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        ]:</span></span>
+<span class="line"><span style="color: #F8F8F2">            time.sleep(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"```</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">chunk</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">```"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> content_df</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> __name__ </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"__main__"</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">    test_tickers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #E6DB74">"IP.CN"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"NTAR.CN"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"API.CN"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"IGN.CN"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">    cfg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {}</span></span>
+<span class="line"><span style="color: #F8F8F2">    scanner </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Scanner(test_tickers, cfg)</span></span>
+<span class="line"><span style="color: #F8F8F2">    ip </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> scanner.main_func()</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This code Implements the Scanner interface for finding high and low technology stocks based on a given percentage cutoff and day cutoff. It imports several packages, including yfinance for downloading stock data, numpy, sys, os, dateutil.relativedelta, pandas, glob, json, multiprocessing, and time.</p>
+<p>The Scanner class has three methods: <strong>init</strong>, get_data, and find_anomaly.</p>
+<p><strong>init</strong> initializes the class with a list of tickers to scan and a configuration dictionary (cfg).</p>
+<p>get_data takes a ticker symbol and a day cutoff and returns a DataFrame of daily data for the past day_cutoff days, using yf.download from the yfinance package to get the data.</p>
+<p>find_anomaly takes a DataFrame of stock data and a percentage cutoff, and returns a dictionary of maximum and minimum values for high and low stock prices, the difference between them, the maximum and minimum percentage differences between the values, and the direction (up or down) of the stock price. If the percentage difference is greater than or equal to the percentage cutoff, the direction is calculated as the difference between the first open price and the last close price.</p>
+<p>The main_func method is the main function of the scanner. It creates a multiprocessing Pool with a number of processes equal to the number of CPUs and maps the get_match method to each ticker in the list of tickers. It then creates a Pandas DataFrame of the results, filters out any None values, and prints the results to a Discord webhook. Finally, it returns the DataFrame of results.</p>
+<p>The script also includes a test case that creates a Scanner object with a list of tickers and an empty configuration dictionary, and calls the main_func method on the Scanner object.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> yfinance </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> yf</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sys</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> dateutil.relativedelta</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> multiprocessing</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> datetime </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> datetime, date</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> stock_screener.util </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> post_webhook</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> stock_screener.interfaces </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> ScannerInterface</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> time</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Scanner</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">ScannerInterface</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">__init__</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">tickers</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">cfg</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.tickers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tickers</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg.get(</span><span style="color: #E6DB74">"settings"</span><span style="color: #F8F8F2">, {})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_data</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">ticker</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">months_cutoff</span><span style="color: #F92672">=</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">) -> pd.DataFrame:</span></span>
+<span class="line"><span style="color: #F8F8F2">        current_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> datetime.strptime(date.today().strftime(</span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">), </span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        past_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> current_date </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> dateutil.relativedelta.relativedelta(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #FD971F">months</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">months_cutoff</span></span>
+<span class="line"><span style="color: #F8F8F2">        )</span></span>
+<span class="line"><span style="color: #F8F8F2">        sys.stdout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(os.devnull, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> yf.download(ticker, past_date, current_date)</span></span>
+<span class="line"><span style="color: #F8F8F2">        sys.stdout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> sys.__stdout__</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> data</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">custom_print</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">d</span><span style="color: #F8F8F2">: pd.DataFrame, </span><span style="color: #FD971F">tick</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">\n\n\n</span><span style="color: #E6DB74">*******  "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> tick.upper() </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"  *******"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Ticker is: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> tick.upper())</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"*********************</span><span style="color: #AE81FF">\n\n\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">@</span><span style="color: #66D9EF">staticmethod</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calc_price_vol</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">ticker_data</span><span style="color: #F8F8F2">: pd.DataFrame):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">try</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            price </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker_data[</span><span style="color: #E6DB74">"Close"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">            volume </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker_data[</span><span style="color: #E6DB74">"Volume"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> price </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> volume</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">except</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Exception</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> e:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(e)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_match</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">ticker</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">        get match for ticker</span></span>
+<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"day_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        ticker_data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_data(ticker, </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">try</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">            last_close </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker_data[</span><span style="color: #E6DB74">"Close"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">            price_volume </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.calc_price_vol(ticker_data)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #88846F"># penny stock with enough liquidity</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> last_close </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">and</span><span style="color: #F8F8F2"> price_volume </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1E6</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">                stonk </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">dict</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">                stonk[</span><span style="color: #E6DB74">"Ticker"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker</span></span>
+<span class="line"><span style="color: #F8F8F2">                stonk[</span><span style="color: #E6DB74">"Volume"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker_data[</span><span style="color: #E6DB74">"Volume"</span><span style="color: #F8F8F2">].iloc[</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">                stonk[</span><span style="color: #E6DB74">"PriceVolume"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> price_volume</span></span>
+<span class="line"><span style="color: #F8F8F2">                stonk[</span><span style="color: #E6DB74">"Close"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> last_close</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> stonk</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">except</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Exception</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> e:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Index failure for stock"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(ticker)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(e)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_func</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #E6DB74">        Main function for the unusual volume scanner</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #E6DB74">        .. todo</span></span>
+<span class="line"><span style="color: #E6DB74">          Determine if this is the best place to send discord messages</span></span>
+<span class="line"><span style="color: #E6DB74">          probably with seperation of concerns, no.</span></span>
+<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        cpus </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> multiprocessing.cpu_count()</span></span>
+<span class="line"><span style="color: #F8F8F2">        title </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg.get(</span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> multiprocessing.Pool(cpus) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> p:</span></span>
+<span class="line"><span style="color: #F8F8F2">            positive_scans </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> p.map(</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_match, </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.tickers)</span></span>
+<span class="line"><span style="color: #F8F8F2">        curr_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> date.today().strftime(</span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"**</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">title</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> - </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">curr_date</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">**"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        not_none_values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">filter</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">__ne__</span><span style="color: #F8F8F2">, positive_scans)</span></span>
+<span class="line"><span style="color: #F8F8F2">        list_of_values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(not_none_values)</span></span>
+<span class="line"><span style="color: #F8F8F2">        post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"Number of stocks: </span><span style="color: #AE81FF">{</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(list_of_values)</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        content_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.DataFrame(list_of_values).reindex(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #FD971F">columns</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span><span style="color: #E6DB74">"Ticker"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Volume"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"PriceVolume"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Close"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">        )</span></span>
+<span class="line"><span style="color: #F8F8F2">        content_str </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> content_df.to_string(</span><span style="color: #FD971F">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># if else statement in case dataframe is missing</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> chunk </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">            content_str[i : i </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1950</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(content_str), </span><span style="color: #AE81FF">1950</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        ]:</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"SENDING CHUNK"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            time.sleep(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            post_webhook(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"```</span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">chunk</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">```"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> content_df</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This is another scanner that implements an unusual volume scanner using the Yahoo Finance API. The script defines a class called <code>Scanner</code> that has a constructor, a <code>get_data</code> method, a <code>custom_print</code> method, a <code>calc_price_vol</code> method, a <code>get_match</code> method, and a <code>main_func</code> method.</p>
+<p>The <code>Scanner</code> constructor takes two parameters, <code>tickers</code> and <code>cfg</code>. <code>tickers</code> is a list of stock tickers that will be scanned, and <code>cfg</code> is a dictionary of configuration settings.</p>
+<p>The <code>get_data</code> method takes a <code>ticker</code> parameter and an optional <code>months_cutoff</code> parameter (default 1). It downloads historical data for the given <code>ticker</code> from <code>months_cutoff</code> months ago to the current date using the Yahoo Finance API and returns it as a pandas DataFrame.</p>
+<p>The <code>custom_print</code> method takes a pandas DataFrame <code>d</code> and a stock ticker <code>tick</code> and prints some information about the DataFrame and the stock ticker.</p>
+<p>The <code>calc_price_vol</code> method takes a pandas DataFrame <code>ticker_data</code> and calculates the product of the latest closing price and the latest volume for the given stock ticker. If an error occurs during this calculation, it returns <code>None</code>.</p>
+<p>The <code>get_match</code> method takes a stock ticker <code>ticker</code>, gets the historical data for that ticker using the <code>get_data</code> method, and checks if the latest closing price is less than 5 and the product of the latest closing price and the latest volume is greater than 1E6. If these conditions are met, it returns a dictionary with information about the stock ticker, including the ticker symbol, volume, price volume, and closing price.</p>
+<p>The <code>main_func</code> method is the main function of the script that runs the unusual volume scanner. It uses multiprocessing to run the <code>get_match</code> method in parallel for each stock ticker in the <code>tickers</code> list. It then filters out any <code>None</code> values and creates a pandas DataFrame from the remaining results. It also sends a Discord webhook with information about the number of stocks that meet the search criteria and the information about each stock.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/FriendlyUser/stock_screener/tree/master">https://github.com/FriendlyUser/stock_screener/tree/master</a></li>
+<li><a href="https://friendlyuser.github.io/posts/stonks/ta/stonk_screener_part_I">https://friendlyuser.github.io/posts/stonks/ta/stonk_screener_part_I</a></li>
+</ul></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-02-15<!-- -->.</div></div></div>
+  </body></html>
