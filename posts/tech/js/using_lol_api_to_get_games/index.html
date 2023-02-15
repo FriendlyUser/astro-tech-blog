@@ -62,94 +62,94 @@
   <body class="bg-slate-900 text-gray-100">
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
-      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using the league of legends api to get games via deno</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 25 April 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/deno" style="padding-right:3px"> <category>deno<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/262205434.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>The League of Legends API (Application Programming Interface) is a set of web-based protocols and tools provided by Riot Games, the developer of League of Legends, that allow third-party developers to access data and functionality related to the game.</p>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using the league of legends api to get games via deno</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 25 April 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/js" style="padding-right:3px"> <category>js<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/262205434.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>The League of Legends API (Application Programming Interface) is a set of web-based protocols and tools provided by Riot Games, the developer of League of Legends, that allow third-party developers to access data and functionality related to the game.</p>
 <p>Using the API, developers can retrieve data such as summoner profiles, match histories, and current game information. This data can be used to build custom websites, mobile applications, or other tools that provide League of Legends players with additional features and functionality beyond what is available in the game itself.</p>
 <p>The League of Legends API provides both REST (Representational State Transfer) and real-time streaming endpoints, making it easy for developers to access the data they need. However, to use the API, developers must first obtain an API key from Riot Games and comply with their terms of service.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">import { writeJson } from "https://deno.land/std/fs/mod.ts"</span></span>
-<span class="line"><span style="color: #F8F8F2">import "https://deno.land/x/dotenv/load.ts"</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">const player_id = Deno.env.get('ACCOUNT_ID')</span></span>
-<span class="line"><span style="color: #F8F8F2">const region_url = 'https://na1.api.riotgames.com'</span></span>
-<span class="line"><span style="color: #F8F8F2">let riot_URL = new URL(`${region_url}/lol/match/v4/matchlists/by-account/${player_id}`)</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">enum HTTP {</span></span>
-<span class="line"><span style="color: #F8F8F2">  GET = 'GET',</span></span>
-<span class="line"><span style="color: #F8F8F2">  POST = 'POST',</span></span>
-<span class="line"><span style="color: #F8F8F2">  PUT = 'PUT',</span></span>
-<span class="line"><span style="color: #F8F8F2">  DELETE = 'DELETE'</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { writeJson } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/std/fs/mod.ts"</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/x/dotenv/load.ts"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> player_id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Deno.env.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'ACCOUNT_ID'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> region_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://na1.api.riotgames.com'</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> riot_URL </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">URL</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">region_url</span><span style="color: #F92672">}</span><span style="color: #E6DB74">/lol/match/v4/matchlists/by-account/</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">player_id</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">enum</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">HTTP</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  GET </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'GET'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  POST </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'POST'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  PUT </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'PUT'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  DELETE </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'DELETE'</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">interface MatchlistDto {</span></span>
-<span class="line"><span style="color: #F8F8F2">  startIndex: number</span></span>
-<span class="line"><span style="color: #F8F8F2">  totalGames: number</span></span>
-<span class="line"><span style="color: #F8F8F2">  endIndex: number</span></span>
-<span class="line"><span style="color: #F8F8F2">  matches: Array&#x3C;any></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MatchlistDto</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  startIndex</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span></span>
+<span class="line"><span style="color: #F8F8F2">  totalGames</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span></span>
+<span class="line"><span style="color: #F8F8F2">  endIndex</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span></span>
+<span class="line"><span style="color: #F8F8F2">  matches</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Array</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">any</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">function makeFetchOptions(</span></span>
-<span class="line"><span style="color: #F8F8F2">    riotKey = Deno.env.get('RIOT_API_KEY'),</span></span>
-<span class="line"><span style="color: #F8F8F2">    method: HTTP = HTTP.GET</span></span>
-<span class="line"><span style="color: #F8F8F2">): object {</span></span>
-<span class="line"><span style="color: #F8F8F2">  return {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">makeFetchOptions</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">riotKey</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Deno.env.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'RIOT_API_KEY'</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">method</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">HTTP</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> HTTP.GET</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">object</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">      method: method,</span></span>
 <span class="line"><span style="color: #F8F8F2">      headers: { </span></span>
-<span class="line"><span style="color: #F8F8F2">        "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",</span></span>
-<span class="line"><span style="color: #F8F8F2">        "Accept-Language":  "en-US,en;q=0.9",</span></span>
-<span class="line"><span style="color: #F8F8F2">        'X-Riot-Token': riotKey</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"Accept-Charset"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"application/x-www-form-urlencoded; charset=UTF-8"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"Accept-Language"</span><span style="color: #F8F8F2">:  </span><span style="color: #E6DB74">"en-US,en;q=0.9"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">'X-Riot-Token'</span><span style="color: #F8F8F2">: riotKey</span></span>
 <span class="line"><span style="color: #F8F8F2">      }</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">function appendMatchHistory(riot_endpoint: string): Promise&#x3C;MatchlistDto> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  const riotKey = Deno.env.get('RIOT_API_KEY')</span></span>
-<span class="line"><span style="color: #F8F8F2">  console.log(riotKey)</span></span>
-<span class="line"><span style="color: #F8F8F2">  const options = makeFetchOptions(riotKey)</span></span>
-<span class="line"><span style="color: #F8F8F2">  return fetch(riot_endpoint, options)</span></span>
-<span class="line"><span style="color: #F8F8F2">  .then( (resp: any) => {</span></span>
-<span class="line"><span style="color: #F8F8F2">    console.log(resp)</span></span>
-<span class="line"><span style="color: #F8F8F2">    return resp.json() </span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">appendMatchHistory</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">riot_endpoint</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Promise</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">MatchlistDto</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> riotKey </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Deno.env.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'RIOT_API_KEY'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">  console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(riotKey)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> options </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">makeFetchOptions</span><span style="color: #F8F8F2">(riotKey)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(riot_endpoint, options)</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">( (</span><span style="color: #FD971F">resp</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">any</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(resp)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> resp.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">() </span></span>
 <span class="line"><span style="color: #F8F8F2">  })</span></span>
-<span class="line"><span style="color: #F8F8F2">  .then( (matchData: MatchlistDto) => {</span></span>
-<span class="line"><span style="color: #F8F8F2">    return matchData</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">( (</span><span style="color: #FD971F">matchData</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MatchlistDto</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> matchData</span></span>
 <span class="line"><span style="color: #F8F8F2">  })</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">const max_iterations = 1000</span></span>
-<span class="line"><span style="color: #F8F8F2">let bIndex = 0</span></span>
-<span class="line"><span style="color: #F8F8F2">let eIndex = 100</span></span>
-<span class="line"><span style="color: #F8F8F2">let current_url = riot_URL</span></span>
-<span class="line"><span style="color: #F8F8F2">let riot_endpoint = null</span></span>
-<span class="line"><span style="color: #F8F8F2">let allMatches = []</span></span>
-<span class="line"><span style="color: #F8F8F2">let customGames = []</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">const sleep = (milliseconds: number) => {</span></span>
-<span class="line"><span style="color: #F8F8F2">  return new Promise(resolve => setTimeout(resolve, milliseconds))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> max_iterations </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1000</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> bIndex </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> eIndex </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> current_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> riot_URL</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> riot_endpoint </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> allMatches </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
+<span class="line"><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> customGames </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sleep</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F">milliseconds</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Promise</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">resolve</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setTimeout</span><span style="color: #F8F8F2">(resolve, milliseconds))</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">for (let i = 0; i &#x3C; max_iterations; i++) {</span></span>
-<span class="line"><span style="color: #F8F8F2">    console.log(`beginIndex: ${bIndex} endIndex: ${eIndex}`)</span></span>
-<span class="line"><span style="color: #F8F8F2">    riot_endpoint = current_url.toString()</span></span>
-<span class="line"><span style="color: #F8F8F2">    const newMatches = await appendMatchHistory(riot_endpoint)</span></span>
-<span class="line"><span style="color: #F8F8F2">    await sleep(1500)</span></span>
-<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.delete('beginIndex')</span></span>
-<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.delete('endIndex')</span></span>
-<span class="line"><span style="color: #F8F8F2">    const {matches} = newMatches</span></span>
-<span class="line"><span style="color: #F8F8F2">    if (matches.length == 0) {</span></span>
-<span class="line"><span style="color: #F8F8F2">      console.log(`ENDING SCRIPT AT ${eIndex} with ${matches.length}`)</span></span>
-<span class="line"><span style="color: #F8F8F2">      break</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">; i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> max_iterations; i</span><span style="color: #F92672">++</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`beginIndex: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">bIndex</span><span style="color: #F92672">}</span><span style="color: #E6DB74"> endIndex: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">eIndex</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    riot_endpoint </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> current_url.</span><span style="color: #A6E22E">toString</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> newMatches </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">appendMatchHistory</span><span style="color: #F8F8F2">(riot_endpoint)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sleep</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1500</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.</span><span style="color: #A6E22E">delete</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'beginIndex'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.</span><span style="color: #A6E22E">delete</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'endIndex'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> {matches} </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> newMatches</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (matches.length </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`ENDING SCRIPT AT </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">eIndex</span><span style="color: #F92672">}</span><span style="color: #E6DB74"> with </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">matches.length</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">break</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
-<span class="line"><span style="color: #F8F8F2">    // startIndex becomes endIndex</span></span>
-<span class="line"><span style="color: #F8F8F2">    bIndex = eIndex</span></span>
-<span class="line"><span style="color: #F8F8F2">    eIndex = eIndex + 100</span></span>
-<span class="line"><span style="color: #F8F8F2">    allMatches.push(newMatches.matches)</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    // get new url</span></span>
-<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.append('beginIndex', String(bIndex))</span></span>
-<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.append('endIndex', String(eIndex))</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// startIndex becomes endIndex</span></span>
+<span class="line"><span style="color: #F8F8F2">    bIndex </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> eIndex</span></span>
+<span class="line"><span style="color: #F8F8F2">    eIndex </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> eIndex </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span></span>
+<span class="line"><span style="color: #F8F8F2">    allMatches.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(newMatches.matches)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// get new url</span></span>
+<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.</span><span style="color: #A6E22E">append</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'beginIndex'</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E">String</span><span style="color: #F8F8F2">(bIndex))</span></span>
+<span class="line"><span style="color: #F8F8F2">    current_url.searchParams.</span><span style="color: #A6E22E">append</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'endIndex'</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E">String</span><span style="color: #F8F8F2">(eIndex))</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">await writeJson(</span></span>
-<span class="line"><span style="color: #F8F8F2">  "./allData.json",</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">writeJson</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"./allData.json"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  allMatches</span></span>
 <span class="line"><span style="color: #F8F8F2">); </span></span></code></pre>
 <p>This is a TypeScript/JavaScript script that retrieves a player’s match history data from the Riot Games API and writes it to a JSON file.</p>
