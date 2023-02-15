@@ -70,6 +70,7 @@
 /posts/tech/js/vuepress_theme_cool.md
 /posts/tech/js/making_an_custom_image_component.md
 /posts/tech/js/using_lol_api_to_get_games.md
+/posts/tech/js/getting_started_with_google_maps.md
 /posts/tech/net/intro_to_linq.md
 /posts/tech/net/minimum_api_ip_address.md
 /posts/tech/python/chatgpt_blog_generation.md
