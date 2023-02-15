@@ -5,7 +5,7 @@ alt: my first blog post
 tags: ["react","js"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 April 2024 13:00:00 GMT
-imgSrc: '/imgs/2023/unused_342028959_blank_card_on_brown_table.png'
+imgSrc: '/imgs/2023/342028959_blank_card_on_brown_table.png'
 ---
 
 
