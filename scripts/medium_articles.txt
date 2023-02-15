@@ -107,3 +107,5 @@
 /posts/tech/css/css_animations_in_react.md
 /posts/tech/css/css_in_jsx_vs_react_styled.md
 /posts/tech/js/building_a_price_card_component_in_react.md
+/posts/stonks/ta/stonk_screener_part_II.md
+/posts/stonks/ta/stonk_screener_part_I.md
