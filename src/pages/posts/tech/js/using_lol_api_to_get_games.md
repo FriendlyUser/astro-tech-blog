@@ -1,11 +1,12 @@
 ---
-tags: ['deno']
+tags: ["js"]
 title: Using the league of legends api to get games via deno
 description: In this post I will show you how to use the league of legends api to get games via deno.
 pubDate: Fri, 25 April 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/262205434.png
 ---
+
 The League of Legends API (Application Programming Interface) is a set of web-based protocols and tools provided by Riot Games, the developer of League of Legends, that allow third-party developers to access data and functionality related to the game.
 
 Using the API, developers can retrieve data such as summoner profiles, match histories, and current game information. This data can be used to build custom websites, mobile applications, or other tools that provide League of Legends players with additional features and functionality beyond what is available in the game itself.
@@ -13,7 +14,7 @@ Using the API, developers can retrieve data such as summoner profiles, match his
 The League of Legends API provides both REST (Representational State Transfer) and real-time streaming endpoints, making it easy for developers to access the data they need. However, to use the API, developers must first obtain an API key from Riot Games and comply with their terms of service.
 
 
-``` 
+```js
 import { writeJson } from "https://deno.land/std/fs/mod.ts"
 import "https://deno.land/x/dotenv/load.ts"
 
@@ -121,8 +122,6 @@ The League of Legends API does not return custom game data because custom games 
 Custom games are typically played with friends or other invited players, and the rules and settings can be customized by the game's creator. Since custom games are not part of the official competitive system, they are not included in the public leaderboards or statistics that are available through the API.
 
 However, it's worth noting that Riot Games does provide some limited access to custom game data through their Tournament API, which allows developers to create custom tournaments and track match data for those tournaments. This API is specifically designed for use in creating custom tournament experiences, and is not intended to be used for general match data retrieval.
-
-
 
 ## References
 - https://github.com/FriendlyUser/deno-riot-games-custom-games/tree/master

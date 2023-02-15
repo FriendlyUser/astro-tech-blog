@@ -37,8 +37,8 @@ def publish_to_medium(data):
       print(post_request)
       return True
     else:
-      print(post_request.status_code)
-      print(post_request.text)
+      print("Failed to create article")
+      print(f"Code is: "  + str(post_request.status_code))
       return False
 
 def make_articles_for_medium():
@@ -77,7 +77,6 @@ def make_articles_for_medium():
                 if isCreated:
                   created_articles.append(adjustedPost)
                 else: 
-                  print("Failed to create article")
                   time.sleep(5)
                 time.sleep(0.5)
     with open ("scripts/medium_articles.txt", "w") as f:

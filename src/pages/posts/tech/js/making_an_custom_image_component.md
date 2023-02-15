@@ -9,13 +9,13 @@ imgSrc: '/imgs/2023/342028959_blank_card_on_brown_table.png'
 ---
 
 
-he HTML <img> tag is used to embed an image in a web page. It allows you to display an image that is hosted on a server or included in the webpage's source code. The <img> tag has two required attributes:
+he HTML `<img>` tag is used to embed an image in a web page. It allows you to display an image that is hosted on a server or included in the webpage's source code. The `<img>` tag has two required attributes:
 
 * src: This specifies the URL or path to the image that you want to display.
 * alt: This provides alternative text for the image, which is displayed if the image cannot be 
 loaded or if the user is using a screen reader.
 
-Here's an example of how to use the <img> tag to display an image:
+Here's an example of how to use the `<img>` tag to display an image:
 
 ```html
 <img src="image.jpg" alt="A beautiful sunset over the ocean">
@@ -24,9 +24,9 @@ Here's an example of how to use the <img> tag to display an image:
 
 In this example, the src attribute points to an image file called image.jpg, and the alt attribute provides a description of the image for users who cannot see it.
 
-The <img> tag also supports several optional attributes that can be used to modify the image's appearance and behavior, such as width, height, title, and loading.
+The `<img>` tag also supports several optional attributes that can be used to modify the image's appearance and behavior, such as width, height, title, and loading.
 
-Overall, the <img> tag is a simple and widely used element that makes it easy to add images to your web pages.  
+Overall, the `<img>` tag is a simple and widely used element that makes it easy to add images to your web pages.  
 
 A fallback image is a backup image that is displayed in the event that the primary image fails to load. This can happen for various reasons, such as slow internet connection or incorrect file path. The fallback image is usually a simpler version of the primary image and is designed to provide a reasonable substitute for the missing image.
 
