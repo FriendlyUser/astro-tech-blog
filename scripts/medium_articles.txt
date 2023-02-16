@@ -119,3 +119,5 @@
 /posts/random/free_education_software_development.md
 /posts/random/linkedin_auto_suggestions.md
 /posts/random/tech_layoffs.md
+/posts/tech/utils/customizing_vscode_settings.md
+/posts/tech/utils/cloud_env_vars.md
