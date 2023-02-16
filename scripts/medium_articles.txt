@@ -116,3 +116,4 @@
 /posts/tech/js/phaser_networked_game.md
 /posts/tech/js/phaser_networked_game_II.md
 /posts/tech/git_hosting.md
+/posts/random/free_education_software_development.md
