@@ -115,3 +115,4 @@
 /posts/stonks/ta/stonk_screener_part_I.md
 /posts/tech/js/phaser_networked_game.md
 /posts/tech/js/phaser_networked_game_II.md
+/posts/tech/git_hosting.md
