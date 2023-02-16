@@ -1,7 +1,7 @@
 ---
 tags: ['js']
-title: Getting started with google maps
-description: In this post I will show you how to create a simple networked game with phaser and nodejs.
+title: Cloud Environment Variables
+description: Environment variables are dynamic values that can be accessed by processes running on an operating system, including programs, scripts, and command-line interfaces. These variables contain information about the operating system environment and can be used to pass data to programs, control the behavior of the system, and provide configuration settings.
 pubDate: Fri, 30 May 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1373682361.png

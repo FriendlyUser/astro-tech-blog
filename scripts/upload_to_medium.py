@@ -20,7 +20,7 @@ def publish_to_medium(data):
         "contentFormat": "markdown",
         "content": full_content,
         "canonicalUrl": canonicalUrl,
-        "tags": data["tags"],
+        # "tags": data["tags"],
         "publishStatus": "draft"
     }
 

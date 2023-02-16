@@ -1,5 +1,5 @@
 ---
-tags: ['Vscode']
+tags: []
 title: How to customize vscode settings
 description: In this post I will show you how to customize visual studio code settings.
 pubDate: Fri, 22 May 2024
