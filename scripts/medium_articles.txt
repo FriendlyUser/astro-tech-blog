@@ -117,3 +117,5 @@
 /posts/tech/js/phaser_networked_game_II.md
 /posts/tech/git_hosting.md
 /posts/random/free_education_software_development.md
+/posts/random/linkedin_auto_suggestions.md
+/posts/random/tech_layoffs.md
