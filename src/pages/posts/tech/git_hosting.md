@@ -1,5 +1,5 @@
 ---
-tags: ['git']
+tags: []
 title: In this post I will compare github, gitlab, and bitbucket
 description: Looking at pros and cons of the main code hosting choices.
 pubDate: Fri, 22 May 2024
