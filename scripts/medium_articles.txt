@@ -75,6 +75,7 @@
 /posts/tech/net/minimum_api_ip_address.md
 /posts/tech/python/chatgpt_blog_generation.md
 /posts/tech/python/python_introduction.md
+/posts/tech/python/youtube_api_get_videos_of_interest.md
 /posts/tech/scripting/argparse_with_python.md
 /posts/tech/scripting/caching_with_github_actions.md
 /posts/tech/scripting/creating_my_own_subs.md
