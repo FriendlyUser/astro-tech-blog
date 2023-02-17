@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converting saber site to nextra - Astro Tech Blog</title>
+    <meta name="description" content="In this post I will show you how I ported saber site to nextra.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Converting saber site to nextra</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 30 May 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/next" style="padding-right:3px"> <category>next<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/nextra" style="padding-right:3px"> <category>nextra<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1538101898.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Next.js is a popular open-source framework for building modern web applications with React. It is a production-ready solution for building server-side rendered React applications that can be deployed to a wide variety of environments including the web, mobile devices, and even static hosting.</p>
+<p>Next.js offers several features that make it a powerful and flexible tool for building web applications. Some of its key features include:</p>
+<ol>
+<li>Server-side rendering: Next.js supports server-side rendering, which means that pages can be pre-rendered on the server and delivered to the client as fully formed HTML pages. This can lead to better performance and search engine optimization (SEO) for web applications.</li>
+<li>Automatic code splitting: Next.js automatically splits code into smaller chunks, which are then loaded on demand when needed. This can help to improve the initial load time of the application and reduce the amount of code that needs to be loaded for each page.</li>
+<li>Dynamic imports: Next.js supports dynamic imports, which allows code to be loaded on demand based on user actions. This can help to reduce the initial load time of the application and improve the user experience.</li>
+<li>Hot module replacement: Next.js supports hot module replacement, which means that changes to code can be made in real-time without the need for a full page reload. This can help to improve developer productivity and reduce the time needed for testing and debugging.</li>
+<li>Static site generation: Next.js supports static site generation, which means that pages can be pre-built as static HTML files that can be served directly to the client. This can help to improve performance and reduce the load on the server.</li>
+</ol>
+<p>Overall, Next.js provides a powerful and flexible platform for building modern web applications with React. Its support for server-side rendering, automatic code splitting, dynamic imports, hot module replacement, and static site generation make it a popular choice for developers who want to build fast, scalable, and maintainable web applications.</p>
+<p>Saber is a static site generator that uses Vue.js as its main framework. It allows developers to build fast, modern, and SEO-friendly websites with the power of Vue.js and the simplicity of static site generation.</p>
+<p>With Saber, developers can create static websites with server-side rendering and support for dynamic data, routing, and caching. Saber is designed to be easy to use and flexible, allowing developers to customize the build process and add plugins and themes as needed.</p>
+<p>Some of the key features of Saber include:</p>
+<ol>
+<li>Vue.js-based: Saber is built on top of Vue.js, which is a popular and powerful framework for building web applications. This means that developers can leverage the power of Vue.js to build static websites with dynamic data and server-side rendering.</li>
+<li>Server-side rendering: Saber supports server-side rendering, which means that pages can be pre-rendered on the server and delivered to the client as fully formed HTML pages. This can lead to better performance and search engine optimization (SEO) for web applications.</li>
+<li>Easy theming: Saber makes it easy to create and use custom themes, which can be applied to any Saber site. Themes can include custom layouts, styles, and components.</li>
+<li>Flexible plugin system: Saber has a flexible plugin system that allows developers to add new functionality to their Saber sites. There are many plugins available, including plugins for syntax highlighting, sitemaps, and RSS feeds.</li>
+<li>Markdown-based: Saber uses Markdown as the primary way to create content, which makes it easy for developers and content creators to collaborate and create content for the website.</li>
+</ol>
+<p>Overall, Saber is a powerful and flexible static site generator that makes it easy to build modern, SEO-friendly websites with the power of Vue.js. It’s a great choice for developers who want to build fast and scalable websites without the complexity of traditional server-side applications.</p>
+<p>Saber is a older framework and relies on hacks to implement search and/or analytics plus google adsense. By leveraging newer framework I was aiming to improve the user experience and improve the quality of my <a href="grandfleet.eu.org">latex diagrams site</a>.</p>
+<p>Nextra is an open-source framework for building static websites with Next.js and MDX. It provides a set of pre-configured components and styles to make it easy to build modern, responsive websites that can be deployed anywhere.</p>
+<p>Nextra is built on top of Next.js, which is a popular framework for building server-side rendered React applications. It leverages the power of Next.js to provide features like server-side rendering, automatic code splitting, and dynamic imports.</p>
+<p>Nextra’s primary focus is on making it easy to create documentation websites, blogs, and other content-driven sites with Next.js and MDX. MDX is a format that combines markdown and JSX, which allows developers to write components directly in their markdown content.</p>
+<p>Some of the key features of Nextra include:</p>
+<ol>
+<li>Easy setup: Nextra provides a simple setup process that includes a pre-configured Next.js project with all the necessary components and styles.</li>
+<li>MDX-based: Nextra uses MDX as the primary way to create content, which makes it easy for developers and content creators to collaborate and create content for the website.</li>
+<li>Customizable: Nextra is highly customizable and includes a wide variety of configuration options and components that can be modified to fit the needs of the website.</li>
+<li>Dark mode support: Nextra includes built-in support for dark mode, which can be toggled with a single click.</li>
+<li>Responsive design: Nextra provides a set of responsive styles that make it easy to build websites that look great on any device.</li>
+</ol>
+<p>Overall, Nextra is a powerful and flexible framework for building static websites with Next.js and MDX. It’s a great choice for developers who want to build fast, responsive, and content-driven websites with the power of Next.js and the simplicity of MDX.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> withNextra </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'nextra'</span><span style="color: #F8F8F2">)({</span></span>
+<span class="line"><span style="color: #F8F8F2">  theme: </span><span style="color: #E6DB74">'nextra-theme-docs'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  themeConfig: </span><span style="color: #E6DB74">'./theme.config.tsx'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  images: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    unoptimized: </span><span style="color: #AE81FF">true</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">module</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">exports</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">withNextra</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This is a code snippet from a Next.js configuration file that uses the <code>withNextra</code> Higher Order Function (HOF) to apply the Nextra framework to the Next.js application.</p>
+<p>Here’s what each part of the code does:</p>
+<ol>
+<li><code>const withNextra = require('nextra')(...)</code> - This line imports the <code>withNextra</code> function from the Nextra package and calls it with an options object as an argument. This creates a new HOF that can be used to apply the Nextra framework to a Next.js application.</li>
+<li><code>theme: 'nextra-theme-docs'</code> - This option specifies the name of the Nextra theme to use. In this case, the theme is <code>nextra-theme-docs</code>, which is a pre-built theme that is optimized for documentation websites.</li>
+<li><code>themeConfig: './theme.config.tsx'</code> - This option specifies the location of the theme configuration file. The theme configuration file is a TypeScript module that can be used to customize the Nextra theme.</li>
+<li><code>images: { unoptimized: true }</code> - This option specifies that images should be served in an unoptimized format. This is useful for development purposes when you want to quickly iterate on image assets.</li>
+<li><code>module.exports = withNextra()</code> - This line exports the <code>withNextra</code> HOF with an empty options object as an argument. This applies the Nextra framework to the Next.js application and makes it available for use in the application.</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { DocsThemeConfig } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'nextra-theme-docs'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> config</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">DocsThemeConfig</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  logo: &#x3C;</span><span style="color: #F92672">span</span><span style="color: #F8F8F2">>Latex Diagrams&#x3C;/</span><span style="color: #F92672">span</span><span style="color: #F8F8F2">>,</span></span>
+<span class="line"><span style="color: #F8F8F2">  project: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    link: </span><span style="color: #E6DB74">'https://github.com/FriendlyUser/LatexDiagrams'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  chat: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    link: </span><span style="color: #E6DB74">'https://discord.com'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  docsRepositoryBase: </span><span style="color: #E6DB74">'https://github.com/FriendlyUser/LatexDiagrams'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  footer: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    text: </span><span style="color: #E6DB74">'Nextra Docs Template'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> config</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This is a code snippet that creates a configuration object for the Nextra <code>nextra-theme-docs</code> theme.</p>
+<p>Here’s what each part of the code does:</p>
+<ol>
+<li><code>import React from 'react'</code> - This line imports the <code>React</code> library, which is needed to create the logo element.</li>
+<li><code>import { DocsThemeConfig } from 'nextra-theme-docs'</code> - This line imports the <code>DocsThemeConfig</code> type from the <code>nextra-theme-docs</code> package. This type is used to define the structure of the theme configuration object.</li>
+<li><code>const config: DocsThemeConfig = {...}</code> - This line creates a <code>config</code> constant that is of type <code>DocsThemeConfig</code> and assigns it an object that contains various configuration options for the <code>nextra-theme-docs</code> theme.</li>
+<li><code>logo: &#x3C;span>Latex Diagrams&#x3C;/span></code> - This option specifies the logo for the website. In this case, the logo is a simple <code>span</code> element with the text “Latex Diagrams”. This element will be rendered in the top left corner of the website.</li>
+<li><code>project: { link: 'https://github.com/FriendlyUser/LatexDiagrams' }</code> - This option specifies a link to the project repository. This link will be displayed in the top right corner of the website.</li>
+<li><code>chat: { link: 'https://discord.com' }</code> - This option specifies a link to a chat service. This link will be displayed in the top right corner of the website next to the project link.</li>
+<li><code>docsRepositoryBase: 'https://github.com/FriendlyUser/LatexDiagrams'</code> - This option specifies the base URL for the documentation repository. This is used to generate links to specific documentation pages.</li>
+<li><code>footer: { text: 'Nextra Docs Template' }</code> - This option specifies the text that should be displayed in the website footer. In this case, the text is “Nextra Docs Template”.</li>
+<li><code>export default config</code> - This line exports the <code>config</code> constant so that it can be used by other parts of the application that require the <code>nextra-theme-docs</code> theme configuration.</li>
+</ol>
+<p>In order to convert my site from saber to nextra I had to do the following:</p>
+<ol>
+<li>Convert all the markdown files to mdx</li>
+<li>Change the generation script to relative updating pathing for images</li>
+<li>deploy to the nextra site to vercel</li>
+</ol>
+<p>Nextra can use mdx in order to render html pages.</p>
+<p>MDX (Markdown + JSX) is a syntax for combining Markdown and JSX into a single file format. It allows users to write rich content that is easily transformed into HTML or React components.</p>
+<p>MDX extends the capabilities of traditional Markdown syntax by allowing users to embed JSX components within Markdown files. This allows for more dynamic and interactive content, such as live code examples, custom components, and interactive widgets.</p>
+<p>MDX files are processed using a transpiler that converts the combined Markdown and JSX syntax into React components that can be rendered by a React application. This makes it easy to create rich, interactive content for the web that can be easily shared and reused.</p>
+<p>MDX is commonly used for creating documentation, blog posts, and other types of content that require more advanced formatting and interactivity. It is supported by many popular static site generators, including Gatsby, Next.js, and Nuxt.js.</p>
+<p>In addition to supporting MDX, Nextra can also be deployed to vercel and benefits from leverage next.js.</p>
+<p>There are several advantages of using Next.js for building web applications:</p>
+<ol>
+<li>Server-side rendering: Next.js provides server-side rendering (SSR) out of the box. This means that the initial HTML is generated on the server, which can improve performance and SEO. With SSR, the content is available to search engines and social media bots, which can improve the visibility of your website.</li>
+<li>Automatic code splitting: Next.js automatically splits your code into small chunks, which can be loaded on demand. This can improve the initial load time of your website and provide a better user experience.</li>
+<li>Static site generation: Next.js allows you to generate static sites, which can be hosted on a CDN and served to users with low latency. This is great for websites with mostly static content and can improve performance and reduce hosting costs.</li>
+<li>TypeScript support: Next.js has excellent support for TypeScript, a statically typed superset of JavaScript. This can improve code quality and reduce bugs by catching errors at compile time.</li>
+<li>Built-in API routes: Next.js provides built-in API routes that allow you to create API endpoints without the need for an external server. This can simplify your architecture and reduce complexity.</li>
+<li>Automatic image optimization: Next.js can optimize images for the web, which can reduce the size of your images and improve performance.</li>
+<li>Large and active community: Next.js has a large and active community, which means there are many resources, tutorials, and packages available to help you build your application.</li>
+</ol>
+<p>There are several advantages to deploying your application to Vercel:</p>
+<ol>
+<li>Easy deployment: Vercel makes it easy to deploy your application with just a few clicks. You can deploy your application from GitHub, GitLab, Bitbucket, or a zip file.</li>
+<li>Automatic scaling: Vercel automatically scales your application based on the traffic it receives. This means your application will always be available, even if there is a sudden increase in traffic.</li>
+<li>Global CDN: Vercel provides a global content delivery network (CDN) that can improve the performance of your application by serving content from the nearest edge server to the user.</li>
+<li>Serverless architecture: Vercel uses a serverless architecture, which means you only pay for the resources you use. This can reduce hosting costs and improve scalability.</li>
+<li>Built-in integrations: Vercel has built-in integrations with popular tools and services like GitHub, Slack, and Stripe. This makes it easy to set up continuous integration and deployment (CI/CD) pipelines, monitor your application, and handle payments.</li>
+<li>Multiple environments: Vercel allows you to create multiple environments for your application, such as production, staging, and development. This can help you test your application in a safe and controlled environment.</li>
+<li>Large and active community: Vercel has a large and active community, which means there are many resources, tutorials, and packages available to help you build and deploy your application.</li>
+</ol>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/FriendlyUser/dli-vue-docs">https://github.com/FriendlyUser/dli-vue-docs</a></li>
+<li><a href="https://github.com/FriendlyUser/latex-diagrams-docs">https://github.com/FriendlyUser/latex-diagrams-docs</a></li>
+<li><a href="https://latex-diagrams-docs.vercel.app/">https://latex-diagrams-docs.vercel.app/</a></li>
+</ul></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-02-17<!-- -->.</div></div></div>
+  </body></html>
