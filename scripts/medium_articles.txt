@@ -121,3 +121,5 @@
 /posts/random/tech_layoffs.md
 /posts/tech/utils/customizing_vscode_settings.md
 /posts/tech/utils/cloud_env_vars.md
+/posts/tech/js/deploy_to_overleaf_button.md
+/posts/tech/js/porting_static_site_to_nextra.md
