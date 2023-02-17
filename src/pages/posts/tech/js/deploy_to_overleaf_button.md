@@ -1,10 +1,10 @@
 ---
 tags: ['next', 'latex', 'nextra']
-title: Getting started with google maps
-description: In this post I will show you how to create a simple networked game with phaser and nodejs.
+title: Create a deploy to overleaf button
+description: How to create a deploy to overleaf button in react and plain html
 pubDate: Fri, 7 June 2024
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png.png
+imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 ---
 
 Overleaf is a web-based platform that allows users to create, edit, and share LaTeX documents online. It is useful for writing reports in LaTeX because it provides a collaborative and streamlined writing environment.
