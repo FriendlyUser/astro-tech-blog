@@ -123,3 +123,4 @@
 /posts/tech/utils/cloud_env_vars.md
 /posts/tech/js/deploy_to_overleaf_button.md
 /posts/tech/js/porting_static_site_to_nextra.md
+/posts/tech/python/chatgpt_extract_description_and_keywords.md
