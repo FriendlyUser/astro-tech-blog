@@ -1,7 +1,7 @@
 ---
 tags: ['chatgpt', 'flutter']
-title: Here I will cover how to use chatgpt extract keywords and describe code.
-description: In this post I will show you how to use chatgpt to describe code and get keywords.
+title: In this blog post I will show you to build a markdown viewer in Flutter.
+description: For chatgpt usage, it is easier to view the prompts in a markdown viewer as a chrome extension.
 pubDate: Fri, 7 July 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1028024527.png
