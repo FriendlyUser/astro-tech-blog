@@ -1,7 +1,7 @@
 ---
 tags: ['life', 'education']
-title: In this post I will compare github, gitlab, and bitbucket
-description: Looking at pros and cons of the main code hosting choices.
+title: Looking at free education options for learning software development.
+description: In this post what options are available for free education for learning software development.
 pubDate: Fri, 22 May 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2463860355.png
