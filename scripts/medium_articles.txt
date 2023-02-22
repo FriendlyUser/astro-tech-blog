@@ -124,3 +124,5 @@
 /posts/tech/js/deploy_to_overleaf_button.md
 /posts/tech/js/porting_static_site_to_nextra.md
 /posts/tech/python/chatgpt_extract_description_and_keywords.md
+/posts/tech/flutter/chrome_extension_flutter.md
+/posts/tech/scripting/intro_to_jql.md
