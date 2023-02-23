@@ -2,7 +2,7 @@
 tags: ['python', 'qt']
 title: How I will describe how to make a qt app that edits a yaml file.
 description: Using qt in python, we can create a qt app to modify/save yaml files.
-pubDate: Fri, 14 June 2024
+pubDate: Fri, 21 July 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2890612218.png
 ---
