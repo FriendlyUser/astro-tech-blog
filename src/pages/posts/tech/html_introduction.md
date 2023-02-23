@@ -2,7 +2,7 @@
 tags: ['csharp', 'dotnet', 'openbb']
 title: Introduction to csharp
 description: Explaining the history of csharp and how it is used
-pubDate: Fri, 10 January 2024
+pubDate: Fri, 25 July 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/760955596.png"
 ---
