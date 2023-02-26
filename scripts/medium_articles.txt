@@ -129,3 +129,4 @@
 /posts/tech/python/qt_app.md
 /posts/tech/2023/intro_to_laravel.md
 /posts/tech/2023/web3_introduction.md
+/posts/tech/python/using_pandas_and_bs4_for_web.md
