@@ -6,6 +6,7 @@ pubDate: Fri, 7 September 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1899250612.png
 ---
+
 Laravel is a free, open-source PHP web application framework that follows the Model-View-Controller (MVC) architectural pattern. It is designed to make building web applications easier and faster, with features such as routing, middleware, blade templating engine, Eloquent ORM, and more. It also provides a command-line interface called Artisan for generating boilerplate code, managing migrations, and running other common tasks.
 
 
