@@ -131,3 +131,4 @@
 /posts/tech/2023/web3_introduction.md
 /posts/tech/python/using_pandas_and_bs4_for_web.md
 /posts/tech/php/laravel_how_to_make_api.md
+/posts/tech/python/chatgpt_vs_edgegpt.md
