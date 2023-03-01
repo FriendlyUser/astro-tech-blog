@@ -133,3 +133,5 @@
 /posts/tech/php/laravel_how_to_make_api.md
 /posts/tech/python/chatgpt_vs_edgegpt.md
 /posts/tech/python/introToPython/chap_1.md
+/posts/tech/python/transcribe_youtube_videos.md
+/posts/tech/python/introToPython/yield_functions.md
