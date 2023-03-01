@@ -232,7 +232,5 @@ AI-based transcription is also faster and more cost-effective than traditional h
 
 Overall, using AI to transcribe videos is a useful and practical application of AI technology that has the potential to significantly improve the accessibility and usability of video content.
 
-
-
 ## References
 - https://huggingface.co/spaces/FriendlyUser/YoutubeDownloaderSubber
