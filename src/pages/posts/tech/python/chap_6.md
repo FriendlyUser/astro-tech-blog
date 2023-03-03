@@ -5,17 +5,7 @@ description: Describing how to use python for object-oriented programming.
 pubDate: Fri, 14 September 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2921207460.png
-jupytext:
-  formats: md:myst
-text_representation:
- extension: .md
- format_name: myst
- format_version: 0.13
- jupytext_version: 1.11.5
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
+
 ---
 In Python, exceptions and errors are used to indicate that something unexpected or abnormal has happened during the execution of a program. Exceptions and errors can be caused by a variety of factors, such as incorrect input data, insufficient memory, or invalid syntax.
 

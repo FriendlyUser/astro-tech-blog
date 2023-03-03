@@ -5,17 +5,6 @@ description: Describing how to use python to program.
 pubDate: Fri, 14 September 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2851628136.png
-jupytext:
-  formats: md:myst
-text_representation:
- extension: .md
- format_name: myst
- format_version: 0.13
- jupytext_version: 1.11.5
-kernelspec:
-  display_name: Python 3
-  language: python
-  name: python3
 ---
 In Python, modules and packages are used to organize code into reusable units. A module is simply a file containing Python definitions and statements, while a package is a collection of modules placed in a directory hierarchy.
 

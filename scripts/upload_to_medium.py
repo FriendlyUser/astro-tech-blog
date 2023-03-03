@@ -52,6 +52,7 @@ def make_articles_for_medium():
     # find all markdown files in the post folders
     for postFolder in postFolders:
         for post in glob.glob(f"{basePostFolder}/{postFolder}/*.md"):
+            print("parsing post")
             with open(post, encoding="utf-8", errors="replace") as f:
               post_contents = frontmatter.loads(f.read())
             # strip basePostFolder from the path

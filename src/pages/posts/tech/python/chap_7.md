@@ -5,17 +5,7 @@ description: For my introductory book on python, I am going to explain how to ha
 pubDate: Fri, 30 September 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1096284488.png
-jupytext:
-	formats: md:myst
-	text_representation:
-		extension: .md
-		format_name: myst
-		format_version: 0.13
-		jupytext_version: 1.11.5
-kernelspec:
-	display_name: Python 3
-	language: python
-	name: python3
+
 ---
 
 Here is an overview of how to work with files in Python using `open()`, `close()`, `read()`, `write()` and other methods:

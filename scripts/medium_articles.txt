@@ -135,3 +135,10 @@
 /posts/tech/python/introToPython/chap_1.md
 /posts/tech/python/transcribe_youtube_videos.md
 /posts/tech/python/introToPython/yield_functions.md
+/posts/tech/python/chap_10.md
+/posts/tech/python/chap_4.md
+/posts/tech/python/chap_5.md
+/posts/tech/python/chap_6.md
+/posts/tech/python/chap_7.md
+/posts/tech/python/chap_8.md
+/posts/tech/python/chap_9.md
