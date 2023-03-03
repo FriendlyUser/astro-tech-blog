@@ -6,6 +6,7 @@ pubDate: Mon, 20 September 2023
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/3842597075.png'
 ---
+
 ChatGPT is a large language model that has been trained using a technique called unsupervised learning, in which the model learns to generate text by being fed a large dataset of text. It is designed to generate human-like responses to prompts, and can be used for a variety of natural language processing tasks, such as language translation, text summarization, and question answering.
 
 
