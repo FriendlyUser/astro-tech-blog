@@ -150,5 +150,3 @@ The JSON object is then passed to the `pd.DataFrame()` function to create a pand
 Finally, the `df.head()` method is used to display the first five rows of the DataFrame.
 
 Note that the specific API endpoint used in this example returns a list of posts, each with a `userId`, `id`, `title`, and `body` field. Depending on the API you're using, you may need to adjust the code to match the format of the data returned by the API.
-
-
