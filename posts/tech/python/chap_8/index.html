@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8 File handling and data processing. - Astro Tech Blog</title>
+    <meta name="description" content="For my introductory book on python, functional programming.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Chapter 8 File handling and data processing.</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 30 September 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python" style="padding-right:3px"> <category>python<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/introtopython" style="padding-right:3px"> <category>introtopython<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3280960381.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Functional programming is a programming paradigm that focuses on creating software applications by composing pure functions that avoid changing state and mutating data. In functional programming, functions are treated as first-class citizens and can be passed around like any other value, including being returned from other functions.</p>
+<p>Functional programming differs from imperative programming in that the latter focuses on describing how the program should be executed step-by-step, often relying on loops, conditionals, and mutable variables. Imperative programming is based on the idea of commands that modify the state of the program, and the execution of these commands often happens in a specific order.</p>
+<p>Object-oriented programming (OOP), on the other hand, is a programming paradigm that focuses on objects and their interactions. In OOP, objects encapsulate data and behavior, and communication between objects is done through method calls. OOP emphasizes the use of inheritance, encapsulation, and polymorphism.</p>
+<p>In functional programming, the focus is on composing functions that transform data without mutating it, while in OOP, the focus is on creating objects that encapsulate data and behavior. Functional programming encourages immutability and avoids side effects, while OOP emphasizes encapsulation and abstraction.</p>
+<p>Both functional programming and OOP can be used to write high-quality software applications, but they approach problems from different angles and have different strengths and weaknesses. Functional programming can be more concise and easier to reason about, while OOP can be more intuitive for modeling complex systems with many interacting objects.</p>
+<p>Functional programming has several advantages and disadvantages. Some of the advantages include:</p>
+<p>Advantages:</p>
+<ol>
+<li>Purity: Functions in functional programming are pure, which means they don’t have side-effects and always produce the same output for a given input. This makes functions easier to test, reason about, and compose, leading to more reliable and maintainable code.</li>
+<li>Immutability: Data in functional programming is immutable, meaning that it cannot be modified once created. This eliminates the risk of data corruption or unintended side effects, leading to more predictable and reliable code.</li>
+<li>Higher-Order Functions: Functional programming treats functions as first-class citizens, meaning that they can be passed around like any other value. This allows for higher-order functions, which are functions that take other functions as arguments or return functions as results. Higher-order functions provide a powerful abstraction mechanism, allowing for more concise and reusable code.</li>
+<li>Concurrency and Parallelism: Functional programming is well-suited for concurrency and parallelism because of its emphasis on immutability and purity. Since functions in functional programming do not modify state, it is easier to reason about concurrent and parallel execution, leading to more efficient and scalable programs.</li>
+</ol>
+<p>However, functional programming also has some disadvantages:</p>
+<p>Disadvantages:</p>
+<ol>
+<li>Steep Learning Curve: Functional programming requires a different mindset and approach to programming than traditional imperative programming, which can make it difficult for developers to learn.</li>
+<li>Performance Overhead: The emphasis on immutability and purity can sometimes come at a performance cost, as creating new data structures instead of modifying existing ones can be more computationally expensive. However, functional programming languages and libraries have evolved to optimize these operations, reducing this overhead.</li>
+<li>Limited Tooling: Functional programming languages and tools are not as widely adopted as traditional programming languages and tools, which can make it more challenging to find resources and support.</li>
+<li>Difficulty in Modeling Some Problems: Functional programming can be challenging to apply to some problems that are more naturally expressed using imperative or object-oriented programming paradigms. In these cases, other paradigms may be more suitable.</li>
+</ol>
+<p>Sure, I can give you an overview of how to use some of the built-in functions in Python for working with iterables.</p>
+<ol>
+<li>map(): The <code>map()</code> function applies a given function to each item of an iterable and returns a new iterable with the transformed values. Here’s an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">square</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">x</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x</span><span style="color: #F92672">**</span><span style="color: #AE81FF">2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">squared_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">map</span><span style="color: #F8F8F2">(square, numbers)</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(squared_numbers)) </span><span style="color: #88846F"># Output: [1, 4, 9, 16, 25]</span></span></code></pre>
+<p>In this example, we defined a function <code>square()</code> that takes a number and returns its square. We then applied the <code>map()</code> function to the <code>numbers</code> list with the <code>square()</code> function as the first argument. The result is a new iterable containing the squared values of the original numbers.</p>
+<ol start="2">
+<li>filter(): The <code>filter()</code> function applies a given function to each item of an iterable and returns a new iterable with only the items for which the function returns <code>True</code>. Here’s an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">is_even</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">x</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">%</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">even_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">filter</span><span style="color: #F8F8F2">(is_even, numbers)</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(even_numbers)) </span><span style="color: #88846F"># Output: [2, 4]</span></span></code></pre>
+<p>In this example, we defined a function <code>is_even()</code> that takes a number and returns <code>True</code> if it is even. We then applied the <code>filter()</code> function to the <code>numbers</code> list with the <code>is_even()</code> function as the first argument. The result is a new iterable containing only the even numbers from the original list.</p>
+<ol start="3">
+<li>reduce(): The <code>reduce()</code> function applies a given function to the items of an iterable in a cumulative way and returns a single value. Here’s an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> functools </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> reduce</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">x</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">y</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> y</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">sum_of_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> reduce(add, numbers)</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(sum_of_numbers) </span><span style="color: #88846F"># Output: 15</span></span></code></pre>
+<p>In this example, we defined a function <code>add()</code> that takes two numbers and returns their sum. We then applied the <code>reduce()</code> function to the <code>numbers</code> list with the <code>add()</code> function as the first argument. The result is the sum of all the numbers in the original list.</p>
+<ol start="4">
+<li>lambda: The <code>lambda</code> keyword is used to create anonymous functions in Python. These are functions that have no name and are defined on the fly. Here’s an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">squared_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">map</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">lambda</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">x</span><span style="color: #F8F8F2">: x</span><span style="color: #F92672">**</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, numbers)</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">list</span><span style="color: #F8F8F2">(squared_numbers)) </span><span style="color: #88846F"># Output: [1, 4, 9, 16, 25]</span></span></code></pre>
+<p>In this example, we used a lambda function to define the square function directly inside the <code>map()</code> function. The lambda function takes a number as its argument and returns its square. This is a shorter way to define small, one-time-use functions.</p>
+<p>List comprehensions, set comprehensions, and dictionary comprehensions are a concise and powerful way to create new collections from existing ones in Python. Here’s an overview of how to use them:</p>
+<ol>
+<li>List comprehensions: A list comprehension is a way to create a new list by specifying a pattern that describes the contents of the list. It has the following syntax:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">new_list </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [expression </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> item </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> iterable </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> condition]</span></span></code></pre>
+<p>where <code>expression</code> is the operation that transforms the <code>item</code>, <code>iterable</code> is the iterable that you want to transform, and <code>condition</code> is an optional filtering condition. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">squared_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [x\</span><span style="color: #F44747">*\*2 for x in numbers if x % 2 == 0]</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(squared_numbers) </span><span style="color: #88846F"># Output: [4, 16]</span></span></code></pre>
+<p>In this example, we used a list comprehension to create a new list <code>squared_numbers</code> that contains the squares of the even numbers from the original list.</p>
+<ol start="2">
+<li>Set comprehensions: A set comprehension is similar to a list comprehension, but it creates a new set instead of a list. It has the following syntax:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">new_set </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {expression </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> item </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> iterable </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> condition}</span></span></code></pre>
+<p>where <code>expression</code>, <code>iterable</code>, and <code>condition</code> are the same as in a list comprehension. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">even_numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {x </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> numbers </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">%</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(even_numbers) </span><span style="color: #88846F"># Output: {2, 4}</span></span></code></pre>
+<p>In this example, we used a set comprehension to create a new set <code>even_numbers</code> that contains the even numbers from the original list.</p>
+<ol start="3">
+<li>Dictionary comprehensions: A dictionary comprehension is a way to create a new dictionary by specifying a pattern that describes the contents of the dictionary. It has the following syntax:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">new_dict </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {key_expression: value_expression </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> item </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> iterable </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> condition}</span></span></code></pre>
+<p>where <code>key_expression</code> and <code>value_expression</code> are the operations that transform the <code>item</code> into a key-value pair, <code>iterable</code> is the iterable that you want to transform, and <code>condition</code> is an optional filtering condition. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">numbers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F8F8F2">squared_dict </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {x: x</span><span style="color: #F92672">**</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> numbers </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">%</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(squared_dict) </span><span style="color: #88846F"># Output: {2: 4, 4: 16}</span></span></code></pre>
+<p>In this example, we used a dictionary comprehension to create a new dictionary <code>squared_dict</code> that contains the squares of the even numbers from the original list, with the even numbers themselves as the keys.</p>
+<p>In Python, generators are a way to create lazy iterables that can be consumed on demand. Generators are functions that use the <code>yield</code> statement to return a value, but instead of returning all the values at once, they return a sequence of values as the generator is iterated over. This makes generators useful for generating large sequences of data that might be too large to store in memory all at once.</p>
+<p>Here’s an example of a generator function that generates the Fibonacci sequence:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fibonacci</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #F8F8F2"> a, b </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">yield</span><span style="color: #F8F8F2"> a</span></span>
+<span class="line"><span style="color: #F8F8F2"> a, b </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> b, a </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> b</span></span></code></pre>
+<p>This function generates the Fibonacci sequence indefinitely. To use this generator, you can iterate over it like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> num </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> fibonacci():</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> num </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">break</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(num)</span></span></code></pre>
+<p>This will print the Fibonacci sequence up to the first number greater than 100.</p>
+<p>In addition to generator functions, Python also has generator expressions, which are similar to list comprehensions and set comprehensions, but they create lazy iterables instead of lists or sets. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">squares </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (x</span><span style="color: #F92672">**</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">))</span></span></code></pre>
+<p>This creates a generator expression that generates the squares of the numbers from 0 to 9. To consume the values generated by this generator expression, you can iterate over it like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> square </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> squares:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(square)</span></span></code></pre>
+<p>This will print the squares of the numbers from 0 to 9. Note that the generator expression only generates the squares of the numbers as they are needed, so it doesn’t store all the squares in memory at once.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-03<!-- -->.</div></div></div>
+  </body></html>

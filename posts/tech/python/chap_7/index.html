@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7 File handling and data processing. - Astro Tech Blog</title>
+    <meta name="description" content="For my introductory book on python, I am going to explain how to handle files.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Chapter 7 File handling and data processing.</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 30 September 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python" style="padding-right:3px"> <category>python<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/introtopython" style="padding-right:3px"> <category>introtopython<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1096284488.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Here is an overview of how to work with files in Python using <code>open()</code>, <code>close()</code>, <code>read()</code>, <code>write()</code> and other methods:</p>
+<ol>
+<li>Opening a file:
+You can use the <code>open()</code> function to open a file in Python. The function takes two arguments: the name of the file you want to open and the mode in which you want to open the file. The mode can be “r” for reading, “w” for writing, “a” for appending, or “x” for creating a new file. For example, to open a file named “example.txt” for writing, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ol start="2">
+<li>Reading from a file:
+You can use the <code>read()</code> method to read the contents of a file. The method reads the entire contents of the file and returns it as a string. For example, to read the contents of the “example.txt” file, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"r"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">contents </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> file.read()</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(contents)</span></span></code></pre>
+<ol start="3">
+<li>Writing to a file:
+You can use the <code>write()</code> method to write to a file. The method takes a string as its argument and writes it to the file. For example, to write the string “Hello, World!” to the “example.txt” file, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">file.write(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ol start="4">
+<li>Closing a file:
+You should always close a file after you have finished working with it. You can use the <code>close()</code> method to close a file. For example, to close the “example.txt” file, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file.close()</span></span></code></pre>
+<ol start="5">
+<li>Using context managers:
+You can use a context manager with the <code>with</code> statement to open and close files automatically. This is a more convenient and safer way to work with files as it automatically closes the file for you after you’re done working with it. For example, to write the string “Hello, World!” to the “example.txt” file using a context manager, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> file.write(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ol start="6">
+<li>Reading and writing lines:
+You can use the <code>readline()</code> method to read a single line from a file, and the <code>writelines()</code> method to write a list of strings to a file, with each string representing a line. For example, to read the first line of the “example.txt” file, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"r"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> file.readline()</span></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(line)</span></span></code></pre>
+<p>And to write a list of strings to the “example.txt” file, you can use the following code:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">lines </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #E6DB74">"Hello"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"World"</span><span style="color: #F8F8F2">]</span></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"example.txt"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> file.writelines(lines)</span></span></code></pre>
+<p>In Linux, write permissions determine whether a user, group or others can modify, create or delete files or directories. The write permission is represented by a number in the file permission system and can be set or changed using the chmod command.</p>
+<p>Here’s what each digit in a chmod code represents:</p>
+<ul>
+<li>The first digit (leftmost) represents the permissions for the owner of the file/directory.</li>
+<li>The second digit represents the permissions for the group owner of the file/directory.</li>
+<li>The third digit represents the permissions for other users who are not the owner or group owner.</li>
+</ul>
+<p>Each digit in the chmod code can be one of the following values:</p>
+<ul>
+<li>0: no permissions</li>
+<li>1: execute permission only</li>
+<li>2: write permission only</li>
+<li>3: write and execute permissions</li>
+<li>4: read permission only</li>
+<li>5: read and execute permissions</li>
+<li>6: read and write permissions</li>
+<li>7: read, write, and execute permissions</li>
+</ul>
+<p>Here are some examples of how to use chmod to set write permissions:</p>
+<ul>
+<li>chmod 700 file.txt - this command sets read, write, and execute permissions for the owner of the file, and no permissions for the group owner or others.</li>
+<li>chmod 755 directory - this command sets read, write, and execute permissions for the owner of the directory, and read and execute permissions for the group owner and others. The group owner and others cannot write to the directory.</li>
+<li>chmod 777 file.txt - this command sets read, write, and execute permissions for everyone, including the owner, group owner, and others.</li>
+</ul>
+<p>In the above examples, the chmod code is composed of three digits. Each digit represents the permissions for a different set of users: the first digit represents the owner’s permissions, the second digit represents the group’s permissions, and the third digit represents everyone else’s permissions.</p>
+<p>Here’s an explanation of the different modes you can use to open files in Python:</p>
+<ul>
+<li>‘r’: This is the default mode when you open a file in Python. It opens the file for reading, which means you can only read data from the file but you can’t write to it or modify it. If the file doesn’t exist, you will get a <code>FileNotFoundError</code>.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘w’: This mode opens the file for writing, which means you can write data to the file and overwrite its existing contents. If the file doesn’t exist, it will be created. If it exists, its previous contents will be deleted.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'w'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘a’: This mode opens the file for appending, which means you can write data to the end of the file without overwriting its existing contents. If the file doesn’t exist, it will be created.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'a'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘x’: This mode opens the file for exclusive creation, which means it creates a new file and opens it for writing. If the file already exists, the <code>FileExistsError</code> exception will be raised.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'x'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘b’: This mode opens the file in binary mode, which is used for working with non-text files such as images, audio, or video files. When you use this mode, you must specify the file as a binary file using the ‘b’ character.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.mp3'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'rb'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<p>In addition to the modes described above, you can also combine them with the <code>+</code> character to create hybrid modes that allow you to read and write to a file at the same time:</p>
+<ul>
+<li>‘r+’: This mode opens the file for reading and writing.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r+'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘w+’: This mode opens the file for reading and writing, overwriting its existing contents.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'w+'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<ul>
+<li>‘a+’: This mode opens the file for reading and appending.</li>
+</ul>
+<p>Example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'a+'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<p>Remember to always close the file after you’re done with it using the <code>close()</code> method or use the <code>with</code> statement to automatically close it:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the file</span></span></code></pre>
+<p>I hope this helps! Let me know if you have any further questions.</p>
+<p>Sure, here’s an example of how to use a context manager with the <code>with</code> statement to automatically close a file after you’re done with it:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the file</span></span>
+<span class="line"><span style="color: #F8F8F2"> contents </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> file.read()</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(contents)</span></span>
+<span class="line"><span style="color: #88846F"># The file will be automatically closed when the code block is exited</span></span></code></pre>
+<p>In the example above, we open the file <code>example.txt</code> in read mode using the <code>open()</code> function, and assign the file object to the variable <code>file</code>. Then we do something with the file, such as reading its contents and printing them. When we’re done with the file, we exit the code block and the file is automatically closed thanks to the <code>with</code> statement.</p>
+<p>Using a context manager with the <code>with</code> statement is a safer and more concise way to open and close files, as it ensures that the file is always closed even if an exception occurs while the code is executing. It also avoids the need to explicitly call the <code>close()</code> method, which can be easy to forget and can lead to resource leaks if not properly handled.</p>
+<p>I hope this helps! Let me know if you have any further questions.</p>
+<p>Sure, here are some examples of how to process data from files using loops, string methods, and regular expressions in Python:</p>
+<ol>
+<li>Loops: You can use loops to iterate over the lines in a file and process each line as a separate string. For example, if you have a file named <code>example.txt</code> with several lines of text, you can read and process each line like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> line </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the line</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(line.strip())</span></span></code></pre>
+<p>In this example, we open the file in read mode using a context manager and a <code>for</code> loop to iterate over each line in the file. We then process each line by stripping its leading and trailing whitespace characters using the <code>strip()</code> method, and print the resulting string to the console.</p>
+<ol start="2">
+<li>String methods: You can use string methods to manipulate the data in each line of a file. For example, if you have a file named <code>example.txt</code> with comma-separated values on each line, you can read and process each line like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> line </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F"># Split the line into a list of values using the comma separator</span></span>
+<span class="line"><span style="color: #F8F8F2">  values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> line.strip().split(</span><span style="color: #E6DB74">','</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F"># Do something with the values</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(values[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">])</span></span></code></pre>
+<p>In this example, we use the <code>strip()</code> method to remove leading and trailing whitespace characters from each line, and the <code>split()</code> method to split each line into a list of values using the comma separator. We then process the resulting list of values by printing the first value to the console.</p>
+<ol start="3">
+<li>Regular expressions: You can use regular expressions to search for patterns in the data in each line of a file. For example, if you have a file named <code>example.txt</code> with email addresses on each line, you can read and process each line like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> re</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.txt'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> line </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Search for email addresses using a regular expression</span></span>
+<span class="line"><span style="color: #F8F8F2"> match </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> re.search(</span><span style="color: #66D9EF">r</span><span style="color: #E6DB74">'\b</span><span style="color: #AE81FF">[A-Za-z0-9.\_%+-]</span><span style="color: #F92672">+</span><span style="color: #E6DB74">@</span><span style="color: #AE81FF">[A-Za-z0-9.-]</span><span style="color: #F92672">+</span><span style="color: #AE81FF">\.[A-Z|a-z]</span><span style="color: #F92672">{2,}</span><span style="color: #E6DB74">\b'</span><span style="color: #F8F8F2">, line)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># If a match is found, print the email address</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> match:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(match.group())</span></span></code></pre>
+<p>In this example, we use the <code>re.search()</code> function to search for email addresses in each line of the file using a regular expression pattern. If a match is found, we print the email address using the <code>group()</code> method of the match object.</p>
+<p>I hope these examples help you understand how to process data from files using loops, string methods, and regular expressions in Python. Let me know if you have any further questions!</p>
+<p>Sure, here’s a brief overview of how to use some of the built-in modules in Python to read and write data in different formats:</p>
+<ol>
+<li>CSV: The <code>csv</code> module in Python provides functionality for reading and writing comma-separated values (CSV) files. Here’s an example of how to read a CSV file and process its data:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> csv</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.csv'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> reader </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> csv.reader(file)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> row </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> reader:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the row data</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(row)</span></span></code></pre>
+<p>In this example, we open a CSV file named <code>example.csv</code> using a context manager and the <code>csv.reader()</code> function. We then use a <code>for</code> loop to iterate over each row in the CSV file and process the row data as a list of strings. In this case, we simply print each row to the console.</p>
+<p>To write data to a CSV file using the <code>csv</code> module, you can use the <code>csv.writer()</code> function to create a writer object and the <code>writerow()</code> method to write rows of data to the file. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> csv</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.csv'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'w'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">newline</span><span style="color: #F92672">=</span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> writer </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> csv.writer(file)</span></span>
+<span class="line"><span style="color: #F8F8F2"> writer.writerow([</span><span style="color: #E6DB74">'Name'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'Age'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'City'</span><span style="color: #F8F8F2">])</span></span>
+<span class="line"><span style="color: #F8F8F2"> writer.writerow([</span><span style="color: #E6DB74">'John'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'30'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'New York'</span><span style="color: #F8F8F2">])</span></span>
+<span class="line"><span style="color: #F8F8F2"> writer.writerow([</span><span style="color: #E6DB74">'Jane'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'25'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'San Francisco'</span><span style="color: #F8F8F2">])</span></span></code></pre>
+<p>In this example, we create a new CSV file named <code>example.csv</code> using a context manager and the <code>csv.writer()</code> function. We then use the <code>writerow()</code> method to write the column headers and two rows of data to the file.</p>
+<ol start="2">
+<li>JSON: The <code>json</code> module in Python provides functionality for encoding and decoding JSON data. Here’s an example of how to read a JSON file and process its data:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.json'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'r'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> json.load(file)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the JSON data</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(data)</span></span></code></pre>
+<p>In this example, we open a JSON file named <code>example.json</code> using a context manager and the <code>json.load()</code> function. We then load the JSON data into a Python object and process the data as necessary. In this case, we simply print the JSON data to the console.</p>
+<p>To write data to a JSON file using the <code>json</code> module, you can use the <code>json.dump()</code> function to write a Python object to the file as JSON data. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">'name'</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'John'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'age'</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'city'</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'New York'</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'example.json'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'w'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> file:</span></span>
+<span class="line"><span style="color: #F8F8F2"> json.dump(data, file)</span></span></code></pre>
+<p>In this example, we create a Python dictionary object containing some data, and then open a new JSON file named <code>example.json</code> using a context manager and the <code>json.dump()</code> function. We then write the Python object to the file as JSON data.</p>
+<ol start="3">
+<li>XML: The <code>xml</code> module in Python provides functionality for parsing and generating XML data. Here’s an example of how to read an XML file and process its data:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> xml.etree.ElementTree </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">ET</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">tree </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">ET</span><span style="color: #F8F8F2">.parse(</span><span style="color: #E6DB74">'example.xml'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">root </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tree.getroot()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> child </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> root:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Do something with the child element</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(child.tag, child.attrib)</span></span></code></pre>
+<p>In this example, we parse an XML file named <code>example.xml</code> using the <code>ET.parse()</code> function from the <code>xml.etree.ElementTree</code> module. We then access the root element of the XML file using the <code>getroot()</code> method, and use a <code>for</code> loop to iterate over the</p>
+<p>Generators are a great way to process large data sets efficiently in Python. They allow you to lazily load data one chunk at a time, rather than loading everything into memory at once. This can be particularly useful when dealing with very large data sets that would otherwise exceed available memory.</p>
+<p>To use generators to process large data sets, you can create a function that yields data in manageable chunks. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> read\</span><span style="color: #F44747">_large\_file(file\_object):</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""A generator function that yields a line from a file object"""</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2">  data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> file_object.readline()</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">not</span><span style="color: #F8F8F2"> data:</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">break</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">yield</span><span style="color: #F8F8F2"> data</span></span></code></pre>
+<p>In this example, we define a generator function called <code>read_large_file()</code> that takes a file object as input. The function uses a <code>while</code> loop to read data from the file object one line at a time, and yields each line of data as it is read. When the end of the file is reached, the loop exits and the generator function stops yielding data.</p>
+<p>To use the <code>read_large_file()</code> generator function to process a large data set, you can open the file and pass the file object to the generator function, then use a <code>for</code> loop to iterate over the generated data one chunk at a time. Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'large\_data\_set.txt'</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> f:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> line </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> read_large_file(f):</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># Process the line of data</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(line.strip())</span></span></code></pre>
+<p>In this example, we open a large data set file named <code>large_data_set.txt</code> using a context manager and the <code>open()</code> function. We then pass the file object to the <code>read_large_file()</code> generator function, which yields each line of data one at a time. Finally, we use a <code>for</code> loop to iterate over the generated data and process each line of data as necessary.</p>
+<p>Note that you can modify the <code>read_large_file()</code> generator function to read data in larger or smaller chunks, depending on your specific needs. Additionally, you can use other generator functions or built-in functions like <code>map()</code> and <code>filter()</code> to further process the generated data as needed.</p>
+<p>You can use the <code>subprocess</code> module in Python to run command-line programs like ffmpeg and pass them arguments. Here’s an example of how you can use <code>subprocess</code> to convert video files from mp4 to mp3 using ffmpeg:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> subprocess</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Input video file path</span></span>
+<span class="line"><span style="color: #F8F8F2">input_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'path/to/video.mp4'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Output audio file path</span></span>
+<span class="line"><span style="color: #F8F8F2">output_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'path/to/audio.mp3'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Run the ffmpeg command to convert the video to audio</span></span>
+<span class="line"><span style="color: #F8F8F2">subprocess.run([</span><span style="color: #E6DB74">'ffmpeg'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'-i'</span><span style="color: #F8F8F2">, input_file, </span><span style="color: #E6DB74">'-vn'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'-acodec'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'libmp3lame'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'-y'</span><span style="color: #F8F8F2">, output_file])</span></span></code></pre>
+<p>In this example, we import the <code>subprocess</code> module, then define the paths to the input and output files. We then use <code>subprocess.run()</code> to run the ffmpeg command with the following arguments:</p>
+<ul>
+<li><code>-i</code>: specifies the input file path</li>
+<li><code>-vn</code>: tells ffmpeg to disable video recording</li>
+<li><code>-acodec</code>: specifies the audio codec to use</li>
+<li><code>libmp3lame</code>: specifies the MP3 audio codec</li>
+<li><code>-y</code>: tells ffmpeg to overwrite the output file if it already exists</li>
+<li>The output file path</li>
+</ul>
+<p>Note that the <code>subprocess.run()</code> function will block until the ffmpeg command finishes running, so if you need to convert multiple files, you may want to use <code>subprocess.Popen()</code> instead and run the commands in parallel. Also note that if you want to convert other types of video files to MP3, you may need to modify the ffmpeg command accordingly.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-03<!-- -->.</div></div></div>
+  </body></html>
