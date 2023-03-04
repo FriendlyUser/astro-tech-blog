@@ -142,3 +142,4 @@
 /posts/tech/python/chap_7.md
 /posts/tech/python/chap_8.md
 /posts/tech/python/chap_9.md
+/posts/tech/js/car_animation.md
