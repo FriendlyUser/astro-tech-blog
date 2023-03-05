@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating a custom wordpress theme. - Astro Tech Blog</title>
+    <meta name="description" content="After thoughts of building a lousy wordpress theme.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Creating a custom wordpress theme.</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 30 September 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-emerald-400 text-emerald-900"> <a href="/tags/javascript" style="padding-right:3px"> <category>javascript<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/css" style="padding-right:3px"> <category>css<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/react" style="padding-right:3px"> <category>react<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1444932837.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>WordPress is a popular open-source content management system (CMS) that allows users to create and manage websites and blogs. It is written in PHP and uses a MySQL database to store and organize website content. With WordPress, users can easily create and customize website designs, add functionality through plugins, and publish content such as blog posts, pages, and media.</p>
+<p>A WordPress theme is made up of several files and directories that work together to control the layout, design, and functionality of a website. Here is a brief overview of the main files and directories found in a WordPress theme:</p>
+<ul>
+<li><code>style.css</code>: This file contains the metadata for the theme, including the theme name, author, version, and other details.</li>
+<li>`index.: This is the main template file that controls the display of the website’s homepage.</li>
+<li>`header.: This file contains the header section of the website, including the logo, navigation menu, and other elements that appear at the top of every page.</li>
+<li>`footer.: This file contains the footer section of the website, including copyright information, social media links, and other elements that appear at the bottom of every page.</li>
+<li>`sidebar.: This file contains the sidebar section of the website, including widgets such as search bars, recent posts, and categories.</li>
+<li>`functions.: This file contains the theme’s functions and actions, which can be used to add custom features and modify the behavior of WordPress.</li>
+<li><code>template-parts/</code>: This directory contains sub-templates for specific sections of the website, such as the loop that displays posts, the comments section, and the search results page.</li>
+</ul>
+<p>Other files and directories may also be included in a WordPress theme, depending on the complexity of the design and functionality.</p>
+<p>Creating a custom WordPress theme involves several steps. Here is a high-level overview of the process:</p>
+<ol>
+<li>Plan your design: Sketch out the layout and design of your website, including the color scheme, typography, and overall look and feel.</li>
+<li>Set up a development environment: Install WordPress on your local computer or a remote server, and set up a new theme directory in the <code>wp-content/themes</code> directory.</li>
+<li>Create the basic files: Create the basic files for your theme, including <code>style.css</code>, <code>index., </code>header., <code>footer., and </code>functions.. These files can be created from scratch or based on an existing theme.</li>
+<li>Build the template files: Create additional template files for specific pages and post types, such as <code>single., </code>page., and `archive.. Use WordPress template tags to display dynamic content such as post titles, content, and custom fields.</li>
+<li>Add functionality: Use WordPress functions and hooks to add custom features to your theme, such as custom menus, widgets, and post formats. You can also use plugins to extend the functionality of your theme.</li>
+<li>Test and debug: Test your theme on different devices and browsers, and debug any issues that arise. Use tools such as the WordPress Debugging plugin to troubleshoot errors.</li>
+<li>Publish your theme: Once your theme is complete and tested, you can package it as a zip file and submit it to the WordPress Theme Directory or sell it on a third-party marketplace.</li>
+</ol>
+<p>This is just a high-level overview of the process of creating a custom WordPress theme. In reality, there are many details and best practices to consider at each step of the way. It’s also important to stay up to date with the latest WordPress coding standards and security practices.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E">have_posts</span><span style="color: #F8F8F2">())</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">while</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E">have_posts</span><span style="color: #F8F8F2">()) : </span><span style="color: #A6E22E">the_post</span><span style="color: #F8F8F2">(); </span><span style="color: #F92672">?></span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">br</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">/></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">br</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">/></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">br</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">/></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">div</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">id</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"post-&#x3C;?php the_ID(); ?>"</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"inline-block max-w-sm rounded overflow-hidden shadow-lg"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> ( </span><span style="color: #A6E22E">has_post_thumbnail</span><span style="color: #F8F8F2">()) </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Check if thumbnail exists </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">a</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">href</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"&#x3C;?php the_permalink(); ?>"</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">title</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"&#x3C;?php the_title(); ?>"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">img</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"w-full"</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">src</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"&#x3C;?php the_post_thumbnail_url()?>"</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">alt</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"&#x3C;?php the_title(); ?>"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">a</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">endif</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">div</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"px-6 py-4"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">div</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"font-bold text-xl mb-2"</span><span style="color: #F92672">>&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">the_title</span><span style="color: #F8F8F2">(); </span><span style="color: #F92672">?>&#x3C;/</span><span style="color: #AE81FF">div</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">p</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"text-gray-700 text-base"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">the_excerpt</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">p</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">div</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">div</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"px-6 py-4"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">span</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">_e</span><span style="color: #F8F8F2">( </span><span style="color: #E6DB74">'Published by'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'html5blank'</span><span style="color: #F8F8F2"> ); </span><span style="color: #F92672">?></span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">the_author_posts_link</span><span style="color: #F8F8F2">(); </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">span</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">span</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">the_time</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'F j, Y'</span><span style="color: #F8F8F2">); </span><span style="color: #F92672">?></span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">the_time</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'g:i a'</span><span style="color: #F8F8F2">); </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">span</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">span</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"</span><span style="color: #F92672">>&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">edit_post_link</span><span style="color: #F8F8F2">(); </span><span style="color: #F92672">?>&#x3C;/</span><span style="color: #AE81FF">span</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">span</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">class</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 </span></span>
+<span class="line"><span style="color: #E6DB74">      &#x3C;?php if (get_comments_number() == 0) { echo 'hidden'; } ?>"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E">comments_open</span><span style="color: #F8F8F2">( </span><span style="color: #A6E22E">get_the_ID</span><span style="color: #F8F8F2">() ) ) </span><span style="color: #A6E22E">comments_popup_link</span><span style="color: #F8F8F2">( </span><span style="color: #A6E22E">__</span><span style="color: #F8F8F2">( </span><span style="color: #E6DB74">'Leave your thoughts'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'html5blank'</span><span style="color: #F8F8F2"> ), </span><span style="color: #A6E22E">__</span><span style="color: #F8F8F2">( </span><span style="color: #E6DB74">'1 Comment'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'html5blank'</span><span style="color: #F8F8F2"> ), </span><span style="color: #A6E22E">__</span><span style="color: #F8F8F2">( </span><span style="color: #E6DB74">'% Comments'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'html5blank'</span><span style="color: #F8F8F2"> )); </span><span style="color: #F92672">?></span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">span</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">div</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">div</span><span style="color: #F92672">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">endwhile</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">?></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">else:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">?></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;!--</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">article</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">--></span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">article</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;</span><span style="color: #AE81FF">h2</span><span style="color: #F92672">>&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">_e</span><span style="color: #F8F8F2">( </span><span style="color: #E6DB74">'Sorry, nothing to display.'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'html5blank'</span><span style="color: #F8F8F2"> ); </span><span style="color: #F92672">?>&#x3C;/</span><span style="color: #AE81FF">h2</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;/</span><span style="color: #AE81FF">article</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">&#x3C;!--</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">/</span><span style="color: #AE81FF">article</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">--></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">&#x3C;?</span><span style="color: #AE81FF">php</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">endif</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">?></span><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>This is a PHP code block that is used in a WordPress theme to display a list of blog posts on a page. Here’s what it does:</p>
+<ol>
+<li>The first line <code>&#x3C;?php if (have_posts()): while (have_posts()) : the_post(); ?></code> checks if there are any posts to display. If there are, it sets up a loop that will iterate through each post.</li>
+<li>The next section of code is a HTML block that displays each post. It uses WordPress template tags to display the post title, excerpt, author, and other metadata such as the publication date and number of comments.</li>
+<li>The loop continues until all posts have been displayed, and ends with <code>&#x3C;?php endwhile; ?></code>.</li>
+<li>If there are no posts to display, the code block displays a “Sorry, nothing to display.” message using the <code>_e()</code> function to allow for translation.</li>
+</ol>
+<p>Some notable points about this code:</p>
+<ul>
+<li>The <code>the_ID()</code> function is used to retrieve the ID of the current post, which is then used as a unique identifier for the post container <code>div</code> element.</li>
+<li>The <code>the_excerpt()</code> function is used to display an excerpt of the post content, which is useful for displaying a preview of the post.</li>
+<li>The <code>edit_post_link()</code> function is used to display a link to edit the post if the user has permission to do so.</li>
+<li>The <code>comments_popup_link()</code> function is used to display a link to the post comments, with different text depending on the number of comments.</li>
+<li>The <code>comments_open()</code> function is used to check if comments are open for the current post, and the <code>get_comments_number()</code> function is used to retrieve the number of comments for the post. If there are no comments, a <code>hidden</code> class is added to the comments link to hide it from view.</li>
+</ul>
+<p>There are several ways to publish your WordPress theme on the internet, depending on your needs and preferences. Here are some common methods:</p>
+<ol>
+<li>WordPress Theme Repository: You can submit your theme to the official WordPress Theme Repository, which allows other WordPress users to download and use your theme for free. This is a great way to gain exposure for your theme and build a user base. To submit your theme, you need to follow the repository’s guidelines and submit your theme for review.</li>
+<li>Theme Marketplaces: There are several third-party theme marketplaces where you can sell your theme, such as ThemeForest, Creative Market, and Mojo Marketplace. These marketplaces offer a wider audience than the WordPress Theme Repository, but they usually require a fee or commission for each sale.</li>
+<li>Your Own Website: If you have your own website, you can publish your theme there and promote it through your own marketing efforts. This gives you more control over the distribution and pricing of your theme, but it also requires more effort to build a user base.</li>
+<li>GitHub or Other Code Repositories: You can publish your theme on GitHub or other code repositories, which allows other developers to contribute to your code and suggest improvements. This is a good option if you want to collaborate with other developers and build a community around your theme.</li>
+<li>WordPress Meetups and Events: You can showcase your theme at WordPress meetups and events, which allows you to get feedback and promote your theme to other WordPress users and developers. This is a good option if you want to network with other WordPress enthusiasts and get involved in the WordPress community.</li>
+</ol>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://developer.wordpress.org/themes/getting-started/what-is-a-theme/">https://developer.wordpress.org/themes/getting-started/what-is-a-theme/</a></li>
+<li><a href="https://github.com/FriendlyUser/bluey-wordpress-theme">https://github.com/FriendlyUser/bluey-wordpress-theme</a></li>
+</ul></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-05<!-- -->.</div></div></div>
+  </body></html>
