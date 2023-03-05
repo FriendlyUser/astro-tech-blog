@@ -143,3 +143,5 @@
 /posts/tech/python/chap_8.md
 /posts/tech/python/chap_9.md
 /posts/tech/js/car_animation.md
+/posts/tech/seven_chatgpt_prompts.md
+/posts/tech/php/making_wordpress_theme.md
