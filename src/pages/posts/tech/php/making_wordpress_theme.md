@@ -1,8 +1,8 @@
 ---
-tags: ['javascript', 'css', 'react']
+tags: ['php', 'wordpress']
 title: Creating a custom wordpress theme.
 description: After thoughts of building a lousy wordpress theme.
-pubDate: Fri, 30 September 2024
+pubDate: Fri, 7 October 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1444932837.png
 ---
