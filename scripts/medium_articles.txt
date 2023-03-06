@@ -145,3 +145,14 @@
 /posts/tech/js/car_animation.md
 /posts/tech/seven_chatgpt_prompts.md
 /posts/tech/php/making_wordpress_theme.md
+/posts/tech/scripting/rank_engineers_in_bash.md
+/posts/tech/go/chapter_5_why_golang.md
+/posts/tech/go/chapter_9_why_golang.md
+/posts/tech/go/chapter_3_why_golang.md
+/posts/tech/go/chapter_10_why_golang.md
+/posts/tech/go/chapter_2_why_golang.md
+/posts/tech/go/chapter_6_why_golang.md
+/posts/tech/go/chapter_8_why_golang.md
+/posts/tech/go/chapter_4_why_golang.md
+/posts/tech/go/chapter_7_why_golang.md
+/posts/tech/go/chapter_1_why_golang.md
