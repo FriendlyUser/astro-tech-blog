@@ -62,26 +62,26 @@
   <body class="bg-slate-900 text-gray-100">
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
-      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using UI Frameworks with React</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 29 November 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/react" style="padding-right:3px"> <category>react<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/bootstrap" style="padding-right:3px"> <category>bootstrap<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/material" style="padding-right:3px"> <category>material<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2955132952.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>When building complex applications with React, one of the most common tasks you’ll encounter is working with forms. In React, form inputs are usually implemented as controlled components, which means that their value is controlled by React, rather than the DOM. This approach allows for a more declarative programming style and enables better control over the behavior of form elements.</p>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using UI Frameworks with React</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 29 November 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/react" style="padding-right:3px"> <category>react<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/bootstrap" style="padding-right:3px"> <category>bootstrap<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/material" style="padding-right:3px"> <category>material<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2955132952.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>When building complex applications with React, one of the most common tasks you’ll encounter is working with forms. In React, form inputs are usually implemented as controlled components, which means that their value is controlled by React, rather than the DOM. This approach allows for a more declarative programming style and enables better control over the behavior of form elements.</p>
 <p>To create a controlled component, you’ll need to keep the value of the input in the component’s state and update it in response to user input. This can be achieved by adding an <code>onChange</code> event handler to the input, which updates the state with the new value:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import { useState } from 'react';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { useState } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function Form() {</span></span>
-<span class="line"><span style="color: #E6DB74"> const [name, setName] = useState('');</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Form</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [name, setName] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> function handleNameChange(event) {</span></span>
-<span class="line"><span style="color: #E6DB74"> setName(event.target.value);</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleNameChange</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">event</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setName</span><span style="color: #F8F8F2">(event.target.value);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;form></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;label></span></span>
-<span class="line"><span style="color: #E6DB74"> Name:</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;input type="text" value={name} onChange={handleNameChange} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/label></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/form></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">form</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> Name:</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"text"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">value</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onChange</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleNameChange</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">form</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In the example above, we’re using the <code>useState</code> hook to keep track of the value of the <code>name</code> input. We’ve also added an <code>onChange</code> event handler to the input that calls the <code>handleNameChange</code> function, which updates the <code>name</code> state with the new value of the input.</p>
 <p>By using a controlled component approach, we can easily validate and manipulate the form data before it is submitted to the server. We can also easily implement complex forms with multiple input fields and validation rules.</p>
 <p>Overall, working with forms and controlled components in React can seem overwhelming at first, but once you understand the basic concepts, it becomes much easier to implement complex forms with ease.</p>
@@ -90,50 +90,50 @@
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm install react</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">router</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">dom</span></span></code></pre>
 <p>Once installed, you can import the components you need from the <code>react-router-dom</code> package. The <code>BrowserRouter</code> component is used to wrap your entire application and define the routes, while the <code>Route</code> component is used to define a specific route and the component that should be rendered when that route is matched.</p>
 <p>Here’s an example of how you might define a simple route in your application:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import { BrowserRouter, Route } from 'react-router-dom';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { BrowserRouter, Route } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-router-dom'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function App() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;BrowserRouter></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Route path="/" component={HomePage} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/BrowserRouter></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">BrowserRouter</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Route</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">path</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">component</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">HomePage</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #66D9EF">BrowserRouter</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function HomePage() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return &#x3C;h1>Welcome to the homepage!&#x3C;/h1>;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomePage</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Welcome to the homepage!&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’re using the <code>BrowserRouter</code> component to wrap our entire application, and the <code>Route</code> component to define a route that matches the root URL (<code>/</code>) and renders the <code>HomePage</code> component.</p>
 <p>React Router also provides several other components, such as <code>Link</code> and <code>NavLink</code>, that allow you to create links to different routes in your application. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import { BrowserRouter, Route, Link } from 'react-router-dom';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { BrowserRouter, Route, Link } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-router-dom'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function App() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;BrowserRouter></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;nav></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;ul></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;li></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Link to="/">Home&#x3C;/Link></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/li></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;li></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Link to="/about">About&#x3C;/Link></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/li></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/ul></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/nav></span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">BrowserRouter</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">nav</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">ul</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">li</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Link</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">to</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">>Home&#x3C;/</span><span style="color: #66D9EF">Link</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">li</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">li</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Link</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">to</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/about"</span><span style="color: #F8F8F2">>About&#x3C;/</span><span style="color: #66D9EF">Link</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">li</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">ul</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">nav</span><span style="color: #F8F8F2">></span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Route path="/" exact component={HomePage} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Route path="/about" component={AboutPage} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/BrowserRouter></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Route</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">path</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">exact</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">component</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">HomePage</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Route</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">path</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/about"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">component</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">AboutPage</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #66D9EF">BrowserRouter</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function HomePage() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return &#x3C;h1>Welcome to the homepage!&#x3C;/h1>;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomePage</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Welcome to the homepage!&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function AboutPage() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return &#x3C;h1>About Us&#x3C;/h1>;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AboutPage</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>About Us&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’ve added a navigation menu to our application using the <code>Link</code> component. We’ve also defined two routes (<code>/</code> and <code>/about</code>) and associated them with the <code>HomePage</code> and <code>AboutPage</code> components, respectively.</p>
 <p>React Router provides many more features, such as nested routes, route parameters, and route guards, that allow you to build complex navigation systems for your applications. Overall, React Router is an essential tool for building single-page applications with React, and it’s worth taking the time to learn how to use it effectively.</p>
 <p>As your React application grows in complexity, managing application state can become a challenging task. Redux is a powerful library that provides a solution to this problem by centralizing the state of your application in a single store.</p>
@@ -141,79 +141,79 @@
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm install redux react</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">redux</span></span></code></pre>
 <p>Once installed, you can define a Redux store and use it in your application. The store is created using the <code>createStore</code> function, which takes a reducer function as an argument. The reducer function is responsible for updating the state of the store in response to actions dispatched by your application.</p>
 <p>Here’s an example of how you might define a simple store in your application:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import { createStore } from 'redux';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { createStore } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'redux'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">const initialState = {</span></span>
-<span class="line"><span style="color: #E6DB74"> count: 0,</span></span>
-<span class="line"><span style="color: #E6DB74">};</span></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> initialState </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> count: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function reducer(state = initialState, action) {</span></span>
-<span class="line"><span style="color: #E6DB74"> switch (action.type) {</span></span>
-<span class="line"><span style="color: #E6DB74"> case 'INCREMENT':</span></span>
-<span class="line"><span style="color: #E6DB74"> return { ...state, count: state.count + 1 };</span></span>
-<span class="line"><span style="color: #E6DB74"> case 'DECREMENT':</span></span>
-<span class="line"><span style="color: #E6DB74"> return { ...state, count: state.count - 1 };</span></span>
-<span class="line"><span style="color: #E6DB74"> default:</span></span>
-<span class="line"><span style="color: #E6DB74"> return state;</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">reducer</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">state</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> initialState, </span><span style="color: #FD971F">action</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">switch</span><span style="color: #F8F8F2"> (action.type) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">case</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'INCREMENT'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> { </span><span style="color: #F92672">...</span><span style="color: #F8F8F2">state, count: state.count </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">case</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'DECREMENT'</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> { </span><span style="color: #F92672">...</span><span style="color: #F8F8F2">state, count: state.count </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> state;</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">const store = createStore(reducer);</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> store </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">createStore</span><span style="color: #F8F8F2">(reducer);</span></span></code></pre>
 <p>In this example, we’re defining a simple store with a <code>count</code> property that is initialized to zero. We’ve also defined a reducer function that updates the count property in response to two actions: <code>INCREMENT</code> and <code>DECREMENT</code>.</p>
 <p>Once you’ve created your store, you can use it in your React application using the <code>Provider</code> component from the <code>react-redux</code> package. The <code>Provider</code> component takes your store as a prop and wraps your entire application.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import { Provider } from 'react-redux';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Provider } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-redux'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function App() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Provider store={store}></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;Counter /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/Provider></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Provider</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">store</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">store</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Counter</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #66D9EF">Provider</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">function Counter() {</span></span>
-<span class="line"><span style="color: #E6DB74"> const count = useSelector((state) => state.count);</span></span>
-<span class="line"><span style="color: #E6DB74"> const dispatch = useDispatch();</span></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Counter</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> count </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useSelector</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">state</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> state.count);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> dispatch </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useDispatch</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> function handleIncrement() {</span></span>
-<span class="line"><span style="color: #E6DB74"> dispatch({ type: 'INCREMENT' });</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleIncrement</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">dispatch</span><span style="color: #F8F8F2">({ type: </span><span style="color: #E6DB74">'INCREMENT'</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> function handleDecrement() {</span></span>
-<span class="line"><span style="color: #E6DB74"> dispatch({ type: 'DECREMENT' });</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleDecrement</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">dispatch</span><span style="color: #F8F8F2">({ type: </span><span style="color: #E6DB74">'DECREMENT'</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;div></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;h1>Count: {count}&#x3C;/h1></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;button onClick={handleIncrement}>Increment&#x3C;/button></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;button onClick={handleDecrement}>Decrement&#x3C;/button></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/div></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Count: </span><span style="color: #F92672">{</span><span style="color: #F8F8F2">count</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleIncrement</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>Increment&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleDecrement</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>Decrement&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’re using the <code>useSelector</code> and <code>useDispatch</code> hooks from the <code>react-redux</code> package to access the state of the store and dispatch actions, respectively. We’re also defining a <code>Counter</code> component that renders the current count and two buttons that dispatch <code>INCREMENT</code> and <code>DECREMENT</code> actions when clicked.</p>
 <p>Overall, Redux is a powerful tool for managing application state in your React applications, and it can help simplify the process of working with complex state. However, it can also add complexity to your application, so it’s important to evaluate whether it’s the right solution for your specific use case.</p>
 <p>As your React application grows in complexity, writing and running tests becomes more important to ensure that your code is functioning as expected. Jest and Enzyme are two popular tools for testing React applications.</p>
 <p>To get started with Jest and Enzyme, you’ll need to install them using npm:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm install jest enzyme enzyme</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">adapter</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">react</span><span style="color: #F92672">-</span><span style="color: #AE81FF">16</span></span></code></pre>
 <p>Once installed, you can define tests for your components. Here’s an example of a simple test for a <code>Button</code> component:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import React from 'react';</span></span>
-<span class="line"><span style="color: #E6DB74">import { shallow } from 'enzyme';</span></span>
-<span class="line"><span style="color: #E6DB74">import Button from './Button';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { shallow } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'enzyme'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Button </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'./Button'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">describe('&#x3C;Button />', () => {</span></span>
-<span class="line"><span style="color: #E6DB74"> it('renders the button text', () => {</span></span>
-<span class="line"><span style="color: #E6DB74"> const wrapper = shallow(&#x3C;Button text="Click me" />);</span></span>
-<span class="line"><span style="color: #E6DB74"> expect(wrapper.text()).toEqual('Click me');</span></span>
-<span class="line"><span style="color: #E6DB74"> });</span></span>
+<span class="line"><span style="color: #A6E22E">describe</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'&#x3C;Button />'</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">it</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'renders the button text'</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> wrapper </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">shallow</span><span style="color: #F8F8F2">(&#x3C;</span><span style="color: #66D9EF">Button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Click me"</span><span style="color: #F8F8F2"> />);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">expect</span><span style="color: #F8F8F2">(wrapper.</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">()).</span><span style="color: #A6E22E">toEqual</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Click me'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> });</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> it('calls the onClick function when clicked', () => {</span></span>
-<span class="line"><span style="color: #E6DB74"> const onClick = jest.fn();</span></span>
-<span class="line"><span style="color: #E6DB74"> const wrapper = shallow(&#x3C;Button text="Click me" onClick={onClick} />);</span></span>
-<span class="line"><span style="color: #E6DB74"> wrapper.simulate('click');</span></span>
-<span class="line"><span style="color: #E6DB74"> expect(onClick).toHaveBeenCalled();</span></span>
-<span class="line"><span style="color: #E6DB74"> });</span></span>
-<span class="line"><span style="color: #E6DB74">});</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">it</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'calls the onClick function when clicked'</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> onClick </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> jest.</span><span style="color: #A6E22E">fn</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> wrapper </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">shallow</span><span style="color: #F8F8F2">(&#x3C;</span><span style="color: #66D9EF">Button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Click me"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">onClick</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> />);</span></span>
+<span class="line"><span style="color: #F8F8F2"> wrapper.</span><span style="color: #A6E22E">simulate</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'click'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">expect</span><span style="color: #F8F8F2">(onClick).</span><span style="color: #A6E22E">toHaveBeenCalled</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
 <p>In this example, we’re using the <code>shallow</code> function from Enzyme to create a shallow render of our <code>Button</code> component. We’re then defining two tests: one that ensures that the button text is rendered correctly, and another that ensures that the <code>onClick</code> function is called when the button is clicked.</p>
 <p>To run your tests, you can use the Jest CLI by adding the following script to your <code>package.json</code> file:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">json</span><span style="color: #E6DB74">`"scripts": {</span></span>
