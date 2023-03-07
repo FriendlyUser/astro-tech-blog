@@ -2,7 +2,7 @@
 tags: ['react', 'bootstrap', 'material']
 title: Using UI Frameworks with React
 description: How to use UI frameworks with react
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2955132952.png
 ---
@@ -12,7 +12,7 @@ To create a controlled component, you'll need to keep the value of the input in 
 
 
 ```tsx
-jsx`import { useState } from 'react';
+import { useState } from 'react';
 
 function Form() {
  const [name, setName] = useState('');
@@ -52,7 +52,7 @@ Here's an example of how you might define a simple route in your application:
 
 
 ```tsx
-jsx`import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 function App() {
  return (
@@ -72,7 +72,7 @@ React Router also provides several other components, such as `Link` and `NavLink
 
 
 ```tsx
-jsx`import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
 function App() {
  return (
@@ -121,7 +121,7 @@ Here's an example of how you might define a simple store in your application:
 
 
 ```tsx
-jsx`import { createStore } from 'redux';
+import { createStore } from 'redux';
 
 const initialState = {
  count: 0,
@@ -146,7 +146,7 @@ Once you've created your store, you can use it in your React application using t
 
 
 ```tsx
-jsx`import { Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 
 function App() {
  return (
@@ -194,7 +194,7 @@ Once installed, you can define tests for your components. Here's an example of a
 
 
 ```tsx
-jsx`import React from 'react';
+import React from 'react';
 import { shallow } from 'enzyme';
 import Button from './Button';
 

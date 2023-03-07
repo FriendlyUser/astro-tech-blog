@@ -2,10 +2,11 @@
 tags: ['react']
 title: React Class Components
 description: How to make react class components
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2459005241.png
 ---
+
 Class components are an important concept in React, and understanding how they work is crucial for building complex applications. In this post, we'll discuss the basics of class components in React.
 
 1. Defining a class component

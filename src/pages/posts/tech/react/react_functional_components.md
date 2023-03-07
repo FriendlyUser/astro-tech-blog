@@ -2,7 +2,7 @@
 tags: ['react']
 title: React Functional Components
 description: How to make react class components
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3281011769.png
 ---

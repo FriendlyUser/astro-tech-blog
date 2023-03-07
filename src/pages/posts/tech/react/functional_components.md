@@ -2,10 +2,11 @@
 tags: ['react']
 title: React Functional Components
 description: How to make react class components
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1090485901.png
 ---
+
 When building a React application, it's important to plan and design your application before you start writing code. This helps ensure that you have a clear understanding of what you're building and how you're going to build it. In this post, we'll discuss some key steps you can take to plan and design your React application.
 
 1. Define your application's requirements

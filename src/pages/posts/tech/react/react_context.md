@@ -2,7 +2,7 @@
 tags: ['react', 'context']
 title: Using react context to manage state
 description: Explaining the use of react context to manage state
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1212575964.png
 ---

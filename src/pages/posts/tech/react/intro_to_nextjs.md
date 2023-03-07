@@ -2,7 +2,7 @@
 tags: ['react', 'nextjs']
 title: Next.js Basics
 description: Introduction to next.js
-pubDate: Fri, 29 November 2024
+pubDate: Fri, 29 November 2023
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2432208319.png
 ---
