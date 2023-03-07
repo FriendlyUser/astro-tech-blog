@@ -156,3 +156,5 @@
 /posts/tech/go/chapter_4_why_golang.md
 /posts/tech/go/chapter_7_why_golang.md
 /posts/tech/go/chapter_1_why_golang.md
+/posts/tech/net/web_scrapping_in_csharp.md
+/posts/tech/rust/intro_to_apis_in_rust.md
