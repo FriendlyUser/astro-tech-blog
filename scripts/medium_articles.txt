@@ -160,3 +160,8 @@
 /posts/tech/rust/intro_to_apis_in_rust.md
 /posts/tech/react/functional_components.md
 /posts/tech/react/intro_to_nextjs.md
+/posts/tech/go/basic_wails_app.md
+/posts/tech/react/class_components.md
+/posts/tech/react/react_context.md
+/posts/tech/react/react_functional_components.md
+/posts/tech/js/caesar_cipher_in_vue.md
