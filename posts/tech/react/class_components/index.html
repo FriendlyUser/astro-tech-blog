@@ -240,41 +240,41 @@ Events, such as button clicks and form submissions, are handled using event hand
 <p>In this example, the component has a form with an input field and a submit button. The <code>handleChange()</code> method is called when the input value changes, and updates the component’s state by calling the <code>setState()</code> method. The <code>handleSubmit()</code> method is called when the form is submitted, and alerts the user with the submitted value.</p>
 <p>By understanding how to handle state and events in class components, you can build interactive and dynamic React applications that respond to user input and actions.</p>
 <p>To implement class components in TypeScript, you can define the component using the <code>React.Component</code> class and define the props and state types using TypeScript interfaces. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">typescript</span><span style="color: #E6DB74">`import React from 'react';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">interface MyProps {</span></span>
-<span class="line"><span style="color: #E6DB74"> name: string;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyProps</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">interface MyState {</span></span>
-<span class="line"><span style="color: #E6DB74"> count: number;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyState</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> count</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">class MyComponent extends React.Component&#x3C;MyProps, MyState> {</span></span>
-<span class="line"><span style="color: #E6DB74"> constructor(props: MyProps) {</span></span>
-<span class="line"><span style="color: #E6DB74"> super(props);</span></span>
-<span class="line"><span style="color: #E6DB74"> this.state = {</span></span>
-<span class="line"><span style="color: #E6DB74"> count: 0</span></span>
-<span class="line"><span style="color: #E6DB74"> };</span></span>
-<span class="line"><span style="color: #E6DB74"> this.handleClick = this.handleClick.bind(this);</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
+<span class="line"><span style="color: #66D9EF">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyComponent</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">Component</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">MyProps</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">MyState</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">constructor</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">props</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyProps</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #FD971F">super</span><span style="color: #F8F8F2">(props);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.state </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> count: </span><span style="color: #AE81FF">0</span></span>
+<span class="line"><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.handleClick </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.handleClick.</span><span style="color: #A6E22E">bind</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> handleClick() {</span></span>
-<span class="line"><span style="color: #E6DB74"> this.setState({ count: this.state.count + 1 });</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">setState</span><span style="color: #F8F8F2">({ count: </span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.state.count </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> render() {</span></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;div></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;h1>Hello, {this.props.name}!&#x3C;/h1></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;p>Count: {this.state.count}&#x3C;/p></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;button onClick={this.handleClick}>Increment&#x3C;/button></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/div></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74"> }</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">render</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Hello, </span><span style="color: #F92672">{</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.props.name</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">!&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">>Count: </span><span style="color: #F92672">{</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.state.count</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">.handleClick</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>Increment&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">export default MyComponent;</span></span></code></pre>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> MyComponent;</span></span></code></pre>
 <p>In this example, the component <code>MyComponent</code> is defined using the <code>React.Component</code> class with two type parameters: <code>MyProps</code> and <code>MyState</code>. <code>MyProps</code> is an interface that defines the type of the component’s props, and <code>MyState</code> is an interface that defines the type of the component’s state.</p>
 <p>The constructor method initializes the component’s state with an initial value of <code>count: 0</code>. The <code>handleClick()</code> method is called when the button is clicked, and updates the component’s state by calling the <code>setState()</code> method.</p>
 <p>The <code>render()</code> method returns the JSX that defines the component’s UI. The <code>name</code> prop is accessed using <code>this.props.name</code>, and the <code>count</code> state is accessed using <code>this.state.count</code>.</p>
@@ -358,5 +358,5 @@ Events, such as button clicks and form submissions, are handled using event hand
     </div>
   </div></div>
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-07<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-08<!-- -->.</div></div></div>
   </body></html>

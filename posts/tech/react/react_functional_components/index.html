@@ -215,66 +215,66 @@ useContext is a hook that allows functional components to access a context objec
 <span class="line"><span style="color: #F8F8F2">};</span></span></code></pre>
 <p>By using event handlers and state, you can create interactive and dynamic user interfaces in React. It’s important to remember to avoid directly manipulating the DOM and to always use React’s declarative programming model to update the UI.</p>
 <p>To implement functional components in TypeScript, you can define the props interface as a generic type parameter and specify the prop types for each property. Here is an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">typescript</span><span style="color: #E6DB74">`import React from 'react';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">interface Props {</span></span>
-<span class="line"><span style="color: #E6DB74"> name: string;</span></span>
-<span class="line"><span style="color: #E6DB74"> age: number;</span></span>
-<span class="line"><span style="color: #E6DB74"> email: string;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<span class="line"><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Props</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> age</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> email</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">const User: React.FC&#x3C;Props> = ({ name, age, email }) => {</span></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;div></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;p>Name: {name}&#x3C;/p></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;p>Age: {age}&#x3C;/p></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;p>Email: {email}&#x3C;/p></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/div></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">};</span></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">User</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">FC</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Props</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F">name</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">age</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">email</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">>Name: </span><span style="color: #F92672">{</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">>Age: </span><span style="color: #F92672">{</span><span style="color: #F8F8F2">age</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">>Email: </span><span style="color: #F92672">{</span><span style="color: #F8F8F2">email</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">export default User;</span></span></code></pre>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> User;</span></span></code></pre>
 <p>In this example, we define an interface called Props that specifies the type of each prop. We then use the React.FC generic type parameter to define the functional component and specify the Props interface as the type parameter. Inside the component, we destructure the props and use them in the JSX.</p>
 <p>You can also specify default props and optional props using the following syntax:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">typescript</span><span style="color: #E6DB74">`interface Props {</span></span>
-<span class="line"><span style="color: #E6DB74"> name: string;</span></span>
-<span class="line"><span style="color: #E6DB74"> age?: number;</span></span>
-<span class="line"><span style="color: #E6DB74"> email: string;</span></span>
-<span class="line"><span style="color: #E6DB74">}</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Props</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> age</span><span style="color: #F92672">?:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">number</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> email</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">const User: React.FC&#x3C;Props> = ({ name, age = 18, email }) => {</span></span>
-<span class="line"><span style="color: #E6DB74"> // ...</span></span>
-<span class="line"><span style="color: #E6DB74">};</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">User</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; font-weight: bold">FC</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Props</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F">name</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">age</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">18</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">email</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// ...</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span></code></pre>
 <p>Here, we define the age prop as optional by adding a question mark after its name, and we provide a default value of 18 in the function signature.</p>
 <p>TypeScript can help catch errors at compile-time and provide better documentation for your code, making it a useful tool for building React applications.</p>
 <p>Here is an example of an input form using functional components in React:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">jsx</span><span style="color: #E6DB74">`import React, { useState } from 'react';</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useState } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">const InputForm = () => {</span></span>
-<span class="line"><span style="color: #E6DB74"> const [name, setName] = useState('');</span></span>
-<span class="line"><span style="color: #E6DB74"> const [email, setEmail] = useState('');</span></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">InputForm</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [name, setName] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [email, setEmail] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> const handleSubmit = (event) => {</span></span>
-<span class="line"><span style="color: #E6DB74"> event.preventDefault();</span></span>
-<span class="line"><span style="color: #E6DB74"> console.log(`</span><span style="color: #F8F8F2">Name: ${name}, Email: ${email}</span><span style="color: #E6DB74">`);</span></span>
-<span class="line"><span style="color: #E6DB74"> };</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleSubmit</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F">event</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> event.</span><span style="color: #A6E22E">preventDefault</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`Name: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #E6DB74">, Email: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">email</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> };</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74"> return (</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;form onSubmit={handleSubmit}></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;label></span></span>
-<span class="line"><span style="color: #E6DB74"> Name:</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;input type="text" value={name} onChange={(event) => setName(event.target.value)} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/label></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;label></span></span>
-<span class="line"><span style="color: #E6DB74"> Email:</span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/label></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;button type="submit">Submit&#x3C;/button></span></span>
-<span class="line"><span style="color: #E6DB74"> &#x3C;/form></span></span>
-<span class="line"><span style="color: #E6DB74"> );</span></span>
-<span class="line"><span style="color: #E6DB74">};</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">form</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onSubmit</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleSubmit</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> Name:</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"text"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">value</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onChange</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">event</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setName</span><span style="color: #F8F8F2">(event.target.value)</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> Email:</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"email"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">value</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">email</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onChange</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">event</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setEmail</span><span style="color: #F8F8F2">(event.target.value)</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">label</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"submit"</span><span style="color: #F8F8F2">>Submit&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #F92672">form</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2"> );</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">export default InputForm;</span></span></code></pre>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> InputForm;</span></span></code></pre>
 <p>In this example, we define a functional component called InputForm that uses the useState hook to manage the form input values. We define two state variables, <code>name</code> and <code>email</code>, and initialize them to empty strings using <code>useState('')</code>. We also define a handleSubmit function that is called when the form is submitted. This function prevents the default form submission behavior using <code>event.preventDefault()</code> and logs the form input values to the console.</p>
 <p>In the JSX, we define a <code>form</code> element with two input fields and a submit button. We bind the value of each input field to its corresponding state variable using the <code>value</code> prop and update the state when the input value changes using the <code>onChange</code> event handler. Finally, we attach the <code>handleSubmit</code> function to the <code>onSubmit</code> event of the form element.</p>
 <p>This is a basic example, but you can add validation and more complex logic to handle form input data as needed.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
@@ -287,5 +287,5 @@ useContext is a hook that allows functional components to access a context objec
     </div>
   </div></div>
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-07<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-08<!-- -->.</div></div></div>
   </body></html>
