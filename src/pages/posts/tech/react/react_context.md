@@ -175,6 +175,7 @@ const DeviceProvider = ({ children }) => {
 
 export { DeviceContext, DeviceProvider }
 ```
+
 In this example, we define a context object using the `createContext` function. We then define a provider component that wraps the entire application and provides `isMobile` state to child components.
 
 In the `useEffect` hook, we add an event listener to check the window size and set `isMobile` state to `true` if the window width is less than 768px. We also remove the event listener when the component unmounts.
@@ -247,4 +248,6 @@ const App = () => {
 
 export default App
 ```
+
+
 Finally, we render the entire application by wrapping it in the `DeviceProvider` component. Any child components that need access to the `isMobile` state can simply use the `useContext` hook to access it. When the device type changes (i.e. when the user resizes the window), the state will be updated and all child components will re-render with the new state.

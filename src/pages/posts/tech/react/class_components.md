@@ -60,6 +60,7 @@ class MyClassComponent extends React.Component {
 
 export default MyClassComponent;
 ```
+
 2. Using a class component
 To use a class component in your React application, you can import the component and use it in your JSX code. Here's an example:
 
@@ -79,6 +80,7 @@ function MyFunctionalComponent() {
 
 export default MyFunctionalComponent;
 ```
+
 3. Accessing props
 Class components can access props using the `this.props` object. Props are passed down from the parent component to the child component, and can be used to customize the behavior and appearance of the component. Here's an example:
 
@@ -204,6 +206,7 @@ class MyEventComponent extends React.Component {
 
 export default MyEventComponent;
 ```
+
 In this example, the component has a form with an input field and a submit button. The `handleChange()` method is called when the input value changes, and updates the component's state by calling the `setState()` method. The `handleSubmit()` method is called when the form is submitted, and alerts the user with the submitted value.
 
 By understanding how to handle state and events in class components, you can build interactive and dynamic React applications that respond to user input and actions.
@@ -213,7 +216,7 @@ To implement class components in TypeScript, you can define the component using 
 
 
 ```tsx
-typescript`import React from 'react';
+import React from 'react';
 
 interface MyProps {
  name: string;
@@ -341,6 +344,7 @@ class MyForm extends React.Component {
 
 export default MyForm;
 ```
+
 In this example, the `MyForm` class contains a constructor that initializes the component's state with two empty strings: `firstName` and `lastName`. The `handleInputChange` method is called whenever an input field's value changes, and updates the component's state with the new value. The `handleSubmit` method is called when the form is submitted, and logs the current state to the console.
 
 The `render` method returns the JSX that defines the form's UI. Each input field has a `name`, `id`, `value`, and `onChange` attribute that correspond to the component's state and event handlers. The `type` attribute on each input field specifies the type of input field to use (in this case, `text`).

@@ -31,6 +31,7 @@ function Form() {
  );
 }
 ```
+
 In the example above, we're using the `useState` hook to keep track of the value of the `name` input. We've also added an `onChange` event handler to the input that calls the `handleNameChange` function, which updates the `name` state with the new value of the input.
 
 By using a controlled component approach, we can easily validate and manipulate the form data before it is submitted to the server. We can also easily implement complex forms with multiple input fields and validation rules.
@@ -43,9 +44,10 @@ In a single-page application built with React, navigation is typically handled u
 To get started with React Router, you'll need to install it using npm:
 
 
-```tsx
+```bash
 npm install react-router-dom
 ```
+
 Once installed, you can import the components you need from the `react-router-dom` package. The `BrowserRouter` component is used to wrap your entire application and define the routes, while the `Route` component is used to define a specific route and the component that should be rendered when that route is matched.
 
 Here's an example of how you might define a simple route in your application:
@@ -66,6 +68,7 @@ function HomePage() {
  return <h1>Welcome to the homepage!</h1>;
 }
 ```
+
 In this example, we're using the `BrowserRouter` component to wrap our entire application, and the `Route` component to define a route that matches the root URL (`/`) and renders the `HomePage` component.
 
 React Router also provides several other components, such as `Link` and `NavLink`, that allow you to create links to different routes in your application. Here's an example:
@@ -112,9 +115,10 @@ As your React application grows in complexity, managing application state can be
 To get started with Redux, you'll need to install it using npm:
 
 
-```tsx
+```bash
 npm install redux react-redux
 ```
+
 Once installed, you can define a Redux store and use it in your application. The store is created using the `createStore` function, which takes a reducer function as an argument. The reducer function is responsible for updating the state of the store in response to actions dispatched by your application.
 
 Here's an example of how you might define a simple store in your application:
@@ -187,7 +191,7 @@ As your React application grows in complexity, writing and running tests becomes
 To get started with Jest and Enzyme, you'll need to install them using npm:
 
 
-```tsx
+```bash
 npm install jest enzyme enzyme-adapter-react-16
 ```
 Once installed, you can define tests for your components. Here's an example of a simple test for a `Button` component:
@@ -218,14 +222,14 @@ To run your tests, you can use the Jest CLI by adding the following script to yo
 
 
 ```tsx
-json`"scripts": {
+"scripts": {
  "test": "jest"
 }
 ```
 You can then run your tests using the following command:
 
 
-```tsx
+```bash
 npm test
 ```
 Jest will automatically find and run all of the test files in your project.
@@ -236,21 +240,20 @@ Overall, Jest and Enzyme are powerful tools for testing React applications, and 
 Building and deploying a React application involves several steps, including configuring your build process, selecting a hosting provider, and deploying your application. In this post, we'll walk through the steps involved in building and deploying a React application.
 
 Configuring your build process
-------------------------------
 
 Before you can deploy your React application, you'll need to configure your build process. The build process converts your source code into a format that can be served by a web server. To configure your build process, you'll need to install the necessary tools and configure your build settings.
 
 To get started, you'll need to install Node.js and npm. Once you have Node.js and npm installed, you can install the necessary dependencies for your build process by running the following command:
 
 
-```tsx
+```bash
 npm install --save-dev webpack webpack-cli webpack-dev-server
 ```
 Once you have installed the necessary dependencies, you can configure your build settings in a `webpack.config.js` file. Here's an example configuration file:
 
 
 ```tsx
-js`const path = require('path');
+const path = require('path');
 
 module.exports = {
  entry: './src/index.js',
@@ -274,10 +277,10 @@ module.exports = {
  },
 };
 ```
+
 In this configuration file, we're specifying that our entry point is `src/index.js` and our output file is `dist/bundle.js`. We're also configuring the `devServer` to serve our files from the `dist` directory. Finally, we're specifying that we want to use the `babel-loader` to transpile our JavaScript code.
 
 Selecting a hosting provider
-----------------------------
 
 Once you have configured your build process, you'll need to select a hosting provider for your application. There are several hosting providers that are well-suited for hosting React applications, including:
 
@@ -289,7 +292,6 @@ Once you have configured your build process, you'll need to select a hosting pro
 Each of these hosting providers has its own set of features and pricing plans, so it's important to evaluate your specific needs and budget before selecting a provider.
 
 Deploying your application
---------------------------
 
 Once you have selected a hosting provider, you can deploy your application. The exact deployment process will depend on your hosting provider, but typically involves the following steps:
 
@@ -303,14 +305,12 @@ Overall, building and deploying a React application involves several steps, but 
 Maintaining and scaling a React application can be challenging as your codebase grows in complexity and your user base expands. In this post, we'll cover some best practices for maintaining and scaling your React application.
 
 Organizing your codebase
-------------------------
 
 As your codebase grows, it's important to organize your code in a way that is easy to maintain and understand. One common approach is to use a modular architecture, where each component is contained in its own file and organized into logical groups. This can make it easier to navigate your codebase and make changes as needed.
 
 Another useful technique is to use a state management library like Redux to manage your application state. This can help ensure that your state is consistent across your application and make it easier to manage complex state interactions.
 
 Optimizing performance
-----------------------
 
 Optimizing the performance of your React application is critical for maintaining a good user experience, particularly as your user base grows. Some tips for optimizing performance include:
 
@@ -321,7 +321,6 @@ Optimizing the performance of your React application is critical for maintaining
 * Use a CDN to cache static assets like images and fonts.
 
 Testing and debugging
----------------------
 
 Testing and debugging are critical for maintaining the quality of your codebase, particularly as your application grows. Some best practices for testing and debugging include:
 
@@ -331,7 +330,6 @@ Testing and debugging are critical for maintaining the quality of your codebase,
 * Use performance profiling tools like Chrome DevTools to identify performance bottlenecks in your application.
 
 Scaling your infrastructure
----------------------------
 
 Finally, as your user base grows, you may need to scale your infrastructure to handle increased traffic and load. Some tips for scaling your infrastructure include:
 
@@ -346,17 +344,14 @@ Overall, maintaining and scaling a React application requires careful planning a
 Deploying a React application can be challenging, but using Vercel can make the process much easier. Vercel is a cloud platform for static sites and serverless functions, which can help you easily deploy and manage your React application. In this post, we'll walk through the steps to deploy a React application to Vercel.
 
 Step 1: Create a Vercel account
--------------------------------
 
 The first step is to create a Vercel account. You can sign up for a free account on the Vercel website. Once you have created an account, you can create a new project.
 
 Step 2: Connect your Git repository
------------------------------------
 
 The next step is to connect your Git repository to Vercel. This will allow Vercel to automatically deploy changes to your application when you push them to your Git repository. To connect your Git repository, navigate to the "Import Project" page in Vercel, select your Git repository, and follow the prompts to authorize Vercel to access your repository.
 
 Step 3: Configure your build settings
--------------------------------------
 
 Once your Git repository is connected, you will need to configure your build settings. This will tell Vercel how to build and deploy your application. To configure your build settings, navigate to the "Build & Development Settings" page in Vercel, and configure your settings as follows:
 
@@ -365,12 +360,10 @@ Once your Git repository is connected, you will need to configure your build set
 * Set the "Output Directory" to "build/"
 
 Step 4: Deploy your application
--------------------------------
 
 Once your build settings are configured, you can deploy your application. To deploy your application, navigate to the "Deployments" page in Vercel, and click the "Deploy" button. Vercel will build and deploy your application, and provide you with a URL where you can access your deployed application.
 
 Step 5: Update your DNS settings (optional)
--------------------------------------------
 
 If you want to use your own domain name for your deployed application, you will need to update your DNS settings to point to your Vercel deployment. To do this, navigate to your domain registrar's website and configure your DNS settings to point to the Vercel deployment URL.
 

@@ -34,16 +34,17 @@ To create a Next.js application with TypeScript, you can follow these steps:
 1. Install the required dependencies by running the following command:
 
 
-```jsx
+```bash
 npx create-next-app my-app --typescript
 ```
+
 This will create a new Next.js application with TypeScript support.
 
 2. Open the `tsconfig.json` file in the root directory of your project and make sure it has the following settings:
 
 
-```jsx
-json`{
+```json
+{
  "compilerOptions": {
  "target": "es5",
  "lib": ["dom", "dom.iterable", "esnext"],
@@ -63,13 +64,14 @@ json`{
  "exclude": ["node\_modules"]
 }
 ```
+
 This configures TypeScript to use the correct settings for Next.js.
 
 3. Create a new file called `_app.tsx` in the `pages` directory. This file will be used to configure the global styles and components of your application.
 
 
 ```jsx
-tsx`import { AppProps } from "next/app";
+import { AppProps } from "next/app";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -82,7 +84,7 @@ export default MyApp;
 
 
 ```jsx
-tsx`import type { NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 
 const Home: NextPage = () => {
@@ -103,12 +105,14 @@ const Home: NextPage = () => {
 
 export default Home;
 ```
+
 5. Start the development server by running the following command:
 
 
-```jsx
+```bash
 npm run dev
 ```
+
 This will start the development server and open your application in a web browser at `http://localhost:3000`.
 
 That's it! You now have a basic Next.js application with TypeScript support up and running. From here, you can start building out the rest of your application using the power of Next.js and TypeScript.

@@ -38,6 +38,7 @@ data() {
   };
 },
 ```
+
 Methods
 Next, we need to define the methods that our component will use. In this case, we need to define two methods: "encrypt" and "decrypt". The "encrypt" method will take the message and shift properties and apply the Caesar cipher encryption algorithm to generate the encrypted message. The "decrypt" method will take the encrypted message and shift properties and apply the Caesar cipher decryption algorithm to generate the decrypted message.
 

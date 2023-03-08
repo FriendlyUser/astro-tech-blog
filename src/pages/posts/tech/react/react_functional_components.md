@@ -197,7 +197,7 @@ To implement functional components in TypeScript, you can define the props inter
 
 
 ```tsx
-typescript`import React from 'react';
+import React from 'react';
 
 interface Props {
  name: string;
@@ -223,7 +223,7 @@ You can also specify default props and optional props using the following syntax
 
 
 ```tsx
-typescript`interface Props {
+interface Props {
  name: string;
  age?: number;
  email: string;
@@ -242,7 +242,7 @@ Here is an example of an input form using functional components in React:
 
 
 ```tsx
-jsx`import React, { useState } from 'react';
+import React, { useState } from 'react';
 
 const InputForm = () => {
  const [name, setName] = useState('');

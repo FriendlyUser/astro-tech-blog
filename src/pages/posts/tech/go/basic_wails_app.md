@@ -19,7 +19,7 @@ Next we have choices on how we can call the api. We can either use the go backen
 
 ## Front-end only integration
 5. Navigate to the frontend/src/components directory of your project and open the Hello.vue file.
-6. In the <script> section of the file, import Axios with import axios from 'axios'.
+6. In the `<script>` section of the file, import Axios with import axios from 'axios'.
 7. In the methods object of your Vue component, add a new method that uses Axios to make an HTTP GET request to the https://www.tronalddump.io/ API to retrieve a quote. For example:
 
 ```jsx
@@ -34,7 +34,7 @@ methods: {
 ```
 
 
-In the <template> section of your Vue component, add an element that displays the retrieved quote using double curly braces ({{ }}) syntax.
+In the `<template>` section of your Vue component, add an element that displays the retrieved quote using double curly braces ({{ }}) syntax.
 
 ```jsx
 <template>
