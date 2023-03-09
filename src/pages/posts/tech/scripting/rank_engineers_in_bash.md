@@ -54,7 +54,7 @@ Overall, this script can be used to quickly assess each author's contributions t
 
 
 ```go 
- #!/bin/bash
+#!/bin/bash
 
 ## Change to the directory of the Git repository
 
@@ -100,7 +100,3 @@ This is a Bash script that uses Git to list all the authors and their line count
 
 Overall, this script can be used to quickly see which authors have contributed the most lines of code to a Git repository, providing insight into their level of contribution to the project.
 
-
-
-## References
-- https://github.com/FriendlyUser/Pirates-Game/tree/master
