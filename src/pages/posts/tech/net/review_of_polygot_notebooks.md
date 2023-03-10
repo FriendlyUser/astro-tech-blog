@@ -75,4 +75,6 @@ Finally, the column object is displayed in the output.
 
 Overall polyglot notebooks can be fairly good for data science, do not recommend using the C# bindings Plotly.NET for data science, and prefer using F# for data science.
 
+More content like this is available in my book on amazon kdp.
+
 [![C# Programming](https://m.media-amazon.com/images/I/414HUhz-9gL.jpg)](https://www.amazon.com/dp/B0BY18F7HB) 
