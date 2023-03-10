@@ -170,3 +170,5 @@
 /posts/tech/net/review_of_polygot_notebooks.md
 /posts/tech/js/intro_to_react_spring.md
 /posts/tech/react/ui_frameworks_in_react.md
+/posts/tech/js/ui/ensure_element_in_viewport.md
+/posts/stonks/thoughts/why_I_am_buying_sqqq.md

@@ -2,7 +2,7 @@
 title: Why I’m Buying SQQQ in a Down Market
 description:  In this article, I will discuss my reasons for buying the ProShares UltraPro Short QQQ (SQQQ) ETF in a down market. SQQQ is a 3x leveraged inverse ETF that tracks the Nasdaq 100 and seeks to return the exact results of the Nasdaq 100 index times negative three. I will explore the potential benefits and risks of this investment strategy and share my thoughts on why I believe it could be a smart move in today’s economic climate.
 alt: Applying nlp to various youtube videos
-pubDate: Friday, 13 January 2023
+pubDate: Friday, 13 April 2023
 tags: ["investing"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/sample.png'
