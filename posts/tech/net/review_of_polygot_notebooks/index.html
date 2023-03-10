@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review of Polygot Notebooks - Astro Tech Blog</title>
+    <meta name="description" content="My thoughts of polygot notebooks after writing a book with them">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Review of Polygot Notebooks</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Friday, 21 December 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/polygot" style="padding-right:3px"> <category>polygot<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/csharp" style="padding-right:3px"> <category>csharp<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/590655340.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Polygot notebooks are a fanastic way to do data science. They allow you to use multiple languages in a single notebook. My personal preference is the vs code extension formerly .net interactive offered as a vs code extension.</p>
+<p>Using the code from <a href="https://towardsdev.com/how-to-rank-software-engineers-using-bash-c8b1bd8885fb">https://towardsdev.com/how-to-rank-software-engineers-using-bash-c8b1bd8885fb</a>,</p>
+<p>I can grab the data from the CSV file and put it into a list of strings.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">using System.IO;</span></span>
+<span class="line"><span style="color: #F8F8F2">using System.Linq;</span></span>
+<span class="line"><span style="color: #F8F8F2">using System.Globalization;</span></span>
+<span class="line"><span style="color: #F8F8F2">using CsvHelper;</span></span>
+<span class="line"><span style="color: #F8F8F2">using System;</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">// Read data from CSV file</span></span>
+<span class="line"><span style="color: #F8F8F2">var records = new List&#x3C;dynamic>();</span></span>
+<span class="line"><span style="color: #F8F8F2">using (var reader = new StreamReader("data/changes_by_file.csv"))</span></span>
+<span class="line"><span style="color: #F8F8F2">using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    records = csv.GetRecords&#x3C;dynamic>().ToList();</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">// Extract data for chart</span></span>
+<span class="line"><span style="color: #F8F8F2">var counts = records.Select(r => r.Count);</span></span>
+<span class="line"><span style="color: #F8F8F2">var file = records.Select(r => r.File);</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">// export authors as list of string</span></span>
+<span class="line"><span style="color: #F8F8F2">var countsList = counts.ToList();</span></span>
+<span class="line"><span style="color: #F8F8F2">// get value from counts</span></span>
+<span class="line"><span style="color: #F8F8F2">var fileList = file.ToList();</span></span></code></pre>
+<p>The script reads data from a CSV file located at “data/changes_by_file.csv” using CsvHelper library to parse the CSV file. It creates a list of dynamic objects where each object represents a row in the CSV file.</p>
+<p>After reading the data, it extracts two columns from the CSV file: “Count” and “File” by projecting them into separate lists using Linq.</p>
+<p>Finally, it exports the counts list and file list as separate variables called countsList and fileList, respectively, by converting them to a list using ToList() method.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">share </span><span style="color: #F92672">--</span><span style="color: #F8F8F2">from csharp countsList</span></span>
+<span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">share </span><span style="color: #F92672">--</span><span style="color: #F8F8F2">from csharp fileList</span></span>
+<span class="line"><span style="color: #F92672">open</span><span style="color: #F8F8F2"> Plotly.NET</span></span>
+<span class="line"><span style="color: #F92672">let</span><span style="color: #F8F8F2"> intList </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> countsList </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> Seq.cast</span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">string</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> List.ofSeq </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> List.map System.Double.Parse</span></span>
+<span class="line"><span style="color: #F8F8F2">intList </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> List.map </span><span style="color: #F92672">(fun</span><span style="color: #FD971F"> x </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> double x</span><span style="color: #F92672">)</span></span>
+<span class="line"><span style="color: #F92672">let</span><span style="color: #F8F8F2"> newKeys </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> fileList </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> Seq.cast</span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">string</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #F92672">|></span><span style="color: #F8F8F2"> List.ofSeq</span></span>
+<span class="line"><span style="color: #F92672">let</span><span style="color: #F8F8F2"> column </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Chart.Column</span><span style="color: #F92672">(</span><span style="color: #F8F8F2">values </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> intList</span><span style="color: #F92672">,</span><span style="color: #F8F8F2"> Keys </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> newKeys</span><span style="color: #F92672">)</span></span>
+<span class="line"><span style="color: #F8F8F2">column</span></span></code></pre>
+<p>The script above first loads the Plotly.NET package and then performs some data manipulation and plotting.</p>
+<p>The script uses the shared variables “countsList” and “fileList” from a C# notebook (using the #!share magic command) to create a column chart using the Plotly.NET library.</p>
+<p>First, it converts the countsList from a list of strings to a list of doubles using Seq.cast<string> |> List.ofSeq |> List.map System.Double.Parse.</string></p>
+<p>Then, it creates a new list called newKeys by casting the fileList to a list of strings.</p>
+<p>Next, it creates a new column chart using the Chart.Column method of the Plotly.NET package. It passes in the values from the intList and keys from the newKeys list.</p>
+<p>Finally, the column object is displayed in the output.</p>
+<p><a href="imgs/2023/tech/newplot.png">!aspnet</a></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Overall polyglot notebooks can be fairly good for data science, do not recommend using the C# bindings Plotly.NET for data science, and prefer using F# for data science.</p>
+<p><a href="https://www.amazon.com/dp/B0BY18F7HB"><img src="https://m.media-amazon.com/images/I/414HUhz-9gL.jpg" alt="C# Programming"></a></p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-10<!-- -->.</div></div></div>
+  </body></html>

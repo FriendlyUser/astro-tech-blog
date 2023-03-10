@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ensure Elements are always visible on screen - Astro Tech Blog</title>
+    <meta name="description" content="Understanding React Refs A Guide for Beginners">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Ensure Elements are always visible on screen</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Friday, 7 December 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/js" style="padding-right:3px"> <category>js<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/148139817.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>To ensure that an HTML element is in the fold, you can follow these steps:</p>
+<p>Identify the viewport height: The viewport height is the visible portion of the web page that a user can see on their screen without scrolling. You can find the viewport height using JavaScript or by using the CSS “vh” unit.</p>
+<p>Place the element in the top portion of the page: To ensure that the element is in the fold, place it in the top portion of the page, preferably in the first screenful of content. This will make sure that the element is visible to the user without them having to scroll down.</p>
+<p>Optimize the content above the element: Ensure that the content above the element is optimized to keep the user engaged and interested. This will encourage them to scroll down and view more content.</p>
+<p>Test the layout on different devices: Test the layout on different devices with different screen sizes to ensure that the element is visible in the fold on all devices.</p>
+<p>Consider using a sticky navigation: If the element is important, consider using a sticky navigation that follows the user as they scroll down the page. This will ensure that the element is always visible to the user.</p>
+<p>By following these steps, you can ensure that the HTML element is in the fold and visible to the user without them having to scroll down.</p>
+<p>In React, a ref is a way to reference a DOM element or a React component instance created by a component.</p>
+<p>Here’s an example of a React ref being used to reference a DOM element:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    inputRef.current.</span><span style="color: #A6E22E">focus</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">  };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #F92672">input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"text"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">inputRef</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleClick</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>Focus&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In React, a ref is a way to reference a DOM element or a React component instance created by a component.</p>
+<p>Here’s an example of a React ref being used to reference a DOM element:</p>
+<p>javascript
+Copy code
+import React, { useRef } from ‘react’;</p>
+<p>function ExampleComponent() {
+const inputRef = useRef(null);</p>
+<p>const handleClick = () => {
+inputRef.current.focus();
+};</p>
+<p>return (
+</p><div>
+<input type="text" ref="{inputRef}">
+<button onclick="{handleClick}">Focus</button>
+</div>
+);
+}
+In this example, we are creating a functional component called “ExampleComponent”. We’re using the “useRef” hook to create a ref called “inputRef” and assigning it to the input element using the “ref” attribute.<p></p>
+<p>We’re also defining a function called “handleClick” that is called when the button is clicked. This function is using the “current” property of the ref to call the “focus” method on the input element, which will give it focus.</p>
+<p>This is just one example of how refs can be used in React. Refs can also be used to reference a React component instance, which can be useful for accessing component methods or properties.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">inputRef?.current.</span><span style="color: #A6E22E">getBoundingClientRect</span><span style="color: #F8F8F2">().bottom </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> document.documentElement.scrollTop</span></span></code></pre>
+<p>inputRef is the ref object that is referencing the element.
+current is a property of the ref object that holds the current DOM node.
+getBoundingClientRect() is a method that returns the size of an element and its position relative to the viewport.
+bottom is a property of the returned object that represents the distance from the bottom edge of the element to the top edge of the viewport.
+document.documentElement.scrollTop is the distance between the top of the viewport and the top of the document.
+So, the above code is calculating the distance between the bottom edge of the element referenced by the inputRef and the top of the document, taking into account any scrolling that has occurred on the page.</p>
+<p>Note that the ? operator is used to ensure that the current property is not accessed if the inputRef is null or undefined. This is important because the getBoundingClientRect() method can only be called on a valid DOM node.</p>
+<p>Using that value and an adjustment property for a relatively positioned element, you can calculate the distance between the bottom edge of the element and the top of the viewport. This can be used to ensure the component is always above the fold.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">top: </span><span style="color: #E6DB74">`-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">top</span><span style="color: #F92672">}</span><span style="color: #E6DB74">px`</span><span style="color: #F8F8F2">,</span></span></code></pre>
+<p>top is a CSS property that controls the positioning of an element along the vertical axis relative to its parent container.
+-${top}px is a template literal that evaluates to a string value that represents a negative pixel value for the top property.
+top is a variable that holds the pixel value to be used in the negative value.
+By setting the top property to a negative value, the element is positioned above the top edge of its parent container. The amount of pixels the element is positioned above the top edge is determined by the value of the top variable. The variable is passed in as an argument to the template literal in the form of ${top}, and is interpolated into the resulting string.</p>
+<p>Overall, this code is useful for positioning an element above its parent container, for example to create an overlay effect or to position a tooltip.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-10<!-- -->.</div></div></div>
+  </body></html>
