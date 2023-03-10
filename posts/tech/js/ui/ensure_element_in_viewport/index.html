@@ -89,22 +89,23 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In React, a ref is a way to reference a DOM element or a React component instance created by a component.</p>
 <p>Here’s an example of a React ref being used to reference a DOM element:</p>
-<p>javascript
-Copy code
-import React, { useRef } from ‘react’;</p>
-<p>function ExampleComponent() {
-const inputRef = useRef(null);</p>
-<p>const handleClick = () => {
-inputRef.current.focus();
-};</p>
-<p>return (
-</p><div>
-<input type="text" ref="{inputRef}">
-<button onclick="{handleClick}">Focus</button>
-</div>
-);
-}
-In this example, we are creating a functional component called “ExampleComponent”. We’re using the “useRef” hook to create a ref called “inputRef” and assigning it to the input element using the “ref” attribute.<p></p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    inputRef.current.</span><span style="color: #A6E22E">focus</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">  };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #F92672">input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"text"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">inputRef</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onClick</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">handleClick</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>Focus&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, we are creating a functional component called “ExampleComponent”. We’re using the “useRef” hook to create a ref called “inputRef” and assigning it to the input element using the “ref” attribute.</p>
 <p>We’re also defining a function called “handleClick” that is called when the button is clicked. This function is using the “current” property of the ref to call the “focus” method on the input element, which will give it focus.</p>
 <p>This is just one example of how refs can be used in React. Refs can also be used to reference a React component instance, which can be useful for accessing component methods or properties.</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">inputRef?.current.</span><span style="color: #A6E22E">getBoundingClientRect</span><span style="color: #F8F8F2">().bottom </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> document.documentElement.scrollTop</span></span></code></pre>
