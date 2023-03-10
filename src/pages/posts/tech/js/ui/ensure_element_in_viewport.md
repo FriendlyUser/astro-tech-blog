@@ -49,8 +49,7 @@ In React, a ref is a way to reference a DOM element or a React component instanc
 
 Here's an example of a React ref being used to reference a DOM element:
 
-javascript
-Copy code
+```jsx
 import React, { useRef } from 'react';
 
 function ExampleComponent() {
@@ -67,6 +66,8 @@ function ExampleComponent() {
     </div>
   );
 }
+```
+
 In this example, we are creating a functional component called "ExampleComponent". We're using the "useRef" hook to create a ref called "inputRef" and assigning it to the input element using the "ref" attribute.
 
 We're also defining a function called "handleClick" that is called when the button is clicked. This function is using the "current" property of the ref to call the "focus" method on the input element, which will give it focus.

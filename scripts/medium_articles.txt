@@ -166,3 +166,7 @@
 /posts/tech/react/react_functional_components.md
 /posts/tech/js/caesar_cipher_in_vue.md
 /posts/tech/js/intro_to_react_spring
+/posts/tech/net/getting_started_with_aspnet.md
+/posts/tech/net/review_of_polygot_notebooks.md
+/posts/tech/js/intro_to_react_spring.md
+/posts/tech/react/ui_frameworks_in_react.md
