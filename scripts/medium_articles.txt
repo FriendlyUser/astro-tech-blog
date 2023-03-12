@@ -172,3 +172,4 @@
 /posts/tech/react/ui_frameworks_in_react.md
 /posts/tech/js/ui/ensure_element_in_viewport.md
 /posts/stonks/thoughts/why_I_am_buying_sqqq.md
+/posts/stonks/web/use_openbb_251_to_summarize_youtube_vids.md
