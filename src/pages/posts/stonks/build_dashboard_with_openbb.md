@@ -1,5 +1,5 @@
 ---
-Title: "Streamlining Technical Analysis with OpenBB and Streamlit"
+title: "Streamlining Technical Analysis with OpenBB and Streamlit"
 description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 12 March 2023 13:00:00 GMT

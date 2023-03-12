@@ -172,3 +172,5 @@
 /posts/tech/js/ui/ensure_element_in_viewport.md
 /posts/stonks/thoughts/why_I_am_buying_sqqq.md
 /posts/stonks/web/use_openbb_251_to_summarize_youtube_vids.md
+/posts/stonks/build_dashboard_with_openbb.md
+/posts/stonks/build_dashboard_with_openbb_II.md
