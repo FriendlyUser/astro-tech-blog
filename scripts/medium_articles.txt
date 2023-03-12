@@ -25,7 +25,6 @@
 /posts/thoughts_after_using_simply_static.md
 /posts/thoughts_on_dash_v250.md
 /posts/tracking_youtube_videos_with_nlp.md
-/posts/stonks/build_dashboard_with_openbb.md
 /posts/stonks/conscrap_2.0.0_release.md
 /posts/stonks/get_transcript_of_youtube_livestreams_part_one.md
 /posts/stonks/get_transcript_of_youtube_livestreams_part_two.md

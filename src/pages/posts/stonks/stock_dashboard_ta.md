@@ -1,9 +1,9 @@
 ---
-title: Building an interactive stock ta app with streamlit and openbb
+title: Building an interactive stock ta app with streamlit and pandas-ta
 description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 3 January 2023 13:00:00 GMT
-tags: ["openbb", "streamlit", "python", "pandas"]
+tags: ["streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-10 21.55.07 - magnifying glass on stonks.png'
 imgAlt: 'rbc stock analyzer'

@@ -1,8 +1,8 @@
 ---
-title: Building an interactive stock ta app with streamlit and openbb
+Title: "Streamlining Technical Analysis with OpenBB and Streamlit"
 description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
 alt: Applying nlp to various youtube videos
-pubDate: Friday, 13 January 2023 13:00:00 GMT
+pubDate: Friday, 12 March 2023 13:00:00 GMT
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/sample.png'
