@@ -8,7 +8,7 @@ imgSrc: /imgs/2023/1836890630.png
 ---
 # LaTeX Syntax 
  
- ## Overview of LaTeX syntax?
+## Overview of LaTeX syntax?
 LaTeX is a popular document preparation system used for creating technical documents, research papers, and academic publications. It offers a wide range of commands that enable users to format text, create tables, equations, graphics, and much more. In this blog post, we'll discuss some of the most commonly used LaTeX commands and how they work.
 
 1. \documentclass: This command is used to specify the type of document you want to create, such as an article, report, or book. For example, if you want to create an article, you would use the command \documentclass{article}.

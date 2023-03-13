@@ -6,9 +6,9 @@ pubDate: Fri, 14 December 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2469646353.png
 ---
-# Chapter 6: Text Formatting with LaTeX 
+# Text Formatting with LaTeX 
  
- ## Overview of collaboration in LaTeX
+## Overview of collaboration in LaTeX
 LaTeX is a powerful tool for collaborative writing, particularly in technical fields. It provides a consistent format for documents, making it easy for multiple authors to work on a document without worrying about formatting issues. LaTeX is also open-source, meaning that anyone can use and modify it, making it a widely accessible tool for collaborative writing. Additionally, LaTeX's version control capabilities allow multiple authors to work on a document simultaneously, tracking changes and resolving conflicts as needed. All of these features make LaTeX an ideal choice for technical documents that require collaboration among multiple authors.
 
 

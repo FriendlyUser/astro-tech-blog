@@ -8,7 +8,7 @@ imgSrc: /imgs/2023/2338311710.png
 ---
 #  Advanced Topics in LaTeX 
  
- ## Introduction to advanced LaTeX topics
+## Introduction to advanced LaTeX topics
 LaTeX is a powerful typesetting system that allows users to create high-quality documents with precision and flexibility. While many basic LaTeX features are relatively easy to learn, there are more advanced topics that require a deeper understanding of the system. In this blog post, we'll explore some of these advanced topics and explain their importance in document preparation.
 
 1. Customizing page layouts: LaTeX provides a default page layout, but sometimes it's necessary to customize the page layout to meet specific requirements. This can be achieved using the geometry package, which allows users to set margins, paper size, and other parameters.

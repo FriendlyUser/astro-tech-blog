@@ -6,7 +6,7 @@ pubDate: Fri, 14 December 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/403791778.png
 ---
-# Chapter 7: Creating Diagrams with LaTeX 
+# Creating Diagrams with LaTeX 
  
  ## Overview of creating diagrams with LaTeX
 TikZ is a powerful and flexible tool for creating high-quality diagrams in LaTeX documents. With TikZ, you can create a wide range of diagrams, including:

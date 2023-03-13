@@ -6,9 +6,9 @@ pubDate: Fri, 14 December 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1710982917.png
 ---
-# Chapter 5: Typesetting Mathematical Equations with LaTeX 
+# Typesetting Mathematical Equations with LaTeX 
  
- ## Introduction to math typesetting in LaTeX
+## Introduction to math typesetting in LaTeX
 LaTeX is a document preparation system widely used in academia and scientific research for typesetting documents, especially those that contain mathematical equations. Here are some benefits of using LaTeX for math typesetting:
 
 1. High-quality output: LaTeX produces high-quality typesetting, especially for complex mathematical equations, which is difficult to achieve with other word processing programs.

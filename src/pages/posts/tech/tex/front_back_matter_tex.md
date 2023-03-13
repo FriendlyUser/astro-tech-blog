@@ -6,7 +6,7 @@ pubDate: Fri, 14 December 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2062539924.png
 ---
-#  Creating Front and Back Matter with LaTeX 
+# Creating Front and Back Matter with LaTeX 
  
 
 ## Overview of front and back matter in LaTeX

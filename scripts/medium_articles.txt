@@ -174,3 +174,11 @@
 /posts/stonks/web/use_openbb_251_to_summarize_youtube_vids.md
 /posts/stonks/build_dashboard_with_openbb.md
 /posts/stonks/build_dashboard_with_openbb_II.md
+/posts/tech/tex/advanced_topics_in_tex.md
+/posts/tech/tex/collaborating_on_documents.md
+/posts/tech/tex/diagrams_in_tex.md
+/posts/tech/tex/front_back_matter_tex.md
+/posts/tech/tex/intro_to_tex.md
+/posts/tech/tex/math_in_tex.md
+/posts/tech/tex/syntax_of_tex.md
+/posts/tech/tex/text_formatting.md
