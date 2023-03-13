@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to latex - Astro Tech Blog</title>
+    <meta name="description" content="Getting started with latex">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to latex</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 14 December 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2291827528.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><h1 id="introduction-to-latex">Introduction to LaTeX</h1>
+<h2 id="what-is-latex-and-why-use-it">What is LaTeX and why use it?</h2>
+<p>LaTeX was first developed by Leslie Lamport in the 1980s as a way to simplify the creation of scientific and technical documents. Lamport built on top of Donald Knuth’s TeX typesetting system, which was already popular among computer scientists and mathematicians.</p>
+<p>LaTeX quickly became popular in academia, particularly in the fields of mathematics, physics, and computer science, due to its ability to handle complex mathematical notation and equations with ease. Today, it remains one of the most widely used document preparation systems for scientific and technical documents.</p>
+<p>LaTeX is an open-source project, which means that anyone can contribute to its development. Over the years, countless developers have created packages and extensions that add new features and functionality to the system. The LaTeX community is active and vibrant, with regular updates and improvements being made to the software.</p>
+<p>LaTeX offers several benefits over other document preparation systems. One of the primary advantages is its high-quality typesetting capabilities. LaTeX uses advanced algorithms to automatically format text, images, and equations in a visually pleasing and consistent manner. This makes documents created with LaTeX look professional and polished, which is especially important in scientific and technical fields where precision and accuracy are essential.</p>
+<p>Another advantage of using LaTeX is document consistency. With LaTeX, you can create templates and style files that define the formatting rules for different types of documents. This ensures that every document you create adheres to a consistent set of rules, which can save time and reduce errors. Additionally, LaTeX’s ability to automatically generate tables of contents, bibliographies, and other features can also save time and ensure consistency across documents.</p>
+<p>LaTeX is also highly customizable, with a vast array of packages and extensions available that allow you to add new features and functionality to the system. This makes it possible to tailor LaTeX to your specific needs and preferences, whether you are creating a simple memo or a complex technical report.</p>
+<p>Finally, LaTeX is platform-independent, which means that you can create documents on any operating system and share them with others without worrying about compatibility issues. This is particularly useful for collaborative projects and for sharing documents with colleagues or collaborators who may be using different software.</p>
+<h2 id="comparison-of-latex-with-other-document-preparation-systems">Comparison of LaTeX with other document preparation systems</h2>
+<p>LaTeX differs from traditional word processors like Microsoft Word and Google Docs in several ways.</p>
+<p>First, LaTeX is a markup language, which means that you enter commands to tell the system how to format the document rather than using a visual interface to select formatting options. This can take some getting used to, but it allows for more precise and consistent formatting, particularly when dealing with mathematical equations and other technical content.</p>
+<p>Second, LaTeX is particularly well-suited for handling complex mathematical equations and scientific notation. While traditional word processors can handle basic equations, they often struggle with more complex notation, leading to formatting errors and inconsistencies. LaTeX’s advanced algorithms and built-in support for mathematical notation make it much easier to create and format complex equations accurately.</p>
+<p>Third, LaTeX is highly customizable, with a vast array of packages and extensions available that allow you to add new features and functionality to the system. While traditional word processors offer some level of customization, they are generally more limited in terms of what you can do with them.</p>
+<p>Finally, LaTeX is particularly well-suited for collaborative projects, particularly when multiple authors are involved. With LaTeX, you can split a document into multiple files, with each author responsible for a different section. This makes it easy to collaborate on large documents without worrying about version control or compatibility issues.</p>
+<p>Overall, while traditional word processors are more accessible and easier to use for basic documents, LaTeX’s advanced typesetting capabilities and support for complex notation make it the tool of choice for scientific and technical documents.</p>
+<p>While LaTeX and markup languages like HTML and Markdown share some similarities, there are also several key differences.</p>
+<p>First, LaTeX is designed specifically for creating scientific and technical documents, whereas HTML and Markdown are more general-purpose markup languages. While you can use HTML and Markdown to create technical documents, they are generally less suited to this task than LaTeX.</p>
+<p>Second, LaTeX has more advanced typesetting capabilities than HTML and Markdown. While both HTML and Markdown support basic text formatting like bold and italic, LaTeX offers more advanced typesetting features like automatic hyphenation, advanced font control, and support for complex mathematical notation. This makes LaTeX better suited to creating polished and professional-looking scientific and technical documents.</p>
+<p>Third, LaTeX is generally more difficult to learn and use than HTML and Markdown, particularly for beginners. While HTML and Markdown use a simpler syntax and are easier to get started with, LaTeX requires a steeper learning curve due to its more complex syntax and advanced typesetting features.</p>
+<p>Finally, while HTML and Markdown are typically used for creating documents for the web or for plain text files, LaTeX is more often used for creating PDFs or other types of print-ready documents. While LaTeX can also be used for creating web documents, it is generally less well-suited to this task than HTML or Markdown.</p>
+<p>Overall, while LaTeX and markup languages share some similarities, LaTeX’s advanced typesetting capabilities and focus on scientific and technical documents set it apart from more general-purpose markup languages like HTML and Markdown.</p>
+<h2 id="installation-and-setup-of-latex">Installation and setup of LaTeX</h2>
+<p>The process for installing LaTeX on Windows, macOS, and Linux can vary slightly depending on the specific operating system and distribution you are using. Here are some general guidelines for each platform:</p>
+<h3 id="windows">Windows</h3>
+<ol>
+<li>Download the MiKTeX distribution from the official website: <a href="https://miktex.org/download">https://miktex.org/download</a>.</li>
+<li>Run the installer and follow the on-screen instructions. You can choose to install the basic system or a full system with all packages.</li>
+<li>Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.</li>
+</ol>
+<h3 id="macos">macOS</h3>
+<ol>
+<li>Download the MacTeX distribution from the official website: <a href="https://www.tug.org/mactex/mactex-download.html">https://www.tug.org/mactex/mactex-download.html</a>.</li>
+<li>Open the .pkg file and follow the on-screen instructions to install the distribution.</li>
+<li>Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.</li>
+</ol>
+<h3 id="linux">Linux</h3>
+<ol>
+<li>Install the LaTeX distribution using your distribution’s package manager. For example, on Ubuntu, you can run <code>sudo apt-get install texlive-full</code> to install the full LaTeX distribution.</li>
+<li>Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.</li>
+</ol>
+<p>Note that these are general guidelines and the specific installation process can vary depending on the distribution you are using. Additionally, there are several different LaTeX distributions available, so you may need to choose the one that is best suited for your needs.</p>
+<p>To create LaTeX documents, you will need a text editor or integrated development environment (IDE) that supports LaTeX. Here are the general steps for installing popular LaTeX editors like TeXstudio and TeXmaker:</p>
+<h3 id="texstudio">TeXstudio</h3>
+<ol>
+<li>Download the TeXstudio installer from the official website: <a href="https://www.texstudio.org/">https://www.texstudio.org/</a>.</li>
+<li>Run the installer and follow the on-screen instructions.</li>
+<li>Once the installation is complete, open TeXstudio and configure the LaTeX distribution you installed earlier. Go to <code>Options > Configure TeXstudio > Build > Default Compiler</code> and choose the appropriate compiler for your distribution.</li>
+<li>You can now create and edit LaTeX documents in TeXstudio.</li>
+</ol>
+<h3 id="texmaker">TeXmaker</h3>
+<ol>
+<li>Download the TeXmaker installer from the official website: <a href="https://www.xm1math.net/texmaker/">https://www.xm1math.net/texmaker/</a>.</li>
+<li>Run the installer and follow the on-screen instructions.</li>
+<li>Once the installation is complete, open TeXmaker and configure the LaTeX distribution you installed earlier. Go to <code>Options > Configure TeXmaker > Commands</code> and choose the appropriate compiler for your distribution.</li>
+<li>You can now create and edit LaTeX documents in TeXmaker.</li>
+</ol>
+<p>Note that there are many other LaTeX editors available, and the installation process can vary depending on the editor you choose. Additionally, some LaTeX editors may come bundled with a LaTeX distribution, so you may not need to install a separate distribution if you choose one of these editors.</p>
+<p>A LaTeX document typically has a specific structure that consists of several components:</p>
+<ol>
+<li><strong>Document class:</strong> The first line of a LaTeX document specifies the document class, which determines the overall structure and formatting of the document. For example, <code>\documentclass{article}</code> specifies that the document is an article.</li>
+<li><strong>Preamble:</strong> The preamble of a LaTeX document comes after the document class and before the <code>\begin{document}</code> command. It contains any necessary commands and packages for the document, such as setting the page margins or including graphics.</li>
+<li><strong>Document content:</strong> The document content comes between the <code>\begin{document}</code> and <code>\end{document}</code> commands. This is where you write the actual content of the document, such as sections, paragraphs, lists, tables, and figures. You can also include mathematical equations and references.</li>
+<li><strong>Document structure:</strong> The document structure is defined by various commands, such as <code>\section</code>, <code>\subsection</code>, and <code>\subsubsection</code>, which create headings and subheadings for the document. You can also use commands like <code>\label</code> and <code>\ref</code> to create cross-references within the document.</li>
+</ol>
+<p>Here’s an example of a minimal LaTeX document that demonstrates the basic structure:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">% Preamble</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">lipsum</span><span style="color: #F8F8F2">} </span><span style="color: #88846F">% Package for generating placeholder text</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">% Document content</span></span>
+<span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Introduction}</span></span>
+<span class="line"><span style="color: #66D9EF">\lipsum</span><span style="color: #F8F8F2">[1]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Conclusion}</span></span>
+<span class="line"><span style="color: #66D9EF">\lipsum</span><span style="color: #F8F8F2">[2]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, the document class is <code>article</code>, the preamble includes the <code>lipsum</code> package for generating placeholder text, and the document content consists of two sections with some placeholder text. This is a very basic example, but it demonstrates the key components of a LaTeX document.</p>
+<p>To compile a LaTeX document, you will need to use a LaTeX distribution like MiKTeX or TeX Live and a LaTeX editor like TeXstudio or TeXmaker. Here are the general steps for compiling a LaTeX document:</p>
+<ol>
+<li>Open your LaTeX editor and create a new document or open an existing one.</li>
+<li>Write your LaTeX code in the editor, following the appropriate structure and syntax.</li>
+<li>Save your document with a <code>.tex</code> extension.</li>
+<li>Click the “Compile” button in your editor, or use the appropriate keyboard shortcut to compile the document. This will generate a PDF output file.</li>
+<li>View the PDF output file in your preferred PDF viewer to check the formatting and content of the document.</li>
+</ol>
+<p>The process for compiling a LaTeX document can vary slightly depending on the specific LaTeX distribution and editor you are using, but these general steps should work for most setups. Note that some editors may have a built-in viewer that allows you to view the PDF output file directly within the editor.</p>
+<p>LaTeX commands are used to control the formatting and structure of a document. A LaTeX command is typically made up of a backslash (<code>\</code>) followed by a command name, and sometimes additional arguments or parameters enclosed in curly braces (<code>{ }</code>).</p>
+<p>Here’s a simple example of a LaTeX command:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">This text will be bold.</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, <code>\textbf</code> is the command name, and the text enclosed in curly braces is the argument or parameter that the command applies to. The result of this command is that the text enclosed in the braces will be bold.</p>
+<p>Commands can also have optional arguments, which are enclosed in square brackets (<code>[ ]</code>). Here’s an example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=5cm]{image.png}</span></span></code></pre>
+<p>In this example, <code>\includegraphics</code> is the command name, and the optional argument <code>width=5cm</code> specifies the width of the included image. The mandatory argument <code>image.png</code> is the name of the image file.</p>
+<p>Backslashes are used to introduce LaTeX commands, and curly braces are used to enclose the arguments or parameters that the command applies to. Backslashes can also be used to insert special characters, such as accents or symbols, into the text of a document.</p>
+<p>For example, to include an accent over a letter, you can use the following command:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">vbnet`</span><span style="color: #AE81FF">\'</span><span style="color: #F8F8F2">{e}</span></span></code></pre>
+<p>In this example, <code>\'</code> is the command for an acute accent, and <code>{e}</code> is the letter that the accent applies to. The result of this command is the letter <code>é</code>.</p>
+<p>In summary, LaTeX commands are used to control the formatting and structure of a document, and are made up of a backslash followed by a command name and optional arguments or parameters enclosed in curly braces or square brackets.</p>
+<p>LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit. An environment is created by using the <code>\begin</code> and <code>\end</code> commands, with the name of the environment as an argument. The text or code that should be enclosed within the environment is placed between the <code>\begin</code> and <code>\end</code> commands.</p>
+<p>Here’s an example of a simple LaTeX environment:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">center</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">This text will be centered.</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">center</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, the <code>center</code> environment is used to center the enclosed text. The result of this code is that the text “This text will be centered” will be displayed in the center of the page.</p>
+<p>LaTeX environments can be nested within each other, allowing you to create more complex formatting and structures. For example, you can nest the <code>itemize</code> environment inside a <code>description</code> environment to create a list of labeled items:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">description</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[First Item] This is the first item in the list.</span></span>
+<span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[Second Item] This is the second item in the list.</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> This is a bullet point within the second item.</span></span>
+<span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> This is another bullet point within the second item.</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[Third Item] This is the third item in the list.</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">description</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, the <code>description</code> environment is used to create a list of labeled items, and the <code>itemize</code> environment is nested within the second item to create a list of bullet points.</p>
+<p>Environments can also have optional arguments, which are specified within square brackets immediately following the <code>\begin</code> command. For example, the <code>figure</code> environment can take an optional argument that specifies the placement of the figure within the document:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}[h]</span></span>
+<span class="line"><span style="color: #66D9EF">\centering</span></span>
+<span class="line"><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">{example.png}</span></span>
+<span class="line"><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{This is a caption for the figure.}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, the optional argument <code>[h]</code> tells LaTeX to try to place the figure “here” in the document. The <code>\centering</code> command centers the figure horizontally, and the <code>\includegraphics</code> command includes the image file <code>example.png</code>. The <code>\caption</code> command adds a caption to the figure.</p>
+<p>In summary, LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit, and can be used to create complex formatting and structures within a document.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-13<!-- -->.</div></div></div>
+  </body></html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting started with tikz - Astro Tech Blog</title>
+    <meta name="description" content="Creation of diagrams with LaTeX, including basic diagrams with TikZ, advanced diagrams with PGFPlots,.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Getting started with tikz</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 14 December 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/403791778.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><h1 id="chapter-7-creating-diagrams-with-latex">Chapter 7: Creating Diagrams with LaTeX</h1>
+<h2 id="overview-of-creating-diagrams-with-latex">Overview of creating diagrams with LaTeX</h2>
+<p>TikZ is a powerful and flexible tool for creating high-quality diagrams in LaTeX documents. With TikZ, you can create a wide range of diagrams, including:</p>
+<ol>
+<li>Flowcharts: Flowcharts are used to illustrate the flow of a process, such as a software program or a manufacturing process.</li>
+<li>Network diagrams: Network diagrams are used to show the relationships between different nodes in a network, such as a computer network or a social network.</li>
+<li>Circuit diagrams: Circuit diagrams are used to illustrate electrical circuits, including the connections between different components.</li>
+<li>Mind maps: Mind maps are used to illustrate the relationships between different ideas or concepts, such as brainstorming or planning sessions.</li>
+<li>Graphs and charts: TikZ can also be used to create a wide range of graphs and charts, including bar charts, line charts, and pie charts.</li>
+<li>Venn diagrams: Venn diagrams are used to illustrate the relationships between different sets of data, such as overlapping categories or groups.</li>
+</ol>
+<p>Overall, TikZ offers a wide range of possibilities for creating high-quality diagrams in LaTeX documents, making it an invaluable tool for technical writers and academics.</p>
+<p>There are several packages and tools available for creating diagrams in LaTeX documents. Some of the most popular ones are:</p>
+<ol>
+<li>TikZ: TikZ is a powerful and flexible tool for creating high-quality diagrams in LaTeX documents. It is highly customizable and allows for precise control over every aspect of the diagram.</li>
+<li>PGFPlots: PGFPlots is a package for creating 2D and 3D plots in LaTeX documents. It offers a wide range of options for customizing the appearance and layout of the plot.</li>
+<li>Circuitikz: Circuitikz is a TikZ-based package for creating high-quality electrical circuit diagrams in LaTeX documents. It offers a wide range of components and symbols for building complex circuits.</li>
+<li>Flowchart: Flowchart is a package for creating flowcharts in LaTeX documents. It is easy to use and offers a range of pre-built shapes and symbols for creating complex flowcharts.</li>
+<li>Graphviz: Graphviz is a software tool for creating diagrams and graphs. It has a simple syntax for defining nodes and edges, and can generate a wide range of diagram types, including flowcharts, network diagrams, and more.</li>
+<li>Dia: Dia is a cross-platform diagramming tool that can be used to create a wide range of diagrams, including flowcharts, network diagrams, and more. It has a simple interface and a wide range of pre-built shapes and symbols.</li>
+</ol>
+<p>Overall, there are many tools and packages available for creating diagrams in LaTeX documents, and choosing the right one depends on the specific needs of your project.</p>
+<p>The Standalone package is a LaTeX package that allows you to create a separate document for each diagram you create, which can then be compiled into a standalone image file. This is useful when you want to include the diagram in a non-LaTeX document, such as a web page or a presentation.</p>
+<p>To use the Standalone package, you simply include the \documentclass{standalone} command at the beginning of your diagram file. You can then add your TikZ or other diagram code as usual. When you compile the document, a standalone PDF file will be generated that contains only the diagram.</p>
+<p>However, when you want to include the diagram in a document that does not support PDFs, you need to convert the PDF to a different image format, such as PNG. One way to do this is by using ImageMagick, a free and open-source software tool for manipulating images.</p>
+<p>To convert a PDF to a PNG using ImageMagick, you can use the following command in the terminal:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">convert -density 300 diagram.pdf -quality 90 diagram.png</span></span></code></pre>
+<p>This command converts the PDF file “diagram.pdf” to a PNG file “diagram.png” with a density of 300 DPI and a quality of 90%.</p>
+<p>Overall, the Standalone package and ImageMagick are powerful tools that can help you create high-quality diagrams for use in a variety of different contexts. By using these tools, you can create diagrams that are both precise and visually appealing, and that can be easily incorporated into a wide range of documents and presentations.</p>
+<h2 id="basic-diagrams-with-tikz">Basic diagrams with TikZ</h2>
+<p>TikZ is a powerful and flexible package for creating high-quality diagrams in LaTeX documents. It provides a wide range of tools for creating basic diagrams, such as lines, circles, rectangles, and polygons, as well as more complex shapes and structures, such as trees and graphs.</p>
+<p>To use TikZ, you start by including the package in your LaTeX document with the command \usepackage{tikz}. You can then add your TikZ code within a tikzpicture environment, like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #88846F">% TikZ code goes here</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Within the tikzpicture environment, you can create a wide range of shapes and structures using TikZ commands. For example, to create a line, you can use the \draw command, like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) -- (2,2);</span></span></code></pre>
+<p>This creates a line that starts at the point (0,0) and ends at the point (2,2). You can customize the appearance of the line using various TikZ options, such as line width, color, and style.</p>
+<p>Similarly, you can create other basic shapes using TikZ commands. For example, to create a circle, you can use the \draw command with the circle option, like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (1,1) circle [radius=1];</span></span></code></pre>
+<p>This creates a circle with a center at the point (1,1) and a radius of 1 unit.</p>
+<p>Overall, TikZ is a powerful and flexible tool for creating basic diagrams in LaTeX documents. By using TikZ commands and options, you can create a wide range of shapes and structures that can be customized to meet your specific needs.</p>
+<p>TikZ is a powerful and flexible package for creating high-quality diagrams in LaTeX documents. It provides a wide range of tools for creating shapes, lines, arrows, and other structures. In this post, we will introduce the TikZ syntax and commands for creating these elements.</p>
+<p>To start using TikZ, you first need to include the package in your LaTeX document with the command \usepackage{tikz}. You can then add your TikZ code within a tikzpicture environment, like this:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #88846F">% TikZ code goes here</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Within the tikzpicture environment, you can create a wide range of shapes and structures using TikZ commands. Here are some of the most common ones:</p>
+<ol>
+<li>Lines: To create a line, you can use the \draw command, like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) -- (2,2);</span></span></code></pre>
+<p>This creates a line that starts at the point (0,0) and ends at the point (2,2).</p>
+<ol start="2">
+<li>Shapes: To create a shape, you can use the \draw command with a shape option, like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (1,1) circle [radius=1];</span></span></code></pre>
+<p>This creates a circle with a center at the point (1,1) and a radius of 1 unit. You can also create other shapes, such as rectangles and polygons, using various TikZ options.</p>
+<ol start="3">
+<li>Arrows: To create an arrow, you can use the \draw command with an arrow option, like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (0,0) -- (2,2);</span></span></code></pre>
+<p>This creates an arrow that starts at the point (0,0) and ends at the point (2,2). You can customize the appearance of the arrow using various TikZ options, such as arrow type and size.</p>
+<p>Overall, TikZ is a powerful and flexible tool for creating shapes, lines, arrows, and other structures in LaTeX documents. By using TikZ commands and options, you can create a wide range of diagrams that can be customized to meet your specific needs.</p>
+<p>TikZ is a powerful and flexible package for creating high-quality diagrams in LaTeX documents. It can be used to create a wide range of diagrams, including flowcharts, mindmaps, and other basic diagrams. In this post, we will provide an overview of how to use TikZ to create these types of diagrams.</p>
+<ol>
+<li>Flowcharts: To create a flowchart, you can use the TikZ library called “shapes.arrows”. This library provides various arrow shapes that can be used to create flowchart elements, such as decision points, input/output boxes, and process boxes. For example, to create a decision point, you can use the diamond shape like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\usetikzlibrary</span><span style="color: #F8F8F2">{shapes.arrows}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[diamond, draw, aspect=2] (a) {Decision};</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a diamond shape with the label “Decision” inside it.</p>
+<ol start="2">
+<li>Mindmaps: To create a mindmap, you can use the TikZ library called “mindmap”. This library provides various node shapes and styles that can be used to create a hierarchical structure of nodes. For example, to create a mindmap with three levels of nodes, you can use the mindmap library like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\usetikzlibrary</span><span style="color: #F8F8F2">{mindmap}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}[mindmap, grow cyclic, every node/.style=concept, concept color=blue!40, level 1/.append style={level distance=5cm, sibling angle=120}, level 2/.append style={level distance=3cm, sibling angle=45}, level 3/.append style={level distance=2cm, sibling angle=60}]</span></span>
+<span class="line"><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">{Root Node}</span></span>
+<span class="line"><span style="color: #F8F8F2">child{node{Level 1 Node 1}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 1}}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 2}}</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">child{node{Level 1 Node 2}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 3}}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 4}}</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">child{node{Level 1 Node 3}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 5}}</span></span>
+<span class="line"><span style="color: #F8F8F2"> child{node{Level 2 Node 6}}</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a mindmap with a root node and three levels of child nodes.</p>
+<ol start="3">
+<li>Other basic diagrams: TikZ can also be used to create other basic diagrams, such as bar charts, pie charts, and Venn diagrams. For example, to create a bar chart, you can use the TikZ library called “pgfplots”. This library provides various plot types and styles that can be used to create bar charts, line charts, and other types of charts. For example, to create a simple bar chart, you can use the pgfplots library like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">pgfplots</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">axis</span><span style="color: #F8F8F2">}[ybar, symbolic x coords={A,B,C,D,E,F}, xtick=data]</span></span>
+<span class="line"><span style="color: #66D9EF">\addplot</span><span style="color: #F8F8F2"> coordinates {(A,3) (B,2) (C,1) (D,4) (E,5) (F,2)};</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">axis</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a bar chart with six bars representing the values 3, 2, 1, 4, 5, and 2 for the categories A, B, C, D, E, and F, respectively.</p>
+<p>Overall, TikZ is a powerful and flexible tool</p>
+<h2 id="circuit-diagrams-with-circuitikz">Circuit Diagrams with Circuitikz</h2>
+<p>Circuitikz is a TikZ-based package for creating circuit diagrams in LaTeX. It provides a comprehensive set of tools for creating electrical and electronic circuits, including resistors, capacitors, inductors, diodes, transistors, and many other components. In this post, we will provide an overview of how to use Circuitikz to create circuit diagrams.</p>
+<ol>
+<li>Basic Circuit Elements: Circuitikz provides various basic circuit elements, such as resistors, capacitors, and inductors. These elements can be added to a circuit diagram by simply using the appropriate command. For example, to add a resistor to a circuit diagram, you can use the command:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to[R=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">R</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (2,0);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a resistor with a label “R” and connects it to two points at coordinates (0,0) and (2,0) using the “to” command.</p>
+<ol start="2">
+<li>Nodes and Labels: Circuitikz also allows you to add nodes and labels to circuit elements. For example, to add a label to a resistor, you can use the “label” command. This command adds a label to the element at a specified position relative to the element. For example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to[R=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">R</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,label=above:</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">5</span><span style="color: #66D9EF">\,</span><span style="color: #AE81FF">\Omega</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (2,0);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a resistor with a label “R” and another label “5 $\Omega$” above it.</p>
+<ol start="3">
+<li>Advanced Circuit Elements: Circuitikz also provides various advanced circuit elements, such as transistors, op-amps, and logic gates. These elements can be added to a circuit diagram using the appropriate commands. For example, to add a transistor, you can use the command:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) node[npn](npn){};</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates an NPN transistor at coordinates (0,0).</p>
+<ol start="4">
+<li>Customization: Circuitikz allows you to customize the appearance of circuit elements by changing various parameters, such as line width, color, and shape. For example, to change the line width of a resistor, you can use the “line width” parameter like this:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to[R=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">R</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,line width=2pt] (2,0);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a resistor with a thicker line.</p>
+<p>Overall, Circuitikz is a powerful and flexible tool for creating circuit diagrams in LaTeX. Its comprehensive set of tools and customization options make it an ideal choice for anyone looking to create high-quality circuit diagrams in their LaTeX documents.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">tikz</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">siunitx</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amsmath,amssymb</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,2) to[V,l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">4</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\volt</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (0,0); </span><span style="color: #88846F">%% Note _>= instead of >=</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,2)to [R,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">10</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (2,2);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (2,2)to [cV,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">3</span><span style="color: #66D9EF">V_{ab}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (4,2);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (4,0) to  [I,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">2\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\ampere</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">](4,2);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (4,2) to [short,-*] (6,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">		node[label={[font=</span><span style="color: #66D9EF">\footnotesize</span><span style="color: #F8F8F2">]right:</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">a</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}] {};</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to [short,-*] (6,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">		node[label={[font=</span><span style="color: #66D9EF">\footnotesize</span><span style="color: #F8F8F2">]right:</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">b</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}] {};</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (6,2) to [open,v_>=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">V_{ab}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (6,0);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>\documentclass[tikz]{standalone}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{amsmath,amssymb}
+\begin{document}
+\begin{circuitikz}
+\draw (0,2) to[V,l_=$4 \si{\volt}$] (0,0); %% Note <em>>= instead of >=
+\draw (0,2)to [R,l^=$10 \si{\ohm}$] (2,2);
+\draw (2,2)to [cV,l^=$3V</em>{ab}$] (4,2);
+\draw (4,0) to  <a href="4,2">I,l^=$2\si{\ampere}$</a>;
+\draw (4,2) to [short,-<em>] (6,2)
+node[label={[font=\footnotesize]right:$a$}] {};
+\draw (0,0) to [short,-</em>] (6,0)
+node[label={[font=\footnotesize]right:$b$}] {};
+\draw (6,2) to [open,v_>=$V_{ab}$] (6,0);
+\end{circuitikz}
+\end{document}
+This code defines a standalone LaTeX document with a TikZ environment for creating an electrical circuit diagram. It includes the necessary packages for creating circuit diagrams, using SI units, and typesetting mathematical symbols.</p>
+<p>The circuit consists of a voltage source with a value of 4 volts connected in series to a resistor with a value of 10 ohms. The voltage at the top of the resistor is connected to a controlled voltage source with a voltage of 3 times the voltage between nodes a and b. The bottom of the controlled voltage source is connected to a current source with a value of 2 amperes. Nodes a and b are connected to the top and bottom of the circuit respectively. An open circuit element with a label of Vab is added to the right of the circuit to represent the voltage between nodes a and b.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/Circuits/SuperPosition.png" alt="Circuitikz">]</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">tikz</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">siunitx</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amsmath,amssymb</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}[american voltages]</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">% Voltage source</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to [V, v>=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">20</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\volt</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">](0, 6) to (6, 6)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">% Left half bridge</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R, l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">, *-*] (3,3) </span><span style="color: #88846F">% Top left resistor</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R, l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">5</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">, -*] (6,0);  </span><span style="color: #88846F">% Bottom left resistor</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">% Right half bridge</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (6,6)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R, l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">, -*] (9, 3) </span><span style="color: #88846F">% Top right resistor</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R, l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">30</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">, -*] (6,0)  </span><span style="color: #88846F">% Bottom left resistor</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">% Draw connection to (-) terminal of voltage source</span></span>
+<span class="line"><span style="color: #F8F8F2">	to (6, 0) to (0,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">% Draw voltmeter</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (3, 3) to [R, l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">5</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,i_=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">i_o</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">, -*] (9, 3);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>\documentclass[tikz]{standalone}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{amsmath,amssymb}
+\begin{document}
+\begin{circuitikz}[american voltages]
+% Voltage source
+\draw (0,0) to [V, v>=$20 \si{\volt}$](0, 6) to (6, 6)
+% Left half bridge
+to [R, l_=$2 \si{k\ohm}$, <em>-</em>] (3,3) % Top left resistor
+to [R, l_=$5 \si{k\ohm}$, -<em>] (6,0);  % Bottom left resistor
+% Right half bridge
+\draw (6,6)
+to [R, l_=$1 \si{k\ohm}$, -</em>] (9, 3) % Top right resistor
+to [R, l_=$30 \si{k\ohm}$, -*] (6,0)  % Bottom left resistor
+% Draw connection to (-) terminal of voltage source
+to (6, 0) to (0,0);</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">% Draw voltmeter</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw (3, 3) to [R, l_=$5 \si{k\ohm}$,i_=$i_o$, -*] (9, 3);</span></span></code></pre>
+<p>\end{circuitikz}
+\end{document}
+This is a LaTeX code that generates a circuit diagram using the <code>circuitikz</code> package. The circuit diagram depicts a voltage source connected to two half bridges, with a voltmeter connected across one of the resistors in the right half bridge. The <code>siunitx</code> and <code>amsmath</code> packages are also included.</p>
+<p>The circuit diagram consists of several components and parameters specified using various <code>circuitikz</code> commands. The voltage source is created using the <code>V</code> command, with a voltage of 20 volts and labeled with the <code>v</code> parameter. The resistors are created using the <code>R</code> command, with their values specified using the <code>l</code> parameter, and their orientation specified using the <code>-</code> and <code>*</code> parameters. The voltmeter is created using another <code>R</code> command, and is labeled with the <code>i</code> parameter. The <code>american voltages</code> option is used to display voltages in the diagram in the American style.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/Circuits/NodeAnalysis.png" alt="Circuitikz">]</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">tikz</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">siunitx</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amsmath,amssymb</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,2) to[V,v>=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">100\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\ampere</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (0,0); </span><span style="color: #88846F">%% Note _>= instead of >=</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,2) to [R,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">2.5</span><span style="color: #66D9EF"> </span><span style="color: #AE81FF">\si</span><span style="color: #66D9EF">{k</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,i_>=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">i_</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,-*] (2,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">625\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,-*](2,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (2,2) to [short] (4,2);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (4,0)to [cI,l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">10</span><span style="color: #66D9EF">^{-</span><span style="color: #AE81FF">3</span><span style="color: #66D9EF">}v_</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (4,2);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (4,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">4\si</span><span style="color: #66D9EF">{</span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (2,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) to [short,-*] (2,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (4,0) to [short,-*] (8,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (8,2)to [cV,l_=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">5000</span><span style="color: #66D9EF">i_</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">](8,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [short] (10,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (8,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">4\si</span><span style="color: #66D9EF">{k </span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (10,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [R,l^=</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">6\si</span><span style="color: #66D9EF">{k </span><span style="color: #AE81FF">\ohm</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">,v_>=</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">v_</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">] (10,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">	to [short, -*] (12,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">	node[label={[font=</span><span style="color: #66D9EF">\footnotesize</span><span style="color: #F8F8F2">]above:</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">b</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}] {}</span></span>
+<span class="line"><span style="color: #F8F8F2">	;</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (10,2) to [short, -*] (12,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">	node[label={[font=</span><span style="color: #66D9EF">\footnotesize</span><span style="color: #F8F8F2">]above:</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">a</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}] {}</span></span>
+<span class="line"><span style="color: #F8F8F2">	;</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">circuitikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>\documentclass[tikz]{standalone}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{amsmath,amssymb}
+\begin{document}
+\begin{circuitikz}
+\draw (0,2) to[V,v>=$100\si{\ampere}$] (0,0); %% Note <em>>= instead of >=
+\draw (0,2) to [R,l^=$2.5 \si{k\ohm}$,i</em>>=$i_1$,-<em>] (2,2)
+to <a href="2,0">R=$625\si{\ohm}$,-*</a>;
+\draw (2,2) to [short] (4,2);
+\draw (4,0)to [cI,l_=$10^{-3}v_2$] (4,2);
+\draw (4,0)
+to [R,l^=$4\si{\ohm}$] (2,0);
+\draw (0,0) to [short,-</em>] (2,0);</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">\draw (4,0) to [short,-*] (8,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw (8,2)to [cV,l_=$5000i_1$](8,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">to [short] (10,0);</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw (8,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">to [R,l^=$4\si{k \ohm}$] (10,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">to [R,l^=$6\si{k \ohm}$,v_>=$v_2$] (10,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">to [short, -*] (12,0)</span></span>
+<span class="line"><span style="color: #F8F8F2">node[label={[font=\footnotesize]above:$b$}] {}</span></span>
+<span class="line"><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">\draw (10,2) to [short, -*] (12,2)</span></span>
+<span class="line"><span style="color: #F8F8F2">node[label={[font=\footnotesize]above:$a$}] {}</span></span>
+<span class="line"><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>\end{circuitikz}
+\end{document}
+This is a LaTeX document that uses the <code>standalone</code> document class and several packages including <code>circuitikz</code>, <code>siunitx</code>, and <code>amsmath</code>. The <code>circuitikz</code> package provides the tools to draw electronic circuits, while <code>siunitx</code> provides support for typesetting units and <code>amsmath</code> provides additional math symbols.</p>
+<p>The code uses the <code>circuitikz</code> environment to draw a circuit diagram with several components. The circuit consists of a voltage source (V), resistors (R), a current-controlled current source (cI), and a current-controlled voltage source (cV). The components are connected using <code>to</code> commands, and labels are added to indicate the values of resistors and sources, as well as the direction and name of currents and voltages. Labels are also added to nodes in the circuit for later reference.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/Circuits/TheveinEquivalent.png" alt="TheveinEquivalent">]</p>
+<h2 id="control-systems-with-tikz">Control Systems with Tikz</h2>
+<p>TikZ is a powerful package that can be used to create various types of diagrams in LaTeX, including block diagrams. Block diagrams are a type of diagram that show the flow of a system or process through a series of interconnected blocks or nodes.</p>
+<p>To create a block diagram in TikZ, you can follow these steps:</p>
+<ol>
+<li>Load the TikZ package by adding the following line to your LaTeX document:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<ol start="2">
+<li>Begin a TikZ picture environment by adding the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #88846F">% TikZ code goes here</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<ol start="3">
+<li>Define the blocks or nodes of the block diagram using the “node” command. For example, to create a rectangular block, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> [rectangle, draw] (block1) {Block 1};</span></span></code></pre>
+<p>This creates a rectangular block with the label “Block 1” and assigns it the name “block1”.</p>
+<ol start="4">
+<li>Connect the blocks using the “draw” command. For example, to connect two blocks with an arrow, you can use the following code:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (block1) -- (block2);</span></span></code></pre>
+<p>This creates an arrow that connects the block named “block1” to the block named “block2”.</p>
+<ol start="5">
+<li>Repeat steps 3-4 to add additional blocks and connections to the diagram.</li>
+</ol>
+<p>Here is an example of a simple block diagram created using TikZ:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> [rectangle, draw] (block1) {Block 1};</span></span>
+<span class="line"><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2"> [rectangle, draw, right of=block1, node distance=3cm] (block2) {Block 2};</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> [->] (block1) -- (block2);</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This creates a block diagram with two rectangular blocks labeled “Block 1” and “Block 2”, respectively, and an arrow that connects them.</p>
+<p>Overall, TikZ provides a flexible and powerful toolset for creating block diagrams in LaTeX. By using the “node” and “draw” commands, you can easily create and connect blocks to represent the flow of a system or process. With a little practice, you can create complex block diagrams with ease using TikZ.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">blox</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\usetikzlibrary</span><span style="color: #F8F8F2">{positioning}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #88846F">%\bXLineStyle{red, dotted}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLineStyle</span><span style="color: #F8F8F2">{very thick}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXInput</span><span style="color: #F8F8F2">{A}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXComp</span><span style="color: #F8F8F2">{B}{A}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">[R]{A}{B}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXCompa</span><span style="color: #F8F8F2">{C}{B}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{B}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXSumb</span><span style="color: #F8F8F2">{D}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{C}{D}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[2]{E}{</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">G_</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{D}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{D}{E}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[2]{F}{</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">G_</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{E}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{E}{F}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[5]{F}{FX1}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchy</span><span style="color: #F8F8F2">[5]{FX1}{FDown1}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (F) -- (FX1.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (FX1.center) -- (FDown1.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[-5.5]{FDown1}{FRight1}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->,very thick] (FDown1.center) -- (FRight1.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[-3.5]{H1}{</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">H_</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{FRight1}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchy</span><span style="color: #F8F8F2">[5]{D}{DDown1}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->,very thick] (DDown1.center) -- (D);</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (H1) -- (DDown1.center);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[2]{G}{</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">G_</span><span style="color: #AE81FF">3</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{FX1}</span></span>
+<span class="line"><span style="color: #88846F">%\draw[-,very thick]  (F)  -- (FX1);</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->,very thick] (F) -- (G);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[3]{G}{GX1}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[3]{GX1}{GX2}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (G) -- (GX2);</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[3]{GX2}{GX3}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchy</span><span style="color: #F8F8F2">[-5]{GX2}{GUp1}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[1.5]{GX2}{GX4}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchy</span><span style="color: #F8F8F2">[7.5]{GX4}{GDown1}</span></span>
+<span class="line"><span style="color: #88846F">%\draw[-,very thick] (G) -- (GX1.center);</span></span>
+<span class="line"><span style="color: #88846F">%\draw[-,very thick] (G) -- (GX1.center);</span></span>
+<span class="line"><span style="color: #88846F">%\draw[-,very thick] (GX1.center) -- (GUp1.center);</span></span>
+<span class="line"><span style="color: #88846F">%\bXLinkxy{GX1}{GUp1}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (GX1.center) -- (GX2.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (GX2.center) -- (GUp1.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->,very thick] (GX2.center) -- (GX3.center);</span></span>
+<span class="line"><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[right = 0.05cm of GX3] (end) {</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">C</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (GX4.center) -- (GDown1.center);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchy</span><span style="color: #F8F8F2">[7.5]{B}{BDown1}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{BDown1.center}{B}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[-,very thick] (GDown1.center) -- (BDown1.center);</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">%% Top Part</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\bXBranchx</span><span style="color: #F8F8F2">[-20]{GUp1}{GLUp1}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[-0]{BlockHG}{</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">\frac</span><span style="color: #66D9EF">{H_</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF">}{G_</span><span style="color: #AE81FF">1</span><span style="color: #66D9EF">}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{GLUp1}</span></span>
+<span class="line"><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->,very thick] (GUp1.center) -- (BlockHG);</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLinkxy</span><span style="color: #F8F8F2">{BlockHG}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>\documentclass{standalone}</p>
+<p>\usepackage{blox}
+\usepackage{tikz}
+\usetikzlibrary{positioning}</p>
+<p>\begin{document}
+\begin{tikzpicture}
+%\bXLineStyle{red, dotted}
+\bXLineStyle{very thick}
+\bXInput{A}
+\bXComp{B}{A}
+\bXLink[R]{A}{B}
+\bXCompa{C}{B}
+\bXLink{B}{C}
+\bXSumb{D}{C}
+\bXLink{C}{D}
+\bXBloc[2]{E}{$G_1$}{D}
+\bXLink{D}{E}
+\bXBloc[2]{F}{$G_2$}{E}
+\bXLink{E}{F}</p>
+<p>\bXBranchx[5]{F}{FX1}</p>
+<p>\bXBranchy[5]{FX1}{FDown1}
+\draw[-,very thick] (F) — (FX1.center);
+\draw[-,very thick] (FX1.center) — (FDown1.center);
+\bXBranchx[-5.5]{FDown1}{FRight1}
+\draw[->,very thick] (FDown1.center) — (FRight1.center);
+\bXBloc[-3.5]{H1}{$H_1$}{FRight1}
+\bXBranchy[5]{D}{DDown1}
+\draw[->,very thick] (DDown1.center) — (D);
+\draw[-,very thick] (H1) — (DDown1.center);</p>
+<p>\bXBloc[2]{G}{$G_3$}{FX1}
+%\draw[-,very thick]  (F)  — (FX1);
+\draw[->,very thick] (F) — (G);</p>
+<p>\bXBranchx[3]{G}{GX1}
+\bXBranchx[3]{GX1}{GX2}
+\draw[-,very thick] (G) — (GX2);
+\bXBranchx[3]{GX2}{GX3}
+\bXBranchy[-5]{GX2}{GUp1}</p>
+<p>\bXBranchx[1.5]{GX2}{GX4}
+\bXBranchy[7.5]{GX4}{GDown1}
+%\draw[-,very thick] (G) — (GX1.center);
+%\draw[-,very thick] (G) — (GX1.center);
+%\draw[-,very thick] (GX1.center) — (GUp1.center);
+%\bXLinkxy{GX1}{GUp1}
+\draw[-,very thick] (GX1.center) — (GX2.center);
+\draw[-,very thick] (GX2.center) — (GUp1.center);
+\draw[->,very thick] (GX2.center) — (GX3.center);
+\node[right = 0.05cm of GX3] (end) {$C$};</p>
+<p>\draw[-,very thick] (GX4.center) — (GDown1.center);</p>
+<p>\bXBranchy[7.5]{B}{BDown1}
+\bXLink{BDown1.center}{B}
+\draw[-,very thick] (GDown1.center) — (BDown1.center);</p>
+<p>%% Top Part</p>
+<p>\bXBranchx[-20]{GUp1}{GLUp1}
+\bXBloc[-0]{BlockHG}{$\frac{H_2}{G_1}$}{GLUp1}
+\draw[->,very thick] (GUp1.center) — (BlockHG);
+\bXLinkxy{BlockHG}{C}
+\end{tikzpicture}
+\end{document}
+The code above is a LaTeX document that creates a block diagram using the <code>blox</code> and <code>tikz</code> packages. The block diagram consists of several blocks and arrows that represent a system of interconnected components. The code defines the layout and styling of the blocks and arrows using various <code>blox</code> commands and <code>tikz</code> drawing commands. The document begins with the <code>\documentclass</code> command, which specifies the document class as <code>standalone</code>. The necessary packages are then loaded using the <code>\usepackage</code> command. Finally, the <code>tikzpicture</code> environment is used to create the block diagram using the defined <code>blox</code> and <code>tikz</code> commands.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/ControlSystems/CSI/BlockDiagramex2.png" alt="Block">]</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amsmath</span><span style="color: #F8F8F2">}  </span><span style="color: #88846F">% For math</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amssymb</span><span style="color: #F8F8F2">}  </span><span style="color: #88846F">% For more math</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">blox</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXInput</span><span style="color: #F8F8F2">{A}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXComp</span><span style="color: #F8F8F2">{B}{A}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">R(s)</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">]{A}{B}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXBloc</span><span style="color: #F8F8F2">[2]{C}{</span><span style="color: #66D9EF">$</span><span style="color: #AE81FF">\cfrac</span><span style="color: #66D9EF">{K}{s(s^</span><span style="color: #AE81FF">2</span><span style="color: #66D9EF">+</span><span style="color: #AE81FF">4</span><span style="color: #66D9EF">s+</span><span style="color: #AE81FF">5</span><span style="color: #66D9EF">)}</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">}{B}</span></span>
+<span class="line"><span style="color: #88846F">%\bXLink[$V_1$]{B}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">{B}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXOutput</span><span style="color: #F8F8F2">{E}{C}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXLink</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">$</span><span style="color: #66D9EF">C(s)</span><span style="color: #66D9EF">$</span><span style="color: #F8F8F2">]{C}{E}</span></span>
+<span class="line"><span style="color: #66D9EF">\bXReturn</span><span style="color: #F8F8F2">{C-E}{B}{}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>\documentclass{standalone}
+\usepackage{amsmath}  % For math
+\usepackage{amssymb}  % For more math</p>
+<p>\usepackage{blox}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}
+\bXInput{A}
+\bXComp{B}{A}
+\bXLink[$R(s)$]{A}{B}
+\bXBloc[2]{C}{$\cfrac{K}{s(s^2+4s+5)}$}{B}
+%\bXLink[$V_1$]{B}{C}
+\bXLink{B}{C}
+\bXOutput{E}{C}
+\bXLink[$C(s)$]{C}{E}
+\bXReturn{C-E}{B}{}
+\end{tikzpicture}</p>
+<p>\end{document}
+The code above is a LaTeX document that defines a TikZ picture environment to create a block diagram. It uses the “blox” package and “tikz” package to draw the blocks and arrows in the diagram. The block diagram represents a feedback control system with an input signal $R(s)$, a controller block with transfer function $\frac{K}{s(s^2+4s+5)}$, and an output signal $C(s)$. The blocks are labeled with letters A, B, C, and E, and arrows are labeled with text to indicate the input and output signals. The “amsmath” and “amssymb” packages are also loaded to allow for mathematical notation in the diagram.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/ControlSystems/CSI/Q2Diagram614.png" alt="Block">]
+TikZ is a great tool for creating control systems diagrams in LaTeX for a variety of reasons:</p>
+<ol>
+<li>High quality output: TikZ produces high-quality output that can be easily customized to meet specific requirements. This is especially important when creating diagrams for technical documents, where precision and clarity are key.</li>
+<li>Flexibility: TikZ provides a wide range of options for creating diagrams. It is possible to create everything from simple block diagrams to complex control systems diagrams with multiple feedback loops.</li>
+<li>Integration with LaTeX: TikZ integrates seamlessly with LaTeX, which means that it is easy to include diagrams in technical documents without having to switch to a separate application.</li>
+<li>Scalability: TikZ allows you to create scalable diagrams that can be easily resized without losing quality. This is particularly useful when diagrams need to be included in presentations or printed documents of different sizes.</li>
+<li>Reusability: TikZ allows you to create templates for frequently used diagrams, which can save time and effort in the long run.</li>
+<li>Consistency: TikZ provides a consistent look and feel for all diagrams created using the package. This makes it easy to maintain a consistent style throughout a technical document.</li>
+</ol>
+<p>Overall, TikZ is a powerful and flexible tool for creating control systems diagrams in LaTeX. Its integration with LaTeX, high-quality output, and scalability make it an ideal choice for technical documents that require precise and professional-looking diagrams.</p>
+<h2 id="diagrams-with-pgfplots">Diagrams with PGFPlots</h2>
+<p>PGFPlots is a powerful package for creating advanced diagrams such as graphs and plots in LaTeX. It is built on top of TikZ and provides a comprehensive set of tools for visualizing data in a variety of formats. Here is an overview of some of the key features of PGFPlots:</p>
+<ol>
+<li>Plotting functions: PGFPlots provides a wide range of functions for creating different types of plots, including scatter plots, line plots, bar charts, and more. It also allows you to plot mathematical functions directly, which is particularly useful for visualizing mathematical concepts.</li>
+<li>Customization: PGFPlots provides a wide range of customization options for all aspects of the plot, including the axis labels, legend, colors, and styles. This allows you to create plots that are tailored to your specific needs.</li>
+<li>Multiple plots: PGFPlots allows you to create multiple plots on the same axis, which is useful for comparing data sets or visualizing different aspects of a single data set.</li>
+<li>3D plots: PGFPlots provides tools for creating 3D plots, including surface plots and contour plots. This is particularly useful for visualizing data sets that have three or more dimensions.</li>
+<li>Data file support: PGFPlots allows you to import data from external files, including CSV and TSV files. This makes it easy to create plots from data sets stored in other applications or generated by other scripts.</li>
+<li>Publication quality output: PGFPlots produces high-quality output that is suitable for use in publications or presentations. It provides tools for adjusting the resolution and size of the output, as well as tools for exporting the output to various file formats, including PDF, PNG, and EPS.</li>
+</ol>
+<p>Overall, PGFPlots is a powerful and flexible package for creating advanced diagrams such as graphs and plots in LaTeX. Its wide range of features and customization options make it an ideal choice for visualizing data in a variety of formats, from simple scatter plots to complex 3D visualizations.</p>
+<p>PGFPlots is built on top of TikZ, so it uses a similar syntax for creating graphs and plots. Here is an overview of some of the key commands and syntax for creating various types of graphs and plots in PGFPlots:</p>
+<ol>
+<li>Axis environment: The <code>axis</code> environment is the main environment for creating plots in PGFPlots. It defines the plot area and provides options for configuring the axis labels, legends, and styles.</li>
+<li>Plotting functions: PGFPlots provides a wide range of functions for creating different types of plots. For example, to create a scatter plot, you can use the <code>\addplot</code> command with the <code>scatter</code> option. To create a line plot, you can use the <code>\addplot</code> command with the <code>smooth</code> option.</li>
+<li>Axis labels: To add labels to the x-axis and y-axis, you can use the <code>xlabel</code> and <code>ylabel</code> options, respectively. You can also use the <code>title</code> option to add a title to the plot.</li>
+<li>Legends: To add a legend to the plot, you can use the <code>legend</code> option. You can specify the legend entries using the <code>\addlegendentry</code> command.</li>
+<li>Styles: PGFPlots provides a wide range of styles for customizing the appearance of the plot. For example, you can use the <code>color</code> option to change the color of the plot, the <code>mark</code> option to change the shape of the plot markers, and the <code>line width</code> option to change the thickness of the plot lines.</li>
+<li>Multiple plots: PGFPlots allows you to create multiple plots on the same axis using the <code>\addplot</code> command with different data sets or functions. You can use the <code>legend</code> option to specify the legend entries for each plot.</li>
+<li>3D plots: To create 3D plots in PGFPlots, you can use the <code>surf</code> option with the <code>\addplot3</code> command. You can also add contour lines using the <code>contour</code> option.</li>
+</ol>
+<p>Overall, PGFPlots provides a comprehensive set of tools for creating a wide range of graphs and plots in LaTeX. Its syntax is similar to TikZ, so it should be familiar to users who are already familiar with TikZ. With its customization options and flexibility, PGFPlots is an ideal choice for visualizing data in a variety of formats.</p>
+<p>PGFPlots is a powerful tool for creating a wide range of advanced diagrams, including bar graphs, line graphs, scatter plots, and more. Here’s a brief overview of how to create some of these types of plots using PGFPlots:</p>
+<ol>
+<li>Bar graphs: To create a bar graph, you can use the <code>ybar</code> option with the <code>\addplot</code> command. You can also use the <code>bar width</code> option to adjust the width of the bars. You can add multiple bar plots to the same axis using the <code>\addplot</code> command with different data sets.</li>
+<li>Line graphs: To create a line graph, you can use the <code>smooth</code> option with the <code>\addplot</code> command. You can also customize the appearance of the lines using options such as <code>color</code>, <code>line width</code>, and <code>mark</code>.</li>
+<li>Scatter plots: To create a scatter plot, you can use the <code>scatter</code> option with the <code>\addplot</code> command. You can customize the appearance of the markers using options such as <code>mark</code>, <code>mark size</code>, and <code>color</code>. You can also add a trend line to the scatter plot using the <code>smooth</code> option.</li>
+<li>Heatmaps: To create a heatmap, you can use the <code>matrix plot</code> option with the <code>\addplot</code> command. You can specify the data using a matrix, and you can customize the appearance of the heatmap using options such as <code>colormap</code>, <code>point meta min</code>, and <code>point meta max</code>.</li>
+<li>3D plots: To create a 3D plot, you can use the <code>surf</code> option with the <code>\addplot3</code> command. You can also add contour lines using the <code>contour</code> option. You can customize the appearance of the plot using options such as <code>view</code>, <code>zmin</code>, and <code>zmax</code>.</li>
+<li>Polar plots: To create a polar plot, you can use the <code>polaraxis</code> environment. You can add multiple plots to the same polar axis using the <code>\addplot</code> command with different data sets. You can customize the appearance of the plot using options such as <code>domain</code>, <code>color</code>, and <code>line width</code>.</li>
+</ol>
+<p>These are just a few examples of the types of advanced diagrams that can be created using PGFPlots. With its comprehensive set of tools for customization and its flexible syntax, PGFPlots is a versatile tool for visualizing data in LaTeX.</p>
+<p>Git is a powerful version control system that can be used to track changes to files, including LaTeX documents, and collaborate with other authors. Here’s an overview of how to use Git for tracking changes and collaborating on LaTeX documents:</p>
+<ol>
+<li>Install Git: The first step is to install Git on your computer. Git is a command-line tool, so you’ll need to be comfortable using the terminal or command prompt. You can download Git from the official website: <a href="https://git-scm.com/downloads">https://git-scm.com/downloads</a></li>
+<li>Create a Git repository: Once you have Git installed, you can create a new Git repository for your LaTeX project. Navigate to the directory where your LaTeX files are stored and run the command <code>git init</code> to create a new repository. This will create a hidden <code>.git</code> directory in your project directory that Git will use to track changes.</li>
+<li>Add files to the repository: To start tracking changes to your LaTeX files, you need to add them to the Git repository. You can do this using the <code>git add</code> command. For example, to add all the files in your project directory, run <code>git add .</code>.</li>
+<li>Make commits: Once your files are added to the repository, you can start making commits. A commit is a snapshot of your project at a particular point in time. To make a commit, use the command <code>git commit -m "commit message"</code>. The commit message should briefly describe the changes you’ve made.</li>
+<li>Collaborate with other authors: If you’re working with other authors, you can use Git to collaborate on the same LaTeX documents. To do this, you’ll need to set up a remote repository, such as on GitHub or GitLab, and give your collaborators access. You can then push your commits to the remote repository using the command <code>git push</code>. Your collaborators can pull your changes using the command <code>git pull</code>.</li>
+<li>Manage branches: Git also allows you to create and manage branches, which are separate copies of your project that can be worked on independently. This is useful for experimenting with new features or fixing bugs without affecting the main project. You can create a new branch using the command <code>git branch branch-name</code> and switch to it using <code>git checkout branch-name</code>.</li>
+</ol>
+<p>These are just a few examples of how to use Git for tracking changes and collaborating on LaTeX documents. Git can take some time to learn, but once you’re comfortable with it, it can be a powerful tool for managing complex projects and working with other authors.</p>
+<h2 id="best-practices-for-creating-diagrams-with-latex">Best practices for creating diagrams with LaTeX</h2>
+<p>Here are some tips for efficient diagram creation with TikZ and PGFPlots:</p>
+<ol>
+<li>Plan your diagram before starting: Take some time to sketch out the diagram you want to create, and think about the elements you’ll need (shapes, lines, labels, etc.). This will help you avoid making mistakes and save time later on.</li>
+<li>Use templates and examples: There are many resources available online for TikZ and PGFPlots, including templates and examples. These can be a great starting point for your own diagrams, and can save you time and effort.</li>
+<li>Use libraries: TikZ and PGFPlots both have many libraries of predefined shapes, styles, and functions. These can help you create complex diagrams quickly and easily.</li>
+<li>Keep it simple: It can be tempting to add lots of bells and whistles to your diagrams, but simpler diagrams are often clearer and easier to understand. Try to use only the elements you need, and avoid adding unnecessary complexity.</li>
+<li>Use macros: If you find yourself repeating the same code over and over again, consider creating a macro. Macros can be defined using <code>\newcommand</code> in LaTeX, and can save you time and reduce errors.</li>
+<li>Test your code: As with any programming, it’s important to test your code as you go along. Compile your document frequently and check for errors or unexpected behavior.</li>
+<li>Document your code: Finally, make sure to document your code. Use comments to explain what each section of code does, and provide context for the reader. This will make it easier for you and others to understand your code later on.</li>
+</ol>
+<p>By following these tips, you can create efficient and effective diagrams with TikZ and PGFPlots.</p>
+<p>Here are some common errors that you may encounter when using TikZ and PGFPlots, and some tips for troubleshooting them:</p>
+<ol>
+<li>“Package TikZ Error: …”: This error usually indicates that there is a problem with your TikZ code. Check the line number indicated in the error message, and look for syntax errors or missing elements (such as closing brackets).</li>
+<li>“Package PGFPlots Error: …”: This error is similar to the TikZ error above, but indicates a problem with your PGFPlots code. Check the line number indicated in the error message, and look for syntax errors or missing elements.</li>
+<li>“Dimension too large”: This error occurs when you try to draw a shape or line that is too large for LaTeX to handle. You can try using the <code>fpu</code> library in TikZ, which provides floating-point arithmetic and can handle larger values.</li>
+<li>“File not found”: This error can occur when you try to include a file (such as an image or data file) that LaTeX cannot find. Double-check the file path and name, and make sure the file is in the correct location.</li>
+<li>“Undefined control sequence”: This error occurs when you use a command that LaTeX does not recognize. Check the spelling of the command and make sure it is spelled correctly.</li>
+<li>“Misplaced alignment tab character &#x26;”: This error occurs when you use the <code>&#x26;</code> character in the wrong context (usually in a table or matrix). Make sure you are using the <code>&#x26;</code> character within the correct environment.</li>
+<li>“Package xcolor Error: Undefined color”: This error occurs when you use a color that is not defined in the <code>xcolor</code> package. Check the spelling of the color and make sure it is spelled correctly.</li>
+</ol>
+<p>To troubleshoot these errors, try the following steps:</p>
+<ol>
+<li>Check the error message for clues about what went wrong.</li>
+<li>Check the line number indicated in the error message.</li>
+<li>Look for syntax errors or missing elements in your code.</li>
+<li>Consult the TikZ or PGFPlots documentation for more information about specific commands or options.</li>
+<li>Try commenting out parts of your code to isolate the problem.</li>
+<li>Ask for help on forums or from colleagues who have experience with TikZ and PGFPlots.</li>
+</ol>
+<p>By following these troubleshooting steps and staying familiar with the common errors that can occur, you can save time and frustration when creating diagrams with TikZ and PGFPlots.</p>
+<p>Here are some tips for maintaining consistency in diagram formatting and layout:</p>
+<ol>
+<li>Define a consistent style: Decide on a consistent style for your diagrams, including font, colors, line styles, and arrowheads. Use this style consistently across all of your diagrams to ensure a cohesive and professional look.</li>
+<li>Use templates: Create a template for each type of diagram you need to create, including all of the necessary formatting and layout elements. This will help ensure that all of your diagrams have a consistent look and feel.</li>
+<li>Use layers: Use layers to organize your diagram elements and make it easier to modify them. For example, you could use separate layers for text, shapes, and lines, and keep the layers consistent across all of your diagrams.</li>
+<li>Label elements consistently: Use consistent labeling for all of your diagram elements, including text, shapes, and lines. For example, use the same label for a certain type of line or arrowhead across all of your diagrams.</li>
+<li>Use a grid: Use a grid to ensure that your diagram elements are aligned properly. This will help give your diagrams a consistent look and make them easier to read.</li>
+<li>Keep it simple: Avoid cluttering your diagrams with too many elements. Stick to the essential information, and use a clear and simple layout to make your diagrams easy to read.</li>
+<li>Get feedback: Ask for feedback from colleagues or others who are familiar with your diagrams. They can help identify any inconsistencies or areas where you could improve your layout and formatting.</li>
+</ol>
+<p>By following these tips, you can maintain consistency in your diagram formatting and layout, making your diagrams easier to read and giving them a professional look.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">% Dupplicated from https://code.visualstudio.com/docs/remote/containers</span></span>
+<span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">11pt</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">standalone</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">T1</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">fontenc</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\usetikzlibrary</span><span style="color: #F8F8F2">{calc,positioning,shapes.geometric}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}[</span></span>
+<span class="line"><span style="color: #F8F8F2">    >=stealth,</span></span>
+<span class="line"><span style="color: #F8F8F2">    node distance=1cm,</span></span>
+<span class="line"><span style="color: #F8F8F2">    orange/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">      minimum width = 11em,</span></span>
+<span class="line"><span style="color: #F8F8F2">      fill=orange!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">      draw=red!40,</span></span>
+<span class="line"><span style="color: #F8F8F2">      text width = 0.35</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    },</span></span>
+<span class="line"><span style="color: #F8F8F2">    database/.style={</span></span>
+<span class="line"><span style="color: #F8F8F2">      cylinder,</span></span>
+<span class="line"><span style="color: #F8F8F2">      cylinder uses custom fill,</span></span>
+<span class="line"><span style="color: #F8F8F2">      cylinder body fill=green!60!black!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">      cylinder end fill=green!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">      shape border rotate=90,</span></span>
+<span class="line"><span style="color: #F8F8F2">      aspect=0.25,</span></span>
+<span class="line"><span style="color: #F8F8F2">      draw</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  ]</span></span>
+<span class="line"><span style="color: #F8F8F2">   </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[rounded corners, </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text depth = 5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=blue!80,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    label={[anchor=north, color=blue!90, inner sep=0pt, xshift=3em, yshift=-1em] north west:{Local OS}}]  (dw){};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[rounded corners, </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text depth = 5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=blue!80,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 30em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    label={[anchor=north, color=blue!90, inner sep=0pt, xshift=3em, yshift=-1em] north west:{Container}},</span></span>
+<span class="line"><span style="color: #F8F8F2">    right = of dw]  (container){};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[ </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=blue!90,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text width = 0.20</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill=blue!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 7em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 15em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    label={[anchor=north, inner sep=0pt, yshift=-0.2em] north:{</span><span style="color: #66D9EF">\Large</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\textcolor</span><span style="color: #F8F8F2">{white}{VS Code}}}] at ([yshift=2em] dw.center) (code){};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[orange] at ([yshift=-1.25em] code.center) (t1) {Theme/UI Extension} ;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[orange] at ([yshift= 0.75em] code.center) (t2) {Theme/UI Extension};</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[ </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=blue!90,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text width = 0.20</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill=blue!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 7em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 15em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    label={[anchor=north, inner sep=0pt, yshift=-0.2em] north:{</span><span style="color: #66D9EF">\Large</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\textcolor</span><span style="color: #F8F8F2">{white}{VS Code Server}}}] at ([xshift=10em, yshift=2em] container.west) (codeserver){};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[orange] at ([yshift=-1.25em] codeserver.center) (we1) {WorkSpace Extension} ;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[orange] at ([yshift= 0.75em] codeserver.center) (we2) {WorkSpace Extension};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Data Sources</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Source Code</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[database] (db1) at ([yshift=-5em] code.south) (scOS) {Source Code};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[database, opacity=0.6] (db1) at ([yshift=-5em] codeserver.south) (scContainer) {Source Code};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Container Stuff</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Container widgets</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">% Configuration Files and Plugin box</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 10em] at ([xshift=7em, yshift=-3em] codeserver.north east) (tp){Terminal Processes};</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 10em] at ([xshift=7em, yshift=-5em] codeserver.north east) (ra){Running Application};</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width= 10em] at ([xshift=7em, yshift=-7em] codeserver.north east) (debug){Debugger};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">     </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[database] (db1) at ([yshift=2em, xshift=7em] codeserver.north east) (fs) {File System};</span></span>
+<span class="line"><span style="color: #F8F8F2">     </span></span>
+<span class="line"><span style="color: #F8F8F2">     </span><span style="color: #88846F">% Connect and labels</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Arrows </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (code.east) -> (codeserver.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% Labels</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[rounded corners, </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=none,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 2em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill = white,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">    text width = 0.11</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width=1.5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    xshift=3.75em] at (code.east) (dw1){Exposed port};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (scOS.east) -> (scContainer.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\node</span><span style="color: #F8F8F2">[rounded corners, </span><span style="color: #88846F">%fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">    draw=none,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum height= 2em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    fill = white,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">    text width = 0.11</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">    minimum width=1.5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">    xshift=8.25em] at (scOS.east) (dw1){Volume Mount};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (codeserver) -> (fs.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (codeserver) -> (tp);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (codeserver) -> (ra.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2">[->, very thick, draw=blue!40] (codeserver) -> (debug.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>% Dupplicated from <a href="https://code.visualstudio.com/docs/remote/containers">https://code.visualstudio.com/docs/remote/containers</a>
+\documentclass[11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,shapes.geometric}
+\begin{document}
+\begin{tikzpicture}[
+>=stealth,
+node distance=1cm,
+orange/.style={
+minimum width = 11em,
+fill=orange!50,
+draw=red!40,
+text width = 0.35\textwidth,
+text centered,
+},
+database/.style={
+cylinder,
+cylinder uses custom fill,
+cylinder body fill=green!60!black!50,
+cylinder end fill=green!10,
+shape border rotate=90,
+aspect=0.25,
+draw
+}
+]</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">\node[rounded corners, %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">text depth = 5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=blue!80,</span></span>
+<span class="line"><span style="color: #F8F8F2">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">label={[anchor=north, color=blue!90, inner sep=0pt, xshift=3em, yshift=-1em] north west:{Local OS}}]  (dw){};</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">    \node[rounded corners, %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">text depth = 5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=blue!80,</span></span>
+<span class="line"><span style="color: #F8F8F2">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 20em,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 30em,</span></span>
+<span class="line"><span style="color: #F8F8F2">label={[anchor=north, color=blue!90, inner sep=0pt, xshift=3em, yshift=-1em] north west:{Container}},</span></span>
+<span class="line"><span style="color: #F8F8F2">right = of dw]  (container){};</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[ %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=blue!90,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">text width = 0.20\textwidth,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill=blue!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 7em,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 15em,</span></span>
+<span class="line"><span style="color: #F8F8F2">label={[anchor=north, inner sep=0pt, yshift=-0.2em] north:{\Large \textcolor{white}{VS Code}}}] at ([yshift=2em] dw.center) (code){};</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[orange] at ([yshift=-1.25em] code.center) (t1) {Theme/UI Extension} ;</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[orange] at ([yshift= 0.75em] code.center) (t2) {Theme/UI Extension};</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">\node[ %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=blue!90,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">text width = 0.20\textwidth,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill=blue!50,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 7em,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 15em,</span></span>
+<span class="line"><span style="color: #F8F8F2">label={[anchor=north, inner sep=0pt, yshift=-0.2em] north:{\Large \textcolor{white}{VS Code Server}}}] at ([xshift=10em, yshift=2em] container.west) (codeserver){};</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[orange] at ([yshift=-1.25em] codeserver.center) (we1) {WorkSpace Extension} ;</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[orange] at ([yshift= 0.75em] codeserver.center) (we2) {WorkSpace Extension};</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">% Data Sources</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">% Source Code</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[database] (db1) at ([yshift=-5em] code.south) (scOS) {Source Code};</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[database, opacity=0.6] (db1) at ([yshift=-5em] codeserver.south) (scContainer) {Source Code};</span></span>
+<span class="line"><span style="color: #F8F8F2">% Container Stuff</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">% Container widgets</span></span>
+<span class="line"><span style="color: #F8F8F2">    % Configuration Files and Plugin box</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 10em] at ([xshift=7em, yshift=-3em] codeserver.north east) (tp){Terminal Processes};</span></span>
+<span class="line"><span style="color: #F8F8F2">    \node[</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 10em] at ([xshift=7em, yshift=-5em] codeserver.north east) (ra){Running Application};</span></span>
+<span class="line"><span style="color: #F8F8F2">        \node[</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=black!10,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill=green!30,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width= 10em] at ([xshift=7em, yshift=-7em] codeserver.north east) (debug){Debugger};</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2"> \node[database] (db1) at ([yshift=2em, xshift=7em] codeserver.north east) (fs) {File System};</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2"> % Connect and labels</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">% Arrows </span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (code.east) -> (codeserver.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">% Labels</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[rounded corners, %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=none,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 2em,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill = white,</span></span>
+<span class="line"><span style="color: #F8F8F2">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">text width = 0.11\textwidth,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width=1.5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">xshift=3.75em] at (code.east) (dw1){Exposed port};</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (scOS.east) -> (scContainer.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">\node[rounded corners, %fill=black,</span></span>
+<span class="line"><span style="color: #F8F8F2">draw=none,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum height= 2em,</span></span>
+<span class="line"><span style="color: #F8F8F2">fill = white,</span></span>
+<span class="line"><span style="color: #F8F8F2">% double distance =1pt,    %% here</span></span>
+<span class="line"><span style="color: #F8F8F2">%font=\Large, </span></span>
+<span class="line"><span style="color: #F8F8F2">text width = 0.11\textwidth,</span></span>
+<span class="line"><span style="color: #F8F8F2">text centered,</span></span>
+<span class="line"><span style="color: #F8F8F2">minimum width=1.5em,</span></span>
+<span class="line"><span style="color: #F8F8F2">xshift=8.25em] at (scOS.east) (dw1){Volume Mount};</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (codeserver) -> (fs.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (codeserver) -> (tp);</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (codeserver) -> (ra.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">\draw[->, very thick, draw=blue!40] (codeserver) -> (debug.west);</span></span>
+<span class="line"><span style="color: #F8F8F2">\end{tikzpicture}</span></span></code></pre>
+<p>\end{document}
+The code is a LaTeX document that generates a visualization of a development environment in the context of Visual Studio Code’s Remote Development feature. The visualization is a diagram created using the TikZ package, which shows the different components and their relationships within the development environment.</p>
+<p>The diagram consists of two main elements: a “Local OS” box on the left-hand side, and a “Container” box on the right-hand side. The “Local OS” box represents the user’s computer, and the “Container” box represents a remote container that the user can connect to via Visual Studio Code’s Remote Development feature.</p>
+<p>The diagram shows that Visual Studio Code is running on the user’s computer (“Local OS”), and that it is connected to a “VS Code Server” running in the remote container. The “VS Code Server” provides access to the user’s code and to the extensions and plugins that the user has installed.</p>
+<p>The diagram also shows that the user’s code is stored in two “Source Code” databases: one on the user’s computer and one in the remote container. Other components in the diagram include “Theme/UI Extensions” and “Workspace Extensions” that are installed in Visual Studio Code, as well as “Terminal Processes,” “Running Application,” “Debugger,” and “File System” components that are part of the remote container. Arrows and labels are used to show the connections and relationships between the different components.</p>
+<p><img src="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/software/vscodeArch.png" alt="Block">]
+TikZ is a powerful and flexible tool for creating control systems diagrams, offering several benefits:</p>
+<ol>
+<li>Customization: TikZ allows you to customize every aspect of your control systems diagrams, including the shapes, colors, fonts, and line styles. This level of customization makes it easy to create diagrams that fit your specific needs.</li>
+<li>Integration: TikZ integrates seamlessly with LaTeX, allowing you to include your diagrams directly in your LaTeX documents. This integration ensures that your diagrams have the same font and formatting as the rest of your document.</li>
+<li>Consistency: TikZ makes it easy to maintain consistency in your control systems diagrams, ensuring that all of your diagrams have the same look and feel. This consistency can make your diagrams easier to read and understand.</li>
+<li>Flexibility: TikZ is a versatile tool that can be used to create a wide range of control systems diagrams, including block diagrams, signal flow graphs, and feedback control systems diagrams. This flexibility means that you can use TikZ for all of your control systems diagramming needs.</li>
+<li>Collaboration: TikZ is an open-source tool that is widely used in the academic and scientific community. This popularity makes it easy to collaborate with others on control systems diagramming projects, as many people are familiar with TikZ and can easily contribute to your project.</li>
+</ol>
+<p>Overall, TikZ is an excellent tool for creating control systems diagrams, offering customization, integration, consistency, flexibility, and collaboration benefits.</p>
+<h2 id="using-diagrams-in-documents">Using diagrams in documents</h2>
+<p>There are several ways to incorporate diagrams into LaTeX documents. Here are some of the most common methods:</p>
+<ol>
+<li>TikZ: Use the TikZ package to create diagrams directly in your LaTeX document. TikZ offers a wide range of features and customization options, making it a powerful tool for creating diagrams.</li>
+<li>External files: Create your diagrams in an external program, such as Inkscape or Adobe Illustrator, and save them as PDF files. Then, use the <code>\includegraphics</code> command to include the PDF files in your LaTeX document.</li>
+<li>PGFPlots: Use the PGFPlots package to create advanced graphs and plots directly in your LaTeX document. PGFPlots offers a wide range of features for creating 2D and 3D plots, histograms, and more.</li>
+<li>Circuitikz: Use the Circuitikz package to create circuit diagrams directly in your LaTeX document. Circuitikz offers a wide range of features for creating circuits with different components and styles.</li>
+</ol>
+<p>Regardless of the method you choose, it is important to ensure that your diagrams are properly sized and aligned with the rest of your text. You may need to adjust the size of your diagrams or use LaTeX commands to properly align them with your text.</p>
+<p>In summary, there are several methods for incorporating diagrams into LaTeX documents, including TikZ, external files, PGFPlots, and Circuitikz. Choose the method that best fits your needs and ensure that your diagrams are properly sized and aligned with the rest of your text.</p>
+<p>When presenting diagrams in a professional manner, it is important to use figures and captions to help the reader understand the context and purpose of the diagram. Here is an overview of how to use figures and captions in LaTeX:</p>
+<ol>
+<li>Use the <code>\begin{figure}</code> and <code>\end{figure}</code> commands to create a floating figure environment. This will allow LaTeX to place the diagram in the most suitable location, such as at the top or bottom of a page.</li>
+<li>Use the <code>\includegraphics</code> command to insert the diagram into the figure environment. Be sure to specify the correct file path and size for the diagram.</li>
+<li>Use the <code>\caption</code> command to provide a descriptive caption for the diagram. The caption should be brief, yet informative, and should explain the purpose of the diagram and any important features or results.</li>
+<li>Use the <code>\label</code> command to label the figure with a unique identifier. This label can be used to refer to the figure in the text using the <code>\ref</code> command, which will automatically generate the correct figure number.</li>
+<li>Place the figure and caption close to where it is first mentioned in the text. This will help the reader understand the context and purpose of the diagram.</li>
+</ol>
+<p>In summary, using figures and captions can help to present diagrams in a professional manner by providing context and explanation for the reader. To use figures and captions in LaTeX, use the figure environment, insert the diagram with <code>\includegraphics</code>, provide a descriptive caption with <code>\caption</code>, label the figure with <code>\label</code>, and place the figure and caption close to where it is first mentioned in the text.</p>
+<p>In LaTeX, it is common to refer to diagrams, figures, and other elements within the text of a document. Cross-referencing commands allow you to do this in a way that is consistent and efficient.</p>
+<p>Here is an introduction to using cross-referencing commands to refer to diagrams in text:</p>
+<ol>
+<li>Label the diagram with a unique identifier using the <code>\label</code> command. For example, you might label a diagram of a control system as <code>\label{fig:controlsystem}</code>.</li>
+<li>Refer to the diagram in the text using the <code>\ref</code> command. For example, you might say “As shown in Figure \ref{fig:controlsystem}, the control system is composed of several feedback loops.”</li>
+<li>Use the <code>\autoref</code> command to automatically generate a reference to the diagram with the appropriate label. For example, you might say “The control system is composed of several feedback loops (\autoref{fig:controlsystem}).”</li>
+<li>Use the <code>\nameref</code> command to reference the name of the diagram. For example, you might say “For a detailed explanation of the control system, see \nameref{fig:controlsystem}.”</li>
+</ol>
+<p>By using these cross-referencing commands, you can refer to diagrams in a way that is consistent and efficient, without having to manually update figure numbers or references if the position of the diagram changes within the document.</p>
+<p>When working on technical documents, it is often necessary to include multiple diagrams or figures in a single section or chapter. LaTeX provides several packages that make it easy to place multiple diagrams in a single figure. Two such packages are subfig and wrapfig.</p>
+<p>The subfig package allows you to create subfigures within a larger figure. Here is a brief overview of how to use subfig:</p>
+<ol>
+<li>Load the subfig package by adding the following line to your document’s preamble: <code>\usepackage{subfig}</code>.</li>
+<li>Create a figure that contains multiple subfigures using the <code>\subfloat</code> command. Here is an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\subfloat</span><span style="color: #F8F8F2">[Diagram A]{</span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=0.4</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">]{diagramA}}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\qquad</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\subfloat</span><span style="color: #F8F8F2">[Diagram B]{</span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=0.4</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">]{diagramB}}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{Two diagrams.}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, two subfigures are created using the <code>\subfloat</code> command. The optional argument to <code>\subfloat</code> is a caption for each subfigure, and the mandatory argument is the image to be included.</p>
+<ol start="3">
+<li>Use the <code>\caption</code> command to provide a caption for the entire figure.</li>
+</ol>
+<p>The wrapfig package allows you to place figures within the text flow, rather than in separate floating environments. Here is a brief overview of how to use wrapfig:</p>
+<ol>
+<li>Load the wrapfig package by adding the following line to your document’s preamble: <code>\usepackage{wrapfig}</code>.</li>
+<li>Use the <code>\begin{wrapfigure}</code> command to create a figure that is wrapped by text. Here is an example:</li>
+</ol>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">wrapfigure</span><span style="color: #F8F8F2">}{r}{0.5</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=0.48</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">]{diagramC}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{Diagram C.}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">wrapfigure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, the optional argument to <code>\begin{wrapfigure}</code> specifies the placement of the figure (in this case, <code>r</code> for right). The mandatory argument is the width of the figure. The <code>\includegraphics</code> command is used to include the image, and the <code>\caption</code> command provides a caption for the figure.</p>
+<p>By using packages such as subfig and wrapfig, you can create professional-looking documents with multiple diagrams in a single figure.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://grandfleet.eu.org">https://grandfleet.eu.org</a></li>
+<li><a href="https://github.com/FriendlyUser/LatexDiagrams/tree/master">https://github.com/FriendlyUser/LatexDiagrams/tree/master</a></li>
+</ul></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-13<!-- -->.</div></div></div>
+  </body></html>
