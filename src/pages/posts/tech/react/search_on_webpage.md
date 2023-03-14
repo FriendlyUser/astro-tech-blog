@@ -1,7 +1,7 @@
 ---
 tags: ['react', 'context']
 title: Options to implement search on your website
-description: Explaining the use of react context to manage state
+description: Options to implement search on your website
 pubDate: Fri, 15 December 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/481242631.png
@@ -69,7 +69,7 @@ This code initializes the Algolia client, indexes some data, and implements a se
 
 Algolia search provides many powerful features, such as faceting, typo-tolerance, and relevance ranking, that can help you deliver a better search experience to your website's users.
 
-# Custom search with React and Fuse.js
+##  Custom search with React and Fuse.js
 
 Adding a search functionality to your website can greatly improve its usability. However, implementing search can be a challenging task. In this post, we'll go through the steps to add a custom search feature to your website using React and Fuse.js.
 

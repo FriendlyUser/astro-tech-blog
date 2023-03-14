@@ -182,3 +182,7 @@
 /posts/tech/tex/math_in_tex.md
 /posts/tech/tex/syntax_of_tex.md
 /posts/tech/tex/text_formatting.md
+/posts/tech/flutter/side_hussle_income_tracker.md
+/posts/tech/java/gui_programming_in_java.md
+/posts/tech/java/set_and_map_in_java.md
+/posts/tech/react/search_on_webpage.md
