@@ -1,6 +1,6 @@
 ---
 title: Side Hustle Income Tracker in Flutter
-description: "Income Tracker" is a mobile app that helps you keep track of your income and expenses. The app uses SQLite to store and retrieve data, allowing you to easily add and delete entries with a source, date, amount, and notes. You can also export the database to a CSV file, making it easy to analyze your income and expenses in a spreadsheet program. With "Income Tracker," you can easily stay on top of your finances and make informed decisions about your spending.
+description: "Income Tracker is a mobile app that helps you keep track of your income and expenses. The app uses SQLite to store and retrieve data, allowing you to easily add and delete entries with a source, date, amount, and notes. You can also export the database to a CSV file, making it easy to analyze your income and expenses in a spreadsheet program. With Income Tracker, you can easily stay on top of your finances and make informed decisions about your spending."
 pubDate: Saturday, 23 March 2023 13:00:00 GMT
 tags: ["flutter"]
 layout: '@/templates/BasePost.astro'
