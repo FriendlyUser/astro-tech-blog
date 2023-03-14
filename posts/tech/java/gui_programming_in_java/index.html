@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUI programming in Java - Astro Tech Blog</title>
+    <meta name="description" content="Explaining how to use GUI programming in Java">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">GUI programming in Java</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 14 December 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/gui" style="padding-right:3px"> <category>gui<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/java" style="padding-right:3px"> <category>java<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2785394646.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><h1 id="gui-programming">GUI Programming</h1>
+<p>Swing is a GUI (Graphical User Interface) toolkit for Java that provides a set of classes for building desktop applications with a graphical user interface. It is a part of the Java Foundation Classes (JFC) and is included in the Java Development Kit (JDK) distribution.</p>
+<p>Swing provides a wide range of components for creating user interfaces, including buttons, labels, text fields, check boxes, radio buttons, lists, tables, and more. It also provides layout managers for arranging components on a container, event handling mechanisms for responding to user actions, and support for internationalization and accessibility.</p>
+<p>Swing is platform-independent, meaning that the same code can be run on different operating systems, as long as the Java Runtime Environment (JRE) is installed. Swing also has a consistent look and feel across different platforms, which helps to create a familiar user experience for users.</p>
+<p>To use Swing in a Java application, we need to import the appropriate classes from the <code>javax.swing</code> package. For example, to create a simple window with a label and a button, we can use the following code:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">javax.swing.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyWindow</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">JFrame</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyWindow</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JLabel</span><span style="color: #F8F8F2"> label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JLabel</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, Swing!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JButton</span><span style="color: #F8F8F2"> button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JButton</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JPanel</span><span style="color: #F8F8F2"> panel </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JPanel</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(label);</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(button);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(panel);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setTitle</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My Window"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setSize</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">300</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setLocationRelativeTo</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setDefaultCloseOperation</span><span style="color: #F8F8F2">(JFrame.EXIT_ON_CLOSE);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setVisible</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">[] </span><span style="color: #FD971F">args</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyWindow</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we extend the <code>JFrame</code> class to create a window, create a <code>JLabel</code> and a <code>JButton</code> component, add them to a <code>JPanel</code> container, add the panel to the window, and set some properties for the window, such as its title and size.</p>
+<p>Swing is a powerful toolkit for creating desktop applications with a graphical user interface in Java. It provides a wide range of components and features for building complex applications, and is well-suited for cross-platform development.</p>
+<p>To create a simple GUI (Graphical User Interface) application in Java, we can use Swing, which provides a set of classes and components for building desktop applications with a graphical user interface.</p>
+<p>Let’s create a simple GUI application that displays a window with a label and a button, and responds to button clicks by showing a message dialog.</p>
+<p>First, we need to import the appropriate classes from the <code>javax.swing</code> package:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">javax.swing.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">java.awt.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">java.awt.event.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>Then, we create a class that extends <code>JFrame</code> to represent our window, and implement <code>ActionListener</code> to handle button clicks:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">csharp`</span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyGUI</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">JFrame</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">implements</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ActionListener</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Components</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">private</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JLabel</span><span style="color: #F8F8F2"> label;</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">private</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JButton</span><span style="color: #F8F8F2"> button;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyGUI</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Create components</span></span>
+<span class="line"><span style="color: #F8F8F2"> label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JLabel</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, GUI!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JButton</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> button.</span><span style="color: #A6E22E">addActionListener</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">); </span><span style="color: #88846F">// Set button listener</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Create panel and add components</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JPanel</span><span style="color: #F8F8F2"> panel </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JPanel</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">BorderLayout</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(label, BorderLayout.CENTER);</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(button, BorderLayout.SOUTH);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Add panel to frame</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(panel);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Set frame properties</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setTitle</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My GUI"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setSize</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">300</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setLocationRelativeTo</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setDefaultCloseOperation</span><span style="color: #F8F8F2">(JFrame.EXIT_ON_CLOSE);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setVisible</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Button click handler</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">actionPerformed</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">ActionEvent</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">e</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> JOptionPane.</span><span style="color: #A6E22E">showMessageDialog</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Button clicked!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">[] </span><span style="color: #FD971F">args</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyGUI</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we create a window with a <code>JLabel</code> and a <code>JButton</code> component, and add them to a <code>JPanel</code> container using the <code>BorderLayout</code> layout manager. We also set the window’s title, size, location, and close operation, and show it by calling <code>setVisible(true)</code>.</p>
+<p>We also implement the <code>ActionListener</code> interface and override the <code>actionPerformed</code> method to handle button clicks. In this method, we show a message dialog using the <code>JOptionPane.showMessageDialog</code> method.</p>
+<p>Finally, in the <code>main</code> method, we create an instance of our <code>MyGUI</code> class to show the window.</p>
+<p>This is a simple example of how to create a GUI application in Java using Swing. We can add more components, layout managers, and event handlers to create more complex and interactive applications.</p>
+<p>In a graphical user interface (GUI) application, user events such as button clicks, mouse movements, and key presses need to be handled to provide interactivity and respond to user actions.</p>
+<p>Java provides several mechanisms for handling user events in a GUI application. In this post, we will discuss how to handle button clicks using event listeners.</p>
+<p>To handle button clicks in Java, we can use an event listener that implements the <code>ActionListener</code> interface. This interface defines a single method, <code>actionPerformed</code>, which is called when the button is clicked.</p>
+<p>Here is an example code that demonstrates how to handle button clicks using an <code>ActionListener</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">javax.swing.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">java.awt.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">java.awt.event.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyGUI</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">JFrame</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">implements</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ActionListener</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Components</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">private</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JLabel</span><span style="color: #F8F8F2"> label;</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">private</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JButton</span><span style="color: #F8F8F2"> button;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyGUI</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Create components</span></span>
+<span class="line"><span style="color: #F8F8F2"> label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JLabel</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, GUI!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JButton</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> button.</span><span style="color: #A6E22E">addActionListener</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">); </span><span style="color: #88846F">// Set button listener</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Create panel and add components</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">JPanel</span><span style="color: #F8F8F2"> panel </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">JPanel</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">BorderLayout</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(label, BorderLayout.CENTER);</span></span>
+<span class="line"><span style="color: #F8F8F2"> panel.</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(button, BorderLayout.SOUTH);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Add panel to frame</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(panel);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Set frame properties</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setTitle</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My GUI"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setSize</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">300</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setLocationRelativeTo</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setDefaultCloseOperation</span><span style="color: #F8F8F2">(JFrame.EXIT_ON_CLOSE);</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">setVisible</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Button click handler</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">actionPerformed</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">ActionEvent</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">e</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> JOptionPane.</span><span style="color: #A6E22E">showMessageDialog</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">this</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Button clicked!"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">[] </span><span style="color: #FD971F">args</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyGUI</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we create a window with a label and a button using <code>JLabel</code> and <code>JButton</code> components, and add them to a <code>JPanel</code> container using the <code>BorderLayout</code> layout manager. We also set the window’s title, size, location, and close operation, and show it by calling <code>setVisible(true)</code>.</p>
+<p>We then implement the <code>ActionListener</code> interface and override the <code>actionPerformed</code> method to handle button clicks. In this method, we show a message dialog using the <code>JOptionPane.showMessageDialog</code> method.</p>
+<p>To register the listener with the button, we call <code>button.addActionListener(this)</code>, where <code>this</code> refers to the current instance of the <code>MyGUI</code> class, which implements the <code>ActionListener</code> interface.</p>
+<p>When the button is clicked, the <code>actionPerformed</code> method is called, and the message dialog is displayed.</p>
+<p>In summary, handling user events in a GUI application involves implementing event listeners that respond to user actions, such as button clicks. Java provides several mechanisms for event handling, including the <code>ActionListener</code> interface, which is used to handle button clicks in Swing applications.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-14<!-- -->.</div></div></div>
+  </body></html>
