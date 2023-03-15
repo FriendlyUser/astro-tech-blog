@@ -186,3 +186,9 @@
 /posts/tech/java/gui_programming_in_java.md
 /posts/tech/java/set_and_map_in_java.md
 /posts/tech/react/search_on_webpage.md
+/posts/tech/java/abstract_classes_in_kotlin.md
+/posts/tech/java/object_oriented_programming_in_kotlin.md
+/posts/tech/java/reflections_in_kotlin.md
+/posts/tech/scripting/best_practises_for_powershell.md
+/posts/tech/python/projects/url_shortener.md
+/posts/tech/python/projects/weather_app.md
