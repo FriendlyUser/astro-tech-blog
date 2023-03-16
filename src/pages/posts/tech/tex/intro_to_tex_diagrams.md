@@ -1,7 +1,7 @@
 ---
 title: How to Create Beautiful LaTeX Diagrams for Your Projects
 description: LaTeX is a powerful system for creating high-quality documents with professional typography and layout. However, LaTeX is not only good for text, but also for graphics
-pubDate: Saturday, 14 November 2022 13:00:00 GMT
+pubDate: Saturday, 16 March 2023 13:00:00 GMT
 tags: ["latex"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'

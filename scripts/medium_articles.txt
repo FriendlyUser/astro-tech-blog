@@ -192,3 +192,7 @@
 /posts/tech/scripting/best_practises_for_powershell.md
 /posts/tech/python/projects/url_shortener.md
 /posts/tech/python/projects/weather_app.md
+/posts/stonks/getting_started_with_cad_tickers.md
+/posts/stonks/thoughts/credit_suisse_failings.md
+/posts/tech/vue/getting_started_with_vuepress_theme_cool.md
+/posts/tech/tex/intro_to_tex_diagrams.md
