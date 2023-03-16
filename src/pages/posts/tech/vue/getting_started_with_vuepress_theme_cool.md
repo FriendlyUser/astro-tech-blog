@@ -3,6 +3,7 @@ title: Getting Started with Vuepress Theme Cool and Vuepress
 description: Vuepress is a static site generator based on Vue.js that allows you to easily create documentation websites or any other kind of website that requires structured content. It features a built-in Markdown editor, support for custom themes, and plugins that extend its functionality.
 pubDate: Thursday, 16 March 2023 13:00:00 GMT
 tags: ["vue", "vuepress"]
+projects: ["vuepress-theme-cool"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/3531615326.png'
 ---
