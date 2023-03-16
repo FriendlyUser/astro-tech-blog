@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to MudBlazor - Astro Tech Blog</title>
+    <meta name="description" content="MudBlazor is a Blazor component library based on Material Design principles.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to MudBlazor</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Tues, 21 November 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/blazor" style="padding-right:3px"> <category>blazor<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dotnet" style="padding-right:3px"> <category>dotnet<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/4067359065.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>MudBlazor is a Blazor component library based on Material Design principles. It provides a rich set of UI components that can help you create beautiful and responsive web applications using Blazor and C#. In this article, I will introduce you to some of the features and benefits of using MudBlazor, and show you how to get started with it.</p>
+<h2 id="what-is-blazor">What is Blazor?</h2>
+<p>Blazor is a framework for building interactive web UIs using C# instead of JavaScript. Blazor can run your client-side C# code directly in the browser, using WebAssembly. Because it’s real .NET running on WebAssembly, you can re-use code and libraries from server-side parts of your application.</p>
+<p>Blazor also supports a server-side model, where the UI runs on the server and communicates with the browser using SignalR. This way, you can take advantage of full .NET Core capabilities on the server, while still enjoying a rich and interactive UI.</p>
+<h2 id="what-is-mudblazor">What is MudBlazor?</h2>
+<p>MudBlazor is an open-source component library for Blazor that aims to make web development easier and more enjoyable. MudBlazor follows the Material Design guidelines and offers over 50 components that cover various aspects of web UI development, such as layout, navigation, data display, inputs, feedback, utilities and more.</p>
+<p>MudBlazor also provides a comprehensive theming system that allows you to customize the look and feel of your application with ease. You can choose from predefined themes or create your own theme with colors, typography, shadows and icons.</p>
+<p>MudBlazor has a friendly and active community that contributes to its development and improvement. You can find documentation, demos, examples and online code editor on its website¹, as well as source code³, issues³and discussions³ on GitHub.</p>
+<h2 id="how-to-get-started-with-mudblazor">How to get started with MudBlazor?</h2>
+<p>To use MudBlazor in your Blazor project, you need to install its NuGet package³and add some references in your <em>Imports.razor</em> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">@using MudBlazor</span></span>
+<span class="line"><span style="color: #F8F8F2">@using MudBlazor.Components</span></span>
+<span class="line"><span style="color: #F8F8F2">@using MudBlazor.Services</span></span></code></pre>
+<p>You also need to add some CSS and JS files in your <em>wwwroot/index.html</em> file (for Blazor WebAssembly) or _Pages/<em>Host.cshtml</em> file (for Blazor Server):</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">link</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"_content/MudBlazor/MudBlazor.min.css"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">rel</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"stylesheet"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">script</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">src</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"_content/MudBlazor/MudBlazor.min.js"</span><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span></code></pre>
+<p>Optionally, you can also add a reference to Google Fonts if you want to use Roboto font:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">link</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"https://fonts.googleapis.com/css?family=Roboto:300,400&#x26;display=swap"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">rel</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"stylesheet"</span><span style="color: #F8F8F2">></span></span></code></pre>
+<p>Now you are ready to use MudBlazor components in your Razor pages or components. For example, here is how you can create a simple app bar with a title and an icon button:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F44747">MudAppBar</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F44747">MudText</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Typo</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Typo.h6"</span><span style="color: #F8F8F2">>My App&#x3C;/</span><span style="color: #F44747">MudText</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F44747">Spacer</span><span style="color: #F8F8F2"> </span><span style="color: #F44747">/</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F44747">MudIconButton</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Icon</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@Icons.Material.Filled.Menu"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">OnClick</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@ToggleDrawer"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F44747">MudAppBar</span><span style="color: #F8F8F2">></span></span></code></pre>
+<p>Here is how it looks like:</p>
+<p><img src="https://www.mudblazordocs.com/images/appbar.png" alt="app bar"></p>
+<p>You can find more examples of how to use different components on the documentation²and demo pages¹.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>MudBlazer is an excellent choice for building modern web applications with Blazer. It offers a wide range of components that follow Material Design principles and are easy to use and customize. It also has a vibrant community that supports its development and improvement. If you are looking for a Blazer component library that can save you time and effort while delivering stunning results,
+you should definitely give MudBlaor a try!</p>
+<p>This article was generated with Ai using bing.</p>
+<p>Source: Conversation with Bing, 3/16/2023(1) MudBlazor - Blazor Component Library. <a href="https://www.mudblazor.com/">https://www.mudblazor.com/</a> Accessed 3/16/2023.
+(2) GitHub - MudBlazor/MudBlazor: Blazor Component Library based on … <a href="https://github.com/MudBlazor/MudBlazor">https://github.com/MudBlazor/MudBlazor</a> Accessed 3/16/2023.
+(3) MudBlazor - Blazor Component Library. <a href="https://www.mudblazor.com/docs/overview">https://www.mudblazor.com/docs/overview</a> Accessed 3/16/2023.
+(4) Starting With Blazor + MudBlazor. <a href="https://www.c-sharpcorner.com/blogs/starting-with-blazor-mudblazor">https://www.c-sharpcorner.com/blogs/starting-with-blazor-mudblazor</a> Accessed 3/16/2023.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-16<!-- -->.</div></div></div>
+  </body></html>
