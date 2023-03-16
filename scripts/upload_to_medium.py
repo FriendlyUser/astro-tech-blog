@@ -45,7 +45,7 @@ def make_articles_for_medium():
     basePostFolder = "src/pages"
     postFolders = ["posts/stonks/web", "posts/stonks/ta", "posts", "posts/stonks", "posts/tech", "posts/tech/css", "posts/tech/dapps", "posts/tech/flutter", "posts/tech/java", "posts/tech/js", "posts/tech/net", "posts/tech/python", "posts/tech/scripting", "posts/tech/go", "posts/random", "posts/tech/utils", "posts/tech/2023", "posts/tech/php", "posts/tech/python/introToPython", "posts/tech/rust", "posts/tech/react", 
     "posts/tech/js/ui", "posts/stonks/thoughts", 
-    "posts/tech/tex", "posts/tech/python/projects"]
+    "posts/tech/tex", "posts/tech/python/projects", "posts/tech/vue"]
     # read articles from medium_articles
     created_articles = []
     with open ("scripts/medium_articles.txt", "r") as f:
