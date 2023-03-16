@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best practices for writing PowerShell scripts - Astro Tech Blog</title>
+    <meta name="description" content="Explains best practises for writing powershell scripts">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Best practices for writing PowerShell scripts</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 14 May 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/powershell" style="padding-right:3px"> <category>powershell<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the window at a tree.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><p>Here are some best practices for writing PowerShell scripts:</p>
+<ol>
+<li>Use clear and descriptive variable names</li>
+</ol>
+<p>When writing PowerShell scripts, it’s important to use clear and descriptive variable names that reflect their purpose. This helps improve the readability of the script and makes it easier to understand and maintain.</p>
+<ol start="2">
+<li>Use comments to explain the code</li>
+</ol>
+<p>Comments are an essential part of any programming language, and PowerShell is no exception. Use comments to explain the code and provide additional context to the reader. This can be especially helpful when working on larger scripts or when collaborating with others.</p>
+<ol start="3">
+<li>Use error handling and exception handling</li>
+</ol>
+<p>PowerShell provides built-in error and exception handling mechanisms that can help prevent your script from failing unexpectedly. Use try-catch blocks and other error handling techniques to handle errors gracefully and provide feedback to the user.</p>
+<ol start="4">
+<li>Use parameters to make scripts more flexible</li>
+</ol>
+<p>Parameters allow you to make your PowerShell scripts more flexible and customizable. By adding parameters to your scripts, you can enable users to specify options and values at runtime, rather than hardcoding them into the script itself.</p>
+<ol start="5">
+<li>Use functions to modularize your code</li>
+</ol>
+<p>Functions are a powerful tool in PowerShell that allow you to modularize your code and make it more reusable. By breaking your script down into functions, you can create more flexible and maintainable code that can be used in other scripts or projects.</p>
+<ol start="6">
+<li>Use version control to manage your scripts</li>
+</ol>
+<p>Version control is an important part of software development and can be extremely helpful when writing PowerShell scripts. By using version control tools like Git or SVN, you can track changes to your scripts, collaborate with others, and revert to previous versions if necessary.</p>
+<ol start="7">
+<li>Use best practices for security</li>
+</ol>
+<p>PowerShell scripts can be a potential security risk if not properly secured. Follow best practices for securing your scripts, such as limiting script execution to trusted sources, using signed scripts, and avoiding hardcoding sensitive data.</p>
+<p>By following these best practices, you can write more effective and efficient PowerShell scripts that are easier to understand, maintain, and secure.</p>
+<p>Debugging and troubleshooting PowerShell scripts is an essential part of the scripting process. Here are some tips and best practices to help you debug and troubleshoot your PowerShell scripts:</p>
+<ol>
+<li>Use the PowerShell Integrated Scripting Environment (ISE)</li>
+</ol>
+<p>The PowerShell Integrated Scripting Environment (ISE) provides a graphical interface for writing and running PowerShell scripts. The ISE also includes debugging tools, such as breakpoints and the ability to step through code line by line, which can help you identify and resolve issues.</p>
+<ol start="2">
+<li>Use Write-Debug to output debugging information</li>
+</ol>
+<p>The Write-Debug cmdlet allows you to output debugging information to the console. By strategically placing Write-Debug statements in your script, you can track the progress of your script and identify issues.</p>
+<ol start="3">
+<li>Use try-catch blocks to handle errors</li>
+</ol>
+<p>Try-catch blocks are a powerful tool for handling errors in PowerShell scripts. By wrapping potentially error-prone code in a try-catch block, you can gracefully handle errors and prevent your script from failing unexpectedly.</p>
+<ol start="4">
+<li>Use Write-Error to output error information</li>
+</ol>
+<p>The Write-Error cmdlet allows you to output error information to the console. By using Write-Error to output meaningful error messages, you can help users identify and resolve issues with your script.</p>
+<ol start="5">
+<li>Use verbose and warning messages to provide additional information</li>
+</ol>
+<p>The verbose and warning messages are another way to provide additional information to the user. By using Write-Verbose and Write-Warning cmdlets, you can provide users with more context and help them understand what is happening in your script.</p>
+<ol start="6">
+<li>Use the Get-Help cmdlet to access cmdlet documentation</li>
+</ol>
+<p>The Get-Help cmdlet allows you to access cmdlet documentation from the console. By using Get-Help to research cmdlets and their parameters, you can better understand how to use them and avoid errors.</p>
+<ol start="7">
+<li>Use online resources to find solutions</li>
+</ol>
+<p>PowerShell has a large and active community, and there are many online resources available for finding solutions to common issues. Some popular resources include the Microsoft TechNet forums, Stack Overflow, and the PowerShell Gallery.</p>
+<p>By following these best practices, you can more effectively debug and troubleshoot your PowerShell scripts, and create more reliable and efficient code.</p>
+<p>Creating reusable functions and modules is a best practice in PowerShell scripting, as it makes your code more modular, reusable, and maintainable. Here are some tips and best practices for creating reusable functions and modules in PowerShell:</p>
+<ol>
+<li>Plan your functions and modules</li>
+</ol>
+<p>Before you start writing your functions and modules, it’s important to plan and design them. Identify the tasks or problems you want to solve, and break them down into smaller, more manageable parts. Think about how you can create functions that are easy to understand, flexible, and reusable.</p>
+<ol start="2">
+<li>Use verb-noun naming conventions for functions</li>
+</ol>
+<p>PowerShell has a naming convention for functions that is based on the verb-noun structure. The verb describes the action that the function performs, while the noun describes the item or resource the action is performed on. For example, Get-Process or Set-Item.</p>
+<ol start="3">
+<li>Write functions that do one thing well</li>
+</ol>
+<p>Functions should be designed to do one thing well. This makes them easier to understand, test, and maintain. When writing a function, try to keep it focused on a specific task or problem.</p>
+<ol start="4">
+<li>Use parameters to make functions more flexible</li>
+</ol>
+<p>Parameters allow you to make your functions more flexible and customizable. By adding parameters to your functions, you can enable users to specify options and values at runtime, rather than hardcoding them into the function itself.</p>
+<ol start="5">
+<li>Use comment-based help to document your functions</li>
+</ol>
+<p>Comment-based help is a PowerShell feature that allows you to include help documentation directly in your functions. By using comment-based help, you can provide users with useful information about how to use your function, including examples and parameter descriptions.</p>
+<ol start="6">
+<li>Use modules to organize your functions</li>
+</ol>
+<p>Modules are collections of related functions that can be easily shared and reused. By organizing your functions into modules, you can create more flexible and maintainable code that can be used in other scripts or projects.</p>
+<ol start="7">
+<li>Publish your modules to the PowerShell Gallery</li>
+</ol>
+<p>The PowerShell Gallery is a community-driven repository of PowerShell modules and scripts. By publishing your modules to the PowerShell Gallery, you can share your code with others and benefit from feedback and contributions.</p>
+<p>By following these best practices, you can create more effective and efficient PowerShell functions and modules that are easier to understand, maintain, and share.</p>
+<p>PowerShell script execution policies are a security feature that determines whether scripts can be run on a machine. By default, PowerShell script execution is disabled to prevent accidental or malicious execution of scripts. However, there may be situations where you need to change the execution policy to allow scripts to run. Here are some tips and best practices for managing PowerShell script execution policies:</p>
+<ol>
+<li>Understand the execution policy levels</li>
+</ol>
+<p>PowerShell has several execution policy levels, each with different levels of restriction. The execution policy levels are: Restricted, AllSigned, RemoteSigned, Unrestricted, and Bypass. It’s important to understand the differences between these levels and choose the appropriate level for your needs.</p>
+<ol start="2">
+<li>Set the execution policy for your user account or for all users</li>
+</ol>
+<p>You can set the execution policy for your user account or for all users on a machine. To set the execution policy for your user account, use the Set-ExecutionPolicy cmdlet with the -Scope parameter set to CurrentUser. To set the execution policy for all users on a machine, use the Set-ExecutionPolicy cmdlet with the -Scope parameter set to LocalMachine.</p>
+<ol start="3">
+<li>Use the Get-ExecutionPolicy cmdlet to check the current policy</li>
+</ol>
+<p>The Get-ExecutionPolicy cmdlet allows you to check the current execution policy level for your user account or for all users on a machine.</p>
+<ol start="4">
+<li>Use the Unblock-File cmdlet to unblock scripts</li>
+</ol>
+<p>If you download a script from the internet or copy a script from another machine, it may be blocked by Windows to prevent the execution of potentially malicious scripts. You can use the Unblock-File cmdlet to remove the block and allow the script to run.</p>
+<ol start="5">
+<li>Use the -ExecutionPolicy parameter to bypass the execution policy</li>
+</ol>
+<p>If you need to run a script that is blocked by the execution policy, you can use the -ExecutionPolicy parameter with the powershell.exe or powershell_ise.exe command to bypass the policy for the current session.</p>
+<ol start="6">
+<li>Use Group Policy to set the execution policy for a domain</li>
+</ol>
+<p>If you need to set the execution policy for a domain, you can use Group Policy to apply the policy to all machines in the domain.</p>
+<p>By following these best practices, you can effectively manage PowerShell script execution policies and ensure that scripts are executed safely and securely on your machines.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-16<!-- -->.</div></div></div>
+  </body></html>
