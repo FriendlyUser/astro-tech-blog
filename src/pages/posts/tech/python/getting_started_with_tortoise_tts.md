@@ -1,6 +1,6 @@
 ---
 tags: ['python', 'tortoise_tts']
-title: Tortoise TTS: A Multi-Voice Text-to-Speech System
+title: "Tortoise TTS: A Multi-Voice Text-to-Speech System"
 description: Text-to-speech (TTS) is a technology that converts text into natural-sounding speech using natural language processing (NLP) and speech synthesis techniques.
 pubDate: Fri, 15 April 2023
 layout: "@/templates/BasePost.astro"

@@ -196,3 +196,5 @@
 /posts/stonks/thoughts/credit_suisse_failings.md
 /posts/tech/vue/getting_started_with_vuepress_theme_cool.md
 /posts/tech/tex/intro_to_tex_diagrams.md
+/posts/tech/python/audio_training.md
+/posts/tech/python/getting_started_with_tortoise_tts.md

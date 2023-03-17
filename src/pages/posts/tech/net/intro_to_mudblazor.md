@@ -7,6 +7,7 @@ layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/4067359065.png'
 ---
 
+
 MudBlazor is a Blazor component library based on Material Design principles. It provides a rich set of UI components that can help you create beautiful and responsive web applications using Blazor and C#. In this article, I will introduce you to some of the features and benefits of using MudBlazor, and show you how to get started with it.
 
 ## What is Blazor?
@@ -48,7 +49,7 @@ Optionally, you can also add a reference to Google Fonts if you want to use Robo
 
 Now you are ready to use MudBlazor components in your Razor pages or components. For example, here is how you can create a simple app bar with a title and an icon button:
 
-```html
+```csharp
 <MudAppBar>
     <MudText Typo="Typo.h6">My App</MudText>
     <Spacer />
