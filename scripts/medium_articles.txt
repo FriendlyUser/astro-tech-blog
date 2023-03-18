@@ -197,4 +197,8 @@
 /posts/tech/vue/getting_started_with_vuepress_theme_cool.md
 /posts/tech/tex/intro_to_tex_diagrams.md
 /posts/tech/python/audio_training.md
+/posts/tech/net/intro_to_mudblazor.md
 /posts/tech/python/getting_started_with_tortoise_tts.md
+/posts/tech/rust/how_to_use_rust_collections.md
+/posts/tech/rust/how_to_use_rust_ffi_capabilities.md
+/posts/tech/rust/intro_to_borrowed_reference_in_rust.md
