@@ -202,3 +202,4 @@
 /posts/tech/rust/how_to_use_rust_collections.md
 /posts/tech/rust/how_to_use_rust_ffi_capabilities.md
 /posts/tech/rust/intro_to_borrowed_reference_in_rust.md
+/posts/tech/2023/pycaret_300.md
