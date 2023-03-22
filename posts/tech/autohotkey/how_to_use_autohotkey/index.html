@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to AutoHotKey. - Astro Tech Blog</title>
+    <meta name="description" content="AutoHotkey is a free, open-source scripting language for Windows that allows users to easily create small to complex scripts">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.3d8bed01.css" />
+<link rel="stylesheet" href="/_astro/index.2f84984c.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to AutoHotKey.</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 14 September 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/autohotkey" style="padding-right:3px"> <category>autohotkey<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/test.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content><h1 id="introduction">Introduction</h1>
+<p>AutoHotkey is a free, open-source scripting language for Windows that allows users to easily create small to complex scripts for all kinds of tasks such as: form fillers, auto-clicking, macros, etc.</p>
+<p>You can use AutoHotkey to automate repetitive tasks, customize keyboard shortcuts, create GUIs, manipulate windows and files, and much more. AutoHotkey has a simple and flexible syntax that lets you write scripts in different styles and paradigms.
+To install AutoHotkey, you need to download the installer from the official website and run it on your computer. You can choose Express Installation for the default configuration or Custom Installation for more options.</p>
+<p>To run AutoHotkey, you can double-click a script file (.ahk) in Explorer or create a shortcut to it. You can also use Task Scheduler to run a script on startup by creating a basic task and selecting “Start a program” as the action. Then you need to enter the file path of AutoHotkey.exe and the script file as arguments.
+AutoHotkey scripts are composed of lines that can contain commands, expressions, variables, hotkeys, hotstrings, or comments.</p>
+<p>Commands are instructions that perform a specific action, such as sending keystrokes, clicking the mouse, running a program, etc. Commands have a name followed by one or more parameters separated by commas. Parameters can be literal values or expressions. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Run, notepad.exe ; This command runs Notepad</span></span>
+<span class="line"><span style="color: #F8F8F2">MsgBox, Hello World! ; This command displays a message box with "Hello World!"</span></span>
+<span class="line"><span style="color: #F8F8F2">SendInput, {Enter} ; This command sends an Enter keystroke</span></span></code></pre>
+<p>Functions are similar to commands but they return a value that can be used in an expression. Functions have a name followed by parentheses that enclose one or more parameters separated by commas. Parameters can be literal values or expressions. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">x := SubStr("AutoHotkey", 5) ; This function returns "Hotkey" and assigns it to x</span></span>
+<span class="line"><span style="color: #F8F8F2">y := MsgBox("Do you want to continue?", 4) ; This function displays a message box with Yes/No buttons and returns 6 for Yes and 7 for No</span></span>
+<span class="line"><span style="color: #F8F8F2">z := WinExist("Untitled - Notepad") ; This function returns the window ID of Notepad if it exists</span></span></code></pre>
+<p>Some common commands and functions in AutoHotkey are:</p>
+<ul>
+<li><code>Run</code>: Runs an external program.</li>
+<li><code>MsgBox</code>: Displays a message box with text and buttons.</li>
+<li><code>SendInput</code>: Sends simulated keystrokes and mouse clicks to the active window.</li>
+<li><code>WinActivate</code>: Activates a window based on its title or ID.</li>
+<li><code>WinExist</code>: Checks if a window exists based on its title or ID and returns its ID.</li>
+<li><code>Loop</code>: Repeats a series of commands until a condition is met or until it is broken by another command.</li>
+<li><code>If</code>: Checks if an expression is true and executes one or more commands if it is.</li>
+<li><code>Else</code>: Executes one or more commands if the preceding If statement was false.</li>
+<li><code>SubStr</code>: Returns a substring of a given string based on its position and length.</li>
+<li><code>StrLen</code>: Returns the length of a string in characters.</li>
+</ul>
+<p>You can find more commands and functions in the alphabetical index or use the search feature on the official website.</p>
+<h2 id="hotkeys-and-hotstrings">Hotkeys and Hotstrings</h2>
+<p>Hotkeys are combinations of keys that trigger a command or function when pressed. You can define hotkeys for the mouse and keyboard using AutoHotkey scripts.</p>
+<p>To define a hotkey, you need to specify the key combination followed by two colons (::) and then the command or function to execute. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#n::Run, notepad.exe ; This hotkey runs Notepad when you press Win+N</span></span>
+<span class="line"><span style="color: #F8F8F2">!c::SendInput, ^c ; This hotkey copies text when you press Alt+C</span></span></code></pre>
+<p>You can use modifiers such as # (Win), ! (Alt), ^ (Ctrl), and + (Shift) to create different combinations. You can also use &#x26; to combine two keys into one hotkey. For example:</p>
+<p>“autohotkey
+F1 &#x26; F2::MsgBox, You pressed F1 and F2 ; This hotkey displays a message box when you press F1 and F2 together</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">You can find a list of key names and symbols on the official website. Some keys may require special syntax or brackets to work properly. For example:</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span></code></pre>
+<p>{F10}::SendInput, Hello ; This hotkey sends “Hello” when you press F10
+&#x3C;^>!a::MsgBox, You pressed Ctrl+Alt+A ; This hotkey displays a message box when you press Ctrl+Alt+A using either side of those keys</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">You can also use wildcards (*) to make a hotkey fire even if extra modifiers are being held down. For example:</span></span>
+<span class="line"><span style="color: #F8F8F2"></span></span>
+<span class="line"><span style="color: #F8F8F2">``autohotkey</span></span>
+<span class="line"><span style="color: #F8F8F2">*#n::Run, notepad.exe ; This hotkey runs Notepad when you press Win+N with any other modifier(s)</span></span></code></pre>
+<p>You can find more examples and tips on how to use hotkeys in AutoHotkey on various websites   .
+Remapping keys or buttons means changing their function to perform a different action. You can remap keys or buttons using AutoHotkey scripts.</p>
+<p>To remap a key or button, you need to use the same syntax as defining a hotkey, but instead of specifying a command or function to execute, you specify another key or button to send. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">a::b ; This remaps the A key to send B</span></span>
+<span class="line"><span style="color: #F8F8F2">CapsLock::Ctrl ; This remaps the CapsLock key to send Ctrl</span></span>
+<span class="line"><span style="color: #F8F8F2">XButton1::F1 ; This remaps the first extra mouse button to send F1</span></span></code></pre>
+<p>Remapping a key or button is complete in the following respects:</p>
+<ul>
+<li>Holding down a modifier such as Ctrl or Shift while typing the origin key will put that modifier into effect for the destination key.</li>
+<li>CapsLock generally affects remapped keys in the same way as normal keys.</li>
+<li>The destination key or button is held down for as long as you continue to hold down the origin key.</li>
+</ul>
+<p>You can find more details and examples on how to remap keys or buttons in AutoHotkey on various websites.
+Hotstrings are a feature of AutoHotkey that let you define a string of characters that can be replaced by other text when typed. Hotstrings are often used as text-expansions for abbreviations or symbols.</p>
+<p>To create a hotstring, you need to specify the trigger string followed by two colons (::) and then the replacement text. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">::btw::by the way ; This hotstring replaces "btw" with "by the way"</span></span>
+<span class="line"><span style="color: #F8F8F2">:::)::😊 ; This hotstring replaces ":)" with "😊"</span></span></code></pre>
+<p>You can also use options to modify how a hotstring behaves. Options are specified inside a pair of colons before the trigger string. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">:*:thx::thanks ; This hotstring replaces "thx" with "thanks" without requiring an ending character</span></span>
+<span class="line"><span style="color: #F8F8F2">:?*:e.g.::for example ; This hotstring replaces "e.g." with "for example" even inside another word</span></span>
+<span class="line"><span style="color: #F8F8F2">:O:lol::Laugh Out Loud ; This hotstring replaces "lol" with "Laugh Out Loud" and capitalizes it</span></span></code></pre>
+<p>You can find a list of options and their meanings on the official website. Some options may require special syntax or brackets to work properly. For example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">:*B0:ahk::{#}ahk{#} ; This hotstring replaces "ahk" with "#ahk#" and prevents backspacing over it</span></span>
+<span class="line"><span style="color: #F8F8F2">:?C:`n::{Enter 2} ; This hotstring replaces "`n" with two newlines even if typed in an input control</span></span></code></pre>
+<p>You can find more examples and tips on how to use hotstrings in AutoHotkey on various websites.</p>
+<h2 id="targeting-specific-apps-or-windows">Targeting Specific Apps or Windows</h2>
+<p>Window Spy is a program that can help you get information about any window on your screen, such as its title, class, executable name, position, size, and more. You can use this information to write AutoHotKey scripts that can interact with those windows.</p>
+<p>To use Window Spy, you need to have AutoHotKey installed on your computer. You can download it from <a href="https://www.autohotkey.com/download/">https://www.autohotkey.com/download/</a>. Then you can run Window Spy in one of these ways:</p>
+<ul>
+<li>Right-click on the AutoHotKey icon in the system tray and select Window Spy from the menu .</li>
+<li>Go to Start > All Programs > AutoHotkey > AutoIt3 Window Spy .</li>
+<li>Extract AU3_Spy.exe from the AutoHotKey installer using 7-Zip and place it in your AutoHotKey folder. Then run it directly.</li>
+</ul>
+<p>Once Window Spy is running, you can click on any window to see its information displayed in Window Spy. You can also use keyboard shortcuts to freeze or refresh the information. For more details, please refer to <a href="https://www.autohotkey.com/docs/WindowSpy.htm">https://www.autohotkey.com/docs/WindowSpy.htm</a>.
+WinTitle, WinText, WinClass and other criteria are used to identify which window (or windows) to operate on with AutoHotKey commands and functions. You can use them to specify the title or partial title of the window, and/or any other criteria described on <a href="https://www.autohotkey.com/docs/misc/WinTitle.htm">https://www.autohotkey.com/docs/misc/WinTitle.htm</a>.</p>
+<p>For example, you can use WinTitle ahk_class WinClass to match a window by its class name , which you can get using Window Spy or WinGetClass. You can also use #If or #IfWinActive directives to create context-sensitive hotkeys and hotstrings that only work when a certain window is active.</p>
+<p>For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/_If.htm">https://www.autohotkey.com/docs/commands/_If.htm</a> and <a href="https://documentation.help/AutoHotkey-en/WinTitle.htm">https://documentation.help/AutoHotkey-en/WinTitle.htm</a>.
+You can use AutoHotKey commands and functions to activate, close, resize or move windows on your screen. Here are some examples:</p>
+<ul>
+<li>To activate a window, you can use WinActivate with the window title or other criteria. For example, WinActivate, Untitled - Notepad will activate a Notepad window with no file name.</li>
+<li>To close a window, you can use WinClose with the window title or other criteria. For example, WinClose, Calculator will close a Calculator window.</li>
+<li>To resize a window, you can use WinMove with the window title or other criteria, followed by the new position and size of the window. For example, WinMove, Paintbrush,, 0, 0 will move a Paintbrush window to the top-left corner of the screen without changing its size.</li>
+<li>To move a window, you can also use WinMove with the same parameters as above. For example, WinMove,, , 1000 will move any active window 1000 pixels to the right.</li>
+</ul>
+<p>You can also create hotkeys and hotstrings to perform these actions more easily. For example, you can use #!Left::WinMove A,, 0 to make Windows+Alt+Left move any active window to the left edge of the screen .</p>
+<p>For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/WinActivate.htm">https://www.autohotkey.com/docs/commands/WinActivate.htm</a>, <a href="https://www.autohotkey.com/docs/commands/WinClose.htm">https://www.autohotkey.com/docs/commands/WinClose.htm</a>, <a href="https://www.autohotkey.com/docs/commands/WinMove.htm">https://www.autohotkey.com/docs/commands/WinMove.htm</a>, and <a href="https://www.autohotkey.com/docs/Hotkeys.htm">https://www.autohotkey.com/docs/Hotkeys.htm</a>.</p>
+<h2 id="replicating-mouse-movements-and-clicks">Replicating Mouse Movements and Clicks</h2>
+<p>You can use MouseGetPos and MouseMove commands to get and set the mouse cursor position on your screen. Here are some examples:</p>
+<ul>
+<li>To get the current mouse position, you can use MouseGetPos with two output variables for the X and Y coordinates. For example, MouseGetPos, xpos, ypos will store the current mouse position in xpos and ypos variables.</li>
+<li>To move the mouse to a specific location, you can use MouseMove with two parameters for the X and Y coordinates. For example, MouseMove, 1000, 500 will move the mouse to (1000, 500) on your screen.</li>
+<li>To move the mouse back to its original position after clicking somewhere else, you can use MouseGetPos before clicking and MouseMove after clicking with the same output variables. For example,</li>
+</ul>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">; Get the current mouse position</span></span>
+<span class="line"><span style="color: #F8F8F2">MouseGetPos, origx, origy</span></span>
+<span class="line"><span style="color: #F8F8F2">; Click somewhere else</span></span>
+<span class="line"><span style="color: #F8F8F2">Click 987,851</span></span>
+<span class="line"><span style="color: #F8F8F2">; Move back to original position</span></span>
+<span class="line"><span style="color: #F8F8F2">MouseMove %origx%, %origy%</span></span></code></pre>
+<p>For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/MouseGetPos.htm">https://www.autohotkey.com/docs/commands/MouseGetPos.htm</a> and <a href="https://www.autohotkey.com/docs/commands/MouseMove.htm">https://www.autohotkey.com/docs/commands/MouseMove.htm</a>.
+You can use Click command to perform a mouse click on a specific location or control on your screen. You can also specify different options for the click, such as:</p>
+<ul>
+<li>The button to click: Left (default), Right, Middle, X1 or X2. For example, Click Right will perform a right-click at the current mouse position.</li>
+<li>The number of times to click: 1 (default) or any positive integer. For example, Click 2 will perform a double-click at the current mouse position.</li>
+<li>The speed of clicking: 0 (fastest) to 100 (slowest), which can be an expression. For example, Click 50 will perform a single-click at half the maximum speed.</li>
+<li>The coordinates to move the mouse before clicking: X and Y coordinates relative to the active window or screen depending on CoordMode setting. For example, Click 1000, 500 will move the mouse to (1000, 500) and perform a single-click there.</li>
+<li>The mode of sending: Event (default) or Play. Event mode is more compatible and reliable but may not work for some games. Play mode may work better for games but is less reliable. For example, Click Play will use Play mode to send a single-click.</li>
+</ul>
+<p>You can also use ControlClick command to click a specific control on a window without activating it . You need to specify the control’s ClassNN (the internal name of the control) or text and the window’s title or other criteria. For example,</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">; Click Button2 on WindowTitle without activating it</span></span>
+<span class="line"><span style="color: #F8F8F2">ControlClick Button2, WindowTitle</span></span></code></pre>
+<p>For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/Click.html">https://www.autohotkey.com/docs/commands/Click.html</a>, <a href="https://www.autohotkey.com/docs/commands/MouseClick.html">https://www.autohotkey.com/docs/commands/MouseClick.html</a>, and <a href="https://www.autohotkey.com/docs/commands/ControlClick.html">https://www.autohotkey.com/docs/commands/ControlClick.html</a>.</p>
+<p>You can record mouse actions with Pulover’s Macro Creator by following these steps :</p>
+<ul>
+<li>Start Pulover’s Macro Creator.</li>
+<li>Click on the Record button on the toolbar or press Ctrl+R.</li>
+<li>Press the record hotkey (default is F9).</li>
+<li>Make mouse and keyboard actions.</li>
+<li>Press the record hotkey again to stop.</li>
+<li>Press the playback hotkey (default is F3) to reproduce your actions.</li>
+</ul>
+<p>You can also change the recording settings, such as recording mode, speed, delay, and coordinates in the Options menu. For more details and examples, please refer to <a href="https://www.macrocreator.com/help/">https://www.macrocreator.com/help/</a> and <a href="https://www.macrocreator.com/docs/Tutorial.html">https://www.macrocreator.com/docs/Tutorial.html</a>.</p>
+<h2 id="replicating-keyboard-keypresses">Replicating Keyboard Keypresses</h2>
+<p>You can use Send command to send keystrokes or key combinations to the active window. You can also use different modifiers to change how the keystrokes are sent, such as:</p>
+<ul>
+<li>The prefix modifiers: symbols that correspond to modifier keys like Control (^), Shift (+), Alt (!), and Windows (#). For example, Send ^a will send Ctrl+A to select all text.</li>
+<li>The blind mode: {Blind} keyword that sends keystrokes without changing the state of modifier keys. For example, Send {Blind}{Ctrl up} will release Ctrl without affecting other modifiers.</li>
+<li>The raw mode: {Raw} keyword that sends keystrokes exactly as they appear rather than translating them. For example, Send {Raw}+a will send +a instead of A (Shift+A).</li>
+<li>The delay mode: {Delay Xms} keyword that sets a delay between keystrokes for X milliseconds. For example, Send {Delay 100ms}Hello will send Hello with a 100 ms delay between each letter.</li>
+</ul>
+<p>You can also use other keywords and options for more advanced usage of Send command. For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/Send.htm">https://www.autohotkey.com/docs/commands/Send.htm</a> and <a href="https://www.autohotkey.com/docs/v2/lib/Send.htm">https://www.autohotkey.com/docs/v2/lib/Send.htm</a>.
+You can use ControlSend command to send keystrokes to a specific control of a window, even if it is not active or visible. You need to specify the control name or ID, the keystrokes, and the window title or ID as parameters. For example, ControlSend Edit1, Hello World!, Untitled - Notepad will send Hello World! to the edit control of Notepad.</p>
+<p>However, some windows or controls may not accept keystrokes sent by ControlSend. In that case, you may need to activate the window briefly before sending keystrokes and then switch back to your current window. You can use WinActivate and WinRestore commands for that purpose. For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/ControlSend.htm">https://www.autohotkey.com/docs/commands/ControlSend.htm</a> and <a href="https://www.autohotkey.com/board/topic/2155-send-keystrokes-to-background-window/">https://www.autohotkey.com/board/topic/2155-send-keystrokes-to-background-window/</a>.
+You can record keyboard actions with Pulover’s Macro Creator by following these steps :</p>
+<ul>
+<li>Start Pulover’s Macro Creator.</li>
+<li>Click on the Record button on the toolbar or press Ctrl+R.</li>
+<li>Press the record hotkey (default is F9).</li>
+<li>Make keyboard actions. You can also record mouse actions if you want.</li>
+<li>Press the record hotkey again to stop.</li>
+<li>Press the playback hotkey (default is F3) to reproduce your actions.</li>
+</ul>
+<p>You can also edit, save, load, and export your recorded macros using Pulover’s Macro Creator. For more details and examples, please refer to <a href="https://www.macrocreator.com/docs/Tutorial.html">https://www.macrocreator.com/docs/Tutorial.html</a> and <a href="https://www.macrocreator.com/help/">https://www.macrocreator.com/help/</a>.</p></content></div></div></div></div><div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div></div>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-03-22<!-- -->.</div></div></div>
+  </body></html>
