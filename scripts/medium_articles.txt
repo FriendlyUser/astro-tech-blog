@@ -205,3 +205,6 @@
 /posts/tech/2023/pycaret_300.md
 /posts/tech/2023/drogon_with_trump_api.md
 /posts/tech/autohotkey/automate_windows_with_auto_hot_key.md
+/posts/tech/js/node_v18_release.md
+/posts/tech/rust/getting_started_with_threads_in_rust.md
+/posts/tech/autohotkey/how_to_use_autohotkey.md
