@@ -208,3 +208,4 @@
 /posts/tech/js/node_v18_release.md
 /posts/tech/rust/getting_started_with_threads_in_rust.md
 /posts/tech/autohotkey/how_to_use_autohotkey.md
+/posts/tech/rust/getting_started_with_io_in_rust.md
