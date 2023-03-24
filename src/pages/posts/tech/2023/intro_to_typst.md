@@ -1,7 +1,7 @@
 ---
 tags: ['typst']
-title: What is laravel.
-description: Explaining what laravel is.
+title: What is Typst.
+description: Typst is a new markup-based typesetting system for the sciences that is designed to be an alternative both to advanced tools like LaTeX and simpler tools like Word and Google Docs..
 pubDate: Fri, 14 June 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1900267581.png
