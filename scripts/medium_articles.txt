@@ -210,3 +210,4 @@
 /posts/tech/autohotkey/how_to_use_autohotkey.md
 /posts/tech/rust/getting_started_with_io_in_rust.md
 /posts/tech/2023/intro_to_typst.md
+/posts/tech/rust/how_to_use_unsafe_operators_in_rust.md
