@@ -211,3 +211,5 @@
 /posts/tech/rust/getting_started_with_io_in_rust.md
 /posts/tech/2023/intro_to_typst.md
 /posts/tech/rust/how_to_use_unsafe_operators_in_rust.md
+/posts/tech/rust/how_to_use_rust_macros.md
+/posts/tech/rust/rust_synchronize_primitives.md
