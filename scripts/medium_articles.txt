@@ -213,3 +213,4 @@
 /posts/tech/rust/how_to_use_unsafe_operators_in_rust.md
 /posts/tech/rust/how_to_use_rust_macros.md
 /posts/tech/rust/rust_synchronize_primitives.md
+/posts/tech/rust/intro_to_rust_lifetimes.md
