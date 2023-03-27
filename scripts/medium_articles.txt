@@ -214,3 +214,4 @@
 /posts/tech/rust/how_to_use_rust_macros.md
 /posts/tech/rust/rust_synchronize_primitives.md
 /posts/tech/rust/intro_to_rust_lifetimes.md
+/posts/tech/ai/how_I_generate_logos_with_ai.md
