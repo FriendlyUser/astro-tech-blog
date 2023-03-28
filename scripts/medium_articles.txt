@@ -215,3 +215,6 @@
 /posts/tech/rust/rust_synchronize_primitives.md
 /posts/tech/rust/intro_to_rust_lifetimes.md
 /posts/tech/ai/how_I_generate_logos_with_ai.md
+/posts/tech/rust/dynamic_linking_in_rust.md
+/posts/tech/rust/rust_cross_language.md
+/posts/tech/rust/rust_ffi_with_c_and_cplusplus.md
