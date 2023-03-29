@@ -218,3 +218,8 @@
 /posts/tech/rust/dynamic_linking_in_rust.md
 /posts/tech/rust/rust_cross_language.md
 /posts/tech/rust/rust_ffi_with_c_and_cplusplus.md
+/posts/tech/js/dates_in_javascript.md
+/posts/tech/python/determine_size_of_objects_in_image_with_python.md
+/posts/tech/python/extract_text_from_pdf_in_python.md
+/posts/tech/python/personal_finance.md
+/posts/tech/go/how_to_call_c_cplusplus_from_go.md

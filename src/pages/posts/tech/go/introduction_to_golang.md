@@ -1,7 +1,7 @@
 ---
 tags: ['csharp', 'dotnet']
-title: Introduction to csharp
-description: Explaining the history of csharp and how it is used
+title: Introduction to golang
+description: Explaining the history of golang and how it is used
 pubDate: Fri, 17 January 2024
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1797349317.png"
