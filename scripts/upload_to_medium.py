@@ -5,6 +5,7 @@ import requests
 import time 
 from dateutil.parser import parse
 from datetime import datetime
+from dotenv import load_dotenv
 
 def publish_to_medium(data):
     token = os.getenv("MEDIUM_TOKEN")
@@ -89,6 +90,11 @@ def make_articles_for_dev():
   pass
 
 def main():
-    make_articles_for_medium()
+  try:
+    load_dotenv()
+  except Exception as e:
+    raise e
+  make_articles_for_medium()
+
 if __name__ == "__main__":
     main()

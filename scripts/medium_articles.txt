@@ -223,3 +223,8 @@
 /posts/tech/python/extract_text_from_pdf_in_python.md
 /posts/tech/python/personal_finance.md
 /posts/tech/go/how_to_call_c_cplusplus_from_go.md
+/posts/tech/js/building_cli_applications_in_typescript.md
+/posts/tech/2023/csvs_with_cpp.md
+/posts/tech/rust/file_size_tool_in_rust.md
+/posts/tech/rust/intro_to_web_scrapping_in_rust.md
+/posts/tech/rust/text_diff_tool_in_rust.md
