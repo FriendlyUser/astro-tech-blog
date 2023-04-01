@@ -228,3 +228,5 @@
 /posts/tech/rust/file_size_tool_in_rust.md
 /posts/tech/rust/intro_to_web_scrapping_in_rust.md
 /posts/tech/rust/text_diff_tool_in_rust.md
+/posts/random/practise_for_tech_interview.md
+/posts/tech/2023/optimize_images_for_web.md
