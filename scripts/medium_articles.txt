@@ -230,3 +230,9 @@
 /posts/tech/rust/text_diff_tool_in_rust.md
 /posts/random/practise_for_tech_interview.md
 /posts/tech/2023/optimize_images_for_web.md
+/posts/tech/go/web_scrapping_in_golang.md
+/posts/tech/rust/image_manipulation_in_rust.md
+/posts/tech/rust/rename_files_with_rust.md
+/posts/tech/rust/simple_chat_server.md
+/posts/tech/rust/todo_list_in_rust.md
+/posts/tech/rust/weather_apis_in_rust.md
