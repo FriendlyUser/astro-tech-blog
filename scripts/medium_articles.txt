@@ -236,3 +236,6 @@
 /posts/tech/rust/simple_chat_server.md
 /posts/tech/rust/todo_list_in_rust.md
 /posts/tech/rust/weather_apis_in_rust.md
+/posts/tech/python/openbb_commodities.md
+/posts/tech/go/text_diff_tool_in_go.md
+/posts/tech/python/projects/contact_book.md
