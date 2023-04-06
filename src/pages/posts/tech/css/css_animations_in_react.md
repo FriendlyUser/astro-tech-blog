@@ -22,19 +22,19 @@ python`import { useInView } from 'react-intersection-observer';
 
 
 ```jsx
-scss`const [ref, inView] = useInView();
+const [ref, inView] = useInView();
 ```
 4. Add the `ref` attribute to the target element that you want to track, like this:
 
 
 ```jsx
-php`<div ref={ref}>...</div>
+<div ref={ref}>...</div>
 ```
 5. Use the `inView` variable to conditionally render content or apply styles based on whether the element is currently in view, like this:
 
 
 ```jsx
-javascript`{inView ? <div>Visible</div> : <div>Not visible</div>}
+{inView ? <div>Visible</div> : <div>Not visible</div>}
 ```
 
 That's the basic usage of the React Intersection Observer library. You can also customize the options for the observer, such as the threshold and whether to detect visibility on the horizontal or vertical axis, by passing an object as the second argument to the `useInView` hook.
@@ -49,14 +49,14 @@ Here's an example of a fade-in animation using the `opacity` property:
 
 
 ```jsx
-jsx`import { useInView } from 'react-intersection-observer';
+import { useInView } from 'react-intersection-observer';
 import './styles.css';
 ```
 3. Use the `useInView` hook to track the visibility of your target element:
 
 
 ```jsx
-jsx`function MyComponent() {
+function MyComponent() {
  const { ref, inView } = useInView();
 
  return (
@@ -69,8 +69,8 @@ jsx`function MyComponent() {
 4. Add the animation styles to your CSS file:
 
 
-```jsx
-css`.fade-in {
+```css
+.fade-in {
  opacity: 0;
  transition: opacity 1s ease-in-out;
 }
@@ -83,7 +83,7 @@ css`.fade-in {
 
 
 ```jsx
-jsx`function MyComponent() {
+function MyComponent() {
  const { ref, inView } = useInView();
 
  return (
