@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting started in opencv with python - Astro Tech Blog</title>
+    <meta name="description" content="Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.a14bf900.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Getting started in opencv with python</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 10 Feb 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-green-400 text-green-900"> <a href="/tags/python" style="padding-right:3px"> <category>python<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/selenium" style="padding-right:3px"> <category>selenium<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/opencv" style="padding-right:3px"> <category>opencv<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3750534419.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <p>Getting Started with Computer Vision</p>
+<p>Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos.</p>
+<p>If you’re new to computer vision, here are some steps to get started:</p>
+<ol>
+<li>
+<p>Pick a computer vision library or framework. The most popular options are OpenCV, TensorFlow, Keras, and PyTorch. These libraries have simplified computer vision and made algorithms more accessible to developers. OpenCV is a great option for beginners with its easy-to-use C++ and Python interfaces.</p>
+</li>
+<li>
+<p>Learn the basics. Some fundamental concepts in computer vision include object detection, image classification, facial recognition, optical character recognition, and image segmentation. Read up on how these techniques work and see examples of them in practice.</p>
+</li>
+<li>
+<p>Start with some simple projects. Good beginner projects include image classification, where you train an algorithm to identify objects in images, and facial detection, where you can build a system to detect faces in images or videos. These projects require limited code and can be completed quickly.</p>
+</li>
+<li>
+<p>Explore pre-trained image classification models. Many libraries offer pre-trained models, such as ResNet, VGGNet, and Inception, that can classify thousands of objects in images. You can simply load the model and retrain it on your own dataset. This is an easy way to get into image classification without building a model from scratch.</p>
+</li>
+<li>
+<p>Keep practicing and building more complex models. Take on more advanced projects like object detection, semantic segmentation, pose estimation, and image generation. Continue learning about deeper neural network architectures and training techniques. Stay up-to-date with the latest research in the field.</p>
+</li>
+</ol>
+<p>With time and consistent practice, you can become proficient in computer vision. But be prepared—it is a fast-moving field with constant innovations and advancements. Keep learning and building projects to strengthen your skills. Before you know it, you’ll be crunching pixels with the best of them!</p>
+<p>Here are some good beginner OpenCV projects to do in Python:</p>
+<p>•Image recognition - Load an image classification model like ResNet or VGGNet and recognize objects in your own images. OpenCV makes it easy to do image classification with these pre-trained models.</p>
+<p>•Face detection - Detect faces in images or videos using the Haar cascade classifier. You can draw bounding boxes around the faces and extract facial landmarks.</p>
+<p>•Optical character recognition - Take a photo of text and convert it into digital text you can edit and search. Use OpenCV’s OCR techniques to recognize text in images.</p>
+<p>•Color detection - Detect a specific color in an image or video. You can track a red ball, detect green foliage, or find blue objects, for example. Use inRange() to filter out colors.</p>
+<p>•Shape detection - Detect basic shapes like circles, rectangles, triangles, etc. in images. Use edge detection and contour analysis to detect and highlight shapes.</p>
+<p>•Motion detection - Detect movement in a video using background subtraction techniques. See if there is a change in the scene by comparing frames and determining moving objects.</p>
+<p>•Image segmentation - Separate objects from the background in an image. Segmentation allows you to extract objects, count pixels, or create transparency. Use algorithms like contour detection or watershed segmentation.</p>
+<p>•Face swapping - Detect faces in two images and swap them, placing one face onto the other image. This uses face detection, facial landmark detection, and seamless cloning.</p>
+<p>•Perspective correction - Take a photo of a document or scene at an angle and fix the perspective distortion. Use OpenCV’s warpPerspective() function to transform the perspective.</p>
+<p>•Camera calibration - Calibrate your camera to correct for lens distortion and other imperfections. Allows you to measure real-world distances and perform accurate augmented reality.</p>
+<p>•Cartoonizer - Turn an image into a cartoon! Simplify an image using techniques like median blurring, adaptive thresholding, and edge detection.</p>
+<p>These are just a few ideas, but OpenCV is capable of accomplishing many computer vision tasks. The best way to learn is to pick a project that interests you and start coding! Let me know if you have any other questions.</p>
+<p>Here is a basic process to cartoonize an image using OpenCV in Python:</p>
+<ol>
+<li>
+<p>Import OpenCV and NumPy libraries
+import cv2
+import numpy as np</p>
+</li>
+<li>
+<p>Read the input image
+image = cv2.imread(‘input.jpg’)</p>
+</li>
+<li>
+<p>Convert to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)</p>
+</li>
+<li>
+<p>Apply Gaussian blur to smooth the image
+blur = cv2.medianBlur(gray, 9)</p>
+</li>
+<li>
+<p>Detect edges using the Canny edge detector
+edges = cv2.Canny(blur, threshold1=100, threshold2=200)</p>
+</li>
+<li>
+<p>Create a mask image filled with zeroes
+mask = np.zeros_like(edges)</p>
+</li>
+<li>
+<p>Create contour lines using edged image
+contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE,
+cv2.CHAIN_APPROX_NONE)</p>
+</li>
+<li>
+<p>Fill the contours with white color on the mask image
+cv2.drawContours(mask, contours, -1, 255, 1)</p>
+</li>
+<li>
+<p>Dilate the masked image to get bold lines
+mask = cv2.dilate(mask, None, iterations=2)</p>
+</li>
+<li>
+<p>Bitwise AND between input image and mask
+result = cv2.seamlessClone(np.uint8(mask), image, (0,0), (image.shape[1],
+image.shape[0]),
+cv2.NORMAL_CLONE)</p>
+</li>
+<li>
+<p>Show the output cartoonized image
+cv2.imshow(‘Cartoonized Image’, result)
+cv2.waitKey(0)</p>
+</li>
+</ol>
+<p>This is a high-level overview of the cartoonization process. Let me know if you have any questions regarding the specific functions used! I can provide more details.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cv2</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Read the input image</span></span>
+<span class="line"><span style="color: #F8F8F2">image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.imread(</span><span style="color: #E6DB74">'input.jpg'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Convert to grayscale</span></span>
+<span class="line"><span style="color: #F8F8F2">gray </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.cvtColor(image, cv2.</span><span style="color: #AE81FF">COLOR_BGR2GRAY</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Apply Gaussian blur to smooth the image</span></span>
+<span class="line"><span style="color: #F8F8F2">blur </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.medianBlur(gray, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Detect edges using the Canny edge detector</span></span>
+<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Create a mask image filled with zeroes</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.zeros_like(edges)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Create contour lines using edged image</span></span>
+<span class="line"><span style="color: #F8F8F2">contours, hierarchy </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.findContours(edges.copy(), cv2.</span><span style="color: #AE81FF">RETR_TREE</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.</span><span style="color: #AE81FF">CHAIN_APPROX_NONE</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Fill the contours with white color on the mask image</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.drawContours(mask, contours, </span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">255</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Dilate the masked image to get bold lines</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Bitwise AND between input image and mask</span></span>
+<span class="line"><span style="color: #F8F8F2">result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.seamlessClone(np.uint8(mask), image, (</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">), (image.shape[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">image.shape[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]),</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.</span><span style="color: #AE81FF">NORMAL_CLONE</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Show the output cartoonized image</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.imshow(</span><span style="color: #E6DB74">'Cartoonized Image'</span><span style="color: #F8F8F2">, result)</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.waitKey(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cv2</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Read the input image</span></span>
+<span class="line"><span style="color: #F8F8F2">image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.imread(</span><span style="color: #E6DB74">'input.jpg'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Convert to grayscale</span></span>
+<span class="line"><span style="color: #F8F8F2">gray </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.cvtColor(image, cv2.</span><span style="color: #AE81FF">COLOR_BGR2GRAY</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Apply Gaussian blur to smooth the image</span></span>
+<span class="line"><span style="color: #F8F8F2">blur </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.medianBlur(gray, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Detect edges using the Canny edge detector</span></span>
+<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Create a mask image filled with zeroes</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.zeros_like(edges)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Create contour lines using edged image</span></span>
+<span class="line"><span style="color: #F8F8F2">contours, hierarchy </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.findContours(edges.copy(), cv2.</span><span style="color: #AE81FF">RETR_TREE</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.</span><span style="color: #AE81FF">CHAIN_APPROX_NONE</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Fill the contours with white color on the mask image</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.drawContours(mask, contours, </span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">255</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Dilate the masked image to get bold lines</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Bitwise AND between input image and mask</span></span>
+<span class="line"><span style="color: #F8F8F2">result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.seamlessClone(np.uint8(mask), image, (</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">), (image.shape[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">image.shape[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]),</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.</span><span style="color: #AE81FF">NORMAL_CLONE</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Show the output cartoonized image</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.imshow(</span><span style="color: #E6DB74">'Cartoonized Image'</span><span style="color: #F8F8F2">, result)</span></span>
+<span class="line"><span style="color: #F8F8F2">cv2.waitKey(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span></code></pre>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-08<!-- -->.</div></div></div>
+  </body></html>
