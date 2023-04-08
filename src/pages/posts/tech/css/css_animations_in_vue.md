@@ -1,3 +1,12 @@
+---
+tags: ['css', 'vue']
+title: Css Animations in Vue
+description: Vue is a popular JavaScript framework that allows developers to create dynamic, reactive user interfaces. One of the ways Vue makes this possible is by allowing developers to easily integrate CSS animations into their Vue components. In this article, we will explore how to use CSS animations in Vue.
+pubDate: Fri, 21 March 2024
+layout: "@/templates/BasePost.astro"
+imgSrc: /imgs/2023/1492118595.png
+---
+
 Vue is a popular JavaScript framework that allows developers to create dynamic, reactive user interfaces. One of the ways Vue makes this possible is by allowing developers to easily integrate CSS animations into their Vue components. In this article, we will explore how to use CSS animations in Vue.
 
 First, we need to understand what CSS animations are. CSS animations are a way to add motion and dynamic effects to elements on a webpage. Animations can be triggered by events such as hovering over an element, clicking on it, or simply loading the page. CSS animations can be applied to a wide range of CSS properties, such as color, opacity, and position, among others.
