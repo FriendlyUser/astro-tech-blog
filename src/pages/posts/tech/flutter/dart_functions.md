@@ -4,6 +4,7 @@ title: Getting started with dart and appwrite
 description: How to use appwrite to deploy dart functions
 pubDate: Fri, 29 November 2024
 layout: "@/templates/BasePost.astro"
+imgSrc: /imgs/2023/248665811.png
 ---
 What is appwrite?
 Appwrite is an open-source backend as a service (BaaS) platform that provides a set of easy-to-use APIs and SDKs for building web and mobile applications. It offers features such as authentication, database management, file storage, and serverless functions, all of which can be used to build modern web and mobile apps faster and more efficiently. Appwrite can be self-hosted or used as a cloud service, and it provides a simple and intuitive user interface for managing your app's backend.

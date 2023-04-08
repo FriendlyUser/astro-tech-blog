@@ -46,7 +46,7 @@ We also specify that the animation should run indefinitely using the infinite ke
 
 To trigger the animation when the user hovers over the button, we can add a :hover pseudo-class to the CSS selector, like this:
 
-```vue
+```
 .pulse:hover {
   animation: pulse 1s infinite;
 }
@@ -56,7 +56,7 @@ Now the button will pulse whenever the user hovers over it.
 
 We can also use Vue's data and computed properties to control the animation. For example, we could define a isPulsing data property that determines whether the button should pulse or not:
 
-```vue
+```
 <template>
   <button :class="{'pulse': isPulsing}" @click="isPulsing = !isPulsing">
     {{ isPulsing ? 'Stop pulsing' : 'Start pulsing' }}
@@ -100,7 +100,7 @@ Another useful feature of Vue is its transitions system. Transitions allow you t
 
 Here's an example of how to use Vue's transition component to apply a fade-in animation to a list of items:
 
-```vue
+```
 <template>
   <div>
     <button @click="addItem">Add item</button>
@@ -145,7 +145,7 @@ In this example, we define a button that adds a new item to the list when clicke
 
 Vue provides several hooks that allow you to control the transition. For example, you can use the before-enter hook to set the initial state of the element before the animation starts:
 
-```vue
+```
 <template>
   <div>
     <button @click="addItem">Add item</button>
