@@ -239,3 +239,9 @@
 /posts/tech/python/openbb_commodities.md
 /posts/tech/go/text_diff_tool_in_go.md
 /posts/tech/python/projects/contact_book.md
+/posts/tech/css/how_to_implement_page_transitions_in_next_js.md
+/posts/tech/flutter/dart_functions.md
+/posts/tech/js/clear_deactivated_twilio_numbers_with_bullmq_and_node.md
+/posts/tech/rust/computer_vision_in_rust.md
+/posts/tech/rust/email_slicer_in_rust.md
+/posts/tech/python/projects/password_generator.md
