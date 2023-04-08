@@ -1,8 +1,8 @@
 ---
 title: "Jumpstarting Computer Vision in Rust: A Beginner's Guide"
 description: Computer vision is important because it allows machines to interpret and understand visual information in a way that is similar to how humans do. In this article we explore how to use OpenCV in Rust.
-pubDate: Saturday, 24 November 2023 13:00:00 GMT
-tags: ["rust", "javascript"]
+pubDate: Saturday, 24 November 2024 13:00:00 GMT
+tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/235824961.png'
 ---
