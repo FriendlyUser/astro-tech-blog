@@ -1,3 +1,12 @@
+---
+tags: ['python', 'selenium', 'opencv']
+title: Getting started in opencv with python
+description: Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos. 
+pubDate: Fri, 10 Feb 2023
+layout: "@/templates/BasePost.astro"
+imgSrc: "/imgs/2023/3750534419.png"
+---
+
 Getting Started with Computer Vision
 
 Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos. 
