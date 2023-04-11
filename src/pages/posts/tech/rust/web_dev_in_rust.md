@@ -1,3 +1,12 @@
+---
+title: How I built out my latex diagrams project
+description: How I build out the latex diagrams project
+tags: ["latex", "bash"]
+pubDate: Saturday, 29 October 2022 13:00:00 GMT
+layout: '@/templates/BasePost.astro'
+imgSrc: "/imgs/2023/nature_0.jpeg"
+---
+
 # Building Web Applications with Rust using Actix Web
 
 Rust is a systems programming language that offers many benefits for web application development. Its speed, safety, and strong type system make it an excellent choice for building modern web applications. In this article, we will introduce you to building web apps with Rust and discuss topics like routing, middleware, and database access using the Actix Web framework.
