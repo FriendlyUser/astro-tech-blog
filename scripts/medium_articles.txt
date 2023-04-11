@@ -245,3 +245,4 @@
 /posts/tech/rust/computer_vision_in_rust.md
 /posts/tech/rust/email_slicer_in_rust.md
 /posts/tech/python/projects/password_generator.md
+/posts/tech/rust/building_web_apps_with_rust.md

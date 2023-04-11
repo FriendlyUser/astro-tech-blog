@@ -1,8 +1,8 @@
 ---
-title: How I built out my latex diagrams project
-description: How I build out the latex diagrams project
-tags: ["latex", "bash"]
-pubDate: Saturday, 29 October 2022 13:00:00 GMT
+title: Building Web Applications with Rust using Actix Web
+description: In this article, we will introduce you to building web apps with Rust and discuss topics like routing, middleware, and database access using the Actix Web framework.
+tags: ["rust", "bash"]
+pubDate: Saturday, 29 April 2024 13:00:00 GMT
 layout: '@/templates/BasePost.astro'
 imgSrc: "/imgs/2023/nature_0.jpeg"
 ---
