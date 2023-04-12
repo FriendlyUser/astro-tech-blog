@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Web Applications with Rocket for Rust - Astro Tech Blog</title>
+    <meta name="description" content="In this tutorial, we'll explore how to build a web application using the Rocket web framework for the Rust programming language. Rocket is a fast, type-safe, and easy-to-use framework that allows us to build web applications quickly, leveraging the power and safety of the Rust language.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.a14bf900.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Building Web Applications with Rocket for Rust</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 27 December 2024 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/rust" style="padding-right:3px"> <category>rust<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/ffi" style="padding-right:3px"> <category>ffi<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/251520990.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="building-web-applications-with-rocket-for-rust">Building Web Applications with Rocket for Rust</h1>
+<p>In this tutorial, we’ll explore how to build a web application using the Rocket web framework for the Rust programming language. Rocket is a fast, type-safe, and easy-to-use framework that allows us to build web applications quickly, leveraging the power and safety of the Rust language.</p>
+<h2 id="setting-up-the-environment">Setting up the Environment</h2>
+<p>Before we start, make sure you have the following prerequisites installed:</p>
+<ul>
+<li>Rust: You can install Rust using rustup by following the instructions on the <a href="https://www.rust-lang.org/tools/install">official Rust website</a>.</li>
+<li>Cargo: Cargo is the Rust package manager, and it is included in the Rust installation.</li>
+</ul>
+<h2 id="creating-a-new-project">Creating a New Project</h2>
+<p>To create a new Rocket project, we’ll first create a new Rust binary project using Cargo. Open a terminal and run the following command:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo new rocket_example --bin</span></span></code></pre>
+<p>This command creates a new binary project named <code>rocket_example</code>. Change into the project directory using:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> rocket_example</span></span></code></pre>
+<h2 id="adding-dependencies">Adding Dependencies</h2>
+<p>To use Rocket, we need to add it as a dependency in our <code>Cargo.toml</code> file. Open <code>Cargo.toml</code> and add the following lines under <code>[dependencies]</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rocket = </span><span style="color: #E6DB74">"0.5"</span></span>
+<span class="line"><span style="color: #F8F8F2">rocket_dyn_templates = </span><span style="color: #E6DB74">"0.5"</span></span>
+<span class="line"><span style="color: #F8F8F2">serde = { version = </span><span style="color: #E6DB74">"1.0"</span><span style="color: #F8F8F2">, features = [</span><span style="color: #E6DB74">"derive"</span><span style="color: #F8F8F2">] }</span></span></code></pre>
+<p>Here, we’re adding the <code>rocket</code>, <code>rocket_dyn_templates</code>, and <code>serde</code> dependencies. <code>rocket_dyn_templates</code> is a dynamic template rendering engine, while <code>serde</code> is a serialization and deserialization library.</p>
+<h2 id="writing-a-simple-web-application">Writing a Simple Web Application</h2>
+<p>Now that we have our dependencies set up, let’s build a simple web application. Open <code>src/main.rs</code> and replace its contents with the following code:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">[feature(proc_macro_hygiene, decl_macro)]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[macro_use] </span><span style="color: #66D9EF">extern</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">crate</span><span style="color: #F8F8F2"> rocket;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rocket</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Request</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rocket_dyn_templates</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Template</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[get(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">)]</span></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">index</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Template</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> context </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">collections</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">HashMap</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2">></span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Template</span><span style="color: #F92672">::</span><span style="color: #A6E22E">render</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"index"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">context)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[catch(404)]</span></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">not_found</span><span style="color: #F8F8F2">(req</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; font-weight: bold">Request</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">format!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Oops! The path '{}' was not found."</span><span style="color: #F8F8F2">, req</span><span style="color: #F92672">.</span><span style="color: #A6E22E">uri</span><span style="color: #F8F8F2">())</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[launch]</span></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">rocket</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> _ {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">rocket</span><span style="color: #F92672">::</span><span style="color: #A6E22E">build</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">.</span><span style="color: #A6E22E">mount</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E">routes!</span><span style="color: #F8F8F2">[index])</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">.</span><span style="color: #A6E22E">register</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E">catchers!</span><span style="color: #F8F8F2">[not_found])</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">.</span><span style="color: #A6E22E">attach</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">Template</span><span style="color: #F92672">::</span><span style="color: #A6E22E">fairing</span><span style="color: #F8F8F2">())</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we:</p>
+<ol>
+<li>Enable the required features: <code>proc_macro_hygiene</code> and <code>decl_macro</code>.</li>
+<li>Import the necessary types and macros from the <code>rocket</code> and <code>rocket_dyn_templates</code> crates.</li>
+<li>Define an <code>index</code> function that returns a <code>Template</code> and is decorated with the <code>#[get("/")]</code> attribute, which associates the function with the root path (”/”).</li>
+<li>Define a <code>not_found</code> function that returns a custom 404 error message.</li>
+<li>Define the <code>rocket</code> function, which launches our Rocket application, mounts the index route, registers the 404 catcher, and attaches the template fairing.</li>
+</ol>
+<h2 id="creating-a-template">Creating a Template</h2>
+<p>Now, let’s create an <code>index</code> template. In your project’s root directory, create a new folder named <code>templates</code>. Inside the <code>templates</code> folder, create a new file named <code>index.html.tera</code> with the following content:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;!</span><span style="color: #F92672">DOCTYPE</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">html</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">html</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">lang</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"en"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">head</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">meta</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">charset</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"UTF-8"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">meta</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"viewport"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">content</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"width=device-width, initial-scale=1.0"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">title</span><span style="color: #F8F8F2">>Rocket Example&#x3C;/</span><span style="color: #F92672">title</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">head</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">body</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Welcome to the Rocket Example!&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">body</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">html</span><span style="color: #F8F8F2">></span></span></code></pre>
+<p>This simple HTML file will be used as our template when rendering the index route.</p>
+<h2 id="running-the-application">Running the Application</h2>
+<p>To run the application, open a terminal in the project’s root directory and execute the following command:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo run</span></span></code></pre>
+<p>This command compiles and runs our web application. You should see output similar to the following:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">🔧 Configured for development.</span></span>
+<span class="line"><span style="color: #F8F8F2">    => address: localhost</span></span>
+<span class="line"><span style="color: #F8F8F2">    => port: 8000</span></span>
+<span class="line"><span style="color: #F8F8F2">🛰  Mounting /:</span></span>
+<span class="line"><span style="color: #F8F8F2">    => GET / (index)</span></span>
+<span class="line"><span style="color: #F8F8F2">🚀 Rocket has launched from http://localhost:8000</span></span></code></pre>
+<p>Open a web browser and navigate to <code>http://localhost:8000</code>. You should see our “Welcome to the Rocket Example!” message.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this tutorial, we have learned how to set up a simple web application using the Rocket framework for Rust. We’ve seen how to create routes, catchers, and use templates to render HTML. You can now use these basic concepts to build more complex web applications with Rocket and Rust.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-12<!-- -->.</div></div></div>
+  </body></html>
