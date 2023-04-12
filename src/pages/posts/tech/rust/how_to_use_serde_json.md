@@ -4,7 +4,7 @@ description: serde_json is a Rust library that can be used to serialize and dese
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/294668704.png'
 ---
 
 
