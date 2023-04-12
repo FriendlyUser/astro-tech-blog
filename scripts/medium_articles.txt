@@ -246,3 +246,4 @@
 /posts/tech/rust/email_slicer_in_rust.md
 /posts/tech/python/projects/password_generator.md
 /posts/tech/rust/building_web_apps_with_rust.md
+/posts/tech/rust/using_rocket_for_web_apps.md
