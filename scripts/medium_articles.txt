@@ -247,3 +247,8 @@
 /posts/tech/python/projects/password_generator.md
 /posts/tech/rust/building_web_apps_with_rust.md
 /posts/tech/rust/using_rocket_for_web_apps.md
+/posts/tech/rust/crash_proof_systems_in_rust.md
+/posts/tech/rust/getting_started_with_mongodb_in_rust.md
+/posts/tech/rust/getting_started_with_ta_in_rust.md
+/posts/tech/rust/how_to_use_serde_json.md
+/posts/tech/rust/pokeapi_in_rust.md
