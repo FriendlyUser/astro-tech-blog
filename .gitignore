@@ -23,3 +23,5 @@ Thumbs.db
 ref/dist
 ref
 .env
+
+gen_articles.sh
