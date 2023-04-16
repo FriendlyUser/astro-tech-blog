@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using the Chrono Crate in Rust for Time and Date Handling - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will explore the features of the Chrono crate and demonstrate how to use it for various time and date operations.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.a14bf900.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using the Chrono Crate in Rust for Time and Date Handling</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Friday, 17 Feb 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/rust" style="padding-right:3px"> <category>rust<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/335264211.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="using-the-chrono-crate-in-rust-for-time-and-date-handling">Using the Chrono Crate in Rust for Time and Date Handling</h1>
+<p>Rust is a systems programming language that aims to provide memory safety, concurrency, and performance. For handling time and date operations, Rust has a popular crate called Chrono. Chrono is a comprehensive library that provides support for various time-related operations, including parsing, formatting, and arithmetic.</p>
+<p>In this article, we will explore the features of the Chrono crate and demonstrate how to use it for various time and date operations.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>To follow this article, you should have:</p>
+<ul>
+<li>A basic understanding of the Rust programming language</li>
+<li><a href="https://www.rust-lang.org/tools/install">Rust and Cargo installed</a> on your system</li>
+</ul>
+<h2 id="setting-up-the-project">Setting Up the Project</h2>
+<p>To begin, let’s create a new Rust project using Cargo:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo new chrono_demo</span></span>
+<span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> chrono_demo</span></span></code></pre>
+<p>Next, add the Chrono crate to the <code>Cargo.toml</code> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">chrono = </span><span style="color: #E6DB74">"0.4"</span></span></code></pre>
+<p>After adding the dependency, run <code>cargo build</code> to download and compile the Chrono crate.</p>
+<h2 id="working-with-chrono">Working with Chrono</h2>
+<p>Now that our project is set up, let’s explore the main features of Chrono.</p>
+<h3 id="creating-date-and-time-objects">Creating Date and Time Objects</h3>
+<p>Chrono provides several structs to represent date and time objects:</p>
+<ul>
+<li><code>NaiveDate</code>: Represents a date without timezone information</li>
+<li><code>NaiveTime</code>: Represents a time without timezone information</li>
+<li><code>NaiveDateTime</code>: Represents a date and time without timezone information</li>
+<li><code>DateTime&#x3C;Utc></code>: Represents a date and time with timezone information (using the UTC timezone)</li>
+</ul>
+<p>Here’s an example of creating different date and time objects:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">chrono</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">NaiveTime</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">NaiveDateTime</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">Utc</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_ymd</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2023</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">16</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> time </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveTime</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_hms</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">12</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">34</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">56</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> datetime </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveDateTime</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(date, time);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> utc_datetime </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Utc</span><span style="color: #F92672">::</span><span style="color: #A6E22E">now</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Date: {}"</span><span style="color: #F8F8F2">, date);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Time: {}"</span><span style="color: #F8F8F2">, time);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"DateTime: {}"</span><span style="color: #F8F8F2">, datetime);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"UTC DateTime: {}"</span><span style="color: #F8F8F2">, utc_datetime);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="parsing-and-formatting-dates-and-times">Parsing and Formatting Dates and Times</h3>
+<p>Chrono allows you to parse and format dates and times using format strings. The format strings use placeholders that correspond to different date and time components.</p>
+<p>Here’s an example of parsing and formatting dates and times:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">chrono</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">NaiveDateTime</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">DateTime</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">Utc</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">LocalResult</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #88846F">    // Parsing a date from a string</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date_str </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"2023-04-16"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> parsed_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F92672">::</span><span style="color: #A6E22E">parse_from_str</span><span style="color: #F8F8F2">(date_str, </span><span style="color: #E6DB74">"%Y-%m-%d"</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Parsed Date: {}"</span><span style="color: #F8F8F2">, parsed_date);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Formatting a date as a string</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> formatted_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> parsed_date</span><span style="color: #F92672">.</span><span style="color: #A6E22E">format</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"%A, %B %e, %Y"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Formatted Date: {}"</span><span style="color: #F8F8F2">, formatted_date);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Parsing a datetime from a string</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> datetime_str </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"2023-04-16T12:34:56Z"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> parsed_datetime </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">DateTime</span><span style="color: #F92672">::</span><span style="color: #A6E22E">parse_from_rfc3339</span><span style="color: #F8F8F2">(datetime_str)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Parsed DateTime: {}"</span><span style="color: #F8F8F2">, parsed_datetime);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Formatting a datetime as a string</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> formatted_datetime </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> parsed_datetime</span><span style="color: #F92672">.</span><span style="color: #A6E22E">format</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"%Y-%m-%dT%H:%M:%S%z"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Formatted DateTime: {}"</span><span style="color: #F8F8F2">, formatted_datetime);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="time-arithmetic-and-comparisons">Time Arithmetic and Comparisons</h3>
+<p>Chrono allows you to perform arithmetic operations and comparisons on date and time objects. You can add or subtract durations, compare dates and times, and calculate the difference between two dates or times.</p>
+<p>Here’s an example of time arithmetic and comparisons:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">chrono</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">Duration</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date1 </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_ymd</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2023</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">16</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date2 </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">NaiveDate</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_ymd</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2023</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Adding and subtracting durations</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date_plus_one_week </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> date1 </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Duration</span><span style="color: #F92672">::</span><span style="color: #A6E22E">days</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">7</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> date_minus_one_month </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> date1 </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Duration</span><span style="color: #F92672">::</span><span style="color: #A6E22E">days</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"One week later: {}"</span><span style="color: #F8F8F2">, date_plus_one_week);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"One month earlier: {}"</span><span style="color: #F8F8F2">, date_minus_one_month);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Comparing dates</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> date1 </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> date2 {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{} is earlier than {}"</span><span style="color: #F8F8F2">, date1, date2);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Calculating the difference between dates</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> duration </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> date2 </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> date1;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"There are {} days between {} and {}"</span><span style="color: #F8F8F2">, duration</span><span style="color: #F92672">.</span><span style="color: #A6E22E">num_days</span><span style="color: #F8F8F2">(), date1, date2);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we have explored the Chrono crate in Rust for handling time and date operations. Wecovered how to create date and time objects, parse and format dates and times, and perform time arithmetic and comparisons. The Chrono crate provides a powerful and easy-to-use API for working with dates and times, making it an essential tool for Rust developers.</p>
+<p>To further explore the Chrono crate and its features, check out the <a href="https://docs.rs/chrono/0.4.19/chrono/">official documentation</a>.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-16<!-- -->.</div></div></div>
+  </body></html>
