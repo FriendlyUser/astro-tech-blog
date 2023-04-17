@@ -1,6 +1,6 @@
 ---
 tags: ['go']
-title: GoAudio: A Powerful Audio Processing Library for Golang
+title: "GoAudio: A Powerful Audio Processing Library for Golang"
 description: In this article, we will explore GoAudio, a powerful and versatile audio processing library for Golang.
 pubDate: Fri, 21 October 2024
 layout: "@/templates/BasePost.astro"
