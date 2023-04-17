@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to use TerminusDB in Rust - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will explore how to use TerminusDB in Rust, and how to integrate the two technologies to build efficient and reliable applications..">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.a14bf900.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to use TerminusDB in Rust</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 24 January 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/TerminusDB" style="padding-right:3px"> <category>TerminusDB<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/rust" style="padding-right:3px"> <category>rust<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/118660664.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <p>TerminusDB is a graph database that provides a modern, powerful, and easy-to-use platform for building and deploying applications that require fast and efficient access to large amounts of data. Rust, on the other hand, is a system programming language that provides low-level control over system resources and guarantees memory safety, making it ideal for building high-performance applications that require robustness and stability.</p>
+<p>It  offers several advantages over traditional relational databases and other graph databases:</p>
+<ol>
+<li>
+<p>Schema flexibility: TerminusDB allows for easy schema evolution without data loss, which is particularly useful in situations where the data model is not fully understood at the outset of a project.</p>
+</li>
+<li>
+<p>Version control: TerminusDB has built-in version control, which allows you to easily track changes to your data over time and revert to previous versions if necessary.</p>
+</li>
+<li>
+<p>Query language: TerminusDB uses a powerful query language called WOQL (Web Ontology Query Language), which allows for complex queries and data manipulation.</p>
+</li>
+<li>
+<p>Graph visualization: TerminusDB includes a built-in graph visualization tool that allows you to explore the relationships between your data in an intuitive way.</p>
+</li>
+<li>
+<p>Collaborative editing: TerminusDB supports collaborative editing, which allows multiple users to work on the same database simultaneously.</p>
+</li>
+<li>
+<p>Open source: TerminusDB is an open-source project, which means that its source code is freely available and can be modified and redistributed by anyone.</p>
+</li>
+</ol>
+<p>In this article, we will explore how to use TerminusDB in Rust, and how to integrate the two technologies to build efficient and reliable applications.</p>
+<h2 id="getting-started-with-terminusdb">Getting Started with TerminusDB</h2>
+<p>To get started with TerminusDB, you need to first install it on your system. TerminusDB provides pre-built binaries for different platforms, including Windows, Linux, and macOS, which can be downloaded from their website.</p>
+<p>Once you have installed TerminusDB, you can start using it by running the TerminusDB server, which provides an HTTP API for interacting with the database. You can use any HTTP client library in Rust, such as Reqwest or Hyper, to interact with the TerminusDB server.</p>
+<h2 id="connecting-to-terminusdb-from-rust">Connecting to TerminusDB from Rust</h2>
+<p>To connect to TerminusDB from Rust, you need to use an HTTP client library that supports sending JSON payloads and handling JSON responses. In this article, we will use the Reqwest library, which is a popular Rust HTTP client library that provides a simple and easy-to-use interface for making HTTP requests.</p>
+<p>First, we need to add the Reqwest library to our Rust project by adding the following line to the <code>Cargo.toml</code> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">reqwest = { version = </span><span style="color: #E6DB74">"0.11"</span><span style="color: #F8F8F2">, features = [</span><span style="color: #E6DB74">"json"</span><span style="color: #F8F8F2">] }</span></span></code></pre>
+<p>This will download and install the latest version of the Reqwest library, along with the <code>json</code> feature, which provides support for JSON payloads and responses.</p>
+<p>Next, we can create a new Rust module to handle communication with TerminusDB. We will use the <code>reqwest::Client</code> struct to create a new HTTP client, and the <code>reqwest::RequestBuilder</code> struct to build and send HTTP requests:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">reqwest</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Client</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TerminusDB</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    client</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Client</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">impl</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TerminusDB</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TerminusDB</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> client </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Client</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">TerminusDB</span><span style="color: #F8F8F2"> { client, url</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> url</span><span style="color: #F92672">.</span><span style="color: #A6E22E">to_string</span><span style="color: #F8F8F2">() }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">query</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, query</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2">, reqwest</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">format!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{}/query"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">url);</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> resp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">client</span><span style="color: #F92672">.</span><span style="color: #A6E22E">post</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">url)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">.</span><span style="color: #A6E22E">header</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Content-Type"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"application/json"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E">json!</span><span style="color: #F8F8F2">({ </span><span style="color: #E6DB74">"query"</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> query }))</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">.</span><span style="color: #A6E22E">send</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> resp</span><span style="color: #F92672">.</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(body)</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we define a <code>TerminusDB</code> struct that contains an instance of the <code>reqwest::Client</code> struct and the URL of the TerminusDB server. We use the <code>new</code> method to create a new instance of the <code>TerminusDB</code> struct, and the <code>query</code> method to send a query to the TerminusDB server and receive the response.</p>
+<p>The <code>query</code> method sends a POST request to the <code>/query</code> endpoint of the TerminusDB server, with a JSON payload containing the query string. It then reads the response body as a string and returns it as a <code>Result&#x3C;String, reqwest::Error></code>.</p>
+<h2 id="using-terminusdb-in-rust">Using TerminusDB in Rust</h2>
+<p>Now that we have a Rust module to handle communication with TerminusDB, we can start using it in our Rust application. Let’s say we want to query the TerminusDB server for all the nodes in a graph, and print their IDs to the console:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">serde_json</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Value</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[tokio</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">main]</span></span>
+<span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;(), </span><span style="color: #A6E22E; font-weight: bold">Box</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dyn</span><span style="color: #F8F8F2"> std</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">error</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">>> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> db </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TerminusDB</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"http://localhost:6363"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> query </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">r#"{"@type": "woql:Select","woql:query_result": {"@type": "woql:Variable","woql:variable_name": "X"}}}"#</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> resp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> db</span><span style="color: #F92672">.</span><span style="color: #A6E22E">query</span><span style="color: #F8F8F2">(query)</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> json</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Value</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">serde_json</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_str</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">resp)</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> bindings </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> json[</span><span style="color: #E6DB74">"bindings"</span><span style="color: #F8F8F2">]</span><span style="color: #F92672">.</span><span style="color: #A6E22E">as_array</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> binding </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> bindings {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> id </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> binding[</span><span style="color: #E6DB74">"X"</span><span style="color: #F8F8F2">][</span><span style="color: #E6DB74">"@id"</span><span style="color: #F8F8F2">]</span><span style="color: #F92672">.</span><span style="color: #A6E22E">as_str</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{}"</span><span style="color: #F8F8F2">, id);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(())</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this code, we create a new instance of the <code>TerminusDB</code> struct with the URL of the TerminusDB server. We then define a query string in WOQL format, which selects all the nodes in the graph and returns their IDs as variables.</p>
+<p>We use the <code>query</code> method of the <code>TerminusDB</code> struct to send the query to the server and receive the response. We then parse the response body as a JSON value using the <code>serde_json::from_str</code> function, and extract the bindings of the query using the <code>bindings</code> key of the JSON object.</p>
+<p>Finally, we iterate over the bindings and extract the ID of each node using the <code>@id</code> key of the JSON object. We print the ID to the console using the <code>println!</code> macro.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>TerminusDB is a powerful graph database that provides a modern and easy-to-use platform for building and deploying applications that require fast and efficient access to large amounts of data. Rust is a system programming language that provides low-level control over system resources and guarantees memory safety, making it ideal for building high-performance applications that require robustness and stability.</p>
+<p>In this article, we have explored how to use TerminusDB in Rust, and how to integrate the two technologies to build efficient and reliable applications. We have shown how to connect to TerminusDB from Rust using the Reqwest HTTP client library, and how to send queries to the TerminusDB server and receive responses using JSON payloads and responses.</p>
+<p>By combining the power of TerminusDB and Rust, you can build high-performance and robust applications that can scale to handle large amounts of data and provide fast and efficient access to it.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-17<!-- -->.</div></div></div>
+  </body></html>
