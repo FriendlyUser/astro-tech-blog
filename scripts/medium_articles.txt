@@ -252,3 +252,11 @@
 /posts/tech/rust/getting_started_with_ta_in_rust.md
 /posts/tech/rust/how_to_use_serde_json.md
 /posts/tech/rust/pokeapi_in_rust.md
+/posts/tech/go/getting_started_with_go_audio.md
+/posts/tech/rust/create_uuids_in_rust.md
+/posts/tech/rust/getting_started_with_bigint.md
+/posts/tech/rust/getting_started_with_hyper.md
+/posts/tech/rust/getting_started_with_logging_in_rust.md
+/posts/tech/rust/getting_started_with_terminius_db_in_rust.md
+/posts/tech/rust/how_to_use_regular_expressions_in_rust.md
+/posts/tech/rust/using_sha2_in_rust.md
