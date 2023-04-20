@@ -260,3 +260,12 @@
 /posts/tech/rust/getting_started_with_terminius_db_in_rust.md
 /posts/tech/rust/how_to_use_regular_expressions_in_rust.md
 /posts/tech/rust/using_sha2_in_rust.md
+/posts/tech/rust/Using_Coreutils_in_Rust.md
+/posts/tech/rust/Using_Generator_Functions_(genfuncs)_in_Rust.md
+/posts/tech/rust/Using_OpenGMK_in_Rust_A_Comprehensive_Guide.md
+/posts/tech/rust/Using_Oxipng_in_Rust_A_Guide_to_Optimizing_PNG_Images.md
+/posts/tech/rust/Using_Resvg_in_Rust_A_Comprehensive_Guide.md
+/posts/tech/rust/Using_Rustfmt_to_Format_Rust_Code.md
+/posts/tech/rust/Using_Rustls_A_Modern_TLS_Library_for_Rust.md
+/posts/tech/rust/Using_Serenity_in_Rust_A_Guide_to_Building_Discord_Bots.md
+/posts/tech/rust/Using_Yaydl_in_Rust_A_Guide_to_Video_Downloading.md
