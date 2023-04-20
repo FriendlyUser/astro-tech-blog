@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using Rustls A Modern TLS Library for Rust - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will discuss how to use Rustls in Rust projects.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using Rustls A Modern TLS Library for Rust</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-04-20T14:45:32.808Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/tags" style="padding-right:3px"> <category>tags<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/729981546.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="using-rustls-a-modern-tls-library-for-rust">Using Rustls: A Modern TLS Library for Rust</h1>
+<p>Rust is a systems programming language with a focus on safety, concurrency, and performance. One critical component in ensuring safety and privacy in network communication is the use of TLS (Transport Layer Security). Rustls is a modern, efficient, and safe TLS library implemented in Rust. In this article, we will discuss how to use Rustls in Rust projects.</p>
+<h2 id="overview-of-rustls">Overview of Rustls</h2>
+<p>Rustls is a pure-Rust implementation of TLS that provides a safe, efficient, and easy-to-use API. It is built on top of <em>ring</em> for cryptographic operations and <em>webpki</em> for certificate handling. Rustls supports TLS 1.2 and 1.3, and it aims to provide a safer and more efficient alternative to OpenSSL.</p>
+<p>Some key features of Rustls include:</p>
+<ul>
+<li>Pure Rust implementation, avoiding common pitfalls of C-based libraries</li>
+<li>Modern, safe, and efficient cryptographic primitives provided by <em>ring</em></li>
+<li>Support for TLS 1.2 and 1.3</li>
+<li>No support for old, insecure protocols (SSLv2, SSLv3, TLS 1.0, TLS 1.1)</li>
+<li>Clear and concise API</li>
+</ul>
+<h2 id="getting-started-with-rustls">Getting Started with Rustls</h2>
+<p>To get started, add Rustls as a dependency in your <code>Cargo.toml</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">rustls = </span><span style="color: #E6DB74">"0.19"</span></span>
+<span class="line"><span style="color: #F8F8F2">tokio-rustls = </span><span style="color: #E6DB74">"0.23"</span></span></code></pre>
+<p>The <code>tokio-rustls</code> crate provides async support for Rustls when using the Tokio runtime, which is commonly used in Rust-based network applications.</p>
+<h2 id="creating-a-rustls-server">Creating a Rustls Server</h2>
+<p>Let’s create a simple TLS server using Rustls and Tokio. First, we need to import the necessary crates:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rustls</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">ServerConfig</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">NoClientAuth</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">AllowAnyAuthenticatedClient</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">internal</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">pemfile};</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">tokio</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">net</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">TcpListener</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">tokio_rustls</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">TlsAcceptor</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">sync</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Arc</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">fs</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">File</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">io</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">BufReader</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>Next, we’ll create a function to configure the server’s TLS settings:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">configure_tls</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">ServerConfig</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">Box</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dyn</span><span style="color: #F8F8F2"> std</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">error</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">>> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> config </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ServerConfig</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">NoClientAuth</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> cert_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">File</span><span style="color: #F92672">::</span><span style="color: #A6E22E">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"cert.pem"</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> key_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">File</span><span style="color: #F92672">::</span><span style="color: #A6E22E">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"key.pem"</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> cert_reader </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">BufReader</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(cert_file);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> key_reader </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">BufReader</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(key_file);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> cert_chain </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">pemfile</span><span style="color: #F92672">::</span><span style="color: #A6E22E">certs</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;mut</span><span style="color: #F8F8F2"> cert_reader)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> keys </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">pemfile</span><span style="color: #F92672">::</span><span style="color: #A6E22E">pkcs8_private_keys</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;mut</span><span style="color: #F8F8F2"> key_reader)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    config</span><span style="color: #F92672">.</span><span style="color: #A6E22E">set_single_cert</span><span style="color: #F8F8F2">(cert_chain, keys</span><span style="color: #F92672">.</span><span style="color: #A6E22E">remove</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">))</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(config)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this function, we create a <code>ServerConfig</code> with no client authentication. We then read the server’s certificate and private key from PEM files and configure the server to use them.</p>
+<p>Now, let’s create an async function to start the server:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">start_server</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;(), </span><span style="color: #A6E22E; font-weight: bold">Box</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dyn</span><span style="color: #F8F8F2"> std</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">error</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">>> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> addr </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"127.0.0.1:8080"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tcp_listener </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TcpListener</span><span style="color: #F92672">::</span><span style="color: #A6E22E">bind</span><span style="color: #F8F8F2">(addr)</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_config </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">configure_tls</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_acceptor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TlsAcceptor</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">Arc</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(tls_config));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Server is listening on {}"</span><span style="color: #F8F8F2">, addr);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">loop</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> (stream, _) </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tcp_listener</span><span style="color: #F92672">.</span><span style="color: #A6E22E">accept</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_acceptor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tls_acceptor</span><span style="color: #F92672">.</span><span style="color: #A6E22E">clone</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">tokio</span><span style="color: #F92672">::</span><span style="color: #A6E22E">spawn</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">move</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_stream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tls_acceptor</span><span style="color: #F92672">.</span><span style="color: #A6E22E">accept</span><span style="color: #F8F8F2">(stream)</span><span style="color: #F92672">.await.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Client connected"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        });</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This function creates a TCP listener on a specified address, configures the TLS settings using the previously defined function, and creates a <code>TlsAcceptor</code>. We then accept incoming connections in a loop, spawning a new task to handle each connection.</p>
+<p>To run the server, simply call <code>start_server().await</code> in your <code>main</code> function.</p>
+<h2 id="creating-a-rustls-client">Creating a Rustls Client</h2>
+<p>Now that we have a server, let’s create a client that connects to it. Import the necessary crates:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rustls</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">ClientConfig</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">ProtocolVersion</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">RootCertStore</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">tokio</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">net</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">TcpStream</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">tokio_rustls</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">TlsConnector</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">sync</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Arc</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">fs</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">File</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">io</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">BufReader</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>Next, create a function to configure the client’s TLS settings:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">configure_tls</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">ClientConfig</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">Box</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dyn</span><span style="color: #F8F8F2"> std</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">error</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">>> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> config </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ClientConfig</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    config</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">versions </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">vec!</span><span style="color: #F8F8F2">[</span><span style="color: #A6E22E; font-weight: bold">ProtocolVersion</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">TLSv1_2, </span><span style="color: #A6E22E; font-weight: bold">ProtocolVersion</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">TLSv1_3];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> root_cert_file </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">File</span><span style="color: #F92672">::</span><span style="color: #A6E22E">open</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"ca.pem"</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> root_cert_reader </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">BufReader</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(root_cert_file);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> root_store </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">RootCertStore</span><span style="color: #F92672">::</span><span style="color: #A6E22E">empty</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    root_store</span><span style="color: #F92672">.</span><span style="color: #A6E22E">add_pem_file</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;mut</span><span style="color: #F8F8F2"> root_cert_reader)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    config</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">root_store </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> root_store;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(config)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this function, we create a <code>ClientConfig</code> and set the supported TLS protocol versions. Then, we read the CA certificate used to sign the server’s certificate from the PEM file and add it to the client’s root certificate store.</p>
+<p>Now, let’s create an async function to connect to the server:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">connect_to_server</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;(), </span><span style="color: #A6E22E; font-weight: bold">Box</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dyn</span><span style="color: #F8F8F2"> std</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">error</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Error</span><span style="color: #F8F8F2">>> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> addr </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"127.0.0.1:8080"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tcp_stream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TcpStream</span><span style="color: #F92672">::</span><span style="color: #A6E22E">connect</span><span style="color: #F8F8F2">(addr)</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_config </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">configure_tls</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_connector </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TlsConnector</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">Arc</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(tls_config));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Connecting to {}"</span><span style="color: #F8F8F2">, addr);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> tls_stream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tls_connector</span><span style="color: #F92672">.</span><span style="color: #A6E22E">connect</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"localhost"</span><span style="color: #F8F8F2">, tcp_stream)</span><span style="color: #F92672">.await?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Connected to server"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Use `tls_stream` to communicate with the server</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This function connects to the server using a TCP stream, configures the TLS settings using the previously defined function, and creates a <code>TlsConnector</code>. We then use the <code>TlsConnector</code> to establish a TLS session with the server.</p>
+<p>To connect to the server, simply call <code>connect_to_server().await</code> in your <code>main</code> function.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we have demonstrated how to use Rustls to create a simple TLS server and client in Rust. Rustls provides a modern, safe, and efficient alternative to OpenSSL, making it an excellent choice for Rust-based network applications. By leveraging the power of Rust and its ecosystem, you can build secure and efficient network applications with ease.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-20<!-- -->.</div></div></div>
+  </body></html>
