@@ -269,3 +269,10 @@
 /posts/tech/rust/Using_Rustls_A_Modern_TLS_Library_for_Rust.md
 /posts/tech/rust/Using_Serenity_in_Rust_A_Guide_to_Building_Discord_Bots.md
 /posts/tech/rust/Using_Yaydl_in_Rust_A_Guide_to_Video_Downloading.md
+/posts/tech/rust/Accelerating_HashMap_Performance_in_Rust_with_Hashbrown.md
+/posts/tech/rust/Creating_a_Basic_Windows_Application_with_WinAPI_and_Rust.md
+/posts/tech/rust/Interacting_with_the_Windows_Registry_using_WinAPI_in_Rust.md
+/posts/tech/rust/Tracing_in_Rust_A_Guide_to_Performance_Analysis_and_Debugging.md
+/posts/tech/rust/Using_Hexadecimal_in_Rust_A_Comprehensive_Guide.md
+/posts/tech/rust/Using_the_`cc`_Crate_in_Rust_for_C_Interoperability.md
+/posts/tech/rust/Using_`rustc-hash`_in_Rust_A_Guide_to_Faster_and_Safer_Hashing.md
