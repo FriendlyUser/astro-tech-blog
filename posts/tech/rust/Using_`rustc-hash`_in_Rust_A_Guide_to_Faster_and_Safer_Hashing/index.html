@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using `rustc-hash` in Rust A Guide to Faster and Safer Hashing - Astro Tech Blog</title>
+    <meta name="description" content="This article will discuss the benefits of using `rustc-hash` and provide a tutorial on how to use it in your Rust projects.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using `rustc-hash` in Rust A Guide to Faster and Safer Hashing</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-04-22T16:25:04.921Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/186810635.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="using-rustc-hash-in-rust-a-guide-to-faster-and-safer-hashing">Using <code>rustc-hash</code> in Rust: A Guide to Faster and Safer Hashing</h1>
+<p>Rust is known for its focus on performance and memory safety. However, when it comes to hashing, the standard library’s <code>std::collections::HashMap</code> can sometimes lead to performance bottlenecks. This is where the <code>rustc-hash</code> crate comes into play. This article will discuss the benefits of using <code>rustc-hash</code> and provide a tutorial on how to use it in your Rust projects.</p>
+<h2 id="why-use-rustc-hash">Why Use <code>rustc-hash</code>?</h2>
+<p><code>rustc-hash</code> is a fast, non-cryptographic hashing library that was initially developed for use within the Rust compiler. It has since been extracted into a standalone crate, making it available for general use. Its key benefits include:</p>
+<ol>
+<li>
+<p><strong>Performance</strong>: <code>rustc-hash</code> uses the FxHash algorithm, which is optimized for performance on small keys, such as integers and strings. This makes it well-suited for many common use cases.</p>
+</li>
+<li>
+<p><strong>Deterministic output</strong>: Unlike some other hashing algorithms, FxHash produces the same output across different platforms and Rust versions. This can help you avoid hard-to-debug issues due to non-deterministic behavior.</p>
+</li>
+<li>
+<p><strong>Minimal dependencies</strong>: <code>rustc-hash</code> has no dependencies, which is a major advantage for projects that want to minimize their dependency tree.</p>
+</li>
+</ol>
+<h2 id="how-to-use-rustc-hash">How to Use <code>rustc-hash</code></h2>
+<p>To start using <code>rustc-hash</code> in your Rust project, you’ll need to add it to your <code>Cargo.toml</code> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">rustc-hash = </span><span style="color: #E6DB74">"1.1.0"</span></span></code></pre>
+<p>Next, let’s see how to utilize <code>rustc-hash</code> in your Rust code. First, import the necessary items:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rustc_hash</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">FxHashMap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">collections</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">hash_map</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Entry</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>Now, let’s create a simple example that demonstrates the usage of <code>FxHashMap</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> word_count </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">FxHashMap</span><span style="color: #F92672">::</span><span style="color: #A6E22E">default</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"the quick brown fox jumps over the lazy dog"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> word </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> text</span><span style="color: #F92672">.</span><span style="color: #A6E22E">split_whitespace</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> count </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> word_count</span><span style="color: #F92672">.</span><span style="color: #A6E22E">entry</span><span style="color: #F8F8F2">(word)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">or_insert</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">count </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{:?}"</span><span style="color: #F8F8F2">, word_count);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>In this example, we create a word count dictionary using <code>FxHashMap</code>. The code iterates over the words in the given <code>text</code> and updates the count of each word in the <code>word_count</code> map. When run, the program will output the following:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    "the": 2, "quick": 1, "brown": 1, "fox": 1, "jumps": 1, "over": 1, "lazy": 1, "dog": 1</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="comparing-rustc-hash-to-stdcollectionshashmap">Comparing <code>rustc-hash</code> to <code>std::collections::HashMap</code></h2>
+<p>To better understand the performance difference between <code>rustc-hash</code> and the standard <code>HashMap</code>, we can create a simple benchmark comparing the two.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">criterion</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{black_box, criterion_group, criterion_main, </span><span style="color: #A6E22E; font-weight: bold">Criterion</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rand</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Rng</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rustc_hash</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">FxHashMap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">collections</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">HashMap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">benchmark</span><span style="color: #F8F8F2">(c</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;mut</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Criterion</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> rng </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">rand</span><span style="color: #F92672">::</span><span style="color: #A6E22E">thread_rng</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> keys</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Vec</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">i32</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #AE81FF">0</span><span style="color: #F92672">..</span><span style="color: #AE81FF">10_000</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">_</span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> rng</span><span style="color: #F92672">.</span><span style="color: #A6E22E">gen_range</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F92672">..</span><span style="color: #AE81FF">1_000_000</span><span style="color: #F8F8F2">))</span><span style="color: #F92672">.</span><span style="color: #A6E22E">collect</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    c</span><span style="color: #F92672">.</span><span style="color: #A6E22E">bench_function</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"rustc-hash"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">|</span><span style="color: #F8F8F2">b</span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        b</span><span style="color: #F92672">.</span><span style="color: #A6E22E">iter</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">FxHashMap</span><span style="color: #F92672">::</span><span style="color: #A6E22E">default</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">key </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">keys {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">map</span><span style="color: #F92672">.</span><span style="color: #A6E22E">entry</span><span style="color: #F8F8F2">(key)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">or_insert</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">black_box</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">map);</span></span>
+<span class="line"><span style="color: #F8F8F2">        })</span></span>
+<span class="line"><span style="color: #F8F8F2">    });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    c</span><span style="color: #F92672">.</span><span style="color: #A6E22E">bench_function</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"std::collections::HashMap"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">|</span><span style="color: #F8F8F2">b</span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        b</span><span style="color: #F92672">.</span><span style="color: #A6E22E">iter</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">HashMap</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">key </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">keys {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">map</span><span style="color: #F92672">.</span><span style="color: #A6E22E">entry</span><span style="color: #F8F8F2">(key)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">or_insert</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">black_box</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">map);</span></span>
+<span class="line"><span style="color: #F8F8F2">        })</span></span>
+<span class="line"><span style="color: #F8F8F2">    });</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #A6E22E">criterion_group!</span><span style="color: #F8F8F2">(benches, benchmark);</span></span>
+<span class="line"><span style="color: #A6E22E">criterion_main!</span><span style="color: #F8F8F2">(benches);</span></span></code></pre>
+<p>Running this benchmark will likely show that <code>rustc-hash</code> outperforms the standard <code>HashMap</code> for this use case.</p>
+<p>It’s important to note that <code>rustc-hash</code> is not suitable for all applications. For example, if you need a cryptographically secure hash, you should use a dedicated cryptographic hashing library instead. Additionally, FxHash may be susceptible to hash collision attacks in untrusted contexts.</p>
+<p>In conclusion, <code>rustc-hash</code> is an excellent choice for many Rust applications requiring fast, deterministic hashing with minimal dependencies. By leveraging its performance characteristics, you can optimize your Rust applications for various use cases.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-22<!-- -->.</div></div></div>
+  </body></html>
