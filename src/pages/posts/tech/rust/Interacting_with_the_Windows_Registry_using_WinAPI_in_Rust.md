@@ -314,6 +314,13 @@ fn main() {
         Ok(_) => println!("Key closed successfully."),
         Err(error) => eprintln!("Error closing key: {}", error),
     }
-
+    
     // Delete the key
+    match delete_key(key_path) {
+        Ok(_) => println!("Key deleted successfully."),
+        Err(error) => eprintln!("Error deleting key: {}", error),
+    }
+}
+```
+
 
