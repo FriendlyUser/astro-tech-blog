@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interacting with the Windows Clipboard using WinAPI in Rust - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will learn how to interact with the Windows clipboard using the Windows API (WinAPI) in Rust.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Interacting with the Windows Clipboard using WinAPI in Rust</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-04-24T18:13:58.063Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/rust" style="padding-right:3px"> <category>rust<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/winapi" style="padding-right:3px"> <category>winapi<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/872471039.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="interacting-with-the-windows-clipboard-using-winapi-in-rust">Interacting with the Windows Clipboard using WinAPI in Rust</h1>
+<p>In this article, we will learn how to interact with the Windows clipboard using the Windows API (WinAPI) in Rust. The clipboard is a temporary storage area for data that the user wants to copy from one place to another. It allows users to perform copy-paste operations across different applications. We will cover the following topics:</p>
+<ol>
+<li>Setting up the Rust environment</li>
+<li>Accessing WinAPI functions in Rust</li>
+<li>Implementing clipboard functions</li>
+<li>Example application</li>
+</ol>
+<h2 id="1-setting-up-the-rust-environment">1. Setting up the Rust environment</h2>
+<p>First, you need to have Rust installed on your system. You can follow the official installation guide <a href="https://www.rust-lang.org/tools/install">here</a>.</p>
+<p>Next, create a new Rust project:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo new winapi_clipboard</span></span>
+<span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> winapi_clipboard</span></span></code></pre>
+<h2 id="2-accessing-winapi-functions-in-rust">2. Accessing WinAPI functions in Rust</h2>
+<p>To access WinAPI functions in Rust, we will use the <code>winapi</code> crate. Add the following dependencies to your <code>Cargo.toml</code> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">winapi = { version = </span><span style="color: #E6DB74">"0.3"</span><span style="color: #F8F8F2">, features = [</span><span style="color: #E6DB74">"winuser"</span><span style="color: #F8F8F2">] }</span></span></code></pre>
+<p>The <code>winuser</code> feature enables the necessary clipboard functions.</p>
+<h2 id="3-implementing-clipboard-functions">3. Implementing clipboard functions</h2>
+<p>Let’s create a new module named <code>clipboard</code> in <code>src/lib.rs</code>:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">mod</span><span style="color: #F8F8F2"> clipboard {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">winapi</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">um</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">winuser</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">CloseClipboard</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">EmptyClipboard</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">GetClipboardData</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">OpenClipboard</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">SetClipboardData</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        CF_TEXT,</span></span>
+<span class="line"><span style="color: #F8F8F2">    };</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">winapi</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">ctypes</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">c_void;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">winapi</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">shared</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">minwindef</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{</span><span style="color: #A6E22E; font-weight: bold">HGLOBAL</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; font-weight: bold">UINT</span><span style="color: #F8F8F2">};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">winapi</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">shared</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">ntdef</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">NULL</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">ptr</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{null_mut, null};</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">ffi</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">CString</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // WinAPI clipboard functions</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Now, let’s implement the clipboard functions:</p>
+<h3 id="opening-and-closing-the-clipboard">Opening and closing the clipboard</h3>
+<p>To interact with the clipboard, we need to open it first. We can do this using the <code>OpenClipboard</code> function:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">open_clipboard</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;(), </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">'</span><span style="color: #A6E22E; font-weight: bold">static</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> { </span><span style="color: #A6E22E">OpenClipboard</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">null_mut</span><span style="color: #F8F8F2">()) };</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> result </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">Err</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to open the clipboard"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(())</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>After we are done interacting with the clipboard, we need to close it using the <code>CloseClipboard</code> function:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">close_clipboard</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">CloseClipboard</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="reading-from-the-clipboard">Reading from the clipboard</h3>
+<p>To read text from the clipboard, we’ll use the <code>GetClipboardData</code> function:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_clipboard_text</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">'</span><span style="color: #A6E22E; font-weight: bold">static</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> clipboard_data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> { </span><span style="color: #A6E22E">GetClipboardData</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">CF_TEXT</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*mut</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">u8</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> clipboard_data</span><span style="color: #F92672">.</span><span style="color: #A6E22E">is_null</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Err</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to get clipboard data"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> index </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">loop</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> ch </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> { </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">clipboard_data</span><span style="color: #F92672">.</span><span style="color: #A6E22E">offset</span><span style="color: #F8F8F2">(index) } </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">char</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> ch </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">\0</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">break</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">        text</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(ch);</span></span>
+<span class="line"><span style="color: #F8F8F2">        index </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(text)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="writing-to-the-clipboard">Writing to the clipboard</h3>
+<p>To write text to the clipboard, we’ll use the <code>EmptyClipboard</code> and <code>SetClipboardData</code> functions:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">set_clipboard_text</span><span style="color: #F8F8F2">(text</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Result</span><span style="color: #F8F8F2">&#x3C;(), </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">'</span><span style="color: #A6E22E; font-weight: bold">static</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">str</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> text_len </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> text</span><span style="color: #F92672">.</span><span style="color: #A6E22E">len</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> text_cstring </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">CString</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(text)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> h_mem </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> { </span><span style="color: #A6E22E">GlobalAlloc</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">GMEM_MOVEABLE</span><span style="color: #F8F8F2">, text_len) } </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*mut</span><span style="color: #F8F8F2"> c_void;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> h_mem</span><span style="color: #F92672">.</span><span style="color: #A6E22E">is_null</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Err</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to allocate memory for clipboard data"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> h_mem_text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> { </span><span style="color: #A6E22E">GlobalLock</span><span style="color: #F8F8F2">(h_mem) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*mut</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">u8</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (i, ch) </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> text_cstring</span><span style="color: #F92672">.</span><span style="color: #A6E22E">as_bytes_with_nul</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">iter</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">enumerate</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">h_mem_text</span><span style="color: #F92672">.</span><span style="color: #A6E22E">offset</span><span style="color: #F8F8F2">(i </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">isize</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">ch;</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">unsafe</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">GlobalUnlock</span><span style="color: #F8F8F2">(h_mem);</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">EmptyClipboard</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SetClipboardData</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">CF_TEXT</span><span style="color: #F8F8F2">, h_mem </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">HGLOBAL</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">NULL</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">GlobalFree</span><span style="color: #F8F8F2">(h_mem);</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Err</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to set clipboard data"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">Ok</span><span style="color: #F8F8F2">(())</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="4-example-application">4. Example application</h2>
+<p>Now, let’s create an example application that reads and writes text to the clipboard:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> example_text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello, clipboard!"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Writing to clipboard: {}"</span><span style="color: #F8F8F2">, example_text);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">open_clipboard</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">set_clipboard_text</span><span style="color: #F8F8F2">(example_text)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">close_clipboard</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Reading from clipboard:"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">open_clipboard</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">       </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> clipboard_text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">get_clipboard_text</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">clipboard</span><span style="color: #F92672">::</span><span style="color: #A6E22E">close_clipboard</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Clipboard content: {}"</span><span style="color: #F8F8F2">, clipboard_text);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Compile and run the example:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo build --release</span></span>
+<span class="line"><span style="color: #F8F8F2">$ target/release/winapi_clipboard</span></span></code></pre>
+<p>You should see the following output:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Writing to clipboard: Hello, clipboard!</span></span>
+<span class="line"><span style="color: #F8F8F2">Reading from clipboard:</span></span>
+<span class="line"><span style="color: #F8F8F2">Clipboard content: Hello, clipboard!</span></span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we’ve learned how to interact with the Windows clipboard using WinAPI in Rust. We covered setting up the Rust environment, accessing WinAPI functions, and implementing clipboard functions for reading and writing text data. This example can serve as a starting point for more advanced clipboard manipulation in your Rust applications.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-04-27<!-- -->.</div></div></div>
+  </body></html>
