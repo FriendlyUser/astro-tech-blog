@@ -276,3 +276,9 @@
 /posts/tech/rust/Using_Hexadecimal_in_Rust_A_Comprehensive_Guide.md
 /posts/tech/rust/Using_the_`cc`_Crate_in_Rust_for_C_Interoperability.md
 /posts/tech/rust/Using_`rustc-hash`_in_Rust_A_Guide_to_Faster_and_Safer_Hashing.md
+/posts/tech/go/Simplify_Your_Golang_Build_Process_with_1build.md
+/posts/tech/go/Streamline_Your_Golang_Builds_with_Mmake_A_Comprehensive_Guide.md
+/posts/tech/go/Using_Chalk_for_Colorful_Terminal_Output_in_Go_(Golang).md
+/posts/tech/go/Using_Task_in_GoLang_A_Comprehensive_Guide.md
+/posts/tech/go/Using_UIProgress_in_GoLang_A_Step-by-Step_Guide.md
+/posts/tech/go/Visualize_Data_with_Asciigraph_in_Golang.md
