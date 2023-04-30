@@ -17,7 +17,8 @@ jobs:
 
       - name: upload to medium
         run: |
-          python -m pip install python-frontmatter requests python-dateutil
+          echo > .env
+          python -m pip install python-frontmatter requests python-dateutil dotenv-python
           python scripts/upload_to_medium.py
       
       # push back to repo all txt files

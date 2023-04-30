@@ -1,12 +1,13 @@
 ---
 title: Using GoCron in Golang A Practical Guide to Task Scheduling
 pubDate: "2023-05-30T19:37:46.343Z"
-description: " In this article, we will explore how to use GoCron to schedule and manage tasks in a Golang application"
+description: " In this article, we will explore how to use GoCron to schedule and manage tasks."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using GoCron in Golang: A Practical Guide to Task Scheduling
+
+# Using GoCron 
 
 GoCron is a simple, efficient, and flexible job scheduling library for the Go programming language (also known as Golang). It enables developers to schedule tasks, automate repetitive jobs, and manage background processes in a user-friendly and efficient manner. In this article, we will explore how to use GoCron to schedule and manage tasks in a Golang application.
 

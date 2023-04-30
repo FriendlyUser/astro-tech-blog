@@ -1,12 +1,13 @@
 ---
 title: Using Cleanenv for Configuration Management in Golang
 pubDate: "2023-05-30T19:37:46.229Z"
-description: "Cleanenv is a lightweight and easy-to-use configuration management library for Golang applications."
+description: "Cleanenv is a lightweight and easy-to-use configuration management library."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using Cleanenv for Configuration Management in Golang
+
+# Using Cleanenv in Golang
 
 Cleanenv is a lightweight and easy-to-use configuration management library for Golang applications. It allows developers to manage application configuration through environment variables and configuration files, making it easier to maintain different configurations for different environments. This article will discuss how to use Cleanenv in your Golang projects, covering installation, usage, and best practices.
 

@@ -6,7 +6,8 @@ tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using Go-Flags in Golang: A Comprehensive Guide
+
+# Using GoFlags in Golang
 
 Go, also known as Golang, is a statically-typed, compiled language developed by Google. One of the many reasons developers love Go is its simplicity and ease of use. When it comes to command-line tools and applications, argument parsing is an important aspect to consider. That's where the `go-flags` library comes in. This versatile and powerful package is designed to parse command-line arguments in Go applications, making it easy to define and use flags.
 

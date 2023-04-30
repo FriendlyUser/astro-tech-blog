@@ -6,20 +6,11 @@ tags: ["dnote", "go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using Dnote in Golang: A Lightweight Note-Taking Tool for Developers
+
+# Using Dnote in Golang
 
 Dnote is a lightweight note-taking tool designed specifically for developers. It allows you to capture, organize, and review your programming knowledge in an efficient way. In this article, we will discuss how to use Dnote in Golang projects, covering installation, usage, and some best practices.
 
-## Table of Contents
-
-1. Introduction
-2. Installation
-3. Using Dnote in Golang
-   1. Creating Notes
-   2. Organizing Notes
-   3. Reviewing Notes
-4. Best Practices
-5. Conclusion
 
 ## 1. Introduction
 

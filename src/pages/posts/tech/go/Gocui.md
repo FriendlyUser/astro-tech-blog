@@ -1,12 +1,12 @@
 ---
 title: Building Interactive Terminal Applications with Golang and Gocui
 pubDate: "2023-05-30T19:37:46.109Z"
-description: "In this article, we will explore how to build an interactive terminal application using Gocui, a minimalistic and flexible library for building intuitive console user interfaces in Go."
+description: "In this article, we will explore how to build an interactive terminal application using Gocui."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Building Interactive Terminal Applications with Golang and Gocui
+
 
 Golang, also known as Go, has become a popular programming language for building high-performance applications. One of the strong points of Go is its simplicity and ease of use, which makes it an excellent choice for creating command-line tools and terminal applications. In this article, we will explore how to build an interactive terminal application using Gocui, a minimalistic and flexible library for building intuitive console user interfaces in Go.
 
@@ -16,7 +16,7 @@ Golang, also known as Go, has become a popular programming language for building
 
 To get started with Gocui, you'll need to have Go installed on your system. You can download and install it from the [official website](https://golang.org/dl/). Once you have Go installed, you can install Gocui by running the following command:
 
-```bash
+```
 go get -u github.com/jroimartin/gocui
 ```
 
@@ -101,4 +101,4 @@ Now, when you run the application and press either `q` or `Ctrl+C`, the applicat
 
 ## Conclusion
 
-Gocui is a powerful library for building interactive terminal applications in Go. It provides a simple and efficient way to manage console UI components and supports a variety of features, including custom keybindings, mouse support, and flexible layout management. In this article, we covered the basics of creating a Gocui application, but there are many more features and possibilities to explore. Be sure to check out the [official Gocui documentation](https://pkg.go.dev/github.com/jroimartin/gocui) for more information and examples.
+Gocui is a powerful library for building interactive terminal applications in Go. It provides a simple and efficient way to manage console UI components and supports a variety of features, including custom keybindings, mouse support, and flexible layout management. In this article, we covered the basics of creating a Gocui application, but there are many more features and possibilities to explore. 

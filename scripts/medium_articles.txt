@@ -289,3 +289,8 @@
 /posts/tech/go/Using_`uitable`_in_Go_for_Flexible_and_Beautiful_Console_Output.md
 /posts/tech/go/Utilizing_Micha_in_Golang_An_Efficient_Web_Socket_Client.md
 /posts/tech/go/Utilizing_`uilive`_for_Real-Time_Terminal_Updates_in_Golang.md
+/posts/tech/go/Lipgloss_in_Golang_Beautifully_Style_Your_cli.md
+/posts/tech/go/goflags.md
+/posts/tech/go/dnote.md
+/posts/tech/go/Using_GoCron_Guide_to_Task_Scheduling.md
+/posts/tech/go/Gocui.md

@@ -6,7 +6,7 @@ tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Lipgloss in Golang: Beautifully Style Your Command-Line Applications
+# Lipgloss in Golang
 
 When creating command-line applications in Go, it can be difficult to produce well-designed and visually appealing output. This is where Lipgloss, a Golang library created by Charm, comes in. Lipgloss lets you effortlessly style your command-line applications by providing a set of powerful utilities for styling text and constructing elegant, responsive layouts.
 

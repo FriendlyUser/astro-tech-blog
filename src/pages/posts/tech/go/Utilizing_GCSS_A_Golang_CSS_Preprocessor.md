@@ -1,24 +1,14 @@
 ---
 title: Utilizing GCSS A Golang CSS Preprocessor
-pubDate: "2023-05-30T19:37:46.254Z"
+pubDate: "2023-05-30T20:37:46.254Z"
 description: "In this article, we will explore how to use GCSS in a Golang project to improve the efficiency and maintainability of your CSS code."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Utilizing GCSS: A Golang CSS Preprocessor
+
 
 GCSS is a powerful CSS preprocessor written in Go. If you're a Golang developer looking to streamline your CSS workflow and take advantage of the speed and robustness of the Go ecosystem, GCSS is an excellent choice. In this article, we will explore how to use GCSS in a Golang project to improve the efficiency and maintainability of your CSS code.
-
-## Table of Contents
-
-1. [Introduction to GCSS](#introduction-to-gcss)
-2. [Installation and Setup](#installation-and-setup)
-3. [Basic GCSS Syntax](#basic-gcss-syntax)
-4. [Variables and Mixins](#variables-and-mixins)
-5. [Control Structures](#control-structures)
-6. [Integration with Golang](#integration-with-golang)
-7. [Conclusion](#conclusion)
 
 ## Introduction to GCSS
 
@@ -85,7 +75,7 @@ GCSS supports variables and mixins for better code organization and reuse.
 
 Variables are declared using the `$` symbol:
 
-```gcss
+```scss
 $primary-color: #0074d9
 $secondary-color: #b6c0ca
 
@@ -98,7 +88,7 @@ body
 
 Mixins are reusable pieces of code that can be included in other rules:
 
-```gcss
+```scss
 @mixin border-radius($radius)
   -webkit-border-radius: $radius
   -moz-border-radius: $radius
@@ -116,7 +106,7 @@ GCSS supports control structures like loops and conditionals, which can help you
 
 You can use `@for` loops to iterate over a range of values:
 
-```gcss
+```scss
 @for $i from 1 through 3
   .col-{$i}
     width: 100% / $i
@@ -126,7 +116,7 @@ You can use `@for` loops to iterate over a range of values:
 
 GCSS supports `@if`, `@else if`, and `@else` conditional statements:
 
-```gcss
+```scss
 $theme: dark
 
 body
