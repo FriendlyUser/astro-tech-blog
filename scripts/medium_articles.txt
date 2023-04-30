@@ -283,3 +283,9 @@
 /posts/tech/go/Using_UIProgress_in_GoLang_A_Step-by-Step_Guide.md
 /posts/tech/go/Visualize_Data_with_Asciigraph_in_Golang.md
 /posts/tech/css/css_animations_in_vue.md
+/posts/tech/go/Using_Cleanenv_for_Configuration_Management_in_Golang.md
+/posts/tech/go/Using_Dictionary_in_GoLang_with_Maps.md
+/posts/tech/go/Using_Subcmd_in_Golang_Enhancing_CLI_Applications_with_Subcommands.md
+/posts/tech/go/Using_`uitable`_in_Go_for_Flexible_and_Beautiful_Console_Output.md
+/posts/tech/go/Utilizing_Micha_in_Golang_An_Efficient_Web_Socket_Client.md
+/posts/tech/go/Utilizing_`uilive`_for_Real-Time_Terminal_Updates_in_Golang.md
