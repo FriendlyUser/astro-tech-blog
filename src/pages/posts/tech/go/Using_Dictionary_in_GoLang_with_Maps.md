@@ -1,6 +1,6 @@
 ---
 title: Using Dictionary in GoLang with Maps
-pubDate: "2023-04-30T19:37:46.314Z"
+pubDate: "2023-05-30T19:37:46.314Z"
 description: "In GoLang, dictionaries are implemented using the built-in data structure called `maps`. A map is a collection of key-value pairs, where each key is unique and maps to a single value."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

@@ -1,6 +1,6 @@
 ---
 title: Efficiently Managing Large Sets of Bits in Golang with BitSet
-pubDate: "2023-04-30T19:37:46.290Z"
+pubDate: "2023-05-30T19:37:46.290Z"
 description: "In this article, we'll explore how to use the `bitset` package in Golang to efficiently manage large sets of bits."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

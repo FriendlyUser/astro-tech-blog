@@ -1,6 +1,6 @@
 ---
 title: Simplify Your Golang Build Process with 1build
-pubDate: "2023-04-26T15:32:48.932Z"
+pubDate: "2023-05-26T15:32:48.932Z"
 description: "A technical article about Rust"
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

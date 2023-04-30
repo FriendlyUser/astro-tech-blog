@@ -1,6 +1,6 @@
 ---
 title: Using Message Passing Interface (MPI) with Go A Guide to MPB
-pubDate: "2023-04-30T19:37:46.030Z"
+pubDate: "2023-05-30T19:37:46.030Z"
 description: " In this article, we will introduce MPB (Message Passing Bridge), a library that enables the use of the Message Passing Interface (MPI) in Go programs."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

@@ -1,6 +1,6 @@
 ---
 title: Using UIProgress in GoLang A Step-by-Step Guide
-pubDate: "2023-04-26T15:32:49.062Z"
+pubDate: "2023-05-26T15:32:49.062Z"
 description: " In this article, we will walk you through the process of using UIProgress in your GoLang projects."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

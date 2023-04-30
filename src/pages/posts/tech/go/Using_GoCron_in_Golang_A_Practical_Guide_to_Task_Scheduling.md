@@ -1,6 +1,6 @@
 ---
 title: Using GoCron in Golang A Practical Guide to Task Scheduling
-pubDate: "2023-04-30T19:37:46.343Z"
+pubDate: "2023-05-30T19:37:46.343Z"
 description: " In this article, we will explore how to use GoCron to schedule and manage tasks in a Golang application"
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

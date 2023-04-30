@@ -1,6 +1,6 @@
 ---
 title: Using Task in GoLang A Comprehensive Guide
-pubDate: "2023-04-26T15:32:48.968Z"
+pubDate: "2023-05-26T15:32:48.968Z"
 description: "In this article, we will explore the `Task` construct in Go, which is helpful for managing concurrent operations. We will learn about the basics of tasks, how to create and run tasks, and how to handle errors and cancellation."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

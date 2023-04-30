@@ -1,6 +1,6 @@
 ---
 title: Utilizing `uilive` for Real-Time Terminal Updates in Golang
-pubDate: "2023-04-30T19:37:46.011Z"
+pubDate: "2023-05-30T19:37:46.011Z"
 description: " In this article, we will explore how to use the `uilive` package to provide real-time updates in terminal applications developed in Go."
 tags: ["uilive", "go"]
 layout: "@/templates/BasePost.astro"

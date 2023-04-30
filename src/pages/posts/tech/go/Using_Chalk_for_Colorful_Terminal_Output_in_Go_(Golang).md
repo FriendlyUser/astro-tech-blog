@@ -1,6 +1,6 @@
 ---
 title: Using Chalk for Colorful Terminal Output in Go (Golang)
-pubDate: "2023-04-26T15:32:49.038Z"
+pubDate: "2023-05-26T15:32:49.038Z"
 description: "A technical article about Rust"
 tags: ["go", "chalk"]
 layout: "@/templates/BasePost.astro"

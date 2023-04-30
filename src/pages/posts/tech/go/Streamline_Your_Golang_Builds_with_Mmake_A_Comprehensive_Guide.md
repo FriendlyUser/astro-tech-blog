@@ -1,6 +1,6 @@
 ---
 title: Streamline Your Golang Builds with Mmake A Comprehensive Guide
-pubDate: "2023-04-26T15:32:48.993Z"
+pubDate: "2023-05-26T15:32:48.993Z"
 description: "In this article, we'll explore how to use `mmake` in Golang projects to streamline your build process."
 tags: ["go", "mmake"]
 layout: "@/templates/BasePost.astro"

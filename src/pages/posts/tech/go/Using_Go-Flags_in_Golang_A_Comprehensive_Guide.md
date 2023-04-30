@@ -1,6 +1,6 @@
 ---
 title: Using Go-Flags in Golang A Comprehensive Guide
-pubDate: "2023-04-30T19:37:46.189Z"
+pubDate: "2023-05-30T19:37:46.189Z"
 description: "This versatile and powerful package is designed to parse command-line arguments in Go applications, making it easy to define and use flags."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

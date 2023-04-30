@@ -1,6 +1,6 @@
 ---
 title: Using Subcmd in Golang Enhancing CLI Applications with Subcommands
-pubDate: "2023-04-30T19:37:46.152Z"
+pubDate: "2023-05-30T19:37:46.152Z"
 description: "In this article, we will explore how to use subcommands in Golang CLI applications using the `subcmd` package"
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

@@ -1,6 +1,6 @@
 ---
 title: Using Dnote in Golang A Lightweight Note-Taking Tool for Developers
-pubDate: "2023-04-30T19:37:46.129Z"
+pubDate: "2023-05-30T19:37:46.129Z"
 description: "Dnote is a lightweight note-taking tool designed specifically for developers"
 tags: ["dnote", "go"]
 layout: "@/templates/BasePost.astro"

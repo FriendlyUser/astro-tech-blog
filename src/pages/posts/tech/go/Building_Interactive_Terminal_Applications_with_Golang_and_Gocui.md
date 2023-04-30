@@ -1,6 +1,6 @@
 ---
 title: Building Interactive Terminal Applications with Golang and Gocui
-pubDate: "2023-04-30T19:37:46.109Z"
+pubDate: "2023-05-30T19:37:46.109Z"
 description: "In this article, we will explore how to build an interactive terminal application using Gocui, a minimalistic and flexible library for building intuitive console user interfaces in Go."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

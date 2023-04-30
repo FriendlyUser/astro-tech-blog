@@ -1,6 +1,6 @@
 ---
 title: Utilizing GCSS A Golang CSS Preprocessor
-pubDate: "2023-04-30T19:37:46.254Z"
+pubDate: "2023-05-30T19:37:46.254Z"
 description: "In this article, we will explore how to use GCSS in a Golang project to improve the efficiency and maintainability of your CSS code."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

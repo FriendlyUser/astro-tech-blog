@@ -1,6 +1,6 @@
 ---
 title: Using Cleanenv for Configuration Management in Golang
-pubDate: "2023-04-30T19:37:46.229Z"
+pubDate: "2023-05-30T19:37:46.229Z"
 description: "Cleanenv is a lightweight and easy-to-use configuration management library for Golang applications."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"

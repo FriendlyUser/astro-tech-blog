@@ -1,6 +1,6 @@
 ---
 title: Using `uitable` in Go for Flexible and Beautiful Console Output
-pubDate: "2023-04-30T19:37:45.987Z"
+pubDate: "2023-05-30T19:37:45.987Z"
 description: "In this article, we will explore `uitable`, a powerful Go package that enables developers to produce beautiful, flexible, and customizable console output in the form of tables."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
