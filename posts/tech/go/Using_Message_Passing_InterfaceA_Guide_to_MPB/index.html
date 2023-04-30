@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Using Message Passing Interface (MPI) with Go A Guide to MPB - Astro Tech Blog</title>
-    <meta name="description" content="In this article, we will introduce MPB a library that enables the use of the Message Passing Interface.">
+    <title>Using Message Passing Interface with Go A Guide to MPB - Astro Tech Blog</title>
+    <meta name="description" content="We will introduce MPB a library that enables the use of the Message Passing Interface.">
     <meta name="author" content="David Li">
 
     <link rel="alternate" type="application/rss+xml" href="/rss.xml">
@@ -63,7 +63,7 @@
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
       
-  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using Message Passing Interface (MPI) with Go A Guide to MPB</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-05-30T19:37:46.030Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/186810635.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using Message Passing Interface with Go A Guide to MPB</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-05-30T19:37:46.030Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/186810635.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>Go is a powerful and versatile programming language, known for its simplicity, efficiency, and modern features. This has made it a popular choice for concurrent and distributed systems. In this article, we will introduce MPB (Message Passing Bridge), a library that enables the use of the Message Passing Interface (MPI) in Go programs.</p>
 <p>MPI is a widely-used communication protocol for parallel computing that allows processes to exchange data using messages. It provides an efficient and portable way to build distributed and high-performance computing applications. By combining the power of Go and MPI through the MPB library, we can create scalable parallel solutions.</p>
 <h2 id="prerequisites">Prerequisites</h2>
@@ -79,7 +79,7 @@
 <p>This command will download and install the MPB package to your Go workspace.</p>
 <h2 id="writing-an-mpb-program">Writing an MPB Program</h2>
 <p>Now that we have MPB installed, let’s write a simple Go program that uses the library to send and receive messages between processes. We will create a program that distributes an array of integers among multiple processes, computes the sum of the elements in each process, and then gathers the partial sums.</p>
-<h3 id="1-import-the-required-packages">1. Import the required packages</h3>
+<h3 id="import-the-required-packages">Import the required packages</h3>
 <p>First, we need to import the necessary packages, including the MPB library:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
@@ -88,7 +88,7 @@
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/btracey/go-mpb"</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/btracey/go-mpb/mpbcomm"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
-<h3 id="2-initialize-and-finalize-mpi">2. Initialize and finalize MPI</h3>
+<h3 id="initialize-and-finalize-mpi">Initialize and finalize MPI</h3>
 <p>Before using any MPI functions, we need to initialize the MPI environment and finalize it when we finish:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	mpi </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> mpb.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(mpbcomm.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">())</span></span>
@@ -99,7 +99,7 @@
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> mpi.</span><span style="color: #66D9EF">Finalize</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
-<h3 id="3-get-the-mpi-rank-and-size">3. Get the MPI rank and size</h3>
+<h3 id="get-the-mpi-rank-and-size">Get the MPI rank and size</h3>
 <p>Each process in an MPI program has a unique identifier called its rank. We also need to know the total number of processes, known as the size. We can obtain these values with the following code:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rank, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> mpi.</span><span style="color: #66D9EF">Rank</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
@@ -110,7 +110,7 @@
 <span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF">panic</span><span style="color: #F8F8F2">(err)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
-<h3 id="4-distribute-the-data-and-compute-the-partial-sums">4. Distribute the data and compute the partial sums</h3>
+<h3 id="distribute-the-data-and-compute-the-partial-sums">Distribute the data and compute the partial sums</h3>
 <p>Now, we can distribute the data and compute the partial sums. We will use the <code>MPI_Scatter</code> and <code>MPI_Gather</code> functions to distribute and gather the data, respectively. In this example, we will assume that the array has a length that is a multiple of the number of processes:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Create the input data (only on the root process)</span></span>
 <span class="line"><span style="color: #F8F8F2">data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">([]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">, size</span><span style="color: #F92672">*</span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">)</span></span>
@@ -134,7 +134,7 @@
 <span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, value </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> localData {</span></span>
 <span class="line"><span style="color: #F8F8F2">	localSum </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> value</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
-<h3 id="5-gather-the-partial-sums-and-compute-the-total-sum">5. Gather the partial sums and compute the total sum</h3>
+<h3 id="gather-the-partial-sums-and-compute-the-total-sum">Gather the partial sums and compute the total sum</h3>
 <p>We can now gather the partial sums and compute the total sum:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Prepare the buffer for gathering the partial sums</span></span>
 <span class="line"><span style="color: #F8F8F2">partialSums </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">([]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">, size)</span></span>

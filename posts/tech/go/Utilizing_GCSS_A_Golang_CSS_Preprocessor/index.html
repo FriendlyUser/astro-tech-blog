@@ -105,39 +105,39 @@
 <p>GCSS supports variables and mixins for better code organization and reuse.</p>
 <h3 id="variables">Variables</h3>
 <p>Variables are declared using the <code>$</code> symbol:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$primary-color: </span><span style="color: #AE81FF">#0074d9</span></span>
-<span class="line"><span style="color: #F8F8F2">$secondary-color: </span><span style="color: #AE81FF">#b6c0ca</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$</span><span style="color: #F92672">primary-color</span><span style="color: #F8F8F2">: </span><span style="color: #F44747">#0074d9</span></span>
+<span class="line"><span style="color: #F8F8F2">$</span><span style="color: #F92672">secondary-color</span><span style="color: #F8F8F2">: </span><span style="color: #A6E22E">#b6c0ca</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">body</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: $primary-color</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">color</span><span style="color: #F8F8F2">: $secondary-color</span></span></code></pre>
+<span class="line"><span style="color: #F92672">body</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">background-color</span><span style="color: #F8F8F2">: $</span><span style="color: #F92672">primary-color</span></span>
+<span class="line"><span style="color: #F8F8F2">  color: $</span><span style="color: #F92672">secondary-color</span></span></code></pre>
 <h3 id="mixins">Mixins</h3>
 <p>Mixins are reusable pieces of code that can be included in other rules:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@mixin</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">border-radius</span><span style="color: #F8F8F2">($radius)</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@mixin</span><span style="color: #F8F8F2"> border-radius($radius)</span></span>
 <span class="line"><span style="color: #F8F8F2">  -webkit-border-radius: $radius</span></span>
 <span class="line"><span style="color: #F8F8F2">  -moz-border-radius: $radius</span></span>
 <span class="line"><span style="color: #F8F8F2">  border-radius: $radius</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #A6E22E">.button</span></span>
+<span class="line"><span style="color: #F8F8F2">.button</span></span>
 <span class="line"><span style="color: #F8F8F2">  +border-radius(4px)</span></span></code></pre>
 <h2 id="control-structures">Control Structures</h2>
 <p>GCSS supports control structures like loops and conditionals, which can help you automate repetitive tasks.</p>
 <h3 id="loops">Loops</h3>
 <p>You can use <code>@for</code> loops to iterate over a range of values:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@for</span><span style="color: #F8F8F2"> $i </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">through</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">.col-</span><span style="color: #F8F8F2">{$i}</span></span>
-<span class="line"><span style="color: #F8F8F2">    width: 100% / $i</span></span></code></pre>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@for</span><span style="color: #F8F8F2"> $i from 1 through 3</span></span>
+<span class="line"><span style="color: #F8F8F2">  .col-{$i}</span></span>
+<span class="line"><span style="color: #F8F8F2">    width: 100% / $</span><span style="color: #F92672">i</span></span></code></pre>
 <h3 id="conditionals">Conditionals</h3>
 <p>GCSS supports <code>@if</code>, <code>@else if</code>, and <code>@else</code> conditional statements:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$theme: </span><span style="color: #66D9EF">dark</span></span>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$theme: dark</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">body</span></span>
-<span class="line"><span style="color: #F8F8F2">  @if $theme == </span><span style="color: #66D9EF">dark</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#fff</span></span>
+<span class="line"><span style="color: #F92672">body</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">@if</span><span style="color: #F8F8F2"> $theme == dark</span></span>
+<span class="line"><span style="color: #F8F8F2">    background-color: #333</span></span>
+<span class="line"><span style="color: #F8F8F2">    color: #fff</span></span>
 <span class="line"><span style="color: #F8F8F2">  @else</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#fff</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">    background-color: #fff</span></span>
+<span class="line"><span style="color: #F8F8F2">    color: #333</span></span></code></pre>
 <h2 id="integration-with-golang">Integration with Golang</h2>
 <p>To compile your GCSS code within a Golang application, you can use the <code>gcss.Compile</code> function:</p>
 <pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
