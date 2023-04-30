@@ -75,7 +75,7 @@ GCSS supports variables and mixins for better code organization and reuse.
 
 Variables are declared using the `$` symbol:
 
-```scss
+```css
 $primary-color: #0074d9
 $secondary-color: #b6c0ca
 
@@ -88,7 +88,7 @@ body
 
 Mixins are reusable pieces of code that can be included in other rules:
 
-```scss
+```css
 @mixin border-radius($radius)
   -webkit-border-radius: $radius
   -moz-border-radius: $radius
@@ -106,7 +106,7 @@ GCSS supports control structures like loops and conditionals, which can help you
 
 You can use `@for` loops to iterate over a range of values:
 
-```scss
+```css
 @for $i from 1 through 3
   .col-{$i}
     width: 100% / $i
@@ -116,7 +116,7 @@ You can use `@for` loops to iterate over a range of values:
 
 GCSS supports `@if`, `@else if`, and `@else` conditional statements:
 
-```scss
+```css
 $theme: dark
 
 body

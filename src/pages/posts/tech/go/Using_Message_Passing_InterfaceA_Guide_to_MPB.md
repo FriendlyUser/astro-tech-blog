@@ -1,11 +1,14 @@
 ---
-title: Using Message Passing Interface (MPI) with Go A Guide to MPB
+title: Using Message Passing Interface with Go A Guide to MPB
 pubDate: "2023-05-30T19:37:46.030Z"
-description: "In this article, we will introduce MPB a library that enables the use of the Message Passing Interface."
+description: "We will introduce MPB a library that enables the use of the Message Passing Interface."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
+
+
+
 
 
 Go is a powerful and versatile programming language, known for its simplicity, efficiency, and modern features. This has made it a popular choice for concurrent and distributed systems. In this article, we will introduce MPB (Message Passing Bridge), a library that enables the use of the Message Passing Interface (MPI) in Go programs.
@@ -28,13 +31,14 @@ To get started with MPB, you need to install the library first. You can do this 
 go get github.com/btracey/go-mpb
 ```
 
+
 This command will download and install the MPB package to your Go workspace.
 
 ## Writing an MPB Program
 
 Now that we have MPB installed, let's write a simple Go program that uses the library to send and receive messages between processes. We will create a program that distributes an array of integers among multiple processes, computes the sum of the elements in each process, and then gathers the partial sums.
 
-### 1. Import the required packages
+### Import the required packages
 
 First, we need to import the necessary packages, including the MPB library:
 
@@ -48,7 +52,7 @@ import (
 )
 ```
 
-### 2. Initialize and finalize MPI
+###  Initialize and finalize MPI
 
 Before using any MPI functions, we need to initialize the MPI environment and finalize it when we finish:
 
@@ -64,7 +68,7 @@ func main() {
 }
 ```
 
-### 3. Get the MPI rank and size
+###  Get the MPI rank and size
 
 Each process in an MPI program has a unique identifier called its rank. We also need to know the total number of processes, known as the size. We can obtain these values with the following code:
 
@@ -80,7 +84,7 @@ if err != nil {
 }
 ```
 
-### 4. Distribute the data and compute the partial sums
+### Distribute the data and compute the partial sums
 
 Now, we can distribute the data and compute the partial sums. We will use the `MPI_Scatter` and `MPI_Gather` functions to distribute and gather the data, respectively. In this example, we will assume that the array has a length that is a multiple of the number of processes:
 
@@ -109,7 +113,7 @@ for _, value := range localData {
 }
 ```
 
-### 5. Gather the partial sums and compute the total sum
+### Gather the partial sums and compute the total sum
 
 We can now gather the partial sums and compute the total sum:
 

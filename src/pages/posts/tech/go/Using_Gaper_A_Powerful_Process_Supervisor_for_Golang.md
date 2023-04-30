@@ -1,7 +1,7 @@
 ---
-title: Using Gaper A Powerful Process Supervisor for Golang
+title: A Powerful Process Supervisor for Golang
 pubDate: "2023-05-26T15:32:48.952Z"
-description: " In this article, we'll explore Gaper's features and demonstrate how to use it effectively in your Golang projects."
+description: "We'll explore Gaper's features and demonstrate how to use it effectively in your Golang projects."
 tags: []
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1230376530.png
