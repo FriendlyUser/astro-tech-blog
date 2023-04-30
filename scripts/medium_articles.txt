@@ -282,3 +282,4 @@
 /posts/tech/go/Using_Task_in_GoLang_A_Comprehensive_Guide.md
 /posts/tech/go/Using_UIProgress_in_GoLang_A_Step-by-Step_Guide.md
 /posts/tech/go/Visualize_Data_with_Asciigraph_in_Golang.md
+/posts/tech/css/css_animations_in_vue.md
