@@ -297,3 +297,4 @@
 /posts/tech/go/bitset.md
 /posts/tech/go/Using_Message_Passing_InterfaceA_Guide_to_MPB.md
 /posts/tech/go/Utilizing_GCSS_A_Golang_CSS_Preprocessor.md
+/posts/tech/ai/ai_tech.md
