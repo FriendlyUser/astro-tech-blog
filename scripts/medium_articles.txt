@@ -294,3 +294,6 @@
 /posts/tech/go/dnote.md
 /posts/tech/go/Using_GoCron_Guide_to_Task_Scheduling.md
 /posts/tech/go/Gocui.md
+/posts/tech/go/bitset.md
+/posts/tech/go/Using_Message_Passing_InterfaceA_Guide_to_MPB.md
+/posts/tech/go/Utilizing_GCSS_A_Golang_CSS_Preprocessor.md

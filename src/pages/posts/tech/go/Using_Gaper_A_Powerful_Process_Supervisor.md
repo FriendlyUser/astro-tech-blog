@@ -1,13 +1,13 @@
 ---
-title: A Powerful Process Supervisor for Golang
+title: A Powerful Process Supervisor Gaper
 pubDate: "2023-05-26T15:32:48.952Z"
-description: "We'll explore Gaper's features and demonstrate how to use it effectively in your Golang projects."
+description: "We'll explore Gapers features and demonstrate how to use it effectively in your Golang projects."
 tags: []
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1230376530.png
 ---
 
-## What is Gaper?
+## What is Gaper
 
 When developing applications in Golang, it is crucial to ensure that your programs run smoothly, and that they are able to recover from unexpected crashes or restarts. This is where Gaper, a process supervisor for Golang, comes in handy. In this article, we'll explore Gaper's features and demonstrate how to use it effectively in your Golang projects.
 
