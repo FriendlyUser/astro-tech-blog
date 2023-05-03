@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using Fresh in Deno for Web Development - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will dive into the world of Deno web development by exploring **Fresh**, a minimalistic web framework for Deno">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using Fresh in Deno for Web Development</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-05-03T14:16:45.051Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/deno" style="padding-right:3px"> <category>deno<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3053072516.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="using-fresh-in-deno-for-web-development">Using Fresh in Deno for Web Development</h1>
+<p>In this article, we will dive into the world of Deno web development by exploring <strong>Fresh</strong>, a minimalistic web framework for Deno. Deno is a runtime for JavaScript and TypeScript built on the V8 JavaScript engine and Rust language. It is designed to be secure, fast, and built with modern web development in mind. Fresh is a lightweight framework that helps developers create server-rendered applications with ease.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before diving into Fresh, make sure you have the following tools installed:</p>
+<ol>
+<li>
+<p><a href="https://deno.land/manual/getting_started/installation">Deno</a>: A secure runtime for JavaScript and TypeScript.</p>
+</li>
+<li>
+<p><a href="https://deno.com/deploy/docs/getting-started">Deno Deploy</a>: A global serverless platform for deploying Deno applications.</p>
+</li>
+</ol>
+<h2 id="getting-started-with-fresh">Getting Started with Fresh</h2>
+<p>To get started with Fresh, create a new directory for your project and navigate to it:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir fresh-app </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> fresh-app</span></span></code></pre>
+<p>Create a <code>deps.ts</code> file in the root of your project, which will hold all the dependencies for your application. This is an excellent practice in Deno applications, as it allows you to manage and update dependencies more efficiently.</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// deps.ts</span></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> { Application } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/x/fresh/mod.ts"</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<p>Now, create a <code>main.ts</code> file in the root directory, which will be the entry point for your application:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// main.ts</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Application } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./deps.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Application</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F">ctx</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  ctx.response.body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello, Fresh!"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">await</span><span style="color: #F8F8F2"> app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">({ port: </span><span style="color: #AE81FF">8000</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2">console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Server is running on http://localhost:8000"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<p>In the code above, we import <code>Application</code> from our <code>deps.ts</code> file, create a new instance of it, and define a simple middleware that sends “Hello, Fresh!” as the response body. Finally, we start our server on port 8000.</p>
+<p>To run the application, execute the following command in your terminal:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">deno run --allow-net main.ts</span></span></code></pre>
+<p>Now, if you visit <code>http://localhost:8000</code> in your browser, you should see the “Hello, Fresh!” message.</p>
+<h2 id="routing-with-fresh">Routing with Fresh</h2>
+<p>Fresh has a built-in router that allows you to create routes for your application easily. Let’s create a new <code>routes.ts</code> file in the root directory and define some routes:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// routes.ts</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Router } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/x/fresh/mod.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> router </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Router</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">ctx</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  ctx.response.body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Welcome to the Fresh application!"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/about"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">ctx</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  ctx.response.body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"This is the about page."</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> router;</span></span></code></pre>
+<p>In your <code>main.ts</code> file, import the router and use it as middleware:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// main.ts</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Application } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./deps.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> router </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./routes.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Application</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(router.</span><span style="color: #A6E22E">routes</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(router.</span><span style="color: #A6E22E">allowedMethods</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">await</span><span style="color: #F8F8F2"> app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">({ port: </span><span style="color: #AE81FF">8000</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2">console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Server is running on http://localhost:8000"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<p>Now, when you visit <code>http://localhost:8000</code> and <code>http://localhost:8000/about</code>, you will see the respective messages.</p>
+<h2 id="server-side-rendering-with-fresh">Server-Side Rendering with Fresh</h2>
+<p>Fresh makes server-side rendering easy. Let’s create a simple template engine for rendering HTML pages. Create a new <code>render.ts</code> file:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// render.ts</span></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">render</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">view</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">data</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Record</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">any</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {})</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> view.</span><span style="color: #A6E22E">replace</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">/</span><span style="color: #AE81FF">\{\{</span><span style="color: #E6DB74">(</span><span style="color: #AE81FF">\w</span><span style="color: #F92672">+</span><span style="color: #E6DB74">)</span><span style="color: #AE81FF">\}\}</span><span style="color: #E6DB74">/</span><span style="color: #F92672">g</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">_</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">key</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> data[key] </span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Now, update your <code>routes.ts</code> file to use the render function:</p>
+<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// routes.ts</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Router } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/x/fresh/mod.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { render } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./render.ts"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> router </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Router</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">ctx</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> html </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`</span></span>
+<span class="line"><span style="color: #E6DB74">    &#x3C;h1>Welcome to the Fresh application!&#x3C;/h1></span></span>
+<span class="line"><span style="color: #E6DB74">    &#x3C;p>{{message}}&#x3C;/p></span></span>
+<span class="line"><span style="color: #E6DB74">  `</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  ctx.response.body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">render</span><span style="color: #F8F8F2">(html, { message: </span><span style="color: #E6DB74">"This is a dynamic message"</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/about"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">ctx</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> html </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`</span></span>
+<span class="line"><span style="color: #E6DB74">    &#x3C;h1>About&#x3C;/h1></span></span>
+<span class="line"><span style="color: #E6DB74">    &#x3C;p>This is the about page.&#x3C;/p></span></span>
+<span class="line"><span style="color: #E6DB74">  `</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  ctx.response.body </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">render</span><span style="color: #F8F8F2">(html);</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> router;</span></span></code></pre>
+<p>Now, when you visit the routes, you will see the HTML pages rendered with dynamic content.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we’ve explored Fresh, a minimalistic web framework for Deno, and learned how to create a simple server-rendered application with routing and templating. Fresh is an excellentchoice for developers who want a lightweight and easy-to-use tool for building server-rendered applications in Deno.</p>
+<p>As you continue to explore Fresh and Deno, you may want to look into other features and tools, such as:</p>
+<ul>
+<li>Middleware for handling static files and serving assets</li>
+<li>Handling form data and file uploads</li>
+<li>Authentication and authorization</li>
+<li>Integrating with databases and ORMs</li>
+<li>Deploying your Deno applications using Deno Deploy or other platforms</li>
+</ul>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+  </body></html>
