@@ -78,17 +78,17 @@
 </ul>
 <h2 id="getting-started-with-mmake">Getting Started with Mmake</h2>
 <p>First, you’ll need to install <code>mmake</code> on your system. You can do this by running the following <code>go get</code> command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/tj/mmake/cmd/mmake</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/tj/mmake/cmd/mmake</span></span></code></pre>
 <p>Now, let’s create a simple Golang project to demonstrate <code>mmake</code> in action:</p>
 <ol>
 <li>Create a new directory for your project:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir my-golang-project</span></span>
-<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> my-golang-project</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">my-golang-project</span></span>
+<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">my-golang-project</span></span></code></pre>
 <ol start="2">
 <li>Initialize the project with a `main. file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// main.go</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// main.go</span></span>
 <span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -99,7 +99,7 @@
 <ol start="3">
 <li>Create a <code>.mmakefile.yml</code> file in the project root:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #E6DB74">.mmakefile.yml</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #E6DB74">.mmakefile.yml</span></span>
 <span class="line"><span style="color: #F92672">build</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">description</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"Build the project"</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">script</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"go build -o my-golang-project"</span></span>
@@ -117,9 +117,9 @@
 <ol>
 <li>To list all available tasks and their descriptions, run:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mmake </span><span style="color: #66D9EF">help</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mmake</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">help</span></span></code></pre>
 <p>You should see output similar to the following:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Tasks:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Tasks:</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">  build  Build the project</span></span>
 <span class="line"><span style="color: #F8F8F2">  run    Run the project</span></span>
@@ -127,17 +127,17 @@
 <ol start="2">
 <li>To build the project, run:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mmake build</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mmake</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span></span></code></pre>
 <p>This will execute the <code>go build -o my-golang-project</code> command defined in the <code>build</code> task.</p>
 <ol start="3">
 <li>To run the project, execute:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mmake run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mmake</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
 <p>This will execute the <code>./my-golang-project</code> command defined in the <code>run</code> task, and you should see the output <code>Hello, Mmake!</code>.</p>
 <ol start="4">
 <li>To run tests, use:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mmake </span><span style="color: #66D9EF">test</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mmake</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">test</span></span></code></pre>
 <p>Since we don’t have any tests defined yet, the output will show that no tests were executed.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>In this article, we’ve explored how to use <code>mmake</code> to simplify building, running, and testing Golang projects. By leveraging the power of <code>mmake</code>, you can streamline your development process and improve the maintainability of your build scripts.</p>
@@ -156,5 +156,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

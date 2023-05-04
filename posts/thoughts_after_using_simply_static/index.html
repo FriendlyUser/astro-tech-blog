@@ -71,7 +71,7 @@
 <p>Overall, simply static deploy with simply static is an excellent way to quickly deploy static sites with wordpress. Even with a pagebuilder - elementor pro, it works quite well. Again I had to include a number of hardcoded paths and assets, but outside of that, it works fine.</p>
 <p>Below is a simple python script to preview the existing urls after exporting the site pages to xml.</p>
 <p>This can also be adapted to replace the url paths.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> xml.etree.ElementTree </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">ET</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> xml.etree.ElementTree </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">ET</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> re</span></span>
 <span class="line"><span style="color: #F8F8F2">root </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">ET</span><span style="color: #F8F8F2">.parse(</span><span style="color: #E6DB74">'site.WordPress.2020-12-07.xml'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
@@ -86,7 +86,7 @@
 <span class="line"><span style="color: #F8F8F2">  link </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> page.find(</span><span style="color: #E6DB74">'link'</span><span style="color: #F8F8F2">).text </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'index.html'</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F"># print(link)</span></span>
 <span class="line"><span style="color: #F8F8F2">  s3_link </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> link.replace(</span><span style="color: #E6DB74">'http://11.217.301.18'</span><span style="color: #F8F8F2">, s3_base_url)</span></span>
-<span class="line"><span style="color: #F8F8F2">  s3_link </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> re.sub(</span><span style="color: #66D9EF">r</span><span style="color: #E6DB74">'wordpress/index.php'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'index.php'</span><span style="color: #F8F8F2">, s3_link, </span><span style="color: #FD971F">flags</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">re.</span><span style="color: #AE81FF">MULTILINE</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">  s3_link </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> re.sub(</span><span style="color: #66D9EF; font-style: italic">r</span><span style="color: #E6DB74">'wordpress/index.php'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'index.php'</span><span style="color: #F8F8F2">, s3_link, </span><span style="color: #FD971F; font-style: italic">flags</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">re.</span><span style="color: #AE81FF">MULTILINE</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(s3_link)</span></span></code></pre>
     </content></div></div></div></div>
 
@@ -103,5 +103,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

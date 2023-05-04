@@ -68,7 +68,7 @@
 <h2 id="file-handling-in-go">File Handling in Go</h2>
 <p>Go provides a rich set of functions and libraries for working with files. The <code>os</code> package provides a set of functions for working with the file system, including creating, opening, reading, and writing files.</p>
 <p>Here’s an example of how to read the contents of a file in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -90,11 +90,11 @@
 <p>Go places a strong emphasis on error handling, and provides a number of features to help you handle errors in your code.</p>
 <p>One of the most common ways to handle errors in Go is to return an error value from a function. An error value is simply a value that implements the <code>error</code> interface, which has a single method, <code>Error() string</code>, that returns a string describing the error.</p>
 <p>Here’s an example of how to return an error value from a function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"errors"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">divide</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">divide</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> b </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, errors.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"division by zero"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -117,7 +117,7 @@
 <p>Sure, let’s dive into reading and writing files in Go.</p>
 <h2 id="reading-files-in-go">Reading Files in Go</h2>
 <p>Go provides several ways to read the contents of a file. One common way is to use the <code>os</code> package, which provides functions for working with the operating system. Specifically, we can use the <code>os.Open</code> and <code>os.Read</code> functions to open a file and read its contents, respectively.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -132,7 +132,7 @@
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">defer</span><span style="color: #F8F8F2"> file.</span><span style="color: #66D9EF">Close</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2"> buf </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">([]</span><span style="color: #66D9EF">byte</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1024</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2"> buf </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">([]</span><span style="color: #66D9EF; font-style: italic">byte</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1024</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> n, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> file.</span><span style="color: #66D9EF">Read</span><span style="color: #F8F8F2">(buf)</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> n </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
@@ -149,7 +149,7 @@
 <p>Next, we read the file contents in a loop using <code>file.Read</code>, which reads up to len(buf) bytes from the file into the buffer <code>buf</code>. We print the contents of the buffer using <code>fmt.Print</code> and continue reading until the end of the file is reached.</p>
 <h2 id="writing-files-in-go">Writing Files in Go</h2>
 <p>Similarly to reading files, Go provides several ways to write data to a file. One common way is to use the <code>os</code> package again, this time with the <code>os.Create</code> and <code>os.Write</code> functions.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -176,10 +176,10 @@
 <p>By using these simple functions, you can easily read from and write to files in Go. Remember to always handle errors appropriately to ensure your code is robust and reliable.</p>
 <p>In Go, error handling is an important aspect of writing robust and reliable code. Go has a built-in error type, <code>error</code>, which is used to represent errors in the language. The <code>error</code> type is an interface with a single method, <code>Error() string</code>, that returns a string describing the error.</p>
 <p>In Go, it is common to return errors as a second return value from functions. This allows the caller to check for errors and take appropriate action. For example, the <code>os.Open</code> function returns a <code>*os.File</code> and an <code>error</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Open</span><span style="color: #F8F8F2">(name </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">File, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Open</span><span style="color: #F8F8F2">(name </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">File, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>If the file can be opened successfully, <code>Open</code> returns a valid <code>*os.File</code> and <code>nil</code> error. If there is an error, <code>Open</code> returns a <code>nil</code> <code>*os.File</code> and a non-<code>nil</code> error.</p>
 <p>Here is an example of error handling in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -214,5 +214,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

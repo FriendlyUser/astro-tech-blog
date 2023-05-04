@@ -65,7 +65,7 @@
       
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Implementing caching in github actions</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Wednesday, 28 July 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/typescript" style="padding-right:3px"> <category>typescript<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/github actions" style="padding-right:3px"> <category>github actions<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900"> <a href="/tags/astro" style="padding-right:3px"> <category>astro<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>To use caching in a GitHub Actions workflow, you can use the cache action. Here is an example of a workflow that caches the node_modules directory between builds:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">push</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">push</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">build</span><span style="color: #F8F8F2">:</span></span>
@@ -90,7 +90,7 @@ If the node_modules directory is not in the cache, it will be installed during t
 </ol>
 <p>I added this logic to my personal blog’s github action to cache the node_modules directory between builds. This will save time on the npm install step and reduce the number of requests to the npm registry.</p>
 <p>The full workflow is</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Build For Github</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Build For Github</span></span>
 <span class="line"><span style="color: #88846F"># Don't want to burn my private minutes at this point</span></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
@@ -159,5 +159,5 @@ If the node_modules directory is not in the cache, it will be installed during t
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

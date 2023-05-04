@@ -73,12 +73,12 @@
 <p>Step 2: Define the CLI commands</p>
 <p>Next, you need to define the commands that your CLI application will support. You can use a library like Commander.js or Yargs to define and parse command-line arguments.</p>
 <p>Here is an example of defining a command using Commander.js:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> commander </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'commander'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> commander </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'commander'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">commander</span></span>
 <span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">command</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'say-hello &#x3C;name>'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">description</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Say hello to someone'</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">action</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">action</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`Hello, </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #E6DB74">!`</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">  });</span></span>
 <span class="line"></span>
@@ -87,12 +87,12 @@
 <p>Step 3: Implement the CLI commands</p>
 <p>Once you have defined your CLI commands, you need to implement the actions that will be executed when the commands are invoked.</p>
 <p>Here is an example of implementing the “say-hello” command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> commander </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'commander'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> commander </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'commander'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">commander</span></span>
 <span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">command</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'say-hello &#x3C;name>'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">description</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Say hello to someone'</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">action</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">action</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`Hello, </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">name</span><span style="color: #F92672">}</span><span style="color: #E6DB74">!`</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">  });</span></span>
 <span class="line"></span>
@@ -101,9 +101,9 @@
 <p>Step 4: Compile and run the application</p>
 <p>Finally, you need to compile your TypeScript code into JavaScript and run the application. You can use the TypeScript compiler (tsc) to compile your code, and then run the resulting JavaScript file using Node.js.</p>
 <p>Here is an example of compiling and running the CLI application:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ tsc index.ts</span></span>
-<span class="line"><span style="color: #F8F8F2">$ node index.js say-hello John</span></span>
-<span class="line"><span style="color: #F8F8F2">Hello, John</span><span style="color: #F92672">!</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">tsc</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">index.ts</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">node</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">index.js</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">say-hello</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">John</span></span>
+<span class="line"><span style="color: #A6E22E">Hello,</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">John!</span></span></code></pre>
 <p>This code compiles the TypeScript code into JavaScript and then runs the “say-hello” command with the argument “John”.</p>
 <p>Conclusion</p>
 <p>Building CLI applications using TypeScript is a great way to take advantage of the language’s features and build robust, scalable applications. With the help of a library like Commander.js or Yargs, you can define and parse command-line arguments, and then implement the actions that will be executed when the commands are invoked. By following these steps, you can build CLI applications that are easy to use, maintain, and extend.</p>
@@ -122,5 +122,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

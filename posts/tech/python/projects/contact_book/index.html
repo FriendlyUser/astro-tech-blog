@@ -78,12 +78,12 @@
 </ul>
 <p>Before we can create a contact book, we need to set up a SQLite database to store the contact information. We can do this using the sqlite3 module in Python.</p>
 <p>To create the database, we first need to import the sqlite3 module and connect to a new or existing database file using the connect() method. We can create a new database file by providing a filename that does not already exist. If the file already exists, it will be opened and used as the database.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sqlite3</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sqlite3</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">conn </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> sqlite3.connect(</span><span style="color: #E6DB74">'contacts.db'</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Once we have connected to the database, we can create a table to store the contact information. In this example, we will create a table called “contacts” with columns for the contact’s name, email address, and phone number.</p>
 <p><a href="https://mermaid.live/edit#pako:eNpdjzEOwyAMRa-CPOcEzF07ZWWxwEmQwERgpFZR7l4nZYoXW09fz_YBvgQCCz5ha6-Ia8Xs2LHRupnxhQW9tOMPjZmlRl4NY6YHEvrIA-1b4RE7Ly9MkKlmjEGX3koHspGqwOoYaMGexIHjU6PYpcxf9mCldpqg7wGFxplgF0xNKYUopb7HI1c7fxFmR6g"><img src="https://mermaid.ink/img/pako:eNpdjzEOwyAMRa-CPOcEzF07ZWWxwEmQwERgpFZR7l4nZYoXW09fz_YBvgQCCz5ha6-Ia8Xs2LHRupnxhQW9tOMPjZmlRl4NY6YHEvrIA-1b4RE7Ly9MkKlmjEGX3koHspGqwOoYaMGexIHjU6PYpcxf9mCldpqg7wGFxplgF0xNKYUopb7HI1c7fxFmR6g?type=png" alt=""></a></p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">c </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> conn.cursor()</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">c </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> conn.cursor()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">c.execute(</span><span style="color: #E6DB74">'''CREATE TABLE contacts</span></span>
 <span class="line"><span style="color: #E6DB74">             (name text, email text, phone text)'''</span><span style="color: #F8F8F2">)</span></span>
@@ -92,7 +92,7 @@
 <p>Creating the contact book interface</p>
 <p>Now that we have set up the database, we can create a simple interface for the contact book using Python’s built-in input and print functions.</p>
 <p>First, we can create a main menu that allows the user to choose between adding a new contact, displaying all contacts, updating a contact, and deleting a contact.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_menu</span><span style="color: #F8F8F2">():</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_menu</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"1. Add new contact"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"2. Display all contacts"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"3. Update a contact"</span><span style="color: #F8F8F2">)</span></span>
@@ -102,7 +102,7 @@
 <span class="line"><span style="color: #F8F8F2">    choice </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter your choice: "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> choice</span></span></code></pre>
 <p>Next, we can create a function for adding a new contact. This function will prompt the user for the contact’s name, email address, and phone number, and then insert the new contact into the database using a SQL INSERT statement.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add_contact</span><span style="color: #F8F8F2">():</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add_contact</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter name: "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    email </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter email: "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    phone </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter phone number: "</span><span style="color: #F8F8F2">)</span></span>
@@ -113,7 +113,7 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Contact added successfully."</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Adding contacts to the database</p>
 <p>Now that we have the main menu and add_contact() function set up, we can test our program by adding a few contacts to the database.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    choice </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> main_menu()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> choice </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"1"</span><span style="color: #F8F8F2">:</span></span>
@@ -131,7 +131,7 @@
 <p>Displaying contacts from the database</p>
 <p>To display all the contacts in the database, we can create a function called display_contacts() that uses a SQL SELECT statement to retrieve all rows from the contacts table. We can then iterate over the rows and print the contact information.</p>
 <p>Once we have fetched all the rows from the contacts table using the fetchall() method, we can loop through the rows and print out the contact information using the print() function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">display_contacts</span><span style="color: #F8F8F2">():</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">display_contacts</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    c.execute(</span><span style="color: #E6DB74">"SELECT * FROM contacts"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    rows </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> c.fetchall()</span></span>
 <span class="line"></span>
@@ -142,7 +142,7 @@
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Updating and deleting contacts from the database</p>
 <p>Finally, we can add functionality to update and delete contacts from the database. To update a contact, we can prompt the user for the contact’s name, and then use a SQL UPDATE statement to modify the corresponding row in the contacts table.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">update_contact</span><span style="color: #F8F8F2">():</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">update_contact</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter name of contact to update: "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    email </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter new email (press enter to keep current value): "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    phone </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter new phone number (press enter to keep current value): "</span><span style="color: #F8F8F2">)</span></span>
@@ -161,7 +161,7 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">else</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Contact not found."</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>To delete a contact, we can prompt the user for the contact’s name, and then use a SQL DELETE statement to remove the corresponding row from the contacts table.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">delete_contact</span><span style="color: #F8F8F2">():</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">delete_contact</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">input</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Enter name of contact to delete: "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    c.execute(</span><span style="color: #E6DB74">"DELETE FROM contacts WHERE name=?"</span><span style="color: #F8F8F2">, (name,))</span></span>
@@ -190,5 +190,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

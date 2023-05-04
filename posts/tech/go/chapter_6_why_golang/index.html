@@ -67,28 +67,28 @@
     <p>Object-oriented programming (OOP) is a popular programming paradigm that emphasizes the use of objects, which are instances of classes, to model real-world entities. OOP is widely used in software development because it offers several benefits, such as encapsulation, inheritance, and polymorphism. In this blog post, we’ll explore how to implement OOP concepts in Go.</p>
 <p>Classes and Objects in Go</p>
 <p>Go doesn’t have classes like other object-oriented languages such as Java or Python. However, Go does have user-defined types, which can be used to achieve the same functionality as classes. A user-defined type is created using the <code>type</code> keyword, followed by the name of the type and the underlying type. For example, we can define a <code>Person</code> type as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF">int</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In Go, we can create objects using struct literals, which are similar to object literals in JavaScript. Here’s an example of creating a <code>Person</code> object:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">person </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John Doe"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">person </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John Doe"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Encapsulation in Go</p>
 <p>Encapsulation is the idea of hiding the implementation details of an object from the outside world. In Go, we can achieve encapsulation by using a combination of struct fields and methods. Struct fields that are capitalized are exported and can be accessed from outside the package, while unexported fields can only be accessed from within the package.</p>
 <p>Here’s an example of encapsulation in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">BankAccount</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> owner </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> balance </span><span style="color: #66D9EF">float64</span></span>
-<span class="line"><span style="color: #F8F8F2"> isLocked </span><span style="color: #66D9EF">bool</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">BankAccount</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> owner </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> balance </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
+<span class="line"><span style="color: #F8F8F2"> isLocked </span><span style="color: #66D9EF; font-style: italic">bool</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (b \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">BankAccount) </span><span style="color: #A6E22E">Deposit</span><span style="color: #F8F8F2">(amount </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (b \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">BankAccount) </span><span style="color: #A6E22E">Deposit</span><span style="color: #F8F8F2">(amount </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">b.isLocked {</span></span>
 <span class="line"><span style="color: #F8F8F2"> b.balance </span><span style="color: #F92672">+=</span><span style="color: #F8F8F2"> amount</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (b \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">BankAccount) </span><span style="color: #A6E22E">Withdraw</span><span style="color: #F8F8F2">(amount </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (b \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">BankAccount) </span><span style="color: #A6E22E">Withdraw</span><span style="color: #F8F8F2">(amount </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">b.isLocked </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> b.balance </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> amount {</span></span>
 <span class="line"><span style="color: #F8F8F2"> b.balance </span><span style="color: #F92672">-=</span><span style="color: #F8F8F2"> amount</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -105,17 +105,17 @@
 <p>Inheritance in Go</p>
 <p>Inheritance is the idea of creating a new class that is a modified version of an existing class. In Go, we can achieve inheritance by embedding one struct into another.</p>
 <p>Here’s an example of inheritance in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Animal</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF">string</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Animal</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (a \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Animal) </span><span style="color: #A6E22E">Speak</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My name is"</span><span style="color: #F8F8F2">, a.name)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Dog</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Dog</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> Animal</span></span>
-<span class="line"><span style="color: #F8F8F2"> breed </span><span style="color: #66D9EF">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> breed </span><span style="color: #66D9EF; font-style: italic">string</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
@@ -127,28 +127,28 @@
 <p>Polymorphism is the idea of using a single interface to represent multiple types. In Go, we can achieve polymorphism by defining an interface that specifies a set of methods, and then implementing that interface for multiple types.</p>
 <p>Here’s an example of</p>
 <p>A struct is a composite data type that groups together zero or more values with different types under a single name. Structs are similar to classes in object-oriented programming and are commonly used to represent real-world entities. In Go, a struct is defined using the <code>type</code> keyword followed by the name of the struct and a set of fields enclosed in curly braces. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF">int</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we define a struct called <code>Person</code> with two fields: <code>name</code> of type string and <code>age</code> of type int.</p>
 <p>We can create an instance of the <code>Person</code> struct using a struct literal. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This creates a new <code>Person</code> object with the <code>name</code> field set to “John” and the <code>age</code> field set to 30.</p>
 <p>We can access the fields of a struct using the dot notation. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sfmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(p.name) </span><span style="color: #88846F">// Output: John</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sfmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(p.name) </span><span style="color: #88846F">// Output: John</span></span>
 <span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(p.age) </span><span style="color: #88846F">// Output: 30</span></span></code></pre>
 <p>In Go, all struct fields are public by default, which means they can be accessed from outside the package. If we want to make a field private, we can use a lowercase first letter for the field name. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2"> email </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #88846F">// private field</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2"> email </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #88846F">// private field</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the <code>email</code> field is private and can only be accessed from within the <code>Person</code> struct.</p>
 <p>In Go, methods are functions that belong to a struct or a type. Methods can be used to encapsulate behavior within a struct, making it easier to work with and maintain. Here’s an example of a method in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF">int</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> age </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (p Person) </span><span style="color: #A6E22E">SayHello</span><span style="color: #F8F8F2">() {</span></span>
@@ -156,24 +156,24 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we define a method called <code>SayHello()</code> on the <code>Person</code> struct. The method takes no parameters and simply prints a greeting to the console.</p>
 <p>We can call the <code>SayHello()</code> method on an instance of the <code>Person</code> struct using the dot notation. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> Person{name: </span><span style="color: #E6DB74">"John"</span><span style="color: #F8F8F2">, age: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">p.</span><span style="color: #66D9EF">SayHello</span><span style="color: #F8F8F2">() </span><span style="color: #88846F">// Output: Hello, my name is John</span></span></code></pre>
 <p>Interfaces in Go are similar to interfaces in other programming languages. An interface is a set of method signatures that a type can implement. If a type implements all the methods in an interface, it is said to satisfy the interface. Here’s an example of an interface in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Shape</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">interface</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Area</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">float64</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Shape</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">interface</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Area</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Rectangle</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> width </span><span style="color: #66D9EF">float64</span></span>
-<span class="line"><span style="color: #F8F8F2"> height </span><span style="color: #66D9EF">float64</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Rectangle</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> width </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
+<span class="line"><span style="color: #F8F8F2"> height </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (r Rectangle) </span><span style="color: #A6E22E">Area</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (r Rectangle) </span><span style="color: #A6E22E">Area</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> r.width </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> r.height</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we define an interface called <code>Shape</code> with a single method signature <code>Area() float64</code>. We also define a struct called <code>Rectangle</code> with two fields <code>width</code> and <code>height</code>, and a method <code>Area()</code> that calculates the area of the rectangle.</p>
 <p>We can create an instance of the <code>Rectangle</code> struct and use it to satisfy the <code>Shape</code> interface. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">less</span><span style="color: #E6DB74">`r := Rectangle{width: 10, height: 5}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">less</span><span style="color: #E6DB74">`r := Rectangle{width: 10, height: 5}</span></span>
 <span class="line"><span style="color: #E6DB74">var s Shape = r</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #E6DB74">fmt.Println(s.Area()) // Output: 50</span></span></code></pre>
@@ -193,5 +193,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

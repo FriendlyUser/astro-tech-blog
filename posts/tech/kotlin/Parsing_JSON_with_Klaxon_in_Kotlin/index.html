@@ -69,35 +69,35 @@
 <p>In this article, we will explore how to use Klaxon in a Kotlin project, including parsing JSON data, creating JSON objects, and more.</p>
 <h2 id="adding-klaxon-dependency">Adding Klaxon Dependency</h2>
 <p>To get started with Klaxon in your Kotlin project, you will first need to add the Klaxon dependency to your build system. If you’re using Gradle, add the following to your <code>build.gradle</code> file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">dependencies {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dependencies {</span></span>
 <span class="line"><span style="color: #F8F8F2">    implementation </span><span style="color: #E6DB74">'com.beust:klaxon:5.5'</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>For Maven users, add the following to your <code>pom.xml</code> file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dependency</span><span style="color: #F8F8F2">></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">dependency</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">groupId</span><span style="color: #F8F8F2">>com.beust&#x3C;/</span><span style="color: #F92672">groupId</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">artifactId</span><span style="color: #F8F8F2">>klaxon&#x3C;/</span><span style="color: #F92672">artifactId</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">version</span><span style="color: #F8F8F2">>5.5&#x3C;/</span><span style="color: #F92672">version</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">dependency</span><span style="color: #F8F8F2">></span></span></code></pre>
 <h2 id="parsing-json-data">Parsing JSON Data</h2>
 <p>Let’s start by parsing a simple JSON string. Consider the following JSON data:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"John Doe"</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"John Doe"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="creating-a-data-class">Creating a Data Class</h3>
 <p>To parse this JSON data, we first need to create a Kotlin data class that represents the JSON structure. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">data</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2">(</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">name</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">age</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Int</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">isDeveloper</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Boolean</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">data</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> name: </span><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> age: </span><span style="color: #A6E22E; text-decoration: underline">Int</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> isDeveloper: </span><span style="color: #A6E22E; text-decoration: underline">Boolean</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
 <h3 id="parsing-json-string-using-klaxon">Parsing JSON String using Klaxon</h3>
 <p>Now that we have our data class, we can use Klaxon to parse the JSON string into an instance of our <code>Person</code> class. Here’s how to do that:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.beust.klaxon.Klaxon</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">import</span><span style="color: #F8F8F2"> com.beust.klaxon.Klaxon</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
 <span class="line"><span style="color: #E6DB74">        {</span></span>
 <span class="line"><span style="color: #E6DB74">          "name": "John Doe",</span></span>
 <span class="line"><span style="color: #E6DB74">          "age": 30,</span></span>
@@ -105,57 +105,57 @@
 <span class="line"><span style="color: #E6DB74">        }</span></span>
 <span class="line"><span style="color: #E6DB74">    """</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Klaxon</span><span style="color: #F8F8F2">().parse</span><span style="color: #F92672">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F92672">></span><span style="color: #F8F8F2">(jsonString)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Klaxon</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">parse</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2">>(jsonString)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (person </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">) {</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Name: ${person.name}"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Age: ${person.age}"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Is Developer: ${person.isDeveloper}"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Name: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.name</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Age: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.age</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Is Developer: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.isDeveloper</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to parse JSON"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to parse JSON"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Running this code will output the following:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Name: John Doe</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Name: John Doe</span></span>
 <span class="line"><span style="color: #F8F8F2">Age: 30</span></span>
 <span class="line"><span style="color: #F8F8F2">Is Developer: true</span></span></code></pre>
 <h2 id="creating-json-objects">Creating JSON Objects</h2>
 <p>Klaxon also allows you to create JSON objects programmatically. Here’s an example of how to create a JSON object using Klaxon:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.beust.klaxon.JsonObject</span></span>
-<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.beust.klaxon.json</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">import</span><span style="color: #F8F8F2"> com.beust.klaxon.JsonObject</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">import</span><span style="color: #F8F8F2"> com.beust.klaxon.json</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> personJson </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> json {</span></span>
-<span class="line"><span style="color: #F8F8F2">        obj(</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> personJson </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">obj</span><span style="color: #F8F8F2">(</span></span>
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2"> to </span><span style="color: #E6DB74">"Jane Doe"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #E6DB74">"age"</span><span style="color: #F8F8F2"> to </span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #E6DB74">"isDeveloper"</span><span style="color: #F8F8F2"> to </span><span style="color: #AE81FF">false</span></span>
 <span class="line"><span style="color: #F8F8F2">        )</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(personJson.toJsonString())</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(personJson.</span><span style="color: #A6E22E">toJsonString</span><span style="color: #F8F8F2">())</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Running this code will output the following JSON string:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">"name"</span><span style="color: #F8F8F2">:</span><span style="color: #CFCFC2">"Jane Doe"</span><span style="color: #F8F8F2">,</span><span style="color: #66D9EF">"age"</span><span style="color: #F8F8F2">:</span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">,</span><span style="color: #66D9EF">"isDeveloper"</span><span style="color: #F8F8F2">:</span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">"name"</span><span style="color: #F8F8F2">:</span><span style="color: #CFCFC2">"Jane Doe"</span><span style="color: #F8F8F2">,</span><span style="color: #66D9EF; font-style: italic">"age"</span><span style="color: #F8F8F2">:</span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">,</span><span style="color: #66D9EF; font-style: italic">"isDeveloper"</span><span style="color: #F8F8F2">:</span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="working-with-json-arrays">Working with JSON Arrays</h2>
 <p>Klaxon can also parse JSON arrays. Let’s say we have the following JSON array:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">[</span></span>
 <span class="line"><span style="color: #F8F8F2">  {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"John Doe"</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"John Doe"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">true</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span>
 <span class="line"><span style="color: #F8F8F2">  {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"Jane Doe"</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">,</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">false</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #CFCFC2">"Jane Doe"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"age"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">"isDeveloper"</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">false</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">]</span></span></code></pre>
 <p>We can parse this JSON array into a list of <code>Person</code> objects like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.beust.klaxon.Klaxon</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">import</span><span style="color: #F8F8F2"> com.beust.klaxon.Klaxon</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> jsonArrayString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">fun</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> jsonArrayString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
 <span class="line"><span style="color: #E6DB74">        [</span></span>
 <span class="line"><span style="color: #E6DB74">          {</span></span>
 <span class="line"><span style="color: #E6DB74">            "name": "John Doe",</span></span>
@@ -170,21 +170,21 @@
 <span class="line"><span style="color: #E6DB74">        ]</span></span>
 <span class="line"><span style="color: #E6DB74">    """</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">val</span><span style="color: #F8F8F2"> persons </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Klaxon</span><span style="color: #F8F8F2">().parseArray</span><span style="color: #F92672">&#x3C;</span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F92672">></span><span style="color: #F8F8F2">(jsonArrayString)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">val</span><span style="color: #F8F8F2"> persons </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Klaxon</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">parseArray</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2">>(jsonArrayString)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (persons </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (person </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> persons) {</span></span>
-<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Name: ${person.name}"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Age: ${person.age}"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Is Developer: ${person.isDeveloper}"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"---"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Name: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.name</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Age: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.age</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Is Developer: </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">person.isDeveloper</span><span style="color: #F92672">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"---"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        }</span></span>
 <span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to parse JSON"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to parse JSON"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Running this code will output the following:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Name: John Doe</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Name: John Doe</span></span>
 <span class="line"><span style="color: #F8F8F2">Age: 30</span></span>
 <span class="line"><span style="color: #F8F8F2">Is Developer: true</span></span>
 <span class="line"><span style="color: #F8F8F2">---</span></span>
@@ -208,5 +208,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

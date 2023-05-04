@@ -71,11 +71,11 @@ To install AutoHotkey, you need to download the installer from the official webs
 <p>To run AutoHotkey, you can double-click a script file (.ahk) in Explorer or create a shortcut to it. You can also use Task Scheduler to run a script on startup by creating a basic task and selecting “Start a program” as the action. Then you need to enter the file path of AutoHotkey.exe and the script file as arguments.
 AutoHotkey scripts are composed of lines that can contain commands, expressions, variables, hotkeys, hotstrings, or comments.</p>
 <p>Commands are instructions that perform a specific action, such as sending keystrokes, clicking the mouse, running a program, etc. Commands have a name followed by one or more parameters separated by commas. Parameters can be literal values or expressions. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Run, notepad.exe ; This command runs Notepad</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Run, notepad.exe ; This command runs Notepad</span></span>
 <span class="line"><span style="color: #F8F8F2">MsgBox, Hello World! ; This command displays a message box with "Hello World!"</span></span>
 <span class="line"><span style="color: #F8F8F2">SendInput, {Enter} ; This command sends an Enter keystroke</span></span></code></pre>
 <p>Functions are similar to commands but they return a value that can be used in an expression. Functions have a name followed by parentheses that enclose one or more parameters separated by commas. Parameters can be literal values or expressions. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">x := SubStr("AutoHotkey", 5) ; This function returns "Hotkey" and assigns it to x</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">x := SubStr("AutoHotkey", 5) ; This function returns "Hotkey" and assigns it to x</span></span>
 <span class="line"><span style="color: #F8F8F2">y := MsgBox("Do you want to continue?", 4) ; This function displays a message box with Yes/No buttons and returns 6 for Yes and 7 for No</span></span>
 <span class="line"><span style="color: #F8F8F2">z := WinExist("Untitled - Notepad") ; This function returns the window ID of Notepad if it exists</span></span></code></pre>
 <p>Some common commands and functions in AutoHotkey are:</p>
@@ -95,17 +95,17 @@ AutoHotkey scripts are composed of lines that can contain commands, expressions,
 <h2 id="hotkeys-and-hotstrings">Hotkeys and Hotstrings</h2>
 <p>Hotkeys are combinations of keys that trigger a command or function when pressed. You can define hotkeys for the mouse and keyboard using AutoHotkey scripts.</p>
 <p>To define a hotkey, you need to specify the key combination followed by two colons (::) and then the command or function to execute. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#n::Run, notepad.exe ; This hotkey runs Notepad when you press Win+N</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">#n::Run, notepad.exe ; This hotkey runs Notepad when you press Win+N</span></span>
 <span class="line"><span style="color: #F8F8F2">!c::SendInput, ^c ; This hotkey copies text when you press Alt+C</span></span></code></pre>
 <p>You can use modifiers such as # (Win), ! (Alt), ^ (Ctrl), and + (Shift) to create different combinations. You can also use &#x26; to combine two keys into one hotkey. For example:</p>
 <p>“autohotkey
 F1 &#x26; F2::MsgBox, You pressed F1 and F2 ; This hotkey displays a message box when you press F1 and F2 together</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">You can find a list of key names and symbols on the official website. Some keys may require special syntax or brackets to work properly. For example:</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span></code></pre>
 <p>{F10}::SendInput, Hello ; This hotkey sends “Hello” when you press F10
 &#x3C;^>!a::MsgBox, You pressed Ctrl+Alt+A ; This hotkey displays a message box when you press Ctrl+Alt+A using either side of those keys</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">You can also use wildcards (*) to make a hotkey fire even if extra modifiers are being held down. For example:</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">``autohotkey</span></span>
@@ -113,7 +113,7 @@ F1 &#x26; F2::MsgBox, You pressed F1 and F2 ; This hotkey displays a message box
 <p>You can find more examples and tips on how to use hotkeys in AutoHotkey on various websites   .
 Remapping keys or buttons means changing their function to perform a different action. You can remap keys or buttons using AutoHotkey scripts.</p>
 <p>To remap a key or button, you need to use the same syntax as defining a hotkey, but instead of specifying a command or function to execute, you specify another key or button to send. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">a::b ; This remaps the A key to send B</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">a::b ; This remaps the A key to send B</span></span>
 <span class="line"><span style="color: #F8F8F2">CapsLock::Ctrl ; This remaps the CapsLock key to send Ctrl</span></span>
 <span class="line"><span style="color: #F8F8F2">XButton1::F1 ; This remaps the first extra mouse button to send F1</span></span></code></pre>
 <p>Remapping a key or button is complete in the following respects:</p>
@@ -125,14 +125,14 @@ Remapping keys or buttons means changing their function to perform a different a
 <p>You can find more details and examples on how to remap keys or buttons in AutoHotkey on various websites.
 Hotstrings are a feature of AutoHotkey that let you define a string of characters that can be replaced by other text when typed. Hotstrings are often used as text-expansions for abbreviations or symbols.</p>
 <p>To create a hotstring, you need to specify the trigger string followed by two colons (::) and then the replacement text. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">::btw::by the way ; This hotstring replaces "btw" with "by the way"</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">::btw::by the way ; This hotstring replaces "btw" with "by the way"</span></span>
 <span class="line"><span style="color: #F8F8F2">:::)::😊 ; This hotstring replaces ":)" with "😊"</span></span></code></pre>
 <p>You can also use options to modify how a hotstring behaves. Options are specified inside a pair of colons before the trigger string. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">:*:thx::thanks ; This hotstring replaces "thx" with "thanks" without requiring an ending character</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">:*:thx::thanks ; This hotstring replaces "thx" with "thanks" without requiring an ending character</span></span>
 <span class="line"><span style="color: #F8F8F2">:?*:e.g.::for example ; This hotstring replaces "e.g." with "for example" even inside another word</span></span>
 <span class="line"><span style="color: #F8F8F2">:O:lol::Laugh Out Loud ; This hotstring replaces "lol" with "Laugh Out Loud" and capitalizes it</span></span></code></pre>
 <p>You can find a list of options and their meanings on the official website. Some options may require special syntax or brackets to work properly. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">:*B0:ahk::{#}ahk{#} ; This hotstring replaces "ahk" with "#ahk#" and prevents backspacing over it</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">:*B0:ahk::{#}ahk{#} ; This hotstring replaces "ahk" with "#ahk#" and prevents backspacing over it</span></span>
 <span class="line"><span style="color: #F8F8F2">:?C:`n::{Enter 2} ; This hotstring replaces "`n" with two newlines even if typed in an input control</span></span></code></pre>
 <p>You can find more examples and tips on how to use hotstrings in AutoHotkey on various websites.</p>
 <h2 id="targeting-specific-apps-or-windows">Targeting Specific Apps or Windows</h2>
@@ -163,7 +163,7 @@ You can use AutoHotKey commands and functions to activate, close, resize or move
 <li>To move the mouse to a specific location, you can use MouseMove with two parameters for the X and Y coordinates. For example, MouseMove, 1000, 500 will move the mouse to (1000, 500) on your screen.</li>
 <li>To move the mouse back to its original position after clicking somewhere else, you can use MouseGetPos before clicking and MouseMove after clicking with the same output variables. For example,</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">; Get the current mouse position</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">; Get the current mouse position</span></span>
 <span class="line"><span style="color: #F8F8F2">MouseGetPos, origx, origy</span></span>
 <span class="line"><span style="color: #F8F8F2">; Click somewhere else</span></span>
 <span class="line"><span style="color: #F8F8F2">Click 987,851</span></span>
@@ -179,7 +179,7 @@ You can use Click command to perform a mouse click on a specific location or con
 <li>The mode of sending: Event (default) or Play. Event mode is more compatible and reliable but may not work for some games. Play mode may work better for games but is less reliable. For example, Click Play will use Play mode to send a single-click.</li>
 </ul>
 <p>You can also use ControlClick command to click a specific control on a window without activating it . You need to specify the control’s ClassNN (the internal name of the control) or text and the window’s title or other criteria. For example,</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">; Click Button2 on WindowTitle without activating it</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">; Click Button2 on WindowTitle without activating it</span></span>
 <span class="line"><span style="color: #F8F8F2">ControlClick Button2, WindowTitle</span></span></code></pre>
 <p>For more details and examples, please refer to <a href="https://www.autohotkey.com/docs/commands/Click.html">https://www.autohotkey.com/docs/commands/Click.html</a>, <a href="https://www.autohotkey.com/docs/commands/MouseClick.html">https://www.autohotkey.com/docs/commands/MouseClick.html</a>, and <a href="https://www.autohotkey.com/docs/commands/ControlClick.html">https://www.autohotkey.com/docs/commands/ControlClick.html</a>.</p>
 <p>You can record mouse actions with Pulover’s Macro Creator by following these steps :</p>
@@ -228,5 +228,5 @@ You can record keyboard actions with Pulover’s Macro Creator by following thes
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

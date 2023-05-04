@@ -68,7 +68,7 @@
 <p>Scraping HTML Tables with Pandas and read_html
 Pandas is a powerful data analysis and manipulation library in Python, and one of its great features is the ability to easily extract data from HTML tables and transform them into DataFrames. One of the quickest ways to do this is using the read_html() method, which automatically converts HTML tables into a list of DataFrames.</p>
 <p>Here’s an example of how to use read_html() to extract data from a simple HTML table:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Scrape the table from a webpage</span></span>
 <span class="line"><span style="color: #F8F8F2">tables </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.read_html(</span><span style="color: #E6DB74">"https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States"</span><span style="color: #F8F8F2">)</span></span>
@@ -82,7 +82,7 @@ Pandas is a powerful data analysis and manipulation library in Python, and one o
 <p>Accessing Class Attributes in HTML Elements</p>
 <p>In addition to extracting data from HTML tables, you may also want to extract information from specific HTML elements based on their class attributes. To do this, you can use a library such as BeautifulSoup, which provides a way to parse HTML and extract specific elements based on their attributes.</p>
 <p>Here’s an example of how to use BeautifulSoup to extract information from a table based on the class attribute of its cells:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> bs4 </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> BeautifulSoup</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Request the page</span></span>
@@ -92,7 +92,7 @@ Pandas is a powerful data analysis and manipulation library in Python, and one o
 <span class="line"><span style="color: #F8F8F2">soup </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> BeautifulSoup(response.content, </span><span style="color: #E6DB74">"html.parser"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Find the table cells with the class attribute "flagicon"</span></span>
-<span class="line"><span style="color: #F8F8F2">flag_cells </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> soup.find_all(</span><span style="color: #E6DB74">"td"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">class_</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"flagicon"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">flag_cells </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> soup.find_all(</span><span style="color: #E6DB74">"td"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">class_</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"flagicon"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Extract the text from each cell</span></span>
 <span class="line"><span style="color: #F8F8F2">flags </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [cell.text </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> cell </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> flag_cells]</span></span>
@@ -117,5 +117,5 @@ Pandas is a powerful data analysis and manipulation library in Python, and one o
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

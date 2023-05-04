@@ -67,7 +67,7 @@
     <p>This code initializes the audio context and players for the game. The audio context is created with a sample rate of 22050 Hz, which is a common sample rate used in audio production. The audio context is then used to create players for the laser and music sounds.</p>
 <p>The laser sound is loaded using the wav package, which is part of the ebiten library. The laser sound is then decoded and a player is created for it using the NewPlayer function. The volume of the laser player is set to 0.25.</p>
 <p>The music sound is loaded using the vorbis package, which is also part of the ebiten library. The music sound is then decoded and an infinite loop stream is created from the decoded bytes. This stream is used to create a player for the music using the NewPlayer function. The volume of the music player is set to 0.5 and the player is started using the Play function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// imported packages, most of them are for the golang game engine</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
@@ -165,32 +165,32 @@
 <p>The Game type represents the state of the game and includes information about the player, the player’s lasers, the enemies, the enemy lasers, and the current game mode.</p>
 <p>The viewport type represents the portion of the background image that is currently being displayed. It has fields for the horizontal and vertical positions of the viewport in 16th pixels. The Move method updates the viewport’s position by a small amount each frame.</p>
 <p>Finally, the init function loads the sprite and background images into memory and initializes the fonts used in the game.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// consider having a laser type to deal with orientation, etc</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// consider having a laser type to deal with orientation, etc</span></span>
 <span class="line"><span style="color: #88846F">// basic information to draw sprites, track position and update position</span></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Body</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Body</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// positions</span></span>
-<span class="line"><span style="color: #F8F8F2">    x </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2"> </span></span>
-<span class="line"><span style="color: #F8F8F2">    y </span><span style="color: #66D9EF">float64</span></span>
+<span class="line"><span style="color: #F8F8F2">    x </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    y </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// velocities</span></span>
-<span class="line"><span style="color: #F8F8F2">    vx </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2"> </span></span>
-<span class="line"><span style="color: #F8F8F2">    vy </span><span style="color: #66D9EF">float64</span></span>
+<span class="line"><span style="color: #F8F8F2">    vx </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    vy </span><span style="color: #66D9EF; font-style: italic">float64</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// get height and width from sheet.xml using sp</span></span>
-<span class="line"><span style="color: #F8F8F2">    width </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span></span>
-<span class="line"><span style="color: #F8F8F2">    height </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    width </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    height </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Enemy</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Enemy</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    Body </span></span>
-<span class="line"><span style="color: #F8F8F2">    sp </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2">    health </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F8F8F2">    sp </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2">    health </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Laser</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Laser</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    Body</span></span>
-<span class="line"><span style="color: #F8F8F2">    sp </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F8F8F2">    sp </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Mode</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Mode</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F92672">const</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	ModeTitle Mode </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">iota</span></span>
 <span class="line"><span style="color: #F8F8F2">	ModeGame</span></span>
@@ -219,16 +219,16 @@
 <span class="line"><span style="color: #F8F8F2">	})</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #88846F">// in the future have a laser type struct, spriteImgNum, and number of animations</span></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Game</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Game</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    mode Mode</span></span>
-<span class="line"><span style="color: #F8F8F2">    level </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F8F8F2">    level </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// tracks location of player and maybe health</span></span>
 <span class="line"><span style="color: #F8F8F2">    Player </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">        Body</span></span>
-<span class="line"><span style="color: #F8F8F2">        health    </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2">        laserType </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span></span>
-<span class="line"><span style="color: #F8F8F2">        canShoot  </span><span style="color: #66D9EF">bool</span></span>
-<span class="line"><span style="color: #F8F8F2">        sp        </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F8F8F2">        health    </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2">        laserType </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">        canShoot  </span><span style="color: #66D9EF; font-style: italic">bool</span></span>
+<span class="line"><span style="color: #F8F8F2">        sp        </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// consider adding in height and width of player object</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// all of the sprites seem to be the same</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// TODO set global width</span></span>
@@ -236,7 +236,7 @@
 <span class="line"><span style="color: #F8F8F2">    PLasers []</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Laser</span></span>
 <span class="line"><span style="color: #F8F8F2">    Enemies []</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Enemy</span></span>
 <span class="line"><span style="color: #F8F8F2">    ELasers []</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Laser</span></span>
-<span class="line"><span style="color: #F8F8F2">    gameoverCount </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F8F8F2">    gameoverCount </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// load images</span></span>
@@ -262,9 +262,9 @@
 <span class="line"><span style="color: #F8F8F2">    theViewport </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">viewport{}</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">viewport</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">	x16 </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2">	y16 </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">viewport</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	x16 </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2">	y16 </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (p </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">viewport) </span><span style="color: #A6E22E">Move</span><span style="color: #F8F8F2">() {</span></span>
@@ -282,14 +282,14 @@
 <p>The CreateLevel function is called to create a new level of enemies for the game. It clears the existing bullets and spawns a number of enemies based on the current level.</p>
 <p>The jump function returns true if the player has pressed a key, clicked the mouse, or touched the screen.</p>
 <p>The moveShip function moves the player’s ship based on user input. The shootLaser function shoots a laser from the player’s ship if the player has pressed a key or clicked the mouse. The moveAndDrawLasers function moves and draws the player’s lasers, while the moveAndDrawEnemies function moves and draws the enemies. The drawShip function draws the player’s ship on the screen. The drawHealthBar function draws a health bar for the player. The moveAndDrawEnemyLasers function moves and draws the enemy lasers. The checkCollisions function checks for collisions between the enemies and the player’s lasers. The checkPlayerLaserCollision function checks for collisions between the player and the enemy lasers. The checkGameOver function checks if the game is over and changes the game mode accordingly.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #88846F">// player health bar</span></span>
 <span class="line"><span style="color: #F92672">var</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">    playerHB </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">ebiten.Image</span></span>
 <span class="line"><span style="color: #F8F8F2">    playerHBoutline </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">ebiten.Image</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (p </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">viewport) </span><span style="color: #A6E22E">Position</span><span style="color: #F8F8F2">() (</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (p </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">viewport) </span><span style="color: #A6E22E">Position</span><span style="color: #F8F8F2">() (</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> p.x16, p.y16</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -336,7 +336,7 @@
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #88846F">// copied from flappyplane, but basic functionality any key pressed</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">jump</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">jump</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> inpututil.</span><span style="color: #66D9EF">IsKeyJustPressed</span><span style="color: #F8F8F2">(ebiten.KeySpace) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
@@ -350,12 +350,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// main game loop</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">Update</span><span style="color: #F8F8F2">(screen </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">ebiten.Image) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">Update</span><span style="color: #F8F8F2">(screen </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">ebiten.Image) </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">switch</span><span style="color: #F8F8F2"> g.mode {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// allow user to jump from title screen</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// and title screen</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">case</span><span style="color: #F8F8F2"> ModeTitle:</span></span>
-<span class="line"><span style="color: #F8F8F2">        msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">        msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">			</span><span style="color: #E6DB74">"Game Created Using Ebiten"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">			</span><span style="color: #E6DB74">"Created By David Li."</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">		}</span></span>
@@ -398,7 +398,7 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// game over instance</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">case</span><span style="color: #F8F8F2"> ModeGameOver:</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// TODO DELETE ALL LASER, RESET PLAYER HEALTH, ETC, or add it to init</span></span>
-<span class="line"><span style="color: #F8F8F2">        msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">        msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">			</span><span style="color: #E6DB74">"Game Over :("</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">			</span><span style="color: #E6DB74">"Created By David Li."</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">		}</span></span>
@@ -437,7 +437,7 @@
 <p>The game has three modes: title screen, game, and game over. The game has a background image that scrolls indefinitely and the player can shoot lasers to destroy enemies. The player’s health is tracked and if it reaches 0, the game enters game over mode.</p>
 <p>The Game struct contains information about the current game mode, level, player, player’s lasers, enemies, enemy lasers, and gameover count. The Body struct represents the basic information needed to draw and update the position of a sprite. The Enemy struct is a type of Body with additional fields for its sprite number and health. The Laser struct is also a type of Body with an additional field for its sprite number.</p>
 <p>The game has a number of initialization functions that set up the game images, audio, and fonts. The Update function is the main game loop that handles the different game modes and updates the game state. The game has functions for moving and drawing the player, lasers, and enemies, and for checking collisions between these objects. There are also functions for adding and removing enemies and lasers.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #88846F">// not sure if I should "goroutine it all", it appears game is using goroutines already</span></span>
 <span class="line"><span style="color: #88846F">// goroutine still causes issues, I think I want collisions to be synced.</span></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">checkCollisions</span><span style="color: #F8F8F2">() {</span></span>
@@ -470,25 +470,25 @@
 <span class="line"><span style="color: #88846F">// Collision Functions</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// check laserEnemyCollision</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2">  (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkPlayerELaserCollision</span><span style="color: #F8F8F2">(j </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2">  (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkPlayerELaserCollision</span><span style="color: #F8F8F2">(j </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    el </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.ELasers[j]</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// adjust body to correct looking </span></span>
 <span class="line"><span style="color: #F8F8F2">    p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.Player</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">BodyCollided</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">p.Body, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">el.Body)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkEnemyLaserCollision</span><span style="color: #F8F8F2">(e</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Enemy, j </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkEnemyLaserCollision</span><span style="color: #F8F8F2">(e</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Enemy, j </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    p </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.PLasers[j]</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">BodyCollided</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">e.Body, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">p.Body)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// check laserEnemyCollision</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2">  (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkPlayerEnemyCollision</span><span style="color: #F8F8F2">(e</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Enemy) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2">  (g</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Game) </span><span style="color: #A6E22E">checkPlayerEnemyCollision</span><span style="color: #F8F8F2">(e</span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> Enemy) (</span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// fmt.Println(g.Player.Body)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">BodyCollided</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">e.Body,</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">g.Player.Body)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #88846F">// check if bodies have collided</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">BodyCollided</span><span style="color: #F8F8F2">(r1 </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body,  r2 </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">BodyCollided</span><span style="color: #F8F8F2">(r1 </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body,  r2 </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body) (</span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// compute rectangle 1</span></span>
 <span class="line"><span style="color: #F8F8F2">    r1L, r1R, r1T, r1B </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ComputeRect</span><span style="color: #F8F8F2">(r1)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// compute rectangle 2</span></span>
@@ -499,7 +499,7 @@
 <span class="line"><span style="color: #F8F8F2">        r1B </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> r2T </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> r1T </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> r2B)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ComputeRect</span><span style="color: #F8F8F2">(rect </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body) (</span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ComputeRect</span><span style="color: #F8F8F2">(rect </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Body) (</span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    rectL </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> rect.x </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(rect.width </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    rectR </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> rect.x </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(rect.width </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    rectT </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> rect.y </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(rect.height </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
@@ -510,7 +510,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// since I am using goroutines I need to check if the specified enemy exists every time this function </span></span>
 <span class="line"><span style="color: #88846F">// is called</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeEnemy</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeEnemy</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    s </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.Enemies</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">>=</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s) {</span></span>
 <span class="line"><span style="color: #F8F8F2">        s[i] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> s[</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s)</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
@@ -518,7 +518,7 @@
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeEnemyLaser</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeEnemyLaser</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    s </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.ELasers</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s) {</span></span>
 <span class="line"><span style="color: #F8F8F2">        s[i] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> s[</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s)</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
@@ -526,7 +526,7 @@
 <span class="line"><span style="color: #F8F8F2">    }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeLaser</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">removeLaser</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    s </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.PLasers</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s) {</span></span>
 <span class="line"><span style="color: #F8F8F2">        s[i] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> s[</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(s)</span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span></span>
@@ -578,7 +578,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// TODO FInish this function</span></span>
 <span class="line"><span style="color: #88846F">// ADD SPECIFIC FUNCTIONALITY for enemy</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">addEnemyLoc</span><span style="color: #F8F8F2">(snum </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">addEnemyLoc</span><span style="color: #F8F8F2">(snum </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    emax </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #F8F8F2">    emin </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">-</span><span style="color: #AE81FF">5</span></span>
 <span class="line"><span style="color: #F8F8F2">    px </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(rand.</span><span style="color: #66D9EF">Intn</span><span style="color: #F8F8F2">(ScreenWidth))</span></span>
@@ -594,9 +594,9 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>It looks like this code is for a 2D space shooter game. The Game struct appears to store the state of the game, including the player’s ship and any enemies, bullets, or other objects in the game. The Update function appears to be the main game loop, where the game logic is executed and objects are moved and drawn on the screen. The init function appears to be used to set up the initial state of the game, including the position of the player’s ship and the number of enemies to spawn. The CreateLevel function appears to be used to create a new level of the game, which involves clearing any existing bullets and spawning new enemies based on the current level number. The jump function appears to be used to detect when the player has pressed a key or mouse button to perform some action, such as starting the game or jumping in a platformer. The checkCollisions function appears to be used to detect when objects in the game have collided with each other and update their state accordingly. The resetLevel function appears to be used to reset the game state when the player has lost or completed a level. The addEnemyRand function appears to be used to spawn a new enemy at a random location on the screen, and the enemyShootLaser function appears to be used to make an enemy shoot a bullet. The drawShip and drawHealthBar functions appear to be used to draw the player’s ship and health bar on the screen, respectively.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// TODO Make the spawn location within a randomized region</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// TODO Make the spawn location within a randomized region</span></span>
 <span class="line"><span style="color: #88846F">// sum is the sprite num corresponding to sheet.xml</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">addEnemyRand</span><span style="color: #F8F8F2">(snum </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">addEnemyRand</span><span style="color: #F8F8F2">(snum </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    emax </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #F8F8F2">    emin </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">-</span><span style="color: #AE81FF">5</span></span>
 <span class="line"><span style="color: #F8F8F2">    spawny </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.75</span></span>
@@ -618,7 +618,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// create new enemy laser</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">enemyShootLaser</span><span style="color: #F8F8F2">(x </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">, y </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Game) </span><span style="color: #A6E22E">enemyShootLaser</span><span style="color: #F8F8F2">(x </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">, y </span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// vx not used outside of initialization</span></span>
 <span class="line"><span style="color: #F8F8F2">    vx </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1.00</span><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #F8F8F2">    vy </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> rand.</span><span style="color: #66D9EF">Float64</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.01</span></span>
@@ -821,5 +821,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

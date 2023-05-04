@@ -72,8 +72,8 @@
 <p>The application allows users to input a stock symbol and date range, and provides information on the adjusted close price, Bollinger Bands, and Donchian channels.</p>
 <p>Changes Made to the stocks ta app
 The git diff provided shows the changes made to the app.py file of the stocks ta app. Let’s go through the changes line by line to understand what was added, removed, or modified.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">diff --git a/app.py b/app.py</span></span></code></pre>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #75715E">@@ -3,10 +3,11 @@</span><span style="color: #F8F8F2"> import datetime</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">diff --git a/app.py b/app.py</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #75715E">@@ -3,10 +3,11 @@</span><span style="color: #F8F8F2"> import datetime</span></span>
 <span class="line"><span style="color: #F8F8F2"> import pandas as pd</span></span>
 <span class="line"><span style="color: #F8F8F2"> import requests</span></span>
 <span class="line"><span style="color: #F8F8F2"> import os</span></span>
@@ -86,13 +86,13 @@ The git diff provided shows the changes made to the app.py file of the stocks ta
 <span class="line"><span style="color: #A6E22E"><span style="user-select: none;">+</span>from openbb_terminal.common.technical_analysis.volatility_view import display_bbands, display_donchian</span></span></code></pre>
 <p>In this section, two new imports were added. import sys was added to import the sys module, and from io import StringIO was added to import the StringIO class from the io module.</p>
 <p>In addition, the import for display_bbands was modified to include display_donchian. The display_donchian function is used to display Donchian channels, which is a new feature that was added to the stocks ta app.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> st.write("""</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> st.write("""</span></span>
 <span class="line"><span style="color: #F8F8F2"> # Technical Analysis Web Application</span></span>
 <span class="line"><span style="color: #F8F8F2"> """)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #75715E">@@ -27,22 +28,37 @@</span><span style="color: #F8F8F2"> def user_input_features():</span></span>
 <span class="line"><span style="color: #F8F8F2"> symbol, start, end = user_input_features()</span></span></code></pre>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>@st.cache  # 👈 Added this</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>@st.cache  # 👈 Added this</span></span>
 <span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>def build_bbands_img(data, symbol, file_name="sample.png"):</span></span>
 <span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>    stream = os.popen('cd ~ &#x26;&#x26; pwd')</span></span>
 <span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>    root_dir = stream.read()</span></span>
@@ -109,10 +109,10 @@ The git diff provided shows the changes made to the app.py file of the stocks ta
 <span class="line"><span style="color: #F92672"><span style="user-select: none;">-</span>    return temp_image</span></span></code></pre>
 <p>These lines show that the build_bbands_img function was modified. The function now uses a new decorator remove_existing_file that checks if the file already exists and removes it before creating a new one. This ensures that only the latest version of the file is used.</p>
 <p>In addition, the cache decorator was replaced with the cache_data decorator, which is a newer version of cache. This was updated a recent change to the streamlit sdk.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">@remove_existing_file</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">@remove_existing_file</span></span>
 <span class="line"><span style="color: #A6E22E">@st.cache_data</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">build_donchian_img</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">data</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">symbol</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">export</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"donchian.png"</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> display_donchian(data, symbol, </span><span style="color: #FD971F">export</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">export)</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">build_donchian_img</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">data</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">symbol</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">export</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"donchian.png"</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> display_donchian(data, symbol, </span><span style="color: #FD971F; font-style: italic">export</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">export)</span></span>
 <span class="line"></span></code></pre>
 <p>This code defines a function named build_donchian_img, which takes in three arguments: data, symbol, and export.</p>
 <p>The @remove_existing_file decorator is used to remove any existing image file with the same name as the export argument, which is the name of the image file to be saved. This decorator wraps the function and performs the file removal before executing the function.</p>
@@ -138,5 +138,5 @@ The git diff provided shows the changes made to the app.py file of the stocks ta
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

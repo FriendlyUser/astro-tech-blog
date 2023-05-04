@@ -69,25 +69,25 @@
 <p><code>uilive</code> is a Go package that allows developers to create dynamic, real-time updates in terminal applications with ease. This makes it perfect for displaying progress bars, loading spinners, and other animated text elements.</p>
 <h2 id="installation">Installation</h2>
 <p>To get started, you need to install the <code>uilive</code> package. Run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/gosuri/uilive</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/gosuri/uilive</span></span></code></pre>
 <p>This command fetches the package and its dependencies and installs them in your Go workspace.</p>
 <h2 id="basic-usage">Basic Usage</h2>
 <p>Let’s walk through a simple example of how to use <code>uilive</code> to display real-time updates in a Go application. We’ll create a basic progress bar that updates as a simulated task completes.</p>
 <p>First, import the <code>uilive</code> package:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"time"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"github.com/gosuri/uilive"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Next, create an instance of the <code>uilive.Writer</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">writer </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> uilive.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">()</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">writer </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> uilive.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">()</span></span></code></pre>
 <p>The <code>uilive.Writer</code> is an <code>io.Writer</code> that updates the terminal with the latest content. It overwrites previous content instead of appending to it, allowing for real-time updates.</p>
 <p>Now, let’s start the <code>uilive.Writer</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">writer.</span><span style="color: #66D9EF">Start</span><span style="color: #F8F8F2">()</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">writer.</span><span style="color: #66D9EF">Start</span><span style="color: #F8F8F2">()</span></span></code></pre>
 <p>This initializes the writer and prepares it to receive updates. After this point, you can write to the <code>uilive.Writer</code> instance, and it will handle updating the terminal in real-time.</p>
 <p>For our example, let’s create a simple progress bar:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">totalSteps </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">totalSteps </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">; i </span><span style="color: #F92672">&#x3C;=</span><span style="color: #F8F8F2"> totalSteps; i</span><span style="color: #F92672">++</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    progress </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(i) </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">(totalSteps) </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span></span>
@@ -95,14 +95,14 @@
 <span class="line"><span style="color: #F8F8F2">    time.</span><span style="color: #66D9EF">Sleep</span><span style="color: #F8F8F2">(time.Millisecond </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>The <code>renderProgressBar</code> function is a custom helper function that generates a string representation of the progress bar:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">renderProgressBar</span><span style="color: #F8F8F2">(current, total, width </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">renderProgressBar</span><span style="color: #F8F8F2">(current, total, width </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    filled </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> (current </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> width) </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> total</span></span>
 <span class="line"><span style="color: #F8F8F2">    empty </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> width </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> filled</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Repeat</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"�?"</span><span style="color: #F8F8F2">, filled) </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Repeat</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"�?"</span><span style="color: #F8F8F2">, empty)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Finally, stop the <code>uilive.Writer</code> and print a completion message:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">writer.</span><span style="color: #66D9EF">Stop</span><span style="color: #F8F8F2">()</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">writer.</span><span style="color: #66D9EF">Stop</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Task completed!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>When you run this program, you’ll see a progress bar that updates in real-time as the simulated task completes.</p>
 <h2 id="summary">Summary</h2>
@@ -123,5 +123,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

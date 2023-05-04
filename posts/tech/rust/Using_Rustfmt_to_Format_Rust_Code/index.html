@@ -76,13 +76,13 @@
 </ol>
 <h2 id="1-installing-rustfmt">1. Installing Rustfmt <a name="installing-rustfmt"></a></h2>
 <p>Rustfmt is part of the Rust toolchain, so if you have Rust installed, you likely already have Rustfmt. To check if Rustfmt is installed, run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rustup component list </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> grep rustfmt</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">rustup</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">component</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">list</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">grep</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">rustfmt</span></span></code></pre>
 <p>If you see <code>rustfmt</code> as an installed component, you’re good to go. If not, install it by running:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rustup component add rustfmt</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">rustup</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">component</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">add</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">rustfmt</span></span></code></pre>
 <h2 id="2-configuration">2. Configuration <a name="configuration"></a></h2>
 <p>Rustfmt offers several configuration options to customize the formatting style. To configure Rustfmt, create a <code>rustfmt.toml</code> or <code>.rustfmt.toml</code> file in the root of your project.</p>
 <p>Here’s a sample configuration file with some commonly used options:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">edition = </span><span style="color: #E6DB74">"2021"</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">edition = </span><span style="color: #E6DB74">"2021"</span></span>
 <span class="line"><span style="color: #F8F8F2">max_width = </span><span style="color: #AE81FF">100</span></span>
 <span class="line"><span style="color: #F8F8F2">hard_tabs = </span><span style="color: #AE81FF">false</span></span>
 <span class="line"><span style="color: #F8F8F2">tab_spaces = </span><span style="color: #AE81FF">4</span></span>
@@ -99,11 +99,11 @@
 <p>For a complete list of configuration options, refer to the <a href="https://rust-lang.github.io/rustfmt/?version=master&#x26;search=#configurations">official Rustfmt configuration documentation</a>.</p>
 <h2 id="3-using-rustfmt">3. Using Rustfmt <a name="using-rustfmt"></a></h2>
 <p>To format a single Rust file, run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rustfmt path/to/your_file.rs</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">rustfmt</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">path/to/your_file.rs</span></span></code></pre>
 <p>To format all Rust files in your project, run the following command from your project’s root directory:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo fmt</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">fmt</span></span></code></pre>
 <p>You can also check if your code is formatted correctly without actually modifying the files by running:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo fmt -- --check</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">fmt</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--check</span></span></code></pre>
 <p>This command will return a non-zero exit code if any file requires formatting.</p>
 <h2 id="4-integrating-with-ides-and-editors">4. Integrating with IDEs and Editors <a name="integrating-with-ides-and-editors"></a></h2>
 <p>Most modern IDEs and text editors support Rustfmt integration. Here are a few examples:</p>
@@ -130,5 +130,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

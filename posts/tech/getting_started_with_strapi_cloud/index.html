@@ -87,18 +87,18 @@
 <li>Save the content type and create some todo items in the admin panel by going to Todo in the left menu and clicking on <code>Add new entry</code></li>
 </ul>
 <p>Use the following code to retrieve and display the todo items in your node app:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Dependencies</span></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> Strapi </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'strapi'</span><span style="color: #F8F8F2">);</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Dependencies</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Strapi </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'strapi'</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Connect to the Strapi server</span></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> strapi </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Strapi</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'http://localhost:1337'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> strapi </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Strapi</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'http://localhost:1337'</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Retrieve the todo items</span></span>
-<span class="line"><span style="color: #F8F8F2">strapi.</span><span style="color: #A6E22E">query</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'todo'</span><span style="color: #F8F8F2">).</span><span style="color: #A6E22E">find</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">todos</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">strapi.</span><span style="color: #A6E22E">query</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'todo'</span><span style="color: #F8F8F2">).</span><span style="color: #A6E22E">find</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">todos</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// Do something with the todos</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
 <p>Here is an example of a Go application that can interact with a Strapi instance running on <code>localhost:1337</code> for the todo collection:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"encoding/json"</span></span>
@@ -107,13 +107,13 @@
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"net/http"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">TodoItem</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">	Title       </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"title"`</span></span>
-<span class="line"><span style="color: #F8F8F2">	Description </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"description"`</span></span>
-<span class="line"><span style="color: #F8F8F2">	Status      </span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">   </span><span style="color: #E6DB74">`json:"status"`</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">TodoItem</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	Title       </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"title"`</span></span>
+<span class="line"><span style="color: #F8F8F2">	Description </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"description"`</span></span>
+<span class="line"><span style="color: #F8F8F2">	Status      </span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">   </span><span style="color: #E6DB74">`json:"status"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getTodoList</span><span style="color: #F8F8F2">() ([]TodoItem, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getTodoList</span><span style="color: #F8F8F2">() ([]TodoItem, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Send a GET request to the /todo endpoint</span></span>
 <span class="line"><span style="color: #F8F8F2">	response, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> http.</span><span style="color: #66D9EF">Get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"http://localhost:1337/todo"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
@@ -170,5 +170,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

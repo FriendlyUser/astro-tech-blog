@@ -84,7 +84,7 @@
 <p>Base64 encoding is a method of encoding binary data into a string of ASCII characters. This is useful when data needs to be transferred over a network, as ASCII characters can be transmitted reliably and without corruption. Base64 encoding works by breaking the input data into groups of 6 bits and representing each group as a character in the ASCII character set.</p>
 <p>Base64 decoding is the reverse process of base64 encoding, in which a base64-encoded string is converted back to its original binary data.</p>
 <p>In JavaScript, you can use the built-in <code>btoa()</code> and <code>atob()</code> functions to perform base64 encoding and decoding, respectively. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">javascript</span><span style="color: #E6DB74">`// Encode a string using base64</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">javascript</span><span style="color: #E6DB74">`// Encode a string using base64</span></span>
 <span class="line"><span style="color: #E6DB74">const message = 'Hello, world!';</span></span>
 <span class="line"><span style="color: #E6DB74">const encoded = btoa(message);</span></span>
 <span class="line"><span style="color: #E6DB74">console.log(encoded); // Outputs "SGVsbG8sIHdvcmxkIQ=="</span></span>
@@ -96,11 +96,11 @@
 <p>To decode this string, we use the <code>atob()</code> function and pass it the encoded string as an argument. The output of this operation is the original string “Hello, world!“.</p>
 <p>Base64 encoding and decoding can also be performed in the command line using bash. Bash provides a command-line utility called <code>base64</code>, which can encode and decode base64 data.</p>
 <p>To encode a string using base64 in bash, you can use the <code>base64</code> command with the <code>-w0</code> option, which tells <code>base64</code> to output the encoded data without any line breaks. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">bash</span><span style="color: #E6DB74">`echo "Hello, world!" | base64 -w0</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">bash</span><span style="color: #E6DB74">`echo "Hello, world!" | base64 -w0</span></span>
 <span class="line"><span style="color: #E6DB74"># Outputs "SGVsbG8sIHdvcmxkIQ=="</span></span></code></pre>
 <p>In this example, we use the <code>echo</code> command to output the string “Hello, world!“. We then pipe the output of <code>echo</code> to the <code>base64</code> command with the <code>-w0</code> option to encode the string as base64. The resulting output is the base64-encoded string “SGVsbG8sIHdvcmxkIQ==“.</p>
 <p>To decode a base64-encoded string in bash, you can use the <code>base64</code> command with the <code>-d</code> option, which tells <code>base64</code> to decode the input data. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">bash</span><span style="color: #E6DB74">`echo "SGVsbG8sIHdvcmxkIQ==" | base64 -d</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">bash</span><span style="color: #E6DB74">`echo "SGVsbG8sIHdvcmxkIQ==" | base64 -d</span></span>
 <span class="line"><span style="color: #E6DB74"># Outputs "Hello, world!"</span></span></code></pre>
 <p>In this example, we use the <code>echo</code> command to output the base64-encoded string “SGVsbG8sIHdvcmxkIQ==“. We then pipe the output of <code>echo</code> to the <code>base64</code> command with the <code>-d</code> option to decode the string. The resulting output is the original string “Hello, world!“.</p>
 <p>Base64 encoding is useful for PEM files because PEM files are binary data, and base64 encoding provides a way to represent binary data as ASCII text.</p>
@@ -124,5 +124,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

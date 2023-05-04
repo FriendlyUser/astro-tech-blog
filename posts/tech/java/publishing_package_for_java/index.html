@@ -67,7 +67,7 @@
     <p>Despite using java throughout my academic career, I had completely forgotten how to deploy java packages.</p>
 <p>Maven is a build automation tool for Java projects. It uses a standard directory layout and a declarative approach to specify the build requirements for a project.</p>
 <p>A typical Maven project has the following directory structure:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">├── src</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">├── src</span></span>
 <span class="line"><span style="color: #F8F8F2">│   ├── main</span></span>
 <span class="line"><span style="color: #F8F8F2">│   │   ├── java</span></span>
 <span class="line"><span style="color: #F8F8F2">│   │   └── resources</span></span>
@@ -86,7 +86,7 @@ target: This directory is created by Maven and is used to store the compiled cla
 README.md: This file provides an overview of the project and may contain additional documentation.
 This is just a basic structure, and a Maven project can have additional directories and files based on the needs of the project.</p>
 <p>Using chatgpt to convert the 13F parser I did in python, I noticed there was a lot of build errors I had to fix, and the imports were wrong.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">package com.grandfleet.docparser;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">package com.grandfleet.docparser;</span></span>
 <span class="line"><span style="color: #F8F8F2">import java.util.EnumSet;</span></span>
 <span class="line"><span style="color: #F8F8F2">import java.util.HashMap;</span></span>
 <span class="line"><span style="color: #F8F8F2">import java.util.Map;</span></span>
@@ -101,7 +101,7 @@ This is just a basic structure, and a Maven project can have additional director
 <p>It got the core imports, but failed to get the exceptions that were being used and the other imports.</p>
 <p>I needed to add the package name to the file and make sure the file is called DocParser to reflect the public class name.</p>
 <p>And make sure your package path is specified in pom.xml</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">distributionManagement</span><span style="color: #F8F8F2">></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">distributionManagement</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">   &#x3C;</span><span style="color: #F92672">repository</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">     &#x3C;</span><span style="color: #F92672">id</span><span style="color: #F8F8F2">>github&#x3C;/</span><span style="color: #F92672">id</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">     &#x3C;</span><span style="color: #F92672">name</span><span style="color: #F8F8F2">>GitHub FriendlyUser Apache Maven Packages&#x3C;/</span><span style="color: #F92672">name</span><span style="color: #F8F8F2">></span></span>
@@ -109,7 +109,7 @@ This is just a basic structure, and a Maven project can have additional director
 <span class="line"><span style="color: #F8F8F2">   &#x3C;/</span><span style="color: #F92672">repository</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">distributionManagement</span><span style="color: #F8F8F2">></span></span></code></pre>
 <p>I used the following code below to publish to github packages.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"># publish maven project to github packages</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"># publish maven project to github packages</span></span>
 <span class="line"><span style="color: #F8F8F2">name: Publish Package</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">on:</span></span>
@@ -152,7 +152,7 @@ This is just a basic structure, and a Maven project can have additional director
 <p>Add the Jitpack repository to your pom.xml file:</p>
 </li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;repositories></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;repositories></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;repository></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;id>jitpack.io&#x3C;/id></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;url>https://jitpack.io&#x3C;/url></span></span>
@@ -161,7 +161,7 @@ This is just a basic structure, and a Maven project can have additional director
 <ol start="3">
 <li>Add the JitCI Maven plugin to your pom.xml file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  &#x3C;repositories></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  &#x3C;repositories></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;repository></span></span>
 <span class="line"><span style="color: #F8F8F2">        &#x3C;id>jitpack.io&#x3C;/id></span></span>
 <span class="line"><span style="color: #F8F8F2">        &#x3C;url>https://jitpack.io&#x3C;/url></span></span>
@@ -200,5 +200,5 @@ This is just a basic structure, and a Maven project can have additional director
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

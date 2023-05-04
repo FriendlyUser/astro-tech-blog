@@ -81,27 +81,27 @@
 </ol>
 <p>Overall, Go’s combination of performance, simplicity, memory safety, and standard library make it a popular choice for building a wide range of applications, from web services to cloud infrastructure and beyond.</p>
 <p>In Go, a struct is a composite data type that allows you to group together values of different types into a single entity. You can define a struct by declaring its name and the types of its fields. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`type Employee struct {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`type Employee struct {</span></span>
 <span class="line"><span style="color: #E6DB74"> name string</span></span>
 <span class="line"><span style="color: #E6DB74"> age int</span></span>
 <span class="line"><span style="color: #E6DB74"> salary float64</span></span>
 <span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
 <p>You can create an instance of a struct by using the struct literal syntax and initializing its fields:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">css</span><span style="color: #E6DB74">`employee := Employee{</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">css</span><span style="color: #E6DB74">`employee := Employee{</span></span>
 <span class="line"><span style="color: #E6DB74"> name: "John Doe",</span></span>
 <span class="line"><span style="color: #E6DB74"> age: 32,</span></span>
 <span class="line"><span style="color: #E6DB74"> salary: 50000.0,</span></span>
 <span class="line"><span style="color: #E6DB74">}</span></span></code></pre>
 <p>You can access the fields of a struct using dot notation:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">python</span><span style="color: #E6DB74">`fmt.Println("Name:", employee.name)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">python</span><span style="color: #E6DB74">`fmt.Println("Name:", employee.name)</span></span>
 <span class="line"><span style="color: #E6DB74">fmt.Println("Age:", employee.age)</span></span>
 <span class="line"><span style="color: #E6DB74">fmt.Println("Salary:", employee.salary)</span></span></code></pre>
 <p>In Go, a list, also known as an array, is a fixed-length, ordered collection of elements of the same type. You can define an array by specifying its length and the type of its elements:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">java</span><span style="color: #E6DB74">`var numbers [5]int</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">java</span><span style="color: #E6DB74">`var numbers [5]int</span></span></code></pre>
 <p>You can initialize an array by providing values for its elements:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`numbers := [5]int{1, 2, 3, 4, 5}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`numbers := [5]int{1, 2, 3, 4, 5}</span></span></code></pre>
 <p>You can access the elements of an array using index notation:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">python</span><span style="color: #E6DB74">`fmt.Println("First Element:", numbers[0])</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">python</span><span style="color: #E6DB74">`fmt.Println("First Element:", numbers[0])</span></span>
 <span class="line"><span style="color: #E6DB74">fmt.Println("Last Element:", numbers[4])</span></span></code></pre>
 <p>Note that Go does not have a built-in dynamic array type, but you can use slices, which are dynamically sized arrays, instead. Slices are created from arrays, and they can be resized dynamically.</p>
 <p>In Go, you can create an executable file by writing a program and then compiling it using the <code>go build</code> command. The <code>go build</code> command takes the source code of your program and generates a binary file that you can run on your computer.</p>
@@ -109,7 +109,7 @@
 <ol>
 <li>Create a new file with a <code>.go</code> extension, such as <code>main.go</code>, and write your program in it. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`package main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`package main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #E6DB74">import "fmt"</span></span>
 <span class="line"></span>
@@ -120,12 +120,12 @@
 <li>Open a terminal and navigate to the directory where you saved the <code>main.go</code> file.</li>
 <li>Run the <code>go build</code> command:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`go build</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`go build</span></span></code></pre>
 <p>This will generate an executable file with the same name as your Go source file (in this case, <code>main</code>), which you can run by typing <code>./main</code> in your terminal.</p>
 <p>When you run the executable file, you should see the following output:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Hello, World</span><span style="color: #F92672">!</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Hello, World</span><span style="color: #F92672">!</span></span></code></pre>
 <p>Note that you can also use the <code>go run</code> command to compile and run your program in one step, without generating an executable file. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`go run main.go</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`go run main.go</span></span></code></pre>
 <p>This is useful for quickly testing and iterating on your code, without having to go through the build process each time.</p>
 <p>Go is a popular choice for building web applications, as it provides the performance, scalability, and features needed to build complex and high-traffic applications. Here’s a basic outline of how to use Go to build a web application:</p>
 <ol>
@@ -136,7 +136,7 @@
 <li>Serve your application: Finally, you’ll need to serve your application to the web. This is typically done using the <code>http.ListenAndServe</code> function, which starts a server and listens for incoming requests.</li>
 </ol>
 <p>Here’s an example of a simple web application that serves a “Hello, World!” message:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`package main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">go</span><span style="color: #E6DB74">`package main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #E6DB74">import (</span></span>
 <span class="line"><span style="color: #E6DB74"> "fmt"</span></span>
@@ -155,9 +155,9 @@
 <p><code>godoc</code> is a tool that is included with the Go programming language that allows you to view documentation for Go packages, functions, and types in your terminal. With <code>godoc</code>, you can quickly view the documentation for any Go code you are working with, making it easier to understand how to use the code and learn about its features.</p>
 <p><code>godoc</code> operates by parsing the Go source code for the packages you are interested in and extracting information about the packages, types, and functions defined in the code. This information is then presented in an easy-to-read format in your terminal, where you can scroll through the documentation and search for specific topics.</p>
 <p>To use <code>godoc</code>, simply run the <code>godoc</code> command in your terminal, followed by the name of the package, type, or function you want to view documentation for. For example, to view the documentation for the <code>fmt</code> package, you would run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bash</span><span style="color: #E6DB74">`godoc fmt</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">bash</span><span style="color: #E6DB74">`godoc fmt</span></span></code></pre>
 <p>You can also use <code>godoc</code> to view documentation for specific functions or types within a package. For example, to view the documentation for the <code>Println</code> function in the <code>fmt</code> package, you would run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bash</span><span style="color: #E6DB74">`godoc fmt Println</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">bash</span><span style="color: #E6DB74">`godoc fmt Println</span></span></code></pre>
 <p><code>godoc</code> is an incredibly useful tool for Go developers, as it makes it easy to access comprehensive documentation for Go code and quickly understand how to use the code in your own projects.</p>
     </content></div></div></div></div>
 
@@ -174,5 +174,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

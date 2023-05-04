@@ -79,22 +79,22 @@
 </ol>
 <h2 id="installing-go-flags">Installing go-flags</h2>
 <p>To get started, you’ll need to install the <code>go-flags</code> package. You can do this by running the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/jessevdk/go-flags</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/jessevdk/go-flags</span></span></code></pre>
 <p>This will download and install the <code>go-flags</code> package in your Go workspace.</p>
 <h2 id="defining-flags">Defining Flags</h2>
 <p>Before you can use <code>go-flags</code>, you must define your flags. Flags are defined using Go’s struct tags. To define a flag, create a struct field with the appropriate type and add a <code>short</code> and/or <code>long</code> tag with the desired flag name. You can also provide a <code>description</code> tag for documentation purposes.</p>
 <p>Here’s an example of a struct with some flags defined:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/jessevdk/go-flags"</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/jessevdk/go-flags"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Options</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">    Verbose </span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"v" long:"verbose" description:"Show verbose debug information"`</span></span>
-<span class="line"><span style="color: #F8F8F2">    Port    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">`short:"p" long:"port" description:"Port to listen on" default:"8080"`</span></span>
-<span class="line"><span style="color: #F8F8F2">    Config  </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"c" long:"config" description:"Path to the configuration file"`</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Options</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    Verbose </span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"v" long:"verbose" description:"Show verbose debug information"`</span></span>
+<span class="line"><span style="color: #F8F8F2">    Port    </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">`short:"p" long:"port" description:"Port to listen on" default:"8080"`</span></span>
+<span class="line"><span style="color: #F8F8F2">    Config  </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"c" long:"config" description:"Path to the configuration file"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’ve defined three flags: <code>verbose</code>, <code>port</code>, and <code>config</code>. The <code>verbose</code> flag is a boolean, while <code>port</code> is an integer, and <code>config</code> is a string.</p>
 <h2 id="parsing-flags">Parsing Flags</h2>
 <p>After defining your flags, you can now parse the command-line arguments using the <code>flags.Parse</code> function. Here’s an example of how you can parse flags and use them in your program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -115,28 +115,28 @@
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Config: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, opts.Config)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>If you run this program with the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">./myprog -v -p 9000 --config=config.toml</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">./myprog</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-v</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-p</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">9000</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--config=config.toml</span></span></code></pre>
 <p>The output will be:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Verbose: true</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Verbose: true</span></span>
 <span class="line"><span style="color: #F8F8F2">Port: 9000</span></span>
 <span class="line"><span style="color: #F8F8F2">Config: config.toml</span></span></code></pre>
 <h2 id="nested-commands">Nested Commands</h2>
 <p><code>go-flags</code> also supports nested commands. This is useful when building complex command-line tools that have multiple subcommands. To define a nested command, you create a struct field with the <code>command</code> tag and the desired command name.</p>
 <p>Here’s an example of a program with two nested commands, <code>serve</code> and <code>version</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ServeCommand</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">	Port </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"p" long:"port" description:"Port to listen on" default:"8080"`</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ServeCommand</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	Port </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"p" long:"port" description:"Port to listen on" default:"8080"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">VersionCommand</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">	Revision </span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"r" long:"revision" description:"Show revision number"`</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">VersionCommand</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	Revision </span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`short:"r" long:"revision" description:"Show revision number"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Options</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Options</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	Serve   ServeCommand   </span><span style="color: #E6DB74">`command:"serve" description:"Start the server"`</span></span>
 <span class="line"><span style="color: #F8F8F2">	Version VersionCommand </span><span style="color: #E6DB74">`command:"version" description:"Show version information"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>To handle the execution of the nested commands, you can use the <code>flags.Command</code> struct and <code>flags.Parse</code> function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> opts Options</span></span>
 <span class="line"><span style="color: #F8F8F2">	parser </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> flags.</span><span style="color: #66D9EF">NewParser</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">opts, flags.Default)</span></span>
 <span class="line"></span>
@@ -159,7 +159,7 @@
 <h2 id="error-handling">Error Handling</h2>
 <p>When parsing flags, <code>go-flags</code> returns an error if the user provides invalid or unexpected input. It’s important to handle these errors appropriately in your program.</p>
 <p>Here’s an example of how to handle errors when parsing flags:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> opts Options</span></span>
 <span class="line"><span style="color: #F8F8F2">    _, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> flags.</span><span style="color: #66D9EF">Parse</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">opts)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
@@ -181,7 +181,7 @@
 <p>One of the great features of <code>go-flags</code> is that it automatically generates help messages based on your flag definitions. By default, when the user types <code>-h</code> or <code>--help</code>, <code>go-flags</code> will display a help message and return a <code>flags.ErrHelp</code> error.</p>
 <p>The help message includes the flag names, their types, default values, and descriptions. You can customize the help message by providing a <code>description</code> tag for each flag, as shown in the examples above.</p>
 <p>Here’s an example of a generated help message:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Usage:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Usage:</span></span>
 <span class="line"><span style="color: #F8F8F2">  myprog [OPTIONS]</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">Application Options:</span></span>
@@ -209,5 +209,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

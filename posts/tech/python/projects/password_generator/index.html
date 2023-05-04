@@ -67,10 +67,10 @@
     <p>Creating a password generator is a useful programming exercise that can teach you about random number generation, string manipulation, and graphical user interface (GUI) design. In this article, we’ll go through the steps to create a password generator in Python and then show you how to create a simple GUI using the tkinter library.</p>
 <h2 id="step-1-generating-a-random-password">Step 1: Generating a Random Password</h2>
 <p>The first step in creating a password generator is to write a function that can generate a random password. Here is an example function that generates a password of a specified length:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> random</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> random</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> string</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_password</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">length</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_password</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">length</span><span style="color: #F8F8F2">):</span></span>
 <span class="line"><span style="color: #F8F8F2">    chars </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> string.ascii_letters </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> string.digits </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> string.punctuation</span></span>
 <span class="line"><span style="color: #F8F8F2">    password </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">.join(random.choice(chars) </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(length))</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> password</span></span></code></pre>
@@ -78,19 +78,19 @@
 <h2 id="step-2-creating-a-gui">Step 2: Creating a GUI</h2>
 <p>Now that we have a function to generate passwords, we can create a GUI that allows users to specify the length of the password and generate a new password with the click of a button. To do this, we’ll use the tkinter library, which is included with Python.</p>
 <p>Here’s an example GUI that includes a label, a text entry widget, a button, and another label to display the generated password:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> tkinter </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> tk</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> tkinter </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> tk</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_password</span><span style="color: #F8F8F2">():</span></span>
-<span class="line"><span style="color: #F8F8F2">    length </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">(length_entry.get())</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_password</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #F8F8F2">    length </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">(length_entry.get())</span></span>
 <span class="line"><span style="color: #F8F8F2">    password </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> generate_password(length)</span></span>
-<span class="line"><span style="color: #F8F8F2">    password_label.config(</span><span style="color: #FD971F">text</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">password)</span></span>
+<span class="line"><span style="color: #F8F8F2">    password_label.config(</span><span style="color: #FD971F; font-style: italic">text</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">password)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create the main window</span></span>
 <span class="line"><span style="color: #F8F8F2">window </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Tk()</span></span>
 <span class="line"><span style="color: #F8F8F2">window.title(</span><span style="color: #E6DB74">"Password Generator"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create the label for the password length</span></span>
-<span class="line"><span style="color: #F8F8F2">length_label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Label(window, </span><span style="color: #FD971F">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Password length:"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">length_label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Label(window, </span><span style="color: #FD971F; font-style: italic">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Password length:"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">length_label.pack()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create the text entry widget for the password length</span></span>
@@ -98,11 +98,11 @@
 <span class="line"><span style="color: #F8F8F2">length_entry.pack()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create the button to generate a new password</span></span>
-<span class="line"><span style="color: #F8F8F2">generate_button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Button(window, </span><span style="color: #FD971F">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Generate"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">command</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">generate_password)</span></span>
+<span class="line"><span style="color: #F8F8F2">generate_button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Button(window, </span><span style="color: #FD971F; font-style: italic">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Generate"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">command</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">generate_password)</span></span>
 <span class="line"><span style="color: #F8F8F2">generate_button.pack()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create the label to display the generated password</span></span>
-<span class="line"><span style="color: #F8F8F2">password_label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Label(window, </span><span style="color: #FD971F">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">password_label </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tk.Label(window, </span><span style="color: #FD971F; font-style: italic">text</span><span style="color: #F92672">=</span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">password_label.pack()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Start the main event loop</span></span>
@@ -127,5 +127,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -124,21 +124,21 @@ Row 2, Column 1 &#x26; Row 2, Column 2 <br>
 <ol>
 <li>Images: To insert an image in LaTeX, you can use the command “\includegraphics”. This command requires the graphicx package to be loaded in the preamble of your document. You can specify the file path of the image, as well as optional arguments for scaling, rotation, and positioning. For example, the following code would insert an image called “example.png” with a width of 0.5 times the text width:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">graphicx</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">graphicx</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=0.5</span><span style="color: #66D9EF">\textwidth</span><span style="color: #F8F8F2">]{example.png}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{Example Image}</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">fig:example</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">fig:example</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>The “figure” environment is used to insert an image with a caption and label. The “\centering” command centers the image horizontally within the environment.</p>
 <ol start="2">
 <li>Tables: To insert a table in LaTeX, you can use the “tabular” environment. Within this environment, you can specify the number of columns, alignment, and content of each cell. You can also use vertical and horizontal lines to separate cells and create headers and footers for the table. For example, the following code would create a simple table with two columns and two rows:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">table</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">table</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tabular</span><span style="color: #F8F8F2">}{|c|c|}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">tabular</span><span style="color: #F8F8F2">}{|c|c|}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\hline</span></span>
 <span class="line"><span style="color: #F8F8F2"> Column 1 </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2"> Column 2 </span><span style="color: #F92672">\\</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\hline</span></span>
@@ -146,38 +146,38 @@ Row 2, Column 1 &#x26; Row 2, Column 2 <br>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\hline</span></span>
 <span class="line"><span style="color: #F8F8F2"> Row 2, Column 1 </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2"> Row 2, Column 2 </span><span style="color: #F92672">\\</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\hline</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tabular</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">tabular</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{Example Table}</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tab:example</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">table</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">tab:example</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">table</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>The “table” environment is used to insert a table with a caption and label. The “tabular” environment defines the content of the table.</p>
 <ol start="3">
 <li>Figures: In LaTeX, a “figure” refers to any graphical element that is not an image, such as a diagram, chart, or graph. To insert a figure in LaTeX, you can use the “figure” environment and include the graphical element using commands such as “\includegraphics” or TikZ. For example, the following code would create a simple bar chart using the TikZ package:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">tikz</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">tikz</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (0,0) rectangle (1,4);</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (1.2,0) rectangle (2.2,2);</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (2.4,0) rectangle (3.4,3);</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\draw</span><span style="color: #F8F8F2"> (3.6,0) rectangle (4.6,1);</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">tikzpicture</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{Example Figure}</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">fig:example</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">fig:example</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>The “figure” environment is used to insert a figure with a caption and label. The TikZ package is used to draw the bar chart.</p>
 <p>By using these commands and environments, you can easily insert images, tables, and figures into your LaTeX documents.</p>
 <p>In LaTeX, you can create lists and bullet points using two different environments: “itemize” and “enumerate”. In this blog post, we’ll explain how to use each of these environments to create lists and bullet points.</p>
 <ol>
 <li>Itemize: The “itemize” environment is used to create a bulleted list. Each item in the list is preceded by a bullet. To create an itemized list, you can use the following code:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ruby`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">ruby`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">itemize</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 1</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 2</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 3</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">itemize</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This will create a bulleted list with three items:</p>
 <ul>
 <li>Item 1</li>
@@ -188,11 +188,11 @@ Row 2, Column 1 &#x26; Row 2, Column 2 <br>
 <ol start="2">
 <li>Enumerate: The “enumerate” environment is used to create a numbered list. Each item in the list is preceded by a number. To create an enumerated list, you can use the following code:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">enumerate</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">enumerate</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 1</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 2</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> Item 3</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">enumerate</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">enumerate</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This will create a numbered list with three items:</p>
 <ol>
 <li>Item 1</li>
@@ -213,39 +213,39 @@ Row 2, Column 1 &#x26; Row 2, Column 2 <br>
 <li>graphicx: This package allows you to include images in your document. You can use it to resize, rotate, or crop images, or to add captions and labels.</li>
 </ol>
 <p>To use these packages, you need to include them in the preamble of your document by using the “\usepackage” command, followed by the name of the package. For example, to use the geometry package, you would include the following line in the preamble:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">geometry</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">geometry</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>You can then use the commands and settings provided by the package to customize the layout of your document. For example, to set custom margins using the geometry package, you would use the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\geometry</span><span style="color: #F8F8F2">{left=2cm,right=2cm,top=2cm,bottom=2cm}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\geometry</span><span style="color: #F8F8F2">{left=2cm,right=2cm,top=2cm,bottom=2cm}</span></span></code></pre>
 <p>This would set the left, right, top, and bottom margins of your document to 2 centimeters.</p>
 <p>In LaTeX, macros are commands that you define yourself, which can be used to simplify the process of writing and formatting your document. Macros are particularly useful for automating repetitive tasks, or for creating custom commands that perform specific functions.</p>
 <p>To create a macro, you use the “\newcommand” command in the preamble of your document. The basic syntax for creating a macro is:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rust`</span><span style="color: #66D9EF">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\macro-name</span><span style="color: #F8F8F2">}{macro-definition}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">rust`</span><span style="color: #66D9EF; font-style: italic">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\macro-name</span><span style="color: #F8F8F2">}{macro-definition}</span></span></code></pre>
 <p>Where “macro-name” is the name of your macro, and “macro-definition” is the LaTeX code that defines what your macro does.</p>
 <p>For example, let’s say you frequently need to typeset the phrase “the quick brown fox jumps over the lazy dog” in your document. Instead of typing out the entire phrase each time, you could create a macro that does it for you. Here’s how you could define such a macro:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\foxphrase</span><span style="color: #F8F8F2">}{the quick brown fox jumps over the lazy dog}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF; font-style: italic">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\foxphrase</span><span style="color: #F8F8F2">}{the quick brown fox jumps over the lazy dog}</span></span></code></pre>
 <p>Once you’ve defined your macro, you can use it anywhere in your document by typing its name preceded by a backslash, like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">vbnet`Here's an example of the fox phrase: </span><span style="color: #66D9EF">\foxphrase</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">vbnet`Here's an example of the fox phrase: </span><span style="color: #66D9EF">\foxphrase</span></span></code></pre>
 <p>When you compile your document, LaTeX will replace “\foxphrase” with the actual text of the macro definition, which in this case is “the quick brown fox jumps over the lazy dog”.</p>
 <p>You can also create macros that take arguments. For example, let’s say you frequently need to typeset dates in a specific format. You could create a macro that takes the day, month, and year as arguments and formats them for you. Here’s an example of how to define such a macro:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">less`</span><span style="color: #66D9EF">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\dateformat</span><span style="color: #F8F8F2">}[3]{#1/#2/#3}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">less`</span><span style="color: #66D9EF; font-style: italic">\newcommand</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\dateformat</span><span style="color: #F8F8F2">}[3]{#1/#2/#3}</span></span></code></pre>
 <p>In this example, the macro takes three arguments, which represent the day, month, and year of the date you want to typeset. The macro definition simply puts these arguments together in the format “day/month/year”.</p>
 <p>Once you’ve defined your macro, you can use it like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">rust`Today's date is </span><span style="color: #66D9EF">\dateformat</span><span style="color: #F8F8F2">{12}{3}{2023}.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">rust`Today's date is </span><span style="color: #66D9EF">\dateformat</span><span style="color: #F8F8F2">{12}{3}{2023}.</span></span></code></pre>
 <p>When you compile your document, LaTeX will replace “\dateformat{12}{3}{2023}” with the formatted date “12/3/2023”.</p>
 <p>A LaTeX document is structured into two main parts: the preamble and the document body.</p>
 <p>The preamble comes before the document body and contains all the settings and commands that define the overall layout and formatting of the document. In the preamble, you define the document class, set up packages, and customize page layout, font styles, and other formatting settings. You can also define your own macros and create a table of contents.</p>
 <p>Here’s an example of a simple LaTeX preamble:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F">12pt</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">graphicx</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">amsmath</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">hyperref</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">[</span><span style="color: #FD971F; font-style: italic">12pt</span><span style="color: #F8F8F2">]{</span><span style="color: #66D9EF; font-style: italic">article</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">graphicx</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">amsmath</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">hyperref</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document Title}</span></span>
 <span class="line"><span style="color: #66D9EF">\author</span><span style="color: #F8F8F2">{My Name}</span></span>
 <span class="line"><span style="color: #66D9EF">\date</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\today</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we are using the “article” document class with a font size of 12 points. We have included three packages - “graphicx”, “amsmath”, and “hyperref” - which allow us to use graphics, advanced mathematical notation, and hyperlinks in our document, respectively. We have also defined the title, author, and date of our document.</p>
 <p>The document body comes after the preamble and contains the actual content of your document. This is where you write your text, add figures and tables, and include equations and mathematical expressions. The document body is typically enclosed in the “\begin{document}” and “\end{document}” commands.</p>
 <p>Here’s an example of a simple LaTeX document body:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\maketitle</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Introduction}</span></span>
@@ -254,7 +254,7 @@ Row 2, Column 1 &#x26; Row 2, Column 2 <br>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Conclusion}</span></span>
 <span class="line"><span style="color: #F8F8F2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget lectus sed justo tincidunt condimentum. Nam quis nunc id quam accumsan auctor. Aenean vel urna non mauris auctor fringilla vel ac lorem.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we have defined two sections - an introduction and a conclusion - using the “\section” command. The text of each section is enclosed in braces. We have also used the “\maketitle” command to generate a title page based on the information we defined in the preamble.</p>
 <p>To compile a LaTeX document, you need to run a LaTeX compiler on the source code file. The LaTeX compiler reads your document and generates a PDF file that you can view and share.</p>
 <p>There are several LaTeX compilers available, and the most popular ones are:</p>
@@ -369,5 +369,5 @@ It can span multiple lines and paragraphs.
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

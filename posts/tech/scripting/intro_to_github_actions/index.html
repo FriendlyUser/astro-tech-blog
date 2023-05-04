@@ -66,7 +66,7 @@
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to github actions and how to use them</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Mon, 13 November 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/github" style="padding-right:3px"> <category>github<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/ci" style="padding-right:3px"> <category>ci<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2543580613.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>YAML (short for “YAML Ain’t Markup Language”) is a human-readable data serialization format. It is commonly used for configuration files, data exchange between systems, and in many other applications.</p>
 <p>The basic structure of a YAML file consists of a series of key-value pairs, separated by colons. Keys are always strings, and values can be strings, numbers, booleans, arrays, or other complex data structures. Here is an example of a simple YAML file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">makefile`name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">John Doe</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">makefile`name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">John Doe</span></span>
 <span class="line"><span style="color: #F92672">age</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">35</span></span>
 <span class="line"><span style="color: #F92672">email</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">john.doe@example.com</span></span>
 <span class="line"></span>
@@ -77,7 +77,7 @@
 <p>In this example, <code>name</code>, <code>age</code>, and <code>email</code> are the keys, and their corresponding values are strings. The key <code>interests</code> has an array of values as its value.</p>
 <p>YAML also provides syntax for more complex data structures, such as nested dictionaries and arrays. The indentation in a YAML file is important, as it defines the structure of the data.</p>
 <p>Here is an example of a nested data structure in YAML:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">person</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">person</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">John Doe</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">age</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">35</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">email</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">john.doe@example.com</span></span>
@@ -90,7 +90,7 @@
 <p>YAML is a versatile and widely used format that is easy to read and write. It is often used in combination with other technologies, such as Ansible, to manage configurations and deploy software.</p>
 <p>A schedule, or cron job, is a task that runs automatically at specified intervals on a Unix-based operating system. The task is defined in a special file called the crontab file, which specifies the schedule and command to run.</p>
 <p>Cron uses a simple syntax to define the schedule for a task, with each line in the crontab file representing a single cron job. The syntax consists of six fields, separated by spaces:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">* * * * * command</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">* * * * * command</span></span>
 <span class="line"><span style="color: #F8F8F2">- - - - -</span></span>
 <span class="line"><span style="color: #F8F8F2">| | | | |</span></span>
 <span class="line"><span style="color: #F8F8F2">| | | | ----- Day of week (0 - 7) (Sunday = both 0 and 7)</span></span>
@@ -100,11 +100,11 @@
 <span class="line"><span style="color: #F8F8F2">------------- Minute (0 - 59)</span></span></code></pre>
 <p>The first five fields represent the schedule, and the last field is the command to run. The asterisk (<code>*</code>) is a wildcard that matches any value, so a schedule of <code>* * * * *</code> would run every minute of every day.</p>
 <p>Here is an example of a cron job that runs a script every day at 4 PM:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #E6DB74">0 16 * * * /path/to/script.sh</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #E6DB74">0 16 * * * /path/to/script.sh</span></span></code></pre>
 <p>Cron jobs can be managed using the <code>crontab</code> command, which allows you to view, edit, and delete cron jobs for a user. You can also use the <code>crontab</code> command to specify the location of a crontab file for a user, for example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">crontab /path/to/crontab.file</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">crontab</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">/path/to/crontab.file</span></span></code></pre>
 <p>Cron is a powerful tool that can automate many types of tasks, such as backing up data, sending emails, or updating databases. However, it is important to use it responsibly and make sure that the tasks you run do not interfere with other systems or processes.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Scrap News</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Scrap News</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">schedule</span><span style="color: #F8F8F2">:</span></span>
@@ -138,23 +138,23 @@
 <li>Run the .NET project using the <code>dotnet out/news-alert.dll</code> command. This step also sets two environment variables: <code>DISCORD_WEBHOOK</code> and <code>ES_INSTANCE</code>. These variables are stored as secrets in the GitHub repository and are passed to the .NET application to allow it to interact with Discord and Elasticsearch.</li>
 </ol>
 <p>To trigger a GitHub Actions workflow on a push event, you can use the following YAML syntax in the <code>on</code> section of your workflow file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> - </span><span style="color: #E6DB74">main</span></span></code></pre>
 <p>In this example, the workflow will be triggered every time a push event is made to the <code>main</code> branch of your repository.</p>
 <p>You can also specify multiple branches to trigger the workflow, for example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> - </span><span style="color: #E6DB74">main</span></span>
 <span class="line"><span style="color: #F8F8F2"> - </span><span style="color: #E6DB74">dev</span></span></code></pre>
 <p>In this example, the workflow will be triggered on push events to both the <code>main</code> and <code>dev</code> branches of your repository.</p>
 <p>If you want to trigger the workflow on pushes to all branches, you can use the following syntax:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span></code></pre>
 <p>Note that you can combine multiple events in the <code>on</code> section, for example, to trigger the workflow on both push events and schedule events, you can use the following syntax:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> - </span><span style="color: #E6DB74">main</span></span>
@@ -174,7 +174,7 @@
 <p>GitHub Actions are designed to run only when there are new commits or other events that trigger a workflow. After 60 days of inactivity, workflows that have not been triggered will be automatically stopped to conserve resources and ensure optimal performance for active workflows.</p>
 <p>The 60-day limit is in place to prevent workflows from running indefinitely without being updated, as this can consume system resources and potentially impact other workflows running on the same infrastructure. Inactive workflows can always be restarted by pushing new commits to the repository, which will trigger the workflow again.</p>
 <p>By stopping inactive workflows, GitHub is able to provide a stable and efficient platform for continuous integration and continuous deployment, enabling developers to automate their workflows and deliver better results to their users more quickly and reliably.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Update CRON</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Update CRON</span></span>
 <span class="line"><span style="color: #88846F"># Make update to public file to keep workflows running</span></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">schedule</span><span style="color: #F8F8F2">:</span></span>
@@ -218,5 +218,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

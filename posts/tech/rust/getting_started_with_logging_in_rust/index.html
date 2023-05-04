@@ -71,10 +71,10 @@
 <p>To follow this tutorial, you need to have Rust installed. If you don’t have it already, you can follow the official installation guide <a href="https://www.rust-lang.org/tools/install">here</a>.</p>
 <h2 id="getting-started">Getting Started</h2>
 <p>To begin, create a new Rust project:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo new log_example</span></span>
-<span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> log_example</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">new</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">log_example</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">log_example</span></span></code></pre>
 <p>Now, open the <code>Cargo.toml</code> file and add the following dependencies:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
 <span class="line"><span style="color: #F8F8F2">log = </span><span style="color: #E6DB74">"0.4"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">[dev-dependencies]</span></span>
@@ -82,23 +82,23 @@
 <p>Here, we’re adding the <code>log</code> crate and the <code>env_logger</code> crate. The <code>log</code> crate provides logging macros, while the <code>env_logger</code> crate provides a simple logging implementation that outputs logs to the terminal based on environment variables.</p>
 <h2 id="setting-up-the-logger">Setting Up the Logger</h2>
 <p>Next, we’ll set up the logger. In the <code>src/main.rs</code> file, add the following lines:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">extern</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">crate</span><span style="color: #F8F8F2"> log;</span></span>
-<span class="line"><span style="color: #66D9EF">extern</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">crate</span><span style="color: #F8F8F2"> env_logger;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">extern</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">crate</span><span style="color: #F8F8F2"> log;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">extern</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">crate</span><span style="color: #F8F8F2"> env_logger;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">log</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{info, trace, warn, error};</span></span>
-<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">env_logger</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Env</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">log</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">{info, trace, warn, error};</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">env_logger</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">Env</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">env_logger</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Builder</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_env</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">Env</span><span style="color: #F92672">::</span><span style="color: #A6E22E">default</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">default_filter_or</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"info"</span><span style="color: #F8F8F2">))</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">env_logger</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">Builder</span><span style="color: #F92672">::</span><span style="color: #A6E22E">from_env</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">Env</span><span style="color: #F92672">::</span><span style="color: #A6E22E">default</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">default_filter_or</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"info"</span><span style="color: #F8F8F2">))</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">.</span><span style="color: #A6E22E">init</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">info!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Logger initialized!"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Here, we import the <code>log</code> and <code>env_logger</code> crates, along with the logging macros from the <code>log</code> crate. We then create a new <code>env_logger::Builder</code> instance, using the <code>from_env</code> function to configure the logging filter based on environment variables. The <code>default_filter_or</code> function sets a default log level if no environment variable is provided.</p>
 <p>Now, run the application:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
 <p>You should see the following output:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">INFO [log_example] Logger initialized!</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">INFO [log_example] Logger initialized!</span></span></code></pre>
 <h2 id="logging-messages">Logging Messages</h2>
 <p>With our logger initialized, we can now log messages at different levels. Let’s examine the various log levels:</p>
 <ul>
@@ -109,7 +109,7 @@
 <li><code>error!</code>: Error logs, used to indicate critical failures or problems in the application.</li>
 </ul>
 <p>Add the following lines to <code>src/main.rs</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #88846F">    // ...</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">trace!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"This is a trace log!"</span><span style="color: #F8F8F2">);</span></span>
@@ -119,14 +119,14 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">error!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"This is an error log!"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>By default, our logger is set to the <code>info</code> level. If you run the application again, you’ll see logs for <code>info</code>, <code>warn</code>, and <code>error</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ cargo run</span></span></code></pre>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">INFO [log_example] Logger initialized!</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">INFO [log_example] Logger initialized!</span></span>
 <span class="line"><span style="color: #F8F8F2">INFO [log_example] This is an info log!</span></span>
 <span class="line"><span style="color: #F8F8F2">WARN [log_example] This is a warning log!</span></span>
 <span class="line"><span style="color: #F8F8F2">ERROR [log_example] This is an error log!</span></span></code></pre>
 <h2 id="changing-log-levels">Changing Log Levels</h2>
 <p>To change the log level, set the <code>RUST_LOG</code> environment variable. For example, if you want to display logs for <code>debug</code> and higher levels, run:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ RUST_LOG=debug cargo run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">RUST_LOG=debug</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
 <p>You’ll now see logs for <code>debug</code>, <code>info</code>, <code>warn</code>, and <code>error</code>.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>In this article, we explored how to use the <code>log</code> crate in Rust to create a flexible and extensible logging system. By leveraging the <code>env_logger</code> crate, we can easily control the log level at runtime using environment variables. Now, you can integrate logging into your Rust applications and enhance your development, debugging, and production monitoring experiences.</p>
@@ -145,5 +145,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

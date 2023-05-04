@@ -79,22 +79,22 @@
 </ol>
 <h2 id="setting-up-the-environment">Setting Up the Environment</h2>
 <p>To use autopilot in Deno, you will first need to install the autopilot module. Create a <code>deps.ts</code> file and import the module as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// deps.ts</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// deps.ts</span></span>
 <span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> { autopilot } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://deno.land/x/autopilot/mod.ts"</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <p>This will allow you to use autopilot in your Deno scripts by simply importing it from <code>deps.ts</code>.</p>
 <h2 id="writing-a-basic-autopilot-script">Writing a Basic Autopilot Script</h2>
 <p>Now that you have the environment set up, let’s write a basic autopilot script. Create a new file called <code>autopilot_example.ts</code> and import the autopilot module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// autopilot_example.ts</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// autopilot_example.ts</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { autopilot } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./deps.ts"</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <p>Next, create a new instance of the <code>Autopilot</code> class:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> pilot </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> autopilot.</span><span style="color: #A6E22E">Autopilot</span><span style="color: #F8F8F2">();</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> pilot </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> autopilot.</span><span style="color: #A6E22E">Autopilot</span><span style="color: #F8F8F2">();</span></span></code></pre>
 <p>Now, you can use the methods available in the <code>Autopilot</code> class to interact with the browser. Let’s write a script that navigates to a URL, takes a screenshot, and saves it to a local file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">runAutopilot</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">runAutopilot</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// Navigate to the desired URL</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> pilot.</span><span style="color: #A6E22E">goto</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"https://deno.land"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// Take a screenshot</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> screenshot </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> pilot.</span><span style="color: #A6E22E">screenshot</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> screenshot </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> pilot.</span><span style="color: #A6E22E">screenshot</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// Save the screenshot to a local file</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> Deno.</span><span style="color: #A6E22E">writeFile</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"deno_land_screenshot.png"</span><span style="color: #F8F8F2">, screenshot);</span></span>
@@ -104,7 +104,7 @@
 <p>This script will open the default web browser, navigate to the Deno website, take a screenshot, and save it as <code>deno_land_screenshot.png</code> in the current working directory.</p>
 <h2 id="running-the-autopilot-script">Running the Autopilot Script</h2>
 <p>To run the autopilot script, execute the following command in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">deno run --allow-net --allow-write autopilot_example.ts</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">deno</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--allow-net</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--allow-write</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">autopilot_example.ts</span></span></code></pre>
 <p>The <code>--allow-net</code> flag is needed to grant network access, while the <code>--allow-write</code> flag allows the script to write the screenshot to the local file system.</p>
 <p>After running the script, you should see a new file named <code>deno_land_screenshot.png</code> containing a screenshot of the Deno website.</p>
 <h2 id="conclusion">Conclusion</h2>
@@ -125,5 +125,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -68,16 +68,16 @@
 <p>It is used by graphic designers, photographers, scientists and also used for creating thumbnails for websites, creating GIF animations, converting PDF pages to images and so on. ImageMagick can be used from the command-line or can be used as a programming library for software development.</p>
 <p>You can call ImageMagick from Python using the <code>os</code> module, which provides a way to interface with the underlying operating system.</p>
 <p>Here’s an example of how to use ImageMagick to convert an image from one format to another:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">input_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'input.jpg'</span></span>
 <span class="line"><span style="color: #F8F8F2">output_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'output.png'</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">os.system(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">'convert </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">input_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">output_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">os.system(</span><span style="color: #66D9EF; font-style: italic">f</span><span style="color: #E6DB74">'convert </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">input_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">output_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>In this example, <code>convert</code> is the command-line utility provided by ImageMagick to convert images. The <code>input_image</code> variable specifies the path to the input image and <code>output_image</code> specifies the path to the output image. The <code>os.system</code> function is used to run the <code>convert</code> command, which converts the input image to the output image.</p>
 <p>The convert utility is only available in imagemagick 6.</p>
 <p>Note that this method is prone to security vulnerabilities, since it passes the parameters directly to the shell. To avoid these vulnerabilities, you can use the <code>subprocess</code> module, which provides a more secure way of calling shell commands. Here’s an example of how to use the <code>subprocess</code> module to call ImageMagick:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> subprocess</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> subprocess</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">input_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'input.jpg'</span></span>
 <span class="line"><span style="color: #F8F8F2">output_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'output.png'</span></span>
@@ -86,24 +86,24 @@
 <p>In this example, the <code>subprocess.run</code> function is used to run the <code>convert</code> command, and the parameters are passed as a list, rather than as a string. This is a more secure way of calling shell commands, as it avoids shell injection attacks.</p>
 <p>You can call ImageMagick from Python using the <code>os</code> module, which provides a way to interface with the underlying operating system.</p>
 <p>Here’s an example of how to use ImageMagick to convert an image from one format to another:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">input_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'input.jpg'</span></span>
 <span class="line"><span style="color: #F8F8F2">output_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'output.png'</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">os.system(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">'convert </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">input_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">output\</span><span style="color: #F44747">_image}')`</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">os.system(</span><span style="color: #66D9EF; font-style: italic">f</span><span style="color: #E6DB74">'convert </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">input_image</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74"> </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">output\</span><span style="color: #F44747">_image}')`</span></span></code></pre>
 <p>In this example, <code>convert</code> is the command-line utility provided by ImageMagick to convert images. The <code>input_image</code> variable specifies the path to the input image and <code>output_image</code> specifies the path to the output image. The <code>os.system</code> function is used to run the <code>convert</code> command, which converts the input image to the output image.</p>
 <p>Note that this method is prone to security vulnerabilities, since it passes the parameters directly to the shell. To avoid these vulnerabilities, you can use the <code>subprocess</code> module, which provides a more secure way of calling shell commands. Here’s an example of how to use the <code>subprocess</code> module to call ImageMagick:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> subprocess</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> subprocess</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">input_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'input.jpg'</span></span>
 <span class="line"><span style="color: #F8F8F2">output_image </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'output.png'</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">subprocess.run([</span><span style="color: #E6DB74">'convert'</span><span style="color: #F8F8F2">, input_image, output_image])</span><span style="color: #F44747">`</span></span></code></pre>
 <p>In this example, the <code>subprocess.run</code> function is used to run the <code>convert</code> command, and the parameters are passed as a list, rather than as a string. This is a more secure way of calling shell commands, as it avoids shell injection attacks.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    dir_list </span><span style="color: #F92672">=</span><span style="color: #F8F8F2">  os.listdir(</span><span style="color: #E6DB74">'.'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> full_file_name </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> dir_list:</span></span>
 <span class="line"><span style="color: #F8F8F2">        base_name, extension </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> os.path.splitext(full_file_name)</span></span>
@@ -157,5 +157,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

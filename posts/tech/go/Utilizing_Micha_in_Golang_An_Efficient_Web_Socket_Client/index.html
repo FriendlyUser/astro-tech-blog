@@ -69,13 +69,13 @@
 <p>Micha is an efficient and easy-to-use WebSocket client library for Golang that allows developers to build real-time applications with ease. In this article, we will explore the steps to implement Micha in Golang, providing examples and best practices.</p>
 <h2 id="installation">Installation</h2>
 <p>First, you need to install the Micha library. To do this, run the following command in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/sacOO7/micha</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/sacOO7/micha</span></span></code></pre>
 <p>After the installation is complete, you can include it in your Golang project by importing the library:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/sacOO7/micha"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/sacOO7/micha"</span></span></code></pre>
 <h2 id="creating-a-websocket-client">Creating a WebSocket Client</h2>
 <p>To create a WebSocket client and connect to a WebSocket server, you must first create an instance of the <code>micha.WebSocket</code> struct, passing the WebSocket server URL as a parameter. After creating the instance, you can define the various event handlers and connect to the server.</p>
 <p>Here’s an example of how to create a WebSocket client and connect to a server:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -94,15 +94,15 @@
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Connected to server"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">	client.OnConnectError </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(err </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	client.OnConnectError </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(err </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Connection error: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, err)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">	client.OnTextMessage </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(message </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	client.OnTextMessage </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(message </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Received text message: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, message)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">	client.OnBinaryMessage </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(data []</span><span style="color: #66D9EF">byte</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	client.OnBinaryMessage </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(data []</span><span style="color: #66D9EF; font-style: italic">byte</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Received binary message: </span><span style="color: #AE81FF">%v\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, data)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
@@ -119,13 +119,13 @@
 <h2 id="sending-messages">Sending Messages</h2>
 <p>To send messages to the WebSocket server, use the <code>SendText()</code> and <code>SendBinary()</code> methods of the <code>micha.WebSocket</code> struct. These methods allow you to send text and binary data, respectively.</p>
 <p>Here’s an example of how to send a text message:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">client.</span><span style="color: #66D9EF">SendText</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, WebSocket!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">client.</span><span style="color: #66D9EF">SendText</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, WebSocket!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>And here’s an example of how to send binary data:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">byte</span><span style="color: #F8F8F2">{</span><span style="color: #F92672">0x</span><span style="color: #AE81FF">01</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">02</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">03</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">04</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">05</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">byte</span><span style="color: #F8F8F2">{</span><span style="color: #F92672">0x</span><span style="color: #AE81FF">01</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">02</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">03</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">04</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">0x</span><span style="color: #AE81FF">05</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">client.</span><span style="color: #66D9EF">SendBinary</span><span style="color: #F8F8F2">(data)</span></span></code></pre>
 <h2 id="disconnecting-from-the-server">Disconnecting from the Server</h2>
 <p>To disconnect from the WebSocket server, call the <code>Disconnect()</code> method:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">client.</span><span style="color: #66D9EF">Disconnect</span><span style="color: #F8F8F2">()</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">client.</span><span style="color: #66D9EF">Disconnect</span><span style="color: #F8F8F2">()</span></span></code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>Micha is an efficient and easy-to-use WebSocket client library for Golang that helps developers build real-time applications with ease. By following the examples and best practices shared in this article, you can quickly create WebSocket clients and interact with WebSocket servers in your Golang projects.</p>
 <p>Now that you have a basic understanding of how to use Micha in Golang, you can start exploring its advanced features, such as customizing connection headers, handling connection timeouts, and more.</p>
@@ -144,5 +144,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

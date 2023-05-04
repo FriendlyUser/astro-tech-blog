@@ -67,7 +67,7 @@
     <p>Web development is an essential skill for any modern-day programmer, and Go provides a robust framework for creating web applications. In this chapter, we’ll cover the basics of web development in Go, including how to build a simple web server, handle HTTP requests, and create dynamic web pages using templates.</p>
 <h3 id="building-a-simple-web-server">Building a Simple Web Server</h3>
 <p>The first step in web development with Go is to create a web server. Here’s a simple example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -86,7 +86,7 @@
 <h3 id="handling-http-requests">Handling HTTP Requests</h3>
 <p>To handle HTTP requests in Go, you need to define a handler function that takes an <code>http.ResponseWriter</code> and an <code>http.Request</code> as arguments. The <code>http.ResponseWriter</code> is used to send the response back to the client, while the <code>http.Request</code> contains information about the incoming request, such as the HTTP method (GET, POST, etc.) and any parameters or headers.</p>
 <p>Here’s an example handler function that handles GET requests for a specific URL:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handler</span><span style="color: #F8F8F2">(w http.ResponseWriter, r \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Request) {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handler</span><span style="color: #F8F8F2">(w http.ResponseWriter, r \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Request) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> r.Method </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"GET"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> r.URL.Path </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"/hello"</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Fprintf</span><span style="color: #F8F8F2">(w, </span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2"> } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
@@ -96,16 +96,16 @@
 <p>This code checks if the incoming request is a GET request for the <code>/hello</code> URL. If it is, it sends the message “Hello, World!” back to the client. If it’s not, it sends a 404 Not Found status code.</p>
 <h3 id="creating-dynamic-web-pages-with-templates">Creating Dynamic Web Pages with Templates</h3>
 <p>Finally, you can use Go’s built-in template engine to create dynamic web pages. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"html/template"</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"net/http"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> Name </span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2"> Age </span><span style="color: #66D9EF">int</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> Name </span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2"> Age </span><span style="color: #66D9EF; font-style: italic">int</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handler</span><span style="color: #F8F8F2">(w http.ResponseWriter, r \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Request) {</span></span>
@@ -123,7 +123,7 @@
 <p>In this chapter, we covered the basics of web development in Go, including how to build a simple web server, handle HTTP requests, and create dynamic web pages using templates. Go provides a simple and powerful framework for web development, making it a great choice for building web applications of all kinds.</p>
 <p>In web development with Go, the HTTP package is the foundation for handling HTTP requests and responses. It provides the <code>http.ListenAndServe</code> function for starting an HTTP server, as well as a number of other functions and types for working with HTTP requests and responses.</p>
 <p>Here’s an example of using the HTTP package to handle an HTTP request:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -143,7 +143,7 @@
 <p>The HTTP package in Go provides a simple and powerful way to handle HTTP requests and responses in web development. With the <code>http.ListenAndServe</code> function and the <code>http.HandleFunc</code> function, you can quickly build a web server that responds to incoming HTTP requests.</p>
 <p>In web development with Go, a web application is a program that runs on a web server and provides a web interface for users to interact with. Web applications are typically built using the HTTP package, which provides the foundation for handling HTTP requests and responses.</p>
 <p>Here’s an example of a simple web application in Go:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -180,5 +180,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

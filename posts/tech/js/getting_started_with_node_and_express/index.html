@@ -90,7 +90,7 @@ Chocolatey package manager:</p>
 <ul>
 <li>
 <p>Open a command prompt or terminal and run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">choco install nodejs</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">choco install nodejs</span></span></code></pre>
 </li>
 <li>
 <p>Once the installation is complete, type node -v to verify that
@@ -123,16 +123,16 @@ distribution to install Node.js. For example, on Ubuntu, you can use
 the following command to install the latest version of Node.js:</p>
 </li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">    sudo apt-get install nodejs</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">    sudo apt-get install nodejs</span></span></code></pre>
 <p>Once the installation is complete, you can use the node command to run
 Node.js in the Linux environment.</p>
 <p>Alternatively, you can also use a package manager like apt on Ubuntu or
 brew on macOS to install Node.js. For example, on Ubuntu, you can use
 the following commands:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">    sudo apt update</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">    sudo apt update</span></span>
 <span class="line"><span style="color: #F8F8F2">    sudo apt install nodejs</span></span></code></pre>
 <p>On macOS, you can use the following commands:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">    brew update</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">    brew update</span></span>
 <span class="line"><span style="color: #F8F8F2">    brew install node</span></span></code></pre>
 <h2 id="express">Express</h2>
 <p>Express is a popular web application framework for building back-end
@@ -177,15 +177,15 @@ package.json file to track dependencies.</p>
 <p>run node app.js</p>
 </li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> express </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"express"</span><span style="color: #F8F8F2">);</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> express </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"express"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">express</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">express</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F">req</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">res</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">, (</span><span style="color: #FD971F; font-style: italic">req</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">res</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  res.</span><span style="color: #A6E22E">send</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, world!"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Server listening on port 3000"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
 <p>In this example, the Express app is created using the express function,
@@ -196,7 +196,7 @@ specified response will be sent back to the client.</p>
 <p>To add a start command to the package.json file that will run the app.js
 file, you can add a scripts property to the package.json file, and
 specify the start command as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"my-node-app"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"version"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"1.0.0"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"scripts"</span><span style="color: #F8F8F2">: {</span></span>
@@ -215,18 +215,18 @@ start), the app.js file will be executed using the node command.</p>
 can run the start script by using the npm run or yarn run command,
 followed by the name of the script. For example, to run the start script
 with npm, you can run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm run start</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">npm run start</span></span></code></pre>
 <p>To create an Express server that hosts static files, you can use the
 express.static middleware function. This function is part of the Express
 framework, which is a popular web application framework for Node.js.</p>
 <p>Here is an example of how to use the express.static middleware to host
 static files:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> express </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'express'</span><span style="color: #F8F8F2">);</span></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">express</span><span style="color: #F8F8F2">();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> express </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'express'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">express</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(express.</span><span style="color: #A6E22E">static</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'public'</span><span style="color: #F8F8F2">));</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">listen</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Server listening on port 3000'</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
 <p>In this example, the express.static middleware is used to serve all
@@ -238,7 +238,7 @@ request to <a href="http://your-server-domain/index.html">http://your-server-dom
 <p>You can also specify a different directory to serve static files from by
 passing the directory path as an argument to the express.static
 function. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(express.</span><span style="color: #A6E22E">static</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'my-static-files'</span><span style="color: #F8F8F2">));</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">app.</span><span style="color: #A6E22E">use</span><span style="color: #F8F8F2">(express.</span><span style="color: #A6E22E">static</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'my-static-files'</span><span style="color: #F8F8F2">));</span></span></code></pre>
 <p>This will serve all files in the my-static-files directory.</p>
 <p>It’s important to note that the express.static middleware only serves
 static files. It does not handle dynamic requests, such as those made
@@ -263,5 +263,5 @@ need to use additional middleware or route handlers.</p>
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

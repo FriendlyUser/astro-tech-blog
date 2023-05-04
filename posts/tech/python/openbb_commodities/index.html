@@ -69,10 +69,10 @@
 <p>Investors can use various tools to track commodity prices, including commodity price indexes, futures contracts, and exchange-traded funds (ETFs). These tools allow investors to monitor price trends and make informed decisions about buying, selling, or holding commodities.</p>
 <p>For example, if an investor expects the price of crude oil to rise due to geopolitical tensions or supply disruptions, they may choose to invest in oil futures or an oil ETF. Alternatively, if an investor wants to hedge against inflation, they may invest in gold or other precious metals, which tend to hold their value during times of economic uncertainty.</p>
 <p>In summary, tracking commodities is important for investing because it provides valuable insights into the global economy and financial markets, and can help investors make informed decisions about their portfolios.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> streamlit </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> st</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> streamlit </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> st</span></span>
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> openbb_terminal.economy.wsj_model </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> market_overview, us_indices, us_bonds, top_commodities, global_bonds, global_currencies</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">openbb_economy</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">openbb_economy</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    economy_dfs </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
 <span class="line"><span style="color: #F8F8F2">    file_names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># append two entries to economy dfs from top_commodities and us_bonds</span></span>
@@ -98,7 +98,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># output all economy tables with labels above</span></span>
 <span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">len</span><span style="color: #F8F8F2">(economy_dfs)):</span></span>
-<span class="line"><span style="color: #F8F8F2">    st.write(</span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">"# </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">file_names[i]</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    st.write(</span><span style="color: #66D9EF; font-style: italic">f</span><span style="color: #E6DB74">"# </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">file_names[i]</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    st.write(economy_dfs[i])</span></span></code></pre>
 <p>The code above is a Python script that uses the Streamlit library to create a web application that displays real-time financial data. Specifically, the script imports six functions from the openbb_terminal.economy.wsj_model module that retrieve data on top commodities, US bonds, US indices, global bonds, global currencies, and market overviews.</p>
 <p>The openbb_economy() function creates a list of dataframes (economy_dfs) and a list of strings (file_names) that correspond to the names of the data sources. Each dataframe is populated by calling one of the six imported functions. The function then returns the two lists as a tuple.</p>
@@ -120,5 +120,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

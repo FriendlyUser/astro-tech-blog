@@ -77,7 +77,7 @@ Get a sense of where I die, who I die to and what my equipment is like on death.
 <li>analyze all the games and join the data into meaningful strings rather that enums</li>
 </ul>
 <p>I found that interactive notebooks can be quite useful if you are using exclusively dotnet libraries or are very comfortable with C#.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#i "nuget:https:</span><span style="color: #88846F">//pkgs.dev.azure.com/dnceng/public/_packaging/dotnet6/nuget/v3/index.json" </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">#i "nuget:https:</span><span style="color: #88846F">//pkgs.dev.azure.com/dnceng/public/_packaging/dotnet6/nuget/v3/index.json" </span></span>
 <span class="line"><span style="color: #F8F8F2">#i "nuget:https:</span><span style="color: #88846F">//pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" </span></span>
 <span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">r</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"nuget: BserClient, 1.4.0"</span></span>
 <span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">r</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"nuget: Plotly.NET, 2.0.0-preview.16"</span></span>
@@ -91,11 +91,11 @@ Get a sense of where I die, who I die to and what my equipment is like on death.
 <li>github rendering is inconsistent with the vs code plugin.</li>
 </ul>
 <p><img src="/imgs/2021/hyunwoo_deaths.png" alt="Sample plot"></p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart</span></span>
 <span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #A6E22E">ofTraceObject</span><span style="color: #F8F8F2">(trace)</span></span>
 <span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #A6E22E">WithLayout</span><span style="color: #F8F8F2">(layout);</span></span></code></pre>
 <p>Plotting in <code>Plotly.NET.Interactive, 2.0.0-preview.6</code></p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart</span></span>
 <span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #A6E22E">ofTraceObject</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">, trace);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    chart </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> GenericChart.</span><span style="color: #A6E22E">setLayout</span><span style="color: #F8F8F2">(layout, chart);</span></span></code></pre>
@@ -127,5 +127,5 @@ Get a sense of where I die, who I die to and what my equipment is like on death.
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

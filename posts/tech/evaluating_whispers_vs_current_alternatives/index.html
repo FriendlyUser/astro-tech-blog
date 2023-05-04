@@ -67,14 +67,14 @@
     <h3 id="summary">Summary</h3>
 <p>Recently openai released whispers, a new transcription tool. I wanted to evaluate it against current options like wit.ai and see how it compares.</p>
 <p>In order to use whispers for your projects, will you need python 3.7+ and to install a model.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">pip install whispers</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">pip install whispers</span></span></code></pre>
 <p>For my use cases, I will use the base model due to speed being more important than efficency, as I want to implement (somewhat real time transcription).</p>
 <p>Although I am comparing it to my existing implementation of wit.ai, the length of my content is a bit longer than the average user. Due to technical limitations of wit.ai I am sending video chunks in 4 minute 30 second intervals, with whispers running locally, that limitation can be somewhat lessened.</p>
 <p>For this analysis, I am comparing a youtube video (has google transcriptions), to what wit.ai ( from facebook) produces and what whispers produces.</p>
 <p>I am using <code>ffmpeg</code> to convert the audio to mp3 and then the corresponding libraries to transcribe the audio. For the given youtube video, I extract the transcript using the unofficial youtube api.</p>
 <p>I will be using <a href="https://www.youtube.com/watch?v=8F5Mc5bKEdc">https://www.youtube.com/watch?v=8F5Mc5bKEdc</a> with stonk talk from jim cramer.</p>
 <p>For example in this sample phrase <code>whispers</code> does a good job. Given the amazing performance on dalle, I am not surprised that the openai model performs quite well.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">whispers: </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">whispers: </span></span>
 <span class="line"><span style="color: #F8F8F2">Sebastian says the volatility index, the bond market, and bond volatility are all pointing towards lower stock prices.</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">wit.ai:</span></span>
@@ -84,7 +84,7 @@
 <span class="line"><span style="color: #F8F8F2">Sebastian says the volatility index the bond market and bond volatility are all pointing toward lower stock prices</span></span></code></pre>
 <p>In this phrase you can see that whispers has the best performance, wit.ai has the worst performance, and google is in the middle.</p>
 <p>In another example, whispers fails to detect P instead of B. Wit.ai does a good job of detecting the P, but google does a better job of detecting the B.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">whispers:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">whispers:</span></span>
 <span class="line"><span style="color: #F8F8F2">Even though the selling in the S&#x26;B has slowed versus where we were looking at earlier this month, the volatility index has shut up much, much more.</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">google:</span></span>
@@ -95,7 +95,7 @@
 <p>In this case, I believe that whispers does a better job than wit.ai, but google does a better job than whispers. I think my script to detect the speech is not working well for wit.ai or it dropped the text as it seemed like the text was not detected.</p>
 <p>This illustrates the advantages of whispers, it has a 30 second sliding window, which reduces the likelyhood of dropping text like this.</p>
 <p>In another example, whispers does a good job of detecting the speech, but wit.ai does a better job of detecting the speech.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">whispers:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">whispers:</span></span>
 <span class="line"><span style="color: #F8F8F2">If you're still another turbulent week where the average is cut smashed, how much worse do things have to get before we stem the bleeding?</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">wit.ai:</span></span>
@@ -128,5 +128,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

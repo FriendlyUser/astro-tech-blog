@@ -67,44 +67,44 @@
     <p>Go is a modern programming language that has a simple syntax, fast compilation, and excellent support for concurrency. In this article, we will discuss functions and packages in Go, two key features of the language that help developers write modular and maintainable code.</p>
 <h2 id="functions-in-go">Functions in Go</h2>
 <p>Functions in Go are blocks of code that perform a specific task. Here is an example of a simple function that adds two integers and returns their sum:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> a </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> b</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we define a function called <code>add</code> that takes two integers as arguments and returns their sum as an integer. The <code>int</code> after the function parameters and before the opening curly brace indicates the return type of the function.</p>
 <p>To call this function, we simply pass two integers as arguments:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sum </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sum </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(sum)</span></span></code></pre>
 <p>In this example, we call the <code>add</code> function with the arguments <code>2</code> and <code>3</code>, and store the result in the variable <code>sum</code>. We then print the value of <code>sum</code> to the console.</p>
 <h2 id="packages-in-go">Packages in Go</h2>
 <p>Packages in Go are collections of related functions and types. They are used to organize code and provide a way to reuse code across multiple files or projects.</p>
 <p>Go has a standard library that includes many useful packages, such as <code>fmt</code> for formatted input and output and <code>net/http</code> for building web applications.</p>
 <p>To use a package in Go, you need to import it into your program using the <code>import</code> keyword:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span></code></pre>
 <p>In this example, we import the <code>fmt</code> package, which provides functions for formatted input and output. We can then use the functions in the <code>fmt</code> package in our program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>In this example, we use the <code>Println</code> function from the <code>fmt</code> package to print the string “Hello, World!” to the console.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>Functions and packages are essential building blocks of any Go program. By using functions to break down complex tasks into smaller, more manageable pieces, and by using packages to organize related code into logical units, developers can create modular and maintainable code that is easy to read, test, and update over time.</p>
 <p>Functions are an essential part of any programming language, and Go is no exception. In this article, we’ll explore how to create and call functions in Go.</p>
 <h2 id="creating-a-function">Creating a Function</h2>
 <p>To create a function in Go, you use the <code>func</code> keyword, followed by the name of the function, the parameters (if any), and the return type (if any). Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(a, b </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> a </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> b</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’ve created a function called <code>add</code> that takes two integers (<code>a</code> and <code>b</code>) as parameters and returns their sum as an integer. The <code>int</code> after the function parameters and before the opening curly brace indicates the return type of the function.</p>
 <h2 id="calling-a-function">Calling a Function</h2>
 <p>To call a function in Go, you simply use the function name followed by the arguments (if any) in parentheses. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sum </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sum </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">add</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(sum)</span></span></code></pre>
 <p>In this example, we’re calling the <code>add</code> function with the arguments <code>2</code> and <code>3</code>. The <code>sum</code> variable is then assigned the return value of the function, which is <code>5</code>. We then print the value of <code>sum</code> to the console using the <code>fmt.Println</code> function.</p>
 <h2 id="multiple-return-values">Multiple Return Values</h2>
 <p>Go allows functions to return multiple values. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">swap</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">swap</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> y, x</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’ve created a function called <code>swap</code> that takes two strings (<code>x</code> and <code>y</code>) as parameters and returns them in reverse order. The function returns two strings, which are separated by a comma in the function signature.</p>
 <p>To call this function, we can use the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">a, b </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">swap</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"hello"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"world"</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">a, b </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">swap</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"hello"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"world"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(a, b)</span></span></code></pre>
 <p>In this example, we’re calling the <code>swap</code> function with the arguments <code>"hello"</code> and <code>"world"</code>. The <code>a</code> and <code>b</code> variables are then assigned the return values of the function, which are <code>"world"</code> and <code>"hello"</code>, respectively. We then print the values of <code>a</code> and <code>b</code> to the console using the <code>fmt.Println</code> function.</p>
 <h2 id="conclusion-1">Conclusion</h2>
@@ -112,17 +112,17 @@
 <p>In Go, packages are used to organize code into reusable and maintainable units. A package can contain multiple files and can be used by other packages or programs. In this article, we’ll explore how to create and use packages in Go.</p>
 <h2 id="creating-a-package">Creating a Package</h2>
 <p>To create a package in Go, you simply create a directory with the name of the package and put one or more Go files inside it. For example, let’s say we want to create a package called <code>utils</code> that contains some utility functions. Here’s what our directory structure might look like:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">utils</span><span style="color: #F92672">/</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">utils</span><span style="color: #F92672">/</span></span>
 <span class="line"><span style="color: #F8F8F2"> math.</span><span style="color: #F92672">go</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">.</span><span style="color: #F92672">go</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">.</span><span style="color: #F92672">go</span></span></code></pre>
 <p>In this example, we’ve created a directory called <code>utils</code>, which contains two Go files: <code>math. and </code>string.. These files contain the utility functions for math and strings respectively.</p>
 <h2 id="importing-a-package">Importing a Package</h2>
 <p>To use a package in Go, you need to import it into your program. To do this, you use the <code>import</code> keyword, followed by the path to the package. For example, if we want to use the <code>utils</code> package we just created, we can import it like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/username/utils"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/username/utils"</span></span></code></pre>
 <p>In this example, we’re importing the <code>utils</code> package from the <code>github.com/username</code> repository. This assumes that the <code>utils</code> package has been published to a public repository on GitHub.</p>
 <h2 id="using-a-package">Using a Package</h2>
 <p>Once you’ve imported a package, you can use its functions and variables in your program. For example, let’s say we want to use the <code>Max</code> function from the <code>math</code> package we created earlier. Here’s how we would do it:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/username/utils/math"</span></span>
 <span class="line"></span>
@@ -138,15 +138,15 @@
 <p>In Go, you can create your own packages to organize your code and make it more reusable. In this article, we’ll explore how to create a package and use it in a program.</p>
 <h2 id="creating-a-package-1">Creating a Package</h2>
 <p>To create a package in Go, you simply need to create a directory with the name of your package and put your Go files inside it. For example, let’s say we want to create a package called <code>myutils</code> that contains some utility functions. Here’s what our directory structure might look like:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">myutils</span><span style="color: #F92672">/</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">myutils</span><span style="color: #F92672">/</span></span>
 <span class="line"><span style="color: #F8F8F2"> math.</span><span style="color: #F92672">go</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">.</span><span style="color: #F92672">go</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">.</span><span style="color: #F92672">go</span></span></code></pre>
 <p>In this example, we’ve created a directory called <code>myutils</code> which contains two Go files: <code>math. and </code>string.. These files contain utility functions for math and strings respectively.</p>
 <p>Here’s an example of the `math. file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Max returns the larger of two integers</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Max</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Max</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> y {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -155,7 +155,7 @@
 <p>In this example, we’ve defined a <code>Max</code> function that takes two integers as arguments and returns the larger of the two.</p>
 <h2 id="using-a-package-1">Using a Package</h2>
 <p>To use the <code>myutils</code> package we just created, we can import it in our program like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"path/to/myutils"</span></span>
 <span class="line"></span>
@@ -169,10 +169,10 @@
 <h2 id="exporting-functions">Exporting Functions</h2>
 <p>In Go, functions and variables are exported (i.e. made public) by starting their names with an uppercase letter. This means that any function or variable with a name starting with a lowercase letter will not be visible outside of the package it was defined in.</p>
 <p>For example, in our <code>math. file, the </code>Max<code>function is exported because its name starts with an uppercase letter. However, if we defined a function called</code>min` with a lowercase letter, like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// min returns the smaller of two integers</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> y {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -183,15 +183,15 @@
 <p>Packages are a great way to organize your code in Go and make it more reusable. By creating your own packages, you can separate your code into logical units and make it easier to maintain and update. With Go’s support for exporting functions and variables, you can control which parts of your code are visible to other packages, allowing you to create powerful and flexible applications that can be used by others.</p>
 <p>In Go, functions and variables are exported (i.e. made public) by starting their names with an uppercase letter. This means that any function or variable with a name starting with a lowercase letter will not be visible outside of the package it was defined in.</p>
 <p>For example, let’s say we have a function called <code>add</code> that we want to export:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> myutils</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Add adds two integers and returns the result</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Add</span><span style="color: #F8F8F2">(x, y </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> x </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> y</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, we’ve defined an <code>Add</code> function that takes two integers as arguments and returns their sum. By starting the function name with an uppercase letter, we’ve made it an exported function that can be used by other packages.</p>
 <p>Now let’s say we want to use this <code>Add</code> function in another package:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -230,5 +230,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

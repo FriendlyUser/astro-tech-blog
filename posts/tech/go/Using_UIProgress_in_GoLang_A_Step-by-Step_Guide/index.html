@@ -74,11 +74,11 @@
 </ol>
 <h2 id="installing-uiprogress">Installing UIProgress</h2>
 <p>To begin, you will need to install the <code>uiprogress</code> library in your GoLang project. You can do this using the <code>go get</code> command as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/gosuri/uiprogress</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/gosuri/uiprogress</span></span></code></pre>
 <p>This will download the library and add it to your <code>GOPATH</code>. Now, you’re ready to start using UIProgress in your Go programs.</p>
 <h2 id="creating-a-basic-progress-bar">Creating a Basic Progress Bar</h2>
 <p>Let’s start by creating a simple progress bar that increments over time. First, create a new Go file called <code>main.. Then, import the </code>uiprogress` library and create a new progress bar as shown below:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -111,16 +111,16 @@
 <p>UIProgress offers various options to customize the appearance and behavior of your progress bars. Here are some examples:</p>
 <h3 id="changing-the-progress-bar-characters">Changing the Progress Bar Characters</h3>
 <p>You can change the characters used to represent the progress bar by modifying the <code>Fill</code> and <code>Empty</code> properties:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bar.Fill </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">+</span><span style="color: #E6DB74">'</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">bar.Fill </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">+</span><span style="color: #E6DB74">'</span></span>
 <span class="line"><span style="color: #F8F8F2">bar.Empty </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'</span><span style="color: #AE81FF">-</span><span style="color: #E6DB74">'</span></span></code></pre>
 <h3 id="adding-a-custom-progress-bar-formatter">Adding a Custom Progress Bar Formatter</h3>
 <p>You can create a custom progress bar formatter by implementing the <code>uiprogress.FormatterFunc</code> interface. For example, this formatter adds a custom prefix and suffix to the progress bar:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bar.Formatter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(b </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">uiprogress.Bar) </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">bar.Formatter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(b </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">uiprogress.Bar) </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Sprintf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"[My Progress] </span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74"> [</span><span style="color: #AE81FF">%d%%</span><span style="color: #E6DB74">] [Complete]"</span><span style="color: #F8F8F2">, b.</span><span style="color: #66D9EF">String</span><span style="color: #F8F8F2">(), b.</span><span style="color: #66D9EF">Percent</span><span style="color: #F8F8F2">())</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="creating-multiple-progress-bars">Creating Multiple Progress Bars</h3>
 <p>UIProgress supports creating multiple progress bars simultaneously. To create additional progress bars, simply call the <code>uiprogress.AddBar()</code> function again:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">bar2 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> uiprogress.</span><span style="color: #66D9EF">AddBar</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">bar2 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> uiprogress.</span><span style="color: #66D9EF">AddBar</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>UIProgress is a powerful and easy-to-use library for adding progress bars to your GoLang console applications. With its flexible customization options and support for multiple progress bars, UIProgress is a valuable addition to any Go developer’s toolkit.</p>
 <p>In this article, we covered the basics of using UIProgress in your Go projects, from installation to customizing the appearance and behavior of progress bars. With this knowledge, you can now create visually appealing progress bars that enhance the user experience of your command-line programs.</p>
@@ -139,5 +139,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

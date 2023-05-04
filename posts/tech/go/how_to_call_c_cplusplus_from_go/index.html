@@ -70,7 +70,7 @@
 <p>CGO is a foreign function interface for Go that allows you to call C code directly from your Go program. CGO provides a way to write C functions that are callable from Go code and vice versa. To use CGO, you need to follow these steps:</p>
 <h3 id="1-include-c-code-in-your-go-files">1. Include C code in your Go files</h3>
 <p>To include C code in your Go file, you need to use the <code>import "C"</code> statement at the beginning of your Go file. Then, you can add your C code within a <code>import "C"</code> comment block:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// #include &#x3C;stdio.h></span></span>
 <span class="line"><span style="color: #88846F">// #include &#x3C;stdlib.h></span></span>
@@ -84,32 +84,32 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="2-build-and-run-your-go-program-with-cgo">2. Build and run your Go program with CGO</h3>
 <p>To build and run your program with CGO, you need to set the <code>CGO_ENABLED</code> environment variable to <code>1</code> and use the <code>go build</code> command with the <code>-x</code> flag:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #F92672">export</span><span style="color: #F8F8F2"> CGO_ENABLED=1</span></span>
-<span class="line"><span style="color: #F8F8F2">$ go build -x main.go</span></span>
-<span class="line"><span style="color: #F8F8F2">$ ./main</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">export</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">CGO_ENABLED=</span><span style="color: #AE81FF">1</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-x</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">main.go</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">./main</span></span></code></pre>
 <p>You should see the “Hello from C code!” message printed on your console.</p>
 <h2 id="method-2-using-swig">Method 2: Using SWIG</h2>
 <p>SWIG (Simplified Wrapper and Interface Generator) is a powerful tool for creating wrappers around C and C++ code to make it accessible from multiple programming languages, including Go. To use SWIG with Go, you need to follow these steps:</p>
 <h3 id="1-install-swig">1. Install SWIG</h3>
 <p>First, you need to install SWIG. You can download it from the official website (<a href="http://www.swig.org/">http://www.swig.org/</a>) or use a package manager like <code>apt-get</code> or <code>brew</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ sudo apt-get install swig    </span><span style="color: #88846F"># For Ubuntu/Debian systems</span></span>
-<span class="line"><span style="color: #F8F8F2">$ brew install swig             </span><span style="color: #88846F"># For macOS systems</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">sudo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">apt-get</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">swig</span><span style="color: #F8F8F2">    </span><span style="color: #88846F"># For Ubuntu/Debian systems</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">brew</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">swig</span><span style="color: #F8F8F2">             </span><span style="color: #88846F"># For macOS systems</span></span></code></pre>
 <h3 id="2-write-your-cc-code-and-create-an-interface-file">2. Write your C/C++ code and create an interface file</h3>
 <p>Let’s say you have a simple C++ class <code>Math</code> that you want to use in your Go program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// math.h</span></span>
-<span class="line"><span style="color: #66D9EF">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Math</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #66D9EF">public:</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">a</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">b</span><span style="color: #F8F8F2">);</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// math.h</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Math</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">public:</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">a</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">b</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// math.cpp</span></span>
 <span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"math.h"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Math</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">a</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">b</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Math</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">add</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">a</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">b</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> a </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> b;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>To use this class in Go, you need to create an interface file (<code>.i</code>) for SWIG:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">// math.i</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">// math.i</span></span>
 <span class="line"><span style="color: #F8F8F2">%module math</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">%{</span></span>
@@ -119,15 +119,15 @@
 <span class="line"><span style="color: #F8F8F2">%include "math.h"</span></span></code></pre>
 <h3 id="3-generate-go-bindings-using-swig">3. Generate Go bindings using SWIG</h3>
 <p>Now, you can generate Go bindings for your C++ code using the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ swig -c++ -go -intgosize 64 -gccgo math.i</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">swig</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-c++</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-go</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-intgosize</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">64</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-gccgo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">math.i</span></span></code></pre>
 <p>This will generate two files: <code>math.go</code> and <code>math_wrap.cxx</code>. The <code>math.go</code> file contains the Go bindings for your C++ code, and <code>math_wrap.cxx</code> is the wrapper code that SWIG generates to bridge the gap between Go and C++.</p>
 <h3 id="4-compile-your-c-code-and-the-swig-generated-wrapper-code">4. Compile your C++ code and the SWIG-generated wrapper code</h3>
 <p>Next, compile your C++ code and the SWIG-generated wrapper code into a shared library:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ g++ -c -fpic math.cpp math_wrap.cxx -I/usr/local/go/include</span></span>
-<span class="line"><span style="color: #F8F8F2">$ g++ -shared math.o math_wrap.o -o libmath.so</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">g++</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-c</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-fpic</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">math.cpp</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">math_wrap.cxx</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-I/usr/local/go/include</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">g++</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-shared</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">math.o</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">math_wrap.o</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-o</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">libmath.so</span></span></code></pre>
 <h3 id="5-use-the-generated-bindings-in-your-go-program">5. Use the generated bindings in your Go program</h3>
 <p>Now you can use the generated Go bindings in your Go program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// #cgo CXXFLAGS: -std=c++11</span></span>
 <span class="line"><span style="color: #88846F">// #cgo LDFLAGS: -L. -lmath</span></span>
@@ -144,12 +144,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="6-build-and-run-the-go-program">6. Build and run the Go program</h3>
 <p>Finally, build and run your Go program using the following commands:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #F92672">export</span><span style="color: #F8F8F2"> CGO_ENABLED=1</span></span>
-<span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #F92672">export</span><span style="color: #F8F8F2"> LD_LIBRARY_PATH=.</span></span>
-<span class="line"><span style="color: #F8F8F2">$ go build main.go</span></span>
-<span class="line"><span style="color: #F8F8F2">$ ./main</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">export</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">CGO_ENABLED=</span><span style="color: #AE81FF">1</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">export</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">LD_LIBRARY_PATH=.</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">main.go</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">./main</span></span></code></pre>
 <p>You will see the following output:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">3 + 4 = 7</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">3</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">7</span></span></code></pre>
     </content></div></div></div></div>
 
   <div class="mx-auto max-w-screen-lg px-3 py-6">
@@ -165,5 +165,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

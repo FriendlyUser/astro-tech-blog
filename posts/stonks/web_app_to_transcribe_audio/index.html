@@ -68,13 +68,13 @@
 <p>Audio transcription is the process of converting speech in an audio recording into written text. This can be useful in a variety of situations, such as when a person wants to search for a specific word or phrase within an audio recording, or when a person wants to make the content of an audio recording more accessible to people who are deaf or hard of hearing. Audio transcription can also be useful for creating written records of meetings, interviews, and other events that are recorded in audio form. In general, audio transcription can help to make the information in audio recordings more easily accessible and searchable.</p>
 <p>Audio transcription can be useful for transcribing investor calls, which are typically audio recordings of meetings or conference calls where company executives discuss the company’s financial performance and outlook with investors. Transcribing these calls can make the information contained in them more easily accessible and searchable, which can be helpful for investors who want to review the information discussed in the calls at a later date.</p>
 <p>The contents of requirements.txt are as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">whispers</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">whispers</span></span>
 <span class="line"><span style="color: #F8F8F2">git+https://github.com/openai/whisper.git</span></span></code></pre>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> whisper</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> whisper</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> gradio </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> gr</span></span>
 <span class="line"></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_text_from_mp3_whisper</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">mp3_file</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">)-></span><span style="color: #66D9EF">str</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_text_from_mp3_whisper</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">mp3_file</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">)-></span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    model </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> whisper.load_model(</span><span style="color: #E6DB74">"base"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># options = whisper.DecodingOptions(language="en", without_timestamps=True)</span></span>
 <span class="line"><span style="color: #F8F8F2">    result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> model.transcribe(mp3_file)</span></span>
@@ -83,15 +83,15 @@
 <span class="line"><span style="color: #F8F8F2">    </span></span>
 <span class="line"><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #F8F8F2">gr.Interface(</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">title</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'OpenAI Whisper Transcribe audio files to text'</span><span style="color: #F8F8F2">, </span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">fn</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">get_text_from_mp3_whisper, </span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">inputs</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
-<span class="line"><span style="color: #F8F8F2">        gr.inputs.Audio(</span><span style="color: #FD971F">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"filepath"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F; font-style: italic">title</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'OpenAI Whisper Transcribe audio files to text'</span><span style="color: #F8F8F2">, </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F; font-style: italic">fn</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">get_text_from_mp3_whisper, </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F; font-style: italic">inputs</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">        gr.inputs.Audio(</span><span style="color: #FD971F; font-style: italic">type</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"filepath"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    ],</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">outputs</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F; font-style: italic">outputs</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"textbox"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"json"</span></span>
 <span class="line"><span style="color: #F8F8F2">    ],</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F">live</span><span style="color: #F92672">=</span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">).launch()</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #FD971F; font-style: italic">live</span><span style="color: #F92672">=</span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">).launch()</span></span></code></pre>
 <p>This code uses the whisper and gradio libraries to create an interface for transcribing audio files. The get_text_from_mp3_whisper function uses the whisper library to load a model and transcribe the audio file at the given filepath. The transcription results are returned as text and a JSON object. The gradio library is then used to create an interface that allows users to input an audio file and see the transcription results. The interface also has a live mode, which allows users to see the transcription results as they are being generated.</p>
 <h2 id="references">References</h2>
 <p>This app is hosted on hugging space</p>
@@ -111,5 +111,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

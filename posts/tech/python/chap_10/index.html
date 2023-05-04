@@ -90,7 +90,7 @@
 <p>The main difference between Data Science and Data Analytics is the scope of their objectives. Data Science aims to solve complex problems using a broad range of techniques and methods, while Data Analytics focuses on providing insights and answers to specific questions. Data Science involves working with larger, more complex datasets and requires a broad range of skills and knowledge, including statistical modeling, machine learning, and programming. Data Analytics involves working with smaller, more focused datasets and requires a strong understanding of data visualization, data mining, and statistical analysis.</p>
 <p>In conclusion, while Data Science and Data Analytics are related fields, they have distinct differences in their objectives, methods, and scope. Both fields are essential for businesses and organizations that want to make informed decisions based on data-driven insights. Data Science can help organizations identify patterns, trends, and insights that may not be visible to the human eye, while Data Analytics can help organizations answer specific questions and provide insights into particular problems.</p>
 <p>Using matplotlib to create a bar chart</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> matplotlib.pyplot </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> plt</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> matplotlib.pyplot </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> plt</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Data</span></span>
 <span class="line"><span style="color: #F8F8F2">labels </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [</span><span style="color: #E6DB74">'January'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'February'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'March'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'April'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'May'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'June'</span><span style="color: #F8F8F2">]</span></span>
@@ -111,7 +111,7 @@
 <p>The <code>plt.title()</code>, <code>plt.xlabel()</code>, and <code>plt.ylabel()</code> functions are used to add a title and labels to the chart.</p>
 <p>Finally, the <code>plt.show()</code> function is called to display the chart.</p>
 <p>Sure, here’s an example of how to plot a sample dataframe using pandas:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> matplotlib.pyplot </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> plt</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Sample data</span></span>
@@ -123,7 +123,7 @@
 <span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.DataFrame(data)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Plot the data</span></span>
-<span class="line"><span style="color: #F8F8F2">df.plot(</span><span style="color: #FD971F">x</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'year'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">y</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span><span style="color: #E6DB74">'sales'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'expenses'</span><span style="color: #F8F8F2">], </span><span style="color: #FD971F">kind</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'bar'</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">df.plot(</span><span style="color: #FD971F; font-style: italic">x</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'year'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">y</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span><span style="color: #E6DB74">'sales'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'expenses'</span><span style="color: #F8F8F2">], </span><span style="color: #FD971F; font-style: italic">kind</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'bar'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Add titles and labels</span></span>
 <span class="line"><span style="color: #F8F8F2">plt.title(</span><span style="color: #E6DB74">'Sales and Expenses by Year'</span><span style="color: #F8F8F2">)</span></span>
@@ -137,7 +137,7 @@
 <p>The <code>plt.title()</code>, <code>plt.xlabel()</code>, and <code>plt.ylabel()</code> functions are used to add a title and labels to the chart.</p>
 <p>Finally, the <code>plt.show()</code> function is called to display the chart.</p>
 <p>Sure, here’s an example of how to use the <code>requests</code> library to get data from an API and load it into a pandas DataFrame:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># API endpoint</span></span>
@@ -174,5 +174,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

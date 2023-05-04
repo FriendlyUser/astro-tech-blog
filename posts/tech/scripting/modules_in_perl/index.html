@@ -67,31 +67,31 @@
     <p>In Perl, modules are packages that contain functions, variables, and other definitions that can be used in other Perl programs. Modules allow us to organize our code into reusable, self-contained units, making it easier to develop, test, and maintain our programs.</p>
 <p>A module is typically stored in a file with the extension <code>.pm</code>. The file must have the same name as the package it contains. For example, a module called <code>MyModule</code> would be stored in a file called <code>MyModule.pm</code>.</p>
 <p>To use a module in a Perl program, we first need to import it using the <code>use</code> keyword:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule;</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule;</span></span></code></pre>
 <p>This makes all the functions and variables defined in the <code>MyModule</code> module available in our program. We can then call these functions and use these variables just like any other functions or variables in our program.</p>
 <p>Modules can also export specific functions or variables, which makes them available in our program without having to specify the module name:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule </span><span style="color: #E6DB74">qw(some_function some_variable)</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule </span><span style="color: #E6DB74">qw(some_function some_variable)</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <p>This imports only the <code>some_function</code> and <code>some_variable</code> from the <code>MyModule</code> module, making them available in our program without having to use the <code>MyModule</code> prefix.</p>
 <p>Perl comes with a large number of built-in modules that provide a wide range of functionality, such as file I/O, regular expressions, networking, and database access. Additionally, there are thousands of third-party modules available on the Comprehensive Perl Archive Network (CPAN), which provide even more functionality.</p>
 <p>In summary, modules are self-contained packages of code in Perl that allow us to organize our code into reusable units. Modules can be imported into other Perl programs using the <code>use</code> keyword, and they can export specific functions and variables to make them available without having to use the module prefix.</p>
 <p>In Perl, there are many built-in modules that provide a wide range of functionality, such as file I/O, regular expressions, networking, and database access. Additionally, there are thousands of third-party modules available on the Comprehensive Perl Archive Network (CPAN), which provide even more functionality.</p>
 <p>To use a built-in module, we can simply use the <code>use</code> keyword followed by the name of the module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> strict;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> strict;</span></span>
 <span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> warnings;</span></span>
 <span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> File::Path;</span></span></code></pre>
 <p>In this example, we are using three built-in modules: <code>strict</code>, <code>warnings</code>, and <code>File::Path</code>. The <code>strict</code> and <code>warnings</code> modules help us write safer and more consistent code by enforcing certain programming practices and issuing warnings for common mistakes. The <code>File::Path</code> module provides functions for creating and removing directory trees.</p>
 <p>To use an external module from CPAN, we first need to install it on our system using a package manager, such as <code>cpanm</code> or <code>cpan</code>. Once the module is installed, we can use it in our Perl program just like any built-in module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> DateTime;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> DateTime;</span></span>
 <span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> Text::CSV;</span></span></code></pre>
 <p>In this example, we are using two external modules: <code>DateTime</code> and <code>Text::CSV</code>. The <code>DateTime</code> module provides functions for working with dates and times, while the <code>Text::CSV</code> module provides functions for reading and writing CSV files.</p>
 <p>When using external modules, it’s important to check their documentation to learn how to use them correctly. External modules may have different function names and parameters than built-in modules, and they may require additional setup or configuration.</p>
 <p>In summary, Perl provides many built-in modules for common tasks, as well as thousands of external modules available on CPAN. To use a module, we simply use the <code>use</code> keyword followed by the name of the module. When using external modules, we need to install them on our system first and check their documentation to learn how to use them correctly.</p>
 <p>Creating and using custom modules is a powerful technique for organizing and reusing code in Perl. A custom module is a Perl package that contains functions, variables, and other definitions that can be used in other Perl programs.</p>
 <p>To create a custom module, we simply create a new file with a <code>.pm</code> extension, and define our package and its contents:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F"># MyModule.pm</span></span>
-<span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyModule</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F"># MyModule.pm</span></span>
+<span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">MyModule</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">sub</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">some_function</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">sub</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">some_function</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># ...</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -100,18 +100,18 @@
 <span class="line"><span style="color: #F8F8F2">1;</span></span></code></pre>
 <p>In this example, we define a package called <code>MyModule</code> that contains a function called <code>some_function</code> and a variable called <code>$some_variable</code>.</p>
 <p>To use our custom module in another Perl program, we simply use the <code>use</code> keyword followed by the name of our module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2"> MyModule::some_function(); </span><span style="color: #88846F"># prints the result of some_function</span></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2"> $MyModule::some_variable; </span><span style="color: #88846F"># prints the value of $some_variable</span></span></code></pre>
 <p>In this example, we import our <code>MyModule</code> package and call the <code>some_function</code> function and access the <code>$some_variable</code> variable using the package name.</p>
 <p>Alternatively, we can use the <code>Exporter</code> module to export specific functions and variables from our custom module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F"># MyModule.pm</span></span>
-<span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">MyModule</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F"># MyModule.pm</span></span>
+<span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">MyModule</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> Exporter </span><span style="color: #E6DB74">qw(import)</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">sub</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">some_function</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">sub</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">some_function</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># ...</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -121,7 +121,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">1;</span></span></code></pre>
 <p>In this example, we use the <code>Exporter</code> module to export the <code>some_function</code> function and <code>$some_variable</code> variable when requested. We can then use these exported functions and variables in another Perl program without having to use the package name:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule </span><span style="color: #E6DB74">qw(some_function $some_variable)</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> MyModule </span><span style="color: #E6DB74">qw(some_function $some_variable)</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2"> some_function(); </span><span style="color: #88846F"># prints the result of some_function</span></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2"> $some_variable; </span><span style="color: #88846F"># prints the value of $some_variable</span></span></code></pre>
@@ -152,5 +152,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

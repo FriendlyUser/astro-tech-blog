@@ -69,7 +69,7 @@
 <p>In this article, we will explore how to build a basic web scraper in Golang using the goquery package for parsing HTML and making HTTP requests.</p>
 <h2 id="making-http-requests">Making HTTP Requests</h2>
 <p>The net/http package is used for making HTTP requests in Golang. We can use it to make GET requests to websites we want to scrape. Here is a basic example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -92,7 +92,7 @@
 <p>This makes a GET request to example.com and prints the full response body as a string.</p>
 <h2 id="parsing-the-response">Parsing the Response</h2>
 <p>Now that we have the HTML content, we need to parse it to extract the data we want. For this, we’ll use the goquery package which lets us query the DOM using CSS selectors. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -114,14 +114,14 @@
 <span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(err)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">	doc.</span><span style="color: #66D9EF">Find</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"a.titlelink"</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Each</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">, s </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">goquery.Selection) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	doc.</span><span style="color: #66D9EF">Find</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"a.titlelink"</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Each</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">, s </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">goquery.Selection) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">%s\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, i, s.</span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">())</span></span>
 <span class="line"><span style="color: #F8F8F2">	})</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This scrapes the page at news.ycombinator.com and extracts all the story titles into stdout.</p>
 <h2 id="putting-it-together">Putting it Together</h2>
 <p>We now have all the pieces to build a basic web scraper in Golang. Here is a full example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -143,8 +143,8 @@
 <span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(err)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> titles []</span><span style="color: #66D9EF">string</span></span>
-<span class="line"><span style="color: #F8F8F2">	doc.</span><span style="color: #66D9EF">Find</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"a.titlelink"</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Each</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">, s </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">goquery.Selection) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> titles []</span><span style="color: #66D9EF; font-style: italic">string</span></span>
+<span class="line"><span style="color: #F8F8F2">	doc.</span><span style="color: #66D9EF">Find</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"a.titlelink"</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Each</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(i </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">, s </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">goquery.Selection) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		titles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(titles, s.</span><span style="color: #66D9EF">Text</span><span style="color: #F8F8F2">())</span></span>
 <span class="line"><span style="color: #F8F8F2">	})</span></span>
 <span class="line"></span>
@@ -168,5 +168,5 @@ The Golang ecosystem provides strong support for building web scrapers with fast
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

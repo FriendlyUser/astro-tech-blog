@@ -117,35 +117,35 @@
 <li>Declare the document class: Begin by declaring the document class using the “\documentclass” command. For example, to create a document with the “article” class, you would use “\documentclass{article}“.</li>
 <li>Set the title, author, and date: In the preamble, use the “\title”, “\author”, and “\date” commands to set the title, author, and date of the document, respectively. For example, to set the title to “My Document”, the author to “John Smith”, and the date to today’s date, you would use:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document}</span></span>
 <span class="line"><span style="color: #66D9EF">\author</span><span style="color: #F8F8F2">{John Smith}</span></span>
 <span class="line"><span style="color: #66D9EF">\date</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\today</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="3">
 <li>Use the “\maketitle” command: To create the title page, use the “\maketitle” command. This command will automatically format the title, author, and date according to the document class.</li>
 </ol>
 <p>Here’s an example of what the complete LaTeX code for a simple title page might look like:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">article</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document}</span></span>
 <span class="line"><span style="color: #66D9EF">\author</span><span style="color: #F8F8F2">{John Smith}</span></span>
 <span class="line"><span style="color: #66D9EF">\date</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\today</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\maketitle</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>When you compile this code, LaTeX will generate a title page that includes the title, author, and date, formatted according to the specifications of the “article” document class. You can customize the appearance of the title page by modifying the formatting options of the document class, or by using additional LaTeX commands to adjust the layout and design.</p>
 <p>In LaTeX, the “abstract” and “dedication” environments are used to create the abstract and dedication sections of a document, respectively. Here’s how they work:</p>
 <ol>
 <li>Abstract environment: To create the abstract section, use the “abstract” environment. This environment should be placed immediately after the title page, and should be enclosed by “\begin{abstract}” and “\end{abstract}” commands. Within the environment, you can include the text of the abstract itself. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">csharp`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">abstract</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">csharp`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">abstract</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the text of my abstract.</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">abstract</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">abstract</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>By default, the “abstract” environment will create a heading labeled “Abstract” at the top of the page. You can customize the appearance of the heading using LaTeX commands.</p>
 <ol start="2">
 <li>Dedication environment: To create the dedication section, use the “dedication” environment. This environment should be placed immediately after the abstract section, and should be enclosed by “\begin{dedication}” and “\end{dedication}” commands. Within the environment, you can include the text of the dedication itself. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">vbnet`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">dedication</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">vbnet`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">dedication</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">To my family, who supported me throughout this project.</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">dedication</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">dedication</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>By default, the “dedication” environment will center the text on the page. You can customize the appearance of the dedication using LaTeX commands.</p>
 <p>Overall, the “abstract” and “dedication” environments are simple but powerful tools for creating front matter elements in LaTeX documents. By using these environments, you can easily create professional-looking abstracts and dedications that add depth and context to your document.</p>
 <p>In LaTeX, you can easily create a table of contents and lists of figures and tables using built-in commands. Here’s an overview of how to create each of these elements:</p>
@@ -154,12 +154,12 @@
 <li>List of figures/tables: To create a list of figures or tables, use the “\listoffigures” or “\listoftables” commands, respectively. These commands should be placed where you want the list to appear in the document. By default, the lists will include all figures or tables in the document, as well as their captions. To customize the lists, you can use LaTeX commands to adjust the formatting, exclude certain figures or tables, and more.</li>
 </ol>
 <p>Here’s an example of how to create a table of contents and list of figures in a LaTeX document:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">article</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document}</span></span>
 <span class="line"><span style="color: #66D9EF">\author</span><span style="color: #F8F8F2">{John Smith}</span></span>
 <span class="line"><span style="color: #66D9EF">\date</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\today</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\maketitle</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\tableofcontents</span></span>
@@ -174,17 +174,17 @@
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Results}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the results section.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">{my_figure.png}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{My Figure}</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">fig:my_figure</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">fig:my_figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Conclusion}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the conclusion section.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>When you compile this code, LaTeX will generate a title page, table of contents, list of figures, and content sections according to the specifications of the “article” document class. You can customize the appearance of the table of contents and lists using LaTeX commands.</p>
 <h2 id="back-matter-in-latex">Back matter in LaTeX</h2>
 <p>In LaTeX, there are several commands that are used to signal the end of the document. These commands serve to close any open environments and finalize the document output. Here are the most common ending commands:</p>
@@ -202,16 +202,16 @@
 <li>Compiling the document: To properly compile a LaTeX document with citations and a bibliography, you need to run several commands in a specific order. First, you need to compile the document with LaTeX. Then, you need to run a citation management tool, such as BibTeX, to generate a bibliography file. Finally, you need to re-compile the document with LaTeX to include the bibliography.</li>
 </ol>
 <p>Here’s an example of how to use the bibliography and citation commands in a LaTeX document:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">article</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\title</span><span style="color: #F8F8F2">{My Document}</span></span>
 <span class="line"><span style="color: #66D9EF">\author</span><span style="color: #F8F8F2">{John Smith}</span></span>
 <span class="line"><span style="color: #66D9EF">\date</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">\today</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\maketitle</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Introduction}</span></span>
-<span class="line"><span style="color: #F8F8F2">This is the introduction section. I am citing a source </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">Smith2020</span><span style="color: #F8F8F2">}.</span></span>
+<span class="line"><span style="color: #F8F8F2">This is the introduction section. I am citing a source </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">Smith</span><span style="color: #F8F8F2">2020}.</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Methods}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the methods section.</span></span>
@@ -219,25 +219,25 @@
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Results}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the results section.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\centering</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">{my_figure.png}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{My Figure}</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">fig:my_figure</span><span style="color: #F8F8F2">}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">\label</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">fig:my_figure</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Conclusion}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the conclusion section.</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\bibliography</span><span style="color: #F8F8F2">{mybibfile}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>When you compile this code, LaTeX will generate a title page, sections, a figure, and a citation using the “article” document class. You can customize the citation style and bibliography formatting using LaTeX packages and commands.</p>
 <p>In LaTeX, it’s possible to create a glossary or an index to help readers navigate and understand your document. Here’s an explanation of how to create each of these:</p>
 <ol>
 <li>Glossary: A glossary is a list of terms and their definitions that are used in the document. To create a glossary in LaTeX, you can use the “glossaries” package. First, you need to define each term and its corresponding definition using the “\newglossaryentry” command. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">glossaries</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">glossaries</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\newglossaryentry</span><span style="color: #F8F8F2">{latex}{</span></span>
 <span class="line"><span style="color: #F8F8F2"> name=LaTeX,</span></span>
@@ -247,7 +247,7 @@
 <ol start="2">
 <li>Index: An index is a list of topics or keywords and the pages on which they appear in the document. To create an index in LaTeX, you can use the “makeidx” package. First, you need to include the package and use the “\makeindex” command to generate the index. Then, throughout the document, you can use the “\index” command to mark any keywords or topics that you want to include in the index. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">makeidx</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">makeidx</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\makeindex</span></span>
 <span class="line"></span>
@@ -260,24 +260,24 @@
 <ol>
 <li>Include the “appendix” package in your LaTeX document:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">appendix</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">appendix</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="2">
 <li>Use the “\appendix” command to indicate the start of the appendix section. This command resets the chapter counter and changes the numbering scheme to use letters instead of numbers for the chapter headings:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\appendix</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\appendix</span></span></code></pre>
 <ol start="3">
 <li>Use the “\chapter” command to create a new appendix chapter. The chapter titles will be numbered with letters (e.g., Appendix A, Appendix B, etc.):</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\chapter</span><span style="color: #F8F8F2">{Appendix Title}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\chapter</span><span style="color: #F8F8F2">{Appendix Title}</span></span></code></pre>
 <ol start="4">
 <li>Add any content you want to include in the appendix, such as tables, figures, or code snippets.</li>
 <li>If you need to reference an appendix chapter in the main text, you can use the “\ref” command with the label of the appendix chapter. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">csharp`As discussed in Appendix </span><span style="color: #F92672">\ref</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">app:example</span><span style="color: #F8F8F2">}, the results of the experiment were inconclusive.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">csharp`As discussed in Appendix </span><span style="color: #F92672">\ref</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">app:example</span><span style="color: #F8F8F2">}, the results of the experiment were inconclusive.</span></span></code></pre>
 <ol start="6">
 <li>If you want to include an appendix in the table of contents, you can use the “\addcontentsline” command. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\addcontentsline</span><span style="color: #F8F8F2">{toc}{chapter}{Appendix Title}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\addcontentsline</span><span style="color: #F8F8F2">{toc}{chapter}{Appendix Title}</span></span></code></pre>
 <p>This command adds an entry for the appendix to the table of contents with the specified chapter title.</p>
 <p>That’s it! With these simple steps, you can easily create an appendix in your LaTeX document.</p>
 <h2 id="bibliographies-with-bibtex">Bibliographies with BibTeX</h2>
@@ -287,7 +287,7 @@
 <li>Entries: A BibTeX file consists of a list of entries, each of which represents a reference to a book, article, or other publication. Each entry begins with an ”@” symbol, followed by the type of entry (e.g., “@book”, “@article”, etc.).</li>
 <li>Fields: Each entry consists of a set of fields, which contain information about the publication. The fields are separated by commas and enclosed in braces. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`@book{goossens94,</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`@book{goossens94,</span></span>
 <span class="line"><span style="color: #F8F8F2"> author = "Michel Goossens and Frank Mittelbach and Alexander Samarin",</span></span>
 <span class="line"><span style="color: #F8F8F2"> title = "The LaTeX Companion",</span></span>
 <span class="line"><span style="color: #F8F8F2"> publisher = "Addison-Wesley",</span></span>
@@ -298,7 +298,7 @@
 <li>Required and optional fields: Each type of entry has required and optional fields. For example, a “book” entry requires the “author”, “title”, “publisher”, and “year” fields, while an “article” entry requires the “author”, “title”, “journal”, “year”, and “volume” fields. Optional fields can be added as needed.</li>
 <li>Cross-referencing: BibTeX allows you to cross-reference entries within the same file or between different files. For example, you can reference a book in an article entry by using the book’s entry name:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`@article{smith99,</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`@article{smith99,</span></span>
 <span class="line"><span style="color: #F8F8F2"> author = "John Smith",</span></span>
 <span class="line"><span style="color: #F8F8F2"> title = "On the importance of LaTeX",</span></span>
 <span class="line"><span style="color: #F8F8F2"> journal = "Journal of LaTeX",</span></span>
@@ -310,7 +310,7 @@
 <ol start="6">
 <li>Citations: In the LaTeX document, you can cite a BibTeX entry using the “\cite” command. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">As discussed in </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens94</span><span style="color: #F8F8F2">}, LaTeX is a powerful document preparation system.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">As discussed in </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens</span><span style="color: #F8F8F2">94}, LaTeX is a powerful document preparation system.</span></span></code></pre>
 <p>This code creates a citation to the “goossens94” entry in the BibTeX file.</p>
 <p>With these basic elements, you can create and manage references using BibTeX in your LaTeX documents.</p>
 <p>BibTeX databases are collections of references that are used to generate bibliographies and manage citations in LaTeX documents. Here’s an introduction to creating and using BibTeX databases:</p>
@@ -319,12 +319,12 @@
 <li>Adding entries to the database: You can add entries to the BibTeX database by opening the file in a text editor and adding new entries manually. Alternatively, you can use a reference management tool such as Zotero, Mendeley, or JabRef to manage your references and export them as a BibTeX file.</li>
 <li>Referencing entries in your LaTeX document: To cite an entry in your BibTeX database, you can use the “\cite” command followed by the entry name. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens94</span><span style="color: #F8F8F2">}, LaTeX is a powerful document preparation system.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens</span><span style="color: #F8F8F2">94}, LaTeX is a powerful document preparation system.</span></span></code></pre>
 <p>This code will generate a citation in your document that points to the “goossens94” entry in your BibTeX database.</p>
 <ol start="4">
 <li>Generating a bibliography: To generate a bibliography in your LaTeX document, you need to include the “\bibliography” command, followed by the name of your BibTeX file (without the “.bib” extension). You also need to specify the bibliography style you want to use. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\bibliography</span><span style="color: #F8F8F2">{mybibfile}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\bibliography</span><span style="color: #F8F8F2">{mybibfile}</span></span>
 <span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{plain}</span></span></code></pre>
 <p>This code will generate a bibliography section in your document, using the entries in the “mybibfile.bib” file and the “plain” bibliography style. The bibliography style determines the format of the bibliography entries, such as the order of authors, the punctuation, and the formatting of titles.</p>
 <p>With these basic steps, you can create and use BibTeX databases to manage your references and generate bibliographies in your LaTeX documents.</p>
@@ -333,28 +333,28 @@
 <li>Create a BibTeX file: First, you need to create a BibTeX file with the extension “.bib”. This file will contain all the bibliographic information for your references. Each reference in the file has a unique key that you can use to cite it in your document.</li>
 <li>Add citations to your document: In your LaTeX document, you can add citations using the “\cite” command followed by the key for the reference you want to cite. For example, if you have a reference with the key “lamport94” in your BibTeX file, you can cite it in your document with the following command:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">lamport94</span><span style="color: #F8F8F2">}, LaTeX is a document preparation system for high-quality typesetting.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">lamport</span><span style="color: #F8F8F2">94}, LaTeX is a document preparation system for high-quality typesetting.</span></span></code></pre>
 <p>This command will create a citation in your document that refers to the “lamport94” reference in your BibTeX file.</p>
 <ol start="3">
 <li>Generate a bibliography: To generate a bibliography section in your document, you need to use the “\bibliography” command and specify the name of your BibTeX file. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\bibliography</span><span style="color: #F8F8F2">{mybibfile}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\bibliography</span><span style="color: #F8F8F2">{mybibfile}</span></span></code></pre>
 <p>This command will generate a bibliography section in your document that lists all the references in your BibTeX file.</p>
 <ol start="4">
 <li>Choose a citation style: To format your citations and bibliography, you can choose from a variety of citation styles, such as APA, MLA, Chicago, etc. To select a citation style, you need to use the “\bibliographystyle” command followed by the name of the style. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{apa}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{apa}</span></span></code></pre>
 <p>This command will format your citations and bibliography according to the APA citation style.</p>
 <p>With these basic steps, you can easily cite references in your LaTeX documents using BibTeX.</p>
 <p>The natbib package is a LaTeX package that provides more advanced citation styles and formatting options than the default LaTeX citation commands. Here’s an introduction to using the natbib package:</p>
 <ol>
 <li>Loading the natbib package: To use the natbib package, you need to include the following line in the preamble of your LaTeX document:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">natbib</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">natbib</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="2">
 <li>Choosing a citation style: The natbib package provides several citation styles that you can choose from. To select a style, you need to use the “\bibliographystyle” command, followed by the name of the style. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{plainnat}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{plainnat}</span></span></code></pre>
 <p>This command will format your citations and bibliography using the plainnat style, which is similar to the plain style but adds some extra features provided by the natbib package.</p>
 <ol start="3">
 <li>Advanced citation commands: The natbib package provides several advanced citation commands that allow you to customize your citations and add additional information. For example:</li>
@@ -374,7 +374,7 @@
 <li>“sort&#x26;compress”: This option sorts and compresses multiple citations into a range, like [1-3].</li>
 </ul>
 <p>You can add these options to the “\bibliographystyle” command, like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{plainnat}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\bibliographystyle</span><span style="color: #F8F8F2">{plainnat}</span></span>
 <span class="line"><span style="color: #66D9EF">\setcitestyle</span><span style="color: #F8F8F2">{round, numbers, sort&#x26;compress}</span></span></code></pre>
 <p>With the natbib package, you can customize your citations and bibliography to suit your needs and preferences.</p>
 <h2 id="glossaries-and-indexes">Glossaries and indexes</h2>
@@ -387,38 +387,38 @@
 <ul>
 <li>Load the package in the preamble of your LaTeX document:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">glossaries</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">glossaries</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <ul>
 <li>Define your terms and their definitions using the “\newglossaryentry” command:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\newglossaryentry</span><span style="color: #F8F8F2">{term}{</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\newglossaryentry</span><span style="color: #F8F8F2">{term}{</span></span>
 <span class="line"><span style="color: #F8F8F2"> name={term},</span></span>
 <span class="line"><span style="color: #F8F8F2"> description={a word or phrase used to describe a concept}</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <ul>
 <li>Use the “\gls” command to reference the term in your document:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">kotlin`The </span><span style="color: #66D9EF">\gls</span><span style="color: #F8F8F2">{term} is an important concept in this field.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">kotlin`The </span><span style="color: #66D9EF">\gls</span><span style="color: #F8F8F2">{term} is an important concept in this field.</span></span></code></pre>
 <ul>
 <li>Finally, include the glossary in your document using the “\printglossary” command:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\printglossary</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\printglossary</span></span></code></pre>
 <ol start="2">
 <li>Indexes: To create an index, you need to use the “makeidx” package. Here’s how to get started:</li>
 </ol>
 <ul>
 <li>Load the package in the preamble of your LaTeX document:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">makeidx</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">makeidx</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #66D9EF">\makeindex</span></span></code></pre>
 <ul>
 <li>Add index entries using the “\index” command:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">This is an example sentence.</span><span style="color: #66D9EF">\index</span><span style="color: #F8F8F2">{example}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">This is an example sentence.</span><span style="color: #66D9EF">\index</span><span style="color: #F8F8F2">{example}</span></span></code></pre>
 <ul>
 <li>Include the index in your document using the “\printindex” command:</li>
 </ul>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\printindex</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\printindex</span></span></code></pre>
 <p>Once you’ve created your glossary or index, you may need to compile your LaTeX document twice to ensure that all the entries are properly cross-referenced.</p>
 <p>In summary, glossaries and indexes can be useful tools for organizing and presenting information in technical documents, and LaTeX provides support for creating them easily using the “glossaries” and “makeidx” packages.</p>
 <p>There are several benefits to using glossaries and indexes in LaTeX:</p>
@@ -433,11 +433,11 @@
 <ol>
 <li>Loading the package: In the preamble of your LaTeX document, you’ll need to load the “glossaries” package:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">glossaries</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">glossaries</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="2">
 <li>Defining entries: To define an entry in the glossary, use the “\newglossaryentry” command. Here’s an example:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\newglossaryentry</span><span style="color: #F8F8F2">{latex}{</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\newglossaryentry</span><span style="color: #F8F8F2">{latex}{</span></span>
 <span class="line"><span style="color: #F8F8F2"> name=LaTeX,</span></span>
 <span class="line"><span style="color: #F8F8F2"> description={A document preparation system},</span></span>
 <span class="line"><span style="color: #F8F8F2"> plural=LaTeX</span></span>
@@ -446,29 +446,29 @@
 <ol start="3">
 <li>Using entries: To reference a glossary entry in your document, use the “\gls” command:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">I used </span><span style="color: #66D9EF">\gls</span><span style="color: #F8F8F2">{latex} to write my paper.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">I used </span><span style="color: #66D9EF">\gls</span><span style="color: #F8F8F2">{latex} to write my paper.</span></span></code></pre>
 <p>This will produce output like “I used LaTeX to write my paper.”, with the glossary term linked to its definition in the glossary.</p>
 <ol start="4">
 <li>Printing the glossary: To include the glossary in your document, use the “\printglossary” command:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\printglossary</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\printglossary</span></span></code></pre>
 <p>This will generate a formatted glossary at the point in your document where the command is placed.</p>
 <p>These are the basic steps for creating a glossary with the “glossaries” package. The package also provides a wide range of customization options, such as formatting options for individual entries, support for acronyms and symbols, and more. The package documentation provides more details on how to use these features.</p>
 <p>In LaTeX, indexes can be created using the “makeindex” tool. Here’s a brief overview of how it works:</p>
 <ol>
 <li>Adding index entries: To create an index entry in your document, use the “\index” command:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">The </span><span style="color: #66D9EF">\index</span><span style="color: #F8F8F2">{cat} sat on the mat.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">The </span><span style="color: #66D9EF">\index</span><span style="color: #F8F8F2">{cat} sat on the mat.</span></span></code></pre>
 <p>This will create an index entry for the word “cat”.</p>
 <ol start="2">
 <li>Compiling the index: After compiling your LaTeX document, you need to run “makeindex” on the generated “.idx” file to generate the index. The command to do this varies depending on your system and LaTeX distribution, but it might look something like this:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">makeindex document.idx</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">makeindex document.idx</span></span></code></pre>
 <p>This will generate a file called “document.ind” that contains the formatted index.</p>
 <ol start="3">
 <li>Including the index: To include the index in your document, use the “\printindex” command in your LaTeX source code:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\printindex</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\printindex</span></span></code></pre>
 <p>This will generate a formatted index at the point in your document where the command is placed.</p>
 <p>These are the basic steps for creating an index with the “makeindex” tool. The tool provides a range of customization options, such as formatting options for individual entries, and support for subheadings and cross-references. The tool documentation provides more details on how to use these features.</p>
 <h2 id="advanced-topics-in-front-and-back-matter">Advanced topics in front and back matter</h2>
@@ -561,5 +561,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

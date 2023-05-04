@@ -68,7 +68,7 @@
 <p>The main image hosting providers shutterstock and 500px did not allow me to sell my images due to watermark, raterization issues and image quality related images.</p>
 <p>I do not think I can legally remove the watermark from the images.</p>
 <p>However, I realised that I needed to upscale the image and tried many ways to convert the images from png to jpeg.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #88846F"># convert png to jpg</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> os</span></span>
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">PIL</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Image</span></span>
@@ -77,8 +77,8 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> file.endswith(</span><span style="color: #E6DB74">".png"</span><span style="color: #F8F8F2">):</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># convert to jpg</span></span>
 <span class="line"><span style="color: #F8F8F2">        im </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Image.open(file)</span></span>
-<span class="line"><span style="color: #F8F8F2">        im </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> im.resize((</span><span style="color: #AE81FF">2560</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">2560</span><span style="color: #F8F8F2">), </span><span style="color: #FD971F">resample</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">Image.</span><span style="color: #AE81FF">BOX</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">        im.convert(</span><span style="color: #E6DB74">'RGB'</span><span style="color: #F8F8F2">).save(file.replace(</span><span style="color: #E6DB74">".png"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">".jpg"</span><span style="color: #F8F8F2">),</span><span style="color: #E6DB74">"JPEG"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">quality</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        im </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> im.resize((</span><span style="color: #AE81FF">2560</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">2560</span><span style="color: #F8F8F2">), </span><span style="color: #FD971F; font-style: italic">resample</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">Image.</span><span style="color: #AE81FF">BOX</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">        im.convert(</span><span style="color: #E6DB74">'RGB'</span><span style="color: #F8F8F2">).save(file.replace(</span><span style="color: #E6DB74">".png"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">".jpg"</span><span style="color: #F8F8F2">),</span><span style="color: #E6DB74">"JPEG"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">quality</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># remove png</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># os.remove(file)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"converted "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> file)</span></span>
@@ -88,20 +88,20 @@
 <p>Convert images to jpeg, with the highest quality available and big enough to meet the minimum image size requirements for image uploads.</p>
 <p>Once the images are converted, I can upload them to the image hosting providers for review, but they are commonly rejected.</p>
 <p>Overall, I’ll continue to generate dall-e images at least for my blog and/or personal usage while adding them to pexels.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> pixelApiKey </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'&#x3C;GET PEXEL API KEY>''</span><span style="color: #F44747">;</span></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> myCollectionsResp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'https://api.pexels.com/v1/collections'</span><span style="color: #F8F8F2">, {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> pixelApiKey </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'&#x3C;GET PEXEL API KEY>''</span><span style="color: #F44747">;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> myCollectionsResp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'https://api.pexels.com/v1/collections'</span><span style="color: #F8F8F2">, {</span></span>
 <span class="line"><span style="color: #F8F8F2">  headers: {</span></span>
 <span class="line"><span style="color: #F8F8F2">    Authorization: pixelApiKey,</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> myCollection </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> myCollectionsResp.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> myCollection </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> myCollectionsResp.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> dallECollectionId </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> myCollection?.collections[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]?.id;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> dallECollectionId </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> myCollection?.collections[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]?.id;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// fetch dalle collection from pexels api</span></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> dallECollectionResp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> dallECollectionResp </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">`https://api.pexels.com/v1/collections/</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">dallECollectionId</span><span style="color: #F92672">}</span><span style="color: #E6DB74">?per_page=80`</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  {</span></span>
 <span class="line"><span style="color: #F8F8F2">    headers: {</span></span>
@@ -110,9 +110,9 @@
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> dallECollection </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> dallECollectionResp.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> dallECollection </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> dallECollectionResp.</span><span style="color: #A6E22E">json</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> dallEImages </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> dallECollection?.media?.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">photo</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> dallEImages </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> dallECollection?.media?.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">photo</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    src: photo.src.original,</span></span>
 <span class="line"><span style="color: #F8F8F2">    alt: photo.photographer,</span></span>
@@ -140,5 +140,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

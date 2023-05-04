@@ -68,7 +68,7 @@
 <p>The ShadowRoot interface represents the root of a shadow DOM subtree, which is a separate DOM tree that is hidden from the main document tree. The Element.shadowRoot property allows you to access the shadow root of an element, but only if it was created using the Element.attachShadow() method with the mode set to “open”.</p>
 <p>Web scraping shadow roots with Selenium can be a bit more challenging than scraping regular web pages because shadow roots are not directly accessible from the main DOM tree. However, it is still possible to scrape data from shadow roots using Selenium by utilizing its JavaScript execution capabilities.</p>
 <p>Here’s an example of how you might do this in Python:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> selenium </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> webdriver</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> selenium </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> webdriver</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># create a new instance of the Firefox driver</span></span>
 <span class="line"><span style="color: #F8F8F2">driver </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> webdriver.Firefox()</span></span>
@@ -91,7 +91,7 @@
 <p>With the changes to the yahoo finance comments api, the comments are added to the dom via a shadow root. In order to scrap the comments from yahoo finance, I have to access the shadow root.</p>
 <p>Instead of leverage selenium bindings in C#, I decided to use plain javascript to access all shadowroots and return the comments as a html string.</p>
 <p>The js command I send over to selenium, creates a function to get all shadow roots and then finds a certain selector.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E; font-weight: bold">String</span><span style="color: #F8F8F2"> getCommentsCmd </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Constants.jsQuerySelectorAllShadows </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""const results = querySelectorAllShadows("</span><span style="color: #F8F8F2">ul.spcv_messages</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">list</span><span style="color: #E6DB74">"); return results[0].outerHTML.toString();"""</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F8F8F2"> getCommentsCmd </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Constants.jsQuerySelectorAllShadows </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""const results = querySelectorAllShadows("ul.spcv_messages-list"); return results[0].outerHTML.toString();"""</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <p>That selector has dom elements that contain all the comments for the yahoo finance stock.</p>
 <p>The function takes two arguments:</p>
 <ul>
@@ -100,7 +100,7 @@
 </ul>
 <p>It then takes the results of these recursive calls and concatenates them with the results obtained from the current el.querySelectorAll(selector) call.
 Finally, it flattens the results array and returns it.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsQuerySelectorAllShadows </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsQuerySelectorAllShadows </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span></span>
 <span class="line"><span style="color: #E6DB74">@"function querySelectorAllShadows(selector, el = document.body) {</span></span>
 <span class="line"><span style="color: #E6DB74">                // recurse on childShadows</span></span>
 <span class="line"><span style="color: #E6DB74">                const childShadows = Array.from(el.querySelectorAll('*')).</span></span>
@@ -114,12 +114,12 @@ Finally, it flattens the results array and returns it.</p>
 <span class="line"><span style="color: #E6DB74">            }</span></span>
 <span class="line"><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <p>The disadvantage of selenium based web-scrapping tends to be the speed.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">try</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">try</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// find Maybe later by text Maybe Later</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">IWebElement</span><span style="color: #F8F8F2"> maybeLater </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> driver.</span><span style="color: #A6E22E">FindElement</span><span style="color: #F8F8F2">(By.</span><span style="color: #A6E22E">XPath</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"//button[contains(text(), 'Maybe later')]"</span><span style="color: #F8F8F2">));</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">IWebElement</span><span style="color: #F8F8F2"> maybeLater </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> driver.</span><span style="color: #A6E22E">FindElement</span><span style="color: #F8F8F2">(By.</span><span style="color: #A6E22E">XPath</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"//button[contains(text(), 'Maybe later')]"</span><span style="color: #F8F8F2">));</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// IWebElement maybeLater = driver.FindElement(By.XPath("//button[contains(@class, 'btn btn-primary')]"));</span></span>
 <span class="line"><span style="color: #F8F8F2">    maybeLater.</span><span style="color: #A6E22E">Click</span><span style="color: #F8F8F2">();</span></span>
-<span class="line"><span style="color: #F8F8F2">} </span><span style="color: #F92672">catch</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E; font-weight: bold">NoSuchElementException</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">} </span><span style="color: #F92672">catch</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E; text-decoration: underline">NoSuchElementException</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"No Maybe Later Button"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>After swapping to the iframe containing all the comments, I attempt to hide the Maybe later popout that yahoo finance shows for unauthenticated users.</p>
@@ -131,7 +131,7 @@ Finally, it flattens the results array and returns it.</p>
 <p>Update the target framework: Update your application’s target framework to .NET 7.0. You can do this by opening your project in Visual Studio and navigating to the Properties page.</p>
 <h2 id="publishing-to-nuget">Publishing to nuget</h2>
 <p>In this release, I added a deployment action to nuget for github and nuget packages.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">startsWith(github.ref, 'refs/heads/release')</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">startsWith(github.ref, 'refs/heads/release')</span></span>
 <span class="line"><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #F92672">|</span></span>
 <span class="line"><span style="color: #E6DB74">  dotnet pack --configuration $BUILD_CONFIG --no-restore</span></span>
 <span class="line"><span style="color: #E6DB74">  nuget setapikey "${{ secrets.NUGET_KEY }}"</span></span>
@@ -164,5 +164,5 @@ Finally, it flattens the results array and returns it.</p>
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

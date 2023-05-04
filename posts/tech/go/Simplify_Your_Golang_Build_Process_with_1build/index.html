@@ -76,17 +76,17 @@
 </ol>
 <h2 id="installing-1build">Installing 1build</h2>
 <p>To install 1build, open your terminal and run the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">curl -sfL https://get.1build.app </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> sh</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">curl</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-sfL</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">https://get.1build.app</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sh</span></span></code></pre>
 <p>This command downloads and installs 1build on your system. Once the installation is complete, verify that it works by running:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">1build --version</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">1build</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--version</span></span></code></pre>
 <p>You should see the installed version number displayed in the output.</p>
 <h2 id="setting-up-a-golang-project">Setting Up a Golang Project</h2>
 <p>Before we dive into using 1build, let’s set up a simple Golang project. Create a new directory for your project and initialize it as a Go module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir my-golang-project</span></span>
-<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> my-golang-project</span></span>
-<span class="line"><span style="color: #F8F8F2">go mod init github.com/your-username/my-golang-project</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">my-golang-project</span></span>
+<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">my-golang-project</span></span>
+<span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">mod</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">init</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/your-username/my-golang-project</span></span></code></pre>
 <p>Next, create a basic `main. file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
@@ -96,7 +96,7 @@
 <p>Now, we’re ready to configure our build process with 1build.</p>
 <h2 id="creating-a-1build-configuration-file">Creating a 1build Configuration File</h2>
 <p>1build uses a YAML file called <code>1build.yaml</code> to store the build configuration. In the root directory of your project, create a new file named <code>1build.yaml</code> and add the following content:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">commands</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">commands</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">build</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">command</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">go build -o my-app</span></span>
 <span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">test</span></span>
@@ -114,11 +114,11 @@
 </ol>
 <h2 id="using-1build-commands">Using 1build Commands</h2>
 <p>With the <code>1build.yaml</code> file in place, you can now execute the defined commands using the 1build CLI. For example, to build your project, run:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">1build build</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">1build</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span></span></code></pre>
 <p>This command compiles your Go code and creates the binary <code>my-app</code>. Similarly, you can run the other commands like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">1build </span><span style="color: #66D9EF">test</span></span>
-<span class="line"><span style="color: #F8F8F2">1build fmt</span></span>
-<span class="line"><span style="color: #F8F8F2">1build run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">1build</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">test</span></span>
+<span class="line"><span style="color: #A6E22E">1build</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">fmt</span></span>
+<span class="line"><span style="color: #A6E22E">1build</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
 <p>Each command executes the corresponding action defined in the <code>1build.yaml</code> file.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>In this article, we explored how to use 1build to simplify the build process for Golang projects. By creating a single configuration file, you can manage and maintain your build commands more efficiently, eliminate the need to remember multiple commands, and ensure a consistent build process across your team.</p>
@@ -137,5 +137,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

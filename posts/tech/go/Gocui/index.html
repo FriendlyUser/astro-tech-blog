@@ -68,10 +68,10 @@
 <h2 id="introduction-to-gocui">Introduction to Gocui</h2>
 <p><a href="https://github.com/jroimartin/gocui">Gocui</a> is an open-source library designed specifically for building terminal-based applications that require a user interface. It provides a simple and efficient way to manage console UI components, such as windows, input fields, and menus. It also provides several features like mouse support, flexible layout management, and custom keybindings.</p>
 <p>To get started with Gocui, you’ll need to have Go installed on your system. You can download and install it from the <a href="https://golang.org/dl/">official website</a>. Once you have Go installed, you can install Gocui by running the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/jroimartin/gocui</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/jroimartin/gocui</span></span></code></pre>
 <h2 id="building-a-basic-gocui-application">Building a Basic Gocui Application</h2>
 <p>Let’s start by building a simple Gocui application that displays “Hello, Gocui!” in a terminal window. Create a new Go file, `main., and add the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -94,7 +94,7 @@
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">layout</span><span style="color: #F8F8F2">(g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.Gui) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">layout</span><span style="color: #F8F8F2">(g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.Gui) </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	maxX, maxY </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.</span><span style="color: #66D9EF">Size</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> v, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> g.</span><span style="color: #66D9EF">SetView</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"hello"</span><span style="color: #F8F8F2">, maxX</span><span style="color: #F92672">/</span><span style="color: #AE81FF">2</span><span style="color: #F92672">-</span><span style="color: #AE81FF">7</span><span style="color: #F8F8F2">, maxY</span><span style="color: #F92672">/</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, maxX</span><span style="color: #F92672">/</span><span style="color: #AE81FF">2</span><span style="color: #F92672">+</span><span style="color: #AE81FF">7</span><span style="color: #F8F8F2">, maxY</span><span style="color: #F92672">/</span><span style="color: #AE81FF">2</span><span style="color: #F92672">+</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">); err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> gocui.ErrUnknownView {</span></span>
@@ -106,11 +106,11 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This code sets up a basic Gocui application with a single “hello” view that displays “Hello, Gocui!” at the center of the terminal window. The <code>layout</code> function is responsible for creating and positioning UI elements within the terminal.</p>
 <p>To run the application, execute the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go run main.go</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">main.go</span></span></code></pre>
 <p>You should see the “Hello, Gocui!” message displayed at the center of your terminal window.</p>
 <h2 id="adding-interactivity">Adding Interactivity</h2>
 <p>Let’s extend our example to make it more interactive. We will add the ability to quit the application by pressing the <code>q</code> key. Update the <code>main</code> function to include the following keybinding:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// ...</span></span>
 <span class="line"><span style="color: #F8F8F2">	g.</span><span style="color: #66D9EF">SetManagerFunc</span><span style="color: #F8F8F2">(layout)</span></span>
 <span class="line"></span>
@@ -127,7 +127,7 @@
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">quit</span><span style="color: #F8F8F2">(g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.Gui, v </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.View) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">quit</span><span style="color: #F8F8F2">(g </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.Gui, v </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">gocui.View) </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> gocui.ErrQuit</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Now, when you run the application and press either <code>q</code> or <code>Ctrl+C</code>, the application will exit gracefully.</p>
@@ -148,5 +148,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

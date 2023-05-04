@@ -74,40 +74,40 @@
 </ol>
 <h2 id="getting-started-with-pogo">Getting Started with Pogo</h2>
 <p>To begin, create a new directory for your project and navigate to it in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ mkdir deno-pogo-example</span></span>
-<span class="line"><span style="color: #F8F8F2">$ </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> deno-pogo-example</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">deno-pogo-example</span></span>
+<span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">deno-pogo-example</span></span></code></pre>
 <p>Create a new file called <code>app.ts</code> inside the project directory. This file will serve as the entry point for our web application. Now, let’s import the Pogo library and create a basic web server:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Pogo } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://deno.land/x/pogo/main.ts'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> server </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Pogo</span><span style="color: #F8F8F2">({ port: </span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2"> });</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> server </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Pogo</span><span style="color: #F8F8F2">({ port: </span><span style="color: #AE81FF">3000</span><span style="color: #F8F8F2"> });</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">server.router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">server.router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'Hello, Pogo!'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">server.</span><span style="color: #A6E22E">start</span><span style="color: #F8F8F2">();</span></span></code></pre>
 <p>In this example, we’re importing the <code>Po class from the Deno package registry and creating a new instance with a specified port. We then define a route for the root path </code>/<code>using the</code>server.router.get()<code>method, which returns a simple "Hello, Pogo!" message. Finally, we start the server using the</code>server.start()` method.</p>
 <p>To run the application, execute the following command in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$ deno run --allow-net app.ts</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">deno</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--allow-net</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">app.ts</span></span></code></pre>
 <p>This command tells Deno to run the <code>app.ts</code> file with network access permissions. Open your browser and navigate to <code>http://localhost:3000</code> to see the “Hello, Pogo!” message.</p>
 <h2 id="serving-static-files">Serving Static Files</h2>
 <p>Pogo makes it easy to serve static files, such as images or stylesheets, using the <code>server.static()</code> method. First, create a new directory called <code>public</code> in your project folder, and add an example file named `style.:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">/* public/style.css */</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">/* public/style.css */</span></span>
 <span class="line"><span style="color: #F92672">body</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">font-family</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">Arial</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">sans-serif</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">text-align</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">center</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#f0f0f0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">font-family</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">Arial</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">sans-serif</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">text-align</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">center</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#f0f0f0</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Next, update your <code>app.ts</code> file to serve static files from the <code>public</code> directory:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
 <span class="line"><span style="color: #88846F">// ...</span></span>
 <span class="line"><span style="color: #F8F8F2">server.</span><span style="color: #A6E22E">static</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">'public'</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #88846F">// ...</span></span></code></pre>
 <p>Now, any file inside the <code>public</code> directory will be accessible via the root path <code>/</code>. For example, you can access the <code>style. file at </code><a href="http://localhost:3000/style">http://localhost:3000/style</a>..</p>
 <h2 id="templating-and-rendering">Templating and Rendering</h2>
 <p>Pogo supports a variety of templating engines, but for this example, we’ll use the built-in <code>EJS</code> (Embedded JavaScript) engine. First, let’s create a new directory called <code>views</code> in your project folder and add an example template named <code>index.ejs</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;!-- views/index.ejs --></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;!-- views/index.ejs --></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;!DOCTYPE html></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;html lang="en"></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;head></span></span>
@@ -122,13 +122,13 @@
 <span class="line"><span style="color: #F8F8F2">&#x3C;/html></span></span></code></pre>
 <p>In this template, we use the <code>&#x3C;%= %></code> syntax to output the value of a variable named <code>message</code>.</p>
 <p>Next, update your <code>app.ts</code> file to use the EJS engine and render the <code>index.ejs</code> template:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// app.ts</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Pogo, renderFile } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://deno.land/x/pogo/main.ts'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #88846F">// ...</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">server.router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> message </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'Hello, Pogo!'</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> content </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">renderFile</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'views/index.ejs'</span><span style="color: #F8F8F2">, { message });</span></span>
+<span class="line"><span style="color: #F8F8F2">server.router.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> message </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'Hello, Pogo!'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> content </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">renderFile</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'views/index.ejs'</span><span style="color: #F8F8F2">, { message });</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> content;</span></span>
 <span class="line"><span style="color: #F8F8F2">});</span></span></code></pre>
 <p>Here, we import the <code>renderFile</code> function from Pogo and use it to render the <code>index.ejs</code> template with the <code>message</code> variable. Restart your server and visit <code>http://localhost:3000</code> to see the rendered template.</p>
@@ -149,5 +149,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

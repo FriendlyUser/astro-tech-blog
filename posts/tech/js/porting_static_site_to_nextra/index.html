@@ -98,7 +98,7 @@
 <li>Responsive design: Nextra provides a set of responsive styles that make it easy to build websites that look great on any device.</li>
 </ol>
 <p>Overall, Nextra is a powerful and flexible framework for building static websites with Next.js and MDX. It’s a great choice for developers who want to build fast, responsive, and content-driven websites with the power of Next.js and the simplicity of MDX.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> withNextra </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'nextra'</span><span style="color: #F8F8F2">)({</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> withNextra </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">require</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'nextra'</span><span style="color: #F8F8F2">)({</span></span>
 <span class="line"><span style="color: #F8F8F2">  theme: </span><span style="color: #E6DB74">'nextra-theme-docs'</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  themeConfig: </span><span style="color: #E6DB74">'./theme.config.tsx'</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  images: {</span></span>
@@ -106,7 +106,7 @@
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">})</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">module</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">exports</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">withNextra</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">module</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF; font-style: italic">exports</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">withNextra</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
 <p>This is a code snippet from a Next.js configuration file that uses the <code>withNextra</code> Higher Order Function (HOF) to apply the Nextra framework to the Next.js application.</p>
 <p>Here’s what each part of the code does:</p>
@@ -117,10 +117,10 @@
 <li><code>images: { unoptimized: true }</code> - This option specifies that images should be served in an unoptimized format. This is useful for development purposes when you want to quickly iterate on image assets.</li>
 <li><code>module.exports = withNextra()</code> - This line exports the <code>withNextra</code> HOF with an empty options object as an argument. This applies the Nextra framework to the Next.js application and makes it available for use in the application.</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { DocsThemeConfig } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'nextra-theme-docs'</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> config</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">DocsThemeConfig</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> config</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">DocsThemeConfig</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  logo: &#x3C;</span><span style="color: #F92672">span</span><span style="color: #F8F8F2">>Latex Diagrams&#x3C;/</span><span style="color: #F92672">span</span><span style="color: #F8F8F2">>,</span></span>
 <span class="line"><span style="color: #F8F8F2">  project: {</span></span>
 <span class="line"><span style="color: #F8F8F2">    link: </span><span style="color: #E6DB74">'https://github.com/FriendlyUser/LatexDiagrams'</span><span style="color: #F8F8F2">,</span></span>
@@ -202,5 +202,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

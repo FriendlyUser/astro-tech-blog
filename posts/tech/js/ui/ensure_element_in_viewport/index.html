@@ -73,12 +73,12 @@
 <p>By following these steps, you can ensure that the HTML element is in the fold and visible to the user without them having to scroll down.</p>
 <p>In React, a ref is a way to reference a DOM element or a React component instance created by a component.</p>
 <p>Here’s an example of a React ref being used to reference a DOM element:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    inputRef.current.</span><span style="color: #A6E22E">focus</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">  };</span></span>
 <span class="line"></span>
@@ -91,12 +91,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In React, a ref is a way to reference a DOM element or a React component instance created by a component.</p>
 <p>Here’s an example of a React ref being used to reference a DOM element:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { useRef } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ExampleComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> inputRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">handleClick</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    inputRef.current.</span><span style="color: #A6E22E">focus</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">  };</span></span>
 <span class="line"></span>
@@ -110,7 +110,7 @@
 <p>In this example, we are creating a functional component called “ExampleComponent”. We’re using the “useRef” hook to create a ref called “inputRef” and assigning it to the input element using the “ref” attribute.</p>
 <p>We’re also defining a function called “handleClick” that is called when the button is clicked. This function is using the “current” property of the ref to call the “focus” method on the input element, which will give it focus.</p>
 <p>This is just one example of how refs can be used in React. Refs can also be used to reference a React component instance, which can be useful for accessing component methods or properties.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">inputRef?.current.</span><span style="color: #A6E22E">getBoundingClientRect</span><span style="color: #F8F8F2">().bottom </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> document.documentElement.scrollTop</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">inputRef?.current.</span><span style="color: #A6E22E">getBoundingClientRect</span><span style="color: #F8F8F2">().bottom </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> document.documentElement.scrollTop</span></span></code></pre>
 <p>inputRef is the ref object that is referencing the element.
 current is a property of the ref object that holds the current DOM node.
 getBoundingClientRect() is a method that returns the size of an element and its position relative to the viewport.
@@ -119,7 +119,7 @@ document.documentElement.scrollTop is the distance between the top of the viewpo
 So, the above code is calculating the distance between the bottom edge of the element referenced by the inputRef and the top of the document, taking into account any scrolling that has occurred on the page.</p>
 <p>Note that the ? operator is used to ensure that the current property is not accessed if the inputRef is null or undefined. This is important because the getBoundingClientRect() method can only be called on a valid DOM node.</p>
 <p>Using that value and an adjustment property for a relatively positioned element, you can calculate the distance between the bottom edge of the element and the top of the viewport. This can be used to ensure the component is always above the fold.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">top: </span><span style="color: #E6DB74">`-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">top</span><span style="color: #F92672">}</span><span style="color: #E6DB74">px`</span><span style="color: #F8F8F2">,</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">top: </span><span style="color: #E6DB74">`-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">top</span><span style="color: #F92672">}</span><span style="color: #E6DB74">px`</span><span style="color: #F8F8F2">,</span></span></code></pre>
 <p>top is a CSS property that controls the positioning of an element along the vertical axis relative to its parent container.
 -${top}px is a template literal that evaluates to a string value that represents a negative pixel value for the top property.
 top is a variable that holds the pixel value to be used in the negative value.
@@ -140,5 +140,5 @@ By setting the top property to a negative value, the element is positioned above
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

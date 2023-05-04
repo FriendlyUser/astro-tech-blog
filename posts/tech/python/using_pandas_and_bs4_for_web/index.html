@@ -67,7 +67,7 @@
     <p>Pandas is an open-source Python library used for data manipulation and analysis. It is a powerful tool for handling structured data, such as spreadsheets and SQL tables. One of the most useful features of pandas is its ability to read and write data from various file formats, including CSV, Excel, and SQL databases.</p>
 <p>Pandas can also be used for web scraping by reading data from HTML tables on web pages. The library provides a method called <code>read_html()</code> that can parse HTML tables and return a list of data frames. Data frames are two-dimensional tables with labeled rows and columns, similar to spreadsheets.</p>
 <p>Here’s an example code snippet that uses pandas to scrape a table from a web page:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page containing the table</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -85,7 +85,7 @@
 <p>Overall, pandas is a powerful tool for web scraping and data analysis, and can save us a lot of time and effort when working with structured data on the web.</p>
 <p>Beautiful Soup (bs4) is a Python library used for web scraping. It allows us to parse HTML and XML documents and extract information from them. One common use case for bs4 is to scrape data from tables on web pages.</p>
 <p>To extract the data from a table using bs4, we first need to obtain the HTML source code of the web page containing the table. We can do this using the <code>requests</code> library, which allows us to make HTTP requests to web pages and retrieve their HTML content. Here’s an example code snippet that shows how to get the HTML source code of a web page:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> requests</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -98,7 +98,7 @@
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(html_content)</span></span></code></pre>
 <p>In this code snippet, we first import the <code>requests</code> library using the <code>import</code> statement. We then specify the URL of the web page we want to scrape. We use the <code>requests.get()</code> method to make a GET request to the URL and retrieve the HTML content. We store the content in a variable called <code>html_content</code> and print it to the console.</p>
 <p>Once we have the HTML source code of the web page, we can use bs4 to extract the table data. We start by creating a BeautifulSoup object and passing in the HTML content. We can then use the <code>find()</code> or <code>find_all()</code> methods to locate the table element(s) and extract their data. Here’s an example code snippet that shows how to extract the data from a table using bs4:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> bs4 </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> BeautifulSoup</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> bs4 </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> BeautifulSoup</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create a BeautifulSoup object and pass in the HTML content</span></span>
 <span class="line"><span style="color: #F8F8F2">soup </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> BeautifulSoup(html_content, </span><span style="color: #E6DB74">'html.parser'</span><span style="color: #F8F8F2">)</span></span>
@@ -121,7 +121,7 @@
 <p>Overall, bs4 is a powerful tool for web scraping, and can save us a lot of time and effort when working with HTML documents.</p>
 <p>Pandas is a popular Python library for data analysis, manipulation, and cleaning. It is often used in data science projects, including web scraping, to process and analyze data in a tabular format.</p>
 <p>To parse a table using pandas, we first need to obtain the HTML source code of the web page containing the table. We can do this using the <code>requests</code> library, as shown in the previous example. Once we have the HTML source code, we can use the <code>read_html()</code> method provided by pandas to parse the table data. Here’s an example code snippet that shows how to extract the data from a table using pandas:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -136,7 +136,7 @@
 <p>Pandas also provides several methods for manipulating and cleaning the data in the DataFrame objects. For example, we can use the <code>drop()</code> method to remove columns or rows with missing data, the <code>fillna()</code> method to fill in missing data with a default value, or the <code>merge()</code> method to combine multiple DataFrame objects into a single object.</p>
 <p>Overall, pandas is a powerful tool for working with tabular data and can simplify the process of extracting and processing data from web pages.</p>
 <p>Once we have parsed the table using pandas, we can easily output it to a CSV (comma-separated values) file using the <code>to_csv()</code> method provided by pandas. Here’s an example code snippet that shows how to output the table to a CSV file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -148,7 +148,7 @@
 <span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tables[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Output the table to a CSV file</span></span>
-<span class="line"><span style="color: #F8F8F2">df.to_csv(</span><span style="color: #E6DB74">'table.csv'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">df.to_csv(</span><span style="color: #E6DB74">'table.csv'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>In this code snippet, we first import the <code>pandas</code> library using the <code>import</code> statement. We then specify the URL of the web page we want to scrape and use <code>pd.read_html()</code> to read the table data from the URL and store it in the <code>tables</code> variable.</p>
 <p>Next, we get the first table from the <code>tables</code> list and store it in a variable called <code>df</code>. We then use the <code>to_csv()</code> method to output the table to a CSV file called <code>table.csv</code>. The <code>index=False</code> parameter tells pandas not to include the row index numbers in the output file.</p>
 <p>Once the code is executed, a CSV file called <code>table.csv</code> will be created in the current working directory with the data from the table. We can open this file in any spreadsheet application, such as Excel or Google Sheets, to view and manipulate the data further.</p>
@@ -158,7 +158,7 @@
 <li>Removing Duplicates:
 Sometimes a web page might have duplicate rows in its table, which can cause problems in our data analysis. Pandas provides a <code>drop_duplicates()</code> method to remove duplicate rows from a DataFrame. Here’s an example code snippet:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -170,13 +170,13 @@ Sometimes a web page might have duplicate rows in its table, which can cause pro
 <span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tables[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Drop duplicate rows</span></span>
-<span class="line"><span style="color: #F8F8F2">df.drop_duplicates(</span><span style="color: #FD971F">inplace</span><span style="color: #F92672">=</span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">df.drop_duplicates(</span><span style="color: #FD971F; font-style: italic">inplace</span><span style="color: #F92672">=</span><span style="color: #AE81FF">True</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>In this example, we first parse the table using pandas and get the first table from the list of DataFrame objects. We then use the <code>drop_duplicates()</code> method to remove any duplicate rows in the table. The <code>inplace=True</code> parameter tells pandas to modify the DataFrame in place rather than returning a new DataFrame object.</p>
 <ol start="2">
 <li>Renaming Columns:
 The column names in a table might not always be in a format that’s suitable for our data analysis. Pandas provides a <code>rename()</code> method to change the column names of a DataFrame. Here’s an example code snippet:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -188,7 +188,7 @@ The column names in a table might not always be in a format that’s suitable fo
 <span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> tables[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Rename the columns</span></span>
-<span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> df.rename(</span><span style="color: #FD971F">columns</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">'old\_column\_name'</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'new\_column\_name'</span><span style="color: #F8F8F2">})</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> df.rename(</span><span style="color: #FD971F; font-style: italic">columns</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">'old\_column\_name'</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'new\_column\_name'</span><span style="color: #F8F8F2">})</span></span></code></pre>
 <p>In this example, we first parse the table using pandas and get the first table from the list of DataFrame objects. We then use the <code>rename()</code> method to change the name of a specific column in the DataFrame. The <code>{'old_column_name': 'new_column_name'}</code> parameter tells pandas to replace the old column name with the new column name.</p>
 <ol start="3">
 <li>Dealing with Missing Values:
@@ -196,7 +196,7 @@ Web pages might have missing data in their tables, which can cause problems in o
 </ol>
 <p>The <code>dropna()</code> method removes any rows or columns with missing values from a DataFrame, while the <code>fillna()</code> method fills in the missing values with a default value or a value calculated from the other data in the DataFrame.</p>
 <p>Here’s an example code snippet:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># URL of the web page we want to scrape</span></span>
 <span class="line"><span style="color: #F8F8F2">url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'https://www.example.com/table.html'</span></span>
@@ -229,5 +229,5 @@ Web pages might have missing data in their tables, which can cause problems in o
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

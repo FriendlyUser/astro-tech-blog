@@ -70,19 +70,19 @@
 <li>Install the library by running <code>npm install react-intersection-observer</code>.</li>
 <li>Import the library in your React component by adding the following line at the top of your file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">python</span><span style="color: #E6DB74">`import { useInView } from 'react-intersection-observer';</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">python</span><span style="color: #E6DB74">`import { useInView } from 'react-intersection-observer';</span></span></code></pre>
 <ol start="3">
 <li>Use the <code>useInView</code> hook to track the visibility of your target element by adding the following line inside your component:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> [ref, inView] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [ref, inView] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span></code></pre>
 <ol start="4">
 <li>Add the <code>ref</code> attribute to the target element that you want to track, like this:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">ref</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>...&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">ref</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">>...&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span></code></pre>
 <ol start="5">
 <li>Use the <code>inView</code> variable to conditionally render content or apply styles based on whether the element is currently in view, like this:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">{inView </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>Visible&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>Not visible&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">{inView </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>Visible&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>Not visible&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">>}</span></span></code></pre>
 <p>That’s the basic usage of the React Intersection Observer library. You can also customize the options for the observer, such as the threshold and whether to detect visibility on the horizontal or vertical axis, by passing an object as the second argument to the <code>useInView</code> hook.</p>
 <p>To create simple CSS animations using the <code>react-intersection-observer</code> library, you can use the <code>inView</code> prop that is returned by the <code>useInView</code> hook to conditionally apply a CSS class to the element when it comes into view.</p>
 <p>Here’s an example of a fade-in animation using the <code>opacity</code> property:</p>
@@ -90,13 +90,13 @@
 <li>Install the <code>react-intersection-observer</code> library by running <code>npm install react-intersection-observer</code>.</li>
 <li>Import the library and a CSS file with your animation styles:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { useInView } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-intersection-observer'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { useInView } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-intersection-observer'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'./styles.css'</span><span style="color: #F8F8F2">;</span></span></code></pre>
 <ol start="3">
 <li>Use the <code>useInView</code> hook to track the visibility of your target element:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyComponent</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> { ref, inView } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> { ref, inView } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">ref</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">className</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"fade-in"</span><span style="color: #F8F8F2">></span></span>
@@ -107,19 +107,19 @@
 <ol start="4">
 <li>Add the animation styles to your CSS file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">.fade-in</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">.fade-in</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">.fade-in.is-visible</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="5">
 <li>Add the <code>is-visible</code> class to the element when it comes into view:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyComponent</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> { ref, inView } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">MyComponent</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> { ref, inView } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useInView</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">ref</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">className</span><span style="color: #F92672">={</span><span style="color: #E6DB74">`fade-in </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">inView </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'is-visible'</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">''</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
@@ -130,7 +130,7 @@
 <p>That’s it! The element will fade in smoothly when it enters the viewport. You can adjust the animation duration, timing function, and other properties in the CSS file to customize the effect.</p>
 <p>The transition property in CSS is used to create smooth and gradual animations between two states of an element. The transition effect is applied to a CSS property when the value of that property changes.</p>
 <p>The syntax for the transition property is as follows:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">transition: property duration </span><span style="color: #F92672">timing-function</span><span style="color: #F8F8F2"> delay;</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">transition: property duration </span><span style="color: #F92672">timing-function</span><span style="color: #F8F8F2"> delay;</span></span></code></pre>
 <p>The transition property in CSS is used to create smooth and gradual animations between two states of an element. The transition effect is applied to a CSS property when the value of that property changes.</p>
 <p>Here’s what each value represents:</p>
 <ul>
@@ -140,13 +140,13 @@
 <li>delay: the length of time to wait before starting the transition effect (e.g., 0s, 500ms).</li>
 </ul>
 <p>Here’s an example of a CSS transition that changes the opacity property of an element:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">.box</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">.box</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">.box:hover</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0.5</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0.5</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the opacity property of the .box element is set to 1 initially, and a transition effect is applied to it with a duration of 1s and an easing function of ease-in-out. When the element is hovered over, the opacity property changes to 0.5, and the transition effect smoothly fades the element to the new opacity value over the course of 1 second.</p>
     </content></div></div></div></div>
@@ -164,5 +164,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

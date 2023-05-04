@@ -69,15 +69,15 @@
 <h2 id="getting-started">Getting Started</h2>
 <p>To start using GoCron, you need to have Golang installed on your system. If you haven’t installed it yet, follow the official installation guide <a href="https://golang.org/doc/install">here</a>.</p>
 <p>Once Golang is installed, you can install GoCron using the <code>go get</code> command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/jasonlvhit/gocron</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/jasonlvhit/gocron</span></span></code></pre>
 <p>This command will install the latest version of GoCron in your <code>$GOPATH</code>.</p>
 <h2 id="using-gocron-in-your-application">Using GoCron in Your Application</h2>
 <p>Let’s begin by creating a simple Go application that uses GoCron. First, create a new directory for your project and navigate to it:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir gocron-example </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> gocron-example</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">gocron-example</span><span style="color: #F8F8F2"> &#x26;&#x26; </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">gocron-example</span></span></code></pre>
 <p>Next, create a new file named `main. and open it in your favorite text editor.</p>
 <h3 id="importing-gocron">Importing GoCron</h3>
 <p>In your `main. file, start by importing the necessary packages, including GoCron:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -91,7 +91,7 @@
 <li>A task that prints the current time every 10 seconds.</li>
 </ol>
 <p>Define these tasks as functions in your `main. file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">printHello</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">printHello</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -101,7 +101,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="scheduling-tasks">Scheduling Tasks</h3>
 <p>Next, let’s schedule the tasks using GoCron. In your <code>main. file, add the following code inside the </code>main` function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Schedule the tasks</span></span>
 <span class="line"><span style="color: #F8F8F2">	gocron.</span><span style="color: #66D9EF">Every</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Second</span><span style="color: #F8F8F2">().</span><span style="color: #66D9EF">Do</span><span style="color: #F8F8F2">(printHello)</span></span>
 <span class="line"><span style="color: #F8F8F2">	gocron.</span><span style="color: #66D9EF">Every</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">Seconds</span><span style="color: #F8F8F2">().</span><span style="color: #66D9EF">Do</span><span style="color: #F8F8F2">(printCurrentTime)</span></span>
@@ -113,7 +113,7 @@
 <p>The last line, <code>&#x3C;-gocron.Start()</code>, starts the scheduler and keeps it running indefinitely.</p>
 <h3 id="running-the-application">Running the Application</h3>
 <p>Save the <code>main. file and run the application using the </code>go run` command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go run main.go</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">main.go</span></span></code></pre>
 <p>You should see the “Hello, World!” message printed every second and the current time printed every 10 seconds.</p>
 <h2 id="advanced-usage">Advanced Usage</h2>
 <p>GoCron also supports more advanced scheduling options, such as:</p>
@@ -140,5 +140,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

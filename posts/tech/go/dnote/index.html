@@ -73,11 +73,11 @@
 <p>To get started with Dnote, you need to install the command-line tool. You can download the latest release from the <a href="https://github.com/dnote/dnote/releases">official GitHub repository</a>. Here are the installation steps for different platforms:</p>
 <h3 id="macos">macOS</h3>
 <p>You can install Dnote on macOS using Homebrew:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">brew tap dnote/dnote</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">brew tap dnote/dnote</span></span>
 <span class="line"><span style="color: #F8F8F2">brew install dnote</span></span></code></pre>
 <h3 id="linux">Linux</h3>
 <p>For Linux, download the latest release, extract it, and move the binary to your <code>PATH</code>:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">wget https://github.com/dnote/dnote/releases/download/vX.Y.Z/dnote_X.Y.Z_linux_amd64.tar.gz</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">wget https://github.com/dnote/dnote/releases/download/vX.Y.Z/dnote_X.Y.Z_linux_amd64.tar.gz</span></span>
 <span class="line"><span style="color: #F8F8F2">tar -xzf dnote_X.Y.Z_linux_amd64.tar.gz</span></span>
 <span class="line"><span style="color: #F8F8F2">sudo mv dnote /usr/local/bin</span></span></code></pre>
 <p>Replace <code>X.Y.Z</code> with the latest version number.</p>
@@ -87,19 +87,19 @@
 <p>After installing Dnote, you can start using it in your Golang projects. The following sections cover the basics of creating, organizing, and reviewing notes.</p>
 <h3 id="31-creating-notes">3.1. Creating Notes</h3>
 <p>To create a note, simply use the <code>dnote add</code> command, followed by the book name (which represents a category) and the note content. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">dnote add golang "Use the fmt package for formatted I/O"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dnote add golang "Use the fmt package for formatted I/O"</span></span></code></pre>
 <p>This command creates a new note under the “golang” book with the content “Use the fmt package for formatted I/O”.</p>
 <h3 id="32-organizing-notes">3.2. Organizing Notes</h3>
 <p>Dnote organizes notes using “books,” which are simply collections of related notes. You can create a book by adding a note to it. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">dnote add golang-concurrency "Use channels for communication between goroutines"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dnote add golang-concurrency "Use channels for communication between goroutines"</span></span></code></pre>
 <p>This command creates a new book called “golang-concurrency” and adds a note to it.</p>
 <p>To view all your books, use the <code>dnote ls-books</code> command.</p>
 <h3 id="33-reviewing-notes">3.3. Reviewing Notes</h3>
 <p>To review the notes in a specific book, use the <code>dnote ls</code> command followed by the book name:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">dnote ls golang</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dnote ls golang</span></span></code></pre>
 <p>This command lists all the notes in the “golang” book.</p>
 <p>To search for notes containing specific keywords, use the <code>dnote search</code> command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">dnote search "channels"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dnote search "channels"</span></span></code></pre>
 <p>This command returns all notes containing the word “channels”.</p>
 <h2 id="4-best-practices">4. Best Practices</h2>
 <p>When using Dnote in Golang projects, consider the following best practices:</p>
@@ -126,5 +126,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

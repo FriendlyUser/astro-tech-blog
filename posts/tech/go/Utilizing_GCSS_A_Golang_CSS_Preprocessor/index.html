@@ -69,12 +69,12 @@
 <p>GCSS is a CSS preprocessor designed for Golang developers. It offers features such as nested rules, variables, mixins, and control structures like loops and conditionals. GCSS helps you write cleaner, more maintainable CSS code by providing a modular and DRY (Don’t Repeat Yourself) approach to CSS development.</p>
 <h2 id="installation-and-setup">Installation and Setup</h2>
 <p>To use GCSS, you first need to install the package in your Golang project. Use the following command to add it to your project:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/yosssi/gcss</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/yosssi/gcss</span></span></code></pre>
 <p>With the package installed, you can now import it into your Golang code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/yosssi/gcss"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/yosssi/gcss"</span></span></code></pre>
 <h2 id="basic-gcss-syntax">Basic GCSS Syntax</h2>
 <p>GCSS uses an indented syntax similar to SASS or Stylus. Let’s take a look at a simple example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">body</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">body</span></span>
 <span class="line"><span style="color: #F8F8F2">  background-color: #f5f5f5</span></span>
 <span class="line"><span style="color: #F8F8F2">  font: 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif</span></span>
 <span class="line"><span style="color: #F8F8F2">  color: #333</span></span>
@@ -87,25 +87,25 @@
 <span class="line"><span style="color: #F8F8F2">      color: #fff</span></span>
 <span class="line"><span style="color: #F8F8F2">      font-size: 24px</span></span></code></pre>
 <p>When compiled, the above GCSS code will generate the following CSS:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">body</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#f5f5f5</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">font</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">16</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">/</span><span style="color: #AE81FF">1.5</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Helvetica Neue"</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">Helvetica</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">Arial</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">sans-serif</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">body</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#f5f5f5</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">font</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">16</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">/</span><span style="color: #AE81FF">1.5</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Helvetica Neue"</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">Helvetica</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">Arial</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">sans-serif</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F92672">body</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">header</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">padding</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">16</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">background-color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#333</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">padding</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">16</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F92672">body</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">header</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">h1</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#fff</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">font-size</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">24</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">color</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">#fff</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">font-size</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">24</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>As you can see, GCSS allows you to nest rules, making it easier to read and maintain your CSS code.</p>
 <h2 id="variables-and-mixins">Variables and Mixins</h2>
 <p>GCSS supports variables and mixins for better code organization and reuse.</p>
 <h3 id="variables">Variables</h3>
 <p>Variables are declared using the <code>$</code> symbol:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$</span><span style="color: #F92672">primary-color</span><span style="color: #F8F8F2">: </span><span style="color: #F44747">#0074d9</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">$</span><span style="color: #F92672">primary-color</span><span style="color: #F8F8F2">: </span><span style="color: #F44747">#0074d9</span></span>
 <span class="line"><span style="color: #F8F8F2">$</span><span style="color: #F92672">secondary-color</span><span style="color: #F8F8F2">: </span><span style="color: #A6E22E">#b6c0ca</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">body</span></span>
@@ -113,7 +113,7 @@
 <span class="line"><span style="color: #F8F8F2">  color: $</span><span style="color: #F92672">secondary-color</span></span></code></pre>
 <h3 id="mixins">Mixins</h3>
 <p>Mixins are reusable pieces of code that can be included in other rules:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@mixin</span><span style="color: #F8F8F2"> border-radius($radius)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">@mixin</span><span style="color: #F8F8F2"> border-radius($radius)</span></span>
 <span class="line"><span style="color: #F8F8F2">  -webkit-border-radius: $radius</span></span>
 <span class="line"><span style="color: #F8F8F2">  -moz-border-radius: $radius</span></span>
 <span class="line"><span style="color: #F8F8F2">  border-radius: $radius</span></span>
@@ -124,12 +124,12 @@
 <p>GCSS supports control structures like loops and conditionals, which can help you automate repetitive tasks.</p>
 <h3 id="loops">Loops</h3>
 <p>You can use <code>@for</code> loops to iterate over a range of values:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">@for</span><span style="color: #F8F8F2"> $i from 1 through 3</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">@for</span><span style="color: #F8F8F2"> $i from 1 through 3</span></span>
 <span class="line"><span style="color: #F8F8F2">  .col-{$i}</span></span>
 <span class="line"><span style="color: #F8F8F2">    width: 100% / $</span><span style="color: #F92672">i</span></span></code></pre>
 <h3 id="conditionals">Conditionals</h3>
 <p>GCSS supports <code>@if</code>, <code>@else if</code>, and <code>@else</code> conditional statements:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">$theme: dark</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">$theme: dark</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">body</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">@if</span><span style="color: #F8F8F2"> $theme == dark</span></span>
@@ -140,7 +140,7 @@
 <span class="line"><span style="color: #F8F8F2">    color: #333</span></span></code></pre>
 <h2 id="integration-with-golang">Integration with Golang</h2>
 <p>To compile your GCSS code within a Golang application, you can use the <code>gcss.Compile</code> function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -189,5 +189,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

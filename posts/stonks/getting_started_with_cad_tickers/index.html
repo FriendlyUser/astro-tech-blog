@@ -76,28 +76,28 @@
 </ul>
 <h2 id="installing-cad-tickers">Installing Cad Tickers</h2>
 <p>To install Cad Tickers, you can use pip:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">pip install cad-tickers</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">pip</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cad-tickers</span></span></code></pre>
 <p>This will download and install the latest version of Cad Tickers and its dependencies.</p>
 <h2 id="using-cad-tickers">Using Cad Tickers</h2>
 <p>To use Cad Tickers, you need to import it in your python script:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cad_tickers</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cad_tickers</span></span></code></pre>
 <p>Then, you can use various functions provided by the package to get different types of data.</p>
 <p>For example, if you want to get a pandas dataframe of all tickers traded on CSE, you can use:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cse_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_cse_tickers_df()</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">cse_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_cse_tickers_df()</span></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(cse_df)</span></span></code></pre>
 <p>This will print a dataframe containing ticker symbols and company names for each stock on CSE.</p>
 <p>If you want to get a list of recent documents from the CSE website for a specific ticker symbol, such as press releases or financial statements, you can use:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">docs </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_recent_docs_from_url(</span><span style="color: #E6DB74">"ACB"</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">docs </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_recent_docs_from_url(</span><span style="color: #E6DB74">"ACB"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(docs)</span></span></code></pre>
 <p>This will print a list of dictionaries containing document titles and URLs for Aurora Cannabis Inc.</p>
 <p>If you want to find news links and text for a specific ticker symbol from Yahoo Finance, you can use:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">news </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.find_news_link_and_text(</span><span style="color: #E6DB74">"ACB"</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">news </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.find_news_link_and_text(</span><span style="color: #E6DB74">"ACB"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(news)</span></span></code></pre>
 <p>This will print a list of dictionaries containing news titles, URLs and text summaries for Aurora Cannabis Inc.</p>
 <p>Saving Dataframes as CSV Files
 If you want to save the dataframes that you get from Cad Tickers as CSV files, you can use the pandas to_csv method. For example, if you want to save the CSE dataframe as a CSV file named cse.csv, you can use:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cse_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_cse_tickers_df()</span></span>
-<span class="line"><span style="color: #F8F8F2">cse_df.to_csv(</span><span style="color: #E6DB74">"cse.csv"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">cse_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cad_tickers.get_cse_tickers_df()</span></span>
+<span class="line"><span style="color: #F8F8F2">cse_df.to_csv(</span><span style="color: #E6DB74">"cse.csv"</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">index</span><span style="color: #F92672">=</span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>This will create a CSV file in your current working directory with the same columns and rows as the dataframe.</p>
 <p>You can also specify other parameters for the to_csv method, such as the separator character, the encoding format, or whether to include headers or not. You can find more information about this method at <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html</a>.</p>
 <p>You can find more examples and documentation for Cad Tickers at <a href="https://pypi.org/project/cad-tickers/">https://pypi.org/project/cad-tickers/</a>.</p>
@@ -125,5 +125,5 @@ If you want to save the dataframes that you get from Cad Tickers as CSV files, y
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -75,10 +75,10 @@
 <p>However, there are some potential downsides to using URL shorteners. For one, they can be used to hide malicious URLs, which can pose a security risk. Additionally, if the URL shortener service goes offline or out of business, any links that were created using that service will no longer work.</p>
 <p>Sure, here is a simple implementation of a URL shortener in Python using Flask and SQLite:</p>
 <p>First, we need to install Flask and SQLite:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">pip install flask</span></span></code></pre>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">pip install sqlite3</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">pip install flask</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">pip install sqlite3</span></span></code></pre>
 <p>Next, we’ll create a <code>app.py</code> file and add the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> flask </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Flask, render_template, request, redirect</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> flask </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Flask, render_template, request, redirect</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sqlite3</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> string</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> random</span></span>
@@ -100,18 +100,18 @@
 <span class="line"><span style="color: #F8F8F2">conn.close()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># function to generate a random string of length 6</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_short_url</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">generate_short_url</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2"> chars </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> string.ascii_letters </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> string.digits</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">''</span><span style="color: #F8F8F2">.join(random.choice(chars) </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _ </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">range</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">))</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># home page route</span></span>
 <span class="line"><span style="color: #A6E22E">@app.route</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/'</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">home</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">home</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> render_template(</span><span style="color: #E6DB74">'home.html'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># shorten url route</span></span>
-<span class="line"><span style="color: #A6E22E">@app.route</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/shorten_url'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">methods</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span><span style="color: #E6DB74">'POST'</span><span style="color: #F8F8F2">])</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">shorten_url</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #A6E22E">@app.route</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/shorten_url'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">methods</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span><span style="color: #E6DB74">'POST'</span><span style="color: #F8F8F2">])</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">shorten_url</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># get original url from form</span></span>
 <span class="line"><span style="color: #F8F8F2"> original_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> request.form[</span><span style="color: #E6DB74">'url'</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"></span>
@@ -137,11 +137,11 @@
 <span class="line"><span style="color: #F8F8F2"> conn.close()</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># redirect to success page with short url</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> render_template(</span><span style="color: #E6DB74">'success.html'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">short_url</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">short_url)</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> render_template(</span><span style="color: #E6DB74">'success.html'</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">short_url</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">short_url)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># redirect route</span></span>
 <span class="line"><span style="color: #A6E22E">@app.route</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'/&#x3C;short_url>'</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">redirect_url</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">short_url</span><span style="color: #F8F8F2">):</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">redirect_url</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">short_url</span><span style="color: #F8F8F2">):</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># get original url from database</span></span>
 <span class="line"><span style="color: #F8F8F2"> conn </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> sqlite3.connect(</span><span style="color: #E6DB74">'url_shortener.db'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2"> c </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> conn.cursor()</span></span>
@@ -166,7 +166,7 @@
 </ul>
 <p>The <code>generate_short_url</code> function generates a random string of length 6, which is used as the short URL. The <code>urls</code> table in the SQLite database stores the original URL and the corresponding short URL.</p>
 <p>You can run the application by running the <code>app.py</code> file in the terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">python app.py</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">python app.py</span></span></code></pre>
 <p>This will start a local web server on port 5000. You can access the application by navigating to <code>http://localhost:5000</code> in your web browser.</p>
 <p>Note: This is just a simple implementation and</p>
 <p>Flask is a lightweight Python web framework that allows developers to easily create web applications. It’s simple, flexible, and easy to use, making it a popular choice for building web applications of all sizes and complexities.</p>
@@ -200,5 +200,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

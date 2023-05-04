@@ -68,7 +68,7 @@
 <h3 id="goroutines">Goroutines</h3>
 <p>Goroutines are the building blocks of concurrent programs in Go. A goroutine is a lightweight thread of execution that can be started with the ` keyword. Goroutines are multiplexed onto a smaller set of operating system threads by the Go runtime, which allows many goroutines to run simultaneously on a single CPU.</p>
 <p>Here’s an example of how to start a goroutine:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sayHello</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sayHello</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, world!"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -80,12 +80,12 @@
 <h3 id="channels">Channels</h3>
 <p>Channels are another important feature of concurrency in Go. A channel is a typed conduit through which you can send and receive values with the channel operator, <code>&#x3C;-</code>. Channels allow you to synchronize the execution of concurrent goroutines and communicate between them.</p>
 <p>Here’s an example of how to create and use a channel:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">writeToChannel</span><span style="color: #F8F8F2">(ch </span><span style="color: #F92672">chan&#x3C;-</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">writeToChannel</span><span style="color: #F8F8F2">(ch </span><span style="color: #F92672">chan&#x3C;-</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2"> ch </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello, world!"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> ch </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2"> ch </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">go</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">writeToChannel</span><span style="color: #F8F8F2">(ch)</span></span>
 <span class="line"><span style="color: #F8F8F2"> msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2">ch</span></span>
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(msg)</span></span>
@@ -96,7 +96,7 @@
 <p>Goroutines are the building blocks of concurrent programs in Go. They are lightweight threads of execution that can be started with the ` keyword. Goroutines are managed by the Go runtime, which multiplexes them onto a smaller set of operating system threads, allowing many goroutines to run simultaneously on a single CPU.</p>
 <p>One of the key benefits of goroutines is that they make it easy to write concurrent programs in Go. By using goroutines, you can perform multiple tasks simultaneously without having to deal with the complexities of thread management or locking. Goroutines are also very efficient, as they have a small memory footprint and can be created and destroyed quickly.</p>
 <p>To start a goroutine, you simply need to define a function that you want to run concurrently and prefix it with the <code>keyword. For example, the following code starts a goroutine that runs the</code>sayHello` function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sayHello</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">sayHello</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, world!"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
@@ -108,21 +108,21 @@
 <p>Goroutines can also be used to perform more complex concurrent tasks, such as reading from and writing to channels. By combining goroutines and channels, you can create powerful concurrent programs that are both efficient and easy to reason about.</p>
 <p>Channels are a powerful feature of Go that enable you to send and receive data between goroutines. A channel is a typed conduit that can be used to communicate between goroutines, allowing them to synchronize their execution and exchange information.</p>
 <p>To create a channel, you use the <code>make</code> function and specify the type of data that the channel will carry. For example, the following code creates a channel of strings:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ch </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">)</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">ch </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Once you have a channel, you can use the <code>&#x3C;-</code> operator to send and receive data. The <code>&#x3C;-</code> operator can be used in two ways: to send data through a channel or to receive data from a channel.</p>
 <p>To send data through a channel, you use the <code>&#x3C;-</code> operator on the channel, followed by the data that you want to send. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ch </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello, world!"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">ch </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello, world!"</span></span></code></pre>
 <p>This code sends the string “Hello, world!” through the <code>ch</code> channel.</p>
 <p>To receive data from a channel, you use the <code>&#x3C;-</code> operator on the left side of the channel variable. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2">ch</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">msg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2">ch</span></span></code></pre>
 <p>This code receives a string from the <code>ch</code> channel and assigns it to the <code>msg</code> variable.</p>
 <p>Channels can be used in many different ways, depending on your needs. For example, you can use channels to synchronize the execution of multiple goroutines, to implement a producer-consumer pattern, or to perform load balancing across multiple workers.</p>
 <p>One of the key benefits of channels is that they provide a simple and efficient way to write concurrent programs in Go. By using channels to coordinate the execution of goroutines, you can create programs that are both easy to reason about and scalable.</p>
 <p>The select statement is a powerful feature of Go that allows you to wait on multiple channels at once. It is often used in concurrent programs to synchronize the execution of multiple goroutines.</p>
 <p>The select statement is similar to a switch statement, but instead of switching on values, it switches on channels. The select statement waits until one of the channels is ready to send or receive data, and then executes the corresponding case statement.</p>
 <p>Here’s an example of how the select statement works:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ch1 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #F8F8F2">ch2 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">)</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">ch1 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">ch2 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">chan</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">go</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2"> time.</span><span style="color: #66D9EF">Sleep</span><span style="color: #F8F8F2">(time.Second)</span></span>
@@ -144,21 +144,21 @@
 <p>The select statement is powerful because it allows you to wait on multiple channels at once, and respond to the first one that is ready. This can be useful in situations where you want to wait for input from multiple sources, such as user input or network requests.</p>
 <p>It’s worth noting that the select statement can also include a default case, which is executed if none of the channels are ready to send or receive data. This can be useful for situations where you want to perform some action if no input is received after a certain period of time, for example.</p>
 <p>Sure! Here’s a simple CLI app that demonstrates the use of goroutines and channels in Go. This app simulates a server that receives requests and processes them concurrently using goroutines. The requests are sent to the server via a channel, and the responses are returned via another channel.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"time"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Request</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> ID </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2"> Message </span><span style="color: #66D9EF">string</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Request</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> ID </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2"> Message </span><span style="color: #66D9EF; font-style: italic">string</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Response</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2"> ID </span><span style="color: #66D9EF">int</span></span>
-<span class="line"><span style="color: #F8F8F2"> Message </span><span style="color: #66D9EF">string</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Response</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> ID </span><span style="color: #66D9EF; font-style: italic">int</span></span>
+<span class="line"><span style="color: #F8F8F2"> Message </span><span style="color: #66D9EF; font-style: italic">string</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">server</span><span style="color: #F8F8F2">(requests </span><span style="color: #F92672">&#x3C;-chan</span><span style="color: #F8F8F2"> \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Request, responses </span><span style="color: #F92672">chan&#x3C;-</span><span style="color: #F8F8F2"> \</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">Response) {</span></span>
@@ -202,7 +202,7 @@
 <p>The <code>server</code> function runs in an infinite loop, waiting for requests to arrive on the <code>requests</code> channel. When a request arrives, it processes it concurrently using a goroutine, and then sends the response back through the <code>responses</code> channel.</p>
 <p>In the <code>main</code> function, we create two channels, <code>requests</code> and <code>responses</code>, and start the server by calling the <code>server</code> function with these channels as arguments. We then send five requests to the server, and wait for the responses to arrive, printing them to the console when they do.</p>
 <p>When you run this code, you should see the following output:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Processed request </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">: Hello </span><span style="color: #AE81FF">1</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Processed request </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">: Hello </span><span style="color: #AE81FF">1</span></span>
 <span class="line"><span style="color: #F8F8F2">Processed request </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">: Hello </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F8F8F2">Processed request </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">: Hello </span><span style="color: #AE81FF">3</span></span>
 <span class="line"><span style="color: #F8F8F2">Processed request </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">: Hello </span><span style="color: #AE81FF">4</span></span>
@@ -223,5 +223,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

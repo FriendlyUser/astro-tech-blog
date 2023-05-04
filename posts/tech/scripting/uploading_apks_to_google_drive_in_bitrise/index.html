@@ -66,9 +66,9 @@
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to upload apks to google drive in bitrise</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Wednesday, 7 April 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-zinc-400 text-zinc-900"> <a href="/tags/git" style="padding-right:3px"> <category>git<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/dall-e/upload_icon_cloud.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>Bitrise is a continuous integration and delivery platform that allows you to automate your build, test, and deployment processes. You can define these processes using a combination of pre-built steps and custom scripts written in Bash or Go.</p>
 <p>Using the google drive api we can upload apks to a specified google drive folder using a service account and sharing the folder to that service account.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">https://drive.google.com/drive/u/4/folders/{folderId}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">https://drive.google.com/drive/u/4/folders/{folderId}</span></span></code></pre>
 <p>Note once the folder is shared to that service account we can upload files to google drive using the folder id. Depending on demand its possible to extend this to upload to a specific folder under the parent folder.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -107,7 +107,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This is a modified version of the Go program that is designed to be used as a build step in the Bitrise CI/CD platform. The program reads in two input environment variables: service_key_path and folder_id. It then uses the utils package to search for all files with the .apk extension in the current directory and its subdirectories, and adds the BITRISE_APK_PATH environment variable (if it is set) to the list of files. Finally, the program iterates over the list of files and uses the utils.UploadFile function to upload each file to Google Drive using the serviceAccount and folderId variables.</p>
 <p>The program then exits with a status code of 0, indicating success. It is good practice to always specify an exit code at the end of a build step, as it helps the CI/CD platform determine whether the step was successful or not.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> utils</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> utils</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"context"</span></span>
@@ -127,20 +127,20 @@
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// ServiceAccount : Use Service account</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">serviceAccount</span><span style="color: #F8F8F2">(credentialFile </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Client {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">serviceAccount</span><span style="color: #F8F8F2">(credentialFile </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Client {</span></span>
 <span class="line"><span style="color: #F8F8F2">	b, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> ioutil.</span><span style="color: #66D9EF">ReadFile</span><span style="color: #F8F8F2">(credentialFile)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(err)</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> c </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">		Email      </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"client_email"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		PrivateKey </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"private_key"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Email      </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"client_email"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		PrivateKey </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`json:"private_key"`</span></span>
 <span class="line"><span style="color: #F8F8F2">	}{}</span></span>
 <span class="line"><span style="color: #F8F8F2">	json.</span><span style="color: #66D9EF">Unmarshal</span><span style="color: #F8F8F2">(b, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">c)</span></span>
 <span class="line"><span style="color: #F8F8F2">	config </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">jwt.Config{</span></span>
 <span class="line"><span style="color: #F8F8F2">		Email:      c.Email,</span></span>
 <span class="line"><span style="color: #F8F8F2">		PrivateKey: []</span><span style="color: #66D9EF">byte</span><span style="color: #F8F8F2">(c.PrivateKey),</span></span>
-<span class="line"><span style="color: #F8F8F2">		Scopes: []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">		Scopes: []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">			drive.DriveScope,</span></span>
 <span class="line"><span style="color: #F8F8F2">		},</span></span>
 <span class="line"><span style="color: #F8F8F2">		TokenURL: google.JWTTokenURL,</span></span>
@@ -149,7 +149,7 @@
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> client</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">UploadFile</span><span style="color: #F8F8F2">(serviceFile </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, fileName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, folderId </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">UploadFile</span><span style="color: #F8F8F2">(serviceFile </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, fileName </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, folderId </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	filename </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> fileName                       </span><span style="color: #88846F">// Filename</span></span>
 <span class="line"><span style="color: #F8F8F2">	baseMimeType </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"application/octet-stream"</span><span style="color: #F8F8F2"> </span><span style="color: #88846F">// MimeType</span></span>
 <span class="line"><span style="color: #F8F8F2">	client </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">serviceAccount</span><span style="color: #F8F8F2">(serviceFile)      </span><span style="color: #88846F">// Please set the json file of Service account.</span></span>
@@ -171,12 +171,12 @@
 <span class="line"><span style="color: #F8F8F2">	baseName </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Base</span><span style="color: #F8F8F2">(filename)</span></span>
 <span class="line"><span style="color: #F8F8F2">	f </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">drive.File{Name: baseName}</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> folderId </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">		f.Parents </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{folderId}</span></span>
+<span class="line"><span style="color: #F8F8F2">		f.Parents </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{folderId}</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
 <span class="line"><span style="color: #F8F8F2">	res, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> srv.Files.</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">Create</span><span style="color: #F8F8F2">(f).</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">ResumableMedia</span><span style="color: #F8F8F2">(context.</span><span style="color: #66D9EF">Background</span><span style="color: #F8F8F2">(), file, fileInf.</span><span style="color: #66D9EF">Size</span><span style="color: #F8F8F2">(), baseMimeType).</span></span>
-<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">ProgressUpdater</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(now, size </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2">) { fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">, </span><span style="color: #AE81FF">%d\r</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, now, size) }).</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">ProgressUpdater</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(now, size </span><span style="color: #66D9EF; font-style: italic">int64</span><span style="color: #F8F8F2">) { fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">, </span><span style="color: #AE81FF">%d\r</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, now, size) }).</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">Do</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatalln</span><span style="color: #F8F8F2">(err)</span></span>
@@ -185,7 +185,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// find files with the extension ending with *.apk</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">FindFiles</span><span style="color: #F8F8F2">(extension </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) ([]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">FindFiles</span><span style="color: #F8F8F2">(extension </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) ([]</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	files, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Glob</span><span style="color: #F8F8F2">(extension)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2">, err</span></span>
@@ -199,7 +199,7 @@
 <li>FindFiles: This function takes a string as input and returns a slice of strings containing the file paths of all files in the current directory and its subdirectories that have the specified extension. The input string should contain a glob pattern, such as ”**/*.apk”. The function uses the filepath.Glob function to search for files that match the pattern and returns the list of file paths.</li>
 </ul>
 <p>An example <code>bitrise.yml</code> file that uses apk uploading to google drive is</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">---</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">---</span></span>
 <span class="line"><span style="color: #F8F8F2">format_version: '11'</span></span>
 <span class="line"><span style="color: #F8F8F2">default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git</span></span>
 <span class="line"><span style="color: #F8F8F2">project_type: flutter</span></span>
@@ -326,5 +326,5 @@ git::<a href="https://github.com/FriendlyUser/bitrise-step-google-drive-uploader
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

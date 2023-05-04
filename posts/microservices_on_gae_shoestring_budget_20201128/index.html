@@ -97,7 +97,7 @@
 <p><img src="/imgs/2020/11/google_app_engine_service.png" alt="Enabled App Engine"></p>
 <p>For simplicity, I have copied the boilerplate for the google app engine fastapi.</p>
 <p>The contents of <code>main.py</code> as is follows.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> fastapi </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> FastAPI</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> fastapi </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> FastAPI</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">app </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> FastAPI()</span></span>
 <span class="line"></span>
@@ -105,10 +105,10 @@
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">@app.get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/"</span><span style="color: #F8F8F2">)</span></span>
-<span class="line"><span style="color: #66D9EF">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">home</span><span style="color: #F8F8F2">():</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">home</span><span style="color: #F8F8F2">():</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span><span style="color: #E6DB74">"message"</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"Hello TutLinks.com"</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>To deploy this application to google cloud platform we have a simple <code>fastapi.yaml</code> file to configure the version of python and the start command. The url for the api microservice will be prepended with <code>api-dot</code>.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">service: api</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">service: api</span></span>
 <span class="line"><span style="color: #F8F8F2">runtime: python37</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">basic_scaling:</span></span>
@@ -122,7 +122,7 @@
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker pyfastapi:app</span></span></code></pre>
 <p>Basic scaling can be changed as needed, these are the defaults that works for me.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">steps</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"gcr.io/cloud-builders/gcloud"</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">deploy_go</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"app"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"deploy"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"goapp.yaml"</span><span style="color: #F8F8F2">]</span></span>
@@ -135,7 +135,7 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">dir</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">python/api</span></span></code></pre>
 <p>This will build the default app service and the fast api service in the <code>python/api</code> directory. Each push will make a new version in app engine. Personally, I do not feel the need to delete old app versions at the moment.</p>
 <p>Another useful step that runs is the cleanup stage. To decrease build times and a bunch of old docker images that are no longer needed. This is just a personal preference to pay no money to google.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'gcr.io/cloud-builders/gcloud'</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  - </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'gcr.io/cloud-builders/gcloud'</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">entrypoint</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">bash</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">id</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">cleanup2</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">args</span><span style="color: #F8F8F2">:</span></span>
@@ -166,5 +166,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

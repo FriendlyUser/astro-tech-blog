@@ -66,7 +66,7 @@
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Simple script to checkout files</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 30 October 2022 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-zinc-400 text-zinc-900"> <a href="/tags/git" style="padding-right:3px"> <category>git<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2022/dall-e/DALL·E 2022-09-05 15.52.26 - corgi on a field staring up into a building falling from the sky, high quality photo.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>Recently, I wrote a script to checkout files from branch because why not. At first I thought of using golang or C#, but bash scripting is the way to go.</p>
 <p>In all honestly, this script was made with github copilot, its getting pretty powerful, but this script is also fairly simple.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">#!/bin/sh</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">#!/bin/sh</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># this scripts reads files.txt and checks out the files from the repository from the inputted branch</span></span>
 <span class="line"></span>
@@ -74,30 +74,30 @@
 <span class="line"><span style="color: #88846F"># argument 2: file.txt</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># check if the branch exists</span></span>
-<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2"> git show-ref --verify --quiet refs/heads/$1</span></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">git</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">show-ref</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--verify</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--quiet</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">refs/heads/</span><span style="color: #FD971F; font-style: italic">$1</span></span>
 <span class="line"><span style="color: #F92672">then</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">echo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Branch does not exist"</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">exit</span><span style="color: #F8F8F2"> 1</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">exit</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span></span>
 <span class="line"><span style="color: #F92672">fi</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># check if file exists</span></span>
-<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> [ </span><span style="color: #F92672">!</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">-f</span><span style="color: #F8F8F2"> $2 ]</span></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> [ </span><span style="color: #F92672">!</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">-f</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">$2</span><span style="color: #F8F8F2"> ]</span></span>
 <span class="line"><span style="color: #F92672">then</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">echo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"File does not exist"</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">exit</span><span style="color: #F8F8F2"> 1</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">exit</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span></span>
 <span class="line"><span style="color: #F92672">fi</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># read the file and check out the files</span></span>
-<span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">read</span><span style="color: #F8F8F2"> line</span></span>
+<span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">read</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">line</span></span>
 <span class="line"><span style="color: #F92672">do</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F"># convert line from windows path to unix path</span></span>
-<span class="line"><span style="color: #F8F8F2">  line=</span><span style="color: #E6DB74">$(echo </span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74"> </span><span style="color: #F92672">|</span><span style="color: #E6DB74"> sed 's/\\/\//g')</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">echo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"git checkout </span><span style="color: #F8F8F2">$1</span><span style="color: #E6DB74"> -- </span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74">"</span></span>
-<span class="line"><span style="color: #F8F8F2">    git checkout </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$1</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2"> -- </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74">"</span></span>
-<span class="line"><span style="color: #F92672">done</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> $2</span></span></code></pre>
+<span class="line"><span style="color: #F8F8F2">  line</span><span style="color: #F92672">=</span><span style="color: #E6DB74">$(</span><span style="color: #66D9EF">echo</span><span style="color: #E6DB74"> </span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74"> </span><span style="color: #F92672">|</span><span style="color: #E6DB74"> </span><span style="color: #A6E22E">sed</span><span style="color: #E6DB74"> 's/\\/\//g')</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">echo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"git checkout </span><span style="color: #FD971F; font-style: italic">$1</span><span style="color: #E6DB74"> -- </span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74">"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">git</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">checkout</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #FD971F; font-style: italic">$1</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$line</span><span style="color: #E6DB74">"</span></span>
+<span class="line"><span style="color: #F92672">done</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">$2</span></span></code></pre>
 <p>Since I use windows + git bash we will need a convert windows file paths to unix, for now I use a simple approach of just parsing backslash.</p>
 <p>For example a sample file.txt can be</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">package.json</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">package.json</span></span>
 <span class="line"><span style="color: #F8F8F2">app/src/file.goeshere.txt</span></span></code></pre>
     </content></div></div></div></div>
 
@@ -114,5 +114,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

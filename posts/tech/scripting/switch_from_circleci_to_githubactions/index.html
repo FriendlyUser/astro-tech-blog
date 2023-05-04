@@ -72,7 +72,7 @@
 <p>GitHub Actions is a similar service that is integrated with GitHub. It provides a platform for automating software workflows, including Continuous Integration, Continuous Deployment, and Continuous Delivery. GitHub Actions can be triggered by events like code commits or pull requests, and it provides a wide range of pre-built actions for tasks like building, testing, and deploying applications.</p>
 <p>In comparison, both CircleCI and GitHub Actions offer similar functionality, but there are some differences. For example, CircleCI has a more robust and flexible environment, while GitHub Actions is tightly integrated with the GitHub ecosystem and provides native integration with other GitHub services like pull requests and issue tracking. Another difference is that CircleCI offers more resources for parallelism and concurrency, making it better suited for complex build and test processes.</p>
 <p>Ultimately, the choice between CircleCI and GitHub Actions will depend on the specific needs of your team and the characteristics of your projects. Both are powerful tools for Continuous Integration and Continuous Deployment and can help teams to deliver high-quality software applications quickly and reliably.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">latex</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">docker</span><span style="color: #F8F8F2">:</span></span>
@@ -134,7 +134,7 @@
 <p>In conclusion, this YAML configuration file defines a CircleCI workflow for building, testing, and deploying code changes, as well as triggering another pipeline for additional steps in the software development process.</p>
 <p>Yes, triggering another workflow from a workflow in CircleCI is possible. To do this, you can make use of the CircleCI API and the “curl” command in your job steps to send an HTTP request to the API endpoint that triggers another workflow.</p>
 <p>Here is an example of triggering another workflow from a workflow in CircleCI:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">yaml`version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">yaml`version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">trigger\_workflow</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">docker</span><span style="color: #F8F8F2">:</span></span>
@@ -162,7 +162,7 @@
 <p>In this example, the “trigger_workflow” job uses a Node.js environment and sends an HTTP POST request to the CircleCI API endpoint that triggers another workflow. The request includes the CircleCI API token as a header, and the branch name is passed as a data payload in the request body.</p>
 <p>The workflow defined in this configuration file is called “build_and_test”, which runs the “trigger_workflow” job. The “trigger_workflow” job is only triggered for the “master” branch.</p>
 <p>Note that you need to replace the placeholders <code>&#x3C;OWNER></code> and <code>&#x3C;REPO></code> with the GitHub repository owner name and repository name, respectively. Also, the <code>CIRCLE_API_TOKEN</code> environment variable needs to be set in the CircleCI project’s environment variables to provide the API token.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">latex</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">docker</span><span style="color: #F8F8F2">:</span></span>
@@ -272,7 +272,7 @@
 <p>Finally, the file defines a workflow named “build_and_test”, which runs the “latex” job first, and then the “saber” job, which requires the “latex” job to complete successfully. The “latex” job is ignored for branches named “gh-pages”.</p>
 <p>You can use GitHub Actions to trigger a deployment to GitHub Pages by setting up a workflow in your repository. The workflow will run whenever you push changes to the repository or when a specific event occurs.</p>
 <p>Here’s an example of a workflow that deploys a static website to GitHub Pages using the <code>actions/github-pages</code> action:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">yaml`name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Deploy to GitHub Pages</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">yaml`name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Deploy to GitHub Pages</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
@@ -298,7 +298,7 @@
 <p>In this example, the workflow will run whenever you push changes to the <code>main</code> branch of your repository. The workflow will check out your code and then use the <code>actions/github-pages</code> action to deploy the static website to the <code>gh-pages</code> branch of your repository.</p>
 <p>You can store the GitHub access token in the repository secrets to prevent it from being leaked.</p>
 <p>Note that this is just one way to set up a deployment to GitHub Pages using GitHub Actions. You can also use other actions or write your own custom deployment scripts if needed.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">---</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">---</span></span>
 <span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Full Build</span></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
@@ -442,5 +442,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

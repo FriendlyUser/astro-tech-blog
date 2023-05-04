@@ -67,13 +67,13 @@
     <p>Next.js is a popular React framework that enables developers to build server-side rendered React applications with ease. One of the ways to enhance the user experience of a Next.js app is to add page transitions. In this article, we will explore how to add page transitions to a Next.js app.</p>
 <h3 id="step-1-install-necessary-packages">Step 1: Install Necessary Packages</h3>
 <p>To add page transitions to a Next.js app, we need to install two packages: <code>framer-motion</code> and <code>next-page-transitions</code>. We can install them using npm by running the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">npm install framer-motion next-page-transitions</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">npm install framer-motion next-page-transitions</span></span></code></pre>
 <h3 id="step-2-create-a-layout-component">Step 2: Create a Layout Component</h3>
 <p>We need to create a layout component that will wrap all our pages. This component will be responsible for rendering the page transitions. Here is an example of a simple layout component:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { motion } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'framer-motion'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { motion } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'framer-motion'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { PageTransition } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'next-page-transitions'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> transitionStyles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> transitionStyles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  enter: {</span></span>
 <span class="line"><span style="color: #F8F8F2">    opacity: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span>
@@ -91,8 +91,8 @@
 <span class="line"><span style="color: #F8F8F2">  },</span></span>
 <span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Layout</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F">children</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> (</span></span>
-<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF">PageTransition</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Layout</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F; font-style: italic">children</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">PageTransition</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">timeout</span><span style="color: #F92672">={</span><span style="color: #AE81FF">500</span><span style="color: #F92672">}</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">classNames</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"page-transition"</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">monkeyPatchScrolling</span></span>
@@ -103,7 +103,7 @@
 <span class="line"><span style="color: #F8F8F2">    }</span><span style="color: #F92672">}</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">loadingClassNames</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"loading-indicator"</span></span>
 <span class="line"><span style="color: #F8F8F2">  ></span></span>
-<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF">motion.div</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF; font-style: italic">motion.div</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">key</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">router.route</span><span style="color: #F92672">}</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">initial</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"enter"</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">animate</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"enterActive"</span></span>
@@ -111,43 +111,43 @@
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">variants</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">transitionStyles</span><span style="color: #F92672">}</span></span>
 <span class="line"><span style="color: #F8F8F2">    ></span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">{</span><span style="color: #F8F8F2">children</span><span style="color: #F92672">}</span></span>
-<span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #66D9EF">motion.div</span><span style="color: #F8F8F2">></span></span>
-<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF">PageTransition</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #66D9EF; font-style: italic">motion.div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF; font-style: italic">PageTransition</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> Layout;</span></span></code></pre>
 <p>In this component, we are using the <code>PageTransition</code> component from <code>next-page-transitions</code> to wrap our content. We are also using the <code>motion</code> component from <code>framer-motion</code> to add animations.</p>
 <h3 id="step-3-wrap-pages-with-the-layout-component">Step 3: Wrap Pages with the Layout Component</h3>
 <p>We need to wrap all our pages with the layout component we just created. Here is an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Layout </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'../components/Layout'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> Layout </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'../components/Layout'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomePage</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> (</span></span>
-<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF">Layout</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomePage</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">Layout</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Home Page&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
-<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF">Layout</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF; font-style: italic">Layout</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> HomePage;</span></span></code></pre>
 <h3 id="step-4-add-css-transitions">Step 4: Add CSS Transitions</h3>
 <p>We also need to add CSS transitions to our pages to make the animations smoother. Here is an example of a simple CSS transition:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">.page-transition-enter</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">.page-transition-enter</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">.page-transition-enter-active</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">500</span><span style="color: #F92672">ms</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">500</span><span style="color: #F92672">ms</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">.page-transition-exit</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">.page-transition-exit-active</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">500</span><span style="color: #F92672">ms</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">opacity</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">transition</span><span style="color: #F8F8F2">: opacity </span><span style="color: #AE81FF">500</span><span style="color: #F92672">ms</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ease-in-out</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h3 id="step-5-test-the-page-transitions">Step 5: Test the Page Transitions</h3>
 <p>We are now ready to test our page transitions. Run the app and navigate between pages to see the animations in action.</p>
@@ -168,5 +168,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

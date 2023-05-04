@@ -68,34 +68,34 @@
 <p>Cleanenv is a lightweight and easy-to-use configuration management library for Golang applications. It allows developers to manage application configuration through environment variables and configuration files, making it easier to maintain different configurations for different environments. This article will discuss how to use Cleanenv in your Golang projects, covering installation, usage, and best practices.</p>
 <h2 id="installation">Installation</h2>
 <p>To install Cleanenv, use the <code>go get</code> command to fetch the latest version of the library:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/ilyakaznacheev/cleanenv</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/ilyakaznacheev/cleanenv</span></span></code></pre>
 <h2 id="configuration-struct">Configuration Struct</h2>
 <p>Before diving into Cleanenv, let’s define a configuration struct for our application. This struct will hold all the necessary configuration values and will be populated by Cleanenv.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> config</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> config</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">AppConfig</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">AppConfig</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	Database </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">		Host     </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"host" env:"DB_HOST"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		Port     </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">`yaml:"port" env:"DB_PORT"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		User     </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"user" env:"DB_USER"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		Password </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"password" env:"DB_PASSWORD"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		Name     </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"name" env:"DB_NAME"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Host     </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"host" env:"DB_HOST"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Port     </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">`yaml:"port" env:"DB_PORT"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		User     </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"user" env:"DB_USER"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Password </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"password" env:"DB_PASSWORD"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Name     </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"name" env:"DB_NAME"`</span></span>
 <span class="line"><span style="color: #F8F8F2">	} </span><span style="color: #E6DB74">`yaml:"database"`</span></span>
 <span class="line"><span style="color: #F8F8F2">	Server </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">		Address </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"address" env:"SERVER_ADDRESS"`</span></span>
-<span class="line"><span style="color: #F8F8F2">		Port    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">`yaml:"port" env:"SERVER_PORT"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Address </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`yaml:"address" env:"SERVER_ADDRESS"`</span></span>
+<span class="line"><span style="color: #F8F8F2">		Port    </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">`yaml:"port" env:"SERVER_PORT"`</span></span>
 <span class="line"><span style="color: #F8F8F2">	} </span><span style="color: #E6DB74">`yaml:"server"`</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the <code>AppConfig</code> struct holds two nested structs for database and server configurations. The struct fields are tagged with <code>yaml</code> and <code>env</code> to indicate the corresponding YAML keys and environment variable names.</p>
 <h2 id="reading-configuration">Reading Configuration</h2>
 <p>To read the configuration values from a YAML file and environment variables, we’ll create a function in the <code>config</code> package called <code>LoadConfig</code>.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> config</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> config</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/ilyakaznacheev/cleanenv"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">LoadConfig</span><span style="color: #F8F8F2">(configPath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">AppConfig, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">LoadConfig</span><span style="color: #F8F8F2">(configPath </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">AppConfig, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	cfg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">AppConfig{}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> cleanenv.</span><span style="color: #66D9EF">ReadConfig</span><span style="color: #F8F8F2">(configPath, cfg)</span></span>
@@ -109,7 +109,7 @@
 <h2 id="usage">Usage</h2>
 <p>Now that we have our configuration management functions set up, let’s see how to use them in a Golang application.</p>
 <p>First, create a YAML configuration file called <code>config.yaml</code> with the following content:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">database</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">database</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">host</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">localhost</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">port</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">5432</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">user</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">dbuser</span></span>
@@ -119,7 +119,7 @@
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">address</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">0.0.0.0</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">port</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">8080</span></span></code></pre>
 <p>Next, create a `main. file with the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -138,7 +138,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Here, we import the <code>config</code> package and call the <code>LoadConfig</code> function, passing the path to our configuration file. If there’s an error loading the configuration, we log it and exit. Otherwise, we print out the loaded configuration values.</p>
 <p>When you run the application, it should output the following:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Database configuration: {Host:localhost Port:5432 User:dbuser Password:dbpassword Name:dbname}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Database configuration: {Host:localhost Port:5432 User:dbuser Password:dbpassword Name:dbname}</span></span>
 <span class="line"><span style="color: #F8F8F2">Server configuration: {Address:0.0.0.0 Port:8080}</span></span></code></pre>
 <h2 id="best-practices">Best Practices</h2>
 <ul>
@@ -163,5 +163,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

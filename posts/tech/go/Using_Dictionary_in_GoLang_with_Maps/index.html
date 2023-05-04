@@ -68,25 +68,25 @@
 <p>In GoLang, dictionaries are implemented using the built-in data structure called <code>maps</code>. A map is a collection of key-value pairs, where each key is unique and maps to a single value. This article will guide you through the basics of using dictionaries in GoLang with the help of maps, including creation, modification, and deletion of key-value pairs.</p>
 <h2 id="creating-a-map">Creating a Map</h2>
 <p>To create a map in GoLang, use the <code>make</code> function with the <code>map</code> keyword, followed by the types of both the key and the value enclosed in square brackets. Here’s an example that demonstrates how to create a map with string keys and integer values:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Create a map with string keys and integer values</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Print the map</span></span>
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(myDict)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="adding-key-value-pairs-to-the-map">Adding Key-Value Pairs to the Map</h2>
 <p>To add a key-value pair to the map, use the assignment operator (<code>=</code>) after specifying the key in square brackets. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Add key-value pairs to the map</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"apple"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span></span>
@@ -98,12 +98,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="retrieving-values-from-the-map">Retrieving Values from the Map</h2>
 <p>To retrieve a value from the map, use the key in square brackets. If the key is not present in the map, it will return the zero value for the value type. Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"apple"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"banana"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">8</span></span>
 <span class="line"></span>
@@ -116,12 +116,12 @@
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Value for orange:"</span><span style="color: #F8F8F2">, value)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>To check if a key exists in the map, use the <code>, ok</code> syntax in the assignment:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"apple"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Check if the key "apple" exists in the map</span></span>
@@ -142,12 +142,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="deleting-key-value-pairs-from-the-map">Deleting Key-Value Pairs from the Map</h2>
 <p>To remove a key-value pair from the map, use the <code>delete</code> built-in function with the map and the key as arguments:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"apple"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"banana"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">8</span></span>
 <span class="line"></span>
@@ -159,12 +159,12 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="iterating-over-a-map">Iterating Over a Map</h2>
 <p>To iterate over a map, use the <code>range</code> keyword in a <code>for</code> loop. The <code>range</code> keyword returns both the key and value for each entry in the map:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    myDict </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">make</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">map</span><span style="color: #F8F8F2">[</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">]</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"apple"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">5</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"banana"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">8</span></span>
 <span class="line"><span style="color: #F8F8F2">    myDict[</span><span style="color: #E6DB74">"orange"</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">12</span></span>
@@ -190,5 +190,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -101,18 +101,18 @@
 </li>
 <li>
 <p>Include the ImGui header files in your source code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"imgui.h"</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"imgui.h"</span></span>
 <span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"imgui_impl_opengl3.h"</span><span style="color: #F8F8F2"> </span><span style="color: #88846F">// Replace with the appropriate backend</span></span>
 <span class="line"><span style="color: #F8F8F2">```</span></span>
 <span class="line"></span></code></pre>
 </li>
 <li>
 <p>Initialize ImGui and the rendering backend in your application:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Inside your setup function</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Inside your setup function</span></span>
 <span class="line"><span style="color: #A6E22E">IMGUI_CHECKVERSION</span><span style="color: #F8F8F2">();</span></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">CreateContext</span><span style="color: #F8F8F2">();</span></span>
-<span class="line"><span style="color: #F8F8F2">ImGuiIO </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">io </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">GetIO</span><span style="color: #F8F8F2">(); (</span><span style="color: #66D9EF">void</span><span style="color: #F8F8F2">)io;</span></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">StyleColorsDark</span><span style="color: #F8F8F2">();</span><span style="color: #88846F"> // Choose a default theme</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">CreateContext</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">ImGuiIO </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">io </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">GetIO</span><span style="color: #F8F8F2">(); (</span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">)io;</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">StyleColorsDark</span><span style="color: #F8F8F2">();</span><span style="color: #88846F"> // Choose a default theme</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Initialize the backend (e.g., OpenGL)</span></span>
 <span class="line"><span style="color: #A6E22E">ImGui_ImplOpenGL3_Init</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"#version 150"</span><span style="color: #F8F8F2">);</span><span style="color: #88846F"> // Set the appropriate version for your graphics library</span></span>
@@ -121,21 +121,21 @@
 </li>
 <li>
 <p>Integrate ImGui into your main loop:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">!</span><span style="color: #A6E22E">glfwWindowShouldClose</span><span style="color: #F8F8F2">(window))</span><span style="color: #88846F"> // Replace with your window loop condition</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">while</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">!</span><span style="color: #A6E22E">glfwWindowShouldClose</span><span style="color: #F8F8F2">(window))</span><span style="color: #88846F"> // Replace with your window loop condition</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">glfwPollEvents</span><span style="color: #F8F8F2">();</span><span style="color: #88846F"> // Poll events for your windowing system</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">ImGui_ImplOpenGL3_NewFrame</span><span style="color: #F8F8F2">();</span><span style="color: #88846F"> // New frame for the backend</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">NewFrame</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">NewFrame</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">    // ImGui code goes here</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Render</span><span style="color: #F8F8F2">();</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2"> display_w, display_h;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Render</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> display_w, display_h;</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">glfwGetFramebufferSize</span><span style="color: #F8F8F2">(window, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">display_w, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">display_h);</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">glViewport</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, display_w, display_h);</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">glClear</span><span style="color: #F8F8F2">(GL_COLOR_BUFFER_BIT);</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">ImGui_ImplOpenGL3_RenderDrawData</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">GetDrawData</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">ImGui_ImplOpenGL3_RenderDrawData</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">GetDrawData</span><span style="color: #F8F8F2">());</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">glfwSwapBuffers</span><span style="color: #F8F8F2">(window);</span><span style="color: #88846F"> // Swap buffers for your windowing system</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
@@ -144,29 +144,29 @@
 </li>
 <li>
 <p>Clean up ImGui and the rendering backend when your application exits:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Inside your cleanup function</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Inside your cleanup function</span></span>
 <span class="line"><span style="color: #A6E22E">ImGui_ImplOpenGL3_Shutdown</span><span style="color: #F8F8F2">();</span><span style="color: #88846F"> // Shutdown the backend</span></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">DestroyContext</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">DestroyContext</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">```</span></span></code></pre>
 </li>
 </ol>
 <h2 id="creating-gui-elements-with-imgui">Creating GUI Elements with ImGui</h2>
 <p>With ImGui integrated into your project, you can now create various GUI elements such as windows, buttons, sliders, and more. ImGui offers an extensive list of widgets to create rich and interactive user interfaces.</p>
 <p>Here’s an example of creating a simple window with a button and a slider:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Inside your main loop, after ImGui::NewFrame()</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Inside your main loop, after ImGui::NewFrame()</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Begin</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My First ImGui Window"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Begin</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"My First ImGui Window"</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Button</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">))</span></span>
+<span class="line"><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">Button</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">))</span></span>
 <span class="line"><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #88846F">    // Respond to button click</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Button clicked!"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Button clicked!"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">float</span><span style="color: #F8F8F2"> slider_value </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">;</span></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">SliderFloat</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Slider"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">slider_value, </span><span style="color: #AE81FF">0.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">100.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">float</span><span style="color: #F8F8F2"> slider_value </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">SliderFloat</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Slider"</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">&#x26;</span><span style="color: #F8F8F2">slider_value, </span><span style="color: #AE81FF">0.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">100.0</span><span style="color: #F92672">f</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #A6E22E; font-weight: bold">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">End</span><span style="color: #F8F8F2">();</span></span></code></pre>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">ImGui</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">End</span><span style="color: #F8F8F2">();</span></span></code></pre>
 <p>In this example, we start by creating a new window using <code>ImGui::Begin()</code>, passing in the window title. Next, we create a button using <code>ImGui::Button()</code>, which returns true when the button is clicked. We then create a slider using <code>ImGui::SliderFloat()</code>, providing a label, a reference to a float variable, and the minimum and maximum values for the slider.</p>
 <p>To explore more widgets and customize your GUI further, refer to the <a href="https://github.com/ocornut/imgui/blob/master/docs/README.md">ImGui documentation</a> and the <a href="https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp">ImGui demo code</a> for comprehensive examples and explanations.</p>
 <h2 id="conclusion">Conclusion</h2>
@@ -186,5 +186,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -85,9 +85,9 @@
 <ol>
 <li>Basic example of a styled button:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> Button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.button</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Button </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.button</span></span>
 <span class="line"><span style="color: #F8F8F2"> background</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">color: #0077cc;</span></span>
 <span class="line"><span style="color: #F8F8F2"> color: #fff;</span></span>
 <span class="line"><span style="color: #F8F8F2"> font</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">size: 16px;</span></span>
@@ -95,15 +95,15 @@
 <span class="line"><span style="color: #F8F8F2"> border</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">radius: 4px;</span></span>
 <span class="line"><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Button</span><span style="color: #F8F8F2">>Click me!&#x3C;/</span><span style="color: #66D9EF">Button</span><span style="color: #F8F8F2">>;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF; font-style: italic">Button</span><span style="color: #F8F8F2">>Click me!&#x3C;/</span><span style="color: #66D9EF; font-style: italic">Button</span><span style="color: #F8F8F2">>;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="2">
 <li>Example of a styled input component with a hover effect:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> Input </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.input</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Input </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.input</span></span>
 <span class="line"><span style="color: #F8F8F2"> border: 1px solid #ddd;</span></span>
 <span class="line"><span style="color: #F8F8F2"> padding: 10px;</span></span>
 <span class="line"><span style="color: #F8F8F2"> border</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">radius: 4px;</span></span>
@@ -113,26 +113,26 @@
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
 <span class="line"><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">placeholder</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Enter your name"</span><span style="color: #F8F8F2"> />;</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF; font-style: italic">Input</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">placeholder</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Enter your name"</span><span style="color: #F8F8F2"> />;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <ol start="3">
 <li>Example of a styled card component with a shadow effect:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> styled </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'styled-components'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> Card </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.div</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Card </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> styled.div</span></span>
 <span class="line"><span style="color: #F8F8F2"> background</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">color: #fff;</span></span>
 <span class="line"><span style="color: #F8F8F2"> border</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">radius: 4px;</span></span>
 <span class="line"><span style="color: #F8F8F2"> box</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">shadow: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> 2px 4px </span><span style="color: #A6E22E">rgba</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0.1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2"> padding: 20px;</span></span>
 <span class="line"><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF">Card</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF; font-style: italic">Card</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">h2</span><span style="color: #F8F8F2">>My Card&#x3C;/</span><span style="color: #F92672">h2</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">>This is some card content&#x3C;/</span><span style="color: #F92672">p</span><span style="color: #F8F8F2">></span></span>
-<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #66D9EF">Card</span><span style="color: #F8F8F2">>;</span></span>
+<span class="line"><span style="color: #F8F8F2"> &#x3C;/</span><span style="color: #66D9EF; font-style: italic">Card</span><span style="color: #F8F8F2">>;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In each example, the styled-components library is used to define a custom styled component using a tagged template literal syntax. The styles are defined in a template string and can include any valid CSS properties.</p>
 <p>“Styled Components” is a popular CSS-in-JS library for styling React components. “CSS-in-JS” is a broader category that includes other libraries and techniques for generating and injecting CSS at runtime using JavaScript.</p>
@@ -160,5 +160,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

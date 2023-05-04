@@ -151,7 +151,7 @@ cv2.waitKey(0)</p>
 </li>
 </ol>
 <p>This is a high-level overview of the cartoonization process. Let me know if you have any questions regarding the specific functions used! I can provide more details.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cv2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> cv2</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Read the input image</span></span>
@@ -164,7 +164,7 @@ cv2.waitKey(0)</p>
 <span class="line"><span style="color: #F8F8F2">blur </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.medianBlur(gray, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Detect edges using the Canny edge detector</span></span>
-<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F; font-style: italic">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create a mask image filled with zeroes</span></span>
 <span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.zeros_like(edges)</span></span>
@@ -177,7 +177,7 @@ cv2.waitKey(0)</p>
 <span class="line"><span style="color: #F8F8F2">cv2.drawContours(mask, contours, </span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">255</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Dilate the masked image to get bold lines</span></span>
-<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Bitwise AND between input image and mask</span></span>
 <span class="line"><span style="color: #F8F8F2">result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.seamlessClone(np.uint8(mask), image, (</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">), (image.shape[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
@@ -199,7 +199,7 @@ cv2.waitKey(0)</p>
 <span class="line"><span style="color: #F8F8F2">blur </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.medianBlur(gray, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Detect edges using the Canny edge detector</span></span>
-<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">edges </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.Canny(blur, </span><span style="color: #FD971F; font-style: italic">threshold1</span><span style="color: #F92672">=</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">threshold2</span><span style="color: #F92672">=</span><span style="color: #AE81FF">200</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Create a mask image filled with zeroes</span></span>
 <span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.zeros_like(edges)</span></span>
@@ -212,7 +212,7 @@ cv2.waitKey(0)</p>
 <span class="line"><span style="color: #F8F8F2">cv2.drawContours(mask, contours, </span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">255</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Dilate the masked image to get bold lines</span></span>
-<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">mask </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.dilate(mask, </span><span style="color: #AE81FF">None</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">iterations</span><span style="color: #F92672">=</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Bitwise AND between input image and mask</span></span>
 <span class="line"><span style="color: #F8F8F2">result </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cv2.seamlessClone(np.uint8(mask), image, (</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">), (image.shape[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
@@ -237,5 +237,5 @@ cv2.waitKey(0)</p>
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

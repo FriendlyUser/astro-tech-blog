@@ -65,7 +65,7 @@
       
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How I built out my latex diagrams project</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 29 October 2022 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/bash" style="padding-right:3px"> <category>bash<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/assets/images/image-post7.jpeg" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>The latex diagrams are composed of two projects, one that holds all the tex code and a workflow to build them all and another static site generation for client-side facing (and ad revenue generation). The following circleCi yaml file is used to build the diagrams and push them to the static site generation project.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">latex</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">docker</span><span style="color: #F8F8F2">:</span></span>
@@ -119,7 +119,7 @@
 <span class="line"><span style="color: #F8F8F2">              </span><span style="color: #F92672">only</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">                - </span><span style="color: #E6DB74">master</span></span></code></pre>
 <p>From there I use my custom docker image hosted on github packages (see)[<a href="https://friendlyuser.github.io/posts/docker_hub_to_github_packages/">https://friendlyuser.github.io/posts/docker_hub_to_github_packages/</a>] for more details on how to do this. The docker image is a custom image that has latex installed and a few other things.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">version</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">2</span></span>
 <span class="line"><span style="color: #F92672">jobs</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">latex</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">docker</span><span style="color: #F8F8F2">:</span></span>
@@ -226,5 +226,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

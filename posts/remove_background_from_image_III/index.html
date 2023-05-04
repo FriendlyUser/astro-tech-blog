@@ -67,7 +67,7 @@
     <p>In this article I will cover how to use fastlane with github actions to automatically deploy your app.</p>
 <p>Following the instructions at fastlane and github actions is far better as they will be updated.</p>
 <p>Keep in mind in order to deploy using fastlane you must manually upload at least once to google play developer.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Flutter Android/ Windows</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Flutter Android/ Windows</span></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">push</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">branches</span><span style="color: #F8F8F2">:</span></span>
@@ -101,7 +101,7 @@
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">path</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">build/app/outputs/bundle/release/*.aab</span><span style="color: #F8F8F2"> </span><span style="color: #88846F"># or path/to/artifact</span></span></code></pre>
 <p>This will generate an apk and aab when you push to the main branch or a specific feature branch.</p>
 <p>Afterwards we can only trigger fastlane events for certain branches.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">flutter build appbundle</span></span>
 <span class="line"><span style="color: #F8F8F2">      - </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">echo $GPLAY_KEY_B64 | base64 --decode > android/pc-api-7819418006086265513-297-141698a71862.json</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">decode json file to upload to google play</span></span>
@@ -124,7 +124,7 @@
 <p>For another one of my projects, <a href="https://github.com/FriendlyUser/trump_quotes/blob/master/android/fastlane/Fastfile">trump quotes</a> I used a flutter plugin to automatically write change logs based on commit messages. It was helpful, but a pain to install.</p>
 <p>In order to do a release build, you must update the android/app/build.gradle file to
 contain</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">   def keystoreProperties = new Properties()</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">   def keystoreProperties = new Properties()</span></span>
 <span class="line"><span style="color: #F8F8F2">   def keystorePropertiesFile = rootProject.file('key.properties')</span></span>
 <span class="line"><span style="color: #F8F8F2">   if (keystorePropertiesFile.exists()) {</span></span>
 <span class="line"><span style="color: #F8F8F2">       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))</span></span>
@@ -135,7 +135,7 @@ contain</p>
 <span class="line"><span style="color: #F8F8F2">   }</span></span></code></pre>
 <h2 id="helpful-commands">Helpful commands</h2>
 <p>My personal preference is to use</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">base64 -w 0 keystore.jks > sample.jks</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">base64 -w 0 keystore.jks > sample.jks</span></span></code></pre>
 <p>in order to make b64 version of keyfiles and put those into github actions and base64 decode them.</p>
 <p>For my personal projects my passwords used are pathetic, please do not judge me.</p>
 <h2 id="references">References</h2>
@@ -159,5 +159,5 @@ contain</p>
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

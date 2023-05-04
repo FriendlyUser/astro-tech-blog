@@ -66,23 +66,23 @@
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to use resolutions in package.json</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 30 April 2022 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dotnet" style="padding-right:3px"> <category>dotnet<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-zinc-400 text-zinc-900"> <a href="/tags/git" style="padding-right:3px"> <category>git<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/bear_book_2.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>In the dependencies section of your package.json file, you can specify version constraints for the packages your project depends on. This is done using a caret (^) or tilde (~) symbol followed by a version number.</p>
 <p>For example, the following dependencies section specifies that the project requires the lodash package in version 4.17.20 or higher, but less than 5.0.0:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
 <span class="line"><span style="color: #F8F8F2">  "lodash": "^4.17.20"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>The caret (^) specifies that any version that is compatible with the specified version can be used. In this case, 4.17.20 is compatible with all versions from 4.17.20 up to but not including 5.0.0.</p>
 <p>The tilde (~) symbol is similar to the caret, but it allows patch-level changes. For example, the following dependencies section specifies that the project requires the lodash package in version 4.17.19 or higher, but less than 4.18.0:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
 <span class="line"><span style="color: #F8F8F2">  "lodash": "~4.17.19"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span></code></pre>
 <p>By using a version constraint in your package.json, you can ensure that your project is using a version of a package that is known to be compatible with your code. This can help prevent issues that might occur if a new, potentially incompatible version of a package is installed.</p>
 <p>You can also specify an exact version of a package by using an equal sign (=) followed by the version number. For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">"dependencies": {</span></span>
 <span class="line"><span style="color: #F8F8F2">  "lodash": "=4.17.20"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This specifies that the exact version 4.17.20 of the lodash package must be used.</p>
 <p>To update the packages in your project to the latest compatible version, you can use the npm update command. This will update the packages specified in your package.json to the latest version that satisfies the version constraints you have specified.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  "resolutions": {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  "resolutions": {</span></span>
 <span class="line"><span style="color: #F8F8F2">    "astro": "1.4.2"</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span></code></pre>
 <p>The resolutions field in a package.json file allows you to specify an exact version of a package that should be used in your project, even if the package is not directly required by your project. This can be useful if you want to ensure that a specific version of a package is used throughout your project and all of its dependencies, even if some of those dependencies do not specify a version constraint for the package.</p>
@@ -90,7 +90,7 @@
 <p>The resolutions field should be placed at the root level of your package.json file, along with other fields such as dependencies and devDependencies.</p>
 <p>It is important to note that the resolutions field is only supported in npm version 6.0.0 or higher. If you are using an earlier version of npm, the resolutions field will be ignored.</p>
 <p>In this example a dependency, “astro-boilerplate-components” was still relying on the <code>astro@v1.0.0-44</code> package. This was causing an installation error on github actions. I was able to fix this by adding the following to my package.json file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  "resolutions": {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  "resolutions": {</span></span>
 <span class="line"><span style="color: #F8F8F2">    "astro": "1.4.2"</span></span>
 <span class="line"><span style="color: #F8F8F2">  },</span></span></code></pre>
     </content></div></div></div></div>
@@ -108,5 +108,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

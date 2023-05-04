@@ -76,28 +76,28 @@
 </ol>
 <h2 id="installing-the-bitset-package">Installing the BitSet Package</h2>
 <p>The BitSet package is not included in the Golang standard library, so you’ll need to install it using the <code>go get</code> command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/willf/bitset</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/willf/bitset</span></span></code></pre>
 <h2 id="using-bitset-in-golang">Using BitSet in Golang</h2>
 <p>To use BitSet in your Golang project, first import the package:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/willf/bitset"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/willf/bitset"</span></span></code></pre>
 <h3 id="creating-a-bitset">Creating a BitSet</h3>
 <p>Use the <code>bitset.New</code> function to create a new BitSet with the specified number of bits:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Create a BitSet with 100 bits</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Create a BitSet with 100 bits</span></span>
 <span class="line"><span style="color: #F8F8F2">myBitSet </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> bitset.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <h3 id="setting-and-clearing-bits">Setting and Clearing Bits</h3>
 <p>To set a bit, use the <code>Set</code> method, providing the index of the bit to set:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Set the bit at index 42</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Set the bit at index 42</span></span>
 <span class="line"><span style="color: #F8F8F2">myBitSet.</span><span style="color: #66D9EF">Set</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">42</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>To clear a bit, use the <code>Clear</code> method, providing the index of the bit to clear:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Clear the bit at index 42</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Clear the bit at index 42</span></span>
 <span class="line"><span style="color: #F8F8F2">myBitSet.</span><span style="color: #66D9EF">Clear</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">42</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <h3 id="checking-if-a-bit-is-set">Checking if a Bit is Set</h3>
 <p>To check if a bit is set, use the <code>Test</code> method, providing the index of the bit to test:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Check if the bit at index 42 is set</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Check if the bit at index 42 is set</span></span>
 <span class="line"><span style="color: #F8F8F2">isSet </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">Test</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">42</span><span style="color: #F8F8F2">)</span></span></code></pre>
 <h3 id="counting-set-bits">Counting Set Bits</h3>
 <p>To count the number of set bits in a BitSet, use the <code>Count</code> method:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Get the number of set bits in the BitSet</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Get the number of set bits in the BitSet</span></span>
 <span class="line"><span style="color: #F8F8F2">count </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">Count</span><span style="color: #F8F8F2">()</span></span></code></pre>
 <h3 id="bitwise-operations">Bitwise Operations</h3>
 <p>BitSets support several bitwise operations, including:</p>
@@ -108,7 +108,7 @@
 <li><strong>AndNot:</strong> Perform a bitwise AND NOT operation between two BitSets</li>
 </ul>
 <p>Here’s an example of performing bitwise AND and OR operations on two BitSets:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Create two BitSets</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Create two BitSets</span></span>
 <span class="line"><span style="color: #F8F8F2">bitset1 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> bitset.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">bitset2 </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> bitset.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
@@ -121,7 +121,7 @@
 <span class="line"><span style="color: #F8F8F2">orResult </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> bitset1.</span><span style="color: #66D9EF">Or</span><span style="color: #F8F8F2">(bitset2)</span></span></code></pre>
 <h3 id="iterating-over-set-bits">Iterating Over Set Bits</h3>
 <p>To iterate over the set bits in a BitSet, use the <code>NextSet</code> method to find the next set bit and the <code>EOL</code> method to check if you’ve reached the end of the BitSet:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i, ok </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">NextSet</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">); </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">ok; i, ok </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">NextSet</span><span style="color: #F8F8F2">(i </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">) {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> i, ok </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">NextSet</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">); </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">ok; i, ok </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> myBitSet.</span><span style="color: #66D9EF">NextSet</span><span style="color: #F8F8F2">(i </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">  fmt.</span><span style="color: #66D9EF">Printf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Bit </span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74"> is set</span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, i)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <h2 id="conclusion">Conclusion</h2>
@@ -141,5 +141,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

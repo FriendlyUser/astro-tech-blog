@@ -71,7 +71,7 @@
 <p>The <code>gutter</code> parameter specifies the amount of space between rows and columns. The <code>column-gutter</code> and <code>row-gutter</code> parameters can be used to specify different amounts of space between columns and rows.</p>
 <p>Inside the grid function, you can add content to the grid by specifying an array of elements. Each element in the array represents a cell in the grid. You can use functions such as <code>align</code>, <code>block</code>, and <code>pad</code> to format the content inside each cell.</p>
 <p>For example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E">grid</span><span style="color: #F8F8F2">(</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">grid</span><span style="color: #F8F8F2">(</span></span>
 <span class="line"><span style="color: #F8F8F2">  columns</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (1fr),</span></span>
 <span class="line"><span style="color: #F8F8F2">  gutter</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.</span><span style="color: #F8F8F2">15em,</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">align</span><span style="color: #F8F8F2">(center, location </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">", "</span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> postalCode),</span></span>
@@ -79,10 +79,10 @@
 <p>This code creates a single column grid with a gutter of 0.15em between rows. The content inside the cell is centered using the <code>align</code> function.</p>
 <p>Putting it into practise, we can generate a simple resume using typst:</p>
 <p>We are going to seperate the core resume into a template and the data into a resume file. The template will be a typst file and the resume will be a typst file.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// The project function defines how your document looks.</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// The project function defines how your document looks.</span></span>
 <span class="line"><span style="color: #88846F">// It takes your content and some metadata and formats it.</span></span>
 <span class="line"><span style="color: #88846F">// Go ahead and customize it to your liking!</span></span>
-<span class="line"><span style="color: #F8F8F2">#</span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">resume</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">#</span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">resume</span><span style="color: #F8F8F2">(</span></span>
 <span class="line"><span style="color: #F8F8F2">  title</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">, location</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">, postalCode</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">, phoneNumber</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">, email</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  authors</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (), experiences</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (), education</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (), body) </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #88846F">  // Set the document's basic properties.</span></span>
@@ -117,8 +117,8 @@
 <span class="line"><span style="color: #F8F8F2">  )</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">line</span><span style="color: #F8F8F2">(length</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F92672">%</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> count </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> experiences</span><span style="color: #F92672">.</span><span style="color: #A6E22E">len</span><span style="color: #F8F8F2">()</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> nrows </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> calc</span><span style="color: #F92672">.</span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(count, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> count </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> experiences</span><span style="color: #F92672">.</span><span style="color: #A6E22E">len</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> nrows </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> calc</span><span style="color: #F92672">.</span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(count, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">grid</span><span style="color: #F8F8F2">(</span></span>
 <span class="line"><span style="color: #F8F8F2">    column</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">gutter</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> 0pt,</span></span>
 <span class="line"><span style="color: #F8F8F2">    row</span><span style="color: #F92672">-</span><span style="color: #F8F8F2">gutter</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> 35pt,</span></span>
@@ -193,7 +193,7 @@
 </li>
 </ol>
 <p>To generate a resume, we can create a resume file that contains the data for the resume. The resume file will be a typst file.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">#import </span><span style="color: #E6DB74">"template.typ"</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">#import </span><span style="color: #E6DB74">"template.typ"</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Take a look at the file `template.typ` in the file panel</span></span>
 <span class="line"><span style="color: #88846F">// to customize this template and discover how it works.</span></span>
@@ -295,5 +295,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

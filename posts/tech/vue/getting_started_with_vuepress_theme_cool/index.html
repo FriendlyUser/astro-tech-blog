@@ -77,29 +77,29 @@
 </ul>
 <h3 id="installing-vuepress-and-vuepress-theme-cool">Installing Vuepress and Vuepress Theme Cool</h3>
 <p>First, we need to install Vuepress globally using Yarn:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">yarn global add vuepress@next</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">yarn</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">global</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">add</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">vuepress@next</span></span></code></pre>
 <p>We use the <code>@next</code> tag to install the latest version of Vuepress (v1.x), which is compatible with Vuepress Theme Cool.</p>
 <p>Next, we need to create a new folder for our project and initialize it as a Node.js project:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir vuepress-cool-demo</span></span>
-<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> vuepress-cool-demo</span></span>
-<span class="line"><span style="color: #F8F8F2">yarn init -y</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">vuepress-cool-demo</span></span>
+<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">vuepress-cool-demo</span></span>
+<span class="line"><span style="color: #A6E22E">yarn</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">init</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-y</span></span></code></pre>
 <p>This will create a <code>package.json</code> file with some default values.</p>
 <p>Then, we need to install Vuepress Theme Cool as a development dependency:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">yarn add -D vuepress-theme-cool</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">yarn</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">add</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-D</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">vuepress-theme-cool</span></span></code></pre>
 <p>This will download the theme package and add it to our <code>package.json</code> file.</p>
 <h3 id="configuring-vuepress">Configuring Vuepress</h3>
 <p>Now that we have installed the necessary packages, we need to configure Vuepress to use our theme and enable some features.</p>
 <p>To do that, we need to create a <code>.vuepress</code> folder inside our project folder and add a <code>config.js</code> file inside it. This file will contain our main configuration options for Vuepress.</p>
 <p>A minimal setup for our config file is:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// .vuepress/config.js</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// .vuepress/config.js</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// this represents the minimal configuration</span></span>
-<span class="line"><span style="color: #66D9EF">module</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">exports</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">module</span><span style="color: #F8F8F2">.</span><span style="color: #66D9EF; font-style: italic">exports</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// specify the theme name</span></span>
 <span class="line"><span style="color: #F8F8F2">  theme: </span><span style="color: #E6DB74">'cool'</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// enable some markdown extensions</span></span>
 <span class="line"><span style="color: #F8F8F2">  markdown: {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">extendMarkdown</span><span style="color: #F8F8F2">: (</span><span style="color: #FD971F">md</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">extendMarkdown</span><span style="color: #F8F8F2">: (</span><span style="color: #FD971F; font-style: italic">md</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// enable HTML tags in markdown source</span></span>
 <span class="line"><span style="color: #F8F8F2">      md.</span><span style="color: #A6E22E">set</span><span style="color: #F8F8F2">({ html: </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2"> });</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">// enable KaTeX for math expressions</span></span>
@@ -116,13 +116,13 @@
 <p>Now that we have configured Vuepress, we can start creating some content for our website.</p>
 <p>To do that, we need to create a <code>docs</code> folder inside our project folder and add some markdown files inside it. These files will represent our pages on the website.</p>
 <p>For example, let’s create an <code>index.md</code> file inside the <code>docs</code> folder with this content:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #A6E22E; font-style: italic"># Welcome to my website!</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E; font-weight: bold"># Welcome to my website!</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">This is an example website using [</span><span style="color: #AE81FF">VuePress</span><span style="color: #F8F8F2">](</span><span style="color: #E6DB74">https://vuepres.vuejs.org</span><span style="color: #F8F8F2">) and [</span><span style="color: #AE81FF">VuePress Theme Cool</span><span style="color: #F8F8F2">](</span><span style="color: #E6DB74">https://github.com/FriendlyUser/vuepress-theme-cool</span><span style="color: #F8F8F2">).</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">You can write any content here using </span><span style="color: #66D9EF; font-style: italic">**Markdown**</span><span style="color: #F8F8F2"> syntax.</span></span>
+<span class="line"><span style="color: #F8F8F2">You can write any content here using </span><span style="color: #66D9EF; font-weight: bold">**Markdown**</span><span style="color: #F8F8F2"> syntax.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">You can also use some </span><span style="color: #66D9EF; font-style: italic">**extensions**</span><span style="color: #F8F8F2"> like:</span></span>
+<span class="line"><span style="color: #F8F8F2">You can also use some </span><span style="color: #66D9EF; font-weight: bold">**extensions**</span><span style="color: #F8F8F2"> like:</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #A6E22E">-</span><span style="color: #F8F8F2"> HTML tags: &#x3C;span style="color:red">This is red&#x3C;/span></span></span>
 <span class="line"><span style="color: #A6E22E">-</span><span style="color: #F8F8F2"> KaTeX math expressions: $E=mc^2$</span></span>
@@ -135,7 +135,7 @@
 <span class="line"><span style="color: #F8F8F2">This is a tip </span></span>
 <span class="line"><span style="color: #F8F8F2">:::</span></span></code></pre>
 <p>This file will be rendered as the homepage of our website. You can see how it looks like by running this command in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">vuepress dev docs/</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">vuepress</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">dev</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">docs/</span></span></code></pre>
 <p>This will start a local development server at <a href="http://localhost:8080/">http://localhost:8080/</a> where you can preview your website live.</p>
     <h5>Related Projects</h5>
               <a href="https://github.com/FriendlyUser/vuepress-theme-cool" style="text-decoration:none;width:200px;text-align:center">
@@ -158,5 +158,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

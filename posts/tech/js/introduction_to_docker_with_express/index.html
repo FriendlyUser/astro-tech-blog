@@ -110,31 +110,31 @@ and efficiency. This makes Docker a useful tool for building and
 deploying modern applications.</p>
 <p>Here is an example of a Dockerfile that can be used to create a Docker
 image for a simple Express server:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">Copy code</span></span>
-<span class="line"><span style="color: #F8F8F2"># Use the official Node.js 10 LTS image as the base image</span></span>
-<span class="line"><span style="color: #F8F8F2">FROM node:10-lts</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Create a directory for the application</span></span>
-<span class="line"><span style="color: #F8F8F2">RUN mkdir -p /usr/src/app</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Set the working directory to the application directory</span></span>
-<span class="line"><span style="color: #F8F8F2">WORKDIR /usr/src/app</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Copy the package.json and package-lock.json files to the working directory</span></span>
-<span class="line"><span style="color: #F8F8F2">COPY package*.json ./</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Install the dependencies</span></span>
-<span class="line"><span style="color: #F8F8F2">RUN npm install</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Copy the application source code to the working directory</span></span>
-<span class="line"><span style="color: #F8F8F2">COPY . .</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Expose port 3000 so it can be accessed from the outside</span></span>
-<span class="line"><span style="color: #F8F8F2">EXPOSE 3000</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2"># Start the Express server when the container is started</span></span>
-<span class="line"><span style="color: #F8F8F2">CMD ["npm", "start"]</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
+<span class="line"><span style="color: #F92672">Copy</span><span style="color: #F8F8F2"> code</span></span>
+<span class="line"><span style="color: #88846F"># Use the official Node.js 10 LTS image as the base image</span></span>
+<span class="line"><span style="color: #F92672">FROM</span><span style="color: #F8F8F2"> node:10-lts</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Create a directory for the application</span></span>
+<span class="line"><span style="color: #F92672">RUN</span><span style="color: #F8F8F2"> mkdir -p /usr/src/app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Set the working directory to the application directory</span></span>
+<span class="line"><span style="color: #F92672">WORKDIR</span><span style="color: #F8F8F2"> /usr/src/app</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Copy the package.json and package-lock.json files to the working directory</span></span>
+<span class="line"><span style="color: #F92672">COPY</span><span style="color: #F8F8F2"> package*.json ./</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Install the dependencies</span></span>
+<span class="line"><span style="color: #F92672">RUN</span><span style="color: #F8F8F2"> npm install</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Copy the application source code to the working directory</span></span>
+<span class="line"><span style="color: #F92672">COPY</span><span style="color: #F8F8F2"> . .</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Expose port 3000 so it can be accessed from the outside</span></span>
+<span class="line"><span style="color: #F92672">EXPOSE</span><span style="color: #F8F8F2"> 3000</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F"># Start the Express server when the container is started</span></span>
+<span class="line"><span style="color: #F92672">CMD</span><span style="color: #F8F8F2"> [</span><span style="color: #E6DB74">"npm"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"start"</span><span style="color: #F8F8F2">]</span></span></code></pre>
 <p>Your file directory should look like</p>
 <p>In this Dockerfile, the official Node.js 10 LTS image is used as the
 base image. The package.json and package-lock.json files are copied to
@@ -146,11 +146,11 @@ container, which will start the Express server when the container is
 started.</p>
 <p>To build a Docker image using this Dockerfile, you can run the following
 command from the directory where the Dockerfile is located:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">docker build -t my-express-app .</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">docker build -t my-express-app .</span></span></code></pre>
 <p>This will build a Docker image with the name my-express-app using the
 instructions in the Dockerfile. You can then run the image as a Docker
 container using the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">docker run -p 3000:3000 my-express-app</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">docker run -p 3000:3000 my-express-app</span></span></code></pre>
 <p>This will start a Docker container based on the my-express-app image,
 and will map port 3000 on the host to port 3000 in the container. The
 Express server will start automatically when the container is started,
@@ -174,5 +174,5 @@ and you will be able to access the server at <a href="http://localhost:3000">htt
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

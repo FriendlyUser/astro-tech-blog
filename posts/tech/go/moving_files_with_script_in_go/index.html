@@ -65,20 +65,20 @@
       
   <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Moving files with a script in go</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Fri, 7 March 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/go" style="padding-right:3px"> <category>go<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/script" style="padding-right:3px"> <category>script<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/matlab" style="padding-right:3px"> <category>matlab<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3194903180.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
     <p>In bash, you can move files using the <code>mv</code> command. Here’s an example of how you could use <code>mv</code> in a script:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">#!/bin/bash</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">#!/bin/bash</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Define the source and destination directories</span></span>
-<span class="line"><span style="color: #F8F8F2">src_dir=</span><span style="color: #E6DB74">"/path/to/source/directory"</span></span>
-<span class="line"><span style="color: #F8F8F2">dst_dir=</span><span style="color: #E6DB74">"/path/to/destination/directory"</span></span>
+<span class="line"><span style="color: #F8F8F2">src_dir</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/path/to/source/directory"</span></span>
+<span class="line"><span style="color: #F8F8F2">dst_dir</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"/path/to/destination/directory"</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Use the `mv` command to move all files from the source directory to the destination directory</span></span>
-<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> file </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$src</span><span style="color: #E6DB74">\_dir"</span><span style="color: #F8F8F2">/</span><span style="color: #F92672">*;</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">do</span></span>
-<span class="line"><span style="color: #F8F8F2"> mv </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$file</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$dst</span><span style="color: #E6DB74">\_dir"</span></span>
+<span class="line"><span style="color: #F92672">for</span><span style="color: #F8F8F2"> file </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$src</span><span style="color: #E6DB74">\_dir"</span><span style="color: #F8F8F2">/</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">do</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">mv</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$file</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">$dst</span><span style="color: #E6DB74">\_dir"</span></span>
 <span class="line"><span style="color: #F92672">done</span></span></code></pre>
 <p>This script moves all files in the <code>src_dir</code> to the <code>dst_dir</code>. The <code>for</code> loop iterates through all files in <code>src_dir</code> and uses the <code>mv</code> command to move each file to the <code>dst_dir</code>.</p>
 <p>Note: This script will overwrite any existing files in the <code>dst_dir</code> with the same names as the files being moved. If you want to avoid overwriting existing files, you can modify the script to include a check for file existence in the destination directory before moving the file.</p>
 <p>Here’s an example of how you could write a Go program to move files:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -90,7 +90,7 @@
 <span class="line"><span style="color: #F8F8F2"> srcDir </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"/path/to/source/directory"</span></span>
 <span class="line"><span style="color: #F8F8F2"> dstDir </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"/path/to/destination/directory"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Walk</span><span style="color: #F8F8F2">(srcDir, </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, info os.FileInfo, err </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Walk</span><span style="color: #F8F8F2">(srcDir, </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, info os.FileInfo, err </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> info.</span><span style="color: #66D9EF">IsDir</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -112,7 +112,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This program uses the <code>filepath.Walk</code> function to iterate through all the files in the <code>srcDir</code> directory. For each file, it uses <code>filepath.Rel</code> to get the relative path of the file with respect to <code>srcDir</code>, and then uses <code>filepath.Join</code> to construct the destination path by joining the relative path with the <code>dstDir</code> directory. Finally, it uses the <code>os.Rename</code> function to move the file to the destination directory.</p>
 <p>Note: This program will overwrite any existing files in the <code>dstDir</code> with the same names as the files being moved. If you want to avoid overwriting existing files, you can modify the program to include a check for file existence in the destination directory before moving the file.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -128,9 +128,9 @@
 <span class="line"><span style="color: #88846F">// basic go cli tool</span></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// go through each directory in go using os package</span></span>
-<span class="line"><span style="color: #F8F8F2">	htmlFiles </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{}</span></span>
+<span class="line"><span style="color: #F8F8F2">	htmlFiles </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{}</span></span>
 <span class="line"><span style="color: #F8F8F2">	outputFolder </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"gh-pages"</span></span>
-<span class="line"><span style="color: #F8F8F2">	reg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">"rm"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"-rf"</span><span style="color: #F8F8F2">, outputFolder}</span></span>
+<span class="line"><span style="color: #F8F8F2">	reg </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">"rm"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"-rf"</span><span style="color: #F8F8F2">, outputFolder}</span></span>
 <span class="line"><span style="color: #F8F8F2">	cmd </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Join</span><span style="color: #F8F8F2">(reg[:], </span><span style="color: #E6DB74">" "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	tmpl </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`</span></span>
@@ -149,7 +149,7 @@
 <span class="line"><span style="color: #E6DB74">	&#x3C;/html></span></span>
 <span class="line"><span style="color: #E6DB74">	`</span><span style="color: #F8F8F2"> </span></span></code></pre>
 <p>It looks like you’re starting to write a Go program to generate an HTML file that lists all of the files in a directory, and move the generated HTML file to an <code>outputFolder</code>. Here’s an example of how you could complete this program:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"fmt"</span></span>
@@ -161,11 +161,11 @@
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> htmlFiles </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{}</span></span>
+<span class="line"><span style="color: #F8F8F2"> htmlFiles </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{}</span></span>
 <span class="line"><span style="color: #F8F8F2"> outputFolder </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"gh-pages"</span></span>
 <span class="line"><span style="color: #F8F8F2"> srcDir </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"."</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Walk</span><span style="color: #F8F8F2">(srcDir, </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, info os.FileInfo, err </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2"> err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> filepath.</span><span style="color: #66D9EF">Walk</span><span style="color: #F8F8F2">(srcDir, </span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(path </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, info os.FileInfo, err </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">info.</span><span style="color: #66D9EF">IsDir</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    htmlFiles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">append</span><span style="color: #F8F8F2">(htmlFiles, path)</span></span>
 <span class="line"><span style="color: #F8F8F2"> }</span></span>
@@ -234,7 +234,7 @@
 <span class="line"><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Files successfully moved."</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This program</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> 	script.</span><span style="color: #66D9EF">FindFiles</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"."</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">FilterScan</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(line </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, w io.Writer) {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> 	script.</span><span style="color: #66D9EF">FindFiles</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"."</span><span style="color: #F8F8F2">).</span><span style="color: #66D9EF">FilterScan</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">(line </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, w io.Writer) {</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #88846F">// if line contains html print it</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Contains</span><span style="color: #F8F8F2">(line, </span><span style="color: #E6DB74">".html"</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Contains</span><span style="color: #F8F8F2">(line, </span><span style="color: #E6DB74">".pdf"</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">			fmt.</span><span style="color: #66D9EF">Fprintf</span><span style="color: #F8F8F2">(w, </span><span style="color: #E6DB74">"scanned line: </span><span style="color: #AE81FF">%q\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, line)</span></span>
@@ -248,7 +248,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// for each html file</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, file </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> htmlFiles {</span></span>
-<span class="line"><span style="color: #F8F8F2">		reg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">"cp"</span><span style="color: #F8F8F2">, file, outputFolder}</span></span>
+<span class="line"><span style="color: #F8F8F2">		reg </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{</span><span style="color: #E6DB74">"cp"</span><span style="color: #F8F8F2">, file, outputFolder}</span></span>
 <span class="line"><span style="color: #F8F8F2">		cmd </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> strings.</span><span style="color: #66D9EF">Join</span><span style="color: #F8F8F2">(reg[:], </span><span style="color: #E6DB74">" "</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #88846F">// copy file to html directory</span></span>
 <span class="line"><span style="color: #F8F8F2">		script.</span><span style="color: #66D9EF">Exec</span><span style="color: #F8F8F2">(cmd).</span><span style="color: #66D9EF">Stdout</span><span style="color: #F8F8F2">()</span></span>
@@ -265,7 +265,7 @@
 <li>Finally, the code uses <code>script.Exec</code> to move the “ads.txt” file to the “gh-pages” directory using the <code>mv</code> command.</li>
 </ul>
 <p>Note that this code only implements the file moving part of the deployment to Github Pages, you might need to write additional code to deploy the files to Github Pages.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> 	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> 	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span></span>
 <span class="line"><span style="color: #F8F8F2">	}</span></span>
@@ -294,7 +294,7 @@
 <li>Finally, the code uses the <code>t.Execute</code> function to write the <code>htmlFiles</code> slice to the “index.html” file. The <code>t.Execute</code> function uses the template defined in the <code>tmpl</code> variable to format the HTML output.</li>
 </ul>
 <p>Note that the code also contains error handling to check for any errors that might occur during the file creation and writing process. If an error occurs, the code prints the error message and returns from the main function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># run go main.go and install and then deploy to gh-pages</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F"># run go main.go and install and then deploy to gh-pages</span></span>
 <span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">deploy</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
@@ -356,5 +356,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

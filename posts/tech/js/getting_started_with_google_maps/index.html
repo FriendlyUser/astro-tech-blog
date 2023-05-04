@@ -93,16 +93,16 @@
 <li>Open your web application in your preferred code editor.</li>
 <li>Add the following script tag to your HTML file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">script</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">src</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"https://maps.googleapis.com/maps/api/js?key=YOUR\_API\_KEY</span><span style="color: #F44747">&#x26;</span><span style="color: #E6DB74">callback=initMap</span><span style="color: #F44747">&#x26;</span><span style="color: #E6DB74">libraries=</span><span style="color: #F44747">&#x26;</span><span style="color: #E6DB74">v=weekly"</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">script</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">src</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"https://maps.googleapis.com/maps/api/js?key=YOUR\_API\_KEY&#x26;callback=initMap&#x26;libraries=&#x26;v=weekly"</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">defer</span></span>
 <span class="line"><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span></code></pre>
 <p>Replace YOUR_API_KEY with the API key you obtained in Step 2.</p>
 <ol start="3">
 <li>Create a new JavaScript file and add the following code:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initMap</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Map</span><span style="color: #F8F8F2">(document.</span><span style="color: #A6E22E">getElementById</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">), {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initMap</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Map</span><span style="color: #F8F8F2">(document.</span><span style="color: #A6E22E">getElementById</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">), {</span></span>
 <span class="line"><span style="color: #F8F8F2"> zoom: </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2"> center: { lat: </span><span style="color: #F92672">-</span><span style="color: #AE81FF">34.397</span><span style="color: #F8F8F2">, lng: </span><span style="color: #AE81FF">150.644</span><span style="color: #F8F8F2"> },</span></span>
 <span class="line"><span style="color: #F8F8F2"> });</span></span>
@@ -111,19 +111,19 @@
 <ol start="4">
 <li>Add a div element with an id of “map” to your HTML file:</li>
 </ol>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">id</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">id</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span></code></pre>
 <p>This is where the map will be displayed in your web application.</p>
 <p>Step 4: Customize the Google Map</p>
 <p>Now that you have added the Google Maps API to your web application, you can customize the map by adding markers, overlays, and real-time traffic data. The Google Maps API documentation provides a comprehensive list of customization options that you can use to create a unique and interactive map for your web application.</p>
 <p>An full example is listed below:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;!</span><span style="color: #F92672">DOCTYPE</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">html</span><span style="color: #F8F8F2">></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;!</span><span style="color: #F92672">DOCTYPE</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">html</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">html</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #F92672">head</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">title</span><span style="color: #F8F8F2">>Google Maps API Example&#x3C;/</span><span style="color: #F92672">title</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">/* Set the height of the map container */</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">#map</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">height</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">400</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">height</span><span style="color: #F8F8F2">: </span><span style="color: #AE81FF">400</span><span style="color: #F92672">px</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">      }</span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #F92672">head</span><span style="color: #F8F8F2">></span></span>
@@ -131,18 +131,18 @@
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">>Google Maps API Example&#x3C;/</span><span style="color: #F92672">h1</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">div</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">>&#x3C;/</span><span style="color: #F92672">div</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">script</span><span style="color: #F8F8F2">></span></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initMap</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initMap</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Set the coordinates for the center of the map</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> center </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> { lat: </span><span style="color: #AE81FF">37.7749</span><span style="color: #F8F8F2">, lng: </span><span style="color: #F92672">-</span><span style="color: #AE81FF">122.4194</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">var</span><span style="color: #F8F8F2"> center </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> { lat: </span><span style="color: #AE81FF">37.7749</span><span style="color: #F8F8F2">, lng: </span><span style="color: #F92672">-</span><span style="color: #AE81FF">122.4194</span><span style="color: #F8F8F2"> };</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Create a new Google Maps object</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Map</span><span style="color: #F8F8F2">(document.</span><span style="color: #A6E22E">getElementById</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">), {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">var</span><span style="color: #F8F8F2"> map </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Map</span><span style="color: #F8F8F2">(document.</span><span style="color: #A6E22E">getElementById</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"map"</span><span style="color: #F8F8F2">), {</span></span>
 <span class="line"><span style="color: #F8F8F2">          center: center,</span></span>
 <span class="line"><span style="color: #F8F8F2">          zoom: </span><span style="color: #AE81FF">13</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">        });</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Add a marker to the map</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF">var</span><span style="color: #F8F8F2"> marker </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Marker</span><span style="color: #F8F8F2">({</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">var</span><span style="color: #F8F8F2"> marker </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> google.maps.</span><span style="color: #A6E22E">Marker</span><span style="color: #F8F8F2">({</span></span>
 <span class="line"><span style="color: #F8F8F2">          position: center,</span></span>
 <span class="line"><span style="color: #F8F8F2">          map: map,</span></span>
 <span class="line"><span style="color: #F8F8F2">        });</span></span>
@@ -176,5 +176,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -70,7 +70,7 @@
 <h2 id="concurrency-in-go">Concurrency in Go</h2>
 <p>Go provides first-class support for concurrency through goroutines and channels. A goroutine is a lightweight thread managed by the Go runtime, and channels are the primary mechanism for communication between goroutines.</p>
 <p>To spawn a new goroutine, you can use the ` keyword followed by a function call. This function will be executed concurrently with the calling function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">go</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">printHello</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"main function"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
@@ -82,19 +82,19 @@
 <h2 id="introducing-task">Introducing Task</h2>
 <p>While goroutines and channels are powerful constructs, they can sometimes be difficult to manage, especially when dealing with complex workflows, error handling, and cancellation. The <code>Task</code> construct was introduced to address these challenges.</p>
 <p>A <code>Task</code> is a higher-level abstraction that represents a unit of work that can be executed concurrently. It provides a more developer-friendly API for managing concurrency, error handling, and cancellation. The <code>Task</code> construct can be found in the <code>github.com/your_package/task</code> package. You must import this package to use tasks in your Go programs.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"github.com/your_package/task"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
 <h2 id="creating-and-running-tasks">Creating and Running Tasks</h2>
 <p>To create a new task, you can use the <code>task.New</code> function. This function takes a single argument: the function to be executed as a task.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello from task"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">})</span></span></code></pre>
 <p>To start the execution of a task, you must call the <code>Run</code> method on the task object. This will execute the task concurrently with the calling function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">t.</span><span style="color: #66D9EF">Run</span><span style="color: #F8F8F2">()</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">t.</span><span style="color: #66D9EF">Run</span><span style="color: #F8F8F2">()</span></span></code></pre>
 <h2 id="waiting-for-tasks-to-complete">Waiting for Tasks to Complete</h2>
 <p>You can use the <code>Wait</code> method to block the calling function until a task has completed its execution. This is useful when you need to ensure that all tasks have completed before proceeding.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello from task"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">})</span></span>
 <span class="line"><span style="color: #F8F8F2">t.</span><span style="color: #66D9EF">Run</span><span style="color: #F8F8F2">()</span></span>
@@ -103,7 +103,7 @@
 <p>In the example above, the “Task completed” message will be printed only after the task has finished executing.</p>
 <h2 id="error-handling-in-tasks">Error Handling in Tasks</h2>
 <p>Tasks make error handling easy and convenient. You can return an error from the function passed to <code>task.New</code> and handle the error using the <code>Error</code> method on the task object.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello from task"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> errors.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"task error"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">})</span></span>
@@ -116,9 +116,9 @@
 <p>In the example above, the task returns an error which is then checked and handled after the task has completed.</p>
 <h2 id="task-cancellation">Task Cancellation</h2>
 <p>Tasks can be cancelled using a context. You can create a context with a cancel function and pass it to the <code>RunWithContext</code> method of the task. To cancel the task, you can call the cancel function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">ctx, cancel </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> context.</span><span style="color: #66D9EF">WithCancel</span><span style="color: #F8F8F2">(context.</span><span style="color: #66D9EF">Background</span><span style="color: #F8F8F2">())</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">ctx, cancel </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> context.</span><span style="color: #66D9EF">WithCancel</span><span style="color: #F8F8F2">(context.</span><span style="color: #66D9EF">Background</span><span style="color: #F8F8F2">())</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> task.</span><span style="color: #66D9EF">New</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">func</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">select</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">case</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;-</span><span style="color: #F8F8F2">ctx.</span><span style="color: #66D9EF">Done</span><span style="color: #F8F8F2">():</span></span>
@@ -154,5 +154,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -87,26 +87,26 @@
 </ul>
 <h2 id="installation">Installation</h2>
 <p>To get started with Chalk, you need to install it as a dependency in your Go project. Run the following command in your terminal:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/ttacon/chalk</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/ttacon/chalk</span></span></code></pre>
 <p>This will fetch the Chalk package and make it available for use in your project.</p>
 <h2 id="basic-usage">Basic Usage</h2>
 <p>To use Chalk in your Go code, you need to import the package first. Add the following import statement to your Go file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/ttacon/chalk"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
 <p>Now, you can start using Chalk to style your console output. For example, to print a green “Hello, World!” message, you can use the following code snippet:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	green </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> chalk.Green.</span><span style="color: #66D9EF">NewStyle</span><span style="color: #F8F8F2">().</span><span style="color: #66D9EF">WithForeground</span><span style="color: #F8F8F2">(chalk.Green)</span></span>
 <span class="line"><span style="color: #F8F8F2">	fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(green.</span><span style="color: #66D9EF">Style</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, World!"</span><span style="color: #F8F8F2">))</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Running this code will produce the following output:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Hello, World!</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Hello, World!</span></span></code></pre>
 <p>The text will be displayed in green color.</p>
 <h2 id="applying-styles">Applying Styles</h2>
 <p>Chalk provides various built-in styles, including colors, backgrounds, and text formatting, such as bold, underline, and italic. To apply a style, you can chain methods on the <code>chalk.Style</code> type.</p>
 <p>Here’s an example of applying multiple styles to a single piece of text:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	styledText </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> chalk.Cyan.</span><span style="color: #66D9EF">NewStyle</span><span style="color: #F8F8F2">().</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">WithForeground</span><span style="color: #F8F8F2">(chalk.Cyan).</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">WithBackground</span><span style="color: #F8F8F2">(chalk.Magenta).</span></span>
@@ -117,7 +117,7 @@
 <p>This code will output the text “Stylish Text Example” in cyan color with a magenta background and bold formatting.</p>
 <h2 id="creating-custom-styles">Creating Custom Styles</h2>
 <p>You can create custom styles by extending the built-in styles provided by Chalk. To do this, you can use the <code>Extend()</code> method. Here’s an example of creating a custom style:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #F8F8F2">	customStyle </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> chalk.Magenta.</span><span style="color: #66D9EF">NewStyle</span><span style="color: #F8F8F2">().</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">WithForeground</span><span style="color: #F8F8F2">(chalk.Magenta).</span></span>
 <span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF">WithBackground</span><span style="color: #F8F8F2">(chalk.White).</span></span>
@@ -155,5 +155,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

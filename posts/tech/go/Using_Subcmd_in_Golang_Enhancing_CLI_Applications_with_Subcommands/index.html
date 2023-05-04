@@ -69,14 +69,14 @@
 <h2 id="what-is-subcmd">What is <code>subcmd</code>?</h2>
 <p><code>subcmd</code> is a Golang package that enables the easy creation of CLI applications with subcommands. It provides a simple interface for defining and parsing subcommands, allowing developers to focus on their application’s core functionality.</p>
 <p>To get started with <code>subcmd</code>, we will need to install it:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/google/subcommands</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/google/subcommands</span></span></code></pre>
 <h2 id="creating-a-simple-cli-application-with-subcommands">Creating a Simple CLI Application with Subcommands</h2>
 <p>Now that we have <code>subcmd</code> installed, let’s create a simple CLI application with two subcommands: <code>add</code> and <code>multiply</code>. The <code>add</code> subcommand will take two integers and return their sum, while the <code>multiply</code> subcommand will return their product.</p>
 <p>First, create a new project folder and initialize it as a Go module:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">mkdir mycli </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> mycli</span></span>
-<span class="line"><span style="color: #F8F8F2">go mod init github.com/yourusername/mycli</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">mkdir</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">mycli</span><span style="color: #F8F8F2"> &#x26;&#x26; </span><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">mycli</span></span>
+<span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">mod</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">init</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/yourusername/mycli</span></span></code></pre>
 <p>Next, create a `main. file in your project root and add the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"context"</span></span>
@@ -98,18 +98,18 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Add command</span></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">addCmd</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">addCmd</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Name</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Name</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"add"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Synopsis</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Synopsis</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Add two integers."</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Usage</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">addCmd) </span><span style="color: #A6E22E">Usage</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`add &#x3C;num1> &#x3C;num2></span></span>
 <span class="line"><span style="color: #E6DB74">	Add two integers and print the result.</span></span>
 <span class="line"><span style="color: #E6DB74">`</span></span>
@@ -138,18 +138,18 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Multiply command</span></span>
-<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">multiplyCmd</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">type</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">multiplyCmd</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">struct</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Name</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Name</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"multiply"</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Synopsis</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Synopsis</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Multiply two integers."</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Usage</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">multiplyCmd) </span><span style="color: #A6E22E">Usage</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`multiply &#x3C;num1> &#x3C;num2></span></span>
 <span class="line"><span style="color: #E6DB74">	Multiply two integers and print the result.</span></span>
 <span class="line"><span style="color: #E6DB74">`</span></span>
@@ -187,21 +187,21 @@
 </ol>
 <p>We define these methods for both the <code>addCmd</code> and <code>multiplyCmd</code> structs, implementing the desired functionality in the <code>Execute()</code> method.</p>
 <p>Tobuild and run the CLI application, execute the following commands in your project root:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go build</span></span>
-<span class="line"><span style="color: #F8F8F2">./mycli </span><span style="color: #66D9EF">help</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span></span>
+<span class="line"><span style="color: #A6E22E">./mycli</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">help</span></span></code></pre>
 <p>You should see the help output, which lists the available subcommands:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Usage: mycli &#x3C;command> [arguments]</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Usage: mycli &#x3C;command> [arguments]</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">Commands:</span></span>
 <span class="line"><span style="color: #F8F8F2">	add            Add two integers.</span></span>
 <span class="line"><span style="color: #F8F8F2">	help           Describe the usage of this program or its subcommands.</span></span>
 <span class="line"><span style="color: #F8F8F2">	multiply       Multiply two integers.</span></span></code></pre>
 <p>Now, let’s test the <code>add</code> and <code>multiply</code> subcommands:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">./mycli add 3 4</span></span>
-<span class="line"><span style="color: #F8F8F2">7</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">./mycli</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">add</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span></span>
+<span class="line"><span style="color: #A6E22E">7</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2">./mycli multiply 3 4</span></span>
-<span class="line"><span style="color: #F8F8F2">12</span></span></code></pre>
+<span class="line"><span style="color: #A6E22E">./mycli</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">multiply</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">4</span></span>
+<span class="line"><span style="color: #A6E22E">12</span></span></code></pre>
 <p>Great! Our CLI application with subcommands is working as expected.</p>
 <h2 id="summary">Summary</h2>
 <p>In this article, we explored how to use the <code>subcmd</code> package to create a Golang CLI application with subcommands. We demonstrated how to define, register, and implement subcommands using the <code>subcommands.Command</code> interface, and we built a simple CLI application that supports <code>add</code> and <code>multiply</code> subcommands.</p>
@@ -221,5 +221,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

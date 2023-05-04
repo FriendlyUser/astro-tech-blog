@@ -70,13 +70,13 @@
 <p>To follow along, you should have a basic understanding of Golang and be familiar with the process of installing packages using <code>go get</code>. If you need a refresher, check out the <a href="https://golang.org/doc/">official Golang website</a>.</p>
 <h2 id="installing-asciigraph">Installing Asciigraph</h2>
 <p>To get started, install the Asciigraph library using the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">go get -u github.com/guptarohit/asciigraph</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">go</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">get</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">-u</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">github.com/guptarohit/asciigraph</span></span></code></pre>
 <p>Once the package is installed, you can import it into your project like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/guptarohit/asciigraph"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"github.com/guptarohit/asciigraph"</span></span></code></pre>
 <h2 id="creating-a-basic-line-graph">Creating a Basic Line Graph</h2>
 <p>Creating a line graph with Asciigraph is simple. First, you need a slice of float64 values that represent the data points to be plotted. Then, you can call the <code>asciigraph.Plot()</code> function to generate the graph.</p>
 <p>Here’s a basic example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -85,14 +85,14 @@
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">	data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">	data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	graph </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> asciigraph.</span><span style="color: #66D9EF">Plot</span><span style="color: #F8F8F2">(data)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(graph)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This code snippet will output the following graph:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  9.00 ┤  ╭─╮    </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  9.00 ┤  ╭─╮    </span></span>
 <span class="line"><span style="color: #F8F8F2">  8.00 ┤  �? �?    </span></span>
 <span class="line"><span style="color: #F8F8F2">  7.00 ┤  �? �?    </span></span>
 <span class="line"><span style="color: #F8F8F2">  6.00 ┤ ╭╯ �?    </span></span>
@@ -102,7 +102,7 @@
 <h2 id="customizing-the-graph">Customizing the Graph</h2>
 <p>Asciigraph provides several options for customizing the appearance of your graph. You can adjust the height, width, caption, and more by passing an <code>asciigraph.Config</code> struct to the <code>asciigraph.Plot()</code> function.</p>
 <p>Here’s an example that demonstrates some of the available options:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">package</span><span style="color: #F8F8F2"> main</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -111,7 +111,7 @@
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
-<span class="line"><span style="color: #F8F8F2">	data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF">float64</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #F8F8F2">	data </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> []</span><span style="color: #66D9EF; font-style: italic">float64</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">3</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">9</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">6</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">4</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">8</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">	config </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> asciigraph.Config{</span></span>
 <span class="line"><span style="color: #F8F8F2">		Height:  </span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">,</span></span>
@@ -124,7 +124,7 @@
 <span class="line"><span style="color: #F8F8F2">	fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(graph)</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This will output a graph with a custom height, width, and caption:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Sample Graph</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Sample Graph</span></span>
 <span class="line"><span style="color: #F8F8F2">  9.00 ┤       ╭─╮</span></span>
 <span class="line"><span style="color: #F8F8F2">  8.00 ┤       �? �?</span></span>
 <span class="line"><span style="color: #F8F8F2">  7.00 ┤       �? �?</span></span>
@@ -150,5 +150,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

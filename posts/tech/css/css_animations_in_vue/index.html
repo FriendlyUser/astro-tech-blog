@@ -68,36 +68,36 @@
 <p>First, we need to understand what CSS animations are. CSS animations are a way to add motion and dynamic effects to elements on a webpage. Animations can be triggered by events such as hovering over an element, clicking on it, or simply loading the page. CSS animations can be applied to a wide range of CSS properties, such as color, opacity, and position, among others.</p>
 <p>To use CSS animations in Vue, we can take advantage of Vue’s built-in support for CSS classes. Vue components can define their own styles using scoped CSS, which means that styles only apply to the component they are defined in. We can use this feature to define CSS classes that apply the animations we want to use.</p>
 <p>Let’s start with a simple example. Suppose we have a Vue component that displays a button. We want to add an animation that makes the button pulse when the user hovers over it. Here’s how we can do it:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">template</span><span style="color: #F8F8F2">></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">template</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #F92672">button</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">class</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"pulse"</span><span style="color: #F8F8F2">>Click me!&#x3C;/</span><span style="color: #F92672">button</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">template</span><span style="color: #F8F8F2">></span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">style</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">scoped</span><span style="color: #F8F8F2">></span></span>
 <span class="line"><span style="color: #A6E22E">.pulse</span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF">animation</span><span style="color: #F8F8F2">: pulse </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">infinite</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">animation</span><span style="color: #F8F8F2">: pulse </span><span style="color: #AE81FF">1</span><span style="color: #F92672">s</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">infinite</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">@keyframes</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">pulse</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">@keyframes</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">pulse</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  0% {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">  50% {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1.2</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1.2</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">  100% {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">transform</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF">scale</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
 <span class="line"><span style="color: #F8F8F2">  }</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span></code></pre>
 <p>In this example, we define a CSS class called “pulse” that applies an animation called “pulse” to the button. The “pulse” animation is defined using the @keyframes rule, which defines how the animation should change over time. In this case, the animation scales the button up by 20% and then back down to its original size.</p>
 <p>We also specify that the animation should run indefinitely using the infinite keyword.</p>
 <p>To trigger the animation when the user hovers over the button, we can add a :hover pseudo-class to the CSS selector, like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">.pulse:hover {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">.pulse:hover {</span></span>
 <span class="line"><span style="color: #F8F8F2">  animation: pulse 1s infinite;</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Now the button will pulse whenever the user hovers over it.</p>
 <p>We can also use Vue’s data and computed properties to control the animation. For example, we could define a isPulsing data property that determines whether the button should pulse or not:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;button :class="{'pulse': isPulsing}" @click="isPulsing = !isPulsing"></span></span>
 <span class="line"><span style="color: #F8F8F2">    {{ isPulsing ? 'Stop pulsing' : 'Start pulsing' }}</span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;/button></span></span>
@@ -134,7 +134,7 @@
 <p>This is just a simple example of how to use CSS animations in Vue. You can apply the same techniques to create more complex animations and control them using Vue’s data and computed properties.</p>
 <p>Another useful feature of Vue is its transitions system. Transitions allow you to apply animations when elements are added, removed, or updated in the DOM. You can use Vue’s <transition> component to define a transition and apply it to any element that is wrapped by the component.</transition></p>
 <p>Here’s an example of how to use Vue’s transition component to apply a fade-in animation to a list of items:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;div></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;button @click="addItem">Add item&#x3C;/button></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;transition-group name="fade" tag="ul"></span></span>
@@ -174,7 +174,7 @@
 <span class="line"><span style="color: #F8F8F2">&#x3C;/script></span></span></code></pre>
 <p>In this example, we define a button that adds a new item to the list when clicked. The list is wrapped in a <transition-group> component, which applies the transition to each list item. We define the “fade” transition using CSS classes that specify how the opacity of the element should change over time. We also specify the tag prop to tell Vue to render the transition as a ul element.</transition-group></p>
 <p>Vue provides several hooks that allow you to control the transition. For example, you can use the before-enter hook to set the initial state of the element before the animation starts:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;template></span></span>
 <span class="line"><span style="color: #F8F8F2">  &#x3C;div></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;button @click="addItem">Add item&#x3C;/button></span></span>
 <span class="line"><span style="color: #F8F8F2">    &#x3C;transition-group name="fade" tag="ul"></span></span>
@@ -254,5 +254,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

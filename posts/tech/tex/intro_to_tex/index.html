@@ -130,12 +130,12 @@
 <li><strong>Document structure:</strong> The document structure is defined by various commands, such as <code>\section</code>, <code>\subsection</code>, and <code>\subsubsection</code>, which create headings and subheadings for the document. You can also use commands like <code>\label</code> and <code>\ref</code> to create cross-references within the document.</li>
 </ol>
 <p>Here’s an example of a minimal LaTeX document that demonstrates the basic structure:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">article</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">\documentclass</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">article</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">% Preamble</span></span>
-<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">lipsum</span><span style="color: #F8F8F2">} </span><span style="color: #88846F">% Package for generating placeholder text</span></span>
+<span class="line"><span style="color: #F92672">\usepackage</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF; font-style: italic">lipsum</span><span style="color: #F8F8F2">} </span><span style="color: #88846F">% Package for generating placeholder text</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">% Document content</span></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Introduction}</span></span>
@@ -144,7 +144,7 @@
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Conclusion}</span></span>
 <span class="line"><span style="color: #66D9EF">\lipsum</span><span style="color: #F8F8F2">[2]</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">document</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the document class is <code>article</code>, the preamble includes the <code>lipsum</code> package for generating placeholder text, and the document content consists of two sections with some placeholder text. This is a very basic example, but it demonstrates the key components of a LaTeX document.</p>
 <p>To compile a LaTeX document, you will need to use a LaTeX distribution like MiKTeX or TeX Live and a LaTeX editor like TeXstudio or TeXmaker. Here are the general steps for compiling a LaTeX document:</p>
 <ol>
@@ -157,39 +157,39 @@
 <p>The process for compiling a LaTeX document can vary slightly depending on the specific LaTeX distribution and editor you are using, but these general steps should work for most setups. Note that some editors may have a built-in viewer that allows you to view the PDF output file directly within the editor.</p>
 <p>LaTeX commands are used to control the formatting and structure of a document. A LaTeX command is typically made up of a backslash (<code>\</code>) followed by a command name, and sometimes additional arguments or parameters enclosed in curly braces (<code>{ }</code>).</p>
 <p>Here’s a simple example of a LaTeX command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">This text will be bold.</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\textbf</span><span style="color: #F8F8F2">{</span><span style="color: #66D9EF">This text will be bold.</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, <code>\textbf</code> is the command name, and the text enclosed in curly braces is the argument or parameter that the command applies to. The result of this command is that the text enclosed in the braces will be bold.</p>
 <p>Commands can also have optional arguments, which are enclosed in square brackets (<code>[ ]</code>). Here’s an example:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=5cm]{image.png}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">[width=5cm]{image.png}</span></span></code></pre>
 <p>In this example, <code>\includegraphics</code> is the command name, and the optional argument <code>width=5cm</code> specifies the width of the included image. The mandatory argument <code>image.png</code> is the name of the image file.</p>
 <p>Backslashes are used to introduce LaTeX commands, and curly braces are used to enclose the arguments or parameters that the command applies to. Backslashes can also be used to insert special characters, such as accents or symbols, into the text of a document.</p>
 <p>For example, to include an accent over a letter, you can use the following command:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">vbnet`</span><span style="color: #AE81FF">\'</span><span style="color: #F8F8F2">{e}</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">vbnet`</span><span style="color: #AE81FF">\'</span><span style="color: #F8F8F2">{e}</span></span></code></pre>
 <p>In this example, <code>\'</code> is the command for an acute accent, and <code>{e}</code> is the letter that the accent applies to. The result of this command is the letter <code>é</code>.</p>
 <p>In summary, LaTeX commands are used to control the formatting and structure of a document, and are made up of a backslash followed by a command name and optional arguments or parameters enclosed in curly braces or square brackets.</p>
 <p>LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit. An environment is created by using the <code>\begin</code> and <code>\end</code> commands, with the name of the environment as an argument. The text or code that should be enclosed within the environment is placed between the <code>\begin</code> and <code>\end</code> commands.</p>
 <p>Here’s an example of a simple LaTeX environment:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">center</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">s</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">center</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2">This text will be centered.</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">center</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">center</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the <code>center</code> environment is used to center the enclosed text. The result of this code is that the text “This text will be centered” will be displayed in the center of the page.</p>
 <p>LaTeX environments can be nested within each other, allowing you to create more complex formatting and structures. For example, you can nest the <code>itemize</code> environment inside a <code>description</code> environment to create a list of labeled items:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">description</span><span style="color: #F8F8F2">}</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">sql`</span><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">description</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[First Item] This is the first item in the list.</span></span>
 <span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[Second Item] This is the second item in the list.</span></span>
-<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">itemize</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> This is a bullet point within the second item.</span></span>
 <span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2"> This is another bullet point within the second item.</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">itemize</span><span style="color: #F8F8F2">}</span></span>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">itemize</span><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F92672">\item</span><span style="color: #F8F8F2">[Third Item] This is the third item in the list.</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">description</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">description</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the <code>description</code> environment is used to create a list of labeled items, and the <code>itemize</code> environment is nested within the second item to create a list of bullet points.</p>
 <p>Environments can also have optional arguments, which are specified within square brackets immediately following the <code>\begin</code> command. For example, the <code>figure</code> environment can take an optional argument that specifies the placement of the figure within the document:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}[h]</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF">\begin</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}[h]</span></span>
 <span class="line"><span style="color: #66D9EF">\centering</span></span>
 <span class="line"><span style="color: #66D9EF">\includegraphics</span><span style="color: #F8F8F2">{example.png}</span></span>
 <span class="line"><span style="color: #66D9EF">\caption</span><span style="color: #F8F8F2">{This is a caption for the figure.}</span></span>
-<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #66D9EF">\end</span><span style="color: #F8F8F2">{</span><span style="color: #FD971F; font-style: italic">figure</span><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>In this example, the optional argument <code>[h]</code> tells LaTeX to try to place the figure “here” in the document. The <code>\centering</code> command centers the figure horizontally, and the <code>\includegraphics</code> command includes the image file <code>example.png</code>. The <code>\caption</code> command adds a caption to the figure.</p>
 <p>In summary, LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit, and can be used to create complex formatting and structures within a document.</p>
     </content></div></div></div></div>
@@ -207,5 +207,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

@@ -79,7 +79,7 @@
 <p><a href="https://www.reddit.com/r/%5Bsubreddit%5D/top.json?limit=10">https://www.reddit.com/r/[subreddit]/top.json?limit=10</a></p>
 <p>Where [subreddit] is the name of the subreddit you want to retrieve data from.</p>
 <p>There are many libraries available in Go that simplify the process of making API calls and processing the resulting data. By using one of these libraries, you can focus on the data you want to extract and display, without having to worry about the details of making API calls and processing the results.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> login </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> login </span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"github.com/jzelinskie/geddit"</span></span>
@@ -89,7 +89,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// returns oauth session for reddit</span></span>
 <span class="line"><span style="color: #88846F">// or fails - fine for my purposes</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">RedditOAuth</span><span style="color: #F8F8F2">() (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.OAuthSession, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">RedditOAuth</span><span style="color: #F8F8F2">() (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">geddit.OAuthSession, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	client_id </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_CLIENT_ID"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	client_secret </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_CLIENT_SECRET"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	password </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> util.</span><span style="color: #66D9EF">GetEnvVar</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"REDDIT_PASSWORD"</span><span style="color: #F8F8F2">)</span></span>
@@ -116,7 +116,7 @@
 <p>This code defines a Go function named “RedditOAuth” that is used to authenticate a user to the Reddit API using the “geddit” library. The function starts by retrieving four environment variables (“REDDIT_CLIENT_ID”, “REDDIT_CLIENT_SECRET”, “REDDIT_PASSWORD”, and “REDDIT_USERNAME”) using the “util.GetEnvVar” function from the “github.com/dli-invest/finreddit/pkg/util” package.</p>
 <p>Next, the function creates a new OAuth session using the “geddit.NewOAuthSession” function and the retrieved environment variables. If an error occurs while creating the OAuth session, it is logged and returned.</p>
 <p>Finally, the function logs in the user using the “o.LoginAuth” method and the “username” and “password” environment variables. If an error occurs while logging in, it is logged and returned. If the login is successful, the OAuth session is returned.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> reddit</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> reddit</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"fmt"</span></span>
@@ -183,7 +183,7 @@
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// Scans subreddits from config file</span></span>
 <span class="line"><span style="color: #88846F">// for example cmd/scan_sr/simple.yml</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ScanSRs</span><span style="color: #F8F8F2">(cfgPathStr </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ScanSRs</span><span style="color: #F8F8F2">(cfgPathStr </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// login to reddit</span></span>
 <span class="line"><span style="color: #F8F8F2">	o, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> login.</span><span style="color: #66D9EF">RedditOAuth</span><span style="color: #F8F8F2">()</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
@@ -213,7 +213,7 @@
 <span class="line"><span style="color: #F8F8F2">				</span><span style="color: #88846F">// seems like a lot of posts, wondering if I will hit</span></span>
 <span class="line"><span style="color: #F8F8F2">				</span><span style="color: #88846F">// post limit, sleep 2 seconds after each post.</span></span>
 <span class="line"><span style="color: #F8F8F2">				</span><span style="color: #88846F">// append to csv</span></span>
-<span class="line"><span style="color: #F8F8F2">				sData </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> [][]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">{{srCfg.Name, s.FullID, s.URL}}</span></span>
+<span class="line"><span style="color: #F8F8F2">				sData </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> [][]</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">{{srCfg.Name, s.FullID, s.URL}}</span></span>
 <span class="line"><span style="color: #F8F8F2">				csvs.</span><span style="color: #66D9EF">AppendToCsv</span><span style="color: #F8F8F2">(csvsPath, sData)</span></span>
 <span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> cfg.Data.NoMessage {</span></span>
 <span class="line"><span style="color: #F8F8F2">					</span><span style="color: #88846F">// output this as a csv for parsing in other programs</span></span>
@@ -240,7 +240,7 @@
 <span class="line"><span style="color: #F8F8F2">		submission.Score,</span></span>
 <span class="line"><span style="color: #F8F8F2">		submission.NumComments)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// get timestamp</span></span>
-<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> dateCreated </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2">(submission.DateCreated)</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> dateCreated </span><span style="color: #66D9EF; font-style: italic">int64</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">int64</span><span style="color: #F8F8F2">(submission.DateCreated)</span></span>
 <span class="line"><span style="color: #F8F8F2">	t </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> time.</span><span style="color: #66D9EF">Unix</span><span style="color: #F8F8F2">(dateCreated, </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	timestamp </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> t.</span><span style="color: #66D9EF">Format</span><span style="color: #F8F8F2">(time.RFC3339)</span></span>
 <span class="line"><span style="color: #F8F8F2">	title </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> fmt.</span><span style="color: #66D9EF">Sprintf</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"</span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74"> - </span><span style="color: #AE81FF">%s</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">, submission.Subreddit, submission.Title)</span></span>
@@ -255,7 +255,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
 <p>This code is a Reddit scraper in Golang, which is a part of a project “finreddit”. It uses the geddit library for connecting to the Reddit API and retrieve submissions from given subreddit. The code filters the submissions based on various conditions such as minimum score, minimum comments, link flair text, and certain phrases. The filtered submissions are then appended to a CSV file. The code also includes a ScanSRs function, which reads subreddit configurations from a YAML file, logs into Reddit using OAuth authentication, and retrieves the submissions using the GetSubmissions function.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> csvs</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> csvs</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// csv utilties to prevent duplicate entries</span></span>
 <span class="line"><span style="color: #88846F">// probably manually clear out every now and then</span></span>
@@ -266,7 +266,7 @@
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// read csv from file path</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ReadCsvFile</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) [][]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ReadCsvFile</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) [][]</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Open</span><span style="color: #F8F8F2">(filePath)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">        fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Unable to read input file "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> filePath, err)</span></span>
@@ -282,7 +282,7 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> records</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendRowToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, data []</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendRowToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, data []</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">OpenFile</span><span style="color: #F8F8F2">(fileName, os.O_WRONLY</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_CREATE</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_APPEND, </span><span style="color: #AE81FF">0644</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
@@ -298,7 +298,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// append rows to csvs</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, data [][]</span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">AppendToCsv</span><span style="color: #F8F8F2">(fileName </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, data [][]</span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    f, err </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">OpenFile</span><span style="color: #F8F8F2">(fileName, os.O_WRONLY</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_CREATE</span><span style="color: #F92672">|</span><span style="color: #F8F8F2">os.O_APPEND, </span><span style="color: #AE81FF">0644</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> err </span><span style="color: #F92672">!=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">nil</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		fmt.</span><span style="color: #66D9EF">Println</span><span style="color: #F8F8F2">(err)</span></span>
@@ -316,7 +316,7 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">// check if value exists in csv</span></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">FindInCsv</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, searchValue </span><span style="color: #66D9EF">string</span><span style="color: #F8F8F2">, searchColumn </span><span style="color: #66D9EF">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF">bool</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">FindInCsv</span><span style="color: #F8F8F2">(filePath </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, searchValue </span><span style="color: #66D9EF; font-style: italic">string</span><span style="color: #F8F8F2">, searchColumn </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">) (</span><span style="color: #66D9EF; font-style: italic">bool</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    records </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">ReadCsvFile</span><span style="color: #F8F8F2">(filePath)</span></span>
 <span class="line"><span style="color: #F8F8F2">    foundValue </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> _, row</span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">range</span><span style="color: #F8F8F2"> records {</span></span>
@@ -336,7 +336,7 @@
 <li><code>FindInCsv</code> checks if a value exists in a specific column of the CSV file at the given file path. It returns a boolean indicating whether the value was found.</li>
 </ul>
 <p>A Discord webhook is a tool that allows you to send messages to a Discord channel from an external source. It is a URL that enables you to send messages to a specific Discord channel from your own website, application, or other platform. The messages appear as if they were sent by a user within Discord, but they are actually sent programmatically. This allows you to integrate Discord into your own systems, such as sending notifications, updates, or other automated messages.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> discord </span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">package</span><span style="color: #F8F8F2"> discord </span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"os"</span></span>
@@ -347,7 +347,7 @@
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #E6DB74">"bytes"</span></span>
 <span class="line"><span style="color: #F8F8F2">)</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SendWebhook</span><span style="color: #F8F8F2">(discordWebhook types.DiscordPayload) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Response, </span><span style="color: #66D9EF">error</span><span style="color: #F8F8F2">){</span></span>
+<span class="line"><span style="color: #F92672">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SendWebhook</span><span style="color: #F8F8F2">(discordWebhook types.DiscordPayload) (</span><span style="color: #F92672">*</span><span style="color: #F8F8F2">http.Response, </span><span style="color: #66D9EF; font-style: italic">error</span><span style="color: #F8F8F2">){</span></span>
 <span class="line"><span style="color: #F8F8F2">	discordUrl </span><span style="color: #F92672">:=</span><span style="color: #F8F8F2"> os.</span><span style="color: #66D9EF">Getenv</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"DISCORD_WEBHOOK"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> discordUrl </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">		log.</span><span style="color: #66D9EF">Fatal</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"DISCORD_WEBHOOK not set"</span><span style="color: #F8F8F2">)</span></span>
@@ -363,7 +363,7 @@
 <p>This is a Go function named “SendWebhook” that posts a Discord webhook to a specified Discord channel. The Discord webhook URL is obtained from an environment variable named “DISCORD_WEBHOOK”. The input to the function is a DiscordPayload of type “types.DiscordPayload” and contains the data to be sent in the webhook. The function then uses the “json” package to marshal the input into a JSON string, and the “http” package to send a HTTP POST request to the Discord webhook URL with the JSON string as the payload. The response from the POST request and any error are returned from the function.</p>
 <p>GitHub Actions allows you to automate tasks such as building, testing, and deploying code. It also supports automating tasks to run on a schedule using workflows. You can create a workflow that runs on a schedule using the “schedule” trigger in your workflow file.</p>
 <p>Here’s an example of a workflow that runs every day at 8pm UTC:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Schedule Task</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">Schedule Task</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">schedule</span><span style="color: #F8F8F2">:</span></span>
@@ -377,7 +377,7 @@
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">run</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">echo "Running Task on Schedule"</span></span></code></pre>
 <p>This workflow specifies that it should run on a schedule using the <code>schedule</code> trigger and the <code>cron</code> value of <code>0 20 * * *</code>. The <code>cron</code> value represents a standard cron syntax that specifies the schedule. In this case, it runs every day at 8pm UTC.</p>
 <p>You can add additional steps in the <code>steps</code> section to perform any other tasks you need to automate. You can also use environment variables in your workflow to pass in any required information, such as API keys or file paths.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">on</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">schedule</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># * is a special character in YAML so you have to quote this string</span></span>
 <span class="line"><span style="color: #F8F8F2">    - </span><span style="color: #F92672">cron</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">'50 * * * *'</span></span>
@@ -456,5 +456,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

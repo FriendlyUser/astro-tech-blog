@@ -74,32 +74,32 @@
 </ol>
 <h2 id="setting-up-the-project">Setting Up the Project</h2>
 <p>Create a new Rust project using Cargo:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo new uuid_example</span></span>
-<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> uuid_example</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">new</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">uuid_example</span></span>
+<span class="line"><span style="color: #66D9EF">cd</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">uuid_example</span></span></code></pre>
 <p>This will create a new Rust project in a directory called <code>uuid_example</code>.</p>
 <h2 id="adding-the-uuid-crate-dependency">Adding the <code>uuid</code> Crate Dependency</h2>
 <p>Now, let’s add the <code>uuid</code> crate as a dependency. Open the <code>Cargo.toml</code> file and add the following line under the <code>[dependencies]</code> section:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">uuid = </span><span style="color: #E6DB74">"0.8"</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">uuid = </span><span style="color: #E6DB74">"0.8"</span></span></code></pre>
 <p>This will include the <code>uuid</code> crate version 0.8.x in your project. Save the file and return to your terminal.</p>
 <h2 id="generating-uuids">Generating UUIDs</h2>
 <p>Let’s create a simple example to demonstrate how to generate UUIDs using the <code>uuid</code> crate. Open the <code>src/main.rs</code> file and replace its content with the following code:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #88846F">// Import the required modules</span></span>
-<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E; font-weight: bold">Uuid</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Import the required modules</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">Uuid</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
 <span class="line"><span style="color: #88846F">    // Generate a random UUID</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> random_uuid </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new_v4</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> random_uuid </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new_v4</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Random UUID: {}"</span><span style="color: #F8F8F2">, random_uuid);</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F">    // Generate a UUID based on a name and a namespace</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">let</span><span style="color: #F8F8F2"> namespace </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-weight: bold">Uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new_v5</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; font-weight: bold">Uuid</span><span style="color: #F92672">::</span><span style="color: #AE81FF">NAMESPACE_DNS</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"example.com"</span><span style="color: #F92672">.</span><span style="color: #A6E22E">as_bytes</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> namespace </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Uuid</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new_v5</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">Uuid</span><span style="color: #F92672">::</span><span style="color: #AE81FF">NAMESPACE_DNS</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"example.com"</span><span style="color: #F92672">.</span><span style="color: #A6E22E">as_bytes</span><span style="color: #F8F8F2">());</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Namespace-based UUID: {}"</span><span style="color: #F8F8F2">, namespace);</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Here, we’re using the <code>Uuid</code> struct from the <code>uuid</code> crate. We generate a random UUID using the <code>new_v4</code> method, which creates a version 4 UUID. A version 4 UUID is randomly generated and has 122 bits of randomness. We also generate a namespace-based UUID using the <code>new_v5</code> method. This method creates a version 5 UUID, which is based on the SHA-1 hash of a namespace and a name. In our example, we use the DNS namespace and the name “example.com”.</p>
 <p>Now, run the program using Cargo:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">cargo run</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">run</span></span></code></pre>
 <p>You should see output similar to the following:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">Random UUID: 3e3c5e5c-8c7d-4b29-aa03-6f1b6e1d6f53</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Random UUID: 3e3c5e5c-8c7d-4b29-aa03-6f1b6e1d6f53</span></span>
 <span class="line"><span style="color: #F8F8F2">Namespace-based UUID: 9073920b-4b6c-5d1c-8918-74fb0e2cc2c2</span></span></code></pre>
 <p>Please note that your output will be different since UUIDs are unique.</p>
 <h2 id="conclusion">Conclusion</h2>
@@ -125,5 +125,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

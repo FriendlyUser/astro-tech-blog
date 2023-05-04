@@ -73,18 +73,18 @@
 <li>Make an API request to the Overleaf API using the file URL. You can do this using the following endpoint: <code>https://www.overleaf.com/docs?snip_uri=URL</code>. Replace “URL” with the URL of your LaTeX file, which should end in <code>.tex</code>.</li>
 </ol>
 <p>Here is some sample code in Python that demonstrates how to use the Overleaf API to open a file:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> webbrowser</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> webbrowser</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Replace FILE\_URL with the URL of your LaTeX file</span></span>
 <span class="line"><span style="color: #AE81FF">FILE_URL</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'http://pathtoyourfile.tex'</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Construct the API request URL</span></span>
-<span class="line"><span style="color: #F8F8F2">api_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">f</span><span style="color: #E6DB74">'https://www.overleaf.com/docs?snip_uri=</span><span style="color: #AE81FF">{FILE_URL}</span><span style="color: #E6DB74">'</span></span>
+<span class="line"><span style="color: #F8F8F2">api_url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">f</span><span style="color: #E6DB74">'https://www.overleaf.com/docs?snip_uri=</span><span style="color: #AE81FF">{FILE_URL}</span><span style="color: #E6DB74">'</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #88846F"># Make the API request</span></span>
 <span class="line"><span style="color: #F8F8F2">webbrowser.open(api_url)</span></span></code></pre>
 <p>This code will open the LaTeX file in Overleaf in a new tab or window in your web browser. You can also use this code to open a LaTeX file in Overleaf from a website or document.</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">a</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"https://www.overleaf.com/docs?snip_uri={FILE_URL}"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">target</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"_blank"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">a</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"https://www.overleaf.com/docs?snip_uri={FILE_URL}"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">target</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"_blank"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
 <span class="line"><span style="color: #F8F8F2">        display: </span><span style="color: #E6DB74">"inline-block"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">        backgroundColor: </span><span style="color: #E6DB74">"green"</span><span style="color: #F8F8F2">,</span></span>
 <span class="line"><span style="color: #F8F8F2">        color: </span><span style="color: #E6DB74">"white"</span><span style="color: #F8F8F2">,</span></span>
@@ -99,10 +99,10 @@
 <p>The style of the link is defined using inline CSS, with a green background color, white text, and other formatting properties such as padding and border radius. The text inside the link reads “Deploy to overleaf” and is centered using the <code>text-align</code> property.</p>
 <p>When a user clicks on this link, it will open the LaTeX file in Overleaf in a new tab or window, allowing them to view and edit the file. The link could be useful for sharing a LaTeX file with collaborators or for quickly accessing a file from a website or document.</p>
 <p>To parameterize the component you provided as a React component, you can modify the code to use props. Here is an example implementation:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #66D9EF">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">OverleafDeployButton</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">props</span><span style="color: #F8F8F2">) {</span></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> { </span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">OverleafDeployButton</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">props</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> { </span></span>
 <span class="line"><span style="color: #F8F8F2"> texFileBaseUrl,</span></span>
 <span class="line"><span style="color: #F8F8F2"> relFolderPath,</span></span>
 <span class="line"><span style="color: #F8F8F2"> texFilePath,</span></span>
@@ -110,7 +110,7 @@
 <span class="line"><span style="color: #F8F8F2"> buttonStyle </span></span>
 <span class="line"><span style="color: #F8F8F2"> } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> props;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> fileUrl </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`https://www.overleaf.com/docs?snip_uri=</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">texFilePath</span><span style="color: #F92672">}</span><span style="color: #E6DB74">.tex`</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> fileUrl </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">`https://www.overleaf.com/docs?snip_uri=</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">texFilePath</span><span style="color: #F92672">}</span><span style="color: #E6DB74">.tex`</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
 <span class="line"><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #F92672">a</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">href</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">fileUrl</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">target</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"\_blank"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">buttonStyle</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
@@ -122,7 +122,7 @@
 <p>We use the destructured props to construct the <code>fileUrl</code> variable, which is then used in the anchor tag’s <code>href</code> attribute.</p>
 <p>The button text and style are also passed as props and used to set the text and style of the anchor tag.</p>
 <p>This component can then be used in a React application by importing the <code>OverleafDeployButton</code> component and passing in the required props, like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF">OverleafDeployButton</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">OverleafDeployButton</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">texFilePath</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/BlogDiagrams/buildingDapp"</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">buttonText</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Deploy to Overleaf"</span></span>
 <span class="line"><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">buttonStyle</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
@@ -158,5 +158,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>

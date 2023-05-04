@@ -94,7 +94,7 @@ of the asynchronous operations. To avoid callback hell, it is
 recommended to use the async/await syntax introduced in ES2017, or to
 use promises and the Promise.then() method.</p>
 <p>Here is an example of using promises in JavaScript:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> myPromise </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Promise</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">resolve</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F">reject</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> myPromise </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Promise</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">resolve</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">reject</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">// do something asynchronous</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #88846F">/* asynchronous operation was successful */</span><span style="color: #F8F8F2">) {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">resolve</span><span style="color: #F8F8F2">(</span><span style="color: #88846F">/* result of the asynchronous operation */</span><span style="color: #F8F8F2">);</span></span>
@@ -104,10 +104,10 @@ use promises and the Promise.then() method.</p>
 <span class="line"><span style="color: #F8F8F2">});</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">myPromise</span></span>
-<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">result</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">result</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// do something with the result of the promise</span></span>
 <span class="line"><span style="color: #F8F8F2">  })</span></span>
-<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">catch</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">catch</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">error</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// handle any error that occurred during the promise</span></span>
 <span class="line"><span style="color: #F8F8F2">  });</span></span></code></pre>
 <p>In the example above, the myPromise object is created with a function
@@ -177,7 +177,7 @@ requested.</p>
 <p>To make an HTTP request in , you can use the object or the fetch API.
 Here’s an example of how to use to make a GET request to fetch some data
 from a server:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">var xhr = new XMLHttpRequest();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">var xhr = new XMLHttpRequest();</span></span>
 <span class="line"><span style="color: #F8F8F2">xhr.open('GET', 'https://www.example.com/api/data', true);</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">xhr.onload = function() {</span></span>
@@ -189,7 +189,7 @@ from a server:</p>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">xhr.send();</span></span></code></pre>
 <p>Here’s an example of how to use the fetch API to make the same request:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">fetch('https://www.example.com/api/data')</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">fetch('https://www.example.com/api/data')</span></span>
 <span class="line"><span style="color: #F8F8F2">  .then(response => response.json())</span></span>
 <span class="line"><span style="color: #F8F8F2">  .then(data => {</span></span>
 <span class="line"><span style="color: #F8F8F2">    // do something with the data</span></span>
@@ -207,7 +207,7 @@ Pokémon video game series. The API provides a GraphQL endpoint that
 allows you to query the API using the GraphQL language.</p>
 <p>Here is an example of using the fetch() method to retrieve data about a
 Pokemon from the PokeAPI:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">fetch('https://pokeapi.co/api/v2/pokemon/1')</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">fetch('https://pokeapi.co/api/v2/pokemon/1')</span></span>
 <span class="line"><span style="color: #F8F8F2">  .then(response => response.json())</span></span>
 <span class="line"><span style="color: #F8F8F2">  .then(data => {</span></span>
 <span class="line"><span style="color: #F8F8F2">    console.log(data);</span></span>
@@ -224,7 +224,7 @@ contains the key-value pairs for the headers you want to include in the
 request.</p>
 <p>For example, if you wanted to include an Authorization header with a
 bearer token, you could do something like this:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">const headers = {</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">const headers = {</span></span>
 <span class="line"><span style="color: #F8F8F2">  'Authorization': 'Bearer &#x3C;your-bearer-token-here>'</span></span>
 <span class="line"><span style="color: #F8F8F2">};</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
@@ -243,7 +243,7 @@ if the user navigates away from the current page, or if the user has
 started a new request that replaces the previous one.</p>
 <p>Here is an example of how to use the AbortController with the fetch()
 method:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">const controller = new AbortController();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">const controller = new AbortController();</span></span>
 <span class="line"><span style="color: #F8F8F2">const signal = controller.signal;</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">fetch('https://pokeapi.co/api/v2/pokemon/1', { signal })</span></span>
@@ -295,10 +295,10 @@ convenient and efficient way to extract data from HTML pages and can be
 easily integrated with the fetch function.</p>
 <p>Here is an example of how you might use the fetch function and Cheerio
 to scrape data from an HTML page:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">response</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> response.</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">())</span></span>
-<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F">html</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">=></span><span style="color: #F8F8F2"> {</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> $ </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cheerio.</span><span style="color: #A6E22E">load</span><span style="color: #F8F8F2">(html);</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">const</span><span style="color: #F8F8F2"> data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">$</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'#some-element'</span><span style="color: #F8F8F2">).</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">();</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">response</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> response.</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">())</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">html</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> $ </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cheerio.</span><span style="color: #A6E22E">load</span><span style="color: #F8F8F2">(html);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">$</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'#some-element'</span><span style="color: #F8F8F2">).</span><span style="color: #A6E22E">text</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// do something with the data here</span></span>
 <span class="line"><span style="color: #F8F8F2">  });</span></span></code></pre>
 <p>In this example, the fetch function is used to make a GET request to the
@@ -334,7 +334,7 @@ number of users who may be requesting the same data. In these cases,
 caching can reduce the load on the server and improve the overall
 performance of the application.</p>
 <p>Here is an example of using a simple cache with the fetch function:</p>
-<pre is:raw="" class="astro-code" style="background-color: #272822; overflow-x: auto;"><code><span class="line"><span style="color: #F8F8F2">// Create a cache to store the responses from fetch</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">// Create a cache to store the responses from fetch</span></span>
 <span class="line"><span style="color: #F8F8F2">const cache = new Map();</span></span>
 <span class="line"><span style="color: #F8F8F2"></span></span>
 <span class="line"><span style="color: #F8F8F2">// Define a function that uses fetch to request data from a server</span></span>
@@ -409,5 +409,5 @@ requirements of your application.</p>
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-03<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-04<!-- -->.</div></div></div>
   </body></html>
