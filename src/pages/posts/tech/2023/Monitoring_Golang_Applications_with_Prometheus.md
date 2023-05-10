@@ -4,7 +4,7 @@ pubDate: "2023-11-21T02:20:37.000Z"
 description: "In this article, we'll explore how to instrument a Golang application using Prometheus, and visualize the metrics in Grafana"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4264430676.png
 ---
 # Monitoring Golang Applications with Prometheus
 

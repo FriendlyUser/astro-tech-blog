@@ -4,7 +4,7 @@ pubDate: "2024-01-15T08:31:21.000Z"
 description: "This article will provide an overview of the MVC framework, discuss its main components, and explore some of its key features.g"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4161054396.png
 ---
 # Microsoft.AspNetCore.Mvc: An Overview
 

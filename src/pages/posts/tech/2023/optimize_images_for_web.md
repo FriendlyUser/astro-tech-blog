@@ -4,7 +4,7 @@ title: How to Optimize Image Loading for a Website.
 description: High-quality images make a site visually appealing, but they can also increase the page load times, negatively impacting the user experience and search engine optimization (SEO). To strike a balance between performance and aesthetics, it is imperative to optimize image loading for your website.
 pubDate: Fri, 14 June 2024
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/4252050732.png
 ---
 
 # How to Optimize Image Loading for a Website

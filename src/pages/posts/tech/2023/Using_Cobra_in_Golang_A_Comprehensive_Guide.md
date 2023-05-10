@@ -4,7 +4,7 @@ pubDate: "2023-09-26T05:59:48.000Z"
 description: "This article will guide you through the process of creating a CLI application using Cobra in Golang."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3558128873.png
 ---
 # Using Cobra in Golang: A Comprehensive Guide
 

@@ -4,7 +4,7 @@ pubDate: "2024-05-09T12:01:52.000Z"
 description: "This article will explore the benefits of using `zap` in your Go projects and will walk you through the process of integrating it into your application."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3582974242.png
 ---
 # Using `zap` for Efficient Logging in Go
 

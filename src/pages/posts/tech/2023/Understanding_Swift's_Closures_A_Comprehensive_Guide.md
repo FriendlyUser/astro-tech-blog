@@ -4,7 +4,7 @@ pubDate: "2025-04-11T21:26:55.000Z"
 description: "This article will explore the different aspects of closures in Swift, including their syntax, capture and storage of constants and variables, and use cases."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3613662819.png
 ---
 # Understanding Swift's Closures: A Comprehensive Guide
 

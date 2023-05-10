@@ -4,7 +4,7 @@ pubDate: "2023-09-16T19:17:25.000Z"
 description: "In this article, we will explore some of the most popular and effective C++ debugging and profiling tools that can help you diagnose and resolve issues in your codebase"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/14447351.png
 ---
 # A Comprehensive Guide to C++ Debugging and Profiling Tools
 

@@ -4,7 +4,7 @@ pubDate: "2024-09-08T17:17:24.000Z"
 description: "In this article, we will explore the basics of pointers and references in C++ and discuss their similarities, differences, and use cases"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4279596222.png
 ---
 # Pointers and References in C++: A Comprehensive Guide
 

@@ -4,7 +4,7 @@ pubDate: "2024-01-17T06:08:15.000Z"
 description: "In this article, we will explore the core concepts of the Netty framework, its architecture, and how to build a simple server and client application"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3598219737.png
 ---
 # Understanding the Netty Network Framework
 

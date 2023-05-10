@@ -1,7 +1,7 @@
 ---
 title: C++ Exceptions and Error Handling A Comprehensive Guide
 pubDate: "2024-01-13T03:27:04.000Z"
-description: "This article will provide an in-depth look at C++ exceptions and error handling, including exception types, how to throw and catch exceptions, and best practices for using exceptions in your code."
+description: "This article will provide an in-depth look at C++ exceptions and error handling, including exception types, how to throw and catch exceptions, and best practices for using exceptions in your code.  "
 tags: []
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png

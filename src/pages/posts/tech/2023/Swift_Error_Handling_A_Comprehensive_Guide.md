@@ -4,7 +4,7 @@ pubDate: "2024-03-18T15:08:37.000Z"
 description: "This article will provide a comprehensive guide to Swift's error handling, covering the basics, error propagation, and advanced techniques."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3847215807.png
 ---
 # Swift Error Handling: A Comprehensive Guide
 

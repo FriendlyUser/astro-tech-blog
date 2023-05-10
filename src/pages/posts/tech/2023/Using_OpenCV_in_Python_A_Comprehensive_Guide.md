@@ -4,7 +4,7 @@ pubDate: "2023-11-24T14:04:38.000Z"
 description: "This article will provide a comprehensive guide on how to use OpenCV in Python, covering installation, basic operations, image processing techniques, and more."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3437532028.png
 ---
 # Using OpenCV in Python: A Comprehensive Guide
 

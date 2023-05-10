@@ -4,7 +4,7 @@ pubDate: "2023-12-22T01:55:57.000Z"
 description: "Logging is a powerful, flexible, and extendable logging framework for .NET developers."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4161054296.png
 ---
 # Microsoft.Extensions.Logging: An In-depth Guide to Effective Logging in .NET
 

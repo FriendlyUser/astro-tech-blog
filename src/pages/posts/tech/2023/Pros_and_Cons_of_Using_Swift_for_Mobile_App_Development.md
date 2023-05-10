@@ -4,7 +4,7 @@ pubDate: "2024-06-12T20:34:39.000Z"
 description: "In this article, we'll discuss the pros and cons of using Swift for mobile app development, to help you decide if it's the right choice for your next project"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/244959930.png
 ---
 # Pros and Cons of Using Swift for Mobile App Development
 

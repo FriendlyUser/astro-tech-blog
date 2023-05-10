@@ -4,7 +4,7 @@ pubDate: "2024-03-03T22:50:03.000Z"
 description: "In this article, we will discuss the architecture, components, and extension points of this middleware, along with examples of how to implement custom authentication schemes."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4181036141.png
 ---
 # Microsoft.AspNetCore.Authentication: A Deep Dive into Authentication Middleware
 

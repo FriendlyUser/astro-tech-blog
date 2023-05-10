@@ -4,7 +4,7 @@ pubDate: "2023-11-13T15:57:56.000Z"
 description: "Microsoft.AspNetCore.Cors is a middleware component provided by the ASP.NET Core framework to help developers implement and manage CORS policies in their web applications."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3752564139.png
 ---
 # Understanding and Implementing Microsoft.AspNetCore.Cors
 

@@ -4,7 +4,7 @@ pubDate: "2024-05-21T21:09:39.000Z"
 description: "This article delves into the origins, benefits, and core elements of the Android Support Library, offering a clear understanding of its functionality and its importance in the Android development ecosystem."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3793215953.png
 ---
 # The Android Support Library: A Comprehensive Overview
 

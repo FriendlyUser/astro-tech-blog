@@ -4,7 +4,7 @@ pubDate: "2024-10-23T17:32:43.000Z"
 description: "In today's digital age, programming has become crucial for individuals, businesses, and society as a whole."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/4042044064.png
 ---
 # Overview of Programming and Its Importance
 

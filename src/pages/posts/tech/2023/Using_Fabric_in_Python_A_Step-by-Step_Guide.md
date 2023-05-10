@@ -4,7 +4,7 @@ pubDate: "2024-08-29T09:57:22.000Z"
 description: "This article will guide you through the process of installing and using Fabric in Python, with practical examples"
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3541980154.png
 ---
 # Using Fabric in Python: A Step-by-Step Guide
 

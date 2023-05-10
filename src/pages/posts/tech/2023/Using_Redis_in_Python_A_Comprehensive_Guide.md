@@ -4,7 +4,7 @@ pubDate: "2024-08-19T21:25:57.000Z"
 description: "This article will guide you through the process of using Redis in Python applications."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3382720876.png
 ---
 # Using Redis in Python: A Comprehensive Guide
 

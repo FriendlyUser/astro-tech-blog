@@ -4,7 +4,7 @@ pubDate: "2024-08-22T15:54:27.000Z"
 description: "In this article, we will explore the core concepts of Microsoft.Extensions.Configuration and learn how to leverage its features to create maintainable and flexible configuration management in .NET applications."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3619698287.png
 ---
 # Understanding Microsoft.Extensions.Configuration: A Comprehensive Guide
 

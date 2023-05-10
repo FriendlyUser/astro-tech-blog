@@ -4,7 +4,7 @@ pubDate: "2024-03-16T02:33:51.000Z"
 description: "This article will discuss the interoperability between Swift and C++, and how you can bridge the gap between these two powerful languages."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/3972119242.png
 ---
 # Swift and C++ Interoperability: Bridging the Gap Between Two Powerful Languages
 
