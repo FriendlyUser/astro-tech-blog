@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Guava A Comprehensive Guide for Java Developers - Astro Tech Blog</title>
+    <meta name="description" content="This article will explore the key features of Guava and provide code samples to help Java developers better understand its benefits.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Google Guava A Comprehensive Guide for Java Developers</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-07-24T12:49:13.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3582974242.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="google-guava-a-comprehensive-guide-for-java-developers">Google Guava: A Comprehensive Guide for Java Developers</h1>
+<p>Google Guava is a powerful, open-source Java library developed by Google that provides an array of utility methods and classes. It enhances the Java programming language by offering a more extensive and efficient API for tasks like collections, caching, functional programming, primitives support, and concurrency. This article will explore the key features of Guava and provide code samples to help Java developers better understand its benefits.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#what-is-google-guava">What is Google Guava?</a></li>
+<li><a href="#guava-collections">Guava Collections</a></li>
+<li><a href="#immutable-collections">Immutable Collections</a></li>
+<li><a href="#multimap-bimap-and-table">Multimap, BiMap, and Table</a></li>
+<li><a href="#caching">Caching</a></li>
+<li><a href="#functional-programming">Functional Programming</a></li>
+<li><a href="#concurrency-utilities">Concurrency Utilities</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<h2 id="what-is-google-guava">What is Google Guava?</h2>
+<p>Google Guava is a versatile Java library that provides a wealth of features to simplify and streamline common programming tasks. It offers a better alternative to using standard Java libraries, making code more readable, efficient, and less prone to errors. The library is used extensively by Google in many of its projects and is regarded as a reliable and well-maintained library.</p>
+<h2 id="guava-collections">Guava Collections</h2>
+<p>Guava extends the Java Collections Framework by providing additional collection types and utility methods. Some of these enhancements include:</p>
+<h3 id="lists">Lists</h3>
+<p>Guava provides a <code>Lists</code> utility class to create and manipulate lists. For example, the <code>Lists.newArrayList</code> method creates a new <code>ArrayList</code> with the given elements:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Lists</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Lists.</span><span style="color: #A6E22E">newArrayList</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Charlie"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<h3 id="sets">Sets</h3>
+<p>Similarly, the <code>Sets</code> utility class offers methods for creating and manipulating sets. The <code>Sets.newHashSet</code> method creates a new <code>HashSet</code> with the given elements:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Sets</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Set</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Sets.</span><span style="color: #A6E22E">newHashSet</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Charlie"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<h2 id="immutable-collections">Immutable Collections</h2>
+<p>Immutable collections are collections that cannot be modified after they are created. They are thread-safe and more efficient than their mutable counterparts. Guava provides immutable versions of lists, sets, and maps.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.ImmutableList</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">ImmutableList</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ImmutableList.</span><span style="color: #A6E22E">of</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Charlie"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<h2 id="multimap-bimap-and-table">Multimap, BiMap, and Table</h2>
+<p>Guava introduces new collection types like Multimap, BiMap, and Table which address specific use cases:</p>
+<h3 id="multimap">Multimap</h3>
+<p>A <code>Multimap</code> is a map where each key can have multiple values. Guava provides several implementations, such as <code>ArrayListMultimap</code> and <code>HashMultimap</code>.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.ArrayListMultimap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Multimap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Multimap</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> multimap </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ArrayListMultimap.</span><span style="color: #A6E22E">create</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">multimap.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Fruits"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Apple"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">multimap.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Fruits"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Banana"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">multimap.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Vegetables"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Carrot"</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<h3 id="bimap">BiMap</h3>
+<p>A <code>BiMap</code> is a bidirectional map that maintains an inverse view of itself, allowing developers to quickly look up keys based on values and vice versa.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.BiMap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.HashBiMap</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">BiMap</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">Integer</span><span style="color: #F8F8F2">> biMap </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> HashBiMap.</span><span style="color: #A6E22E">create</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">biMap.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"One"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">biMap.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Two"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Get the key for value 2</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> key </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> biMap.</span><span style="color: #A6E22E">inverse</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">);  </span><span style="color: #88846F">// key = "Two"</span></span></code></pre>
+<h3 id="table">Table</h3>
+<p>A <code>Table</code> represents a two-dimensional map, where each cell has a row key, a column key, and a value.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.HashBasedTable</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Table</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Table</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">Integer</span><span style="color: #F8F8F2">> table </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> HashBasedTable.</span><span style="color: #A6E22E">create</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">table.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Math"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">90</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">table.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Science"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">85</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">table.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Math"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">80</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">table.</span><span style="color: #A6E22E">put</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Science"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">75</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<h2 id="caching">Caching</h2>
+<p>Guava provides a <code>Cache</code> interface for in-memory caching with a flexible and powerful implementation called <code>LoadingCache</code>. It supports features like automatic loading, eviction, and time-based expiration.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.cache.CacheBuilder</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.cache.CacheLoader</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.cache.LoadingCache</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">LoadingCache</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> cache </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> CacheBuilder.</span><span style="color: #A6E22E">newBuilder</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    .</span><span style="color: #A6E22E">maximumSize</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    .</span><span style="color: #A6E22E">expireAfterAccess</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">, TimeUnit.MINUTES)</span></span>
+<span class="line"><span style="color: #F8F8F2">    .</span><span style="color: #A6E22E">build</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">CacheLoader</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">load</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">key</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetchDataFromSource</span><span style="color: #F8F8F2">(key);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">    });</span></span></code></pre>
+<h2 id="functional-programming">Functional Programming</h2>
+<p>Guava offers limited support for functional programming,including transformations and filtering on collections using <code>Function</code> and <code>Predicate</code> interfaces:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.base.Function</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.base.Predicate</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Collections2</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.collect.Lists</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">List</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Lists.</span><span style="color: #A6E22E">newArrayList</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Alice"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Bob"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"Charlie"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Define a function to convert names to uppercase</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Function</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> toUpperCase </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Function</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">apply</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">input</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> input.</span><span style="color: #A6E22E">toUpperCase</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Transform a list of names to uppercase</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Collection</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> upperCaseNames </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Collections2.</span><span style="color: #A6E22E">transform</span><span style="color: #F8F8F2">(names, toUpperCase);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Define a predicate to filter names starting with 'A'</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Predicate</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> startsWithA </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Predicate</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">apply</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">input</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> input.</span><span style="color: #A6E22E">startsWith</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"A"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Filter names starting with 'A'</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">Collection</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> filteredNames </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Collections2.</span><span style="color: #A6E22E">filter</span><span style="color: #F8F8F2">(names, startsWithA);</span></span></code></pre>
+<p>However, Java 8 introduced streams and lambda expressions, which are more powerful tools for functional programming. As a result, Guava’s functional programming features are now considered obsolete and not recommended for new projects.</p>
+<h2 id="concurrency-utilities">Concurrency Utilities</h2>
+<p>Guava provides concurrency utilities that simplify working with threads, such as <code>ListenableFuture</code> and <code>Service</code>:</p>
+<h3 id="listenablefuture">ListenableFuture</h3>
+<p>A <code>ListenableFuture</code> extends the standard <code>Future</code> interface and allows developers to register callbacks to be executed when the future completes.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.util.concurrent.</span><span style="color: #FD971F">*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Example</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">[] </span><span style="color: #FD971F; font-style: italic">args</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Create an executor for the future</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">ListeningExecutorService</span><span style="color: #F8F8F2"> executor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> MoreExecutors.</span><span style="color: #A6E22E">listeningDecorator</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            Executors.</span><span style="color: #A6E22E">newSingleThreadExecutor</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Submit a task to the executor</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">ListenableFuture</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">> future </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> executor.</span><span style="color: #A6E22E">submit</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Callable</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">            @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">call</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetchDataFromSource</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">        });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Add a callback to be executed when the future completes</span></span>
+<span class="line"><span style="color: #F8F8F2">        Futures.</span><span style="color: #A6E22E">addCallback</span><span style="color: #F8F8F2">(future, </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">FutureCallback</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">            @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onSuccess</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">String</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">result</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">                System.out.</span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Data fetched: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> result);</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">            @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">onFailure</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">Throwable</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">t</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">                System.err.</span><span style="color: #A6E22E">println</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Failed to fetch data: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> t.</span><span style="color: #A6E22E">getMessage</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">        }, MoreExecutors.</span><span style="color: #A6E22E">directExecutor</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="service">Service</h3>
+<p>The <code>Service</code> interface provides a uniform way to manage the lifecycle of components that perform background tasks.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">com.google.common.util.concurrent.AbstractService</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">MyService</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">extends</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; font-style: italic; text-decoration: underline">AbstractService</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">private</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">ExecutorService</span><span style="color: #F8F8F2"> executor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Executors.</span><span style="color: #A6E22E">newSingleThreadExecutor</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">protected</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">doStart</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        executor.</span><span style="color: #A6E22E">submit</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Runnable</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">            @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">run</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">try</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #A6E22E">performBackgroundTask</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #A6E22E">notifyStarted</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">                } </span><span style="color: #F92672">catch</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF; font-style: italic">Throwable</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">t</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">                    </span><span style="color: #A6E22E">notifyFailed</span><span style="color: #F8F8F2">(t);</span></span>
+<span class="line"><span style="color: #F8F8F2">                }</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">        });</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">protected</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">doStop</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        executor.</span><span style="color: #A6E22E">shutdown</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">notifyStopped</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Google Guava is a powerful, comprehensive library that provides a wide range of utilities for Java developers. Its features enhance the Java programming language, making code more readable, efficient, and less prone to errors. Although some of its functional programming features are now considered obsolete due to Java 8’s introduction of streams and lambda expressions, Guava’s other features, such as collections, caching, and concurrency utilities, continue to offer significant benefits to developers.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

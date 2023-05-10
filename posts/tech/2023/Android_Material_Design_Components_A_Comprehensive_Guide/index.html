@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Material Design Components A Comprehensive Guide - Astro Tech Blog</title>
+    <meta name="description" content="This article provides an overview of Android Material Design Components and demonstrates how to use them effectively in your Android applications.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Android Material Design Components A Comprehensive Guide</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-07-29T08:24:55.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/654074938.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="android-material-design-components-a-comprehensive-guide">Android Material Design Components: A Comprehensive Guide</h1>
+<p>Material Design is a design language developed by Google in 2014. It aims to create a unified and consistent user experience across various platforms, devices, and input methods. Android Material Design Components (MDC) is a set of components and styles that help developers build Android applications in line with Material Design guidelines.</p>
+<p>This article provides an overview of Android Material Design Components and demonstrates how to use them effectively in your Android applications.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction to Material Design Components</a></li>
+<li><a href="#setup">Setting Up Material Design Components</a></li>
+<li><a href="#key-components">Exploring Key Components</a>
+<ul>
+<li><a href="#buttons">Buttons</a></li>
+<li><a href="#text-fields">Text Fields</a></li>
+<li><a href="#cards">Cards</a></li>
+<li><a href="#app-bars">App Bars</a></li>
+<li><a href="#navigation">Navigation</a></li>
+<li><a href="#snackbars">Snackbars</a></li>
+</ul>
+</li>
+<li><a href="#theming">Theming</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<h2 id="1-introduction-to-material-design-components">1. Introduction to Material Design Components <a name="introduction"></a></h2>
+<p>Material Design Components (MDC) is a library that provides developers with pre-built UI components that adhere to Material Design principles. These components are designed to be adaptive, responsive, and flexible, making it easier to create professional and visually appealing Android applications.</p>
+<p>Some of the key advantages of using MDC in your Android applications include:</p>
+<ul>
+<li><strong>Consistent design</strong>: By using MDC, your app will automatically follow Material Design guidelines, ensuring a familiar and consistent user experience.</li>
+<li><strong>Faster development</strong>: MDC components are pre-built and easily customizable, saving you time during development.</li>
+<li><strong>Accessibility</strong>: MDC components are designed with accessibility in mind, making it easier for users with disabilities to interact with your app.</li>
+</ul>
+<h2 id="2-setting-up-material-design-components">2. Setting Up Material Design Components <a name="setup"></a></h2>
+<p>To start using Material Design Components in your Android project, follow these steps:</p>
+<ol>
+<li>Add the Material Components for Android library to your app’s <code>build.gradle</code> file:</li>
+</ol>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dependencies {</span></span>
+<span class="line"><span style="color: #F8F8F2">    implementation </span><span style="color: #E6DB74">'com.google.android.material:material:1.4.0'</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<ol start="2">
+<li>In your <code>AndroidManifest.xml</code> file, set your app theme to inherit from a Material Components theme:</li>
+</ol>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">application</span></span>
+<span class="line"><span style="color: #F8F8F2">    ...</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:theme</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Theme.MaterialComponents.DayNight"</span><span style="color: #F8F8F2">></span></span></code></pre>
+<ol start="3">
+<li>Create a new style in <code>res/values/styles.xml</code> that extends a Material Components theme:</li>
+</ol>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">style</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"AppTheme"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parent</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Theme.MaterialComponents.DayNight"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Customize your theme here. --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h2 id="3-exploring-key-components">3. Exploring Key Components <a name="key-components"></a></h2>
+<h3 id="buttons">Buttons <a name="buttons"></a></h3>
+<p>MDC provides several types of buttons, including:</p>
+<ul>
+<li><strong>Text Button</strong>: A button with text and no background.</li>
+<li><strong>Outlined Button</strong>: A button with text and a border.</li>
+<li><strong>Contained Button</strong>: A button with text, a background, and an elevation.</li>
+</ul>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">&#x3C;!-- Text Button --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">Button</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/text_button"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">style</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Widget.MaterialComponents.Button.TextButton"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:text</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Text Button"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">&#x3C;!-- Outlined Button --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">Button</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/outlined_button"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">style</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Widget.MaterialComponents.Button.OutlinedButton"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:text</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Outlined Button"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">&#x3C;!-- Contained Button --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">Button</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/contained_button"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">style</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Widget.MaterialComponents.Button"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:text</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Contained Button"</span><span style="color: #F8F8F2"> /></span></span></code></pre>
+<h3 id="text-fields">Text Fields <a name="text-fields"></a></h3>
+<p>MDC provides a variety of text field styles, including filled and outlined text fields.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">&#x3C;!-- Filled Text Field --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.textfield.TextInputLayout</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/filled_text_field"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">style</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Widget.MaterialComponents.TextInputLayout.FilledBox"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">com.google.android.material.textfield.TextInputEditText</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:hint</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Filled Text Field"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">com.google.android.material.textfield.TextInputLayout</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">&#x3C;!-- Outlined Text Field --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.textfield.TextInputLayout</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/outlined_text_field"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">style</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">com.google.android.material.textfield.TextInputEditText</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:hint</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"OutlinedText Field"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">com.google.android.material.textfield.TextInputLayout</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h3 id="cards">Cards <a name="cards"></a></h3>
+<p>Cards are a versatile component that can be used to display content and actions related to a single subject. MDC provides a <code>MaterialCardView</code> component that extends the default <code>CardView</code>.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.card.MaterialCardView</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/material_card"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">app:cardElevation</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"4dp"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">app:cardCornerRadius</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"8dp"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Card content goes here --></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">com.google.android.material.card.MaterialCardView</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h3 id="app-bars">App Bars <a name="app-bars"></a></h3>
+<p>App bars provide a dedicated space for app branding, navigation, and actions. MDC provides a <code>Toolbar</code> component that can be customized with Material Design styles.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.appbar.AppBarLayout</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">androidx.appcompat.widget.Toolbar</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/toolbar"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"?attr/actionBarSize"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">app:title</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"App Title"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">com.google.android.material.appbar.AppBarLayout</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h3 id="navigation">Navigation <a name="navigation"></a></h3>
+<p>MDC provides several components for implementing navigation within your app, including Bottom Navigation, Navigation Drawer, and Tabs.</p>
+<ul>
+<li><strong>Bottom Navigation</strong>: A bar with icons and text labels for switching between different views in an app.</li>
+</ul>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.bottomnavigation.BottomNavigationView</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/bottom_navigation"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">app:menu</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@menu/bottom_navigation_menu"</span><span style="color: #F8F8F2"> /></span></span></code></pre>
+<ul>
+<li><strong>Navigation Drawer</strong>: A panel that slides in from the left or right edge of the screen, typically used for navigation.</li>
+</ul>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">androidx.drawerlayout.widget.DrawerLayout</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/drawer_layout"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Main content goes here --></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">com.google.android.material.navigation.NavigationView</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/navigation_view"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_gravity</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"start"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">app:menu</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@menu/navigation_drawer_menu"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">androidx.drawerlayout.widget.DrawerLayout</span><span style="color: #F8F8F2">></span></span></code></pre>
+<ul>
+<li><strong>Tabs</strong>: A set of horizontally-scrollable tabs for organizing content at a high level.</li>
+</ul>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">com.google.android.material.tabs.TabLayout</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:id</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"@+id/tab_layout"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"match_parent"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">com.google.android.material.tabs.TabItem</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:text</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Tab 1"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">com.google.android.material.tabs.TabItem</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_width</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:layout_height</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"wrap_content"</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">android:text</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Tab 2"</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">com.google.android.material.tabs.TabLayout</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h3 id="snackbars">Snackbars <a name="snackbars"></a></h3>
+<p>Snackbars provide lightweight feedback about an operation in the form of a brief message at the bottom of the screen.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Snackbar.</span><span style="color: #A6E22E">make</span><span style="color: #F8F8F2">(view, </span><span style="color: #E6DB74">"Snackbar message"</span><span style="color: #F8F8F2">, Snackbar.LENGTH_SHORT).</span><span style="color: #A6E22E">show</span><span style="color: #F8F8F2">();</span></span></code></pre>
+<h2 id="4-theming">4. Theming <a name="theming"></a></h2>
+<p>MDC supports powerful theming capabilities that allow you to easily customize the look and feel of your app. You can define a custom theme by extending a Material Components theme and overriding the desired attributes.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">style</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"AppTheme"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parent</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Theme.MaterialComponents.DayNight"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Primary color --></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"colorPrimary"</span><span style="color: #F8F8F2">>@color/colorPrimary&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Primary dark color --></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"colorPrimaryDark"</span><span style="color: #F8F8F2">>@color/colorPrimaryDark&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Accent color --></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"colorAccent"</span><span style="color: #F8F8F2">>@color/colorAccent&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">&#x3C;!-- Default button background color --></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"materialButtonStyle"</span><span style="color: #F8F8F2">>@style/MyButtonStyle&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">style</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"MyButtonStyle"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parent</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"Widget.MaterialComponents.Button"</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"backgroundTint"</span><span style="color: #F8F8F2">>@color/buttonBackground&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #F92672">item</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F8F8F2">=</span><span style="color: #E6DB74">"android:textColor"</span><span style="color: #F8F8F2">>@color/buttonText&#x3C;/</span><span style="color: #F92672">item</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #F92672">style</span><span style="color: #F8F8F2">></span></span></code></pre>
+<h2 id="5-conclusion">5. Conclusion <a name="conclusion"></a></h2>
+<p>Android Material Design Components provide a powerful and flexible set of pre-built UI components that adhere to Material Design guidelines. By using MDC in your Android applications, you can create consistent, visually appealing, and accessible user experiences with ease. In this article, we’ve explored key MDC components and their usage, as well as theming capabilities that enable you to customize your app’s look and</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

@@ -67,25 +67,25 @@
     <p>Drogon is a C++14/17-based HTTP application framework. It can be used to build various types of web applications such as APIs and backend services. One interesting use case for Drogon is to build an application that interacts with the Donald Trump API available at <a href="https://www.tronalddump.io/">https://www.tronalddump.io/</a>.</p>
 <p>The Donald Trump API provides access to a large collection of quotes and tweets from the former US President. Using Drogon, you can easily create an application that fetches data from this API and processes it in various ways.</p>
 <p>Here’s an example of how you might use Drogon to interact with the Donald Trump API:</p>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">#include &#x3C;drogon/drogon.h></span></span>
-<span class="line"><span style="color: #F8F8F2">#include &#x3C;iostream></span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">int main() {</span></span>
-<span class="line"><span style="color: #F8F8F2">    auto client = drogon::HttpClient::newHttpClient("https://api.tronalddump.io");</span></span>
-<span class="line"><span style="color: #F8F8F2">    auto req = drogon::HttpRequest::newHttpRequest();</span></span>
-<span class="line"><span style="color: #F8F8F2">    req->setMethod(drogon::Get);</span></span>
-<span class="line"><span style="color: #F8F8F2">    req->setPath("/random/quote");</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    client->sendRequest(req,</span></span>
-<span class="line"><span style="color: #F8F8F2">        [](drogon::ReqResult result, const drogon::HttpResponsePtr &#x26;resp) {</span></span>
-<span class="line"><span style="color: #F8F8F2">            if (result == drogon::ReqResult::Ok) {</span></span>
-<span class="line"><span style="color: #F8F8F2">                std::cout &#x3C;&#x3C; resp->getBody() &#x3C;&#x3C; std::endl;</span></span>
-<span class="line"><span style="color: #F8F8F2">            } else {</span></span>
-<span class="line"><span style="color: #F8F8F2">                std::cerr &#x3C;&#x3C; "Error: " &#x3C;&#x3C; resp->getStatusCode() &#x3C;&#x3C; std::endl;</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;drogon/drogon.h></span></span>
+<span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;iostream></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">auto</span><span style="color: #F8F8F2"> client </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">HttpClient</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">newHttpClient</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"https://api.tronalddump.io"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">auto</span><span style="color: #F8F8F2"> req </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">HttpRequest</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">newHttpRequest</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    req-></span><span style="color: #A6E22E">setMethod</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::Get);</span></span>
+<span class="line"><span style="color: #F8F8F2">    req-></span><span style="color: #A6E22E">setPath</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"/random/quote"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    client-></span><span style="color: #A6E22E">sendRequest</span><span style="color: #F8F8F2">(req,</span></span>
+<span class="line"><span style="color: #F8F8F2">        [](</span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">ReqResult</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">result</span><span style="color: #F8F8F2">, </span><span style="color: #F92672">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">HttpResponsePtr</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F; font-style: italic">resp</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (result </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">ReqResult</span><span style="color: #F8F8F2">::Ok) {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> resp-></span><span style="color: #A6E22E">getBody</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">            } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cerr </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Error: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> resp-></span><span style="color: #A6E22E">getStatusCode</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
 <span class="line"><span style="color: #F8F8F2">            }</span></span>
 <span class="line"><span style="color: #F8F8F2">        });</span></span>
-<span class="line"><span style="color: #F8F8F2"></span></span>
-<span class="line"><span style="color: #F8F8F2">    drogon::app().run();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">drogon</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E">app</span><span style="color: #F8F8F2">().</span><span style="color: #A6E22E">run</span><span style="color: #F8F8F2">();</span></span>
 <span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>This code creates a new <code>HttpClient</code> object that connects to the Donald Trump API. It then creates a new <code>HttpRequest</code> object and sets its method to <code>GET</code> and its path to <code>/random/quote</code>. This will fetch a random quote from the API.</p>
 <p>The request is then sent using the <code>sendRequest</code> method of the <code>HttpClient</code> object. The callback function passed as the second argument will be called when the response is received. In this case, we simply print out the body of the response if it was successful.</p>
@@ -105,5 +105,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-08<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
   </body></html>

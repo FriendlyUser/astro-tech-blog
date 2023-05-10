@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Eclipse Jetty A High-Performance Web Server and Servlet Container - Astro Tech Blog</title>
+    <meta name="description" content="This article explores the key features, architecture, and use cases of Eclipse Jetty.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Introduction to Eclipse Jetty A High-Performance Web Server and Servlet Container</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-12-27T08:18:10.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3383398588_Ship_on_the_ocean.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="introduction-to-eclipse-jetty-a-high-performance-web-server-and-servlet-container">Introduction to Eclipse Jetty: A High-Performance Web Server and Servlet Container</h1>
+<p>Eclipse Jetty is an open-source, high-performance web server and servlet container designed for serving static and dynamic content. It is a subproject of the Eclipse Foundation, which is known for creating and maintaining various open-source projects. Jetty is widely used across a range of industries and applications, from small-scale projects to large-scale enterprise applications. This article explores the key features, architecture, and use cases of Eclipse Jetty.</p>
+<h2 id="key-features-of-eclipse-jetty">Key Features of Eclipse Jetty</h2>
+<ol>
+<li>
+<p><strong>Lightweight and Modular</strong>: Jetty is designed to be lightweight and modular, allowing developers to include only the components they need for their specific use case. This modularity helps to reduce the application’s footprint and improve performance.</p>
+</li>
+<li>
+<p><strong>High Performance</strong>: Jetty is known for its high performance, handling thousands of requests per second with minimal overhead. This makes it suitable for large-scale applications as well as small projects.</p>
+</li>
+<li>
+<p><strong>Scalability</strong>: Jetty is designed for horizontal scalability, making it an ideal choice for cloud-based and containerized deployments.</p>
+</li>
+<li>
+<p><strong>Embeddable</strong>: Jetty can be easily embedded into other Java applications, allowing developers to create custom web servers and servlet containers tailored to their specific requirements.</p>
+</li>
+<li>
+<p><strong>Support for Java Standards</strong>: Jetty supports Java standards, including the Servlet API, JavaServer Pages (JSP), and Java WebSocket API. This ensures compatibility with a wide range of Java-based web applications and frameworks.</p>
+</li>
+<li>
+<p><strong>Active Community and Extensive Documentation</strong>: Jetty has an active community and extensive documentation, making it easy to find answers to questions and discover best practices.</p>
+</li>
+</ol>
+<h2 id="architecture-of-eclipse-jetty">Architecture of Eclipse Jetty</h2>
+<p>Jetty’s architecture is composed of several key components:</p>
+<ol>
+<li>
+<p><strong>Jetty Server</strong>: The core of Jetty is the Jetty Server, which handles incoming connections and manages the lifecycle of the request-response cycle.</p>
+</li>
+<li>
+<p><strong>HTTP Connectors</strong>: Jetty supports various HTTP connectors, such as standard blocking connectors (HTTP/1.1) and non-blocking connectors (HTTP/2). These connectors handle incoming requests and pass them to the appropriate handlers.</p>
+</li>
+<li>
+<p><strong>Handlers</strong>: Handlers are responsible for processing requests and generating responses. Jetty provides several built-in handlers, including the ServletHandler, which processes servlet-based web applications, and the ResourceHandler, which serves static content.</p>
+</li>
+<li>
+<p><strong>Servlet Containers</strong>: Jetty includes a built-in servlet container that implements the Java Servlet API. This container can host Java-based web applications, including those that use JSP and Java WebSocket APIs.</p>
+</li>
+<li>
+<p><strong>Jetty Modules</strong>: Jetty’s modular architecture allows developers to include additional functionality through modules. These modules include support for SSL/TLS, WebSocket, SPDY, and more.</p>
+</li>
+</ol>
+<h2 id="use-cases-for-eclipse-jetty">Use Cases for Eclipse Jetty</h2>
+<p>Eclipse Jetty can be used in a variety of scenarios, including:</p>
+<ol>
+<li>
+<p><strong>Standalone Web Server</strong>: Jetty can be used as a standalone web server to serve static and dynamic content. It is a popular choice for serving RESTful APIs due to its high performance and support for HTTP/2.</p>
+</li>
+<li>
+<p><strong>Servlet Container</strong>: Jetty can be used as a servlet container, hosting Java-based web applications that use the Servlet API, JSP, or Java WebSocket API.</p>
+</li>
+<li>
+<p><strong>Embedded Web Server</strong>: Jetty can be embedded into other Java applications, enabling developers to create custom web servers or servlet containers that meet their specific requirements.</p>
+</li>
+<li>
+<p><strong>Microservices and Containers</strong>: Jetty’s lightweight and modular nature make it an excellent choice for microservices architectures and containerized deployments, such as those using Docker and Kubernetes.</p>
+</li>
+<li>
+<p><strong>Reverse Proxy</strong>: Jetty can be used as a reverse proxy, forwarding requests to other web servers or applications and load balancing traffic.</p>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>Eclipse Jetty is a versatile, high-performance web server and servlet container that can be easily tailored to meet the specific needs of a wide range of applications. Its lightweight and modular design, support for Java standards, and active community make it an excellent choice for developers looking to build scalable and high-performance web applications.</p>
+<h2 id="introduction-to-apache-beam-a-unified-model-for-batch-and-streaming-data-processing">Introduction to Apache Beam: A Unified Model for Batch and Streaming Data Processing</h2>
+<p>Apache Beam is an open-source, unified programming model for data processing pipelines, designed to provide a comprehensive solution for batch and streaming data processing. This article provides an in-depth introduction to Apache Beam, its features and components, and demonstrates how to build a basic data processing pipeline using the framework.</p>
+<h3 id="overview-of-apache-beam">Overview of Apache Beam</h3>
+<p>Developed originally by Google, Apache Beam aims to simplify the process of developing data processing pipelines, allowing developers to focus on their application logic while the framework handles the underlying infrastructure. The main goals of Apache Beam are:</p>
+<ol>
+<li><strong>Unified programming model</strong>: Beam provides a single API to develop both batch and streaming-based data processing pipelines.</li>
+<li><strong>Portability</strong>: Beam pipelines can be executed on various runners, such as Apache Flink, Apache Spark, and Google Cloud Dataflow.</li>
+<li><strong>Extensibility</strong>: Beam supports custom data sources, transformations, and sinks, enabling developers to extend its functionality according to their needs.</li>
+</ol>
+<h3 id="beam-model-concepts">Beam Model Concepts</h3>
+<p>Apache Beam introduces a few key concepts that are essential to understanding the framework:</p>
+<ul>
+<li><strong>Pipeline</strong>: A data processing job consisting of multiple stages, where data is read from a Source, transformed, and written to a Sink.</li>
+<li><strong>PCollection</strong>: An immutable, distributed, and potentially unordered collection of data items, representing the data in a pipeline.</li>
+<li><strong>PTransform</strong>: A data processing operation, applied to a PCollection, that takes one or more input PCollections and produces zero or more output PCollections.</li>
+<li><strong>Source</strong>: A data source from which the pipeline reads data, such as a file, a database, or a message queue.</li>
+<li><strong>Sink</strong>: A data destination where the pipeline writes the processed data, such as a file, a database, or a message queue.</li>
+<li><strong>Runner</strong>: A back-end execution engine responsible for running Beam pipelines on various distributed processing platforms.</li>
+</ul>
+<h3 id="creating-a-simple-beam-pipeline">Creating a Simple Beam Pipeline</h3>
+<p>To create a simple Beam pipeline, you need to follow these steps:</p>
+<ol>
+<li>
+<p><strong>Install Apache Beam</strong>: You can install Apache Beam using pip:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">pip</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">apache-beam</span></span>
+<span class="line"><span style="color: #E6DB74">```</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Import Beam libraries</strong>: Import the required Beam libraries in your Python script:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> apache_beam </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> beam</span></span>
+<span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> apache_beam.options.pipeline_options </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> PipelineOptions</span></span></code></pre>
+</li>
+<li>
+<p><strong>Define PipelineOptions</strong>: Configure the pipeline options, such as the runner and any other required settings:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">pipeline_options </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> PipelineOptions([</span><span style="color: #E6DB74">'--runner=DirectRunner'</span><span style="color: #F8F8F2">])</span></span></code></pre>
+</li>
+<li>
+<p><strong>Create the pipeline</strong>: Instantiate a pipeline object using the pipeline options:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">with</span><span style="color: #F8F8F2"> beam.Pipeline(</span><span style="color: #FD971F; font-style: italic">options</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">pipeline_options) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pipeline:</span></span></code></pre>
+</li>
+<li>
+<p><strong>Define Source, Transformations, and Sink</strong>: Inside the pipeline context, define the source, transformations, and sink:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">(pipeline</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Read from file"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">>></span><span style="color: #F8F8F2"> beam.io.ReadFromText(</span><span style="color: #E6DB74">"input.txt"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Split words"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">>></span><span style="color: #F8F8F2"> beam.FlatMap(</span><span style="color: #66D9EF; font-style: italic">lambda</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">line</span><span style="color: #F8F8F2">: line.split())</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Count words"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">>></span><span style="color: #F8F8F2"> beam.combiners.Count.PerElement()</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">|</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Write to file"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">>></span><span style="color: #F8F8F2"> beam.io.WriteToText(</span><span style="color: #E6DB74">"output"</span><span style="color: #F8F8F2">))</span></span></code></pre>
+</li>
+</ol>
+<p>In this example, the pipeline reads text data from an input file, splits the data into words, counts the occurrences of each word, and writes the results to an output file.</p>
+<h3 id="conclusion-1">Conclusion</h3>
+<p>Apache Beam is a powerful framework that simplifies the development of data processing pipelines by providing a unified programming model for both batch and streaming data. With its portability and extensibility, Beam enables developers to focus on their application logic while leveraging the capabilities of various distributed processing platforms. By understanding the key concepts, you can start building your own data processing pipelines using Apache Beam.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Libraries for Scientific Computing An Overview - Astro Tech Blog</title>
+    <meta name="description" content="C++ has emerged as one of the preferred languages for implementing high-performance scientific computing applications">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">C++ Libraries for Scientific Computing An Overview</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-10-08T15:59:26.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1444932837.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="c-libraries-for-scientific-computing-an-overview">C++ Libraries for Scientific Computing: An Overview</h1>
+<p>Scientific computing is a multidisciplinary field that requires the use of advanced mathematical models, algorithms, and various computational techniques to solve complex problems in science and engineering. Over the years, C++ has emerged as one of the preferred languages for implementing high-performance scientific computing applications, thanks to its combination of low-level control, high-level abstractions, and support for multi-threading and parallelism. This article provides an overview of some of the most popular C++ libraries for scientific computing, covering linear algebra, optimization, data processing, and more.</p>
+<h2 id="1-eigen">1. Eigen</h2>
+<p><strong>Website:</strong> <a href="http://eigen.tuxfamily.org/">http://eigen.tuxfamily.org/</a></p>
+<p>Eigen is a high-performance C++ library for linear algebra, including operations like matrix and vector arithmetic, decompositions, and solvers for systems of linear equations. It is header-only, which means that you only need to include the header files in your project to start using it. Eigen is known for its easy-to-use and expressive API, which makes it a popular choice for both beginners and experts.</p>
+<p>Some of the key features of Eigen include:</p>
+<ul>
+<li>Support for fixed-size and dynamic-size matrices and vectors</li>
+<li>Expression templates to optimize computations at compile-time</li>
+<li>Built-in support for sparse matrices and linear solvers</li>
+<li>SIMD vectorization and multi-threading for improved performance</li>
+</ul>
+<h2 id="2-armadillo">2. Armadillo</h2>
+<p><strong>Website:</strong> <a href="http://arma.sourceforge.net/">http://arma.sourceforge.net/</a></p>
+<p>Armadillo is another popular C++ library for linear algebra, designed with a focus on ease of use, speed, and flexibility. It provides a simple and MATLAB-like syntax for performing various matrix and vector operations, as well as a wide range of mathematical functions, such as trigonometric, logarithmic, and exponential functions. Armadillo is also header-only, making it easy to integrate into your projects.</p>
+<p>Key features of Armadillo include:</p>
+<ul>
+<li>Support for dense and sparse matrices, as well as complex numbers</li>
+<li>Optional integration with high-performance libraries like OpenBLAS and Intel MKL</li>
+<li>A wide range of decomposition and solver algorithms</li>
+<li>Built-in support for random number generation and statistics</li>
+</ul>
+<h2 id="3-boost">3. Boost</h2>
+<p><strong>Website:</strong> <a href="https://www.boost.org/">https://www.boost.org/</a></p>
+<p>Boost is a comprehensive collection of high-quality, peer-reviewed C++ libraries that cover a wide range of functionalities, including several libraries specifically tailored for scientific computing. Some of the most relevant Boost libraries for scientific computing are:</p>
+<ul>
+<li><strong>Boost.Math:</strong> Provides a wide range of mathematical functions, including special functions, statistical distributions, and tools for numerical differentiation and integration.</li>
+<li><strong>Boost.ODEint:</strong> A library for solving ordinary differential equations (ODEs) using a variety of numerical methods.</li>
+<li><strong>Boost.Geometry:</strong> A library for handling and performing calculations on geometrical objects like points, lines, polygons, and more.</li>
+</ul>
+<h2 id="4-ceres-solver">4. Ceres Solver</h2>
+<p><strong>Website:</strong> <a href="http://ceres-solver.org/">http://ceres-solver.org/</a></p>
+<p>Ceres Solver is a powerful C++ library for modeling and solving large-scale nonlinear optimization problems, commonly encountered in various scientific and engineering domains. It is particularly well-suited for problems with sparse, large-scale, or robust objective functions.</p>
+<p>Key features of Ceres Solver include:</p>
+<ul>
+<li>Support for a wide range of optimization algorithms, including Levenberg-Marquardt, Dogleg, and Trust Region</li>
+<li>Automatic differentiation for computing gradients</li>
+<li>Built-in support for various linear solvers, including dense, sparse, and iterative methods</li>
+<li>Flexible and extensible problem formulation</li>
+</ul>
+<h2 id="5-vtk">5. VTK</h2>
+<p><strong>Website:</strong> <a href="https://vtk.org/">https://vtk.org/</a></p>
+<p>The Visualization Toolkit (VTK) is an open-source, cross-platform C++ library for 3D computer graphics, image processing, and visualization. It provides a wide range of functionalities for processing, analyzing, and visualizing scientific data, making it particularly useful for applications in fields like fluid dynamics, medical imaging, and structural analysis.</p>
+<p>Some of the key features of VTK include:</p>
+<ul>
+<li>Support for various data types, including structured and unstructured grids, polygonal data, and volume data</li>
+<li>A large collection of algorithms for filtering, transforming, and analyzing data</li>
+<li>Built-in support for parallel processing and rendering using MPI and multi-threading</li>
+<li>Integration with popular visualization tools like ParaView and VisIt</li>
+</ul>
+<h2 id="6-opencv">6. OpenCV</h2>
+<p><strong>Website:</strong> <a href="https://opencv.org/">https://opencv.org/</a></p>
+<p>OpenCV (Open Source Computer Vision Library) is an open-source and cross-platform C++ library that provides tools and interfaces for real-time computer vision and image processing. It is widely used in applications like robotics, machine learning, and scientific research, where the processing and analysis of images and videos play a crucial role.</p>
+<p>Key features of OpenCV include:</p>
+<ul>
+<li>A comprehensive library of image processing functions, including filtering, edge detection, and image transformations</li>
+<li>Support for machine learning and deep learning, with interfaces to popular libraries like TensorFlow and PyTorch</li>
+<li>Built-in support for parallel processing using OpenCL and CUDA</li>
+<li>Integration with popular graphical user interface libraries like Qt and GTK</li>
+</ul>
+<h2 id="7-fftw">7. FFTW</h2>
+<p><strong>Website:</strong> <a href="http://www.fftw.org/">http://www.fftw.org/</a></p>
+<p>The Fastest Fourier Transform in the West (FFTW) is a C library for computing the discrete Fourier transform (DFT) in one or more dimensions. Although it is written in C, it provides a C++ API that makes it easy to use in C++ projects. FFTW is known for its high performance, achieved through various optimization techniques, such as code generation, runtime adaptation, and SIMD instructions.</p>
+<p>Key features of FFTW include:</p>
+<ul>
+<li>Support for single and double precision, as well as real and complex data</li>
+<li>Flexible and extensible API for handling arbitrary input sizes and dimensions</li>
+<li>Support for multi-threading and parallel execution using OpenMP and MPI</li>
+</ul>
+<h2 id="8-gsl">8. GSL</h2>
+<p><strong>Website:</strong> <a href="https://www.gnu.org/software/gsl/">https://www.gnu.org/software/gsl/</a></p>
+<p>The GNU Scientific Library (GSL) is a collection of C++ functions for numerical computing, covering a wide range of areas like linear algebra, numerical integration, optimization, and more. Although it is written in C, it provides a C++ wrapper that facilitates its use in C++ projects. GSL is part of the GNU project, which means it is free software, and it is designed to be efficient and robust.</p>
+<p>Some of the key features of GSL include:</p>
+<ul>
+<li>Support for various mathematical functions, including special functions, polynomials, and random number generation</li>
+<li>A wide range of linear algebra operations, including matrix and vector arithmetic, decompositions, and solvers</li>
+<li>Algorithms for numerical integration, differentiation, and root-finding</li>
+<li>Support for optimization and minimization, including both unconstrained and constrained methods</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Scientific computing is a diverse field that requires specialized tools and libraries for efficient and accurate problem-solving. This article has provided an overview of some of the most popular C++ libraries used in scientific computing, covering areas like linear algebra, optimization, data visualization, and more. By using these libraries, researchers and developers can harness the power of C++ to build high-performance and reliable applications for solving complex scientific problems.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

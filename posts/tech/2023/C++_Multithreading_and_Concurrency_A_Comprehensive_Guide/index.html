@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Multithreading and Concurrency A Comprehensive Guide - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will explore multithreading concepts, C++11 threading support, synchronization mechanisms, and best practices for writing concurrent C++ programs">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">C++ Multithreading and Concurrency A Comprehensive Guide</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-09-17T19:14:17.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/4181036141.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="c-multithreading-and-concurrency-a-comprehensive-guide">C++ Multithreading and Concurrency: A Comprehensive Guide</h1>
+<h2 id="introduction">Introduction</h2>
+<p>In the era of multi-core processors, exploiting concurrency and parallelism has become crucial to harnessing the full potential of modern computing hardware. C++ provides a rich set of features to support multithreading and concurrency. In this article, we will explore multithreading concepts, C++11 threading support, synchronization mechanisms, and best practices for writing concurrent C++ programs.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#concurrency-vs-parallelism">Concurrency vs. Parallelism</a></li>
+<li><a href="#c11-threading-support">C++11 Threading Support</a></li>
+<li><a href="#thread-management">Thread Management</a></li>
+<li><a href="#synchronization-mechanisms">Synchronization Mechanisms</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ol>
+<h2 id="concurrency-vs-parallelism">Concurrency vs. Parallelism</h2>
+<p>Concurrency and parallelism are two closely related concepts, often used interchangeably, but they have distinct meanings:</p>
+<ul>
+<li>
+<p><strong>Concurrency</strong>: Refers to the ability of a program to manage multiple tasks at once. These tasks do not necessarily have to be executed simultaneously. They can be interleaved or executed in overlapping time periods. Concurrency is more about the design aspect of a program.</p>
+</li>
+<li>
+<p><strong>Parallelism</strong>: Refers to the simultaneous execution of multiple tasks. Parallelism is more about the execution aspect of a program and is mainly dependent on hardware resources like multi-core processors.</p>
+</li>
+</ul>
+<h2 id="c11-threading-support">C++11 Threading Support</h2>
+<p>Prior to C++11, the standard C++ library did not have built-in support for multithreading. Developers relied on platform-specific libraries like POSIX threads (pthreads) or Windows threads. C++11 introduced a new threading library that abstracts these platform-specific details, providing a consistent and portable interface for multithreading.</p>
+<p>The C++ threading support is part of the <code>&#x3C;thread></code> header, which includes classes and functions for managing threads, synchronization primitives, and thread-local storage.</p>
+<h2 id="thread-management">Thread Management</h2>
+<h3 id="creating-threads">Creating Threads</h3>
+<p>To create a new thread, you can use the <code>std::thread</code> class. The constructor of <code>std::thread</code> accepts a function (or a callable object) to be executed in the new thread. Here’s an example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;iostream></span></span>
+<span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;thread></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">print_hello</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello from thread!"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::thread </span><span style="color: #A6E22E">t</span><span style="color: #F8F8F2">(print_hello);</span></span>
+<span class="line"><span style="color: #F8F8F2">    t.</span><span style="color: #A6E22E">join</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Hello from main!"</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="detaching-threads">Detaching Threads</h3>
+<p>When a thread object goes out of scope, its destructor is called. If the thread is still joinable (i.e., it has not been joined or detached), the program will terminate. To avoid this, you can either join the thread using <code>join()</code> or detach it using <code>detach()</code>. Once a thread is detached, it becomes independent and its resources will be automatically reclaimed when it finishes execution.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::</span><span style="color: #A6E22E; text-decoration: underline">thread</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">t</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">print_hello</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">t.</span><span style="color: #A6E22E">detach</span><span style="color: #F8F8F2">();</span></span></code></pre>
+<h3 id="passing-arguments-to-threads">Passing Arguments to Threads</h3>
+<p>You can pass arguments to the thread function by providing them as additional arguments to the <code>std::thread</code> constructor:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">print_number</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">number</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Number: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">42</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::thread </span><span style="color: #A6E22E">t</span><span style="color: #F8F8F2">(print_number, number);</span></span>
+<span class="line"><span style="color: #F8F8F2">    t.</span><span style="color: #A6E22E">join</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="synchronization-mechanisms">Synchronization Mechanisms</h2>
+<p>When multiple threads access shared data, there’s a risk of race conditions, which can lead to unpredictable behavior. To prevent this, C++ provides various synchronization mechanisms:</p>
+<h3 id="mutex">Mutex</h3>
+<p>A mutex (short for “mutual exclusion”) is a synchronization primitive that ensures that only one thread can access a shared resource at a time. The <code>&#x3C;mutex></code> header provides the <code>std::mutex</code> class, which has member functions <code>lock()</code> and <code>unlock()</code> for acquiring and releasing the lock.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;mutex></span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::mutex mtx;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">print_with_lock</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">number</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    mtx.</span><span style="color: #A6E22E">lock</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Number: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">    mtx.</span><span style="color: #A6E22E">unlock</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="lock-guard">Lock Guard</h3>
+<p><code>std::lock_guard</code> is a convenient RAII wrapper for mutexes. It automatically locks the mutex when instantiated and unlocks it when destroyed. This ensures that the mutex is always released, even if an exception is thrown.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">print_with_lock_guard</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">number</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::lock_guard</span><span style="color: #F92672">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::mutex</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">lock</span><span style="color: #F8F8F2">(mtx);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Number: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #88846F">    // mtx is automatically unlocked when lock goes out of scope</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="condition-variables">Condition Variables</h3>
+<p><code>std::condition_variable</code> is another synchronization primitive that allows threads to wait for a specific condition to become true. Condition variables work in conjunction with std::unique_lock, providing <code>wait()</code>, <code>notify_one()</code>, and <code>notify_all()</code> member functions.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;condition_variable></span></span>
+<span class="line"><span style="color: #F92672">#include</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">&#x3C;queue></span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::mutex mtx;</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::condition_variable cv;</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::queue</span><span style="color: #F92672">&#x3C;</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> data_queue;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">data_producer</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> i </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">; i </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">++</span><span style="color: #F8F8F2">i) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::unique_lock</span><span style="color: #F92672">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::mutex</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">lock</span><span style="color: #F8F8F2">(mtx);</span></span>
+<span class="line"><span style="color: #F8F8F2">        data_queue.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(i);</span></span>
+<span class="line"><span style="color: #F8F8F2">        lock.</span><span style="color: #A6E22E">unlock</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        cv.</span><span style="color: #A6E22E">notify_one</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">data_consumer</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">while</span><span style="color: #F8F8F2"> (</span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::unique_lock</span><span style="color: #F92672">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::mutex</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">lock</span><span style="color: #F8F8F2">(mtx);</span></span>
+<span class="line"><span style="color: #F8F8F2">        cv.</span><span style="color: #A6E22E">wait</span><span style="color: #F8F8F2">(lock, [] { </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">!</span><span style="color: #F8F8F2">data_queue.</span><span style="color: #A6E22E">empty</span><span style="color: #F8F8F2">(); });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data_queue.</span><span style="color: #A6E22E">front</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">        data_queue.</span><span style="color: #A6E22E">pop</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        lock.</span><span style="color: #A6E22E">unlock</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (data </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">-</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">break</span><span style="color: #F8F8F2">;</span><span style="color: #88846F"> // exit condition</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::cout </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Consumed: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> data </span><span style="color: #F92672">&#x3C;&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F8F8F2">::endl;</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li>
+<p><strong>Avoid using raw <code>std::thread</code> for resource management</strong>: Use higher-level abstractions like <code>std::async</code> and <code>std::future</code> to handle resource management automatically.</p>
+</li>
+<li>
+<p><strong>Minimize data sharing between threads</strong>: Use message-passing, thread-local storage, or other techniques to minimize the need for synchronization and reduce the risk of race conditions.</p>
+</li>
+<li>
+<p><strong>Prefer <code>std::lock_guard</code> and <code>std::unique_lock</code> over manual <code>lock()</code> and <code>unlock()</code></strong>: These RAII wrappers ensure that mutexes are always properly released, even in the presence of exceptions.</p>
+</li>
+<li>
+<p><strong>Avoid long-running threads with shared data</strong>: Long-running threads that access shared data may cause contention and limit parallelism. Break down tasks into smaller, independent units that can be executed concurrently.</p>
+</li>
+<li>
+<p><strong>Test and measure</strong>: Thoroughly test your concurrent code for correctness, performance, and scalability. Use tools like static analyzers, dynamic analysis tools, and profilers to help identify issues and optimize your code.</p>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>C++ provides a powerful set of tools and abstractions for multithreading and concurrency. By understanding the core concepts and utilizing the provided library features, you can write efficient, portable, and maintainable concurrent code in C++. However, keep in mind that multithreading can introduce complexity and potential pitfalls, so it’s essential to follow best practices and thoroughly test your code to ensure correctness and performance.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using Jupyter Notebook in Python An Interactive Computing Environment - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we'll explore the features of Jupyter Notebook and how to use it in your Python projects">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Using Jupyter Notebook in Python An Interactive Computing Environment</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-06-22T06:25:07.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/4279596222.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="using-jupyter-notebook-in-python-an-interactive-computing-environment">Using Jupyter Notebook in Python: An Interactive Computing Environment</h1>
+<p>Jupyter Notebook is a powerful tool for interactively developing and presenting data science projects. It is an open-source web application that allows you to create and share documents containing live code, equations, visualizations, and narrative text. In this article, we’ll explore the features of Jupyter Notebook and how to use it in your Python projects.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#launching">Launching Jupyter Notebook</a></li>
+<li><a href="#interface">Notebook Interface</a></li>
+<li><a href="#cells">Working with Cells</a></li>
+<li><a href="#markdown">Markdown Cells</a></li>
+<li><a href="#code">Code Cells</a></li>
+<li><a href="#magics">Magics</a></li>
+<li><a href="#plotting">Plotting and Visualization</a></li>
+<li><a href="#sharing">Sharing Notebooks</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<p><a name="introduction"></a></p>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>Jupyter Notebook is a part of the larger Jupyter Project which was created to support interactive data science and scientific computing across various programming languages. The name “Jupyter” is a combination of three core programming languages: <strong>Ju</strong>lia, <strong>Py</strong>thon, and <strong>R</strong>. However, Jupyter Notebook supports many other languages as well.</p>
+<p>The main components of the Jupyter ecosystem are:</p>
+<ul>
+<li>Jupyter Notebook: The interactive web-based notebook environment.</li>
+<li>JupyterLab: The next-generation web-based interface for Project Jupyter.</li>
+<li>JupyterHub: A multi-user version of the notebook designed for companies, classrooms, and research labs.</li>
+</ul>
+<p>In this article, we’ll focus on Jupyter Notebook and its functionalities using Python.</p>
+<p><a name="installation"></a></p>
+<h2 id="2-installation">2. Installation</h2>
+<p>To install Jupyter Notebook, you first need Python installed on your system. If you don’t already have Python, you can follow the installation guide from the <a href="https://www.python.org/downloads/">official Python website</a>.</p>
+<p>Once Python is installed, you can install Jupyter Notebook using <code>pip</code>, the Python package manager:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">pip</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">jupyter</span></span></code></pre>
+<p>Alternatively, you can use the Anaconda distribution, which includes Jupyter Notebook, Python, and several other scientific computing packages. You can download Anaconda from the <a href="https://www.anaconda.com/products/distribution">official Anaconda website</a>.</p>
+<p><a name="launching"></a></p>
+<h2 id="3-launching-jupyter-notebook">3. Launching Jupyter Notebook</h2>
+<p>To launch Jupyter Notebook, open your terminal or command prompt and enter the following command:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">jupyter</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">notebook</span></span></code></pre>
+<p>This will start the Jupyter Notebook server and open your default web browser, displaying the Notebook Dashboard. The dashboard is the main interface that lets you manage your notebooks, create new ones, and access the ones you’ve already created.</p>
+<p><a name="interface"></a></p>
+<h2 id="4-notebook-interface">4. Notebook Interface</h2>
+<p>The Jupyter Notebook interface consists of two main areas:</p>
+<ul>
+<li>The <strong>notebook toolbar</strong> at the top, which contains buttons for common actions such as creating new cells, running code, and saving the notebook.</li>
+<li>The <strong>notebook area</strong> below the toolbar, which contains the notebook’s content organized into cells.</li>
+</ul>
+<p><a name="cells"></a></p>
+<h2 id="5-working-with-cells">5. Working with Cells</h2>
+<p>A Jupyter Notebook is made up of cells - individual units that can contain code, text, images, or other content. There are two primary types of cells: code cells and markdown cells.</p>
+<p><a name="markdown"></a></p>
+<h3 id="51-markdown-cells">5.1 Markdown Cells</h3>
+<p>Markdown cells are used for writing narrative text, equations, and adding structure to your notebook. They support <a href="https://commonmark.org/">CommonMark Markdown</a> and can be formatted using various styles, headings, and lists.</p>
+<p>To create a markdown cell, click the ’+’ button on the toolbar, then change the cell type to ‘Markdown’ using the dropdown menu. You can also press <code>M</code> while the cell is selected to change it to a markdown cell.</p>
+<p>To edit a markdown cell, double-click on it. To render the markdown and display the formatted text, either press <code>Shift + Enter</code> or click the ‘Run’ button on the toolbar.</p>
+<p><a name="code"></a></p>
+<h3 id="52-code-cells">5.2 Code Cells</h3>
+<p>Code cells are used for writing and executing code in the programming language of your choice. In our case, we’ll be using Python. When a code cell is executed, its output is displayed below the cell.</p>
+<p>To create a code cell, click the ’+’ button on the toolbar, then ensure the cell type is set to ‘Code’ using the dropdown menu. You can also press <code>Y</code> while the cell is selected to change it to a code cell.</p>
+<p>To edit a code cell, click on it and start typing your code. To execute the code, either press <code>Shift + Enter</code> or click the ‘Run’ button on the toolbar.</p>
+<p><a name="magics"></a></p>
+<h2 id="6-magics">6. Magics</h2>
+<p>Jupyter Notebook includes afeature called “magics” - special commands that provide additional functionality beyond the standard Python code. There are two types of magics: line magics and cell magics. Line magics are prefixed with a single <code>%</code> and operate on a single line of code, while cell magics are prefixed with <code>%%</code> and operate on the entire cell.</p>
+<p>Here are some commonly used magics:</p>
+<ul>
+<li><code>%time</code>: Time the execution of a single statement.</li>
+<li><code>%timeit</code>: Time the execution of a statement multiple times and provide an average execution time.</li>
+<li><code>%run</code>: Run a Python script as a program.</li>
+<li><code>%load</code>: Load the contents of a file into a code cell.</li>
+<li><code>%%writefile</code>: Write the contents of a cell to a file.</li>
+<li><code>%pwd</code>: Print the current working directory.</li>
+<li><code>%cd</code>: Change the current working directory.</li>
+<li><code>%reset</code>: Reset the namespace by removing all names defined by the user.</li>
+</ul>
+<p>For a complete list of available magics, use the <code>%lsmagic</code> command.</p>
+<p><a name="plotting"></a></p>
+<h2 id="7-plotting-and-visualization">7. Plotting and Visualization</h2>
+<p>Jupyter Notebook provides seamless integration with popular data visualization libraries such as Matplotlib, Seaborn, and Plotly. This allows you to create stunning visualizations and plots within your notebook.</p>
+<p>For example, to use Matplotlib for plotting in a Jupyter Notebook, you first need to install the library if you haven’t already:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">pip</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">install</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">matplotlib</span></span></code></pre>
+<p>Next, enable inline plotting by running the following magic command in a code cell:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">%</span><span style="color: #F8F8F2">matplotlib inline</span></span></code></pre>
+<p>Now, you can create plots using Matplotlib:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> matplotlib.pyplot </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> plt</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">x </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.linspace(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">10</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">y </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.sin(x)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">plt.plot(x, y)</span></span>
+<span class="line"><span style="color: #F8F8F2">plt.xlabel(</span><span style="color: #E6DB74">"x"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">plt.ylabel(</span><span style="color: #E6DB74">"sin(x)"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">plt.show()</span></span></code></pre>
+<p>This will display the plot directly below the code cell.</p>
+<p><a name="sharing"></a></p>
+<h2 id="8-sharing-notebooks">8. Sharing Notebooks</h2>
+<p>Jupyter Notebooks can be easily shared with others by exporting them in various formats such as HTML, PDF, or even as a standalone web app using <a href="https://voila.readthedocs.io/en/stable/">Voilà</a>. To export a notebook, click ‘File’ > ‘Download as’ and choose the desired format.</p>
+<p>You can also use services like <a href="https://nbviewer.jupyter.org/">nbviewer</a> to share a link to your notebook hosted on a public repository, such as GitHub. Nbviewer will render your notebook as a static web page, allowing others to view it without needing Jupyter Notebook installed.</p>
+<p><a name="conclusion"></a></p>
+<h2 id="9-conclusion">9. Conclusion</h2>
+<p>In this article, we’ve covered the basics of using Jupyter Notebook in Python, including installation, launching, working with cells, using magics, and creating plots. Jupyter Notebook is a versatile tool that can significantly enhance your workflow and improve the presentation of your data science projects.</p>
+<p>By incorporating Jupyter Notebook into your Python projects, you’ll be able to create interactive, shareable documents that combine live code, visualizations, and narrative text, making it easier to communicate your ideas and results.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

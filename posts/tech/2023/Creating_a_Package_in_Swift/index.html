@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating a Package in Swift - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will explore how to create, manage, and distribute a package in Swift using the Swift Package Manager">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Creating a Package in Swift</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2025-01-15T13:22:30.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/4161054396.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="creating-a-package-in-swift">Creating a Package in Swift</h1>
+<p>Swift is a powerful and easy-to-use language for iOS, macOS, watchOS, and tvOS app development. One of the great features of Swift is its support for packages, which allows you to bundle reusable code into a single unit that can be easily shared among different projects. In this article, we will explore how to create, manage, and distribute a package in Swift using the Swift Package Manager.</p>
+<h2 id="what-is-a-swift-package">What is a Swift Package?</h2>
+<p>A Swift package is a collection of source files, resources, and a manifest file that defines the package’s structure and its dependencies. The manifest file, called <code>Package.swift</code>, specifies the package metadata such as the name, version, and the products it provides (libraries or executables).</p>
+<h2 id="getting-started-creating-a-new-package">Getting Started: Creating a New Package</h2>
+<p>To create a new Swift package, you need to have the <a href="https://swift.org/download/">Swift command line tools</a> installed on your system. Once you have the command line tools installed, open the terminal and navigate to the directory where you want to create your package. Then, run the following command:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">swift</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">package</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">init</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--type</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">library</span></span></code></pre>
+<p>This command will create a new package with the default folder structure and a <code>Package.swift</code> manifest file. The <code>--type</code> flag specifies that we want to create a library package, which can be imported into other projects. If you want to create an executable package, you can use <code>--type executable</code> instead.</p>
+<p>The folder structure of a newly created package looks like this:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">MyPackage</span></span>
+<span class="line"><span style="color: #F8F8F2">├── Package.swift</span></span>
+<span class="line"><span style="color: #F8F8F2">├── README.md</span></span>
+<span class="line"><span style="color: #F8F8F2">├── .gitignore</span></span>
+<span class="line"><span style="color: #F8F8F2">└── Sources</span></span>
+<span class="line"><span style="color: #F8F8F2">    └── MyPackage</span></span>
+<span class="line"><span style="color: #F8F8F2">        └── MyPackage.swift</span></span>
+<span class="line"><span style="color: #F8F8F2">└── Tests</span></span>
+<span class="line"><span style="color: #F8F8F2">    └── MyPackageTests</span></span>
+<span class="line"><span style="color: #F8F8F2">        └── MyPackageTests.swift</span></span></code></pre>
+<h2 id="packageswift-manifest-file">Package.swift Manifest File</h2>
+<p>The <code>Package.swift</code> manifest file is the heart of a Swift package. It defines the package metadata, dependencies, and products. Let’s take a closer look at a basic <code>Package.swift</code> file:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// swift-tools-version:5.5</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">PackageDescription</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">let</span><span style="color: #F8F8F2"> package </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">Package</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">platforms</span><span style="color: #F8F8F2">: [</span></span>
+<span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #66D9EF">macOS</span><span style="color: #F8F8F2">(.v10_15),</span></span>
+<span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #66D9EF">iOS</span><span style="color: #F8F8F2">(.v13),</span></span>
+<span class="line"><span style="color: #F8F8F2">    ],</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">products</span><span style="color: #F8F8F2">: [</span></span>
+<span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #66D9EF">library</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">targets</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">]),</span></span>
+<span class="line"><span style="color: #F8F8F2">    ],</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">dependencies</span><span style="color: #F8F8F2">: [],</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF">targets</span><span style="color: #F8F8F2">: [</span></span>
+<span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #66D9EF">target</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">dependencies</span><span style="color: #F8F8F2">: []),</span></span>
+<span class="line"><span style="color: #F8F8F2">        .</span><span style="color: #66D9EF">testTarget</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"MyPackageTests"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">dependencies</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">]),</span></span>
+<span class="line"><span style="color: #F8F8F2">    ]</span></span>
+<span class="line"><span style="color: #F8F8F2">)</span></span></code></pre>
+<p>Here is a brief explanation of each section:</p>
+<ul>
+<li><code>swift-tools-version</code>: Specifies the minimum version of the Swift tools required to build the package.</li>
+<li><code>import PackageDescription</code>: Imports the <code>PackageDescription</code> module needed to define the package.</li>
+<li><code>name</code>: The name of the package.</li>
+<li><code>platforms</code>: Specifies the platforms and their minimum deployment target versions supported by the package.</li>
+<li><code>products</code>: Describes the libraries or executables that the package provides.</li>
+<li><code>dependencies</code>: Lists the package’s external dependencies.</li>
+<li><code>targets</code>: Defines the package’s build targets, including their source files and dependencies.</li>
+</ul>
+<h2 id="adding-dependencies">Adding Dependencies</h2>
+<p>To add a dependency to your package, you need to add it to the <code>dependencies</code> array in the <code>Package.swift</code> file. Each dependency requires a URL and a version range. For example, let’s add the popular Alamofire networking library to our package:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dependencies</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">    .</span><span style="color: #66D9EF">package</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">url</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"https://github.com/Alamofire/Alamofire.git"</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">from</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"5.0.0"</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">],</span></span></code></pre>
+<p>Next, you need to specify the dependency in the corresponding target. In this case, we’ll add Alamofire to the <code>MyPackage</code> target:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">.</span><span style="color: #66D9EF">target</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">name</span><span style="color: #F8F8F2">: </span><span style="color: #E6DB74">"MyPackage"</span><span style="color: #F8F8F2">, </span><span style="color: #66D9EF">dependencies</span><span style="color: #F8F8F2">: [</span><span style="color: #E6DB74">"Alamofire"</span><span style="color: #F8F8F2">]),</span></span></code></pre>
+<p>Now the package is set up to use Alamofire.</p>
+<h2 id="building-and-testing-your-package">Building and Testing Your Package</h2>
+<p>To build your package, navigate to the package directory in the terminal and run:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">swift</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span></span></code></pre>
+<p>This command will compile the package and its dependencies. To run the package’s tests, execute:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">swift</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">test</span></span></code></pre>
+<h2 id="distributing-your-package">Distributing Your Package</h2>
+<p>To make your package available to others, you should host the package’s source code on a public Git repository such as GitHub, GitLab, or Bitbucket. Once your package is hosted, other developers can add it as a dependency to their projects using the repository URL and a version range.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we covered the basics of creating, managing, and distributing a Swift package using the Swift Package Manager. Packages are an excellent way to modularize, share, and reuse code in the Swift ecosystem. By creating and distributing your own packages, you can contribute to the community and help make Swift even more powerful and versatile.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>

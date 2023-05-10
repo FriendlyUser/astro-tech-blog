@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Comprehensive Guide to Newtonsoft.Json - Astro Tech Blog</title>
+    <meta name="description" content="In this article, we will explore the key features of Newtonsoft.Json, learn how to install it, and discuss how to work with JSON data using this powerful library.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.4b7a3691.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">A Comprehensive Guide to Newtonsoft.Json</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2025-01-26T23:24:40.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in a library.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="a-comprehensive-guide-to-newtonsoftjson">A Comprehensive Guide to Newtonsoft.Json</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Newtonsoft.Json, also known as Json.NET, is a popular high-performance JSON framework for .NET. It is widely used for parsing and serializing JSON data in .NET applications, making it easy to work with JSON data in C#. Developed by James Newton-King, Newtonsoft.Json provides a range of features, including support for LINQ to JSON, BSON, and XML, as well as efficient serialization and deserialization.</p>
+<p>In this article, we will explore the key features of Newtonsoft.Json, learn how to install it, and discuss how to work with JSON data using this powerful library.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#serialization">Serialization</a>
+<ol>
+<li><a href="#basic-serialization">Basic Serialization</a></li>
+<li><a href="#customizing-serialization">Customizing Serialization</a></li>
+</ol>
+</li>
+<li><a href="#deserialization">Deserialization</a>
+<ol>
+<li><a href="#basic-deserialization">Basic Deserialization</a></li>
+<li><a href="#customizing-deserialization">Customizing Deserialization</a></li>
+</ol>
+</li>
+<li><a href="#linq-to-json">LINQ to JSON</a></li>
+<li><a href="#performance-tips">Performance Tips</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<h2 id="installation">Installation</h2>
+<p>To get started with Newtonsoft.Json, you’ll first need to install it. You can do this using the NuGet package manager, which is the recommended approach. Simply open the NuGet Package Manager Console in Visual Studio and run the following command:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">Install-Package Newtonsoft.Json</span></span></code></pre>
+<p>Alternatively, you can also use the .NET Core CLI to install Newtonsoft.Json:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">dotnet add package Newtonsoft.Json</span></span></code></pre>
+<p>Once installed, you can start using the library by adding the following namespace to your C# code:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">;</span></span></code></pre>
+<h2 id="serialization">Serialization</h2>
+<h3 id="basic-serialization">Basic Serialization</h3>
+<p>Serialization is the process of converting an object into a JSON string. With Newtonsoft.Json, you can easily serialize objects by calling the <code>JsonConvert.SerializeObject</code> method. Here’s a quick example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> Name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> Age { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Program</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Main</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> { Name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"John Doe"</span><span style="color: #F8F8F2">, Age </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">30</span><span style="color: #F8F8F2"> };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> JsonConvert.</span><span style="color: #A6E22E">SerializeObject</span><span style="color: #F8F8F2">(person);</span></span>
+<span class="line"><span style="color: #F8F8F2">        Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(jsonString); </span><span style="color: #88846F">// Outputs: {"Name":"John Doe","Age":30}</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="customizing-serialization">Customizing Serialization</h3>
+<p>Newtonsoft.Json provides a range of options for customizing the serialization process. For example, you can control the formatting of the JSON output, change property names, and apply custom converters. Here’s an example that demonstrates some of these features:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Converters</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    [</span><span style="color: #A6E22E; text-decoration: underline">JsonProperty</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"full_name"</span><span style="color: #F8F8F2">)]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> Name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> Age { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    [</span><span style="color: #A6E22E; text-decoration: underline">JsonConverter</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">typeof</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">StringEnumConverter</span><span style="color: #F8F8F2">))]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Gender</span><span style="color: #F8F8F2"> Gender { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">enum</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Gender</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    Male,</span></span>
+<span class="line"><span style="color: #F8F8F2">    Female</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Program</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Main</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> { Name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"Jane Doe"</span><span style="color: #F8F8F2">, Age </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">28</span><span style="color: #F8F8F2">, Gender </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Gender.Female };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> JsonConvert.</span><span style="color: #A6E22E">SerializeObject</span><span style="color: #F8F8F2">(person, Formatting.Indented);</span></span>
+<span class="line"><span style="color: #F8F8F2">        Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(jsonString);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">/* Outputs:</span></span>
+<span class="line"><span style="color: #88846F">        {</span></span>
+<span class="line"><span style="color: #88846F">          "full_name": "Jane Doe",</span></span>
+<span class="line"><span style="color: #88846F">          "Age": 28,</span></span>
+<span class="line"><span style="color: #88846F">          "Gender": "Female"</span></span>
+<span class="line"><span style="color: #88846F">        }</span></span>
+<span class="line"><span style="color: #88846F">        */</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="deserialization">Deserialization</h2>
+<h3 id="basic-deserialization">Basic Deserialization</h3>
+<p>Deserialization is the process of converting a JSON string back into an object. With Newtonsoft.Json, you can easily deserialize JSON strings by calling the <code>JsonConvert.DeserializeObject</code> method. Here’s a simple example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> Name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> Age { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Program</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Main</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">@"{</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Name</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">:</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">John Doe</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">,</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Age</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">:30}"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> JsonConvert.</span><span style="color: #A6E22E">DeserializeObject</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2">>(jsonString);</span></span>
+<span class="line"><span style="color: #F8F8F2">        Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">$"Name: {</span><span style="color: #F8F8F2">person</span><span style="color: #E6DB74">.</span><span style="color: #F8F8F2">Name</span><span style="color: #E6DB74">}, Age: {</span><span style="color: #F8F8F2">person</span><span style="color: #E6DB74">.</span><span style="color: #F8F8F2">Age</span><span style="color: #E6DB74">}"</span><span style="color: #F8F8F2">); </span><span style="color: #88846F">// Outputs: Name: John Doe, Age: 30</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="customizing-deserialization">Customizing Deserialization</h3>
+<p>Similar to serialization, JsonConvert provides various options to customize the deserialization process. You can use attributes, custom converters, and specify error handling during deserialization. Here’s an example that demonstrates some of these features:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Converters</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Person</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    [</span><span style="color: #A6E22E; text-decoration: underline">JsonProperty</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"full_name"</span><span style="color: #F8F8F2">)]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> Name { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">int</span><span style="color: #F8F8F2"> Age { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    [</span><span style="color: #A6E22E; text-decoration: underline">JsonConverter</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">typeof</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">StringEnumConverter</span><span style="color: #F8F8F2">))]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Gender</span><span style="color: #F8F8F2"> Gender { </span><span style="color: #F92672">get</span><span style="color: #F8F8F2">; </span><span style="color: #F92672">set</span><span style="color: #F8F8F2">; }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">enum</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Gender</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    Male,</span></span>
+<span class="line"><span style="color: #F8F8F2">    Female</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Program</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Main</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">@"{</span></span>
+<span class="line"><span style="color: #E6DB74">          </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">full_name</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Jane Doe</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">,</span></span>
+<span class="line"><span style="color: #E6DB74">          </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Age</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: 28,</span></span>
+<span class="line"><span style="color: #E6DB74">          </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Gender</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Female</span><span style="color: #AE81FF">""</span></span>
+<span class="line"><span style="color: #E6DB74">        }"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2"> person </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> JsonConvert.</span><span style="color: #A6E22E">DeserializeObject</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">Person</span><span style="color: #F8F8F2">>(jsonString);</span></span>
+<span class="line"><span style="color: #F8F8F2">        Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">$"Name: {</span><span style="color: #F8F8F2">person</span><span style="color: #E6DB74">.</span><span style="color: #F8F8F2">Name</span><span style="color: #E6DB74">}, Age: {</span><span style="color: #F8F8F2">person</span><span style="color: #E6DB74">.</span><span style="color: #F8F8F2">Age</span><span style="color: #E6DB74">}, Gender: {</span><span style="color: #F8F8F2">person</span><span style="color: #E6DB74">.</span><span style="color: #F8F8F2">Gender</span><span style="color: #E6DB74">}"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">// Outputs: Name: Jane Doe, Age: 28, Gender: Female</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">## LINQ to JSON</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">LINQ to JSON </span><span style="color: #F92672">is</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">a</span><span style="color: #F8F8F2"> feature of Newtonsoft.Json that allows you to work with JSON data </span><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">LINQ</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">queries</span><span style="color: #F8F8F2">. </span><span style="color: #A6E22E; text-decoration: underline">This</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">can</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">be</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">particularly</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">useful</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">when</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">you</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">need</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">to</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">query</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; text-decoration: underline">filter</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; text-decoration: underline">or</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">transform</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">JSON</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">data</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">without</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">deserializing</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">it</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">into</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">a</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">strongly</span><span style="color: #F8F8F2">-</span><span style="color: #A6E22E; text-decoration: underline">typed</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">object</span><span style="color: #F8F8F2">. </span><span style="color: #A6E22E; text-decoration: underline">Here</span><span style="color: #F8F8F2">'</span><span style="color: #A6E22E; text-decoration: underline">s</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">an</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">example</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">that</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">demonstrates</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">how</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">to</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">LINQ</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">to</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">JSON</span><span style="color: #F8F8F2">:</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">```</span><span style="color: #A6E22E; text-decoration: underline">csharp</span></span>
+<span class="line"><span style="color: #A6E22E; text-decoration: underline">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Newtonsoft</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Json</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">Linq</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">using</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">System</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Program</span></span>
+<span class="line"><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">Main</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">    {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">string</span><span style="color: #F8F8F2"> jsonString </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">@"{</span></span>
+<span class="line"><span style="color: #E6DB74">          </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">people</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: [</span></span>
+<span class="line"><span style="color: #E6DB74">            {</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">name</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">John Doe</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">, </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">age</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: 30},</span></span>
+<span class="line"><span style="color: #E6DB74">            {</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">name</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Jane Doe</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">, </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">age</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: 28},</span></span>
+<span class="line"><span style="color: #E6DB74">            {</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">name</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">Alice</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">, </span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">age</span><span style="color: #AE81FF">""</span><span style="color: #E6DB74">: 25}</span></span>
+<span class="line"><span style="color: #E6DB74">          ]</span></span>
+<span class="line"><span style="color: #E6DB74">        }"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">JObject</span><span style="color: #F8F8F2"> json </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> JObject.</span><span style="color: #A6E22E">Parse</span><span style="color: #F8F8F2">(jsonString);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">var</span><span style="color: #F8F8F2"> names </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> json[</span><span style="color: #E6DB74">"people"</span><span style="color: #F8F8F2">].</span><span style="color: #A6E22E">Select</span><span style="color: #F8F8F2">(p </span><span style="color: #F92672">=></span><span style="color: #F8F8F2"> p[</span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">]).</span><span style="color: #A6E22E">ToList</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        Console.</span><span style="color: #A6E22E">WriteLine</span><span style="color: #F8F8F2">(string.</span><span style="color: #A6E22E">Join</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">", "</span><span style="color: #F8F8F2">, names)); </span><span style="color: #88846F">// Outputs: John Doe, Jane Doe, Alice</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="performance-tips">Performance Tips</h2>
+<p>Newtonsoft.Json is designed to be fast and efficient, but there are a few tips you can follow to optimize performance even further:</p>
+<ol>
+<li>
+<p>Reuse <code>JsonSerializer</code> instances: If you’re using the <code>JsonSerializer</code> class directly (instead of <code>JsonConvert</code>), try to reuse instances of the class to avoid creating a new one each time you need to serialize or deserialize data.</p>
+</li>
+<li>
+<p>Use <code>JsonTextReader</code> and <code>JsonTextWriter</code> for streaming: When working with large JSON data, use the <code>JsonTextReader</code> and <code>JsonTextWriter</code> classes for streaming serialization and deserialization, as this can reduce memory usage and improve performance.</p>
+</li>
+<li>
+<p>Optimize your data structures: Use appropriate data structures for your JSON data, and try to avoid deeply nested objects or large arrays, as this can make serialization and deserialization slower.</p>
+</li>
+<li>
+<p>Use custom converters when necessary: If you have complex objects or custom serialization requirements, consider implementing your own <code>JsonConverter</code> to optimize the serialization and deserialization process.</p>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>Newtonsoft.Json is a powerful and flexible library for working with JSON data in .NET applications. With its rich feature set and performance optimizations, it’s no wonder that it has become one of the most popular JSON libraries for .NET developers.</p>
+<p>In this article, we’ve explored the key features of Newtonsoft.Json, including serialization, deserialization, and LINQ to JSON. We’ve also discussed some performance tips to help you get the most out of this library in your projects.</p>
+<p>Whether you’re building a web API, a desktop application, or a mobile app, Newtonsoft.Json can help you work with JSON data more efficiently and effectively. Give it a try, and see for yourself what it can do for your .NET projects.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-10<!-- -->.</div></div></div>
+  </body></html>
