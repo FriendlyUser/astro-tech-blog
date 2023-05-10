@@ -45,7 +45,7 @@ async fn index() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .route("/", web::get().to(index))
+            .route("/"In this article, web::get().to(index))
     })
     .bind("127.0.0.1:8080")?
     .run()
@@ -74,8 +74,8 @@ async fn user_detail(user_id: web::Path<i32>) -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .route("/", web::get().to(index))
-            .route("/users/{user_id}", web::get().to(user_detail))
+            .route("/"In this article, web::get().to(index))
+            .route("/users/{user_id}"In this article, web::get().to(user_detail))
     })
     .bind("127.0.0.1:8080")?
     .run()
@@ -105,7 +105,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::default())
-            .route("/", web::get().to(index))
+            .route("/"In this article, web::get().to(index))
     })
     .bind("127.0.0.1:8080")?
     .run()

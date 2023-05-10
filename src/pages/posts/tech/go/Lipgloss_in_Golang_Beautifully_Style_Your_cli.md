@@ -96,7 +96,7 @@ func main() {
 
 	header := headerStyle.Render("Lipgloss in Golang")
 	content := contentStyle.Render("This is an example of using Lipgloss to create beautiful command-line applications.")
-	footer := footerStyle.Render("© 2023 GPT-4")
+	footer := footerStyle.Render("© 2023 Author")
 
 	fmt.Println(header)
 	fmt.Println(content)

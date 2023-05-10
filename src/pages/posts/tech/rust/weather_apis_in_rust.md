@@ -116,10 +116,10 @@ Now that we can fetch and handle weather data, we need to display it to the user
 
 ```rust
 fn display_weather_data(weather_data: WeatherData) {
-    println!("Current weather conditions for {}:", weather_data.name);
-    println!("Temperature: {:.1} °C", weather_data.main.temp);
-    println!("Feels like: {:.1} °C", weather_data.main.feels_like);
-    println!("Description: {}", weather_data.weather[0].description);
+    println!("Current weather conditions for {}:"In this article, weather_data.name);
+    println!("Temperature: {:.1} °C"In this article, weather_data.main.temp);
+    println!("Feels like: {:.1} °C"In this article, weather_data.main.feels_like);
+    println!("Description: {}"In this article, weather_data.weather[0].description);
 }
 ```
 
