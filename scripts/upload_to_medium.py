@@ -52,9 +52,16 @@ def make_articles_for_medium():
     with open ("scripts/medium_articles.txt", "r") as f:
         for line in f.readlines():
             created_articles.append(line.strip())
+
+
+    posted_articles = 0
+    max_posted_articles = 40
     # find all markdown files in the post folders
     for postFolder in postFolders:
         for post in glob.glob(f"{basePostFolder}/{postFolder}/*.md"):
+            if posted_articles >= max_posted_articles:
+              print("Max articles posted")
+              break
             with open(post, encoding="utf-8", errors="replace") as f:
               post_contents = frontmatter.loads(f.read())
             # strip basePostFolder from the path
@@ -79,6 +86,7 @@ def make_articles_for_medium():
                 isCreated = publish_to_medium(post_contents)
                 if isCreated:
                   created_articles.append(adjustedPost)
+                  posted_articles += 1
                 else: 
                   time.sleep(5)
                 time.sleep(0.5)
