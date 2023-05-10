@@ -149,7 +149,7 @@ public class MyClass {
 
 3. **SWIG (Simplified Wrapper and Interface Generator):** SWIG is a software development tool that simplifies the task of interfacing different languages. It can generate the necessary JNI code and Java class files needed to interface with C++ code.
 
-```c++
+```cpp
 // In your C++ header file
 int my_cpp_function(int x);
 ```

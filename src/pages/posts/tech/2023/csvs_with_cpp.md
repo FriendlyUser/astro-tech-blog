@@ -15,7 +15,7 @@ CSV or Comma-Separated Values is a widely used format for storing tabular data. 
 Reading CSV Data
 To read a CSV file, we can use std::ifstream to open the file and read rows one by one. A single row can be read into a string using std::getline(). We can then parse the string to extract individual columns. Here is an example:
 
-```c++
+```cpp
 std::ifstream csvFile {"data.csv"}; // open the file
 std::string row;
 while (std::getline(csvFile, row)) { // read rows one by one
@@ -34,7 +34,7 @@ In the above example, we opened the CSV file "data.csv" using std::ifstream. We 
 Manipulating CSV Data
 We can also write CSV data from our program using std::ofstream. We can open a file for writing and write rows and columns separated by commas. Here is an example:
 
-```c++
+```cpp
 std::ofstream csvFile {"data.csv"}; // open the file
 csvFile << "Column1,Column2,Column3\n"; // write header row
 csvFile << "1,Hello,World\n"; // write data rows
@@ -43,7 +43,7 @@ csvFile << "2,Goodbye,Moon\n";
 
 In the above example, we opened the CSV file "data.csv" using std::ofstream. We then wrote a header row and two data rows separated by commas. If we want to append to an existing CSV file, we can use std::ofstream with the std::ios::app flag like this:
 
-```c++
+```cpp
 std::ofstream csvFile {"data.csv", std::ios::app}; // open the file in append mode
 csvFile << "3,Greetings,Earth\n"; // append a new row
 ```

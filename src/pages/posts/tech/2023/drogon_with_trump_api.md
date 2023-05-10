@@ -13,7 +13,7 @@ The Donald Trump API provides access to a large collection of quotes and tweets 
 
 Here's an example of how you might use Drogon to interact with the Donald Trump API:
 
-```c++
+```cpp
 #include <drogon/drogon.h>
 #include <iostream>
 
