@@ -138,7 +138,7 @@ To make an HTTP request in , you can use the object or the fetch API.
 Here's an example of how to use to make a GET request to fetch some data
 from a server:
 
-``` {.Javascript language="Javascript" caption="How to make a HTTP request in Javascript"}
+```Javascript
 var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://www.example.com/api/data', true);
 
@@ -154,7 +154,7 @@ xhr.send();
 
 Here's an example of how to use the fetch API to make the same request:
 
-``` {.Javascript language="Javascript" caption="HTTP request using fetch"}
+```Javascript
 fetch('https://www.example.com/api/data')
   .then(response => response.json())
   .then(data => {
@@ -180,7 +180,7 @@ allows you to query the API using the GraphQL language.
 Here is an example of using the fetch() method to retrieve data about a
 Pokemon from the PokeAPI:
 
-``` {.Javascript language="Javascript" caption="Fetching entry from poke api"}
+```Javascript
 fetch('https://pokeapi.co/api/v2/pokemon/1')
   .then(response => response.json())
   .then(data => {
@@ -203,7 +203,7 @@ request.
 For example, if you wanted to include an Authorization header with a
 bearer token, you could do something like this:
 
-``` {.Javascript language="Javascript" caption="\"Authroization header example with fetch"}
+```Javascript
 const headers = {
   'Authorization': 'Bearer <your-bearer-token-here>'
 };
@@ -229,7 +229,7 @@ started a new request that replaces the previous one.
 Here is an example of how to use the AbortController with the fetch()
 method:
 
-``` {.Javascript language="Javascript" caption="AbortController example"}
+```Javascript
 const controller = new AbortController();
 const signal = controller.signal;
 
@@ -336,7 +336,7 @@ performance of the application.
 
 Here is an example of using a simple cache with the fetch function:
 
-``` {.Javascript language="Javascript"}
+```Javascript
 // Create a cache to store the responses from fetch
 const cache = new Map();
 
