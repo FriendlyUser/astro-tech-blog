@@ -1,7 +1,7 @@
 ---
 title: Mastering NumPy A Comprehensive Guide to Efficient Numerical Computing in Python
 pubDate: "2023-05-28T20:33:27.000Z"
-description: "This article will provide a comprehensive introduction to NumPy and its capabilities.
+description: "This article will provide a comprehensive introduction to NumPy and its capabilities."
 tags: []
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
