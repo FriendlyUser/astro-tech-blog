@@ -1,11 +1,13 @@
 ---
-title: C++ Operator Overloading Enhancing the Power of User-Defined Types
-pubDate: "2025-01-30T11:49:17.000Z"
-description: "In this article, we'll explore the basics of operator overloading in C++, including:"
+description: 'In this article, we''ll explore the basics of operator overloading in
+  C++, including:'
+imgSrc: /imgs/2023/1031426508.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-30T11:49:17.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Operator Overloading Enhancing the Power of User-Defined Types
 ---
+
 # C++ Operator Overloading: Enhancing the Power of User-Defined Types
 
 C++ is a powerful and versatile programming language that offers a range of features to help programmers develop efficient and expressive code. One such feature is **operator overloading**, which allows you to redefine the behavior of built-in operators for user-defined types. This can make your code more intuitive and easier to read, as it allows you to use familiar syntax when working with custom objects.

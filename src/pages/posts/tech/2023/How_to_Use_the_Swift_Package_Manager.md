@@ -1,11 +1,13 @@
 ---
-title: How to Use the Swift Package Manager
-pubDate: "2023-08-26T13:34:45.000Z"
-description: "In this article, we'll explore the key concepts of SPM, how to create a new Swift package, and how to add and manage dependencies in your projects"
+description: In this article, we'll explore the key concepts of SPM, how to create
+  a new Swift package, and how to add and manage dependencies in your projects
+imgSrc: /imgs/2023/3867963691.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-08-26T13:34:45.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: How to Use the Swift Package Manager
 ---
+
 # How to Use the Swift Package Manager
 
 Swift Package Manager (SPM) is a powerful dependency management tool developed by Apple for the Swift programming language. It streamlines the process of adding, updating, and managing dependencies for your Swift projects. In this article, we'll explore the key concepts of SPM, how to create a new Swift package, and how to add and manage dependencies in your projects.

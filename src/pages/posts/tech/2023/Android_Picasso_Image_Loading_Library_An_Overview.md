@@ -1,11 +1,13 @@
 ---
-title: Android Picasso Image Loading Library An Overview
-pubDate: "2023-10-14T01:18:17.000Z"
-description: "In this article, we'll explore the features, benefits, and usage of Picasso for Android development."
+description: In this article, we'll explore the features, benefits, and usage of Picasso
+  for Android development.
+imgSrc: /imgs/2023/148139817.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-14T01:18:17.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Android Picasso Image Loading Library An Overview
 ---
+
 # Android Picasso Image Loading Library: An Overview
 
 ## Introduction

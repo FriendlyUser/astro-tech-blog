@@ -1,11 +1,14 @@
 ---
-title: C++ Performance Optimization Techniques
-pubDate: "2024-12-19T10:46:03.000Z"
-description: "This article will explore various C++ performance optimization techniques that can help developers write efficient code."
+description: This article will explore various C++ performance optimization techniques
+  that can help developers write efficient code.
+imgSrc: /imgs/2023/DALL·E 2022-12-29 12.27.48 - ball cartoon on grass red white like
+  pokeball.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-12-19T10:46:03.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Performance Optimization Techniques
 ---
+
 # C++ Performance Optimization Techniques
 
 In the world of software development, performance optimization is a crucial aspect. It ensures that applications run faster and use fewer resources. C++ is a powerful and versatile programming language, and when used effectively, it offers excellent performance. This article will explore various C++ performance optimization techniques that can help developers write efficient code.

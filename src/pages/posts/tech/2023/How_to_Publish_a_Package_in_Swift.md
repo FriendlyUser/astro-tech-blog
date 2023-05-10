@@ -1,11 +1,13 @@
 ---
-title: How to Publish a Package in Swift
-pubDate: "2025-04-13T05:37:32.000Z"
-description: "In this article, we will guide you through the process of creating and publishing a Swift package"
+description: In this article, we will guide you through the process of creating and
+  publishing a Swift package
+imgSrc: /imgs/2023/1693067648.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-04-13T05:37:32.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: How to Publish a Package in Swift
 ---
+
 # How to Publish a Package in Swift
 
 Swift is a powerful and intuitive programming language developed by Apple for iOS, macOS, watchOS, tvOS, and beyond. One of the key features of Swift is its support for packages, which are modular, reusable pieces of code that can be easily shared and integrated into other projects. In this article, we will guide you through the process of creating and publishing a Swift package.
@@ -113,4 +115,3 @@ Replace `https://github.com/YourUsername/MyPackage.git` with the URL of your rem
 Congratulations! Your Swift package is now published and can be easily integrated into other projects using the Swift Package Manager. To include your package in a Swift project, simply provide the repository URL and version requirements in the project's `Package.swift` file or through Xcode's package management interface.
 
 You can also share your package with the community by submitting it to package indexes like [Swift Package Index](https://swiftpackageindex.com/) or [SwiftPM Library](https://swiftpm.co/).
-

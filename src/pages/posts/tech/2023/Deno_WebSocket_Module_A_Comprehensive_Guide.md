@@ -1,11 +1,13 @@
 ---
-title: Deno WebSocket Module A Comprehensive Guide
-pubDate: "2025-01-08T09:48:30.000Z"
-description: "In this article, we will explore the Deno WebSocket module and how to use it to build WebSocket applications in Deno"
+description: In this article, we will explore the Deno WebSocket module and how to
+  use it to build WebSocket applications in Deno
+imgSrc: /imgs/2023/2421950579.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-08T09:48:30.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno WebSocket Module A Comprehensive Guide
 ---
+
 # Deno WebSocket Module: A Comprehensive Guide
 
 WebSockets provide a full-duplex communication channel over a single, long-lived connection, enabling real-time interactions between a client and a server. In this article, we will explore the Deno WebSocket module and how to use it to build WebSocket applications in Deno.
@@ -165,4 +167,3 @@ Disconnected from WebSocket server: [object CloseEvent]
 In this article, we covered the basics of using the Deno WebSocket module to create WebSocket applications. We set up a Deno environment, created a WebSocket server, built a WebSocket client, and handled WebSocket events on the server side.
 
 By leveraging Deno's built-in WebSocket support, you can build real-time applications with ease. As you explore further, you can also look into additional features such as secure WebSocket (wss) connections, handling binary data, and implementing custom protocols on top of WebSockets.
-

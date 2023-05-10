@@ -1,11 +1,13 @@
 ---
-title: C++ Interoperability with Other Languages
-pubDate: "2024-08-14T04:21:24.000Z"
-description: "In this article, we will discuss how C++ can interoperate with other programming languages, including C, Python, and Java"
+description: In this article, we will discuss how C++ can interoperate with other
+  programming languages, including C, Python, and Java
+imgSrc: /imgs/2023/1098832555.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-08-14T04:21:24.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Interoperability with Other Languages
 ---
+
 # C++ Interoperability with Other Languages
 
 C++ is a powerful, versatile programming language that provides extensive support for object-oriented, procedural, and generic programming. However, there may be times when you need to use other languages in your C++ projects, for reasons such as leveraging existing code or using specialized libraries. In this article, we will discuss how C++ can interoperate with other programming languages, including C, Python, and Java.

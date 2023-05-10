@@ -1,11 +1,13 @@
 ---
-title: Introduction to Eclipse Jetty A High-Performance Web Server and Servlet Container
-pubDate: "2023-12-27T08:18:10.000Z"
-description: "This article explores the key features, architecture, and use cases of Eclipse Jetty."
+description: This article explores the key features, architecture, and use cases of
+  Eclipse Jetty.
+imgSrc: /imgs/2023/3383398588_Ship_on_the_ocean.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-12-27T08:18:10.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Introduction to Eclipse Jetty A High-Performance Web Server and Servlet Container
 ---
+
 # Introduction to Eclipse Jetty: A High-Performance Web Server and Servlet Container
 
 Eclipse Jetty is an open-source, high-performance web server and servlet container designed for serving static and dynamic content. It is a subproject of the Eclipse Foundation, which is known for creating and maintaining various open-source projects. Jetty is widely used across a range of industries and applications, from small-scale projects to large-scale enterprise applications. This article explores the key features, architecture, and use cases of Eclipse Jetty.

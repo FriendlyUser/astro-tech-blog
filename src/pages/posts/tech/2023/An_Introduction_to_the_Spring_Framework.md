@@ -1,11 +1,13 @@
 ---
-title: An Introduction to the Spring Framework
-pubDate: "2024-01-05T04:26:36.000Z"
-description: "In this article, we will discuss the core features and benefits of the Spring Framework and delve into its primary components"
+description: In this article, we will discuss the core features and benefits of the
+  Spring Framework and delve into its primary components
+imgSrc: /imgs/2023/2679960937.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-01-05T04:26:36.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: An Introduction to the Spring Framework
 ---
+
 # An Introduction to the Spring Framework
 
 The Spring Framework is an open-source, comprehensive Java-based framework that simplifies the development of enterprise-level applications. Created by Rod Johnson in 2002, it has since evolved into a powerful, flexible ecosystem that offers several modules to streamline the development process. In this article, we will discuss the core features and benefits of the Spring Framework and delve into its primary components.

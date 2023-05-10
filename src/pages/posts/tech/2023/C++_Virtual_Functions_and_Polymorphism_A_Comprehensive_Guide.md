@@ -1,11 +1,13 @@
 ---
-title: C++ Virtual Functions and Polymorphism A Comprehensive Guide
-pubDate: "2023-08-04T17:45:10.000Z"
-description: "This article provides a comprehensive understanding of virtual functions and polymorphism in C++, their use cases, and best practices."
+description: This article provides a comprehensive understanding of virtual functions
+  and polymorphism in C++, their use cases, and best practices.
+imgSrc: /imgs/2023/326029388.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-08-04T17:45:10.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Virtual Functions and Polymorphism A Comprehensive Guide
 ---
+
 # C++ Virtual Functions and Polymorphism: A Comprehensive Guide
 
 ## Introduction

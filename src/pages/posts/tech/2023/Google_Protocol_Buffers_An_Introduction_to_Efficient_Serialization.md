@@ -1,11 +1,13 @@
 ---
-title: Google Protocol Buffers An Introduction to Efficient Serialization
-pubDate: "2025-01-02T13:08:12.000Z"
-description: "This article will provide an overview of the key features and benefits of Protobuf, and explain its usage in practical applications."
+description: This article will provide an overview of the key features and benefits
+  of Protobuf, and explain its usage in practical applications.
+imgSrc: /imgs/2023/1879869613.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-02T13:08:12.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Google Protocol Buffers An Introduction to Efficient Serialization
 ---
+
 # Google Protocol Buffers: An Introduction to Efficient Serialization
 
 ## Introduction

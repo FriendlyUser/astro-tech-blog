@@ -1,11 +1,13 @@
 ---
-title: Jackson JSON Library An Overview and Usage Guide
-pubDate: "2023-10-06T06:00:24.000Z"
-description: "In this article, we will cover the features, advantages, and basic usage of the Jackson library"
+description: In this article, we will cover the features, advantages, and basic usage
+  of the Jackson library
+imgSrc: /imgs/2023/pokemon_by_first_letter.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-06T06:00:24.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Jackson JSON Library An Overview and Usage Guide
 ---
+
 # Jackson JSON Library: An Overview and Usage Guide
 
 In the world of Java development, handling JSON data is a common task. Whether you're working with web services, RESTful APIs, or data storage, processing JSON data efficiently is essential. One of the most popular and widely used Java libraries for processing JSON data is the Jackson JSON library. In this article, we will cover the features, advantages, and basic usage of the Jackson library.

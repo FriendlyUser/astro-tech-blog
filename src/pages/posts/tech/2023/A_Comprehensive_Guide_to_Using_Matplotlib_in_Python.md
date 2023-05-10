@@ -1,11 +1,13 @@
 ---
-title: A Comprehensive Guide to Using Matplotlib in Python
-pubDate: "2024-04-03T11:06:50.000Z"
-description: "In this article, we will explore the fundamentals of Matplotlib, including installation, basic plots, customization, and advanced functionality"
+description: In this article, we will explore the fundamentals of Matplotlib, including
+  installation, basic plots, customization, and advanced functionality
+imgSrc: /imgs/2023/1637557246.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-04-03T11:06:50.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Comprehensive Guide to Using Matplotlib in Python
 ---
+
 # A Comprehensive Guide to Using Matplotlib in Python
 
 Matplotlib is a powerful and versatile library in Python for creating static, interactive, and animated visualizations. It offers a wide variety of plots and chart types, making it the go-to library for many data analysts and scientists.

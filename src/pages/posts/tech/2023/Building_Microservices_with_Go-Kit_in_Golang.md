@@ -1,11 +1,13 @@
 ---
-title: Building Microservices with Go-Kit in Golang
-pubDate: "2024-03-16T04:50:20.000Z"
-description: " Go-Kit offers a set of tools and best practices to develop and manage these services with ease."
+description: ' Go-Kit offers a set of tools and best practices to develop and manage
+  these services with ease.'
+imgSrc: /imgs/2023/2269624161_forest.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-03-16T04:50:20.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Building Microservices with Go-Kit in Golang
 ---
+
 # Building Microservices with Go-Kit in Golang
 
 In this technical article, we will discuss the Go-Kit library, a toolkit for building microservices in Golang. Microservices are a popular architectural pattern that decomposes an application into smaller, independently deployable and maintainable services. Go-Kit offers a set of tools and best practices to develop and manage these services with ease.

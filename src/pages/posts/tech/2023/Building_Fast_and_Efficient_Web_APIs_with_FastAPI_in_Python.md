@@ -1,11 +1,14 @@
 ---
-title: Building Fast and Efficient Web APIs with FastAPI in Python
-pubDate: "2025-03-05T02:02:13.000Z"
-description: "In this article, we'll explore the basics of FastAPI, including how to set up a FastAPI project, define API endpoints, and use FastAPI's powerful features such as dependency injection and validation"
+description: In this article, we'll explore the basics of FastAPI, including how to
+  set up a FastAPI project, define API endpoints, and use FastAPI's powerful features
+  such as dependency injection and validation
+imgSrc: /imgs/2023/1899250612.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-03-05T02:02:13.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Building Fast and Efficient Web APIs with FastAPI in Python
 ---
+
 # Building Fast and Efficient Web APIs with FastAPI in Python
 
 FastAPI is a modern, fast, and efficient web framework for building APIs in Python. It is built on top of the Starlette framework and Pydantic, leveraging the latest features of the Python programming language. FastAPI is easy to use and provides automatic validation, serialization, and documentation for your API, making it a powerful and developer-friendly choice for building web applications.
@@ -135,4 +138,3 @@ def read_item(item_id: int, db: Database = Depends(get_db)):
 FastAPI is a powerful and flexible web framework for building APIs in Python. Its automatic validation, serialization, and dependency injection features make it easy to build robust and efficient web applications. With FastAPI, you can quickly build high-performance web APIs thatare easy to maintain and scale.
 
 In this article, we've covered the basics of setting up a FastAPI project, defining API endpoints, and using some of FastAPI's powerful features. As you continue to develop your application, you can explore more advanced features such as OAuth2 authentication, WebSocket support, and custom exception handlers.
-

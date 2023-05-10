@@ -1,11 +1,13 @@
 ---
-title: Contributing to Open-Source Swift Packages
-pubDate: "2024-04-23T23:13:25.000Z"
-description: "In this article, we'll outline the steps you need to take to contribute to open-source Swift packages"
+description: In this article, we'll outline the steps you need to take to contribute
+  to open-source Swift packages
+imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-04-23T23:13:25.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Contributing to Open-Source Swift Packages
 ---
+
 # Contributing to Open-Source Swift Packages
 
 Open-source Swift packages are essential building blocks for the Swift community, helping developers create efficient and scalable applications. Contributing to these packages can be a rewarding experience, allowing you to improve your programming skills and contribute to the growth of the Swift ecosystem. In this article, we'll outline the steps you need to take to contribute to open-source Swift packages.
@@ -87,4 +89,3 @@ After submitting your pull request, the package maintainers or other contributor
 To make changes to your PR, simply push new commits to the same branch on your fork. These will automatically be added to the existing PR. Once your changes have been approved, the maintainers will merge your PR into the main branch.
 
 ## Conclusion
-

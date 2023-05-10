@@ -1,11 +1,14 @@
 ---
-title: C++ Multithreading and Concurrency A Comprehensive Guide
-pubDate: "2023-09-17T19:14:17.000Z"
-description: "In this article, we will explore multithreading concepts, C++11 threading support, synchronization mechanisms, and best practices for writing concurrent C++ programs"
+description: In this article, we will explore multithreading concepts, C++11 threading
+  support, synchronization mechanisms, and best practices for writing concurrent C++
+  programs
+imgSrc: /imgs/2023/4181036141.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-09-17T19:14:17.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Multithreading and Concurrency A Comprehensive Guide
 ---
+
 # C++ Multithreading and Concurrency: A Comprehensive Guide
 
 ## Introduction

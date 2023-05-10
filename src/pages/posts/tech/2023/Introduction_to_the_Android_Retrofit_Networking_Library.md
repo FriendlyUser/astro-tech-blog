@@ -1,11 +1,14 @@
 ---
-title: Introduction to the Android Retrofit Networking Library
-pubDate: "2024-07-19T00:14:29.000Z"
-description: "In this article, we will explore the key features of Retrofit, how to set up a project using Retrofit, and some best practices for using this library in your Android applications"
+description: In this article, we will explore the key features of Retrofit, how to
+  set up a project using Retrofit, and some best practices for using this library
+  in your Android applications
+imgSrc: /imgs/2023/pokemon_types_by_gen.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-07-19T00:14:29.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Introduction to the Android Retrofit Networking Library
 ---
+
 # Introduction to the Android Retrofit Networking Library
 
 In today's interconnected world, mobile applications often rely on the ability to communicate with remote servers and APIs to provide a rich user experience. One popular library for handling network communication in Android applications is Retrofit, developed by Square. Retrofit is a powerful, type-safe HTTP client for Android and Java applications that simplifies the process of consuming RESTful web services.

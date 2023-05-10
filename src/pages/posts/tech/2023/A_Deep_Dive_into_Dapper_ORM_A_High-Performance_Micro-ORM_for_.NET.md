@@ -1,11 +1,13 @@
 ---
-title: A Deep Dive into Dapper ORM A High-Performance Micro-ORM for .NET
-pubDate: "2024-05-15T13:51:04.000Z"
-description: "In this article, we'll explore the features, benefits, and usage of Dapper ORM."
+description: In this article, we'll explore the features, benefits, and usage of Dapper
+  ORM.
+imgSrc: /imgs/2023/bear_book_1.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-05-15T13:51:04.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Deep Dive into Dapper ORM A High-Performance Micro-ORM for .NET
 ---
+
 # A Deep Dive into Dapper ORM: A High-Performance Micro-ORM for .NET
 
 ## Introduction

@@ -1,11 +1,14 @@
 ---
-title: C++ Move Semantics and Rvalue References A Deep Dive
-pubDate: "2025-04-04T18:30:25.000Z"
-description: "In this article, we will explore C++ move semantics and rvalue references, two powerful features introduced in C++11 that enable efficient resource management and code optimization"
+description: In this article, we will explore C++ move semantics and rvalue references,
+  two powerful features introduced in C++11 that enable efficient resource management
+  and code optimization
+imgSrc: /imgs/2023/3072838870.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-04-04T18:30:25.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Move Semantics and Rvalue References A Deep Dive
 ---
+
 # C++ Move Semantics and Rvalue References: A Deep Dive
 
 In this article, we will explore C++ move semantics and rvalue references, two powerful features introduced in C++11 that enable efficient resource management and code optimization. We will discuss their significance, their usage patterns, and dive into some practical examples to understand their inner workings better.

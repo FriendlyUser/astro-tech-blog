@@ -1,11 +1,13 @@
 ---
-title: An Introduction to Pygame Zero Building Your First Game in Python
-pubDate: "2023-06-16T23:52:29.000Z"
-description: "In this article, we will explore the basics of Pygame Zero and guide you through the process of creating a simple game"
+description: In this article, we will explore the basics of Pygame Zero and guide
+  you through the process of creating a simple game
+imgSrc: /imgs/2023/359936451.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-06-16T23:52:29.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: An Introduction to Pygame Zero Building Your First Game in Python
 ---
+
 # An Introduction to Pygame Zero: Building Your First Game in Python
 
 Pygame Zero is a beginner-friendly game engine for Python that allows you to create simple video games without the need to write complex boilerplate code. This powerful library provides a straightforward interface that abstracts away many of the complexities of Pygame, a popular library for creating multimedia applications in Python. In this article, we will explore the basics of Pygame Zero and guide you through the process of creating a simple game.

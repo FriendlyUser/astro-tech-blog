@@ -1,11 +1,13 @@
 ---
-title: C++ Libraries for Scientific Computing An Overview
-pubDate: "2023-10-08T15:59:26.000Z"
-description: "C++ has emerged as one of the preferred languages for implementing high-performance scientific computing applications"
+description: C++ has emerged as one of the preferred languages for implementing high-performance
+  scientific computing applications
+imgSrc: /imgs/2023/1444932837.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-08T15:59:26.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Libraries for Scientific Computing An Overview
 ---
+
 # C++ Libraries for Scientific Computing: An Overview
 
 Scientific computing is a multidisciplinary field that requires the use of advanced mathematical models, algorithms, and various computational techniques to solve complex problems in science and engineering. Over the years, C++ has emerged as one of the preferred languages for implementing high-performance scientific computing applications, thanks to its combination of low-level control, high-level abstractions, and support for multi-threading and parallelism. This article provides an overview of some of the most popular C++ libraries for scientific computing, covering linear algebra, optimization, data processing, and more.

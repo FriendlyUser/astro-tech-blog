@@ -1,11 +1,14 @@
 ---
-title: C++ Type Traits and Metaprogramming A Deep Dive
-pubDate: "2025-04-17T21:19:07.000Z"
-description: "In this article, we will explore the concept of type traits, a key component of C++ metaprogramming, and how they can be utilized to write cleaner and more efficient code"
+description: In this article, we will explore the concept of type traits, a key component
+  of C++ metaprogramming, and how they can be utilized to write cleaner and more efficient
+  code
+imgSrc: /imgs/2023/2861854918.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-04-17T21:19:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Type Traits and Metaprogramming A Deep Dive
 ---
+
 # C++ Type Traits and Metaprogramming: A Deep Dive
 
 C++ is a powerful programming language that allows developers to write high-performance, low-level code. One of the more advanced features of C++ is its support for metaprogramming, which can be leveraged to create efficient and elegant code. In this article, we will explore the concept of type traits, a key component of C++ metaprogramming, and how they can be utilized to write cleaner and more efficient code.

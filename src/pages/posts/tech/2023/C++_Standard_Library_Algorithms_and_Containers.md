@@ -1,11 +1,13 @@
 ---
-title: C++ Standard Library Algorithms and Containers
-pubDate: "2025-01-17T14:56:26.000Z"
-description: "This article will provide an overview of these components, their benefits, and how to use them effectively in your C++ code."
+description: This article will provide an overview of these components, their benefits,
+  and how to use them effectively in your C++ code.
+imgSrc: /imgs/2023/4046799380_Scrapping_oil_off_a_painting.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-17T14:56:26.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Standard Library Algorithms and Containers
 ---
+
 # C++ Standard Library: Algorithms and Containers
 
 The C++ standard library is a rich collection of classes, functions, and algorithms designed to simplify the development of C++ applications. Among the vast array of features it provides, two of the most essential and frequently used components are the **algorithms** and **containers**. This article will provide an overview of these components, their benefits, and how to use them effectively in your C++ code.

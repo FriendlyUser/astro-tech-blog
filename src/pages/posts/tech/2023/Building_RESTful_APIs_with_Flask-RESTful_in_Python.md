@@ -1,11 +1,13 @@
 ---
-title: Building RESTful APIs with Flask-RESTful in Python
-pubDate: "2024-07-01T14:01:55.000Z"
-description: " By the end of this tutorial, you'll have a basic understanding of how to create, retrieve, update, and delete (CRUD) resources using this library."
+description: ' By the end of this tutorial, you''ll have a basic understanding of
+  how to create, retrieve, update, and delete (CRUD) resources using this library.'
+imgSrc: /imgs/2023/1144941208.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-07-01T14:01:55.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Building RESTful APIs with Flask-RESTful in Python
 ---
+
 # Building RESTful APIs with Flask-RESTful in Python
 
 Flask-RESTful is an extension for the Flask web framework that simplifies the process of building RESTful APIs. In this tutorial, we'll explore how to build a simple RESTful API using Flask-RESTful in Python. By the end of this tutorial, you'll have a basic understanding of how to create, retrieve, update, and delete (CRUD) resources using this library.

@@ -1,11 +1,14 @@
 ---
-title: An Introduction to Flask A Lightweight Web Framework for Python
-pubDate: "2025-01-31T19:30:20.000Z"
-description: "In this article, we will explore the basics of Flask and demonstrate how to create a simple web application"
+description: In this article, we will explore the basics of Flask and demonstrate
+  how to create a simple web application
+imgSrc: /imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the
+  window at a tree.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-31T19:30:20.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: An Introduction to Flask A Lightweight Web Framework for Python
 ---
+
 # An Introduction to Flask: A Lightweight Web Framework for Python
 
 Flask is a popular and easy-to-use web framework for Python that allows developers to create web applications quickly and efficiently. It is a micro-framework that follows the "batteries-included" philosophy, providing a minimalistic core with the ability to extend its functionality using third-party libraries. In this article, we will explore the basics of Flask and demonstrate how to create a simple web application.

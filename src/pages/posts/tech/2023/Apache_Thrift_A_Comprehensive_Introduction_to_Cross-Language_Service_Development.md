@@ -1,11 +1,14 @@
 ---
-title: Apache Thrift A Comprehensive Introduction to Cross-Language Service Development
-pubDate: "2024-11-09T05:19:51.000Z"
-description: "In this article, we'll explore the core components of Apache Thrift, how it achieves cross-language communication, and walk through a simple example of implementing and consuming a service"
+description: In this article, we'll explore the core components of Apache Thrift,
+  how it achieves cross-language communication, and walk through a simple example
+  of implementing and consuming a service
+imgSrc: /imgs/2023/other
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-11-09T05:19:51.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache Thrift A Comprehensive Introduction to Cross-Language Service Development
 ---
+
 # Apache Thrift: A Comprehensive Introduction to Cross-Language Service Development
 
 Apache Thrift is an open-source software framework that allows developers to build cross-language services. It was originally developed by Facebook and later donated to the Apache Software Foundation in 2007. Thrift enables developers to define data types and service interfaces in a simple language-agnostic Interface Definition Language (IDL). It then generates code for various programming languages, making it easier to implement and consume services across different platforms.

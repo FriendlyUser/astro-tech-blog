@@ -1,11 +1,13 @@
 ---
-title: Interfacing with the Kraken API in Go
-pubDate: "2023-10-11T12:10:48.000Z"
-description: "In this article, we'll explore how to use the Kraken cryptocurrency exchange API with Go (Golang)"
+description: In this article, we'll explore how to use the Kraken cryptocurrency exchange
+  API with Go (Golang)
+imgSrc: /imgs/2023/3847215807.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-11T12:10:48.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Interfacing with the Kraken API in Go
 ---
+
 # Interfacing with the Kraken API in Go
 
 In this article, we'll explore how to use the Kraken cryptocurrency exchange API with Go (Golang). We will create a simple application that retrieves account balance, places an order, and checks the status of an open order.

@@ -1,11 +1,13 @@
 ---
-title: Deno Fetch Module A Deep Dive into HTTP Request Handling
-pubDate: "2023-11-24T14:08:45.000Z"
-description: "This article will explore the Deno Fetch module in-depth, explaining its key components, usage, and benefits."
+description: This article will explore the Deno Fetch module in-depth, explaining
+  its key components, usage, and benefits.
+imgSrc: /imgs/2023/2581699444.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-11-24T14:08:45.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno Fetch Module A Deep Dive into HTTP Request Handling
 ---
+
 # Deno Fetch Module: A Deep Dive into HTTP Request Handling
 
 Deno, a modern and secure runtime for JavaScript and TypeScript, has gained significant traction since its launch in 2018. One of the key features of Deno is its built-in Fetch module, which provides a robust and user-friendly way to perform HTTP requests. This article will explore the Deno Fetch module in-depth, explaining its key components, usage, and benefits.

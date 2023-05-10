@@ -1,11 +1,14 @@
 ---
-title: Introduction to Scikit-learn A Powerful Python Library for Machine Learning
-pubDate: "2024-06-02T15:09:55.000Z"
-description: "In this article, we will discuss the key features of Scikit-learn and demonstrate how to use it for various machine learning tasks, such as classification, regression, and clustering"
+description: In this article, we will discuss the key features of Scikit-learn and
+  demonstrate how to use it for various machine learning tasks, such as classification,
+  regression, and clustering
+imgSrc: /imgs/2023/3072838870.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-02T15:09:55.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Introduction to Scikit-learn A Powerful Python Library for Machine Learning
 ---
+
 # Introduction to Scikit-learn: A Powerful Python Library for Machine Learning
 
 Scikit-learn is an open-source Python library that simplifies the process of implementing machine learning algorithms. It offers a wide variety of tools for preprocessing, model selection, evaluation, and visualization, making it an excellent choice for both beginners and experienced practitioners in the field of machine learning.

@@ -1,11 +1,14 @@
 ---
-title: Demystifying Microsoft.AspNetCore.Authorization
-pubDate: "2024-09-21T06:51:47.000Z"
-description: "In this article, we will delve into the key components of this system, examine how it works, and explore various ways to implement custom authorization policies"
+description: In this article, we will delve into the key components of this system,
+  examine how it works, and explore various ways to implement custom authorization
+  policies
+imgSrc: /imgs/2023/1400635341.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-09-21T06:51:47.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Demystifying Microsoft.AspNetCore.Authorization
 ---
+
 # Demystifying Microsoft.AspNetCore.Authorization
 
 ## Introduction

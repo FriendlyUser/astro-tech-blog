@@ -1,11 +1,14 @@
 ---
-title: An In-Depth Look at the Android Standard Library
-pubDate: "2024-02-03T22:08:52.000Z"
-description: "In this article, we will delve into the Android Standard Library, its essential components, and how developers can leverage its functionalities to create feature-rich Android applications"
+description: In this article, we will delve into the Android Standard Library, its
+  essential components, and how developers can leverage its functionalities to create
+  feature-rich Android applications
+imgSrc: /imgs/2023/1575571770.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-02-03T22:08:52.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: An In-Depth Look at the Android Standard Library
 ---
+
 # An In-Depth Look at the Android Standard Library
 
 The Android Standard Library, also known as the Android Framework, is a collection of APIs, tools, and libraries that developers can use to build Android applications. It is a crucial component in the Android ecosystem, serving as a foundation for app development. In this article, we will delve into the Android Standard Library, its essential components, and how developers can leverage its functionalities to create feature-rich Android applications.

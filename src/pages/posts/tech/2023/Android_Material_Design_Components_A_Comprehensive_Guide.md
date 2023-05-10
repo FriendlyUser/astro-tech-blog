@@ -1,11 +1,13 @@
 ---
-title: Android Material Design Components A Comprehensive Guide
-pubDate: "2023-07-29T08:24:55.000Z"
-description: "This article provides an overview of Android Material Design Components and demonstrates how to use them effectively in your Android applications."
+description: This article provides an overview of Android Material Design Components
+  and demonstrates how to use them effectively in your Android applications.
+imgSrc: /imgs/2023/654074938.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-29T08:24:55.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Android Material Design Components A Comprehensive Guide
 ---
+
 # Android Material Design Components: A Comprehensive Guide
 
 Material Design is a design language developed by Google in 2014. It aims to create a unified and consistent user experience across various platforms, devices, and input methods. Android Material Design Components (MDC) is a set of components and styles that help developers build Android applications in line with Material Design guidelines.

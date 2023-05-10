@@ -1,11 +1,13 @@
 ---
-title: Introduction to Log4j A Powerful Java Logging Framework
-pubDate: "2023-10-17T08:06:29.000Z"
-description: "In this article, we will delve into the details of the Log4j logging framework, its components, and how to use it effectively in a Java application"
+description: In this article, we will delve into the details of the Log4j logging
+  framework, its components, and how to use it effectively in a Java application
+imgSrc: /imgs/2023/945555918.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-17T08:06:29.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Introduction to Log4j A Powerful Java Logging Framework
 ---
+
 # Introduction to Log4j: A Powerful Java Logging Framework
 
 Logging is an essential part of any software application, as it helps developers to track and understand the application's behavior. For Java applications, Log4j is one of the most popular and widely-used logging frameworks. Apache Log4j is an open-source project under the Apache Software Foundation and is part of the Apache Logging Services Project.

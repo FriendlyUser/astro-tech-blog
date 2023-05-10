@@ -1,11 +1,13 @@
 ---
-title: Leveraging Pandas in Python for Data Manipulation
-pubDate: "2024-12-03T08:17:39.000Z"
-description: "In this article, we will explore the key features of Pandas and demonstrate how to use it effectively for data manipulation and analysis"
+description: In this article, we will explore the key features of Pandas and demonstrate
+  how to use it effectively for data manipulation and analysis
+imgSrc: /imgs/2023/481242631.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-12-03T08:17:39.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Leveraging Pandas in Python for Data Manipulation
 ---
+
 # Leveraging Pandas in Python for Data Manipulation
 
 Pandas is a powerful data manipulation library in Python that offers intuitive data structures and functions for data analysis. The name Pandas is derived from the term "Panel Data," which refers to multi-dimensional structured data sets commonly used in statistics and econometrics. In this article, we will explore the key features of Pandas and demonstrate how to use it effectively for data manipulation and analysis.

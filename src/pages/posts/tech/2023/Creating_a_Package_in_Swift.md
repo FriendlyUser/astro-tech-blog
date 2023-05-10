@@ -1,11 +1,13 @@
 ---
-title: Creating a Package in Swift
-pubDate: "2025-01-15T13:22:30.000Z"
-description: "In this article, we will explore how to create, manage, and distribute a package in Swift using the Swift Package Manager"
+description: In this article, we will explore how to create, manage, and distribute
+  a package in Swift using the Swift Package Manager
+imgSrc: /imgs/2023/4161054396.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-15T13:22:30.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Creating a Package in Swift
 ---
+
 # Creating a Package in Swift
 
 Swift is a powerful and easy-to-use language for iOS, macOS, watchOS, and tvOS app development. One of the great features of Swift is its support for packages, which allows you to bundle reusable code into a single unit that can be easily shared among different projects. In this article, we will explore how to create, manage, and distribute a package in Swift using the Swift Package Manager.

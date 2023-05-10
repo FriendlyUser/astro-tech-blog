@@ -1,11 +1,13 @@
 ---
-title: Demystifying AutoMapper Streamlining Object-to-Object Mapping in .NET
-pubDate: "2024-06-15T23:06:49.000Z"
-description: " In this article, we'll explore the basics of AutoMapper, how to set it up, and how to use it in your .NET applications."
+description: ' In this article, we''ll explore the basics of AutoMapper, how to set
+  it up, and how to use it in your .NET applications.'
+imgSrc: /imgs/2023/2921207460.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-15T23:06:49.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Demystifying AutoMapper Streamlining Object-to-Object Mapping in .NET
 ---
+
 # Demystifying AutoMapper: Streamlining Object-to-Object Mapping in .NET
 
 ## Introduction

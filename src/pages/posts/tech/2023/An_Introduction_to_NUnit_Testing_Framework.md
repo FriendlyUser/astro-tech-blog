@@ -1,11 +1,13 @@
 ---
-title: An Introduction to NUnit Testing Framework
-pubDate: "2025-01-23T22:59:48.000Z"
-description: "In this article, we will explore the basics of NUnit, its features, and how to use it to write and run tests for your"
+description: In this article, we will explore the basics of NUnit, its features, and
+  how to use it to write and run tests for your
+imgSrc: /imgs/2023/3267094508_short_ruler_in_the_grass.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-23T22:59:48.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: An Introduction to NUnit Testing Framework
 ---
+
 # An Introduction to NUnit Testing Framework
 
 ## Overview

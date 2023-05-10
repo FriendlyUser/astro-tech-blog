@@ -1,11 +1,13 @@
 ---
-title: Apache Maven Unleashing the Power of Build Automation
-pubDate: "2025-02-08T00:40:27.000Z"
-description: "In this article, we will explore the key features of Maven, its project structure, and how to get started with this versatile build tool"
+description: In this article, we will explore the key features of Maven, its project
+  structure, and how to get started with this versatile build tool
+imgSrc: /imgs/2023/326029388.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-08T00:40:27.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache Maven Unleashing the Power of Build Automation
 ---
+
 # Apache Maven: Unleashing the Power of Build Automation
 
 Apache Maven is a powerful build automation tool primarily used in Java projects. It simplifies the entire build process, from compiling source code to generating documentation to deploying artifacts to a repository. In this article, we will explore the key features of Maven, its project structure, and how to get started with this versatile build tool.

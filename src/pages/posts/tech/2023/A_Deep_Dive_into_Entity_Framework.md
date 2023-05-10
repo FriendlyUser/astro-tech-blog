@@ -1,11 +1,13 @@
 ---
-title: A Deep Dive into Entity Framework
-pubDate: "2025-01-08T08:09:42.000Z"
-description: "In this article, we will explore the key concepts of Entity Framework, its architecture, and how to use it in a typical .NET application."
+description: In this article, we will explore the key concepts of Entity Framework,
+  its architecture, and how to use it in a typical .NET application.
+imgSrc: /imgs/2023/3194903180.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-08T08:09:42.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Deep Dive into Entity Framework
 ---
+
 # A Deep Dive into Entity Framework
 
 ## Introduction

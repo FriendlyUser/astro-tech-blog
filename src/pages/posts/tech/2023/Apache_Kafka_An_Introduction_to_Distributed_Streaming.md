@@ -1,11 +1,13 @@
 ---
-title: Apache Kafka An Introduction to Distributed Streaming
-pubDate: "2023-11-04T21:22:19.000Z"
-description: "In this article, we will explore the fundamentals of Apache Kafka, its architecture, and how it works"
+description: In this article, we will explore the fundamentals of Apache Kafka, its
+  architecture, and how it works
+imgSrc: /imgs/2023/other
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-11-04T21:22:19.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache Kafka An Introduction to Distributed Streaming
 ---
+
 # Apache Kafka: An Introduction to Distributed Streaming
 
 Apache Kafka is a distributed streaming platform that enables high-throughput, fault-tolerant, and scalable data streaming. Developed by the Apache Software Foundation, Kafka is an open-source technology that has gained significant popularity for its ability to process large volumes of real-time data efficiently. In this article, we will explore the fundamentals of Apache Kafka, its architecture, and how it works.

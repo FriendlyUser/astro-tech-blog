@@ -1,11 +1,14 @@
 ---
-title: Automating GUI Interactions with Python Using PyAutoGUI
-pubDate: "2024-09-17T00:24:45.000Z"
-description: "In this article, we will explore various features of PyAutoGUI, including how to install the library, interact with the mouse and keyboard, and use screenshots to control your applications"
+description: In this article, we will explore various features of PyAutoGUI, including
+  how to install the library, interact with the mouse and keyboard, and use screenshots
+  to control your applications
+imgSrc: /imgs/2023/226878303.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-09-17T00:24:45.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Automating GUI Interactions with Python Using PyAutoGUI
 ---
+
 # Automating GUI Interactions with Python Using PyAutoGUI
 
 PyAutoGUI is a powerful Python library that allows you to control the mouse and keyboard programmatically. With PyAutoGUI, you can automate repetitive tasks, create custom shortcuts, and even develop simple bots. In this article, we will explore various features of PyAutoGUI, including how to install the library, interact with the mouse and keyboard, and use screenshots to control your applications.

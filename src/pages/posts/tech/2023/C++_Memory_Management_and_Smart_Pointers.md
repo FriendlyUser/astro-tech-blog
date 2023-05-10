@@ -1,11 +1,13 @@
 ---
-title: C++ Memory Management and Smart Pointers
-pubDate: "2024-06-10T21:02:58.000Z"
-description: "In this article, we will discuss C++ memory management, the concept of smart pointers, and how they can help you write better code"
+description: In this article, we will discuss C++ memory management, the concept of
+  smart pointers, and how they can help you write better code
+imgSrc: /imgs/2023/954954072.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-10T21:02:58.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Memory Management and Smart Pointers
 ---
+
 # C++ Memory Management and Smart Pointers
 
 In C++, memory management is one of the most important aspects of writing efficient, maintainable, and bug-free code. Manual memory management using raw pointers can be error-prone and lead to memory leaks, crashes, and other hard-to-trace issues. This is where smart pointers come in handy. In this article, we will discuss C++ memory management, the concept of smart pointers, and how they can help you write better code.

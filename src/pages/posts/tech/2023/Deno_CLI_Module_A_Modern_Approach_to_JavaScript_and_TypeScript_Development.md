@@ -1,11 +1,13 @@
 ---
-title: Deno CLI Module A Modern Approach to JavaScript and TypeScript Development
-pubDate: "2024-02-08T15:32:23.000Z"
-description: "In this article, we will explore the Deno CLI module, a powerful and versatile tool for JavaScript and TypeScript developers"
+description: In this article, we will explore the Deno CLI module, a powerful and
+  versatile tool for JavaScript and TypeScript developers
+imgSrc: /imgs/2023/1096284488.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-02-08T15:32:23.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno CLI Module A Modern Approach to JavaScript and TypeScript Development
 ---
+
 # Deno CLI Module: A Modern Approach to JavaScript and TypeScript Development
 
 In this article, we will explore the Deno CLI module, a powerful and versatile tool for JavaScript and TypeScript developers. We will discuss its key features, benefits, and how to use it effectively. By the end of this article, you should have a solid understanding of the Deno CLI module and its potential to enhance your development process.
@@ -109,4 +111,3 @@ This command will generate a `hello.bundle.js` file containing our application's
 ## Conclusion
 
 The Deno CLI module is a powerful and flexible tool for JavaScript and TypeScript developers. With its rich set of commands and options, it allows for efficient management of scripts, dependencies, and development workflows. From running applications with fine-grained permissions to bundling code for deployment, Deno CLI facilitates a modern and secure approach to JavaScript and TypeScript development.
-

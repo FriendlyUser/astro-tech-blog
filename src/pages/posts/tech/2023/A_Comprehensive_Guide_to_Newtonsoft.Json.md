@@ -1,11 +1,15 @@
 ---
-title: A Comprehensive Guide to Newtonsoft.Json
-pubDate: "2025-01-26T23:24:40.000Z"
-description: "In this article, we will explore the key features of Newtonsoft.Json, learn how to install it, and discuss how to work with JSON data using this powerful library."
+description: In this article, we will explore the key features of Newtonsoft.Json,
+  learn how to install it, and discuss how to work with JSON data using this powerful
+  library.
+imgSrc: /imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in
+  a library.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-26T23:24:40.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Comprehensive Guide to Newtonsoft.Json
 ---
+
 # A Comprehensive Guide to Newtonsoft.Json
 
 ## Introduction

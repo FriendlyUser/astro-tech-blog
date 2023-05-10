@@ -1,11 +1,13 @@
 ---
-title: C++ Templates and Generic Programming A Deep Dive
-pubDate: "2023-08-22T02:43:46.000Z"
-description: "In this article, we will explore C++ templates, a powerful feature that enables generic programming"
+description: In this article, we will explore C++ templates, a powerful feature that
+  enables generic programming
+imgSrc: /imgs/2023/1312348161.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-08-22T02:43:46.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Templates and Generic Programming A Deep Dive
 ---
+
 # C++ Templates and Generic Programming: A Deep Dive
 
 In this article, we will explore C++ templates, a powerful feature that enables generic programming. We will discuss the motivation behind templates, their syntax, and their role in implementing generic algorithms and data structures. We will also touch upon some advanced topics like template specialization and variadic templates.
@@ -164,4 +166,3 @@ int main() {
 ## Conclusion
 
 C++ templates are a powerful feature that enables generic programming, allowing you to write reusable and adaptable code. By understanding and leveraging templates, you can create efficient and flexible algorithms and data structures that can be used with a wide range of types. This article provided an overview of the syntax and basics of C++ templates, as well as some advanced topics like template specialization and variadic templates.
-

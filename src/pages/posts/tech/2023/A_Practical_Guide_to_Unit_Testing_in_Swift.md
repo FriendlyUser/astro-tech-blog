@@ -1,11 +1,13 @@
 ---
-title: A Practical Guide to Unit Testing in Swift
-pubDate: "2024-04-05T00:16:03.000Z"
-description: "In this article, we will explore the basics of unit testing in Swift, using XCTest the testing framework provided by Apple"
+description: In this article, we will explore the basics of unit testing in Swift,
+  using XCTest the testing framework provided by Apple
+imgSrc: /imgs/2023/3170249337.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-04-05T00:16:03.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Practical Guide to Unit Testing in Swift
 ---
+
 # A Practical Guide to Unit Testing in Swift
 
 Unit testing is an essential practice in software development, allowing developers to ensure that their code behaves as expected and to detect errors before they become critical issues. In this article, we will explore the basics of unit testing in Swift, using XCTest �? the testing framework provided by Apple.

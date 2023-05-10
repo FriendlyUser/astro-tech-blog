@@ -1,11 +1,13 @@
 ---
-title: How to Use Popular Swift Packages Alamofire, RxSwift, and SwiftyJSON
-pubDate: "2025-02-20T21:42:07.000Z"
-description: "In this article, we will cover three popular Swift packages: Alamofire, RxSwift, and SwiftyJSON"
+description: 'In this article, we will cover three popular Swift packages: Alamofire,
+  RxSwift, and SwiftyJSON'
+imgSrc: /imgs/2023/559850830.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-20T21:42:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: How to Use Popular Swift Packages Alamofire, RxSwift, and SwiftyJSON
 ---
+
 # How to Use Popular Swift Packages: Alamofire, RxSwift, and SwiftyJSON
 
 Swift is a powerful general-purpose, multi-paradigm programming language developed by Apple Inc. for iOS, macOS, watchOS, and tvOS app development. With its growing popularity, the Swift developer community has created a plethora of packages and libraries to simplify and enhance app development. In this article, we will cover three popular Swift packages: Alamofire, RxSwift, and SwiftyJSON.

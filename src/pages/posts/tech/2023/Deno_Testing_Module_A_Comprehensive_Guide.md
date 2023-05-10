@@ -1,11 +1,13 @@
 ---
-title: Deno Testing Module A Comprehensive Guide
-pubDate: "2024-04-04T20:56:50.000Z"
-description: "In this article, we will explore the Deno testing module, its features, and how to use it effectively"
+description: In this article, we will explore the Deno testing module, its features,
+  and how to use it effectively
+imgSrc: /imgs/2023/3702590653.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-04-04T20:56:50.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno Testing Module A Comprehensive Guide
 ---
+
 # Deno Testing Module: A Comprehensive Guide
 
 Deno is a modern, secure runtime for JavaScript and TypeScript that aims to address some of the shortcomings of Node.js. One of the many strengths of Deno is its built-in testing framework, which makes it easy for developers to write and run tests for their applications. In this article, we will explore the Deno testing module, its features, and how to use it effectively.

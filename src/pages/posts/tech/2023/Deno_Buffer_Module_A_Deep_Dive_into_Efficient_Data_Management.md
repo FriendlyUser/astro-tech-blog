@@ -1,11 +1,13 @@
 ---
-title: Deno Buffer Module A Deep Dive into Efficient Data Management
-pubDate: "2025-02-24T08:06:49.000Z"
-description: "In this article, we will explore the Deno Buffer module and its various features, and learn how to effectively use them in our applications"
+description: In this article, we will explore the Deno Buffer module and its various
+  features, and learn how to effectively use them in our applications
+imgSrc: /imgs/2023/4225416985.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-24T08:06:49.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno Buffer Module A Deep Dive into Efficient Data Management
 ---
+
 # Deno Buffer Module: A Deep Dive into Efficient Data Management
 
 Deno, the modern, secure runtime for JavaScript and TypeScript, has been making waves in the web development community since its release. One of the powerful features it offers is the Buffer module, which provides an efficient way to manage binary data. In this article, we will explore the Deno Buffer module and its various features, and learn how to effectively use them in our applications.

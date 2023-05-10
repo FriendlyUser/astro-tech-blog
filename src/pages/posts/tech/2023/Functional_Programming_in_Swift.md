@@ -1,11 +1,13 @@
 ---
-title: Functional Programming in Swift
-pubDate: "2023-12-22T09:17:57.000Z"
-description: "In this article, we'll explore the functional programming capabilities of Swift and how they can be used to write clean, reusable, and maintainable code"
+description: In this article, we'll explore the functional programming capabilities
+  of Swift and how they can be used to write clean, reusable, and maintainable code
+imgSrc: /imgs/2023/2575289368.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-12-22T09:17:57.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Functional Programming in Swift
 ---
+
 # Functional Programming in Swift
 
 Swift is a powerful, modern programming language developed by Apple. It combines the best features of both object-oriented and functional programming paradigms, resulting in a powerful and expressive language. In this article, we'll explore the functional programming capabilities of Swift and how they can be used to write clean, reusable, and maintainable code.
@@ -93,4 +95,3 @@ case .green:
 In this example, we define an enumeration `TrafficLight` with three cases. We then use a `switch` statement to perform pattern matching on the `currentLight` constant and execute the appropriate block of code.
 
 ## Conclusion
-

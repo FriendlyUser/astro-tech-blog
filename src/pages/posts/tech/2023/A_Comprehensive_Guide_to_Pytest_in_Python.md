@@ -1,11 +1,13 @@
 ---
-title: A Comprehensive Guide to Pytest in Python
-pubDate: "2024-06-07T12:11:18.000Z"
-description: "In this article, we will explore the basics of Pytest, its features, and best practices for writing effective test cases."
+description: In this article, we will explore the basics of Pytest, its features,
+  and best practices for writing effective test cases.
+imgSrc: /imgs/2023/3614994253.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-07T12:11:18.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Comprehensive Guide to Pytest in Python
 ---
+
 # A Comprehensive Guide to Pytest in Python
 
 Pytest is a popular testing framework in Python that makes it easy to write simple and scalable test cases. In this article, we will explore the basics of Pytest, its features, and best practices for writing effective test cases.

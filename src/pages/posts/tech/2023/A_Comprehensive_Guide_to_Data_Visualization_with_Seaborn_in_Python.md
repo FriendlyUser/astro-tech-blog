@@ -1,11 +1,13 @@
 ---
-title: A Comprehensive Guide to Data Visualization with Seaborn in Python
-pubDate: "2024-12-16T08:27:25.000Z"
-description: "In this article, we will explore Seaborn, a powerful Python library for data visualization"
+description: In this article, we will explore Seaborn, a powerful Python library for
+  data visualization
+imgSrc: /imgs/2023/2463860355.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-12-16T08:27:25.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Comprehensive Guide to Data Visualization with Seaborn in Python
 ---
+
 # A Comprehensive Guide to Data Visualization with Seaborn in Python
 
 In this article, we will explore Seaborn, a powerful Python library for data visualization. We'll cover essential topics such as installing Seaborn, creating various types of plots, customizing plots, and working with datasets. By the end of this guide, you'll be well-equipped to create stunning visualizations using Seaborn in your Python projects.

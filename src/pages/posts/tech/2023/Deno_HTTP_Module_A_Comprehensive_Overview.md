@@ -1,11 +1,13 @@
 ---
-title: Deno HTTP Module A Comprehensive Overview
-pubDate: "2023-09-08T03:12:13.000Z"
-description: "In this article, we will take a deep dive into the Deno HTTP module and explore its features, benefits, and usage in various scenarios"
+description: In this article, we will take a deep dive into the Deno HTTP module and
+  explore its features, benefits, and usage in various scenarios
+imgSrc: /imgs/2023/3054188082.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-09-08T03:12:13.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Deno HTTP Module A Comprehensive Overview
 ---
+
 # Deno HTTP Module: A Comprehensive Overview
 
 Deno, the secure runtime for JavaScript and TypeScript, has been gaining traction in the development community as a powerful alternative to Node.js. One of the key features of Deno is its built-in HTTP module, which provides a simple and efficient way to create HTTP servers and clients. In this article, we will take a deep dive into the Deno HTTP module and explore its features, benefits, and usage in various scenarios.

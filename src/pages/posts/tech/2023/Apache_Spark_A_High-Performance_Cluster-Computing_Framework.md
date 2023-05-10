@@ -1,11 +1,13 @@
 ---
-title: Apache Spark A High-Performance Cluster-Computing Framework
-pubDate: "2024-01-15T05:31:42.000Z"
-description: "In this article, we will explore the core components of Apache Spark, its architecture, and its key features"
+description: In this article, we will explore the core components of Apache Spark,
+  its architecture, and its key features
+imgSrc: /imgs/2023/1856526150.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-01-15T05:31:42.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache Spark A High-Performance Cluster-Computing Framework
 ---
+
 # Apache Spark: A High-Performance Cluster-Computing Framework
 
 Apache Spark is an open-source, distributed computing system designed to process large volumes of data quickly and efficiently. Developed by the Apache Software Foundation, Spark has rapidly become one of the most widely used big data processing frameworks, thanks to its ability to handle complex data processing tasks with ease and its compatibility with various data sources and programming languages.

@@ -1,11 +1,13 @@
 ---
-title: C++ Function Objects and Functors A Comprehensive Guide
-pubDate: "2023-10-03T21:43:43.000Z"
-description: "In this article, we will dive deep into function objects and functors in C++, exploring their use cases and benefits"
+description: In this article, we will dive deep into function objects and functors
+  in C++, exploring their use cases and benefits
+imgSrc: /imgs/2023/248665811.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-03T21:43:43.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Function Objects and Functors A Comprehensive Guide
 ---
+
 # C++ Function Objects and Functors: A Comprehensive Guide
 
 C++ offers various ways to represent functions and callable objects, with function pointers, lambda expressions, and functors being the most common. In this article, we will dive deep into function objects and functors in C++, exploring their use cases and benefits.

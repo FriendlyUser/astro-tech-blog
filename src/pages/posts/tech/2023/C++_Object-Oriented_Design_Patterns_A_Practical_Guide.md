@@ -1,11 +1,13 @@
 ---
-title: C++ Object-Oriented Design Patterns A Practical Guide
-pubDate: "2025-02-17T16:45:07.000Z"
-description: "This article will introduce you to some of the most common design patterns used in C++ OOP, and provide code examples to illustrate their usage."
+description: This article will introduce you to some of the most common design patterns
+  used in C++ OOP, and provide code examples to illustrate their usage.
+imgSrc: /imgs/2023/other
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-17T16:45:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Object-Oriented Design Patterns A Practical Guide
 ---
+
 # C++ Object-Oriented Design Patterns: A Practical Guide
 
 Design patterns are reusable solutions to common problems that occur in software design. In the realm of object-oriented programming (OOP), these patterns provide proven solutions and techniques to help developers create flexible and maintainable software. This article will introduce you to some of the most common design patterns used in C++ OOP, and provide code examples to illustrate their usage.

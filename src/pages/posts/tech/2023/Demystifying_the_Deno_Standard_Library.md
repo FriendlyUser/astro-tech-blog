@@ -1,11 +1,13 @@
 ---
-title: Demystifying the Deno Standard Library
-pubDate: "2023-10-18T14:25:14.000Z"
-description: "In this article, we'll explore the Deno standard library and how it contributes to the overall Deno ecosystem"
+description: In this article, we'll explore the Deno standard library and how it contributes
+  to the overall Deno ecosystem
+imgSrc: /imgs/2023/2785394646.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-18T14:25:14.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Demystifying the Deno Standard Library
 ---
+
 # Demystifying the Deno Standard Library
 
 Deno, a secure runtime for JavaScript and TypeScript, has been gaining traction in recent years due to its focus on security, developer-friendly features, and modern tooling. One of the key components of Deno is its standard library, which offers a collection of high-quality, well-maintained modules that come with the runtime itself. In this article, we'll explore the Deno standard library and how it contributes to the overall Deno ecosystem.

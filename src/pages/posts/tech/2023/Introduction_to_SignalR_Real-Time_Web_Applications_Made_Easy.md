@@ -1,11 +1,13 @@
 ---
-title: Introduction to SignalR Real-Time Web Applications Made Easy
-pubDate: "2024-01-04T05:19:15.000Z"
-description: "In this article, we'll explore the basics of SignalR, its key features, and how it works under the hood"
+description: In this article, we'll explore the basics of SignalR, its key features,
+  and how it works under the hood
+imgSrc: /imgs/2023/2966567085.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-01-04T05:19:15.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Introduction to SignalR Real-Time Web Applications Made Easy
 ---
+
 # Introduction to SignalR: Real-Time Web Applications Made Easy
 
 In today's ever-evolving world of web development, real-time communication has become essential for providing a seamless and interactive user experience. SignalR is a robust open-source library built on the .NET platform that simplifies the process of implementing real-time communication capabilities into web applications. In this article, we'll explore the basics of SignalR, its key features, and how it works under the hood.

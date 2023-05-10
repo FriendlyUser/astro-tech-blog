@@ -1,11 +1,13 @@
 ---
-title: Building Microservices with Go-Micro in Golang
-pubDate: "2024-06-25T08:00:17.000Z"
-description: "In this article, we will explore **Go-Micro**, a powerful framework for building microservices in Golang"
+description: In this article, we will explore **Go-Micro**, a powerful framework for
+  building microservices in Golang
+imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-25T08:00:17.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Building Microservices with Go-Micro in Golang
 ---
+
 # Building Microservices with Go-Micro in Golang
 
 In this article, we will explore **Go-Micro**, a powerful framework for building microservices in Golang. Go-Micro is a pluggable, extensible framework with built-in service discovery, load balancing, and fault tolerance. By the end of this tutorial, you will have a solid understanding of how to build and deploy microservices using Go-Micro.

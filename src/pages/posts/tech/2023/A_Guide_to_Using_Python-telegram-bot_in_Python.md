@@ -1,11 +1,13 @@
 ---
-title: A Guide to Using Python-telegram-bot in Python
-pubDate: "2023-08-17T13:13:00.000Z"
-description: "In this article, we will walk through the process of setting up a bot, handling messages, and implementing custom commands"
+description: In this article, we will walk through the process of setting up a bot,
+  handling messages, and implementing custom commands
+imgSrc: /imgs/2023/945555918.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-08-17T13:13:00.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: A Guide to Using Python-telegram-bot in Python
 ---
+
 # A Guide to Using Python-telegram-bot in Python
 
 Python-telegram-bot is a powerful library that allows you to create and manage Telegram bots using Python. In this article, we will walk through the process of setting up a bot, handling messages, and implementing custom commands. By the end of this guide, you will have a functional Telegram bot that can interact with users.

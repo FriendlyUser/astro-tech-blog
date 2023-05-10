@@ -1,11 +1,13 @@
 ---
-title: Hangfire Background Processing A Comprehensive Guide
-pubDate: "2024-03-30T01:44:02.000Z"
-description: "In this article, we'll explore Hangfire's background processing capabilities, its components, and how to implement it"
+description: In this article, we'll explore Hangfire's background processing capabilities,
+  its components, and how to implement it
+imgSrc: /imgs/2023/2459232016.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-03-30T01:44:02.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Hangfire Background Processing A Comprehensive Guide
 ---
+
 # Hangfire Background Processing: A Comprehensive Guide
 
 ## Introduction

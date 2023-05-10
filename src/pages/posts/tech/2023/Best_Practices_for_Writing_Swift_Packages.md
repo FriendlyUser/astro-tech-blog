@@ -1,11 +1,13 @@
 ---
-title: Best Practices for Writing Swift Packages
-pubDate: "2024-08-16T15:57:18.000Z"
-description: "This article outlines several best practices to keep in mind when creating and maintaining Swift packages."
+description: This article outlines several best practices to keep in mind when creating
+  and maintaining Swift packages.
+imgSrc: /imgs/2023/1900267581.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-08-16T15:57:18.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Best Practices for Writing Swift Packages
 ---
+
 # Best Practices for Writing Swift Packages
 
 Swift packages are a powerful tool to modularize and share your code across multiple projects. Following best practices during the development of your Swift packages enables you to create a robust, maintainable, and easy-to-use code base. This article outlines several best practices to keep in mind when creating and maintaining Swift packages.
@@ -135,4 +137,3 @@ let package = Package(
 ```
 
 By following these best practices in your Swift package development, you can create a robust, maintainable, and easy-to-use code base that greatly benefits the Swift community.
-

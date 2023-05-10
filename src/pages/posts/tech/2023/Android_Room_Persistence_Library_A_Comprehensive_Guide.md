@@ -1,11 +1,14 @@
 ---
-title: Android Room Persistence Library A Comprehensive Guide
-pubDate: "2025-04-23T06:31:46.000Z"
-description: "In this article, we'll explore the key features of the Room Persistence Library, discuss its components, and walk through a practical example of how to integrate it into an Android application"
+description: In this article, we'll explore the key features of the Room Persistence
+  Library, discuss its components, and walk through a practical example of how to
+  integrate it into an Android application
+imgSrc: /imgs/2023/2627778103.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-04-23T06:31:46.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Android Room Persistence Library A Comprehensive Guide
 ---
+
 # Android Room Persistence Library: A Comprehensive Guide
 
 The Android Room Persistence Library is an integral part of Android Jetpack, a suite of libraries and tools that helps developers build high-quality, robust applications for Android. Room provides an abstraction layer over SQLite, making it easier to work with databases in Android applications. 

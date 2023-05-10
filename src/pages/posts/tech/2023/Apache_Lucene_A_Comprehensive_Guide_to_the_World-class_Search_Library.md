@@ -1,11 +1,14 @@
 ---
-title: Apache Lucene A Comprehensive Guide to the World-class Search Library
-pubDate: "2024-01-23T14:36:34.000Z"
-description: "In this article, we will delve into the key features and components of Apache Lucene, understand how it works, and explore how you can leverage its capabilities to build robust search applications."
+description: In this article, we will delve into the key features and components of
+  Apache Lucene, understand how it works, and explore how you can leverage its capabilities
+  to build robust search applications.
+imgSrc: /imgs/2023/454515535.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-01-23T14:36:34.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache Lucene A Comprehensive Guide to the World-class Search Library
 ---
+
 # Apache Lucene: A Comprehensive Guide to the World-class Search Library
 
 ## Introduction

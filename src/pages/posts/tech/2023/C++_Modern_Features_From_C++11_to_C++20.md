@@ -1,11 +1,13 @@
 ---
-title: C++ Modern Features From C++11 to C++20
-pubDate: "2023-07-18T05:09:30.000Z"
-description: "This article provides an overview of the modern features introduced in C++11, C++14, C++17, and C++20."
+description: This article provides an overview of the modern features introduced in
+  C++11, C++14, C++17, and C++20.
+imgSrc: /imgs/2023/986397498.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-18T05:09:30.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: C++ Modern Features From C++11 to C++20
 ---
+
 # C++ Modern Features: From C++11 to C++20
 
 C++ is a widely-used, high-performance programming language known for its flexibility and support for object-oriented, procedural, and generic programming paradigms. Since its creation in the early 1980s, C++ has undergone significant evolution with the release of new language standards, introducing new features and improving existing ones. This article provides an overview of the modern features introduced in C++11, C++14, C++17, and C++20.

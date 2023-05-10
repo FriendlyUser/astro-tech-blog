@@ -1,11 +1,13 @@
 ---
-title: Java Standard Library An Overview
-pubDate: "2024-08-08T15:20:34.000Z"
-description: "This article provides an overview of the Java Standard Library, its primary packages, and how it can be used to streamline development."
+description: This article provides an overview of the Java Standard Library, its primary
+  packages, and how it can be used to streamline development.
+imgSrc: /imgs/2023/1924742632.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-08-08T15:20:34.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Java Standard Library An Overview
 ---
+
 # Java Standard Library: An Overview
 
 The Java Standard Library, also known as Java Class Library or Java API, is a collection of pre-built classes and methods that developers can utilize to perform common programming tasks. The library is bundled with the Java Development Kit (JDK) and serves as a foundation for building Java applications. This article provides an overview of the Java Standard Library, its primary packages, and how it can be used to streamline development.

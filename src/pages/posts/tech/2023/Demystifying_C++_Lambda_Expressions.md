@@ -1,11 +1,13 @@
 ---
-title: Demystifying C++ Lambda Expressions
-pubDate: "2023-08-29T23:14:52.000Z"
-description: "This article aims to provide an in-depth understanding of C++ lambda expressions and their use cases, along with examples to illustrate their functionality."
+description: This article aims to provide an in-depth understanding of C++ lambda
+  expressions and their use cases, along with examples to illustrate their functionality.
+imgSrc: /imgs/2023/3216063167.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-08-29T23:14:52.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Demystifying C++ Lambda Expressions
 ---
+
 # Demystifying C++ Lambda Expressions
 
 C++ is a versatile and powerful programming language that offers a plethora of features to make writing code more expressive and efficient. One such feature introduced in C++11, and refined in later standards, is lambda expressions. This article aims to provide an in-depth understanding of C++ lambda expressions and their use cases, along with examples to illustrate their functionality.

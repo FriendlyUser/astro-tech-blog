@@ -1,11 +1,13 @@
 ---
-title: Exploring the Deno Permissions Module A Comprehensive Guide
-pubDate: "2024-03-05T01:45:04.000Z"
-description: "This article provides an in-depth look at the Deno Permissions module, explaining its purpose, usage, and best practices."
+description: This article provides an in-depth look at the Deno Permissions module,
+  explaining its purpose, usage, and best practices.
+imgSrc: /imgs/2023/1047200128.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-03-05T01:45:04.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Exploring the Deno Permissions Module A Comprehensive Guide
 ---
+
 # Exploring the Deno Permissions Module: A Comprehensive Guide
 
 Deno, a secure runtime for JavaScript and TypeScript, has gained significant traction in the development community since its initial release. One of the most appealing aspects of Deno is its focus on security, which is evident in its Permissions module. This article provides an in-depth look at the Deno Permissions module, explaining its purpose, usage, and best practices.

@@ -1,11 +1,14 @@
 ---
-title: Debugging Techniques in Swift
-pubDate: "2023-07-23T01:41:19.000Z"
-description: "This article will explore various debugging techniques in Swift, including breakpoints, LLDB, and print statements, as well as some advanced features like the Address Sanitizer and Thread Sanitizer."
+description: This article will explore various debugging techniques in Swift, including
+  breakpoints, LLDB, and print statements, as well as some advanced features like
+  the Address Sanitizer and Thread Sanitizer.
+imgSrc: /imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-23T01:41:19.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Debugging Techniques in Swift
 ---
+
 # Debugging Techniques in Swift
 
 Swift is a powerful and intuitive programming language developed by Apple, designed for building iOS, macOS, watchOS, and tvOS applications. Debugging is an essential skill for every developer, as it helps you identify and resolve issues in your code. This article will explore various debugging techniques in Swift, including breakpoints, LLDB, and print statements, as well as some advanced features like the Address Sanitizer and Thread Sanitizer.

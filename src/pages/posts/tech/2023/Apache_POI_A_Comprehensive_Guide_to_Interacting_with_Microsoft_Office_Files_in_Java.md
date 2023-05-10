@@ -1,11 +1,14 @@
 ---
-title: Apache POI A Comprehensive Guide to Interacting with Microsoft Office Files in Java
-pubDate: "2024-01-01T14:36:17.000Z"
-description: "In this comprehensive guide, we'll cover the core features of Apache POI, installation, and examples to work with different file formats."
+description: In this comprehensive guide, we'll cover the core features of Apache
+  POI, installation, and examples to work with different file formats.
+imgSrc: /imgs/2023/1086816529.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-01-01T14:36:17.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Apache POI A Comprehensive Guide to Interacting with Microsoft Office Files
+  in Java
 ---
+
 # Apache POI: A Comprehensive Guide to Interacting with Microsoft Office Files in Java
 
 Apache POI is a powerful library that enables Java developers to interact with Microsoft Office file formats, such as Word, Excel, and PowerPoint. The library is open-source and actively maintained by the Apache Software Foundation. In this comprehensive guide, we'll cover the core features of Apache POI, installation, and examples to work with different file formats.
@@ -209,4 +212,3 @@ public class PowerPointExample {
 ## 6. Conclusion <a name="conclusion"></a>
 
 Apache POI is a powerful library to interact with Microsoft Office file formats in Java. This guide covered the basics of working with Excel, Word, and PowerPoint files, but there are many more features available, such as reading and modifying existing files, working with charts, images, and much more. To explore further, refer to the [official Apache POI documentation](https://poi.apache.org/documentation.html).
-
