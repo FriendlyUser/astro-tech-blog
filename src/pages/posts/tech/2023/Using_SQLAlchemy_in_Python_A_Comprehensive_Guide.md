@@ -1,11 +1,15 @@
 ---
-title: Using SQLAlchemy in Python A Comprehensive Guide
-pubDate: "2023-10-24T03:02:10.000Z"
-description: "In this article, we will explore SQLAlchemy, a powerful and versatile Object Relational Mapper (ORM) for Python that makes database interactions easy and efficient"
+description: In this article, we will explore SQLAlchemy, a powerful and versatile
+  Object Relational Mapper (ORM) for Python that makes database interactions easy
+  and efficient
+imgSrc: /imgs/2023/DALL·E 2023-01-16 12.01.55 - Two futuristic towers with a skybridge
+  covered in lush foliage, digital art.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-24T03:02:10.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using SQLAlchemy in Python A Comprehensive Guide
 ---
+
 # Using SQLAlchemy in Python: A Comprehensive Guide
 
 In this article, we will explore SQLAlchemy, a powerful and versatile Object Relational Mapper (ORM) for Python that makes database interactions easy and efficient. We will learn how to install and use SQLAlchemy, create a simple application, and understand some of its most powerful features.

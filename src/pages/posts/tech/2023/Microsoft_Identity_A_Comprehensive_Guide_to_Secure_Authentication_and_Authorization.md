@@ -1,11 +1,14 @@
 ---
-title: Microsoft Identity A Comprehensive Guide to Secure Authentication and Authorization
-pubDate: "2023-06-10T04:44:13.000Z"
-description: "This article explores the core components of Microsoft Identity, delves into the concepts of authentication and authorization, and provides practical guidance on integrating Microsoft Identity with your applications"
+description: This article explores the core components of Microsoft Identity, delves
+  into the concepts of authentication and authorization, and provides practical guidance
+  on integrating Microsoft Identity with your applications
+imgSrc: /imgs/2023/359936451.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-06-10T04:44:13.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Microsoft Identity A Comprehensive Guide to Secure Authentication and Authorization
 ---
+
 # Microsoft Identity: A Comprehensive Guide to Secure Authentication and Authorization
 
 **Table of Contents:**

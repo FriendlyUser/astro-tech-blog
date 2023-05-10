@@ -1,11 +1,13 @@
 ---
-title: Using PyInstaller to Create Standalone Executables in Python
-pubDate: "2024-11-03T18:16:10.000Z"
-description: "In this article, we will explore how to use PyInstaller to create standalone executables for your Python applications"
+description: In this article, we will explore how to use PyInstaller to create standalone
+  executables for your Python applications
+imgSrc: /imgs/2023/336369522.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-11-03T18:16:10.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using PyInstaller to Create Standalone Executables in Python
 ---
+
 # Using PyInstaller to Create Standalone Executables in Python
 
 PyInstaller is a powerful tool that allows you to convert your Python scripts into standalone executables. This can be incredibly useful for distributing your applications without requiring users to install Python or external packages. In this article, we will explore how to use PyInstaller to create standalone executables for your Python applications.

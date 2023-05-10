@@ -1,11 +1,13 @@
 ---
-title: Mastering Python Development with PyCharm
-pubDate: "2025-01-11T09:44:06.000Z"
-description: "In this article, we will dive into the key features of PyCharm and explore how to use them effectively"
+description: In this article, we will dive into the key features of PyCharm and explore
+  how to use them effectively
+imgSrc: /imgs/2023/1028024527.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-11T09:44:06.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Mastering Python Development with PyCharm
 ---
+
 # Mastering Python Development with PyCharm
 
 PyCharm is a powerful integrated development environment (IDE) for Python programmers. Developed by JetBrains, PyCharm provides a wide array of features that make Python development more productive and enjoyable. In this article, we will dive into the key features of PyCharm and explore how to use them effectively.

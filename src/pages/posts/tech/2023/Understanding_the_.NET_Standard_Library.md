@@ -1,11 +1,12 @@
 ---
-title: Understanding the .NET Standard Library
-pubDate: "2023-05-12T13:35:03.000Z"
-description: "In this article, we'll explore the purpose and benefits of the"
+description: In this article, we'll explore the purpose and benefits of the
+imgSrc: /imgs/2023/454515535.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-05-12T13:35:03.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Understanding the .NET Standard Library
 ---
+
 # Understanding the .NET Standard Library
 
 The .NET Standard Library is a foundational element of the .NET ecosystem. In this article, we'll explore the purpose and benefits of the .NET Standard Library, its versioning strategy, and how it enables seamless interoperability between different .NET implementations.

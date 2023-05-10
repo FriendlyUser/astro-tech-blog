@@ -1,11 +1,13 @@
 ---
-title: Understanding Access Control in Swift
-pubDate: "2025-03-28T21:42:20.000Z"
-description: "In this article, we'll explore the different access control levels provided in Swift and how to use them effectively"
+description: In this article, we'll explore the different access control levels provided
+  in Swift and how to use them effectively
+imgSrc: /imgs/2023/549017699.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-03-28T21:42:20.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Understanding Access Control in Swift
 ---
+
 # Understanding Access Control in Swift
 
 Swift's access control mechanism is designed to provide a way to restrict access to parts of your code from other parts of your code, as well as from external codebases. This ensures that internal implementation details remain hidden, creating a clean public API and promoting modularity and encapsulation. In this article, we'll explore the different access control levels provided in Swift and how to use them effectively.

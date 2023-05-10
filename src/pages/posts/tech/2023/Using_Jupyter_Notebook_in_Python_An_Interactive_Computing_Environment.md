@@ -1,11 +1,13 @@
 ---
-title: Using Jupyter Notebook in Python An Interactive Computing Environment
-pubDate: "2023-06-22T06:25:07.000Z"
-description: "In this article, we'll explore the features of Jupyter Notebook and how to use it in your Python projects"
+description: In this article, we'll explore the features of Jupyter Notebook and how
+  to use it in your Python projects
+imgSrc: /imgs/2023/4279596222.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-06-22T06:25:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Jupyter Notebook in Python An Interactive Computing Environment
 ---
+
 # Using Jupyter Notebook in Python: An Interactive Computing Environment
 
 Jupyter Notebook is a powerful tool for interactively developing and presenting data science projects. It is an open-source web application that allows you to create and share documents containing live code, equations, visualizations, and narrative text. In this article, we'll explore the features of Jupyter Notebook and how to use it in your Python projects.

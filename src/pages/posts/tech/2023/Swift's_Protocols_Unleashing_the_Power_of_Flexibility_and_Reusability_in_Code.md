@@ -1,11 +1,13 @@
 ---
-title: Swift's Protocols Unleashing the Power of Flexibility and Reusability in Code
-pubDate: "2023-05-14T00:11:20.000Z"
-description: "In this article, we will delve into the world of protocols in Swift, exploring their purpose, syntax, and practical applications"
+description: In this article, we will delve into the world of protocols in Swift,
+  exploring their purpose, syntax, and practical applications
+imgSrc: /imgs/2023/1666734888.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-05-14T00:11:20.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Protocols Unleashing the Power of Flexibility and Reusability in Code
 ---
+
 # Swift's Protocols: Unleashing the Power of Flexibility and Reusability in Code
 
 Swift, the powerful and modern programming language introduced by Apple, has a strong emphasis on safety, performance, and expressiveness. One of the features that has made Swift a popular choice among developers is its support for protocols. In this article, we will delve into the world of protocols in Swift, exploring their purpose, syntax, and practical applications.

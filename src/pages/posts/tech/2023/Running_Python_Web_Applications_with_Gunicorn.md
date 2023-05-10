@@ -1,11 +1,13 @@
 ---
-title: Running Python Web Applications with Gunicorn
-pubDate: "2024-08-25T10:07:00.000Z"
-description: "In this article, we will discuss the basics of Gunicorn, how to install and configure it, and how to use it to serve a Python web application"
+description: In this article, we will discuss the basics of Gunicorn, how to install
+  and configure it, and how to use it to serve a Python web application
+imgSrc: /imgs/2023/3893879687.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-08-25T10:07:00.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Running Python Web Applications with Gunicorn
 ---
+
 # Running Python Web Applications with Gunicorn
 
 Gunicorn, or Green Unicorn, is a Python Web Server Gateway Interface (WSGI) HTTP server. It is a pre-fork worker model, which means it forks multiple worker processes to handle incoming requests. Gunicorn is often used to serve Python web applications behind a reverse proxy, such as Nginx or Apache, providing a reliable and efficient way to deploy web applications. In this article, we will discuss the basics of Gunicorn, how to install and configure it, and how to use it to serve a Python web application.

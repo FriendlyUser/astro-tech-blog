@@ -1,11 +1,14 @@
 ---
-title: Using TensorFlow in Python A Comprehensive Guide
-pubDate: "2025-03-02T08:14:57.000Z"
-description: "In this article, we'll explore how to use TensorFlow in Python, covering essential topics like data preparation, model creation, training, evaluation, and deployment"
+description: In this article, we'll explore how to use TensorFlow in Python, covering
+  essential topics like data preparation, model creation, training, evaluation, and
+  deployment
+imgSrc: /imgs/2023/4181036141.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-03-02T08:14:57.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using TensorFlow in Python A Comprehensive Guide
 ---
+
 # Using TensorFlow in Python: A Comprehensive Guide
 
 TensorFlow is an open-source deep learning library developed by the Google Brain team. It is designed to facilitate the creation, training, and deployment of machine learning models with a focus on neural networks. In this article, we'll explore how to use TensorFlow in Python, covering essential topics like data preparation, model creation, training, evaluation, and deployment.

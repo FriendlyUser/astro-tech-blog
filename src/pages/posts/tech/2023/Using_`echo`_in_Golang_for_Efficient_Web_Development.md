@@ -1,11 +1,13 @@
 ---
-title: Using `echo` in Golang for Efficient Web Development
-pubDate: "2024-06-27T06:04:59.000Z"
-description: "In this article, we will explore the basics of using `echo` in Golang to create a simple web application"
+description: In this article, we will explore the basics of using `echo` in Golang
+  to create a simple web application
+imgSrc: /imgs/2023/3437532028.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-27T06:04:59.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using `echo` in Golang for Efficient Web Development
 ---
+
 # Using `echo` in Golang for Efficient Web Development
 
 `echo` is a high-performance, extensible, and easy-to-use web framework for the Go programming language (Golang). It is designed to simplify the process of creating web applications by providing a minimalistic and fast solution for building RESTful APIs, microservices, and web applications.
@@ -130,4 +132,3 @@ Restart your server and send a request to any of the registered routes. You shou
 ## Conclusion
 
 In this article, we explored the basics of using `echo` in Golang to create a simple web application. We learned how to set up our development environment, create an `echo` application, define routes and request handlers, and implement middleware.
-

@@ -1,11 +1,13 @@
 ---
-title: Swift's Extensions Enhancing the Functionality of Existing Types
-pubDate: "2023-11-15T23:38:52.000Z"
-description: "In this article, we'll explore the concept of extensions in Swift, illustrate how and when to use them, and provide examples to enhance your understanding"
+description: In this article, we'll explore the concept of extensions in Swift, illustrate
+  how and when to use them, and provide examples to enhance your understanding
+imgSrc: /imgs/2023/2966567085.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-11-15T23:38:52.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Extensions Enhancing the Functionality of Existing Types
 ---
+
 # Swift's Extensions: Enhancing the Functionality of Existing Types
 
 Swift is a powerful and versatile programming language designed for iOS, macOS, watchOS, and tvOS application development. One of its most remarkable features is extensions, which allow developers to add new functionality to existing types without the need to subclass or modify the original code.

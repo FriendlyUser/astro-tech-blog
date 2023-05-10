@@ -1,11 +1,13 @@
 ---
-title: Using Pillow in Python A Comprehensive Guide
-pubDate: "2024-05-24T17:15:41.000Z"
-description: "In this article, we'll explore the capabilities of Pillow and demonstrate its usage with practical examples"
+description: In this article, we'll explore the capabilities of Pillow and demonstrate
+  its usage with practical examples
+imgSrc: /imgs/2023/1793654723_jerome_powell_burning_down_nyse_looking_like_a_boss.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-05-24T17:15:41.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Pillow in Python A Comprehensive Guide
 ---
+
 # Using Pillow in Python: A Comprehensive Guide
 
 Pillow is a powerful Python library that enables you to perform a wide range of image processing tasks. It's an open-source fork of the original Python Imaging Library (PIL) and offers a user-friendly interface for handling images in Python. In this article, we'll explore the capabilities of Pillow and demonstrate its usage with practical examples.

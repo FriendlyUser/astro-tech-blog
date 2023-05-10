@@ -1,11 +1,13 @@
 ---
-title: Swift Performance Optimization Techniques
-pubDate: "2024-03-03T01:10:23.000Z"
-description: "In this article, we will discuss several techniques that can help you make the most of Swift's performance optimization features"
+description: In this article, we will discuss several techniques that can help you
+  make the most of Swift's performance optimization features
+imgSrc: /imgs/2023/1031426508.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-03-03T01:10:23.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift Performance Optimization Techniques
 ---
+
 # Swift Performance Optimization Techniques
 
 Swift is a high-performance language designed to deliver fast, safe, and expressive code. One of the key factors of Swift's performance is the language's ability to optimize code at compile time. In this article, we will discuss several techniques that can help you make the most of Swift's performance optimization features.

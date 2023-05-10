@@ -1,11 +1,13 @@
 ---
-title: Swift's Concurrency Features A Deep Dive
-pubDate: "2024-11-05T03:10:42.000Z"
-description: "In this article, we'll explore Swift's concurrency features, including async/await, actors, and structured concurrency with tasks"
+description: In this article, we'll explore Swift's concurrency features, including
+  async/await, actors, and structured concurrency with tasks
+imgSrc: /imgs/2023/2851628136.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-11-05T03:10:42.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Concurrency Features A Deep Dive
 ---
+
 # Swift's Concurrency Features: A Deep Dive
 
 Concurrency is a critical aspect of modern software development, allowing developers to write efficient programs that can execute multiple tasks simultaneously. In this article, we'll explore Swift's concurrency features, including async/await, actors, and structured concurrency with tasks.

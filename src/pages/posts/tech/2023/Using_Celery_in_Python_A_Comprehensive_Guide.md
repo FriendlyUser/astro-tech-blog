@@ -1,11 +1,14 @@
 ---
-title: Using Celery in Python A Comprehensive Guide
-pubDate: "2023-10-24T00:20:26.000Z"
-description: "In this article, we will explore how to use Celery to improve the performance and reliability of your Python applications"
+description: In this article, we will explore how to use Celery to improve the performance
+  and reliability of your Python applications
+imgSrc: /imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in
+  a library.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-24T00:20:26.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Celery in Python A Comprehensive Guide
 ---
+
 # Using Celery in Python: A Comprehensive Guide
 
 Celery is a powerful task queue implementation in Python that enables the execution of asynchronous, distributed tasks. It is highly configurable and extensible, making it suitable for a wide range of applications, including web development, data processing, and machine learning. In this article, we will explore how to use Celery to improve the performance and reliability of your Python applications.

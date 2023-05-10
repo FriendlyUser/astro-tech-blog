@@ -1,11 +1,13 @@
 ---
-title: Top C++ Libraries for Game Development
-pubDate: "2023-12-26T06:45:23.000Z"
-description: "In this article, we will explore some of the most popular C++ libraries for game development"
+description: In this article, we will explore some of the most popular C++ libraries
+  for game development
+imgSrc: /imgs/2023/244959930.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-12-26T06:45:23.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Top C++ Libraries for Game Development
 ---
+
 # Top C++ Libraries for Game Development
 
 Game development is a multi-faceted discipline that requires expertise in programming, art, design, and sound engineering. For developers who wish to create high-quality games, leveraging existing libraries and frameworks can save time and effort. C++ is a powerful, versatile programming language popular in the game development community, and there are many libraries available to support various aspects of game development.

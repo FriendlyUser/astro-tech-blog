@@ -1,11 +1,14 @@
 ---
-title: Using Pygame in Python A Comprehensive Guide
-pubDate: "2025-01-18T07:09:48.000Z"
-description: "In this article, we will provide a comprehensive guide on using Pygame in Python, covering topics such as installing the library, creating a simple game, handling user input, and managing game objects"
+description: In this article, we will provide a comprehensive guide on using Pygame
+  in Python, covering topics such as installing the library, creating a simple game,
+  handling user input, and managing game objects
+imgSrc: /imgs/2023/262205434.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-18T07:09:48.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Pygame in Python A Comprehensive Guide
 ---
+
 # Using Pygame in Python: A Comprehensive Guide
 
 Pygame is a popular library in Python that allows developers to create video games and multimedia applications. With its simple and intuitive API, it makes creating 2D games easy and enjoyable. In this article, we will provide a comprehensive guide on using Pygame in Python, covering topics such as installing the library, creating a simple game, handling user input, and managing game objects.

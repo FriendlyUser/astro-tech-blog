@@ -1,11 +1,13 @@
 ---
-title: Swift Programming Basics A Beginner's Guide
-pubDate: "2023-07-07T16:27:41.000Z"
-description: "In this article, we will cover the basics of Swift programming, including variables, constants, data types, control flow, and functions"
+description: In this article, we will cover the basics of Swift programming, including
+  variables, constants, data types, control flow, and functions
+imgSrc: /imgs/2023/590655340.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-07T16:27:41.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift Programming Basics A Beginner's Guide
 ---
+
 # Swift Programming Basics: A Beginner's Guide
 
 Swift is a powerful, general-purpose, and intuitive programming language developed by Apple Inc. for iOS, macOS, watchOS, tvOS, and beyond. It was introduced at Apple's 2014 Worldwide Developers Conference (WWDC) as a successor to Objective-C, offering better performance, safety, and modern features. Swift is designed to be easy to learn and use, making it an excellent choice for beginners and experienced developers alike. In this article, we will cover the basics of Swift programming, including variables, constants, data types, control flow, and functions.

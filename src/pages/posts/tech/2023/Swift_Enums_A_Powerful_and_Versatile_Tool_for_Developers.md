@@ -1,11 +1,14 @@
 ---
-title: Swift Enums A Powerful and Versatile Tool for Developers
-pubDate: "2024-05-27T17:08:22.000Z"
-description: "In this article, we'll dive into the power of Swift enums, explore their various features, and learn how they can be used to make your code more concise, expressive, and safe"
+description: In this article, we'll dive into the power of Swift enums, explore their
+  various features, and learn how they can be used to make your code more concise,
+  expressive, and safe
+imgSrc: /imgs/2023/872471039.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-05-27T17:08:22.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift Enums A Powerful and Versatile Tool for Developers
 ---
+
 # Swift Enums: A Powerful and Versatile Tool for Developers
 
 Swift is a modern, type-safe programming language that puts great emphasis on clarity and safety. One of the many powerful features Swift offers is **enumerations**, commonly abbreviated as **enums**. Enums are a convenient way to represent a group of related values, allowing you to work with those values in a type-safe manner.

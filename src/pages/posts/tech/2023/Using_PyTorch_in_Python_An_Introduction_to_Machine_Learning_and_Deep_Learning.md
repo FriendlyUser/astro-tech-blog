@@ -1,11 +1,13 @@
 ---
-title: Using PyTorch in Python An Introduction to Machine Learning and Deep Learning
-pubDate: "2025-01-22T20:35:26.000Z"
-description: "In this article, we will explore the basics of PyTorch and its application in Python"
+description: In this article, we will explore the basics of PyTorch and its application
+  in Python
+imgSrc: /imgs/2023/336369522.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-22T20:35:26.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using PyTorch in Python An Introduction to Machine Learning and Deep Learning
 ---
+
 # Using PyTorch in Python: An Introduction to Machine Learning and Deep Learning
 
 PyTorch is an open-source machine learning library developed by Facebook's AI Research lab (FAIR) that provides a flexible and efficient platform for building deep learning models. In this article, we will explore the basics of PyTorch and its application in Python.

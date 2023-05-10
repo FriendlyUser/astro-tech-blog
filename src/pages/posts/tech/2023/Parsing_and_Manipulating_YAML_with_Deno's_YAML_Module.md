@@ -1,11 +1,13 @@
 ---
-title: Parsing and Manipulating YAML with Deno's YAML Module
-pubDate: "2023-07-24T22:28:00.000Z"
-description: "In this article, we will explore how to utilize this module to work with YAML data in a Deno application"
+description: In this article, we will explore how to utilize this module to work with
+  YAML data in a Deno application
+imgSrc: /imgs/2023/248665811.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-24T22:28:00.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Parsing and Manipulating YAML with Deno's YAML Module
 ---
+
 # Parsing and Manipulating YAML with Deno's YAML Module
 
 ## Introduction

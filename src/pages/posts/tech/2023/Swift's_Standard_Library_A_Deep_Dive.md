@@ -1,11 +1,13 @@
 ---
-title: Swift's Standard Library A Deep Dive
-pubDate: "2024-07-12T16:20:28.000Z"
-description: "In this article, we will explore the core elements of Swift's standard library, including its data types, collections, and utility functions"
+description: In this article, we will explore the core elements of Swift's standard
+  library, including its data types, collections, and utility functions
+imgSrc: /imgs/2023/117117315.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-07-12T16:20:28.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Standard Library A Deep Dive
 ---
+
 # Swift's Standard Library: A Deep Dive
 
 Swift is a powerful and intuitive programming language developed by Apple for iOS, macOS, watchOS, tvOS, and beyond. It is designed to be easy to read and write while still being fast and efficient. One of the key components of Swift's power and flexibility is its comprehensive standard library. In this article, we will explore the core elements of Swift's standard library, including its data types, collections, and utility functions.

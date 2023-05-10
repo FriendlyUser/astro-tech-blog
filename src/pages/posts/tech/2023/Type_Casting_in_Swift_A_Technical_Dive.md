@@ -1,11 +1,13 @@
 ---
-title: Type Casting in Swift A Technical Dive
-pubDate: "2025-02-06T15:34:03.000Z"
-description: "In this article, we'll dive deep into Swift's type casting, its syntax, and various use cases"
+description: In this article, we'll dive deep into Swift's type casting, its syntax,
+  and various use cases
+imgSrc: /imgs/2023/2844566079.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-06T15:34:03.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Type Casting in Swift A Technical Dive
 ---
+
 # Type Casting in Swift: A Technical Dive
 
 Swift is a strongly typed language, which means that every variable and constant must have a declared type, and that type cannot be changed once it is assigned. This feature helps to prevent runtime errors due to type mismatches, as the compiler can catch type-related errors during compile time.

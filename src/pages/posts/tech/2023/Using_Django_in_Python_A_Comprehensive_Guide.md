@@ -1,11 +1,13 @@
 ---
-title: Using Django in Python A Comprehensive Guide
-pubDate: "2023-10-31T19:03:01.000Z"
-description: "In this article, we will delve into the key concepts of Django and demonstrate how to create a simple web application using this powerful framework"
+description: In this article, we will delve into the key concepts of Django and demonstrate
+  how to create a simple web application using this powerful framework
+imgSrc: /imgs/2023/3750534419.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-31T19:03:01.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Django in Python A Comprehensive Guide
 ---
+
 # Using Django in Python: A Comprehensive Guide
 
 Django is a high-level, open-source web framework that allows developers to build clean, maintainable, and efficient web applications quickly using Python. It follows the Model-View-Template (MVT) architectural pattern and emphasizes reusability and "plug-ability" of components. In this article, we will delve into the key concepts of Django and demonstrate how to create a simple web application using this powerful framework.

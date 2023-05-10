@@ -1,11 +1,13 @@
 ---
-title: Understanding Hibernate ORM A Comprehensive Guide
-pubDate: "2024-07-06T05:08:26.000Z"
-description: "In this article, we'll dive into the fundamentals of Hibernate ORM, its key features, and how to get started with the framework to improve your Java applications"
+description: In this article, we'll dive into the fundamentals of Hibernate ORM, its
+  key features, and how to get started with the framework to improve your Java applications
+imgSrc: /imgs/2023/251520990.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-07-06T05:08:26.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Understanding Hibernate ORM A Comprehensive Guide
 ---
+
 # Understanding Hibernate ORM: A Comprehensive Guide
 
 Hibernate ORM (Object-Relational Mapping) is a powerful and widely-used Java-based framework for mapping an object-oriented domain model to a relational database. In this article, we'll dive into the fundamentals of Hibernate ORM, its key features, and how to get started with the framework to improve your Java applications.

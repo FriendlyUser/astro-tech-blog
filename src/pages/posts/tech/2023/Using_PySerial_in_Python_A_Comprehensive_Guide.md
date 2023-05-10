@@ -1,11 +1,13 @@
 ---
-title: Using PySerial in Python A Comprehensive Guide
-pubDate: "2023-10-24T22:56:56.000Z"
-description: "In this article, we will explore the PySerial library and its various functions, as well as how to use it effectively in Python"
+description: In this article, we will explore the PySerial library and its various
+  functions, as well as how to use it effectively in Python
+imgSrc: /imgs/2023/818001379.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-10-24T22:56:56.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using PySerial in Python A Comprehensive Guide
 ---
+
 # Using PySerial in Python: A Comprehensive Guide
 
 PySerial is a Python library that provides access to the serial ports on a variety of operating systems. It is widely used for communication between microcontrollers and computers, enabling the exchange of data over serial communication protocols. In this article, we will explore the PySerial library and its various functions, as well as how to use it effectively in Python.

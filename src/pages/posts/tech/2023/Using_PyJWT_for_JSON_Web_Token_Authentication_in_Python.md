@@ -1,11 +1,13 @@
 ---
-title: Using PyJWT for JSON Web Token Authentication in Python
-pubDate: "2023-07-07T00:01:07.000Z"
-description: "In this article, we will discuss JSON Web Tokens (JWT) and how to use the PyJWT library to encode and decode JWTs in your Python applications"
+description: In this article, we will discuss JSON Web Tokens (JWT) and how to use
+  the PyJWT library to encode and decode JWTs in your Python applications
+imgSrc: /imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-07-07T00:01:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using PyJWT for JSON Web Token Authentication in Python
 ---
+
 # Using PyJWT for JSON Web Token Authentication in Python
 
 In this article, we will discuss JSON Web Tokens (JWT) and how to use the PyJWT library to encode and decode JWTs in your Python applications. JWTs are widely used for authentication and authorization purposes in web applications, and PyJWT is a popular library for handling JWTs in Python.

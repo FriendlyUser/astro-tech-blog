@@ -1,11 +1,12 @@
 ---
-title: Using Requests in Python A Comprehensive Guide
-pubDate: "2025-01-15T01:07:52.000Z"
-description: "In this article, we will cover:"
+description: 'In this article, we will cover:'
+imgSrc: /imgs/2023/2851628136.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-01-15T01:07:52.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Requests in Python A Comprehensive Guide
 ---
+
 # Using Requests in Python: A Comprehensive Guide
 
 Requests is a popular third-party library in Python for making HTTP requests. It abstracts the complexities of making requests behind a simple API, allowing you to send HTTP/1.1 requests. With it, you can add content like headers, query parameters, and form data via simple Python libraries to HTTP requests.

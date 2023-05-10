@@ -1,11 +1,12 @@
 ---
-title: Understanding the .NET Core Framework A Comprehensive Overview
-pubDate: "2025-02-20T11:47:23.000Z"
-description: "In this article, we will delve into the core components of the"
+description: In this article, we will delve into the core components of the
+imgSrc: /imgs/2023/1938616315.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-02-20T11:47:23.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Understanding the .NET Core Framework A Comprehensive Overview
 ---
+
 # Understanding the .NET Core Framework: A Comprehensive Overview
 
 .NET Core is a versatile, high-performance, open-source framework developed by Microsoft to build modern, cross-platform applications. It is a modular and lightweight framework that can be used for developing applications on Windows, macOS, and Linux platforms. In this article, we will delve into the core components of the .NET Core framework, its advantages, and real-world applications.

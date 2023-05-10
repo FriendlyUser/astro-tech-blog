@@ -1,11 +1,13 @@
 ---
-title: Using Gin Framework in Golang
-pubDate: "2025-04-12T02:45:18.000Z"
-description: "In this article, we will explore the core features of Gin and learn how to build a simple RESTful API with this powerful framework"
+description: In this article, we will explore the core features of Gin and learn how
+  to build a simple RESTful API with this powerful framework
+imgSrc: /imgs/2023/3053072516.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-04-12T02:45:18.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Gin Framework in Golang
 ---
+
 # Using Gin Framework in Golang
 
 Gin is a high-performance HTTP web framework for the Go programming language. It is designed to facilitate the development of web applications and RESTful APIs by providing a fast and flexible routing system, middleware support, and a variety of helper functions. In this article, we will explore the core features of Gin and learn how to build a simple RESTful API with this powerful framework.

@@ -1,11 +1,13 @@
 ---
-title: Using Testify in Golang A Comprehensive Guide
-pubDate: "2024-04-29T08:21:13.000Z"
-description: "In this article, we'll explore the key features of Testify, and see how to use them effectively in your Golang projects"
+description: In this article, we'll explore the key features of Testify, and see how
+  to use them effectively in your Golang projects
+imgSrc: /imgs/2023/1797349317.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-04-29T08:21:13.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using Testify in Golang A Comprehensive Guide
 ---
+
 # Using Testify in Golang: A Comprehensive Guide
 
 Testify is a popular testing framework for the Go programming language. It provides a rich set of assertions and utilities that make it easier to write and maintain tests. In this article, we'll explore the key features of Testify, and see how to use them effectively in your Golang projects.

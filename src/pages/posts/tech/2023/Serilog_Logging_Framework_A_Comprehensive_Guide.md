@@ -1,11 +1,13 @@
 ---
-title: Serilog Logging Framework A Comprehensive Guide
-pubDate: "2024-06-24T00:59:46.000Z"
-description: "In this article, we will discuss the core concepts of Serilog, its advantages, and how to configure and use it in your"
+description: In this article, we will discuss the core concepts of Serilog, its advantages,
+  and how to configure and use it in your
+imgSrc: /imgs/2023/2126341537_forest.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-06-24T00:59:46.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Serilog Logging Framework A Comprehensive Guide
 ---
+
 # Serilog Logging Framework: A Comprehensive Guide
 
 Serilog is a modern, structured logging framework for .NET applications. It offers a flexible and powerful way to capture and store log data, allowing developers to easily troubleshoot, monitor, and analyze application behavior. In this article, we will discuss the core concepts of Serilog, its advantages, and how to configure and use it in your .NET projects.

@@ -1,11 +1,13 @@
 ---
-title: Swift's Generics Enhancing Code Flexibility and Reusability
-pubDate: "2023-11-16T13:30:07.000Z"
-description: "In this article, we will discuss what generics are, why they are important, and how to use them in your Swift code"
+description: In this article, we will discuss what generics are, why they are important,
+  and how to use them in your Swift code
+imgSrc: /imgs/2023/4252050732.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-11-16T13:30:07.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Generics Enhancing Code Flexibility and Reusability
 ---
+
 # Swift's Generics: Enhancing Code Flexibility and Reusability
 
 Generics are a powerful feature in the Swift programming language that enables developers to write flexible and reusable code with less duplication. In this article, we will discuss what generics are, why they are important, and how to use them in your Swift code.

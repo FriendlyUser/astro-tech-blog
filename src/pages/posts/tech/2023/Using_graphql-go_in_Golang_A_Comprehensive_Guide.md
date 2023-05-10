@@ -1,11 +1,13 @@
 ---
-title: Using graphql-go in Golang A Comprehensive Guide
-pubDate: "2024-05-28T04:50:15.000Z"
-description: "In this article, we will explore how to use the `graphql- library to build a GraphQL server in Golang"
+description: In this article, we will explore how to use the `graphql- library to
+  build a GraphQL server in Golang
+imgSrc: /imgs/2023/1231025858.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-05-28T04:50:15.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using graphql-go in Golang A Comprehensive Guide
 ---
+
 # Using graphql-go in Golang: A Comprehensive Guide
 
 GraphQL is a query language for your API, and a runtime for executing those queries against your data. It provides a more efficient, powerful, and flexible alternative to the traditional REST API. In this article, we will explore how to use the `graphql- library to build a GraphQL server in Golang.

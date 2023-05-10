@@ -1,11 +1,13 @@
 ---
-title: Mastering NumPy A Comprehensive Guide to Efficient Numerical Computing in Python
-pubDate: "2023-05-28T20:33:27.000Z"
-description: "This article will provide a comprehensive introduction to NumPy and its capabilities."
+description: This article will provide a comprehensive introduction to NumPy and its
+  capabilities.
+imgSrc: /imgs/2023/1879869613.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-05-28T20:33:27.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Mastering NumPy A Comprehensive Guide to Efficient Numerical Computing in Python
 ---
+
 # Mastering NumPy: A Comprehensive Guide to Efficient Numerical Computing in Python
 
 NumPy (Numerical Python) is a powerful library for numerical computing in Python. It provides a high-performance multidimensional array object, as well as tools for working with these arrays. NumPy is a fundamental library for scientific computing, data analysis, and machine learning in Python. This article will provide a comprehensive introduction to NumPy and its capabilities.

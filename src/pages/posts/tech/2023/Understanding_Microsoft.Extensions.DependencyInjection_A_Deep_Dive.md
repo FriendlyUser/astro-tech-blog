@@ -1,11 +1,14 @@
 ---
-title: Understanding Microsoft.Extensions.DependencyInjection A Deep Dive
-pubDate: "2024-11-26T17:49:54.000Z"
-description: "In this article, we will explore the key features of this library, discuss its benefits, and walk through some examples to demonstrate how to use it effectively in your projects"
+description: In this article, we will explore the key features of this library, discuss
+  its benefits, and walk through some examples to demonstrate how to use it effectively
+  in your projects
+imgSrc: /imgs/2023/man_on_horse.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-11-26T17:49:54.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Understanding Microsoft.Extensions.DependencyInjection A Deep Dive
 ---
+
 # Understanding Microsoft.Extensions.DependencyInjection: A Deep Dive
 
 Microsoft.Extensions.DependencyInjection is a lightweight, extensible dependency injection (DI) library designed for use with .NET applications. This library provides a minimalistic yet powerful framework for managing dependencies in .NET applications. In this article, we will explore the key features of this library, discuss its benefits, and walk through some examples to demonstrate how to use it effectively in your projects.

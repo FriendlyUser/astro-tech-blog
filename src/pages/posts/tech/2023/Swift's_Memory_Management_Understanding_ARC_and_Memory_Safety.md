@@ -1,11 +1,13 @@
 ---
-title: Swift's Memory Management Understanding ARC and Memory Safety
-pubDate: "2025-03-24T02:51:50.000Z"
-description: "In this article, we will delve into the details of Swift's memory management, focusing on Automatic Reference Counting (ARC) and memory safety mechanisms"
+description: In this article, we will delve into the details of Swift's memory management,
+  focusing on Automatic Reference Counting (ARC) and memory safety mechanisms
+imgSrc: /imgs/2023/music_album.jpg
+layout: '@/templates/BasePost.astro'
+pubDate: '2025-03-24T02:51:50.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Swift's Memory Management Understanding ARC and Memory Safety
 ---
+
 # Swift's Memory Management: Understanding ARC and Memory Safety
 
 Swift is a powerful and versatile programming language developed by Apple for iOS, macOS, watchOS, and tvOS app development. One of the key aspects of Swift is its efficient and safe memory management system. In this article, we will delve into the details of Swift's memory management, focusing on Automatic Reference Counting (ARC) and memory safety mechanisms.

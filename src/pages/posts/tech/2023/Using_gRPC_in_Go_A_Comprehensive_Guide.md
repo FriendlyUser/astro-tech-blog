@@ -1,11 +1,13 @@
 ---
-title: Using gRPC in Go A Comprehensive Guide
-pubDate: "2023-06-01T18:40:54.000Z"
-description: "In this article, we will explore how to implement gRPC in Go, covering the following topics:"
+description: 'In this article, we will explore how to implement gRPC in Go, covering
+  the following topics:'
+imgSrc: /imgs/2023/2892583015.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-06-01T18:40:54.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using gRPC in Go A Comprehensive Guide
 ---
+
 # Using gRPC in Go: A Comprehensive Guide
 
 gRPC is a modern, open-source, high-performance remote procedure call (RPC) framework that can run in any environment. It efficiently connects services in and across data centers with pluggable support for load balancing, tracing, health checking, and authentication. gRPC is an excellent choice for developing microservices and other distributed systems.

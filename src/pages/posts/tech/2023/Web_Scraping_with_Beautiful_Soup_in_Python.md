@@ -1,11 +1,13 @@
 ---
-title: Web Scraping with Beautiful Soup in Python
-pubDate: "2024-02-10T08:30:57.000Z"
-description: "In this article, we will look at how to use Beautiful Soup for web scraping in Python"
+description: In this article, we will look at how to use Beautiful Soup for web scraping
+  in Python
+imgSrc: /imgs/2023/262205434.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2024-02-10T08:30:57.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Web Scraping with Beautiful Soup in Python
 ---
+
 # Web Scraping with Beautiful Soup in Python
 
 Web scraping is a technique for extracting data from websites. It involves making HTTP requests to web pages and parsing the HTML content to retrieve the desired information. Beautiful Soup is a popular and easy-to-use Python library for web scraping. In this article, we will look at how to use Beautiful Soup for web scraping in Python.

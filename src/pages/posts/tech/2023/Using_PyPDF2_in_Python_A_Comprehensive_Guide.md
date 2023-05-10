@@ -1,11 +1,13 @@
 ---
-title: Using PyPDF2 in Python A Comprehensive Guide
-pubDate: "2023-11-24T12:44:35.000Z"
-description: "In this article, we'll explore the PyPDF2 library, its features, and demonstrate its usage through practical examples"
+description: In this article, we'll explore the PyPDF2 library, its features, and
+  demonstrate its usage through practical examples
+imgSrc: /imgs/2023/pokedex_types.png
+layout: '@/templates/BasePost.astro'
+pubDate: '2023-11-24T12:44:35.000Z'
 tags: []
-layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+title: Using PyPDF2 in Python A Comprehensive Guide
 ---
+
 # Using PyPDF2 in Python: A Comprehensive Guide
 
 PyPDF2 is a popular Python library for working with PDF files. It allows you to extract text, metadata, and images from PDF files or manipulate and combine them to create new PDFs. In this article, we'll explore the PyPDF2 library, its features, and demonstrate its usage through practical examples.
