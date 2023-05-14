@@ -55,7 +55,7 @@ def make_articles_for_medium():
 
 
     posted_articles = 0
-    max_posted_articles = 40
+    max_posted_articles = 20
     # find all markdown files in the post folders
     for postFolder in postFolders:
         for post in glob.glob(f"{basePostFolder}/{postFolder}/*.md"):
