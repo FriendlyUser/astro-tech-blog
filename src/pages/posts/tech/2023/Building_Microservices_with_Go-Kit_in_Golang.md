@@ -1,11 +1,10 @@
 ---
-description: ' Go-Kit offers a set of tools and best practices to develop and manage
-  these services with ease.'
+title: Building Microservices with Go-Kit in Golang
+description: ' Go-Kit offers a set of tools and best practices to develop and manage these services with ease.'
 imgSrc: /imgs/2023/2269624161_forest.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-16T04:50:20.000Z'
 tags: []
-title: Building Microservices with Go-Kit in Golang
 ---
 
 # Building Microservices with Go-Kit in Golang
@@ -214,7 +213,7 @@ go build -o stringsvc .
 
 To test the service, send HTTP requests to the `/concat` and `/count` endpoints:
 
-```sh
+```
 curl -X POST -d '{"a": "hello", "b": "world"}' -H 'Content-Type: application/json' http://localhost:8080/concat
 curl -X POST -d '{"s": "hello world"}' -H 'Content-Type: application/json' http://localhost:8080/count
 ```
