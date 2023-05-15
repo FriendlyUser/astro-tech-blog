@@ -4,7 +4,7 @@ description: "Describes a Next.js project that uses a PostgreSQL database to man
 alt: my first blog post
 tags: ["react","js"]
 layout: '@/templates/BasePost.astro'
-pubDate: Friday, 17 April 2024 13:00:00 GMT
+pubDate: Friday, 16 March 2023 13:00:00 GMT
 imgSrc: '/imgs/2023/neon_article.jpeg'
 ---
 
