@@ -37,8 +37,8 @@ const dallECollection = await dallECollectionResp.json();
 
 const dallEImages = dallECollection?.media?.map((photo) => {
   return {
-    src: photo.src.original,
-    alt: photo.photographer,
+    src: photo?.src?.original,
+    alt: photo?.photographer,
   };
 });
 const title = "Photos"
