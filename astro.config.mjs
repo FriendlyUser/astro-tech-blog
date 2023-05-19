@@ -15,9 +15,7 @@ export default defineConfig({
   // Only official '@astrojs/*' integrations are currently supported by Astro.
   // Add 'experimental.integrations: true' to make 'astro-robots-txt' working
   // with 'astro build' command.
-  experimental: {
-    integrations: true,
-  },
+
   markdown: {
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)
