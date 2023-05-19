@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to use Navigation API in react native - Astro Tech Blog</title>
+    <meta name="description" content="The Navigation API is a powerful new tool for managing navigation in React Native apps.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.b1b88089.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How to use Navigation API in react native</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 14 June 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dotnet" style="padding-right:3px"> <category>dotnet<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-zinc-400 text-zinc-900"> <a href="/tags/git" style="padding-right:3px"> <category>git<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/bear_book_2.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="understanding-the-navigation-api">Understanding the Navigation API</h1>
+<p>The Navigation API is a powerful new tool for managing navigation in React Native apps. It allows you to navigate between routes in your app, handle deep linking, share state between routes, and more - all with a straightforward API.</p>
+<p>Some of the main benefits of the Navigation API are:</p>
+<ul>
+<li>
+<p>Simple routing - You define routes, and the API handles transitioning between them, maintaining history, etc.</p>
+</li>
+<li>
+<p>Shared state - You can pass data between routes, maintaining a shared state for your whole navigation “tree”.</p>
+</li>
+<li>
+<p>Custom screen transitions - You have full control over the transition between routes with custom animations and gestures.</p>
+</li>
+<li>
+<p>Nested child routes - Routes can contain child routes, allowing you to create nested navigation hierarchies in your app.</p>
+</li>
+<li>
+<p>Deep linking support - Easily handle links that open into specific routes in your app.</p>
+</li>
+<li>
+<p>And more - The Navigation API also provides features like modals, tab navigation, drawer navigation, and more.</p>
+</li>
+</ul>
+<p>To get started with the Navigation API, you first need to install the react-navigation library:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">npm install @react-navigation/native</span></span></code></pre>
+<p>The Navigation API is made up of “navigators” - components like StackNavigator, TabNavigator, and DrawerNavigator that manage navigation for a section of your app. You nest navigators within one another to create the navigation structure for your whole app.</p>
+<p>For example, here’s a basic app with some routes defined using the StackNavigator:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { NavigationContainer, StackNavigator } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'@react-navigation/native'</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Stack </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">StackNavigator</span><span style="color: #F8F8F2">({</span></span>
+<span class="line"><span style="color: #F8F8F2">  Home: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    screen: HomeScreen</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  Details: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    screen: DetailsScreen</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF; font-style: italic">NavigationContainer</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #66D9EF; font-style: italic">Stack</span><span style="color: #F8F8F2"> /></span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;/</span><span style="color: #66D9EF; font-style: italic">NavigationContainer</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  ); </span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This defines two routes, Home and Details, wrapped in a StackNavigator. The NavigationContainer component is required to manage state for the navigation tree.</p>
+<h2 id="navigating-between-routes-and-passing-data">Navigating Between Routes and Passing Data</h2>
+<p>In part 1, we set up a basic StackNavigator with two routes. Now let’s look at how to navigate between those routes and share data between them.</p>
+<p>To navigate from one route to another, you call the navigation prop on the screen component. For example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// HomeScreen.js</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomeScreen</span><span style="color: #F8F8F2">({ </span><span style="color: #FD971F; font-style: italic">navigation</span><span style="color: #F8F8F2"> }) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF; font-style: italic">Button</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">title</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Go to Details"</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> navigation.</span><span style="color: #A6E22E">navigate</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Details'</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    /></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>The navigate method takes the name of the route to navigate to. So this will navigate from HomeScreen to DetailsScreen.</p>
+<p>You can also pass data between routes using the navigation prop. For example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// HomeScreen.js</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">HomeScreen</span><span style="color: #F8F8F2">({ </span><span style="color: #FD971F; font-style: italic">navigation</span><span style="color: #F8F8F2"> }) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF; font-style: italic">Button</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">title</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Go to Details"</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> navigation.</span><span style="color: #A6E22E">navigate</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'Details'</span><span style="color: #F8F8F2">, { item: { name: </span><span style="color: #E6DB74">'React Native'</span><span style="color: #F8F8F2"> } })</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    /></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This passes an item object with some data to the Details route.</p>
+<p>In the DetailsScreen, you can access this data through the route prop:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// DetailsScreen.js</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">DetailsScreen</span><span style="color: #F8F8F2">({ </span><span style="color: #FD971F; font-style: italic">route</span><span style="color: #F8F8F2"> }) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> item </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> route.params.item;</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> &#x3C;</span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">></span><span style="color: #F92672">{</span><span style="color: #F8F8F2">item.name</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">>; </span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>The route.params contains the parameters passed from the navigating route.</p>
+<p>To go back from the Details route to the Home route, you can call <code>navigation.goBack()</code>. For example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// DetailsScreen.js</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">DetailsScreen</span><span style="color: #F8F8F2">({ </span><span style="color: #FD971F; font-style: italic">navigation</span><span style="color: #F8F8F2"> }) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    &#x3C;</span><span style="color: #66D9EF; font-style: italic">Button</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">title</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Go back"</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">() </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> navigation.</span><span style="color: #A6E22E">goBack</span><span style="color: #F8F8F2">()</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    /></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>This will pop the DetailsScreen off the stack and return to the HomeScreen.</p>
+<p>The <code>navigation</code> prop contains various other useful methods for controlling navigation like setParams, push, popToTop, reset, etc. You can build very flexible navigation flows using all the features of the Navigation API.</p>
+<p>Next, we’ll look at nesting navigators to create a tabbed view, handling deep linking, and implementing custom transitions between routes.</p>
+<h1 id="nested-navigators-deep-linking-and-custom-transitions">Nested Navigators, Deep Linking, and Custom Transitions</h1>
+<p>We covered the basics of navigating between routes and passing data with the Navigation API.</p>
+<p>Nested Navigators
+To create complex navigation hierarchies in your app, you nest navigators within one another. For example, to have tab navigation where each tab contains a stack of routes, you’d do:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">TabNavigator</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">StackNavigator</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">{</span><span style="color: #88846F">/* Routes for tab 1 */</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF; font-style: italic">StackNavigator</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">StackNavigator</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">{</span><span style="color: #88846F">/* Routes for tab 2 */</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;/</span><span style="color: #66D9EF; font-style: italic">StackNavigator</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #66D9EF; font-style: italic">TabNavigator</span><span style="color: #F8F8F2">> </span></span></code></pre>
+<p>You can nest navigators as deeply as you like to create really complex navigation structures.</p>
+<h2 id="deep-linking">Deep Linking</h2>
+<p>Deep linking allows you to link directly into routes in your app. To handle deep linking with the Navigation API, you define a linking config when creating your StackNavigator. For example:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> Stack </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">StackNavigator</span><span style="color: #F8F8F2">({</span></span>
+<span class="line"><span style="color: #F8F8F2">  Home: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    screen: HomeScreen</span></span>
+<span class="line"><span style="color: #F8F8F2">  },</span></span>
+<span class="line"><span style="color: #F8F8F2">  Details: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    screen: DetailsScreen</span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span></span>
+<span class="line"><span style="color: #F8F8F2">}, {</span></span>
+<span class="line"><span style="color: #F8F8F2">  initialRouteName: </span><span style="color: #E6DB74">'Home'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  linking: {</span></span>
+<span class="line"><span style="color: #F8F8F2">    prefixes: [</span><span style="color: #E6DB74">'https://example.com'</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">    config: {</span></span>
+<span class="line"><span style="color: #F8F8F2">      Details: {</span></span>
+<span class="line"><span style="color: #F8F8F2">        path: </span><span style="color: #E6DB74">'details/:itemId'</span></span>
+<span class="line"><span style="color: #F8F8F2">      }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span></span>
+<span class="line"><span style="color: #F8F8F2">}); </span></span></code></pre>
+<p>This will match incoming URLs that start with <code>https://example.com</code>. The config then looks for the route name (Details here) in the path after the prefix, and any parameters after than (<code>:itemId</code>) will be passed as params to the route.</p>
+<p>So if your app is opened with the URL <code>https://example.com/details/abc123</code>, it will navigate directly to the DetailsScreen route with route.params.itemId = ‘abc123’.</p>
+<p>Custom Screen Transitions
+You have full control over the transition between screens with the Navigation API. You can create custom animations and gestures for navigating between routes.</p>
+<p>For example, to have a slide up transition between routes, you’d do:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">Stack.Navigator</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">initialRouteName</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Home"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">screenOptions</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">  headerShown: </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">  cardStyle: { backgroundColor: </span><span style="color: #E6DB74">'transparent'</span><span style="color: #F8F8F2"> }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">Stack.Screen</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">name</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Home"</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">component</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">HomeScreen</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">/></span></span>
+<span class="line"><span style="color: #F8F8F2">  &#x3C;</span><span style="color: #66D9EF; font-style: italic">Stack.Screen</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">name</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"Details"</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">component</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">DetailsScreen</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">options</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #A6E22E">cardStyleInterpolator</span><span style="color: #F8F8F2">: ({ </span><span style="color: #FD971F; font-style: italic">current</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">next</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">closing</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">          cardStyle: {</span></span>
+<span class="line"><span style="color: #F8F8F2">            opacity: current.progress,</span></span>
+<span class="line"><span style="color: #F8F8F2">          }</span></span>
+<span class="line"><span style="color: #F8F8F2">        };</span></span>
+<span class="line"><span style="color: #F8F8F2">      }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">  /></span></span>
+<span class="line"><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #66D9EF; font-style: italic">Stack.Navigator</span><span style="color: #F8F8F2">> </span></span></code></pre>
+<p>This sets some options to hide the default header and use a transparent background for the Stack. It then passes a custom <code>cardStyleInterpolator</code> to the DetailsScreen which handles the animation/transition. This will cause the DetailsScreen to slide up and fade in.</p>
+<p>You can create transitions triggered by gestures, react to drag gestures, and completely customize the navigation experience in your app using the Navigation API.</p>
+<p>That covers the basics of the Navigation API in React Native! Let me know if you have any other questions.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-19<!-- -->.</div></div></div>
+  </body></html>
