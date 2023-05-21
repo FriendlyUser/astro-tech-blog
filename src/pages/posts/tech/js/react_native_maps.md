@@ -4,7 +4,7 @@ title: Creating a cluster on a map in react native
 description: In this post I will show you how to clusters on a map in react native.
 pubDate: Monday, 22 May 2024
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/test.png
+imgSrc: /imgs/2023/3793215953.png
 ---
 
 # What supercluster and how does it work? 
