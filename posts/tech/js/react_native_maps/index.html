@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating a cluster on a map in react native - Astro Tech Blog</title>
+    <meta name="description" content="In this post I will show you how to clusters on a map in react native.">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+
+    </script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.e6d5c001.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.b1b88089.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Creating a cluster on a map in react native</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Monday, 22 May 2024</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/react-native" style="padding-right:3px"> <category>react-native<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/js" style="padding-right:3px"> <category>js<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/test.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="what-supercluster-and-how-does-it-work">What supercluster and how does it work?</h1>
+<p>In cosmology, a supercluster is a large group of galaxy clusters or galaxy groups; they are among the largest known structures in the universe. The Milky Way is part of the Local Group galaxy group (which contains more than 54 galaxies), which in turn is part of the Virgo Supercluster, which is part of the Laniakea Supercluster. The large size and low density of superclusters means that they, unlike clusters, expand with the Hubble expansion. The number of superclusters in the observable universe is estimated to be 10 million.</p>
+<p>Superclusters form massive structures of galaxies, called “filaments”, “supercluster complexes”, “walls” or “sheets”, that may span between several hundred million light-years to 10 billion light-years, covering more than 5% of the observable universe. These are the largest structures known to date. Observations of superclusters can give information about the initial condition of the universe, when these superclusters were created.</p>
+<p>Here is how a supercluster works:</p>
+<ol>
+<li>Galaxies are attracted to each other by gravity.</li>
+<li>As galaxies move towards each other, they collide and merge.</li>
+<li>Over time, these collisions and mergers create larger and larger groups of galaxies.</li>
+<li>These groups of galaxies eventually form superclusters.</li>
+<li>Superclusters are held together by gravity.</li>
+<li>The gravity of superclusters helps to shape the structure of the universe.</li>
+</ol>
+<p>Superclusters are important because they can help us to understand the evolution of the universe. By studying superclusters, we can learn about how galaxies formed and evolved, and how the universe is structured.</p>
+<p>Here are some interesting facts about superclusters:</p>
+<ul>
+<li>The largest supercluster known to date is the Hercules–Corona Borealis Great Wall, which is about 10 billion light-years across.</li>
+<li>The Milky Way is located in the Laniakea Supercluster, which is about 500 million light-years across.</li>
+<li>Superclusters are constantly moving and evolving.</li>
+<li>Superclusters are thought to be the largest structures in the universe that are held together by gravity.</li>
+</ul>
+<p>Superclusters are a fascinating and important part of the universe. By studying them, we can learn more about the evolution of the universe and the structure of space.</p>
+<h1 id="why-are-clusters-on-maps-useful">Why are clusters on maps useful</h1>
+<p>Clusters on maps are useful because they can help us to visualize and understand large amounts of data. When you have a large number of markers on a map, it can be difficult to see the individual markers and the relationships between them. Clustering groups markers together based on their location, which makes it easier to see the big picture.</p>
+<p>There are many different ways to use clusters on maps. For example, you can use clusters to visualize the distribution of population, businesses, or other types of data. You can also use clusters to identify areas of interest, such as areas with high crime rates or areas with a lot of traffic.</p>
+<p>Here are some of the benefits of using clusters on maps:</p>
+<ul>
+<li>They can help you to visualize large amounts of data.</li>
+<li>They can help you to identify patterns and trends in the data.</li>
+<li>They can help you to make better decisions about the data.</li>
+<li>They can help you to communicate the data to others.</li>
+</ul>
+<p>Here are some examples of how clusters on maps can be used:</p>
+<ul>
+<li>A city planner can use clusters to visualize the distribution of population and identify areas with high density.</li>
+<li>A business owner can use clusters to visualize the distribution of businesses and identify areas with high competition.</li>
+<li>A crime analyst can use clusters to visualize the distribution of crime and identify areas with high crime rates.</li>
+<li>A traffic engineer can use clusters to visualize the distribution of traffic and identify areas with high traffic congestion.</li>
+</ul>
+<p>Clusters on maps are a powerful tool that can be used to visualize and understand large amounts of data. By using clusters, you can make better decisions, communicate the data to others, and gain a better understanding of the world around you.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Text } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { COLORS } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"@theme/colors"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { FC, memo } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { StyleSheet, TouchableOpacity, View } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Marker } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native-maps"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ClusterMarkerProps</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	geometry</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">any</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	properties</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">any</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	tracksViewChanges</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ClusterMarker</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">FC</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">ClusterMarkerProps</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ({ </span><span style="color: #FD971F; font-style: italic">geometry</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">properties</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">onPress</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">tracksViewChanges</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> points </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> properties.point_count;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">		&#x3C;</span><span style="color: #66D9EF; font-style: italic">Marker</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">key</span><span style="color: #F92672">={</span><span style="color: #E6DB74">`</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">geometry.coordinates[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]</span><span style="color: #F92672">}</span><span style="color: #E6DB74">_</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">geometry.coordinates[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">]</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">coordinate</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{</span></span>
+<span class="line"><span style="color: #F8F8F2">				longitude: geometry.coordinates[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">				latitude: geometry.coordinates[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">{ zIndex: points </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> }</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">onPress</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">tracksViewChanges</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">tracksViewChanges</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">		></span></span>
+<span class="line"><span style="color: #F8F8F2">			&#x3C;</span><span style="color: #66D9EF; font-style: italic">TouchableOpacity</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">activeOpacity</span><span style="color: #F92672">={</span><span style="color: #AE81FF">0.5</span><span style="color: #F92672">}</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">styles.container</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">				&#x3C;</span><span style="color: #66D9EF; font-style: italic">View</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">styles.cluster</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">					&#x3C;</span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">style</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">styles.text</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">></span><span style="color: #F92672">{</span><span style="color: #F8F8F2">points</span><span style="color: #F92672">}</span><span style="color: #F8F8F2">&#x3C;/</span><span style="color: #66D9EF; font-style: italic">Text</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">				&#x3C;/</span><span style="color: #66D9EF; font-style: italic">View</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">			&#x3C;/</span><span style="color: #66D9EF; font-style: italic">TouchableOpacity</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">		&#x3C;/</span><span style="color: #66D9EF; font-style: italic">Marker</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">	);</span></span>
+<span class="line"><span style="color: #F8F8F2">}; </span></span></code></pre>
+<p>The code provided is a React Native component that renders a marker on a map. The component takes four props:</p>
+<ul>
+<li><code>geometry</code>: The geometry of the marker, which is an object with the following properties:
+<ul>
+<li><code>coordinates</code>: The coordinates of the marker, which is an array of two numbers: the longitude and the latitude.</li>
+</ul>
+</li>
+<li><code>properties</code>: The properties of the marker, which is an object with any additional information you want to associate with the marker.</li>
+<li><code>onPress</code>: A function that is called when the marker is pressed.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the marker should be updated when the map view changes.</li>
+</ul>
+<p>The component renders a <code>Marker</code> component with the following properties:</p>
+<ul>
+<li><code>key</code>: A unique identifier for the marker.</li>
+<li><code>coordinate</code>: The coordinates of the marker.</li>
+<li><code>style</code>: The style of the marker.</li>
+<li><code>onPress</code>: The function that is called when the marker is pressed.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the marker should be updated when the map view changes.</li>
+</ul>
+<p>The component also renders a <code>TouchableOpacity</code> component with the following properties:</p>
+<ul>
+<li><code>activeOpacity</code>: The opacity of the component when it is pressed.</li>
+<li><code>style</code>: The style of the component.</li>
+</ul>
+<p>The <code>TouchableOpacity</code> component renders a <code>View</code> component with the following properties:</p>
+<ul>
+<li><code>style</code>: The style of the component.</li>
+</ul>
+<p>The <code>View</code> component renders a <code>Text</code> component with the following properties:</p>
+<ul>
+<li><code>style</code>: The style of the text.</li>
+</ul>
+<p>The text in the <code>Text</code> component displays the number of markers that are in the cluster.</p>
+<p>The <code>ClusterMarker</code> component is a useful tool for visualizing large amounts of data on a map. By using this component, you can easily create markers that represent groups of markers. This can help you to see the big picture and identify areas of interest.</p>
+<p>We can add styles and a default export to the ClusterMarker.tsx file</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React, { forwardRef, memo, useEffect, useMemo, useRef, useState } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Dimensions, LayoutAnimation, LayoutAnimationConfig, Platform } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> MapView, { Details, Region } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native-maps"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> SuperCluster </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"supercluster"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> ClusterMarker </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./ClusterMarker"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	calculateBBox,</span></span>
+<span class="line"><span style="color: #F8F8F2">	markerToGeoJSONFeature,</span></span>
+<span class="line"><span style="color: #F8F8F2">	returnMapZoom,</span></span>
+<span class="line"><span style="color: #F8F8F2">	getSearchRadiusFromPresets,</span></span>
+<span class="line"><span style="color: #F8F8F2">	getRegionForCoordinates</span></span>
+<span class="line"><span style="color: #F8F8F2">} </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"./helpers"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">interface</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ClusteredMapViewProps</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">ReactNode</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	clusteringEnabled</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	animationEnabled</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	preserveClusterPressBehavior</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	layoutAnimationConf</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">LayoutAnimationConfig</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	tracksViewChanges</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// SuperCluster parameters</span></span>
+<span class="line"><span style="color: #F8F8F2">	radius</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	maxZoom</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	minZoom</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	minPoints</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	extent</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	nodeSize</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">number</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Callbacks</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onRegionChangeComplete</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">e</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Region</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Promise</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">>,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onClusterPress</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">cluster</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">children</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">ReactNode</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onMarkersChange</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">mapRef</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>The code  provided is an interface for a React Native component that renders a map with clustering capabilities. The interface takes the following props:</p>
+<ul>
+<li><code>children</code>: The children of the component, which can be any React Native component.</li>
+<li><code>clusteringEnabled</code>: A boolean that specifies whether clustering is enabled.</li>
+<li><code>animationEnabled</code>: A boolean that specifies whether animation is enabled when markers are clustered or unclustered.</li>
+<li><code>preserveClusterPressBehavior</code>: A boolean that specifies whether the press behavior of clusters should be preserved when they are unclustered.</li>
+<li><code>layoutAnimationConf</code>: A <code>LayoutAnimationConfig</code> object that specifies the animation configuration for when markers are clustered or unclustered.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the component should be updated when the map view changes.</li>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+<li><code>onRegionChangeComplete</code>: A function that is called when the region of the map changes.</li>
+<li><code>onClusterPress</code>: A function that is called when a cluster is pressed.</li>
+<li><code>onMarkersChange</code>: A function that is called when the markers change.</li>
+<li><code>mapRef</code>: A reference to the <code>MapView</code> component.</li>
+</ul>
+<p>The component renders a <code>MapView</code> component with the following properties:</p>
+<ul>
+<li><code>children</code>: The children of the component.</li>
+<li><code>clusteringEnabled</code>: A boolean that specifies whether clustering is enabled.</li>
+<li><code>animationEnabled</code>: A boolean that specifies whether animation is enabled when markers are clustered or unclustered.</li>
+<li><code>preserveClusterPressBehavior</code>: A boolean that specifies whether the press behavior of clusters should be preserved when they are unclustered.</li>
+<li><code>layoutAnimationConf</code>: A <code>LayoutAnimationConfig</code> object that specifies the animation configuration for when markers are clustered or unclustered.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the component should be updated when the map view changes.</li>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+<li><code>onRegionChangeComplete</code>: A function that is called when the region of the map changes.</li>
+<li><code>onClusterPress</code>: A function that is called when a cluster is pressed.</li>
+<li><code>onMarkersChange</code>: A function that is called when the markers change.</li>
+</ul>
+<p>The component also renders a <code>SuperCluster</code> component with the following properties:</p>
+<ul>
+<li><code>data</code>: The data for the clusters.</li>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+</ul>
+<p>The <code>SuperCluster</code> component uses the <code>radius</code> prop to cluster markers that are within a certain distance of each other. The <code>maxZoom</code> and <code>minZoom</code> props specify the maximum and minimum zoom levels at which clustering is enabled. The <code>minPoints</code> prop specifies the minimum number of markers required to form a cluster. The <code>extent</code> prop specifies the extent of the map, in meters. The <code>nodeSize</code> prop specifies the size of the nodes in the cluster tree, in pixels.</p>
+<p>The <code>ClusteredMapView</code> component is a useful tool for visualizing large amounts of data on a map. By using this component, you can easily create a map with clusters of markers. This can help you to see the big picture and identify areas of interest.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> ClusteredMapView </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">forwardRef</span><span style="color: #F8F8F2">(</span></span>
+<span class="line"><span style="color: #F8F8F2">	(</span></span>
+<span class="line"><span style="color: #F8F8F2">		{</span></span>
+<span class="line"><span style="color: #F8F8F2">			radius,</span></span>
+<span class="line"><span style="color: #F8F8F2">			maxZoom,</span></span>
+<span class="line"><span style="color: #F8F8F2">			minZoom,</span></span>
+<span class="line"><span style="color: #F8F8F2">			minPoints,</span></span>
+<span class="line"><span style="color: #F8F8F2">			extent,</span></span>
+<span class="line"><span style="color: #F8F8F2">			nodeSize,</span></span>
+<span class="line"><span style="color: #F8F8F2">			children,</span></span>
+<span class="line"><span style="color: #F8F8F2">			onClusterPress,</span></span>
+<span class="line"><span style="color: #F8F8F2">			onRegionChangeComplete,</span></span>
+<span class="line"><span style="color: #F8F8F2">			onMarkersChange,</span></span>
+<span class="line"><span style="color: #F8F8F2">			preserveClusterPressBehavior,</span></span>
+<span class="line"><span style="color: #F8F8F2">			clusteringEnabled,</span></span>
+<span class="line"><span style="color: #F8F8F2">			layoutAnimationConf,</span></span>
+<span class="line"><span style="color: #F8F8F2">			animationEnabled,</span></span>
+<span class="line"><span style="color: #F8F8F2">			tracksViewChanges,</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">...</span><span style="color: #F8F8F2">restProps</span></span>
+<span class="line"><span style="color: #F8F8F2">		}: ClusteredMapViewProps,</span></span>
+<span class="line"><span style="color: #F8F8F2">		ref,</span></span>
+<span class="line"><span style="color: #F8F8F2">	) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [markers, updateMarkers] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">([]);</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [otherChildren, updateChildren] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">React</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E; text-decoration: underline">ReactNode</span><span style="color: #F8F8F2">>();</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [superCluster, setSuperCluster] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [currentRegion, updateRegion] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useState</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">Region</span><span style="color: #F8F8F2">>(restProps.region </span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> restProps.initialRegion);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> mapRef </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useRef</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> propsChildren </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (children) {</span></span>
+<span class="line"><span style="color: #F8F8F2">			propsChildren </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">useMemo</span><span style="color: #F8F8F2">(() </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> React.Children.</span><span style="color: #A6E22E">toArray</span><span style="color: #F8F8F2">(children), [children]);</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #A6E22E">useEffect</span><span style="color: #F8F8F2">(() </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> rawData </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [];</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> otherChildren </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">clusteringEnabled) {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">updateMarkers</span><span style="color: #F8F8F2">([]);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">updateChildren</span><span style="color: #F8F8F2">(propsChildren);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">setSuperCluster</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">null</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">return</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			propsChildren.</span><span style="color: #A6E22E">forEach</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">child</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">index</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (child.props.coordinates) { </span><span style="color: #88846F">// child is a marker</span></span>
+<span class="line"><span style="color: #F8F8F2">					rawData.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">markerToGeoJSONFeature</span><span style="color: #F8F8F2">(child, index));</span></span>
+<span class="line"><span style="color: #F8F8F2">				} </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">					otherChildren.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(child);</span></span>
+<span class="line"><span style="color: #F8F8F2">				}</span></span>
+<span class="line"><span style="color: #F8F8F2">			});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> superCluster </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">SuperCluster</span><span style="color: #F8F8F2">({</span></span>
+<span class="line"><span style="color: #F8F8F2">				radius,</span></span>
+<span class="line"><span style="color: #F8F8F2">				maxZoom,</span></span>
+<span class="line"><span style="color: #F8F8F2">				minZoom,</span></span>
+<span class="line"><span style="color: #F8F8F2">				minPoints,</span></span>
+<span class="line"><span style="color: #F8F8F2">				extent,</span></span>
+<span class="line"><span style="color: #F8F8F2">				nodeSize,</span></span>
+<span class="line"><span style="color: #F8F8F2">			});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			superCluster.</span><span style="color: #A6E22E">load</span><span style="color: #F8F8F2">(rawData);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> bBox </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calculateBBox</span><span style="color: #F8F8F2">(currentRegion);</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> zoom </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">returnMapZoom</span><span style="color: #F8F8F2">(currentRegion, bBox, minZoom);</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> markers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> superCluster.</span><span style="color: #A6E22E">getClusters</span><span style="color: #F8F8F2">(bBox, zoom);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">updateMarkers</span><span style="color: #F8F8F2">(markers);</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">updateChildren</span><span style="color: #F8F8F2">(otherChildren);</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">setSuperCluster</span><span style="color: #F8F8F2">(superCluster);</span></span>
+<span class="line"><span style="color: #F8F8F2">		}, [propsChildren, clusteringEnabled]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">_onRegionChangeComplete</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">region</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Region</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">details</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Details</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (superCluster </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> region) {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> bBox </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calculateBBox</span><span style="color: #F8F8F2">(region);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> zoom </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">returnMapZoom</span><span style="color: #F8F8F2">(region, bBox, minZoom);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> markers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> superCluster.</span><span style="color: #A6E22E">getClusters</span><span style="color: #F8F8F2">(bBox, zoom);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (animationEnabled </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> Platform.OS </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"ios"</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">					LayoutAnimation.</span><span style="color: #A6E22E">configureNext</span><span style="color: #F8F8F2">(layoutAnimationConf);</span></span>
+<span class="line"><span style="color: #F8F8F2">				}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">updateMarkers</span><span style="color: #F8F8F2">(markers);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">onMarkersChange</span><span style="color: #F8F8F2">(markers);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">onRegionChangeComplete</span><span style="color: #F8F8F2">(region, details, markers);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">updateRegion</span><span style="color: #F8F8F2">(region);</span></span>
+<span class="line"><span style="color: #F8F8F2">			} </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">onRegionChangeComplete</span><span style="color: #F8F8F2">(region, details);</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"><span style="color: #F8F8F2">		};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">_onClusterPress</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">cluster</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> children </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> superCluster.</span><span style="color: #A6E22E">getLeaves</span><span style="color: #F8F8F2">(cluster.id, </span><span style="color: #AE81FF">Infinity</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (preserveClusterPressBehavior) {</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">onClusterPress</span><span style="color: #F8F8F2">(cluster, children);</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">return</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">			}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> coordinates </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> children.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(({ </span><span style="color: #FD971F; font-style: italic">geometry</span><span style="color: #F8F8F2"> }) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> ({</span></span>
+<span class="line"><span style="color: #F8F8F2">				latitude: geometry.coordinates[</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">				longitude: geometry.coordinates[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">],</span></span>
+<span class="line"><span style="color: #F8F8F2">			}));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> newRegion </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getRegionForCoordinates</span><span style="color: #F8F8F2">(coordinates);</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> zoomOutFactor </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1.25</span><span style="color: #F8F8F2">; </span><span style="color: #88846F">// arbitrary value</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #88846F">// increase delta so the map is a bit zoomed out</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #88846F">// otherwise markers might appear at the edges of the screen</span></span>
+<span class="line"><span style="color: #F8F8F2">			newRegion.latitudeDelta </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> newRegion.latitudeDelta </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> zoomOutFactor;</span></span>
+<span class="line"><span style="color: #F8F8F2">			newRegion.longitudeDelta </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> newRegion.longitudeDelta </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> zoomOutFactor;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			mapRef.current.</span><span style="color: #A6E22E">animateToRegion</span><span style="color: #F8F8F2">(newRegion);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> radiusInMiles </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> newRegion.latitudeDelta </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">69</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> searchRadius </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getSearchRadiusFromPresets</span><span style="color: #F8F8F2">(radiusInMiles);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #A6E22E">onClusterPress</span><span style="color: #F8F8F2">(newRegion, searchRadius)</span></span>
+<span class="line"><span style="color: #F8F8F2">		};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">			&#x3C;</span><span style="color: #66D9EF; font-style: italic">MapView</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">{...</span><span style="color: #F8F8F2">restProps</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">ref</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">map</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">					mapRef.current </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> map;</span></span>
+<span class="line"><span style="color: #F8F8F2">					</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (ref) ref.current </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> map;</span></span>
+<span class="line"><span style="color: #F8F8F2">					restProps.</span><span style="color: #A6E22E">mapRef</span><span style="color: #F8F8F2">(map);</span></span>
+<span class="line"><span style="color: #F8F8F2">				}</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #A6E22E">onRegionChangeComplete</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">_onRegionChangeComplete</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">			></span></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">{</span><span style="color: #F8F8F2">markers.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">marker</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span></span>
+<span class="line"><span style="color: #F8F8F2">					marker.properties.point_count </span><span style="color: #F92672">===</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">						propsChildren[marker.properties.index]</span></span>
+<span class="line"><span style="color: #F8F8F2">					) </span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">						&#x3C;</span><span style="color: #66D9EF; font-style: italic">ClusterMarker</span></span>
+<span class="line"><span style="color: #F8F8F2">							</span><span style="color: #A6E22E">key</span><span style="color: #F92672">={</span><span style="color: #E6DB74">`cluster-</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">marker.id</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">							</span><span style="color: #F92672">{...</span><span style="color: #F8F8F2">marker</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">							</span><span style="color: #A6E22E">onPress</span><span style="color: #F92672">={</span><span style="color: #A6E22E">_onClusterPress</span><span style="color: #F8F8F2">(marker)</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">							</span><span style="color: #A6E22E">tracksViewChanges</span><span style="color: #F92672">={</span><span style="color: #F8F8F2">tracksViewChanges</span><span style="color: #F92672">}</span></span>
+<span class="line"><span style="color: #F8F8F2">						/></span></span>
+<span class="line"><span style="color: #F8F8F2">					)</span></span>
+<span class="line"><span style="color: #F8F8F2">				)</span><span style="color: #F92672">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">				</span><span style="color: #F92672">{</span><span style="color: #F8F8F2">otherChildren</span><span style="color: #F92672">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">			&#x3C;/</span><span style="color: #66D9EF; font-style: italic">MapView</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">		);</span></span>
+<span class="line"><span style="color: #F8F8F2">	},</span></span>
+<span class="line"><span style="color: #F8F8F2">); </span></span></code></pre>
+<p>The code provided is a React Native component that renders a map with clustering capabilities. The component takes the following props:</p>
+<ul>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+<li><code>children</code>: The children of the component, which can be any React Native component.</li>
+<li><code>onClusterPress</code>: A function that is called when a cluster is pressed.</li>
+<li><code>onRegionChangeComplete</code>: A function that is called when the region of the map changes.</li>
+<li><code>onMarkersChange</code>: A function that is called when the markers change.</li>
+<li><code>preserveClusterPressBehavior</code>: A boolean that specifies whether the press behavior of clusters should be preserved when they are unclustered.</li>
+<li><code>clusteringEnabled</code>: A boolean that specifies whether clustering is enabled.</li>
+<li><code>layoutAnimationConf</code>: A <code>LayoutAnimationConfig</code> object that specifies the animation configuration for when markers are clustered or unclustered.</li>
+<li><code>animationEnabled</code>: A boolean that specifies whether animation is enabled when markers are clustered or unclustered.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the component should be updated when the map view changes.</li>
+<li><code>mapRef</code>: A reference to the <code>MapView</code> component.</li>
+</ul>
+<p>The component renders a <code>MapView</code> component with the following properties:</p>
+<ul>
+<li><code>children</code>: The children of the component.</li>
+<li><code>clusteringEnabled</code>: A boolean that specifies whether clustering is enabled.</li>
+<li><code>animationEnabled</code>: A boolean that specifies whether animation is enabled when markers are clustered or unclustered.</li>
+<li><code>preserveClusterPressBehavior</code>: A boolean that specifies whether the press behavior of clusters should be preserved when they are unclustered.</li>
+<li><code>layoutAnimationConf</code>: A <code>LayoutAnimationConfig</code> object that specifies the animation configuration for when markers are clustered or unclustered.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the component should be updated when the map view changes.</li>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+<li><code>onRegionChangeComplete</code>: A function that is called when the region of the map changes.</li>
+<li><code>onClusterPress</code>: A function that is called when a cluster is pressed.</li>
+<li><code>onMarkersChange</code>: A function that is called when the markers change.</li>
+</ul>
+<p>The component also renders a <code>SuperCluster</code> component with the following properties:</p>
+<ul>
+<li><code>data</code>: The data for the clusters.</li>
+<li><code>radius</code>: The radius of the clusters, in meters.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster.</li>
+<li><code>extent</code>: The extent of the map, in meters.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels.</li>
+</ul>
+<p>The <code>SuperCluster</code> component uses the <code>radius</code> prop to cluster markers that are within a certain distance of each other. The <code>maxZoom</code> and <code>minZoom</code> props specify the maximum and minimum zoom levels at which clustering is enabled. The <code>minPoints</code> prop specifies the minimum number of markers required to form a cluster. The <code>extent</code> prop specifies the extent of the map, in meters. The <code>nodeSize</code> prop specifies the size of the nodes in the cluster tree, in pixels.</p>
+<p>The <code>ClusteredMapView</code> component is a useful tool for visualizing large amounts of data on a map. By using this component, you can easily create a map with clusters of markers. This can help you to see the big picture and identify areas of interest.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> ClusteredMapView.defaultProps </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	clusteringEnabled: </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	animationEnabled: </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	preserveClusterPressBehavior: </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	layoutAnimationConf: LayoutAnimation.Presets.spring,</span></span>
+<span class="line"><span style="color: #F8F8F2">	tracksViewChanges: </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// SuperCluster parameters</span></span>
+<span class="line"><span style="color: #F8F8F2">	radius: Dimensions.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"window"</span><span style="color: #F8F8F2">).width </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0.06</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	maxZoom: </span><span style="color: #AE81FF">20</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	minZoom: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	minPoints: </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	extent: </span><span style="color: #AE81FF">512</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	nodeSize: </span><span style="color: #AE81FF">64</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Map parameters</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// Callbacks</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onRegionChangeComplete</span><span style="color: #F8F8F2">: () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> { },</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onClusterPress</span><span style="color: #F8F8F2">: () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> { },</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">onMarkersChange</span><span style="color: #F8F8F2">: () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> { },</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #A6E22E">mapRef</span><span style="color: #F8F8F2">: () </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> { },</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"><span style="color: #F8F8F2"> </span></span></code></pre>
+<p>The code you provided is the default props for the <code>ClusteredMapView</code> component. The default props are used when the component is created without any props.</p>
+<p>The following are the default props for the <code>ClusteredMapView</code> component:</p>
+<ul>
+<li><code>clusteringEnabled</code>: A boolean that specifies whether clustering is enabled. The default value is <code>true</code>.</li>
+<li><code>animationEnabled</code>: A boolean that specifies whether animation is enabled when markers are clustered or unclustered. The default value is <code>true</code>.</li>
+<li><code>preserveClusterPressBehavior</code>: A boolean that specifies whether the press behavior of clusters should be preserved when they are unclustered. The default value is <code>false</code>.</li>
+<li><code>layoutAnimationConf</code>: A <code>LayoutAnimationConfig</code> object that specifies the animation configuration for when markers are clustered or unclustered. The default value is <code>LayoutAnimation.Presets.spring</code>.</li>
+<li><code>tracksViewChanges</code>: A boolean that specifies whether the component should be updated when the map view changes. The default value is <code>false</code>.</li>
+<li><code>radius</code>: The radius of the clusters, in meters. The default value is <code>Dimensions.get("window").width * 0.06</code>.</li>
+<li><code>maxZoom</code>: The maximum zoom level at which clustering is enabled. The default value is <code>20</code>.</li>
+<li><code>minZoom</code>: The minimum zoom level at which clustering is enabled. The default value is <code>1</code>.</li>
+<li><code>minPoints</code>: The minimum number of markers required to form a cluster. The default value is <code>2</code>.</li>
+<li><code>extent</code>: The extent of the map, in meters. The default value is <code>512</code>.</li>
+<li><code>nodeSize</code>: The size of the nodes in the cluster tree, in pixels. The default value is <code>64</code>.</li>
+<li><code>onRegionChangeComplete</code>: A function that is called when the region of the map changes. The default value is an empty function.</li>
+<li><code>onClusterPress</code>: A function that is called when a cluster is pressed. The default value is an empty function.</li>
+<li><code>onMarkersChange</code>: A function that is called when the markers change. The default value is an empty function.</li>
+<li><code>mapRef</code>: A reference to the <code>MapView</code> component. The default value is an empty function.</li>
+</ul>
+<p>The default props can be overridden when the component is created by passing in props with the desired values.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> GeoViewport </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"@mapbox/geo-viewport"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { Dimensions } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"react-native"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> { distancePresets } </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"@screens/book/SearchResults"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> { width, height } </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Dimensions.</span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"window"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calculateBBox</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">region</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> lngD;</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (region.longitudeDelta </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">) lngD </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> region.longitudeDelta </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">360</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> lngD </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> region.longitudeDelta;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> [</span></span>
+<span class="line"><span style="color: #F8F8F2">		region.longitude </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> lngD, </span><span style="color: #88846F">// westLng - min lng</span></span>
+<span class="line"><span style="color: #F8F8F2">		region.latitude </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> region.latitudeDelta, </span><span style="color: #88846F">// southLat - min lat</span></span>
+<span class="line"><span style="color: #F8F8F2">		region.longitude </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> lngD, </span><span style="color: #88846F">// eastLng - max lng</span></span>
+<span class="line"><span style="color: #F8F8F2">		region.latitude </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> region.latitudeDelta, </span><span style="color: #88846F">// northLat - max lat</span></span>
+<span class="line"><span style="color: #F8F8F2">	];</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">returnMapZoom</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">region</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">bBox</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">minZoom</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> viewport </span><span style="color: #F92672">=</span></span>
+<span class="line"><span style="color: #F8F8F2">		region.longitudeDelta </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">40</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">?</span><span style="color: #F8F8F2"> { zoom: minZoom }</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> GeoViewport.</span><span style="color: #A6E22E">viewport</span><span style="color: #F8F8F2">(bBox, [width, height]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> viewport.zoom;</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">markerToGeoJSONFeature</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">marker</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">index</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		type: </span><span style="color: #E6DB74">"Feature"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">		geometry: {</span></span>
+<span class="line"><span style="color: #F8F8F2">			coordinates: [</span></span>
+<span class="line"><span style="color: #F8F8F2">				marker.props.coordinates.longitude,</span></span>
+<span class="line"><span style="color: #F8F8F2">				marker.props.coordinates.latitude,</span></span>
+<span class="line"><span style="color: #F8F8F2">			],</span></span>
+<span class="line"><span style="color: #F8F8F2">			type: </span><span style="color: #E6DB74">"Point"</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">		},</span></span>
+<span class="line"><span style="color: #F8F8F2">		properties: {</span></span>
+<span class="line"><span style="color: #F8F8F2">			point_count: </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">			index,</span></span>
+<span class="line"><span style="color: #F8F8F2">		},</span></span>
+<span class="line"><span style="color: #F8F8F2">	};</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">_removeChildrenFromProps</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">props</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> newProps </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {};</span></span>
+<span class="line"><span style="color: #F8F8F2">	Object.</span><span style="color: #A6E22E">keys</span><span style="color: #F8F8F2">(props).</span><span style="color: #A6E22E">forEach</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">key</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (key </span><span style="color: #F92672">!==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"children"</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">			newProps[key] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> props[key];</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"><span style="color: #F8F8F2">	});</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> newProps;</span></span>
+<span class="line"><span style="color: #F8F8F2">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getSearchRadiusFromPresets</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (</span><span style="color: #FD971F; font-style: italic">radiusInMiles</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> radius </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> distancePresets[distancePresets.length </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> distancePreset </span><span style="color: #F92672">of</span><span style="color: #F8F8F2"> distancePresets) {</span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (distancePreset </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> radiusInMiles) {</span></span>
+<span class="line"><span style="color: #F8F8F2">			radius </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> distancePreset;</span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">break</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">		}</span></span>
+<span class="line"><span style="color: #F8F8F2">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> radius;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">getRegionForCoordinates</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">points</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// points should be an array of { latitude: X, longitude: Y }</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> minX, maxX, minY, maxY;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// init first point</span></span>
+<span class="line"><span style="color: #F8F8F2">	((</span><span style="color: #FD971F; font-style: italic">point</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		minX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> point.latitude;</span></span>
+<span class="line"><span style="color: #F8F8F2">		maxX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> point.latitude;</span></span>
+<span class="line"><span style="color: #F8F8F2">		minY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> point.longitude;</span></span>
+<span class="line"><span style="color: #F8F8F2">		maxY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> point.longitude;</span></span>
+<span class="line"><span style="color: #F8F8F2">	})(points[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #88846F">// calculate rect</span></span>
+<span class="line"><span style="color: #F8F8F2">	points.</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">((</span><span style="color: #FD971F; font-style: italic">point</span><span style="color: #F8F8F2">) </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		minX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Math.</span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(minX, point.latitude);</span></span>
+<span class="line"><span style="color: #F8F8F2">		maxX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Math.</span><span style="color: #A6E22E">max</span><span style="color: #F8F8F2">(maxX, point.latitude);</span></span>
+<span class="line"><span style="color: #F8F8F2">		minY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Math.</span><span style="color: #A6E22E">min</span><span style="color: #F8F8F2">(minY, point.longitude);</span></span>
+<span class="line"><span style="color: #F8F8F2">		maxY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Math.</span><span style="color: #A6E22E">max</span><span style="color: #F8F8F2">(maxY, point.longitude);</span></span>
+<span class="line"><span style="color: #F8F8F2">	});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> midX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (minX </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> maxX) </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> midY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (minY </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> maxY) </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> deltaX </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (maxX </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> minX);</span></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> deltaY </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (maxY </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> minY);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">	</span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">		latitude: midX,</span></span>
+<span class="line"><span style="color: #F8F8F2">		longitude: midY,</span></span>
+<span class="line"><span style="color: #F8F8F2">		latitudeDelta: deltaX,</span></span>
+<span class="line"><span style="color: #F8F8F2">		longitudeDelta: deltaY</span></span>
+<span class="line"><span style="color: #F8F8F2">	};</span></span>
+<span class="line"><span style="color: #F8F8F2">} </span></span></code></pre>
+<p>The code provided is a set of functions that are useful for working with maps. The functions include:</p>
+<ul>
+<li><code>calculateBBox()</code>: Calculates the bounding box of a region.</li>
+<li><code>returnMapZoom()</code>: Returns the zoom level for a region.</li>
+<li><code>markerToGeoJSONFeature()</code>: Converts a marker to a GeoJSON feature.</li>
+<li><code>_removeChildrenFromProps()</code>: Removes the <code>children</code> prop from an object.</li>
+<li><code>getSearchRadiusFromPresets()</code>: Gets the search radius from a preset.</li>
+<li><code>getRegionForCoordinates()</code>: Gets the region for a set of coordinates.</li>
+</ul>
+<p>These functions can be used to create maps, cluster markers, and get information about maps.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-21<!-- -->.</div></div></div>
+  </body></html>
