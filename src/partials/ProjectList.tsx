@@ -48,6 +48,18 @@ const ProjectList = () => (
         }
       />
       <Project
+        name="Ai Books"
+        description="Generate AI Books for free on the internet, learned a lot about decefits with LLMs."
+        link="https://books.grandfleet.eu.org/books"
+        img={{ src: '/assets/images/project-maps.png', alt: 'Books' }}
+        category={
+          <>
+            <Tags color={ColorTags.FUCHSIA}>AI</Tags>
+            <Tags color={ColorTags.INDIGO}>books</Tags>
+          </>
+        }
+      />
+      <Project
         name="Financial News NLP"
         description="Process financial news articles scrapped from the internet using python."
         link="https://github.com/dli-invest/fin_news_nlp"
