@@ -74,19 +74,19 @@
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> cad_tickers.exchanges.cse </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> get_recent_docs_from_url</span></span>
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> extract_doc </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> mk_dir, handle_logic</span></span>
 <span class="line"><span style="color: #F92672">from</span><span style="color: #F8F8F2"> io </span><span style="color: #F92672">import</span><span style="color: #F8F8F2"> BytesIO, StringIO</span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">1. Get the list of documents from the CSE website</span></span>
-<span class="line"><span style="color: #E6DB74">2. For each document, get the document url</span></span>
-<span class="line"><span style="color: #E6DB74">3. If the document url is not in the csv file, add it to the csv file</span></span>
-<span class="line"><span style="color: #E6DB74">4. For each document url, download the document and add it to the docs folder</span></span>
-<span class="line"><span style="color: #E6DB74">5. For each document url, make a discord request with the document url</span></span>
-<span class="line"><span style="color: #E6DB74">6. For each document url, make a discord request with the document summary</span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">1. Get the list of documents from the CSE website</span></span>
+<span class="line"><span style="color: #88846F">2. For each document, get the document url</span></span>
+<span class="line"><span style="color: #88846F">3. If the document url is not in the csv file, add it to the csv file</span></span>
+<span class="line"><span style="color: #88846F">4. For each document url, download the document and add it to the docs folder</span></span>
+<span class="line"><span style="color: #88846F">5. For each document url, make a discord request with the document url</span></span>
+<span class="line"><span style="color: #88846F">6. For each document url, make a discord request with the document summary</span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fig_to_buffer</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">fig</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #E6DB74">""" returns a matplotlib figure as a buffer</span></span>
-<span class="line"><span style="color: #E6DB74">  """</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #88846F">""" returns a matplotlib figure as a buffer</span></span>
+<span class="line"><span style="color: #88846F">  """</span></span>
 <span class="line"><span style="color: #F8F8F2">  buf </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> BytesIO()</span></span>
 <span class="line"><span style="color: #F8F8F2">  fig.savefig(buf, </span><span style="color: #FD971F; font-style: italic">format</span><span style="color: #F92672">=</span><span style="color: #E6DB74">'png'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">  buf.seek(</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
@@ -226,5 +226,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

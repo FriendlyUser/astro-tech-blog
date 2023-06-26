@@ -101,16 +101,16 @@
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_year_quarter_from_path</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">path</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">""" Get year and quarter from path</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">""" Get year and quarter from path</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># get all numbers from path using regex</span></span>
 <span class="line"><span style="color: #F8F8F2">    year, quarter </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> re.findall(</span><span style="color: #66D9EF; font-style: italic">r</span><span style="color: #E6DB74">'\d</span><span style="color: #F92672">+</span><span style="color: #E6DB74">'</span><span style="color: #F8F8F2">, path)[</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">:</span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> year, quarter</span></span></code></pre>
 <p>This code appears to be parsing 13F filing documents and outputting the results to a file in markdown format. The parse_filings function takes a dictionary of data (data) as input and retrieves a company’s CIK number (a unique identifier assigned by the SEC to publicly traded companies) from the cik field in the data dictionary. If the cik field is not present, it defaults to “1649339”. It also retrieves the desired output filename from the filename field in the data dictionary, defaulting to “burry” if the field is not present. The function then uses the glob library to find all the text files under the temp folder that match the specified CIK number and stores their filenames in the filename variable. It uses the DocParser class to parse each file and filters the resulting documents for those of type “INFORMATION_TABLE”. It then adds the year and quarter of each document to its data frame and stores the resulting document in the final_docs list. If the final_docs list has four elements, the loop breaks. Finally, the function sorts the elements of final_docs by quarter and calls the output_to_md function to output the data to a markdown file. The metadata dictionary stores some metadata about the 13F filing that is included in the output file.</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parse_filings</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">data</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {}):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">""" Parse filings</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">""" Parse filings</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    cik </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data.get(</span><span style="color: #E6DB74">"cik"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"1649339"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    output_name </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data.get(</span><span style="color: #E6DB74">"filename"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"burry"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># find files under temp/2022/QTR{1,2,3,4}/*.txt with glob</span></span>
@@ -151,8 +151,8 @@
 <p>The function then opens a file with the name specified in the filename field of the metadata dictionary and writes some metadata and the pivoted data frame to it in markdown format. It also writes the data from each data frame in final_docs to the file, grouped by cusip. Finally, it writes the merged data frame (last_two_quarter_diff) to the file in markdown format.</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">output_to_md</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">final_docs</span><span style="color: #F8F8F2">: List[pd.DataFrame], </span><span style="color: #FD971F; font-style: italic">metadata</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">""" Output dataframe to markdown file</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">""" Output dataframe to markdown file</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    combined_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># iterate across final_docs and append them all</span></span>
@@ -252,5 +252,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

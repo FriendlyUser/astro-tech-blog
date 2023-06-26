@@ -89,9 +89,9 @@
 <p>Then we can calculate the profit by multiplying the average price of the stock when we bought it by the quantity of stocks we sold, and subtracting the total cost of the transaction.</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">  </span><span style="color: #A6E22E">@</span><span style="color: #66D9EF; font-style: italic">staticmethod</span></span>
 <span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calc_profit_for_years</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">ticker_df</span><span style="color: #F8F8F2">: pd.DataFrame, </span><span style="color: #FD971F; font-style: italic">txn_cost</span><span style="color: #F92672">=</span><span style="color: #AE81FF">9.95</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #E6DB74">""" Calculates the profit for all years in the given df for a particular ticker</span></span>
-<span class="line"><span style="color: #E6DB74">      Returns an array of object, year: profit</span></span>
-<span class="line"><span style="color: #E6DB74">      """</span></span>
+<span class="line"><span style="color: #F8F8F2">      </span><span style="color: #88846F">""" Calculates the profit for all years in the given df for a particular ticker</span></span>
+<span class="line"><span style="color: #88846F">      Returns an array of object, year: profit</span></span>
+<span class="line"><span style="color: #88846F">      """</span></span>
 <span class="line"><span style="color: #F8F8F2">      profits </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
 <span class="line"><span style="color: #F8F8F2">      ticker_df[</span><span style="color: #E6DB74">'tnx_year'</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> ticker_df[</span><span style="color: #E6DB74">'Date'</span><span style="color: #F8F8F2">].dt.strftime(</span><span style="color: #E6DB74">'%Y'</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">      </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> tnx_year </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> ticker_df[</span><span style="color: #E6DB74">"tnx_year"</span><span style="color: #F8F8F2">].unique():</span></span>
@@ -110,12 +110,12 @@
 <p>In order to calculate average cost basis, this is a function I created, its somewhat inaccurate, need to adjust and remove a lot of bad data.</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">@</span><span style="color: #66D9EF; font-style: italic">staticmethod</span></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">calc_acb</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">sorted_df</span><span style="color: #F8F8F2">: pd.DataFrame)-> pd.DataFrame:</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""calculate acb for a sorted dataframe only containing</span></span>
-<span class="line"><span style="color: #E6DB74">    trades with a single ticker</span></span>
-<span class="line"><span style="color: #E6DB74">    </span></span>
-<span class="line"><span style="color: #E6DB74">    see https://stackoverflow.com/questions/45448532/dataframe-calculating-average-purchase-price</span></span>
-<span class="line"><span style="color: #E6DB74">    this method does not account for stock purchasing fees.</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""calculate acb for a sorted dataframe only containing</span></span>
+<span class="line"><span style="color: #88846F">    trades with a single ticker</span></span>
+<span class="line"><span style="color: #88846F">    </span></span>
+<span class="line"><span style="color: #88846F">    see https://stackoverflow.com/questions/45448532/dataframe-calculating-average-purchase-price</span></span>
+<span class="line"><span style="color: #88846F">    this method does not account for stock purchasing fees.</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> sorted_df</span></span>
 <span class="line"><span style="color: #F8F8F2">    df[</span><span style="color: #E6DB74">'prev_cum_qty'</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> df[</span><span style="color: #E6DB74">'TotalQty'</span><span style="color: #F8F8F2">].shift(</span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">fill_value</span><span style="color: #F92672">=</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    df[</span><span style="color: #E6DB74">'average_price'</span><span style="color: #F8F8F2">] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> np.nan</span></span>
@@ -179,5 +179,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

@@ -208,7 +208,7 @@
 <span class="line"><span style="color: #66D9EF">\maketitle</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Introduction}</span></span>
-<span class="line"><span style="color: #F8F8F2">This is the introduction section. I am citing a source </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">Smith</span><span style="color: #F8F8F2">2020}.</span></span>
+<span class="line"><span style="color: #F8F8F2">This is the introduction section. I am citing a source </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">Smith2020</span><span style="color: #F8F8F2">}.</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF">\section</span><span style="color: #F8F8F2">{Methods}</span></span>
 <span class="line"><span style="color: #F8F8F2">This is the methods section.</span></span>
@@ -307,7 +307,7 @@
 <ol start="6">
 <li>Citations: In the LaTeX document, you can cite a BibTeX entry using the “\cite” command. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">As discussed in </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens</span><span style="color: #F8F8F2">94}, LaTeX is a powerful document preparation system.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">As discussed in </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens94</span><span style="color: #F8F8F2">}, LaTeX is a powerful document preparation system.</span></span></code></pre>
 <p>This code creates a citation to the “goossens94” entry in the BibTeX file.</p>
 <p>With these basic elements, you can create and manage references using BibTeX in your LaTeX documents.</p>
 <p>BibTeX databases are collections of references that are used to generate bibliographies and manage citations in LaTeX documents. Here’s an introduction to creating and using BibTeX databases:</p>
@@ -316,7 +316,7 @@
 <li>Adding entries to the database: You can add entries to the BibTeX database by opening the file in a text editor and adding new entries manually. Alternatively, you can use a reference management tool such as Zotero, Mendeley, or JabRef to manage your references and export them as a BibTeX file.</li>
 <li>Referencing entries in your LaTeX document: To cite an entry in your BibTeX database, you can use the “\cite” command followed by the entry name. For example:</li>
 </ol>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens</span><span style="color: #F8F8F2">94}, LaTeX is a powerful document preparation system.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">goossens94</span><span style="color: #F8F8F2">}, LaTeX is a powerful document preparation system.</span></span></code></pre>
 <p>This code will generate a citation in your document that points to the “goossens94” entry in your BibTeX database.</p>
 <ol start="4">
 <li>Generating a bibliography: To generate a bibliography in your LaTeX document, you need to include the “\bibliography” command, followed by the name of your BibTeX file (without the “.bib” extension). You also need to specify the bibliography style you want to use. For example:</li>
@@ -330,7 +330,7 @@
 <li>Create a BibTeX file: First, you need to create a BibTeX file with the extension “.bib”. This file will contain all the bibliographic information for your references. Each reference in the file has a unique key that you can use to cite it in your document.</li>
 <li>Add citations to your document: In your LaTeX document, you can add citations using the “\cite” command followed by the key for the reference you want to cite. For example, if you have a reference with the key “lamport94” in your BibTeX file, you can cite it in your document with the following command:</li>
 </ol>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">lamport</span><span style="color: #F8F8F2">94}, LaTeX is a document preparation system for high-quality typesetting.</span></span></code></pre>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">According to </span><span style="color: #F92672">\cite</span><span style="color: #F8F8F2">{</span><span style="color: #AE81FF">lamport94</span><span style="color: #F8F8F2">}, LaTeX is a document preparation system for high-quality typesetting.</span></span></code></pre>
 <p>This command will create a citation in your document that refers to the “lamport94” reference in your BibTeX file.</p>
 <ol start="3">
 <li>Generate a bibliography: To generate a bibliography section in your document, you need to use the “\bibliography” command and specify the name of your BibTeX file. For example:</li>
@@ -558,5 +558,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

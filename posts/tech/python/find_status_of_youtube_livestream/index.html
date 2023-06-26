@@ -65,11 +65,11 @@
 <p>Transcribing Federal Reserve livestreams in real time is important for investors because the statements made by Federal Reserve officials can have a significant impact on financial markets. The Federal Reserve is the central bank of the United States, and its policies and statements on monetary policy, economic conditions, and interest rates can have a major effect on the stock market, the bond market, and the value of the US dollar.</p>
 <p>By transcribing the livestreams in real time, investors can quickly and accurately obtain information and insights from the Federal Reserve’s statements. This can help them make informed investment decisions and respond to market changes as they occur. Additionally, real-time transcription allows investors to more effectively analyze and interpret the Federal Reserve’s statements, giving them a competitive advantage in a fast-paced and constantly-changing market.</p>
 <p>In short, transcribing Federal Reserve livestreams in real time is important for investors because it allows them to stay up-to-date on the central bank’s statements and respond quickly to market changes, which can have a significant impact on their investments.</p>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">author: FriendlyUser</span></span>
-<span class="line"><span style="color: #E6DB74">description: grab livestream data from url using selenium, (need a browser for youtube)</span></span>
-<span class="line"><span style="color: #E6DB74">create database entries to track livestreams, check if livestream is live or upcoming and exclude certain channels with never ending livestreams.</span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">author: FriendlyUser</span></span>
+<span class="line"><span style="color: #88846F">description: grab livestream data from url using selenium, (need a browser for youtube)</span></span>
+<span class="line"><span style="color: #88846F">create database entries to track livestreams, check if livestream is live or upcoming and exclude certain channels with never ending livestreams.</span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> bs4</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> time</span></span>
@@ -78,13 +78,13 @@
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> dateparser</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_livestreams_from_html</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">data</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        gets livestream from html from youtube channel and determines if it is live or upcoming.</span></span>
-<span class="line"><span style="color: #E6DB74">        Returns dict:</span></span>
-<span class="line"><span style="color: #E6DB74">          time: time of livestream</span></span>
-<span class="line"><span style="color: #E6DB74">          channel: channel name</span></span>
-<span class="line"><span style="color: #E6DB74">          status: LIVE or UPCOMING or none</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        gets livestream from html from youtube channel and determines if it is live or upcoming.</span></span>
+<span class="line"><span style="color: #88846F">        Returns dict:</span></span>
+<span class="line"><span style="color: #88846F">          time: time of livestream</span></span>
+<span class="line"><span style="color: #88846F">          channel: channel name</span></span>
+<span class="line"><span style="color: #88846F">          status: LIVE or UPCOMING or none</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># get text data from url using requests</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">try</span><span style="color: #F8F8F2">:</span></span>
 <span class="line"></span>
@@ -139,9 +139,9 @@
 <span class="line"><span style="color: #F8F8F2">    )</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_html_from_url</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">url</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        gets html from url</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        gets html from url</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># get text data from url using requests</span></span>
 <span class="line"><span style="color: #F8F8F2">    driver </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> get_webdriver()</span></span>
 <span class="line"><span style="color: #F8F8F2">    driver.get(url)</span></span>
@@ -193,5 +193,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

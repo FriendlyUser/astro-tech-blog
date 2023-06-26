@@ -73,7 +73,7 @@
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ScannerInterface</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">ABC</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""Each scanner has an interface and get_match for the ticker"""</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""Each scanner has an interface and get_match for the ticker"""</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">@abstractmethod</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_func</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">):</span></span>
@@ -86,24 +86,24 @@
 <p>The purpose of this code is to define a common interface for different types of scanners, each with its own implementation of the <code>main_func</code> and <code>get_match</code> methods. By using an abstract base class, the interface can be standardized, making it easier to write code that can work with different types of scanners.</p>
 <p>The <code>main_func</code> method is left abstract so that it can be implemented by different types of scanners depending on their specific functionality. The <code>get_match</code> method, on the other hand, is a method that all scanner classes must implement to get a match for the ticker they are scanning for.</p>
 <p>Note that this code alone does not define a concrete scanner class. Instead, it provides a blueprint that other classes can inherit from to create concrete scanner classes. Any class that inherits from the <code>ScannerInterface</code> class must implement both <code>main_func</code> and <code>get_match</code> methods to be considered a valid implementation of the interface.</p>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">  Grab stocks from cad tickers </span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">  Grab stocks from cad tickers </span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">TickerControllerV2</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">    Grabs cad_tickers dataframes and normalized them</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">    Grabs cad_tickers dataframes and normalized them</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">__init__</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">cfg</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Extract yahoo finance tickers from website</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Extract yahoo finance tickers from website</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        Consider using hardcoded csvs sheets for the tickers to</span></span>
-<span class="line"><span style="color: #E6DB74">        increase speed, no need to grab all data dynamically.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        Consider using hardcoded csvs sheets for the tickers to</span></span>
+<span class="line"><span style="color: #88846F">        increase speed, no need to grab all data dynamically.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.yf_tickers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># import csv from github</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.read_csv(</span></span>
@@ -145,13 +145,13 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">@</span><span style="color: #66D9EF; font-style: italic">staticmethod</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ex_to_yahoo_ex</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">row</span><span style="color: #F8F8F2">: pd.Series) -> </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Parameters:</span></span>
-<span class="line"><span style="color: #E6DB74">          ticker: ticker from pandas dataframe from cad_tickers</span></span>
-<span class="line"><span style="color: #E6DB74">          exchange: what exchange the ticker is for</span></span>
-<span class="line"><span style="color: #E6DB74">        Returns:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Parameters:</span></span>
+<span class="line"><span style="color: #88846F">          ticker: ticker from pandas dataframe from cad_tickers</span></span>
+<span class="line"><span style="color: #88846F">          exchange: what exchange the ticker is for</span></span>
+<span class="line"><span style="color: #88846F">        Returns:</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">(row[</span><span style="color: #E6DB74">"symbol"</span><span style="color: #F8F8F2">])</span></span>
 <span class="line"><span style="color: #F8F8F2">        exchange </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> row[</span><span style="color: #E6DB74">"exShortName"</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> exchange </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"CSE"</span><span style="color: #F8F8F2">:</span></span>
@@ -185,24 +185,24 @@
 <p>The <code>ex_to_yahoo_ex</code> method is a static method that takes a row from the ticker data frame as input and returns the corresponding ticker symbol in the format required by Yahoo Finance. This method is used to normalize the tickers before they are used in the application.</p>
 <p>The code includes a main block that loads the configuration from a JSON file and creates an instance of the <code>TickerControllerV2</code> class to retrieve the tickers. The tickers are then printed to the console for testing purposes.</p>
 <p>Overall, this code provides a convenient way to retrieve and normalize Canadian and US stock tickers for use in a financial application. It can be easily modified to support other types of tickers or to add additional filters based on other criteria.</p>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">  Grab stocks from cad tickers </span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">  Grab stocks from cad tickers </span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> pandas </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> pd</span></span>
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #66D9EF; font-style: italic">class</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">TickerControllerV2</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">    Grabs cad_tickers dataframes and normalized them</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">    Grabs cad_tickers dataframes and normalized them</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">__init__</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">cfg</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Extract yahoo finance tickers from website</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Extract yahoo finance tickers from website</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        Consider using hardcoded csvs sheets for the tickers to</span></span>
-<span class="line"><span style="color: #E6DB74">        increase speed, no need to grab all data dynamically.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        Consider using hardcoded csvs sheets for the tickers to</span></span>
+<span class="line"><span style="color: #88846F">        increase speed, no need to grab all data dynamically.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.yf_tickers </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> []</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># import csv from github</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker_df </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> pd.read_csv(</span></span>
@@ -244,13 +244,13 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">@</span><span style="color: #66D9EF; font-style: italic">staticmethod</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">ex_to_yahoo_ex</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">row</span><span style="color: #F8F8F2">: pd.Series) -> </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Parameters:</span></span>
-<span class="line"><span style="color: #E6DB74">          ticker: ticker from pandas dataframe from cad_tickers</span></span>
-<span class="line"><span style="color: #E6DB74">          exchange: what exchange the ticker is for</span></span>
-<span class="line"><span style="color: #E6DB74">        Returns:</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Parameters:</span></span>
+<span class="line"><span style="color: #88846F">          ticker: ticker from pandas dataframe from cad_tickers</span></span>
+<span class="line"><span style="color: #88846F">          exchange: what exchange the ticker is for</span></span>
+<span class="line"><span style="color: #88846F">        Returns:</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">(row[</span><span style="color: #E6DB74">"symbol"</span><span style="color: #F8F8F2">])</span></span>
 <span class="line"><span style="color: #F8F8F2">        exchange </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> row[</span><span style="color: #E6DB74">"exShortName"</span><span style="color: #F8F8F2">]</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> exchange </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"CSE"</span><span style="color: #F8F8F2">:</span></span>
@@ -306,5 +306,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

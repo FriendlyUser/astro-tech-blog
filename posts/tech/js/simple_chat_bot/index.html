@@ -60,73 +60,74 @@
     <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
     <div data-pagefind-body>
       
-  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Simple Chat bot using react-simple-chatbot</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 18 August 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/solidity" style="padding-right:3px"> <category>solidity<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/dapp" style="padding-right:3px"> <category>dapp<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/powell_ANGRY.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
-    <p>This code is a React component that creates a simple chatbot using the “react-simple-chatbot” library. The chatbot has several steps, each with a message and options for the user to choose from. The options determine which step to trigger next. The final step ends the chatbot session with a message “Awesome! You finished my summary.” The <code>&lt;ChatBot /&gt;</code> component takes in the steps prop, which is an array of objects, each representing a step in the chatbot conversation. The component is exported and rendered in the returned JSX of the App function, it will show a simple chatbot with a few steps.</p>
-<pre class="astro-code" style="background-color:#272822;overflow-x:auto"><code><span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> React </span><span style="color:#F92672">from</span><span style="color:#F8F8F2"> </span><span style="color:#E6DB74">&#39;react&#39;</span><span style="color:#F8F8F2">;</span></span>
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Simple Chat bot using react-simple-chatbot</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Saturday, 18 August 2023 13:00:00 GMT</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/js" style="padding-right:3px"> <category>js<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/chatbot" style="padding-right:3px"> <category>chatbot<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3793215953.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <p>This code is a React component that creates a simple chatbot using the “react-simple-chatbot” library. The chatbot has several steps, each with a message and options for the user to choose from. The options determine which step to trigger next. The final step ends the chatbot session with a message “Awesome! You finished my summary.” The <code>&#x3C;ChatBot /></code> component takes in the steps prop, which is an array of objects, each representing a step in the chatbot conversation. The component is exported and rendered in the returned JSX of the App function, it will show a simple chatbot with a few steps.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> React </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> ChatBot </span><span style="color:#F92672">from</span><span style="color:#F8F8F2"> </span><span style="color:#E6DB74">&#39;react-simple-chatbot&#39;</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> ChatBot </span><span style="color: #F92672">from</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">'react-simple-chatbot'</span><span style="color: #F8F8F2">;</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#66D9EF">const</span><span style="color:#F8F8F2"> steps</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">[</span></span>
-<span class="line"><span style="color:#F8F8F2">      {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;1&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        message: </span><span style="color:#E6DB74">&#39;Hi, I am David, an inspired programming eager to learn more about the latest technologies.&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        trigger: </span><span style="color:#E6DB74">&#39;2&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">      {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;2&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        options: [</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">1</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Want to learn more about me?&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;3&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">2</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Close this Menu&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;100&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">        ],</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">      {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;3&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        message: </span><span style="color:#E6DB74">&#39;In high school I was interested in computers and technologies, so I took information technologies classes that focused on game development.&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        trigger: </span><span style="color:#E6DB74">&#39;4&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">	  {</span></span>
-<span class="line"><span style="color:#F8F8F2">	    id: </span><span style="color:#E6DB74">&#39;4&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        options: [</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">1</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Want to learn even more about me?&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;5&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">2</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Close this Menu&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;100&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">        ],</span></span>
-<span class="line"><span style="color:#F8F8F2">	  },</span></span>
-<span class="line"><span style="color:#F8F8F2">	  {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;5&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        message: </span><span style="color:#E6DB74">&#39;In University I learned about the underlying hardware and software that comprise computers. However, in my spare time, I learnt web development, typography (latex), and general programming knowledge.&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        trigger: </span><span style="color:#E6DB74">&#39;6&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">	  {</span></span>
-<span class="line"><span style="color:#F8F8F2">	    id: </span><span style="color:#E6DB74">&#39;6&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        options: [</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">1</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Continue?&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;7&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">          { value: </span><span style="color:#AE81FF">2</span><span style="color:#F8F8F2">, label: </span><span style="color:#E6DB74">&#39;Close this Menu&#39;</span><span style="color:#F8F8F2">, trigger: </span><span style="color:#E6DB74">&#39;100&#39;</span><span style="color:#F8F8F2"> },</span></span>
-<span class="line"><span style="color:#F8F8F2">        ],</span></span>
-<span class="line"><span style="color:#F8F8F2">	  },</span></span>
-<span class="line"><span style="color:#F8F8F2">	  {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;7&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        message: </span><span style="color:#E6DB74">&#39;On my 1st and 2nd co-op terms, I learnt about the software development lifecycle, commonly used agile tools (JIRA and Confluence), as well as scripting and data analysis. My third co-op term covered BlockChain Technologies.&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        trigger: </span><span style="color:#E6DB74">&#39;100&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">      {</span></span>
-<span class="line"><span style="color:#F8F8F2">        id: </span><span style="color:#E6DB74">&#39;100&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        message: </span><span style="color:#E6DB74">&#39;Awesome! You finished my summary.&#39;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">        end: </span><span style="color:#AE81FF">true</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">      },</span></span>
-<span class="line"><span style="color:#F8F8F2">    ];</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> steps</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">[</span></span>
+<span class="line"><span style="color: #F8F8F2">      {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'1'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        message: </span><span style="color: #E6DB74">'Hi, I am David, an inspired programming eager to learn more about the latest technologies.'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        trigger: </span><span style="color: #E6DB74">'2'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">      {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'2'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        options: [</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Want to learn more about me?'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'3'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Close this Menu'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'100'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">        ],</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">      {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'3'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        message: </span><span style="color: #E6DB74">'In high school I was interested in computers and technologies, so I took information technologies classes that focused on game development.'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        trigger: </span><span style="color: #E6DB74">'4'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">	  {</span></span>
+<span class="line"><span style="color: #F8F8F2">	    id: </span><span style="color: #E6DB74">'4'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        options: [</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Want to learn even more about me?'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'5'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Close this Menu'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'100'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">        ],</span></span>
+<span class="line"><span style="color: #F8F8F2">	  },</span></span>
+<span class="line"><span style="color: #F8F8F2">	  {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'5'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        message: </span><span style="color: #E6DB74">'In University I learned about the underlying hardware and software that comprise computers. However, in my spare time, I learnt web development, typography (latex), and general programming knowledge.'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        trigger: </span><span style="color: #E6DB74">'6'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">	  {</span></span>
+<span class="line"><span style="color: #F8F8F2">	    id: </span><span style="color: #E6DB74">'6'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        options: [</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Continue?'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'7'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">          { value: </span><span style="color: #AE81FF">2</span><span style="color: #F8F8F2">, label: </span><span style="color: #E6DB74">'Close this Menu'</span><span style="color: #F8F8F2">, trigger: </span><span style="color: #E6DB74">'100'</span><span style="color: #F8F8F2"> },</span></span>
+<span class="line"><span style="color: #F8F8F2">        ],</span></span>
+<span class="line"><span style="color: #F8F8F2">	  },</span></span>
+<span class="line"><span style="color: #F8F8F2">	  {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'7'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        message: </span><span style="color: #E6DB74">'On my 1st and 2nd co-op terms, I learnt about the software development lifecycle, commonly used agile tools (JIRA and Confluence), as well as scripting and data analysis. My third co-op term covered BlockChain Technologies.'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        trigger: </span><span style="color: #E6DB74">'100'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">      {</span></span>
+<span class="line"><span style="color: #F8F8F2">        id: </span><span style="color: #E6DB74">'100'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        message: </span><span style="color: #E6DB74">'Awesome! You finished my summary.'</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">        end: </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">      },</span></span>
+<span class="line"><span style="color: #F8F8F2">    ];</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">export</span><span style="color:#F8F8F2"> </span><span style="color:#F92672">default</span><span style="color:#F8F8F2"> </span><span style="color:#66D9EF">function</span><span style="color:#F8F8F2"> </span><span style="color:#A6E22E">App</span><span style="color:#F8F8F2">() {</span></span>
-<span class="line"><span style="color:#F8F8F2">  </span><span style="color:#F92672">return</span><span style="color:#F8F8F2"> (</span></span>
-<span class="line"><span style="color:#F8F8F2">    </span><span style="color:#F92672">&lt;</span><span style="color:#F8F8F2">div className</span><span style="color:#F92672">=</span><span style="color:#E6DB74">&quot;app&quot;</span><span style="color:#F92672">&gt;</span></span>
-<span class="line"><span style="color:#F8F8F2">      &lt;</span><span style="color:#A6E22E;font-weight:bold">h4</span><span style="color:#F8F8F2">&gt;Simple Chat App</span><span style="color:#F92672">&lt;/</span><span style="color:#F8F8F2">h4</span><span style="color:#F92672">&gt;</span></span>
-<span class="line"><span style="color:#F8F8F2">		&lt;</span><span style="color:#A6E22E;font-weight:bold">div</span><span style="color:#F8F8F2">&gt;</span></span>
-<span class="line"><span style="color:#F8F8F2">			</span><span style="color:#F92672">&lt;</span><span style="color:#F8F8F2">ChatBot steps</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">{steps} </span><span style="color:#F92672">/&gt;</span></span>
-<span class="line"><span style="color:#F8F8F2">		</span><span style="color:#F92672">&lt;/</span><span style="color:#F8F8F2">div</span><span style="color:#F92672">&gt;</span><span style="color:#F8F8F2">,</span></span>
-<span class="line"><span style="color:#F8F8F2">    </span><span style="color:#F92672">&lt;/</span><span style="color:#F8F8F2">div</span><span style="color:#F92672">&gt;</span></span>
-<span class="line"><span style="color:#F8F8F2">  );</span></span>
-<span class="line"><span style="color:#F8F8F2">}</span></span></code></pre>
+<span class="line"><span style="color: #F92672">export</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">default</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">App</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> (</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">div className</span><span style="color: #F92672">=</span><span style="color: #E6DB74">"app"</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">      &#x3C;</span><span style="color: #A6E22E; text-decoration: underline">h4</span><span style="color: #F8F8F2">>Simple Chat App</span><span style="color: #F92672">&#x3C;/</span><span style="color: #F8F8F2">h4</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">		&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">div</span><span style="color: #F8F8F2">></span></span>
+<span class="line"><span style="color: #F8F8F2">			</span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">ChatBot steps</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">{steps} </span><span style="color: #F92672">/></span></span>
+<span class="line"><span style="color: #F8F8F2">		</span><span style="color: #F92672">&#x3C;/</span><span style="color: #F8F8F2">div</span><span style="color: #F92672">></span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">&#x3C;/</span><span style="color: #F8F8F2">div</span><span style="color: #F92672">></span></span>
+<span class="line"><span style="color: #F8F8F2">  );</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
 <p>Implementing chat bot on page, using iframe (couldnt figure out how to show this using mdx outside of a iframe).</p>
-<iframe src="https://friendlyuser.github.io/Simple-Chat-Bot-in-React" width="100%" height="500px"></iframe>
+<iframe src="https://friendlyuser.github.io/Simple-Chat-Bot-in-React" width="100%" height="500px">
+</iframe>
 <p>Alternatively you can preview the bot at</p>
 <p><a href="https://friendlyuser.github.io/Simple-Chat-Bot-in-React/">https://friendlyuser.github.io/Simple-Chat-Bot-in-React/</a></p>
     </content></div></div></div></div>
@@ -144,5 +145,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

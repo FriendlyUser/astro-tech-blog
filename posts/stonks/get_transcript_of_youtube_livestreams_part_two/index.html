@@ -147,9 +147,9 @@
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> final_object</span></span></code></pre>
 <p>This function appears to be a wrapper function that transcribes an audio file by splitting it into smaller chunks, transcribing each chunk, and then concatenating the transcriptions. It does this by calling the split_vid_into_chunks function, which yields the filenames of the chunks, and then calling the get_text_from_mp3_whisper function on each chunk. The function then combines the transcriptions into a single string and returns an object with this string as the value of the “text” field. The function also has some additional code for error handling, but this code is currently commented out.</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">format_seconds</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">seconds</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">    format seconds to hh:mm:ss</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">    format seconds to hh:mm:ss</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    hours </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> math.floor(seconds </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3600</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    minutes </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> math.floor((seconds </span><span style="color: #F92672">%</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">3600</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">/</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">60</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">    seconds </span><span style="color: #F92672">%=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">60</span></span>
@@ -165,9 +165,9 @@
 <p>The get_text_from_mp3_whisper function appears to use the whisper library to transcribe an MP3 audio file. It first loads a model using the load_model function, and then transcribes the audio file by calling the transcribe method on this model and passing in the filename of the audio file. Finally, it returns the result of the transcription.</p>
 <p>For the original wit ai implementation</p>
 <pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parse_witai_response</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">data</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">    Parse wit.ai response</span></span>
-<span class="line"><span style="color: #E6DB74">    """</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">    Parse wit.ai response</span></span>
+<span class="line"><span style="color: #88846F">    """</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F"># scan for export interface and export type</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    type_start_line </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
@@ -227,5 +227,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

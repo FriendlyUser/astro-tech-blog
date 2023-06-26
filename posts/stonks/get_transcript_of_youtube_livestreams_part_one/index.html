@@ -225,9 +225,9 @@
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> channel</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">transcribe</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">data</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">            takes video file and transcribes it</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">            takes video file and transcribes it</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        filename </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data.get(</span><span style="color: #E6DB74">"filename"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        is_livestream </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> data.get(</span><span style="color: #E6DB74">"is_livestream"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">False</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        ic(</span><span style="color: #66D9EF; font-style: italic">f</span><span style="color: #E6DB74">"Transcribing... </span><span style="color: #AE81FF">{</span><span style="color: #F8F8F2">filename</span><span style="color: #AE81FF">}</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
@@ -271,9 +271,9 @@
 <span class="line"></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">send_metadata_embed</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">metadata</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">other_data</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Send metadata embed to discord</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Send metadata embed to discord</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        url </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> other_data.get(</span><span style="color: #E6DB74">"url"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        iteration </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> os.getenv(</span><span style="color: #E6DB74">"ITERATION"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">"0"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        embed </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> {</span></span>
@@ -295,11 +295,11 @@
 <span class="line"><span style="color: #F8F8F2">        send_discord_msg(data)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">parse_metadata</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">) -> </span><span style="color: #66D9EF; font-style: italic">dict</span><span style="color: #F8F8F2">:</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Parse metadata and send to discord.</span></span>
-<span class="line"><span style="color: #E6DB74">        After a video is done recording, </span></span>
-<span class="line"><span style="color: #E6DB74">        it will have both the livestream format and the mp4 format.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Parse metadata and send to discord.</span></span>
+<span class="line"><span style="color: #88846F">        After a video is done recording, </span></span>
+<span class="line"><span style="color: #88846F">        it will have both the livestream format and the mp4 format.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># send metadata to discord</span></span>
 <span class="line"><span style="color: #F8F8F2">        formats </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.metadata.get(</span><span style="color: #E6DB74">"formats"</span><span style="color: #F8F8F2">, [])</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># filter for ext = mp4</span></span>
@@ -336,9 +336,9 @@
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #AE81FF">...</span><span style="color: #F8F8F2"> </span><span style="color: #88846F"># code omitted for brevity</span></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">process_video</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">ytube_url</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"https://www.youtube.com/watch?v=86YLFOog4GM&#x26;ab_channel=SpaceVideos"</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Main function.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Main function.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        metadata </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.metadata</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F"># grab raw data from url with mp3 versions</span></span>
 <span class="line"><span style="color: #F8F8F2">        formats </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> metadata.get(</span><span style="color: #E6DB74">"formats"</span><span style="color: #F8F8F2">, [])</span></span>
@@ -476,5 +476,5 @@
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>

@@ -85,9 +85,9 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <p>The program uses the tickers_config settings to filter out stocks in specific sectors and industries. For the TSX, it only considers stocks in the technology sector, while for the CSE, it considers stocks in both CleanTech and Technology industries.</p>
 <p>The settings section defines the parameters used by the algorithm to determine which stocks are considered high or low performing. The percent_cutoff parameter is set to 0.35, which means that stocks with a daily percent change greater than or equal to 0.35% will be considered high performing, while stocks with a daily percent change less than or equal to -0.35% will be considered low performing. The day_cutoff parameter is set to 3, which means that only stocks that have met the high or low performing criteria for at least 3 days will be included in the program’s final output.</p>
 <p>Overall, this configuration file sets the criteria and filters for a program to identify high and low performing technology stocks on the TSX and CSE based on their percent change over a specified number of days.</p>
-<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">Scans for stocks with a change from the low to high with a high number</span></span>
-<span class="line"><span style="color: #E6DB74">"""</span></span>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2"> </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">Scans for stocks with a change from the low to high with a high number</span></span>
+<span class="line"><span style="color: #88846F">"""</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> yfinance </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> yf</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> numpy </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> np</span></span>
 <span class="line"><span style="color: #F92672">import</span><span style="color: #F8F8F2"> sys</span></span>
@@ -109,9 +109,9 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> cfg.get(</span><span style="color: #E6DB74">"settings"</span><span style="color: #F8F8F2">, {})</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_data</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">ticker</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">str</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">day_cutoff</span><span style="color: #F92672">=</span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">) -> pd.DataFrame:</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Grab daily days for high and low</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Grab daily days for high and low</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        current_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> datetime.strptime(date.today().strftime(</span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">), </span><span style="color: #E6DB74">"%Y-%m-</span><span style="color: #AE81FF">%d</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        past_date </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> current_date </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> dateutil.relativedelta.relativedelta(</span><span style="color: #FD971F; font-style: italic">days</span><span style="color: #F92672">=</span><span style="color: #F8F8F2">day_cutoff)</span></span>
 <span class="line"><span style="color: #F8F8F2">        sys.stdout </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">open</span><span style="color: #F8F8F2">(os.devnull, </span><span style="color: #E6DB74">"w"</span><span style="color: #F8F8F2">)</span></span>
@@ -149,10 +149,10 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> d</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_match</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">ticker</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        get match for ticker</span></span>
-<span class="line"><span style="color: #E6DB74">        for the past five days</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        get match for ticker</span></span>
+<span class="line"><span style="color: #88846F">        for the past five days</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">PERCENT_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"percent_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">0.35</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"day_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker_data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_data(ticker, </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2">)</span></span>
@@ -165,13 +165,13 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> d</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_func</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Main function for the unusual volume scanner</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Main function for the unusual volume scanner</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        .. todo</span></span>
-<span class="line"><span style="color: #E6DB74">          Determine if this is the best place to send discord messages</span></span>
-<span class="line"><span style="color: #E6DB74">          probably with seperation of concerns, no.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        .. todo</span></span>
+<span class="line"><span style="color: #88846F">          Determine if this is the best place to send discord messages</span></span>
+<span class="line"><span style="color: #88846F">          probably with seperation of concerns, no.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        cpus </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> multiprocessing.cpu_count()</span></span>
 <span class="line"><span style="color: #F8F8F2">        title </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg.get(</span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> multiprocessing.Pool(cpus) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> p:</span></span>
@@ -263,9 +263,9 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">None</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get_match</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">, </span><span style="color: #FD971F; font-style: italic">ticker</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        get match for ticker</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        get match for ticker</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.search_settings.get(</span><span style="color: #E6DB74">"day_cutoff"</span><span style="color: #F8F8F2">, </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        ticker_data </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.get_data(ticker, </span><span style="color: #AE81FF">DAY_CUTOFF</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">try</span><span style="color: #F8F8F2">:</span></span>
@@ -285,13 +285,13 @@ This post covers the logic used in my screeners. The logic is written in Python 
 <span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(e)</span></span>
 <span class="line"></span>
 <span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">def</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main_func</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">self</span><span style="color: #F8F8F2">):</span></span>
-<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #E6DB74">"""</span></span>
-<span class="line"><span style="color: #E6DB74">        Main function for the unusual volume scanner</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #88846F">"""</span></span>
+<span class="line"><span style="color: #88846F">        Main function for the unusual volume scanner</span></span>
 <span class="line"></span>
-<span class="line"><span style="color: #E6DB74">        .. todo</span></span>
-<span class="line"><span style="color: #E6DB74">          Determine if this is the best place to send discord messages</span></span>
-<span class="line"><span style="color: #E6DB74">          probably with seperation of concerns, no.</span></span>
-<span class="line"><span style="color: #E6DB74">        """</span></span>
+<span class="line"><span style="color: #88846F">        .. todo</span></span>
+<span class="line"><span style="color: #88846F">          Determine if this is the best place to send discord messages</span></span>
+<span class="line"><span style="color: #88846F">          probably with seperation of concerns, no.</span></span>
+<span class="line"><span style="color: #88846F">        """</span></span>
 <span class="line"><span style="color: #F8F8F2">        cpus </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> multiprocessing.cpu_count()</span></span>
 <span class="line"><span style="color: #F8F8F2">        title </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">.cfg.get(</span><span style="color: #E6DB74">"name"</span><span style="color: #F8F8F2">, </span><span style="color: #E6DB74">""</span><span style="color: #F8F8F2">)</span></span>
 <span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">with</span><span style="color: #F8F8F2"> multiprocessing.Pool(cpus) </span><span style="color: #F92672">as</span><span style="color: #F8F8F2"> p:</span></span>
@@ -342,5 +342,5 @@ This post covers the logic used in my screeners. The logic is written in Python 
 </div>
 
     </div>
-    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-05-29<!-- -->.</div></div></div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-06-26<!-- -->.</div></div></div>
   </body></html>
