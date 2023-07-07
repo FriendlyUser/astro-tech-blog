@@ -20,6 +20,11 @@ const Footer = () => (
         . Last updated on {date}.
       </div>
     </div>
+    <script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script>
+    <script
+      src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js"
+      defer
+    ></script>
   </Section>
 );
 
