@@ -8,6 +8,15 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 def publish_to_medium(data):
+    """
+    Publishes data to Medium.
+
+    Args:
+        data (dict): A dictionary containing the data to be published.
+
+    Returns:
+        bool: True if the article is successfully created, False otherwise.
+    """
     token = os.getenv("MEDIUM_TOKEN")
     baseUrl = "https://friendlyuser.github.io"
     canonicalUrl = f"{baseUrl}{data['slug']}"
@@ -43,6 +52,12 @@ def publish_to_medium(data):
       return False
 
 def make_articles_for_medium():
+    """
+    Generates a function comment for the given function body in a markdown code block with the correct language syntax. 
+    
+    Returns:
+        str: The function comment for the given function body.
+    """
     basePostFolder = "src/pages"
     postFolders = ["posts/stonks/web", "posts/stonks/ta", "posts", "posts/stonks", "posts/tech", "posts/tech/css", "posts/tech/dapps", "posts/tech/flutter", "posts/tech/java", "posts/tech/js", "posts/tech/net", "posts/tech/python", "posts/tech/scripting", "posts/tech/go", "posts/random", "posts/tech/utils", "posts/tech/2023", "posts/tech/php", "posts/tech/python/introToPython", "posts/tech/rust", "posts/tech/react", 
     "posts/tech/js/ui", "posts/stonks/thoughts", 
