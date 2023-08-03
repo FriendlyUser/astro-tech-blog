@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Espresso Testing Framework An In-Depth Guide - Astro Tech Blog</title>
+    <meta name="description" content="In this article , we will explore the Espresso testing framework in depth, covering its core concepts, components, and best practices for writing and executing UI tests">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.fe829d41.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.d0fb23b7.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Android Espresso Testing Framework An In-Depth Guide</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2024-09-23T18:33:29.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3558128873.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="android-espresso-testing-framework-an-in-depth-guide">Android Espresso Testing Framework: An In-Depth Guide</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Espresso is a powerful testing framework developed by Google for Android applications. It provides a reliable and efficient way to perform UI tests on Android apps, ensuring that the app’s user interface works as expected. Espresso is part of the Android Testing Support Library and is designed to work seamlessly with Android Studio, making it an essential tool for Android developers who want to create high-quality, maintainable, and reliable applications.</p>
+<p>In this article, we will explore the Espresso testing framework in depth, covering its core concepts, components, and best practices for writing and executing UI tests.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Espresso Testing Framework Overview</a></li>
+<li><a href="#setup">Setting Up Espresso</a></li>
+<li><a href="#components">Espresso Components and Core API</a></li>
+<li><a href="#writing-tests">Writing Espresso Tests</a></li>
+<li><a href="#advanced">Advanced Espresso Techniques</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<p><a name="overview"></a></p>
+<h2 id="1-espresso-testing-framework-overview">1. Espresso Testing Framework Overview</h2>
+<p>Espresso provides a powerful and flexible way to test Android applications’ user interfaces. It focuses on providing a simple API for writing UI tests and automatically synchronizes with the Android UI thread, ensuring that tests run reliably and without flakiness.</p>
+<p>Some of the main advantages of using Espresso for UI testing include:</p>
+<ul>
+<li><strong>Automatic synchronization</strong>: Espresso automatically synchronizes with the app’s UI thread, ensuring that tests run smoothly and without race conditions.</li>
+<li><strong>Ease of use</strong>: Espresso provides a simple and easy-to-understand API for writing UI tests.</li>
+<li><strong>Integration with Android Studio</strong>: Espresso is fully integrated with Android Studio, making it easy to write, run, and debug tests.</li>
+<li><strong>Support for multiple devices</strong>: Espresso tests can be run on a wide range of Android devices, including emulators and physical devices.</li>
+</ul>
+<p><a name="setup"></a></p>
+<h2 id="2-setting-up-espresso">2. Setting Up Espresso</h2>
+<p>To get started with Espresso, you need to set up your Android Studio project with the necessary dependencies. Add the following dependencies to your app’s <code>build.gradle</code> file:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'</span></span>
+<span class="line"><span style="color: #F8F8F2">androidTestImplementation 'androidx.test:runner:1.4.0'</span></span>
+<span class="line"><span style="color: #F8F8F2">androidTestImplementation 'androidx.test:rules:1.4.0'</span></span></code></pre>
+<p>Don’t forget to sync your project with the Gradle files.</p>
+<p><a name="components"></a></p>
+<h2 id="3-espresso-components-and-core-api">3. Espresso Components and Core API</h2>
+<p>Espresso consists of three main components:</p>
+<ol>
+<li><strong>ViewMatchers</strong>: These are used to find views in the app’s view hierarchy. They are based on Hamcrest matchers and provide a variety of built-in matchers for common use cases.</li>
+<li><strong>ViewActions</strong>: These are used to interact with the found views, such as clicking or typing text.</li>
+<li><strong>ViewAssertions</strong>: These are used to check the state of the views and make assertions about their properties.</li>
+</ol>
+<p>The core Espresso API is based on the following static methods:</p>
+<ul>
+<li><code>onView(ViewMatcher)</code>: This method is used to find a view in the app’s view hierarchy that matches the given ViewMatcher. It returns a <code>ViewInteraction</code> object.</li>
+<li><code>perform(ViewAction)</code>: This method is used to perform an action on the found view, such as clicking or typing text.</li>
+<li><code>check(ViewAssertion)</code>: This method is used to check the state of the view and make assertions about its properties.</li>
+</ul>
+<p>Here’s an example of a simple Espresso test:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">@</span><span style="color: #66D9EF; font-style: italic">Test</span></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">buttonClickTest</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Find the button with the text "Click me!" and perform a click action</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">onView</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">withText</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Click me!"</span><span style="color: #F8F8F2">)).</span><span style="color: #A6E22E">perform</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">click</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Check if the text "Button clicked!" is displayed in the TextView with the ID "result_text"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">onView</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">withId</span><span style="color: #F8F8F2">(R.id.result_text)).</span><span style="color: #A6E22E">check</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">matches</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">withText</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Button clicked!"</span><span style="color: #F8F8F2">)));</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p><a name="writing-tests"></a></p>
+<h2 id="4-writing-espresso-tests">4. Writing Espresso Tests</h2>
+<p>When writing Espresso tests, you should follow these best practices:</p>
+<ol>
+<li><strong>Keep tests focused and granular</strong>: Each test should verify a single functionality or behavior of your app. This makes it easier to understand the test’s purpose and fix issues when a test fails.</li>
+<li><strong>Use descriptive test names</strong>: Test names should clearly describe the behavior they are testing. This makes it easier to understand the test’s purpose and maintain the test suite.</li>
+<li><strong>Organize tests by functionality</strong>: Group tests that verify related functionality together. This makes it easier to maintain and navigate the test suite.</li>
+<li><strong>Use the <code>@Before</code> and <code>@After</code> annotations</strong>: Use these annotations to set up and clean up resources before and after each test. This ensures that tests run in isolation and do not interfere with each other.</li>
+</ol>
+<p><a name="advanced"></a></p>
+<h2 id="5-advanced-espresso-techniques">5. Advanced Espresso Techniques</h2>
+<p>Espresso also provides advanced techniques for more complex testing scenarios. Some of these techniques include:</p>
+<ul>
+<li>
+<p><strong>Data-driven testing</strong>: Use Espresso’s<code>@RunWith(Parameterized.class)</code> and <code>@Parameters</code> annotations to create data-driven tests. This allows you to run the same test with different input values, making it easier to test a wide range of scenarios.</p>
+</li>
+<li>
+<p><strong>Idling resources</strong>: Use Espresso’s IdlingResource interface to handle asynchronous operations in your tests. This allows Espresso to wait for long-running operations to complete before executing the next action or assertion, ensuring that tests run reliably.</p>
+</li>
+<li>
+<p><strong>Custom matchers, actions, and assertions</strong>: Create custom ViewMatchers, ViewActions, and ViewAssertions to extend Espresso’s functionality and handle specific use cases in your app.</p>
+</li>
+<li>
+<p><strong>Testing intents</strong>: Use Espresso-Intents, an extension of the Espresso framework, to test the interactions between your app’s components (e.g., starting an Activity or sending a BroadcastReceiver). This allows you to verify that your app’s components work together as expected.</p>
+</li>
+</ul>
+<p>Here’s an example of a custom ViewMatcher that checks if a view is visible and has a specific background color:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">static</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Matcher</span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2">View</span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">withBackgroundColor</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">final</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">int</span><span style="color: #F8F8F2"> color) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">new</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">TypeSafeMatcher</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #66D9EF; font-style: italic">View</span><span style="color: #F8F8F2">>() {</span></span>
+<span class="line"><span style="color: #F8F8F2">        @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">protected</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">boolean</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">matchesSafely</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">View</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">view</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF; font-style: italic">Drawable</span><span style="color: #F8F8F2"> background </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> view.</span><span style="color: #A6E22E">getBackground</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> (</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">(background </span><span style="color: #F92672">instanceof</span><span style="color: #F8F8F2"> ColorDrawable)) </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #66D9EF; font-style: italic">ColorDrawable</span><span style="color: #F8F8F2"> colorDrawable </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> (ColorDrawable) background;</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> colorDrawable.</span><span style="color: #A6E22E">getColor</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> color </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> view.</span><span style="color: #A6E22E">getVisibility</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> View.VISIBLE;</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">        @</span><span style="color: #66D9EF; font-style: italic">Override</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">describeTo</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF; font-style: italic">Description</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">description</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">            description.</span><span style="color: #A6E22E">appendText</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"with background color: "</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> color);</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">    };</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>To use this custom ViewMatcher in a test, you can simply call it like any other built-in matcher:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">@</span><span style="color: #66D9EF; font-style: italic">Test</span></span>
+<span class="line"><span style="color: #F92672">public</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">void</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">customMatcherTest</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">onView</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">withId</span><span style="color: #F8F8F2">(R.id.view_with_color)).</span><span style="color: #A6E22E">check</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">matches</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">withBackgroundColor</span><span style="color: #F8F8F2">(Color.RED)));</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p><a name="conclusion"></a></p>
+<h2 id="6-conclusion">6. Conclusion</h2>
+<p>The Android Espresso testing framework is a powerful and flexible tool for testing your app’s user interface. By following best practices and leveraging advanced techniques, you can create a robust and maintainable test suite that ensures your app’s UI works as expected.</p>
+<p>By incorporating Espresso into your development process, you can catch potential issues early, reduce the risk of regressions, and ultimately deliver a higher-quality app to your users.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-08-03<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div>
+  </body></html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Decentralized Applications with WebAssembly - Astro Tech Blog</title>
+    <meta name="description" content="In this article , we will explore how WebAssembly can be used to build dApps, providing an efficient and flexible platform for running code securely across various environments">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.fe829d41.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.d0fb23b7.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Building Decentralized Applications with WebAssembly</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2023-08-28T13:17:37.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2785952400.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="building-decentralized-applications-with-webassembly">Building Decentralized Applications with WebAssembly</h1>
+<p>Decentralized applications (dApps) have gained significant attention in recent years, thanks to the rise of blockchain technology and the increasing need for more secure, private, and resilient solutions. In this article, we will explore how WebAssembly can be used to build dApps, providing an efficient and flexible platform for running code securely across various environments.</p>
+<h2 id="what-is-webassembly">What is WebAssembly?</h2>
+<p>WebAssembly (Wasm) is a binary instruction format designed as a portable target for the compilation of high-level languages like C, C++, and Rust. It is a low-level virtual machine that runs code at near-native speed by using a compact binary format and a stack-based execution model. WebAssembly was initially created to enable web browsers to run complex applications with performance close to native, but its use cases have expanded beyond the browser to other environments such as blockchain and serverless computing.</p>
+<h2 id="why-use-webassembly-for-decentralized-applications">Why Use WebAssembly for Decentralized Applications?</h2>
+<p>There are several reasons why WebAssembly is an excellent choice for building dApps:</p>
+<ol>
+<li><strong>Performance</strong>: WebAssembly code is executed at near-native speed, which is crucial for computationally intensive tasks often found in dApps.</li>
+<li><strong>Security</strong>: WebAssembly’s sandboxed execution environment provides strong isolation between the host system and the application, minimizing potential risks.</li>
+<li><strong>Portability</strong>: WebAssembly is platform-agnostic, allowing developers to write code once and run it on various devices and environments.</li>
+<li><strong>Language Flexibility</strong>: Developers can use their preferred programming languages, such as C, C++, Rust, and others, that can be compiled to WebAssembly.</li>
+</ol>
+<h2 id="building-a-decentralized-application-with-webassembly">Building a Decentralized Application with WebAssembly</h2>
+<p>Let’s go through the steps involved in building a simple dApp using WebAssembly:</p>
+<h3 id="step-1-choose-a-blockchain-platform">Step 1: Choose a Blockchain Platform</h3>
+<p>First, you need to select a blockchain platform that supports WebAssembly smart contracts. Examples of such platforms include:</p>
+<ul>
+<li><a href="https://ethereum.org/">Ethereum</a>: Ethereum 2.0 introduces support for WebAssembly-based smart contracts through its <a href="https://github.com/ewasm">eWasm</a> project.</li>
+<li><a href="https://eos.io/">EOSIO</a>: A blockchain platform that natively supports WebAssembly smart contracts.</li>
+<li><a href="https://polkadot.network/">Polkadot</a>: A multi-chain platform that allows developers to build and deploy WebAssembly-based smart contracts through its <a href="https://substrate.dev/">Substrate</a> framework.</li>
+</ul>
+<h3 id="step-2-write-the-smart-contract">Step 2: Write the Smart Contract</h3>
+<p>Next, write the smart contract using a programming language that can be compiled to WebAssembly, such as Rust, C, or C++. For example, let’s create a simple smart contract in Rust that stores and retrieves key-value pairs:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">#</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">[no_std]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">core</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">from_utf8;</span></span>
+<span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">wasm_bindgen</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">prelude</span><span style="color: #F92672">::*</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[wasm_bindgen]</span></span>
+<span class="line"><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">KeyValueStore</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    store</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Vec</span><span style="color: #F8F8F2">&#x3C;(</span><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F8F8F2">)>,</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">#[wasm_bindgen]</span></span>
+<span class="line"><span style="color: #F92672">impl</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">KeyValueStore</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    #[wasm_bindgen(constructor)]</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">Self</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">Self</span><span style="color: #F8F8F2"> { store</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Vec</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">() }</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">set</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;mut</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, key</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F8F8F2">, value</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (k, v) </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">store</span><span style="color: #F92672">.</span><span style="color: #A6E22E">iter_mut</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> k </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> key {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">*</span><span style="color: #F8F8F2">v </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> value</span><span style="color: #F92672">.</span><span style="color: #A6E22E">to_string</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">return</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">store</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">((key</span><span style="color: #F92672">.</span><span style="color: #A6E22E">to_string</span><span style="color: #F8F8F2">(), value</span><span style="color: #F92672">.</span><span style="color: #A6E22E">to_string</span><span style="color: #F8F8F2">()));</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">pub</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">get</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">, key</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Option</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> (k, v) </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">store</span><span style="color: #F92672">.</span><span style="color: #A6E22E">iter</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">            </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> k </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> key {</span></span>
+<span class="line"><span style="color: #F8F8F2">                </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Some</span><span style="color: #F8F8F2">(v</span><span style="color: #F92672">.</span><span style="color: #A6E22E">clone</span><span style="color: #F8F8F2">());</span></span>
+<span class="line"><span style="color: #F8F8F2">            }</span></span>
+<span class="line"><span style="color: #F8F8F2">        }</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">None</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h3 id="step-3-compile-the-smart-contract-to-webassembly">Step 3: Compile the Smart Contract to WebAssembly</h3>
+<p>Compile the smart contract to a WebAssembly binary using a compiler like `car for Rust:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #A6E22E">$</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">cargo</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">build</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--target</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">wasm32-unknown-unknown</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">--release</span></span></code></pre>
+<h3 id="step-4-deploy-the-smart-contract">Step 4: Deploy the Smart Contract</h3>
+<p>Deploy the compiled smart contract to the chosen blockchain platform. The process may vary depending on the platform, but usually involves submitting a transaction that includes the WebAssembly binary and any necessary metadata.</p>
+<h3 id="step-5-interact-with-the-decentralized-application">Step 5: Interact with the Decentralized Application</h3>
+<p>Finally, build a user interface (UI) to interact with the deployed smart contract. You can use web technologies like HTML, CSS, and JavaScript, along with libraries and frameworks such as <a href="https://reactjs.org/">React</a> or <a href="https://vuejs.org/">Vue.js</a>, to create a user-friendly UI.</p>
+<p>To interact with the smart contract, you will need to use the platform’s SDK or API to send transactions and query the blockchain. These transactions will include calls to the WebAssembly functions exposed by your smart contract, such as <code>set</code> and <code>get</code> in our example.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>WebAssembly offers an efficient, secure, and flexible platform for building decentralized applications. By leveraging its performance, security, and portability features,developers can create powerful dApps that run on various blockchain platforms and devices. As more platforms continue to adopt WebAssembly as a supported execution environment, it is poised to become a key technology in the future of decentralized applications and blockchain ecosystems. So, whether you’re a seasoned blockchain developer or just starting to explore dApps, consider using WebAssembly to bring your next decentralized application to life.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-08-03<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div>
+  </body></html>

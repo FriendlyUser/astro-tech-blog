@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leveraging Rust&#39;s Type System for Safe and Efficient Code - Astro Tech Blog</title>
+    <meta name="description" content="In this article , we will discuss how Rust's type system can be used to create safe and efficient code">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.fe829d41.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.d0fb23b7.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Leveraging Rust&#x27;s Type System for Safe and Efficient Code</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2024-10-20T17:44:24.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/2851628136.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="leveraging-rusts-type-system-for-safe-and-efficient-code">Leveraging Rust’s Type System for Safe and Efficient Code</h1>
+<p>Rust is a system programming language that aims to provide safety, concurrency, and performance. One of the key features that set Rust apart from other languages is its powerful type system. In this article, we will discuss how Rust’s type system can be used to create safe and efficient code.</p>
+<h2 id="introduction-to-rusts-type-system">Introduction to Rust’s Type System</h2>
+<p>Rust’s type system is based on the Hindley-Milner type system, which is a powerful and expressive way of describing types. The type system enforces many safety guarantees at compile-time, allowing Rust programs to run with minimal runtime overhead. Some of the main features of Rust’s type system include:</p>
+<ol>
+<li>
+<p><strong>Strong static typing</strong>: Rust enforces strict type checking at compile-time, which helps catch many errors before the code is run.</p>
+</li>
+<li>
+<p><strong>Algebraic data types</strong>: Rust supports sum types (enums) and product types (structs), which allow developers to create complex data structures with ease.</p>
+</li>
+<li>
+<p><strong>Pattern matching</strong>: Rust’s pattern matching capabilities make it easy to destructure complex data types and perform exhaustive case analysis.</p>
+</li>
+<li>
+<p><strong>Ownership and borrowing</strong>: Rust’s ownership system helps manage memory and prevent data races by enforcing strict rules for accessing and modifying data.</p>
+</li>
+<li>
+<p><strong>Generics and traits</strong>: Rust’s generics and traits allow developers to write reusable and type-safe code.</p>
+</li>
+</ol>
+<p>Let’s look at some examples of how Rust’s type system can help us create safe and efficient code.</p>
+<h2 id="example-1-enforcing-invariants-with-newtypes">Example 1: Enforcing Invariants with Newtypes</h2>
+<p>In Rust, you can create a newtype by wrapping a primitive type in a tuple struct. Newtypes allow you to enforce invariants at the type level, which can help catch errors at compile-time.</p>
+<p>For example, suppose you are developing a temperature conversion library. To prevent mixing up Celsius and Fahrenheit values, you can create newtypes for each:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Celsius</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Fahrenheit</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">);</span></span></code></pre>
+<p>Now, if you try to mix up Celsius and Fahrenheit values, the Rust compiler will catch the error:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">add_temperatures</span><span style="color: #F8F8F2">(c</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Celsius</span><span style="color: #F8F8F2">, f</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Fahrenheit</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Celsius</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #88846F">    // This will not compile because you cannot add a Celsius and a Fahrenheit value directly</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">Celsius</span><span style="color: #F8F8F2">(c</span><span style="color: #F92672">.</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> f</span><span style="color: #F92672">.</span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>By using newtypes, you can enforce these invariants at the type level and catch errors early in the development process.</p>
+<h2 id="example-2-leveraging-enums-for-error-handling">Example 2: Leveraging Enums for Error Handling</h2>
+<p>In Rust, you can use enums to create custom error types. Enums in Rust are algebraic data types that can hold multiple variants. This makes them ideal for representing different error conditions.</p>
+<p>For example, suppose you are implementing a function that reads an integer from a string. You might encounter two types of errors: a parsing error or an out-of-range error. You can represent these errors with an enum:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">enum</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">ReadIntError</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">ParseError</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">num</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">ParseIntError</span><span style="color: #F8F8F2">),</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E; text-decoration: underline">OutOfRange</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">read_int</span><span style="color: #F8F8F2">(s</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Result</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">i32</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; text-decoration: underline">ReadIntError</span><span style="color: #F8F8F2">> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> n </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> s</span><span style="color: #F92672">.</span><span style="color: #A6E22E">parse</span><span style="color: #F92672">::</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">i32</span><span style="color: #F8F8F2">>()</span><span style="color: #F92672">.</span><span style="color: #A6E22E">map_err</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">ReadIntError</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">ParseError</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">?</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> n </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">||</span><span style="color: #F8F8F2"> n </span><span style="color: #F92672">></span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">100</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Err</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E; text-decoration: underline">ReadIntError</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">OutOfRange</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">    } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">Ok</span><span style="color: #F8F8F2">(n)</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>By using enums for error handling, you can create expressive and type-safe error types that make it easy to handle and propagate errors.</p>
+<h2 id="example-3-using-traits-for-abstraction-and-polymorphism">Example 3: Using Traits for Abstraction and Polymorphism</h2>
+<p>In Rust, traits are a way to define shared behavior between types. Traits can be used for abstraction and polymorphism, allowing you to write reusable and type-safe code.</p>
+<p>For example, suppose you are implementing a function that calculates the area of different geometric shapes. You can define a trait <code>Area</code> and implement it for each shape:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">trait</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Area</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">area</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Circle</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    radius</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">struct</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Rectangle</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    width</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">    height</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2">,</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">impl</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Area</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Circle</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">area</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E; text-decoration: underline">std</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">consts</span><span style="color: #F92672">::</span><span style="color: #AE81FF">PI</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">radius </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">radius</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">impl</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Area</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Rectangle</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">area</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">&#x26;</span><span style="color: #FD971F">self</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">width </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F">self</span><span style="color: #F92672">.</span><span style="color: #F8F8F2">height</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>Now, you can write a function that takes any type that implements the <code>Area</code> trait and calculates the combined area:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">combined_area</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #A6E22E; text-decoration: underline">T</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Area</span><span style="color: #F8F8F2">, </span><span style="color: #A6E22E; text-decoration: underline">U</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Area</span><span style="color: #F8F8F2">>(shape1</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">T</span><span style="color: #F8F8F2">, shape2</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">U</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">f64</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    shape1</span><span style="color: #F92672">.</span><span style="color: #A6E22E">area</span><span style="color: #F8F8F2">() </span><span style="color: #F92672">+</span><span style="color: #F8F8F2"> shape2</span><span style="color: #F92672">.</span><span style="color: #A6E22E">area</span><span style="color: #F8F8F2">()</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<p>By using traits, you can write generic and type-safe code that works with multiple types.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we have explored how Rust’s type system can be used to create safe and efficient code. By leveraging features like newtypes, enums, and traits, Rust developers can enforce invariantsat the type level, create expressive error handling, and write reusable and type-safe code. The strong static typing, pattern matching, and ownership system further enhance Rust’s ability to catch errors at compile-time and minimize runtime overhead.</p>
+<p>As a result, Rust’s type system plays a crucial role in ensuring that your code is robust, maintainable, and efficient. By understanding and utilizing the features of Rust’s type system, you can create high-quality software that stands up to the demands of modern systems programming.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-08-03<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div>
+  </body></html>

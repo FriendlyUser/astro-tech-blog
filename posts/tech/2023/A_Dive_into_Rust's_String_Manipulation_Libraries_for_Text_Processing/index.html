@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Dive into Rust&#39;s String Manipulation Libraries for Text Processing - Astro Tech Blog</title>
+    <meta name="description" content="In this article , we will explore some of the essential string manipulation libraries in Rust, along with examples of how to use them in your projects">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.fe829d41.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.d0fb23b7.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">A Dive into Rust&#x27;s String Manipulation Libraries for Text Processing</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2024-07-16T02:35:36.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1693067648.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h1 id="a-dive-into-rusts-string-manipulation-libraries-for-text-processing">A Dive into Rust’s String Manipulation Libraries for Text Processing</h1>
+<p>Rust, a systems programming language that prioritizes safety, performance, and concurrency, has become increasingly popular in recent years. This is due, in part, to its powerful and flexible standard library, which offers a wide range of utilities for handling strings and text processing. In this article, we will explore some of the essential string manipulation libraries in Rust, along with examples of how to use them in your projects.</p>
+<h2 id="overview-of-rusts-string-types">Overview of Rust’s String Types</h2>
+<p>Before diving into the libraries, it’s crucial to understand the two primary string types in Rust: <code>String</code> and <code>&#x26;str</code>. Both of these types represent a collection of Unicode scalar values, but they differ in their memory management and use cases.</p>
+<ul>
+<li><code>String</code>: A growable, heap-allocated string type. It is mutable and owned, making it ideal for situations where the text needs to change or grow over time.</li>
+<li><code>&#x26;str</code>: A string slice, often used as a view into a <code>String</code> or another <code>&#x26;str</code>. It is immutable and borrowed, which makes it preferable for efficient read-only access to string data.</li>
+</ul>
+<h2 id="the-stdstringstring-module">The <code>std::string::String</code> Module</h2>
+<p>The <code>String</code> module provides numerous methods for creating and manipulating strings. Here’s a brief overview of some of the most common methods:</p>
+<ul>
+<li><code>String::new()</code>: Creates a new empty <code>String</code>.</li>
+<li><code>String::from()</code>: Creates a new <code>String</code> from a string literal or another string type.</li>
+<li><code>String::push_str()</code>: Appends a string slice to a <code>String</code>.</li>
+<li><code>String::push()</code>: Appends a single character to a <code>String</code>.</li>
+<li><code>String::pop()</code>: Removes the last character from a <code>String</code> and returns it.</li>
+</ul>
+<h3 id="example-basic-string-manipulation">Example: Basic <code>String</code> Manipulation</h3>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #88846F">    // Create a new empty String</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">mut</span><span style="color: #F8F8F2"> greeting </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">String</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Add content to the String</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push_str</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Hello, "</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'R'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'u'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'s'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'t'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    greeting</span><span style="color: #F92672">.</span><span style="color: #A6E22E">push</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'!'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{}"</span><span style="color: #F8F8F2">, greeting);</span><span style="color: #88846F"> // Output: Hello, Rust!</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="the-stdstr-module">The <code>std::str</code> Module</h2>
+<p>The <code>str</code> module contains functions for working with string slices. Some of the most common functions include:</p>
+<ul>
+<li><code>str::len()</code>: Returns the length of a string slice in bytes.</li>
+<li><code>str::chars()</code>: Returns an iterator over the Unicode scalar values of a string slice.</li>
+<li><code>str::split()</code>: Splits a string slice by a specified delimiter, returning an iterator over the substrings.</li>
+<li><code>str::trim()</code>: Removes leading and trailing whitespace from a string slice.</li>
+</ul>
+<h3 id="example-basic-str-manipulation">Example: Basic <code>&#x26;str</code> Manipulation</h3>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> input </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">" Hello, Rust! </span><span style="color: #AE81FF">\n</span><span style="color: #E6DB74">"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> trimmed </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> input</span><span style="color: #F92672">.</span><span style="color: #A6E22E">trim</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Split the trimmed input into words</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> words</span><span style="color: #F92672">:</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Vec</span><span style="color: #F8F8F2">&#x3C;</span><span style="color: #F92672">&#x26;</span><span style="color: #A6E22E; text-decoration: underline">str</span><span style="color: #F8F8F2">> </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> trimmed</span><span style="color: #F92672">.</span><span style="color: #A6E22E">split</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">' '</span><span style="color: #F8F8F2">)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">collect</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">for</span><span style="color: #F8F8F2"> word </span><span style="color: #F92672">in</span><span style="color: #F8F8F2"> words {</span></span>
+<span class="line"><span style="color: #F8F8F2">        </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{}"</span><span style="color: #F8F8F2">, word);</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #88846F">    // Output:</span></span>
+<span class="line"><span style="color: #88846F">    // Hello,</span></span>
+<span class="line"><span style="color: #88846F">    // Rust!</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="the-regex-crate">The <code>regex</code> Crate</h2>
+<p>For more advanced text processing, the <code>regex</code> crate provides an extensive API for working with regular expressions. It can be added to your project by including it in your <code>Cargo.toml</code> file:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F8F8F2">[dependencies]</span></span>
+<span class="line"><span style="color: #F8F8F2">regex = </span><span style="color: #E6DB74">"1.5.4"</span></span></code></pre>
+<p>Here are some common operations with the <code>regex</code> crate:</p>
+<ul>
+<li><code>Regex::new()</code>: Compiles a regular expression pattern.</li>
+<li><code>Regex::is_match()</code>: Determines if the pattern matches anywhere in a given text.</li>
+<li><code>Regex::captures()</code>: Returns a <code>Captures</code> struct containing the matched substrings.</li>
+<li><code>Regex::replace_all()</code>: Replaces all matches of a pattern in a given text with a replacement string.</li>
+</ul>
+<h3 id="example-using-the-regex-crate-for-text-processing">Example: Using the <code>regex</code> Crate for Text Processing</h3>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">use</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">regex</span><span style="color: #F92672">::</span><span style="color: #A6E22E; text-decoration: underline">Regex</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">fn</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">main</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> text </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">"I have 3 apples and 4 oranges."</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> pattern </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #E6DB74">r"\d+"</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> regex </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E; text-decoration: underline">Regex</span><span style="color: #F92672">::</span><span style="color: #A6E22E">new</span><span style="color: #F8F8F2">(pattern)</span><span style="color: #F92672">.</span><span style="color: #A6E22E">unwrap</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Check if the pattern matches the text</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"Pattern found: {}"</span><span style="color: #F8F8F2">, regex</span><span style="color: #F92672">.</span><span style="color: #A6E22E">is_match</span><span style="color: #F8F8F2">(text));</span><span style="color: #88846F"> // Output: Pattern found: true</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">    // Replace all occurrences of the pattern with "X"</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">let</span><span style="color: #F8F8F2"> replaced </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> regex</span><span style="color: #F92672">.</span><span style="color: #A6E22E">replace_all</span><span style="color: #F8F8F2">(text, </span><span style="color: #E6DB74">"X"</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #A6E22E">println!</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">"{}"</span><span style="color: #F8F8F2">, replaced);</span><span style="color: #88846F"> // Output: I have X apples and X oranges.</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Rust’s string manipulation libraries provide a powerful foundation for handling text processing tasks. In this article, we covered the basics of working with <code>String</code> and <code>&#x26;str</code>, as well as more advanced text processing with the <code>regex</code> crate. By leveraging these libraries, you can build efficient and safe text-processing applications with Rust.</p>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-08-03<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div>
+  </body></html>
