@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Removing Broken Links with the Fetch API - Astro Tech Blog</title>
+    <meta name="description" content="This article will guide you through the process of installing and using Fabric in Python, with practical examples">
+    <meta name="author" content="David Li">
+
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6">
+
+    </script>
+    
+    <script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch(err) {
+          // do nothing here
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/_astro/index.fe829d41.css" />
+<link rel="stylesheet" href="/_astro/index.be9bd85e.css" /><script type="module" src="/_astro/hoisted.d0fb23b7.js"></script></head>
+  <body class="bg-slate-900 text-gray-100">
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div>
+    <div data-pagefind-body>
+      
+  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Removing Broken Links with the Fetch API</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2024-08-29T09:57:22.000Z</div><div class="flex place-content-center pt-2"></div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3541980154.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content>
+    <h2 id="removing-broken-links-with-the-fetch-api">Removing Broken Links with the Fetch API</h2>
+<p>When building a website, it’s important to regularly check for and remove any broken or dead links that may exist across your pages. Broken links create a poor user experience and can negatively impact your site’s SEO. In this article, we’ll look at how to use the Fetch API in JavaScript to efficiently identify and eliminate faulty links.</p>
+<p>The Fetch API provides a modern way to make network requests directly from JavaScript. A key benefit of Fetch is the ability to make HEAD requests, which retrieve just the headers of a response without the full body. For our purposes, this allows quickly checking the status code of a link without downloading the entire resource.</p>
+<p>Here’s example code to loop through all links on a page, make HEAD requests, and remove any that return 400+ status codes:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> links </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> document.</span><span style="color: #A6E22E">querySelectorAll</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'a'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #88846F">//</span></span>
+<span class="line"><span style="color: #88846F">// ...</span></span>
+<span class="line"><span style="color: #88846F">// for each link in a</span></span>
+<span class="line"><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(a.href, {method: </span><span style="color: #E6DB74">'HEAD'</span><span style="color: #F8F8F2">})</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">then</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">res</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">(res.status </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">400</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      row.</span><span style="color: #A6E22E">remove</span><span style="color: #F8F8F2">(); </span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  })</span></span>
+<span class="line"><span style="color: #F8F8F2">  .</span><span style="color: #A6E22E">catch</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">e</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// a.remove();</span></span>
+<span class="line"><span style="color: #F8F8F2">  }); </span></span></code></pre>
+<p>This uses document.querySelectorAll to grab all <a> elements, then makes a HEAD request to check each href. If the status is 400 or above, indicating a client or server error, we remove the link’s entire row from the DOM.</a></p><a>
+<p>document.querySelectorAll allows us to easily select elements by CSS selector syntax. This gives us flexibility to target specific links, like only ones in a table or under a certain class. Overall, combining Fetch, HEAD requests, and querySelectorAll provides a straightforward way to prune dead links on a page.</p>
+<h2 id="optimizations-and-considerations">Optimizations and Considerations</h2>
+<p>While the basic technique outlined above works, there are a few ways we can optimize the process and avoid potential pitfalls:</p>
+<ul>
+<li>Check links asynchronously - Making a large number of sequential Fetch requests could lock up the browser. We can make use of async/await to send requests in parallel:</li>
+</ul>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">checkLinks</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> links </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> document.</span><span style="color: #A6E22E">querySelectorAll</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'a'</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> requests </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Array.</span><span style="color: #A6E22E">from</span><span style="color: #F8F8F2">(links).</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">link</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> res </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(link.href, {method: </span><span style="color: #E6DB74">'HEAD'</span><span style="color: #F8F8F2">});</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> [link, res]; </span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> results </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Promise</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">all</span><span style="color: #F8F8F2">(requests);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  results.</span><span style="color: #A6E22E">forEach</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">result</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [link, res] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> result;</span></span>
+<span class="line"><span style="color: #F8F8F2">   </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">(res.status </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">400</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">     link.</span><span style="color: #A6E22E">remove</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">   }</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span></code></pre>
+<ul>
+<li>
+<p>Watch for redirects - Some 400+ status codes are for temporary redirects rather than permanent broken links. We may want to allow 3xx responses to avoid removing working links.</p>
+</li>
+<li>
+<p>Consider link types - Be thoughtful about which links you want to remove. Deleting JS/CSS assets could break functionality.</p>
+</li>
+<li>
+<p>Re-crawl - Check links again after removing to catch any new issues exposed.</p>
+</li>
+<li>
+<p>Report issues - Logging or alerting on invalid links can help track down problems.</p>
+</li>
+</ul>
+<p>Properly deployed, an automated Fetch-based solution can greatly reduce the occurrence of dead links. With the ability to refine selector targets and handle redirects/assets, we can keep our sites full of useful, working links.</p>
+<h2 id="putting-it-all-together">Putting It All Together</h2>
+<p>Now that we’ve explored the core technique and some optimizations, let’s walk through an expanded script to cleanly remove dead links from a site:</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #88846F">// Select links, exclude ones we don't want to check</span></span>
+<span class="line"><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> links </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> document.</span><span style="color: #A6E22E">querySelectorAll</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">'a:not([data-ignore])'</span><span style="color: #F8F8F2">); </span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">checkStatus</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">link</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> res </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">fetch</span><span style="color: #F8F8F2">(link.href, {method: </span><span style="color: #E6DB74">'HEAD'</span><span style="color: #F8F8F2">});</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">(res.status </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">400</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">&#x26;&#x26;</span><span style="color: #F8F8F2"> res.status </span><span style="color: #F92672">&#x3C;</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">500</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Log 4xx issues</span></span>
+<span class="line"><span style="color: #F8F8F2">    console.</span><span style="color: #A6E22E">log</span><span style="color: #F8F8F2">(</span><span style="color: #E6DB74">`</span><span style="color: #F92672">${</span><span style="color: #F8F8F2">link.href</span><span style="color: #F92672">}</span><span style="color: #E6DB74"> returned </span><span style="color: #F92672">${</span><span style="color: #F8F8F2">res.status</span><span style="color: #F92672">}</span><span style="color: #E6DB74">`</span><span style="color: #F8F8F2">);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">false</span><span style="color: #F8F8F2">;</span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">(res.status </span><span style="color: #F92672">>=</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">500</span><span style="color: #F8F8F2">) {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #88846F">// Retry 5xx issues </span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">checkStatus</span><span style="color: #F8F8F2">(link);</span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">true</span><span style="color: #F8F8F2">; </span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">function</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">checkLinks</span><span style="color: #F8F8F2">() {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> linkPromises </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> Array.</span><span style="color: #A6E22E">from</span><span style="color: #F8F8F2">(links).</span><span style="color: #A6E22E">map</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">async</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">link</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> valid </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">checkStatus</span><span style="color: #F8F8F2">(link);</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> [link, valid];</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> results </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> </span><span style="color: #F92672">await</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Promise</span><span style="color: #F8F8F2">.</span><span style="color: #A6E22E">all</span><span style="color: #F8F8F2">(linkPromises);</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">  results.</span><span style="color: #A6E22E">forEach</span><span style="color: #F8F8F2">(</span><span style="color: #FD971F; font-style: italic">result</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">=></span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #66D9EF; font-style: italic">const</span><span style="color: #F8F8F2"> [link, valid] </span><span style="color: #F92672">=</span><span style="color: #F8F8F2"> result;</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">if</span><span style="color: #F8F8F2">(</span><span style="color: #F92672">!</span><span style="color: #F8F8F2">valid) {</span></span>
+<span class="line"><span style="color: #F8F8F2">      link.</span><span style="color: #A6E22E">remove</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"><span style="color: #F8F8F2">    }</span></span>
+<span class="line"><span style="color: #F8F8F2">  });</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Initially check links </span></span>
+<span class="line"><span style="color: #A6E22E">checkLinks</span><span style="color: #F8F8F2">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #88846F">// Re-check links periodically</span></span>
+<span class="line"><span style="color: #A6E22E">setInterval</span><span style="color: #F8F8F2">(checkLinks, </span><span style="color: #AE81FF">60</span><span style="color: #F92672">*</span><span style="color: #AE81FF">60</span><span style="color: #F92672">*</span><span style="color: #AE81FF">1000</span><span style="color: #F8F8F2">); </span></span></code></pre>
+<p>This expands on our initial script by:</p>
+<ul>
+<li>
+<p>Using a <code>data-ignore</code> attribute to exclude certain links from checking, like CSS/JS assets we want to leave alone.</p>
+</li>
+<li>
+<p>Logging 4xx status codes to diagnose issues while still removing the links.</p>
+</li>
+<li>
+<p>Retrying failed requests in case of transient 5xx errors.</p>
+</li>
+<li>
+<p>Running the checker on an interval to detect new broken links over time.</p>
+</li>
+</ul>
+<p>With these enhancements, we have a robust solution to keep our links tidy and users happy. The Fetch API provides the flexibility to implement exactly the checking logic we need.</p></a>
+    </content></div></div></div></div>
+
+  <div class="mx-auto max-w-screen-lg px-3 py-6">
+  <div class="no-print flex w-full">
+    <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form>
+    <div class="ml-3 max-w-lg bg-slate-300">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script>
+      <div id="search" class="ml-3 p-4"></div>
+      
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2023<!-- --> by <!-- -->Astro Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2023-08-20<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div>
+  </body></html>
