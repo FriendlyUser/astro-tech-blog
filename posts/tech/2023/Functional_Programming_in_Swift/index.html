@@ -115,7 +115,20 @@
 <span class="line"><span style="color: #F8F8F2">}</span></span>
 <span class="line"><span style="color: #88846F">// Output: Stop</span></span></code></pre>
 <p>In this example, we define an enumeration <code>TrafficLight</code> with three cases. We then use a <code>switch</code> statement to perform pattern matching on the <code>currentLight</code> constant and execute the appropriate block of code.</p>
+<h2 id="recursion">Recursion</h2>
+<p>Recursion is a technique used in functional programming to repeat the same operation or process by having a function call itself. This avoids mutating state and reliance on loops.</p>
+<pre is:raw="" class="astro-code monokai" style="background-color: #272822; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color: #66D9EF; font-style: italic">func</span><span style="color: #F8F8F2"> </span><span style="color: #A6E22E">factorial</span><span style="color: #F8F8F2">(</span><span style="color: #A6E22E">_</span><span style="color: #F8F8F2"> </span><span style="color: #FD971F; font-style: italic">number</span><span style="color: #F8F8F2">: </span><span style="color: #66D9EF; font-style: italic">Int</span><span style="color: #F8F8F2">) </span><span style="color: #F92672">-></span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF; font-style: italic">Int</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">  </span><span style="color: #F92672">if</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">==</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">0</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2"> </span></span>
+<span class="line"><span style="color: #F8F8F2">  } </span><span style="color: #F92672">else</span><span style="color: #F8F8F2"> {</span></span>
+<span class="line"><span style="color: #F8F8F2">    </span><span style="color: #F92672">return</span><span style="color: #F8F8F2"> number </span><span style="color: #F92672">*</span><span style="color: #F8F8F2"> </span><span style="color: #66D9EF">factorial</span><span style="color: #F8F8F2">(number </span><span style="color: #F92672">-</span><span style="color: #F8F8F2"> </span><span style="color: #AE81FF">1</span><span style="color: #F8F8F2">)</span></span>
+<span class="line"><span style="color: #F8F8F2">  }</span></span>
+<span class="line"><span style="color: #F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #66D9EF">print</span><span style="color: #F8F8F2">(</span><span style="color: #66D9EF">factorial</span><span style="color: #F8F8F2">(</span><span style="color: #AE81FF">5</span><span style="color: #F8F8F2">)) </span><span style="color: #88846F">// Output: 120</span></span></code></pre>
+<p>Here, we calculate the factorial of a number recursively without using a loop construct. The function calls itself repeatedly until the base case is reached.</p>
 <h2 id="conclusion">Conclusion</h2>
+<p>Functional programming allows you to write Swift code that is concise, readable, and easy to reason about. Concepts like immutability, higher-order functions, and pattern matching facilitate a declarative style of programming that avoids side effects. While Swift is not a pure functional language, incorporating functional concepts results in code that is efficient, modular, and less prone to bugs.</p>
     </content></div></div></div></div>
 
   <div class="mx-auto max-w-screen-lg px-3 py-6">
