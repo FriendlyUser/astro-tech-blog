@@ -94,4 +94,22 @@ case .green:
 
 In this example, we define an enumeration `TrafficLight` with three cases. We then use a `switch` statement to perform pattern matching on the `currentLight` constant and execute the appropriate block of code.
 
+## Recursion
+Recursion is a technique used in functional programming to repeat the same operation or process by having a function call itself. This avoids mutating state and reliance on loops.
+
+```swift
+func factorial(_ number: Int) -> Int {
+  if number == 0 {
+    return 1 
+  } else {
+    return number * factorial(number - 1)
+  }
+}
+
+print(factorial(5)) // Output: 120
+```
+
+Here, we calculate the factorial of a number recursively without using a loop construct. The function calls itself repeatedly until the base case is reached.
 ## Conclusion
+
+Functional programming allows you to write Swift code that is concise, readable, and easy to reason about. Concepts like immutability, higher-order functions, and pattern matching facilitate a declarative style of programming that avoids side effects. While Swift is not a pure functional language, incorporating functional concepts results in code that is efficient, modular, and less prone to bugs.

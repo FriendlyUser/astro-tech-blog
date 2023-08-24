@@ -510,3 +510,4 @@
 /posts/tech/2023/Using_`echo`_in_Golang_for_Efficient_Web_Development.md
 /posts/tech/2023/Using_`zap`_for_Efficient_Logging_in_Go.md
 /posts/tech/2023/Web_Scraping_with_Beautiful_Soup_in_Python.md
+/posts/tech/2023/using_fetch_to_remove_bad_links.md
