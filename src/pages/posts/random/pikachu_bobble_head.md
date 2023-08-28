@@ -52,3 +52,15 @@ As long as you read seller reviews and check photo reviews from other buyers, yo
 ## Conclusion:
 
 Don't overpay for Pokémon goodies at retail stores. For the best deals on fun anime merch, shop directly on AliExpress! You can find the same solar powered Pikachu bobblehead that made me smile years ago for cheaper than ever. Bring home your own desk buddy today!
+
+
+![/imgs/2023/bobblehead_pika.jpg]
+https://s.click.aliexpress.com/e/_EzsfG7D
+
+
+
+or
+
+![/imgs/2023/pika_solar.jpg]
+
+https://s.click.aliexpress.com/e/_mKsNLUS
