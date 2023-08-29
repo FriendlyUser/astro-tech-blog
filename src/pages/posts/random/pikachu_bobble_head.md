@@ -19,7 +19,7 @@ I first fell in love with these adorable bobbleheads years ago when I bought one
 
 About 6 years ago, I was visiting Chinatown with friends when I came across a little shop selling cute anime figurines and toys. That's where I found this vibrant yellow solar powered Pikachu bobblehead. His head bobbled happily while his cheeks lit up red with solar energy. I had to have it! At only $12.99, it felt like a steal.
 
-![/imgs/2023/pikachu_nong.png]
+![basic pikachu](/imgs/2023/pikachu_nong.png)
 
 This adorable desk accessory has brought me smiles every day since. Pikachu bobbles his head cheerfully while absorbing energy from any light source. He's a constant reminder to stay positive and find joy in the little things.
 
@@ -54,13 +54,13 @@ As long as you read seller reviews and check photo reviews from other buyers, yo
 Don't overpay for Pokémon goodies at retail stores. For the best deals on fun anime merch, shop directly on AliExpress! You can find the same solar powered Pikachu bobblehead that made me smile years ago for cheaper than ever. Bring home your own desk buddy today!
 
 
-![/imgs/2023/bobblehead_pika.jpg]
+![cool image](/imgs/2023/bobblehead_pika.jpg)
 https://s.click.aliexpress.com/e/_EzsfG7D
 
 
 
 or
 
-![/imgs/2023/pika_solar.jpg]
+![Solar Pika](/imgs/2023/pika_solar.jpg)
 
 https://s.click.aliexpress.com/e/_mKsNLUS
