@@ -5,7 +5,7 @@ description: In this article, we will explore the concept of type traits, a key 
 imgSrc: /imgs/2023/2861854918.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-17T21:19:07.000Z'
-tags: []
+tags: ["C++"]
 title: C++ Type Traits and Metaprogramming A Deep Dive
 ---
 
