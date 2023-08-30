@@ -19,7 +19,7 @@ I first fell in love with these adorable bobbleheads years ago when I bought one
 
 About 6 years ago, I was visiting Chinatown with friends when I came across a little shop selling cute anime figurines and toys. That's where I found this vibrant yellow solar powered Pikachu bobblehead. His head bobbled happily while his cheeks lit up red with solar energy. I had to have it! At only $12.99, it felt like a steal.
 
-![basic pikachu](/imgs/2023/pikachu_nong.png)
+![basic pikachu](/imgs/2023/pikachu_nobg.png)
 
 This adorable desk accessory has brought me smiles every day since. Pikachu bobbles his head cheerfully while absorbing energy from any light source. He's a constant reminder to stay positive and find joy in the little things.
 

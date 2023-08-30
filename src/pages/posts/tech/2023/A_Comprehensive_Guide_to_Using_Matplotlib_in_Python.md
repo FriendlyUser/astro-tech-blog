@@ -62,7 +62,7 @@ plt.plot(x, y)
 plt.show()
 ```
 
-![Line Plot](images/line_plot.png)
+![Line Plot](/images/line_plot.png)
 
 ### Scatter Plot
 
@@ -76,7 +76,7 @@ plt.scatter(x, y)
 plt.show()
 ```
 
-![Scatter Plot](images/scatter_plot.png)
+![Scatter Plot](/images/scatter_plot.png)
 
 ### Bar Plot
 
@@ -90,7 +90,7 @@ plt.bar(categories, values)
 plt.show()
 ```
 
-![Bar Plot](images/bar_plot.png)
+![Bar Plot](/images/bar_plot.png)
 
 ### Histogram
 
@@ -103,7 +103,7 @@ plt.hist(data, bins=30)
 plt.show()
 ```
 
-![Histogram](images/histogram.png)
+![Histogram](/images/histogram.png)
 
 ## Customizing Plots <a name="customizing-plots"></a>
 
@@ -122,7 +122,7 @@ plt.ylabel('y-axis')
 plt.show()
 ```
 
-![Titles and Labels](images/titles_and_labels.png)
+![Titles and Labels](/images/titles_and_labels.png)
 
 ### Changing Colors and Line Styles
 
@@ -138,7 +138,7 @@ plt.plot(x, y2, color='green', linestyle='--')
 plt.show()
 ```
 
-![Colors and Line Styles](images/colors_and_line_styles.png)
+![Colors and Line Styles](/images/colors_and_line_styles.png)
 
 ### Legend
 
@@ -155,7 +155,7 @@ plt.legend()
 plt.show()
 ```
 
-![Legend](images/legend.png)
+![Legend](/images/legend.png)
 
 ## Advanced Functionality <a name="advanced-functionality"></a>
 
@@ -180,7 +180,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![Subplots](images/subplots.png)
+![Subplots](/images/subplots.png)
 
 ### 3D Plots
 
@@ -204,7 +204,7 @@ ax.set_zlabel('Z Label')
 plt.show()
 ```
 
-![3D Scatter Plot](images/3d_scatter_plot.png)
+![3D Scatter Plot](/images/3d_scatter_plot.png)
 
 ### Animations
 

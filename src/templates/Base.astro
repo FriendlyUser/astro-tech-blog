@@ -1,4 +1,6 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
+
 import { Footer } from '@/partials/Footer';
 import { Navbar } from '@/partials/Navbar';
 import { AppConfig } from '@/utils/AppConfig';
@@ -20,6 +22,7 @@ const pageFindUiText = '#000000';
 
 <html lang="en">
   <head>
+    <ViewTransitions />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
@@ -28,24 +31,24 @@ const pageFindUiText = '#000000';
 
     <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386"
-     crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386"
+      crossorigin="anonymous"
+    ></script>
     <style is:global>
-      @media print
-      {    
-          .no-print, .no-print *
-          {
-              display: none !important;
-          }
+      @media print {
+        .no-print,
+        .no-print * {
+          display: none !important;
+        }
       }
     </style>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"
-    >
-
-    </script>
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -88,7 +91,7 @@ const pageFindUiText = '#000000';
           slides[slideIndex - 1].style.display = 'block';
           dots[slideIndex - 1].className += ' active';
           captionText.innerHTML = dots[slideIndex - 1].alt;
-        } catch(err) {
+        } catch (err) {
           // do nothing here
         }
       }

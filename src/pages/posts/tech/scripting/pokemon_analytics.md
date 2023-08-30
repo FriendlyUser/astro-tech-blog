@@ -164,9 +164,7 @@ Here's a breakdown of what each part of the code is doing:
 5. The GenericChart.ofTraceObject method is used to create a GenericChart object from the Trace object, and the WithLayout method is used to apply the layout to the chart.
 6. The GenericChart.toChartHTML method is used to generate the HTML code for the chart, and the DisplayExtensions.DisplayAs method is used to display the chart as an HTML page in the console.
 
-
 ![pokedex](/imgs/2023/pokedex_types.png)
-
 
 ```csharp
 // number of pokemon per generation
@@ -216,7 +214,7 @@ foreach (var pokemon in pokemonList)
 makePlot(groupedPokemonByFirstLetter, "First Letter", "Number", "Number of pokemon by first letter", 1280);
 ```
 
-![pokedex](imgs/2023/pokedex_by_first_letter.png)
+![pokedex](/imgs/2023/pokedex_by_first_letter.png)
 
 ## References
 https://friendlyuser.github.io/pokemon_stats/
