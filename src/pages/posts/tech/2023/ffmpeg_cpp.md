@@ -1,10 +1,10 @@
 ---
-description: Transcode video file with ffmpeg
+description: It provides various tools and APIs for tasks like format conversion, resizing, editing, and more. In this article, we will see how to use ffmpeg to transcode a video file from one format to another.
 imgSrc: /imgs/2023/1047200128.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-05T01:45:04.000Z'
 tags: []
-title: Exploring the Deno Permissions Module A Comprehensive Guide
+title: Transcode video file with ffmpeg.
 ---
 
 
