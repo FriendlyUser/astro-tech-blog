@@ -2,7 +2,7 @@
 description: Explore the emergence of custom ChatGPT bots and their role in streamlining coding-related tasks. Discover how OpenAI's GPT facilitates the creation of tailored AI chatbots for various applications such as type conversions, diagram generation, string manipulation, and encoding.
 imgSrc: /imgs/2023/progress.png
 layout: '@/templates/BasePost.astro'
-pubDate: '2024-08-08T15:20:34.000Z'
+pubDate: '2023-11-08T15:20:34.000Z'
 tags: ['ChatGPT', 'AI Chatbots', 'Programming', 'Automation', 'Mermaid Diagrams']
 title: "Custom ChatGPT Bots: Revolutionizing Coding Tasks"
 ---
