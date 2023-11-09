@@ -512,3 +512,5 @@
 /posts/tech/2023/Web_Scraping_with_Beautiful_Soup_in_Python.md
 /posts/tech/2023/using_fetch_to_remove_bad_links.md
 /posts/tech/2023/ffmpeg_cpp.md
+/posts/tech/2023/Making_custom_gpt_bots_with_openai.md
+/posts/tech/2023/Subscriptions_with_clover.md

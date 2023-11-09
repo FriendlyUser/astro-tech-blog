@@ -104,7 +104,7 @@ def make_articles_for_medium():
                   posted_articles += 1
                 else: 
                   time.sleep(5)
-                time.sleep(0.5)
+                time.sleep(5)
     with open ("scripts/medium_articles.txt", "w") as f:
         for article in created_articles:
             f.write(article + "\n")
