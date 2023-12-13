@@ -25,3 +25,5 @@ ref
 .env
 
 gen_articles.sh
+
+sample_md_file.md
