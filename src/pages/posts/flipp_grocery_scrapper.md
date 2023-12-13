@@ -12,6 +12,7 @@ imgSrc: "/imgs/2023/2023/117117315.png"
 # Technical Analysis of `flipp_flyer_parser` Python Script
 
 ## Overview
+
 The `flipp_flyer_parser` Python script is a sophisticated web scraping tool, designed for extracting promotional flyer data from various retail websites. Authored by FriendlyUser, this script leverages Selenium, a powerful tool for browser automation, to navigate through web pages and extract relevant data. It focuses on three major Canadian retailers: Save-On-Foods, Walmart, and Superstore.
 
 ## Key Components and Libraries
