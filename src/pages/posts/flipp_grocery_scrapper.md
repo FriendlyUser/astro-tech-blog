@@ -3,9 +3,10 @@ title: Automated Data Extraction from Online Retail Flyers Using Python and Sele
 description: This article explores the `flipp_flyer_parser` Python script, an advanced web scraping tool for extracting promotional data from retail websites like Save-On-Foods, Walmart, and Superstore.
 alt: Web Scraping Retail Flyers with Python
 layout: '@/templates/BasePost.astro'
-pubDate: Wed, 14 May 2022 13:00:00 GMT
+pubDate: Thursday, 14 December 2023 13:00:00 GMT
 tags: ["python", "web scraping", "selenium", "data extraction", "retail", "automation"]
 imgAlt: 'Python Web Scraping Visualization'
+imgSrc: "/imgs/2023/2023/117117315.png"
 ---
 
 # Technical Analysis of `flipp_flyer_parser` Python Script
