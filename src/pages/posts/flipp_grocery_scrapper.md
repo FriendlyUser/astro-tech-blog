@@ -89,46 +89,49 @@ These functions are tailored for each retail website, navigating to the respecti
 This function extracts detailed information from a part of the webpage, typically an iframe.
 
 1. **Switching to the Relevant Iframe**:
-   - Calls `swap_to_iframe` with the class name of the iframe to be accessed.
+
+Calls `swap_to_iframe` with the class name of the iframe to be accessed.
 
 2. **Extracting Information**:
-   - Finds elements by tag or class name (e.g., validity dates, descriptions).
-   - Regular expressions are used to parse and extract data like sizes, quantities, and product types from the product description.
-   - Exception handling is used to manage elements that might not be present.
+
+Finds elements by tag or class name (e.g., validity dates, descriptions).
+Regular expressions are used to parse and extract data like sizes, quantities, and product types from the product description.
+Exception handling is used to manage elements that might not be present.
 
 #### `scrap_flyer` Function
 
 This function orchestrates the overall scraping process.
 
 1. **Initial Setup**:
-   - Waits for the main element of the page to become visible.
-   - Handles exceptions by saving the page source to a file for debugging.
+
+Waits for the main element of the page to become visible.
+Handles exceptions by saving the page source to a file for debugging.
 
 2. **Handling Cookies and HTML Content**:
-   - Retrieves and saves cookies to a JSON file.
-   - Saves the HTML content of the page for further processing.
+Retrieves and saves cookies to a JSON file.
+Saves the HTML content of the page for further processing.
 
 3. **Navigating Through Flyer Images**:
-   - Iterates over elements containing flyer images.
-   - For each image, iterates over associated buttons that likely contain product information.
-   - Executes a script to ensure the visibility of elements and interacts with them (clicking buttons).
+Iterates over elements containing flyer images.
+For each image, iterates over associated buttons that likely contain product information.
+Executes a script to ensure the visibility of elements and interacts with them (clicking buttons).
 
 4. **Extracting Product Data**:
-   - Each button's label is parsed for product data.
-   - Regular expressions are used to extract pricing information.
-   - Calls `parse_flipp_aside` to extract additional details from the aside section.
-   - Aggregates all extracted data into a dictionary and appends it to a list.
+Each button's label is parsed for product data.
+Regular expressions are used to extract pricing information.
+Calls `parse_flipp_aside` to extract additional details from the aside section.
+Aggregates all extracted data into a dictionary and appends it to a list.
 
 5. **Final Steps**:
-   - The data list is saved to a JSON file.
-   - Handles a set maximum number of items to prevent excessive scraping.
+The data list is saved to a JSON file.
+Handles a set maximum number of items to prevent excessive scraping.
 
 ### 4. Main Function
 
 The script uses an argument parser to allow the user to specify the store type via the command line.
 
-- Based on the store type provided, the corresponding scraping function is called.
-- This modular approach allows for easy expansion or modification for different stores.
+Based on the store type provided, the corresponding scraping function is called.
+This modular approach allows for easy expansion or modification for different stores.
 
 ### Conclusion
 
