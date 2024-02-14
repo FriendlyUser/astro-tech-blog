@@ -3,15 +3,13 @@ title: Automated Data Extraction from Online Retail Flyers Using Python and Sele
 description: This article explores the `flipp_flyer_parser` Python script, an advanced web scraping tool for extracting promotional data from retail websites like Save-On-Foods, Walmart, and Superstore.
 alt: Web Scraping Retail Flyers with Python
 layout: '@/templates/BasePost.astro'
-pubDate: Thursday, 14 December 2023 13:00:00 GMT
+pubDate: Thursday, 15 Feburary 2023 13:00:00 GMT
 tags: ["python", "web scraping", "selenium", "data extraction", "retail", "automation"]
 imgAlt: 'Python Web Scraping Visualization'
 imgSrc: "/imgs/2023/117117315.png"
 ---
 
 # Web Scraping Retail Flipp Flyers
-
-## Overview
 
 The `flipp_flyer_parser` Python script is a sophisticated web scraping tool, designed for extracting promotional flyer data from various retail websites. Authored by FriendlyUser, this script leverages Selenium, a powerful tool for browser automation, to navigate through web pages and extract relevant data. It focuses on three major Canadian retailers: Save-On-Foods, Walmart, and Superstore.
 
@@ -88,11 +86,11 @@ These functions are tailored for each retail website, navigating to the respecti
 
 This function extracts detailed information from a part of the webpage, typically an iframe.
 
-1. **Switching to the Relevant Iframe**:
+**Switching to the Relevant Iframe**:
 
-Calls `swap_to_iframe` with the class name of the iframe to be accessed.
+  Calls `swap_to_iframe` with the class name of the iframe to be accessed.
 
-2. **Extracting Information**:
+**Extracting Information**:
 
 Finds elements by tag or class name (e.g., validity dates, descriptions).
 Regular expressions are used to parse and extract data like sizes, quantities, and product types from the product description.
@@ -102,27 +100,27 @@ Exception handling is used to manage elements that might not be present.
 
 This function orchestrates the overall scraping process.
 
-1. **Initial Setup**:
+**Initial Setup**:
 
 Waits for the main element of the page to become visible.
 Handles exceptions by saving the page source to a file for debugging.
 
-2. **Handling Cookies and HTML Content**:
+**Handling Cookies and HTML Content**:
 Retrieves and saves cookies to a JSON file.
 Saves the HTML content of the page for further processing.
 
-3. **Navigating Through Flyer Images**:
+**Navigating Through Flyer Images**:
 Iterates over elements containing flyer images.
 For each image, iterates over associated buttons that likely contain product information.
 Executes a script to ensure the visibility of elements and interacts with them (clicking buttons).
 
-4. **Extracting Product Data**:
+**Extracting Product Data**:
 Each button's label is parsed for product data.
 Regular expressions are used to extract pricing information.
 Calls `parse_flipp_aside` to extract additional details from the aside section.
 Aggregates all extracted data into a dictionary and appends it to a list.
 
-5. **Final Steps**:
+**Final Steps**:
 The data list is saved to a JSON file.
 Handles a set maximum number of items to prevent excessive scraping.
 
