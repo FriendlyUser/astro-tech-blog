@@ -514,3 +514,4 @@
 /posts/tech/2023/ffmpeg_cpp.md
 /posts/tech/2023/Making_custom_gpt_bots_with_openai.md
 /posts/tech/2023/Subscriptions_with_clover.md
+/posts/tech/2024/integrating_azure_active_directory_with_wagtail.md
