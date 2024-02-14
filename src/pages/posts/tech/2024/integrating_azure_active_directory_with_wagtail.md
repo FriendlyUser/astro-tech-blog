@@ -4,7 +4,7 @@ pubDate: "2024-02-16T19:17:25.000Z"
 description: "In this article, we will explore how to integrate microsoft entra with wagtail"
 tags: ["Wagtail", "Microsoft Entra", "Azure Active Directory", "OAuth2", "Django", "Authentication", "Security", "Web Development", "Python", "Social Auth"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2024/authentication_birds.png
+imgSrc: /imgs/2024/authentication_birds.webp
 ---
 
 # Integrating microsoft entra with wagtail
