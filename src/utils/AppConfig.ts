@@ -1,7 +1,7 @@
 export const AppConfig = {
-  site_name: 'Astro Tech Blog',
-  title: 'Personal Website',
-  description: 'Tech Blog built with Astro using React and Tailwind CSS',
+  site_name: 'FriendlyUsers Tech Blog',
+  title: "Tech Blog | Software Development",
+  description: 'A software development blog showcasing tutorials and cool tricks in programming, crafted with Astro, React, and Tailwind CSS.',
   author: 'David Li',
   locale_region: 'en-us',
   locale: 'en',
