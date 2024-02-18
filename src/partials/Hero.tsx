@@ -49,10 +49,10 @@ const Hero = () => (
             />
           </a>
           <a href="https://github.com/FriendlyUser">
-            <HeroSocial
-              src="/assets/images/github.png"
-              alt="Github icon"
-            />
+            <HeroSocial src="/assets/images/github.png" alt="Github icon" />
+          </a>
+          <a href="https://TeeMugs3.redbubble.com">
+            <HeroSocial src="/imgs/2024/redbubble.svg" alt="Redbubble icon" />
           </a>
         </>
       }
