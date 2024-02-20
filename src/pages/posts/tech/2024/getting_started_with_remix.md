@@ -4,7 +4,7 @@ pubDate: "2024-02-16T19:17:25.000Z"
 description: "This article provides a comprehensive guide on getting started with Remix, its core features, and how it fits into the React ecosystem."
 tags: ["Remix", "React", "Web Development", "JavaScript", "Frontend Development", "Performance Optimization", "SEO", "Authentication", "State Management", "Styling"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2024/remix_deep_dive.webp"
+imgSrc: "/imgs/2024/2443221186.png"
 
 ---
 
