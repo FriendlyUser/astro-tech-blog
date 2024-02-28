@@ -4,7 +4,7 @@ description: "This technical article details the process of downloading investor
 tags: ["Investor Presentation", "Audio Download", "Conference Hosting Software", "Web Development", "ffmpeg", "Transcription", "Machine Learning"]
 pubDate: "2024-03-19T19:17:25.000Z"
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2024/2443221186.png"
+imgSrc: "/imgs/2023/14447351.png"
 ---
 
 
