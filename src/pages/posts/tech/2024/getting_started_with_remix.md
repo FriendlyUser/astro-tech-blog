@@ -60,7 +60,6 @@ npm run dev
 
 5. **Deployment**: Remix applications can be deployed on various platforms, including Vercel, Netlify, and traditional server environments. The framework's flexibility in deployment options ensures that it can fit into any workflow or infrastructure.
 
-
 ### Supporting Packages and Ecosystem in Remix
 
 Beyond the core features of Remix, its ecosystem is rich with supporting packages and integrations that enhance its capabilities and streamline the development process. These packages address various aspects of web development, from styling and state management to authentication and database interactions. Here's an overview of some common supporting packages and how they fit into the Remix ecosystem.
@@ -95,7 +94,6 @@ Beyond the core features of Remix, its ecosystem is rich with supporting package
 
 - **Vercel**: Offers first-class support for Remix, providing an optimized platform for deploying and hosting Remix applications with features like global CDN, edge functions, and automatic SSL.
 - **Netlify**: Another popular option for deploying Remix applications, Netlify supports serverless functions and offers continuous deployment from Git across all of its plans, including the free tier.
-
 
 #### Conclusion
 

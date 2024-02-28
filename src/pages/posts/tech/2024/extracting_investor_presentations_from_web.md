@@ -7,6 +7,7 @@ layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/14447351.png"
 ---
 
+# How to Download Investor Presentation Audio Files
 
 In this technical article, we'll explore the process of downloading investor presentation audio files from conference hosting software. Often, these presentations are made available via webcasting services, and accessing them for offline review or transcription can be invaluable. We'll use a specific example to illustrate the process, breaking it down into manageable steps.
 
