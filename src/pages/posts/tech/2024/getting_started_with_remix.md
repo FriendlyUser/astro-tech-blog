@@ -5,7 +5,6 @@ description: "This article provides a comprehensive guide on getting started wit
 tags: ["Remix", "React", "Web Development", "JavaScript", "Frontend Development", "Performance Optimization", "SEO", "Authentication", "State Management", "Styling"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2024/2443221186.png"
-
 ---
 
 ### Getting Started with Remix: A Deep Dive into the React Ecosystem

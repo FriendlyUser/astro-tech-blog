@@ -3,7 +3,6 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import robotsTxt from 'astro-robots-txt';
-import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,5 +21,5 @@ export default defineConfig({
       theme: 'monokai',
     },
   },
-  integrations: [react(), tailwind({}), sitemap(), robotsTxt(), mdx()],
+  integrations: [react(), tailwind({}), sitemap(), robotsTxt()],
 });
