@@ -1,12 +1,11 @@
 ---
-title: "Leveraging Boost in C++20 Projects: A Comprehensive Guide for Developers"
-pubDate: "2024-03-15T16:16:44.676Z"
-description: "Explore how to effectively integrate and use Boost in your C++20 projects. From setting up and configuring to practical examples of Boost.Asio and Boost.Beast, enhance your C++ development with Boost's powerful capabilities."
-tags: ["C++", "Boost", "C++20", "Programming", "Software Development"]
+title: Boost Your C++ Programming with Boost Library
+pubDate: "2023-05-05T16:16:44.676Z"
+description: "In this article, we will introduce you to the Boost library and explore some of its key features to help you improve your C++ programming skills."
+tags: ["cpp", "boost"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2024/leveraging-boost-cpp20.png
+imgSrc: /imgs/2023/1931041591.png
 ---
-
 # Boost Your C++ Programming with Boost Library
 
 The Boost library is a collection of high-quality, peer-reviewed, portable C++ libraries that aim to extend the functionality and best practices of the C++ programming language. It provides a wide range of powerful libraries for various purposes, such as data structures, algorithms, input/output operations, and more. In this article, we will introduce you to the Boost library and explore some of its key features to help you improve your C++ programming skills.
