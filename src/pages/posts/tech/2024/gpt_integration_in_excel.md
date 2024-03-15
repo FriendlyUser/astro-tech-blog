@@ -4,7 +4,7 @@ pubDate: "2024-03-30T00:00:00.000Z"
 description: "A beginner's guide to embedding OpenAI's GPT in Excel plugins, enhancing spreadsheets with AI's power for automation and efficiency. This article covers the basics of creating an Excel Add-in, integrating GPT, and demonstrates the benefits of AI-driven Excel applications."
 tags: ["GPT", "Excel", "AI Integration", "Software Development", "JavaScript", "TypeScript", "Excel Add-in", "OpenAI", "Automation", "Productivity"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2024/embedding-gpt-in-excel.png"
+imgSrc: "/imgs/2023/3292707171.png"
 ---
 
 # Embedding GPT in Excel Applications: A Guide for Beginners
@@ -134,7 +134,7 @@ To share your Add-in with others, you need to publish it to an Add-in catalog or
 
 The example provided demonstrates a basic Excel plugin designed to showcase how developers can integrate AI functionalities into Excel. The plugin utilizes HTML for the user interface and JavaScript for backend logic, incorporating OpenAI's GPT and the AlphaVantage API to offer investment advice and stock information directly within Excel.
 
-### Key Components of the Plugin:
+### Key Components of the Plugin
 
 1. **HTML File (User Interface):** This file defines the visual layout and elements of the plugin, including the welcome message, input field, and search button. It also includes references to external resources like Fluent UI for styling and Office.js for integrating with Excel.
 
@@ -150,7 +150,6 @@ When the user enters a description of a company in the input field and clicks th
 2. **OpenAI Chat Function:** It then calls the `openAiChat` function, sending the input to OpenAI's API to receive a stock ticker recommendation based on the input.
 3. **AlphaVantage Function:** With the recommended stock ticker, the plugin calls the `alphaVantage` function to fetch detailed information about the stock from the AlphaVantage API.
 4. **Display Information:** Finally, the plugin displays the fetched stock information in the plugin interface.
-
 
 ### Understanding the Code Structure
 

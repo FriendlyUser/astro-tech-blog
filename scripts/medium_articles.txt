@@ -519,3 +519,6 @@
 /posts/tech/2024/extracting_investor_presentations_from_web.md
 /posts/tech/2024/file_uploads_with_python.md
 /posts/tech/2024/hosting_an_ocr_app_on_azure.md
+/posts/tech/cpp/Boost_C++20_programming.md
+/posts/tech/2024/azure_cloud_storage.md
+/posts/tech/2024/pytest_adding_fixtures.md
