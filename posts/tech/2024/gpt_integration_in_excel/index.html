@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="en"> <head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Embedding GPT in Excel Applications: A Guide for Beginners - FriendlyUsers Tech Blog</title><meta name="description" content="A beginner's guide to embedding OpenAI's GPT in Excel plugins, enhancing spreadsheets with AI's power for automation and efficiency. This article covers the basics of creating an Excel Add-in, integrating GPT, and demonstrates the benefits of AI-driven Excel applications."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch (err) {
+          // do nothing here
+        }
+      }
+    </script><!-- Google Tag Manager --><!-- End Google Tag Manager --><link rel="stylesheet" href="/_astro/index.DFWZl3Z8.css" />
+<style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);-webkit-clip-path:inset(50%);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}@media print{.no-print,.no-print *{display:none!important}}
+</style><script type="module" src="/_astro/hoisted.CcuKkQrI.js"></script></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Embedding GPT in Excel Applications: A Guide for Beginners</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2024-03-30T00:00:00.000Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/GPT" style="padding-right:3px"> <category>GPT<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Excel" style="padding-right:3px"> <category>Excel<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/AI Integration" style="padding-right:3px"> <category>AI Integration<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Software Development" style="padding-right:3px"> <category>Software Development<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/JavaScript" style="padding-right:3px"> <category>JavaScript<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/TypeScript" style="padding-right:3px"> <category>TypeScript<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Excel Add-in" style="padding-right:3px"> <category>Excel Add-in<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/OpenAI" style="padding-right:3px"> <category>OpenAI<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Automation" style="padding-right:3px"> <category>Automation<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Productivity" style="padding-right:3px"> <category>Productivity<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3292707171.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <h1 id="embedding-gpt-in-excel-applications-a-guide-for-beginners">Embedding GPT in Excel Applications: A Guide for Beginners</h1>
+<p>In the ever-evolving landscape of technology, the integration of advanced AI tools like OpenAI’s Generative Pre-trained Transformer (GPT) into everyday applications has opened new frontiers for automation and efficiency. One such practical application is embedding GPT into Excel plugins, enabling users to harness the power of AI directly within their spreadsheets. This article will guide beginners through understanding how to embed GPT into an Excel plugin, using a basic plugin as an example, and discuss the potential benefits of this approach.</p>
+<p>Creating an Excel plugin, also known as an Excel Add-in, using JavaScript or TypeScript involves several steps, from setting up your development environment to writing the code and testing your Add-in within Excel. This guide will walk you through the process, focusing on a simple example to get you started.</p>
+<h3 id="step-1-prerequisites">Step 1: Prerequisites</h3>
+<ul>
+<li><strong>Microsoft Office</strong>: You need Excel installed on your computer or access to Excel on the web.</li>
+<li><strong>Node.js</strong>: Install Node.js, which includes npm (node package manager), to run the development server and manage your project’s dependencies.</li>
+<li><strong>Yeoman and Yeoman Office Generator</strong>: Yeoman helps scaffold new projects, and the Yeoman Office Generator (<code>generator-office</code>) provides templates for creating Office Add-ins.</li>
+</ul>
+<h3 id="step-2-setting-up-your-project">Step 2: Setting Up Your Project</h3>
+<ol>
+<li>
+<p><strong>Install Yeoman and the Yeoman Office Generator</strong>:</p>
+<p>Open a terminal or command prompt and run the following command:</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#A6E22E">npm</span><span style="color:#E6DB74"> install</span><span style="color:#AE81FF"> -g</span><span style="color:#E6DB74"> yo</span><span style="color:#E6DB74"> generator-office</span></span></code></pre>
+</li>
+<li>
+<p><strong>Scaffold Your Excel Add-in Project</strong>:</p>
+<p>Run the Yeoman generator for Office Add-ins:</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#A6E22E">yo</span><span style="color:#E6DB74"> office</span></span></code></pre>
+<p>Follow the prompts to set up your project. Choose:</p>
+<ul>
+<li><strong>Project Type</strong>: Office Add-in Task Pane project</li>
+<li><strong>Script Type</strong>: JavaScript or TypeScript (according to your preference)</li>
+<li><strong>Office Application</strong>: Excel</li>
+</ul>
+<p>This will create a new directory with your project’s name and set up a basic project structure.</p>
+</li>
+</ol>
+<h3 id="step-3-understanding-the-project-structure">Step 3: Understanding the Project Structure</h3>
+<p>Your project directory will contain several files and folders:</p>
+<ul>
+<li><strong>src</strong>: Contains the source code for your project.
+<ul>
+<li><strong>taskpane.html</strong>: The HTML file for the task pane UI.</li>
+<li><strong>taskpane.js</strong> (or <strong>taskpane.ts</strong> for TypeScript): The JavaScript or TypeScript file that contains the logic for your Add-in.</li>
+</ul>
+</li>
+<li><strong>package.json</strong>: Manages your project’s dependencies and scripts.</li>
+<li><strong>manifest.xml</strong>: The XML file that describes your Add-in to Excel.</li>
+</ul>
+<h3 id="step-4-developing-your-add-in">Step 4: Developing Your Add-in</h3>
+<p>Open the <code>taskpane.html</code> and <code>taskpane.js</code> (or <code>.ts</code>) files in your preferred code editor to start adding your custom code. For example, you might want to fetch data from a web API and display it in Excel.</p>
+<h4 id="sample-javascript-code">Sample JavaScript Code</h4>
+<p>If you’re using JavaScript, your <code>taskpane.js</code> might look something like this to write data to an Excel sheet:</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F8F8F2">Office.</span><span style="color:#A6E22E">onReady</span><span style="color:#F8F8F2">((</span><span style="color:#FD971F;font-style:italic">info</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">  if</span><span style="color:#F8F8F2"> (info.host </span><span style="color:#F92672">===</span><span style="color:#F8F8F2"> Office.HostType.Excel) {</span></span>
+<span class="line"><span style="color:#F8F8F2">    document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"run"</span><span style="color:#F8F8F2">).onclick </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> run;</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">async</span><span style="color:#66D9EF;font-style:italic"> function</span><span style="color:#A6E22E"> run</span><span style="color:#F8F8F2">() {</span></span>
+<span class="line"><span style="color:#F92672">  try</span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">    await</span><span style="color:#F8F8F2"> Excel.</span><span style="color:#A6E22E">run</span><span style="color:#F8F8F2">(</span><span style="color:#F92672">async</span><span style="color:#F8F8F2"> (</span><span style="color:#FD971F;font-style:italic">context</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> sheet </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> context.workbook.worksheets.</span><span style="color:#A6E22E">getActiveWorksheet</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> range </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> sheet.</span><span style="color:#A6E22E">getRange</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"A1"</span><span style="color:#F8F8F2">);</span></span>
+<span class="line"><span style="color:#F8F8F2">      range.values </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> [[</span><span style="color:#E6DB74">"Hello, Excel!"</span><span style="color:#F8F8F2">]];</span></span>
+<span class="line"><span style="color:#F92672">      await</span><span style="color:#F8F8F2"> context.</span><span style="color:#A6E22E">sync</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#F8F8F2">    });</span></span>
+<span class="line"><span style="color:#F8F8F2">  } </span><span style="color:#F92672">catch</span><span style="color:#F8F8F2"> (error) {</span></span>
+<span class="line"><span style="color:#F8F8F2">    console.</span><span style="color:#A6E22E">error</span><span style="color:#F8F8F2">(error);</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">}</span></span></code></pre>
+<h4 id="sample-typescript-code">Sample TypeScript Code</h4>
+<p>For TypeScript, you might have a <code>taskpane.ts</code> with similar functionality:</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F8F8F2">Office.</span><span style="color:#A6E22E">onReady</span><span style="color:#F8F8F2">((</span><span style="color:#FD971F;font-style:italic">info</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">Office</span><span style="color:#F8F8F2">.</span><span style="color:#A6E22E;text-decoration:underline">InitializationReason</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">  if</span><span style="color:#F8F8F2"> (info.host </span><span style="color:#F92672">===</span><span style="color:#F8F8F2"> Office.HostType.Excel) {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">    const</span><span style="color:#F8F8F2"> runButton</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">HTMLButtonElement</span><span style="color:#F92672"> =</span><span style="color:#F8F8F2"> document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"run"</span><span style="color:#F8F8F2">) </span><span style="color:#F92672">as</span><span> </span><span style="color:#A6E22E;text-decoration:underline">HTMLButtonElement</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color:#F8F8F2">    runButton.onclick </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> run;</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">async</span><span style="color:#66D9EF;font-style:italic"> function</span><span style="color:#A6E22E"> run</span><span style="color:#F8F8F2">()</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">Promise</span><span style="color:#F8F8F2">&#x3C;</span><span style="color:#66D9EF;font-style:italic">void</span><span style="color:#F8F8F2">> {</span></span>
+<span class="line"><span style="color:#F92672">  try</span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">    await</span><span style="color:#F8F8F2"> Excel.</span><span style="color:#A6E22E">run</span><span style="color:#F8F8F2">(</span><span style="color:#F92672">async</span><span style="color:#F8F8F2"> (</span><span style="color:#FD971F;font-style:italic">context</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">Excel</span><span style="color:#F8F8F2">.</span><span style="color:#A6E22E;text-decoration:underline">RequestContext</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> sheet</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">Excel</span><span style="color:#F8F8F2">.</span><span style="color:#A6E22E;text-decoration:underline">Worksheet</span><span style="color:#F92672"> =</span><span style="color:#F8F8F2"> context.workbook.worksheets.</span><span style="color:#A6E22E">getActiveWorksheet</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> range</span><span style="color:#F92672">:</span><span> </span><span style="color:#A6E22E;text-decoration:underline">Excel</span><span style="color:#F8F8F2">.</span><span style="color:#A6E22E;text-decoration:underline">Range</span><span style="color:#F92672"> =</span><span style="color:#F8F8F2"> sheet.</span><span style="color:#A6E22E">getRange</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"A1"</span><span style="color:#F8F8F2">);</span></span>
+<span class="line"><span style="color:#F8F8F2">      range.values </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> [[</span><span style="color:#E6DB74">"Hello, Excel!"</span><span style="color:#F8F8F2">]];</span></span>
+<span class="line"><span style="color:#F92672">      await</span><span style="color:#F8F8F2"> context.</span><span style="color:#A6E22E">sync</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#F8F8F2">    });</span></span>
+<span class="line"><span style="color:#F8F8F2">  } </span><span style="color:#F92672">catch</span><span style="color:#F8F8F2"> (error) {</span></span>
+<span class="line"><span style="color:#F8F8F2">    console.</span><span style="color:#A6E22E">error</span><span style="color:#F8F8F2">(error);</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">}</span></span></code></pre>
+<h3 id="step-5-testing-your-add-in">Step 5: Testing Your Add-in</h3>
+<ol>
+<li>
+<p><strong>Start the Local Web Server</strong>:</p>
+<p>Run the following command in your project directory:</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#A6E22E">npm</span><span style="color:#E6DB74"> start</span></span></code></pre>
+<p>This command starts a local web server and opens your default web browser to the Office Add-in loading page.</p>
+</li>
+<li>
+<p><strong>Load Your Add-in in Excel</strong>:</p>
+<ul>
+<li>For Excel on the desktop, use the <code>Upload My Add-in</code> button on the Office Add-in loading page to upload the manifest file.</li>
+<li>For Excel on the web, go to <code>Insert</code> > <code>Office Add-ins</code> > <code>Upload My Add-in</code> and upload your manifest file.</li>
+</ul>
+</li>
+</ol>
+<h3 id="step-6-publish-your-add-in">Step 6: Publish Your Add-in</h3>
+<p>To share your Add-in with others, you need to publish it to an Add-in catalog or to the Office Store. The specifics of this process depend on your target audience and distribution needs.</p>
+<h2 id="introduction-to-the-stock-excel-plugin">Introduction to the Stock Excel Plugin</h2>
+<p>The example provided demonstrates a basic Excel plugin designed to showcase how developers can integrate AI functionalities into Excel. The plugin utilizes HTML for the user interface and JavaScript for backend logic, incorporating OpenAI’s GPT and the AlphaVantage API to offer investment advice and stock information directly within Excel.</p>
+<h3 id="key-components-of-the-plugin">Key Components of the Plugin</h3>
+<ol>
+<li>
+<p><strong>HTML File (User Interface):</strong> This file defines the visual layout and elements of the plugin, including the welcome message, input field, and search button. It also includes references to external resources like Fluent UI for styling and Office.js for integrating with Excel.</p>
+</li>
+<li>
+<p><strong>JavaScript File (Logic and API Calls):</strong> This file contains the logic for the plugin, handling events (e.g., clicking the search button), making API calls to OpenAI for generating stock recommendations based on user input, and fetching stock details from AlphaVantage.</p>
+</li>
+<li>
+<p><strong>Environment Variables:</strong> The <code>OPENAI_KEY</code> and <code>ALPHAVANTAGE_KEY</code> are used to authenticate requests to the respective APIs. Note that the provided OpenAI key is expired and for demonstration purposes only.</p>
+</li>
+</ol>
+<h2 id="how-it-works">How It Works</h2>
+<p>When the user enters a description of a company in the input field and clicks the “Search” button, the plugin executes the following steps:</p>
+<ol>
+<li><strong>Capture User Input:</strong> The plugin retrieves the user’s input from the text field.</li>
+<li><strong>OpenAI Chat Function:</strong> It then calls the <code>openAiChat</code> function, sending the input to OpenAI’s API to receive a stock ticker recommendation based on the input.</li>
+<li><strong>AlphaVantage Function:</strong> With the recommended stock ticker, the plugin calls the <code>alphaVantage</code> function to fetch detailed information about the stock from the AlphaVantage API.</li>
+<li><strong>Display Information:</strong> Finally, the plugin displays the fetched stock information in the plugin interface.</li>
+</ol>
+<h3 id="understanding-the-code-structure">Understanding the Code Structure</h3>
+<p>The integration is made up of two main components: an HTML file that serves as the user interface and a JavaScript file that contains the logic and API calls to OpenAI and AlphaVantage.</p>
+<h4 id="html-file-user-interface">HTML File: User Interface</h4>
+<p>This file (<code>index.html</code>) sets up the UI of the Excel plugin. It includes references to external libraries and stylesheets, such as Office.js (for Excel integration) and Fluent UI (for styling). The body of the HTML file contains elements like headers, sections, and inputs that form the user interface of the plugin.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F8F8F2">&#x3C;!</span><span style="color:#F92672">DOCTYPE</span><span style="color:#A6E22E"> html</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;</span><span style="color:#F92672">html</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;</span><span style="color:#F92672">head</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">meta</span><span style="color:#A6E22E"> charset</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"UTF-8"</span><span style="color:#F8F8F2"> /></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">meta</span><span style="color:#A6E22E"> http-equiv</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"X-UA-Compatible"</span><span style="color:#A6E22E"> content</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"IE=Edge"</span><span style="color:#F8F8F2"> /></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">meta</span><span style="color:#A6E22E"> name</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"viewport"</span><span style="color:#A6E22E"> content</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"width=device-width, initial-scale=1"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">title</span><span style="color:#F8F8F2">>Contoso Task Pane Add-in&#x3C;/</span><span style="color:#F92672">title</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">script</span><span style="color:#A6E22E"> src</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"</span><span style="color:#F8F8F2">>&#x3C;/</span><span style="color:#F92672">script</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">link</span><span style="color:#A6E22E"> rel</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"stylesheet"</span><span style="color:#A6E22E"> href</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"</span><span style="color:#F8F8F2">/></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">link</span><span style="color:#A6E22E"> href</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"taskpane.css"</span><span style="color:#A6E22E"> rel</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"stylesheet"</span><span style="color:#A6E22E"> type</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"text/css"</span><span style="color:#F8F8F2"> /></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;/</span><span style="color:#F92672">head</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;</span><span style="color:#F92672">body</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-font-m ms-welcome ms-Fabric"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">header</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-welcome__header ms-bgColor-neutralLighter"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">img</span><span style="color:#A6E22E"> width</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"90"</span><span style="color:#A6E22E"> height</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"90"</span><span style="color:#A6E22E"> src</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"../../assets/logo-filled.png"</span><span style="color:#A6E22E"> alt</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"Contoso"</span><span style="color:#A6E22E"> title</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"Contoso"</span><span style="color:#F8F8F2"> /></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">h1</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-font-su"</span><span style="color:#F8F8F2">>Welcome&#x3C;/</span><span style="color:#F92672">h1</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;/</span><span style="color:#F92672">header</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">section</span><span style="color:#A6E22E"> id</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"sideload-msg"</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-welcome__main"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">h2</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-font-xl"</span><span style="color:#F8F8F2">>Please &#x3C;</span><span style="color:#F92672">a</span><span style="color:#A6E22E"> href</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"https://learn.microsoft.com/"</span><span style="color:#F8F8F2">>sideload&#x3C;/</span><span style="color:#F92672">a</span><span style="color:#F8F8F2">> your add-in to see app body.&#x3C;/</span><span style="color:#F92672">h2</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;/</span><span style="color:#F92672">section</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;</span><span style="color:#F92672">main</span><span style="color:#A6E22E"> id</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"app-body"</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-welcome__main"</span><span style="color:#A6E22E"> style</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"display: none;"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">p</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-font-l"</span><span style="color:#F8F8F2">>Input a description of a company and hit &#x3C;</span><span style="color:#F92672">b</span><span style="color:#F8F8F2">>Search&#x3C;/</span><span style="color:#F92672">b</span><span style="color:#F8F8F2">>.&#x3C;/</span><span style="color:#F92672">p</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">input</span><span style="color:#A6E22E"> type</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"textarea"</span><span style="color:#A6E22E"> id</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"prompt"</span><span style="color:#A6E22E"> placeholder</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"enter prompt here"</span><span style="color:#F8F8F2">>&#x3C;/</span><span style="color:#F44747">input</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">div</span><span style="color:#A6E22E"> role</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"button"</span><span style="color:#A6E22E"> id</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"run"</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-welcome__action ms-Button"</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">            &#x3C;</span><span style="color:#F92672">span</span><span style="color:#A6E22E"> class</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"ms-Button-label"</span><span style="color:#F8F8F2">>Search&#x3C;/</span><span style="color:#F92672">span</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;/</span><span style="color:#F92672">div</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">        &#x3C;</span><span style="color:#F92672">div</span><span style="color:#A6E22E"> id</span><span style="color:#F8F8F2">=</span><span style="color:#E6DB74">"description"</span><span style="color:#F8F8F2">>&#x3C;/</span><span style="color:#F92672">div</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">    &#x3C;/</span><span style="color:#F92672">main</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;/</span><span style="color:#F92672">body</span><span style="color:#F8F8F2">></span></span>
+<span class="line"><span style="color:#F8F8F2">&#x3C;/</span><span style="color:#F92672">html</span><span style="color:#F8F8F2">></span></span></code></pre>
+<h4 id="javascript-file-logic-and-api-calls">JavaScript File: Logic and API Calls</h4>
+<p>This file (<code>commands.js</code>) is responsible for the plugin’s functionality. It uses the Office JavaScript API to interact with Excel and fetches from OpenAI and AlphaVantage to get stock recommendations and details.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> fetch </span><span style="color:#F92672">from</span><span style="color:#E6DB74"> "cross-fetch"</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> { OPENAI_KEY, ALPHAVANTAGE_KEY } </span><span style="color:#F92672">from</span><span style="color:#E6DB74"> "./env"</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F8F8F2">Office.</span><span style="color:#A6E22E">onReady</span><span style="color:#F8F8F2">((</span><span style="color:#FD971F;font-style:italic">info</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">  if</span><span style="color:#F8F8F2"> (info.host </span><span style="color:#F92672">===</span><span style="color:#F8F8F2"> Office.HostType.Excel) {</span></span>
+<span class="line"><span style="color:#F8F8F2">    document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"sideload-msg"</span><span style="color:#F8F8F2">).style.display </span><span style="color:#F92672">=</span><span style="color:#E6DB74"> "none"</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color:#F8F8F2">    document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"app-body"</span><span style="color:#F8F8F2">).style.display </span><span style="color:#F92672">=</span><span style="color:#E6DB74"> "flex"</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color:#F8F8F2">    document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"run"</span><span style="color:#F8F8F2">).onclick </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> run;</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">async</span><span style="color:#66D9EF;font-style:italic"> function</span><span style="color:#A6E22E"> openAiChat</span><span style="color:#F8F8F2">(</span><span style="color:#FD971F;font-style:italic">prompt</span><span style="color:#F8F8F2">) {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> apiKey </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> OPENAI_KEY;</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> response </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#A6E22E"> fetch</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"https://api.openai.com/v1/chat/completions"</span><span style="color:#F8F8F2">, {</span></span>
+<span class="line"><span style="color:#F8F8F2">    method: </span><span style="color:#E6DB74">"POST"</span><span style="color:#F8F8F2">,</span></span>
+<span class="line"><span style="color:#F8F8F2">    headers: {</span></span>
+<span class="line"><span style="color:#E6DB74">      "Content-Type"</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">"application/json"</span><span style="color:#F8F8F2">,</span></span>
+<span class="line"><span style="color:#F8F8F2">      Authorization: </span><span style="color:#E6DB74">`Bearer </span><span style="color:#F92672">${</span><span style="color:#F8F8F2">apiKey</span><span style="color:#F92672">}</span><span style="color:#E6DB74">`</span><span style="color:#F8F8F2">,</span></span>
+<span class="line"><span style="color:#F8F8F2">    },</span></span>
+<span class="line"><span style="color:#F8F8F2">    body: JSON.</span><span style="color:#A6E22E">stringify</span><span style="color:#F8F8F2">({</span></span>
+<span class="line"><span style="color:#F8F8F2">      model: </span><span style="color:#E6DB74">"gpt-3.5-turbo"</span><span style="color:#F8F8F2">,</span></span>
+<span class="line"><span style="color:#F8F8F2">      messages: [{ role: </span><span style="color:#E6DB74">"system"</span><span style="color:#F8F8F2">, content: </span><span style="color:#E6DB74">"Investment advice prompt"</span><span style="color:#F8F8F2"> }, { role: </span><span style="color:#E6DB74">"user"</span><span style="color:#F8F8F2">, content: prompt }],</span></span>
+<span class="line"><span style="color:#F8F8F2">      temperature: </span><span style="color:#AE81FF">0.7</span><span style="color:#F8F8F2">,</span></span>
+<span class="line"><span style="color:#F8F8F2">    }),</span></span>
+<span class="line"><span style="color:#F8F8F2">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> data </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#F8F8F2"> response.</span><span style="color:#A6E22E">json</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#F92672">  return</span><span style="color:#F8F8F2"> data.choices[</span><span style="color:#AE81FF">0</span><span style="color:#F8F8F2">].message.content;</span></span>
+<span class="line"><span style="color:#F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">async</span><span style="color:#66D9EF;font-style:italic"> function</span><span style="color:#A6E22E"> alphaVantage</span><span style="color:#F8F8F2">(</span><span style="color:#FD971F;font-style:italic">symbol</span><span style="color:#F8F8F2">) {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> url </span><span style="color:#F92672">=</span><span style="color:#E6DB74"> `https://www.alphavantage.co/query?function=OVERVIEW&#x26;symbol=</span><span style="color:#F92672">${</span><span style="color:#F8F8F2">symbol</span><span style="color:#F92672">}</span><span style="color:#E6DB74">&#x26;apikey=</span><span style="color:#F92672">${</span><span style="color:#F8F8F2">ALPHAVANTAGE_KEY</span><span style="color:#F92672">}</span><span style="color:#E6DB74">`</span><span style="color:#F8F8F2">;</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> response </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#A6E22E"> fetch</span><span style="color:#F8F8F2">(url);</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">  const</span><span style="color:#F8F8F2"> data </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#F8F8F2"> response.</span><span style="color:#A6E22E">json</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#F92672">  return</span><span style="color:#F8F8F2"> data;</span></span>
+<span class="line"><span style="color:#F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">async</span><span style="color:#66D9EF;font-style:italic"> function</span><span style="color:#A6E22E"> run</span><span style="color:#F8F8F2">() {</span></span>
+<span class="line"><span style="color:#F92672">  try</span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#F92672">    await</span><span style="color:#F8F8F2"> Excel.</span><span style="color:#A6E22E">run</span><span style="color:#F8F8F2">(</span><span style="color:#F92672">async</span><span style="color:#F8F8F2"> (</span><span style="color:#FD971F;font-style:italic">context</span><span style="color:#F8F8F2">) </span><span style="color:#66D9EF;font-style:italic">=></span><span style="color:#F8F8F2"> {</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> inputValue </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"prompt"</span><span style="color:#F8F8F2">).value;</span></span>
+<span class="line"><span style="color:#F92672">      await</span><span style="color:#F8F8F2"> context.</span><span style="color:#A6E22E">sync</span><span style="color:#F8F8F2">();</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> stockResponse </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#A6E22E"> openAiChat</span><span style="color:#F8F8F2">(inputValue);</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> tickerData </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> JSON.</span><span style="color:#A6E22E">parse</span><span style="color:#F8F8F2">(stockResponse);</span></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">      const</span><span style="color:#F8F8F2"> results </span><span style="color:#F92672">=</span><span style="color:#F92672"> await</span><span style="color:#A6E22E"> alphaVantage</span><span style="color:#F8F8F2">(tickerData.ticker);</span></span>
+<span class="line"><span style="color:#F8F8F2">      document.</span><span style="color:#A6E22E">getElementById</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"description"</span><span style="color:#F8F8F2">).innerHTML </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> results.Description;</span></span>
+<span class="line"><span style="color:#F8F8F2">    });</span></span>
+<span class="line"><span style="color:#F8F8F2">  } </span><span style="color:#F92672">catch</span><span style="color:#F8F8F2"> (error) {</span></span>
+<span class="line"><span style="color:#F8F8F2">    console.</span><span style="color:#A6E22E">error</span><span style="color:#F8F8F2">(error);</span></span>
+<span class="line"><span style="color:#F8F8F2">  }</span></span>
+<span class="line"><span style="color:#F8F8F2">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F">// Note: OPENAI_KEY and ALPHAVANTAGE_KEY are placeholders and should be replaced with valid API keys.</span></span></code></pre>
+<h3 id="benefits-of-embedding-gpt-in-excel">Benefits of Embedding GPT in Excel</h3>
+<p>Embedding GPT into Excel applications like this plugin enables several powerful capabilities:</p>
+<ul>
+<li><strong>Automation:</strong> Reduces manual data entry and analysis, saving users valuable time and effort.</li>
+<li><strong>Intelligence:</strong> Leverages AI to provide insightful recommendations and data, enhancing decision-making.</li>
+<li><strong>Customization:</strong> Allows for tailored functionalities to meet specific user needs, making Excel a more versatile tool.</li>
+<li><strong>Accessibility:</strong> Brings advanced AI capabilities into a familiar environment, making it more accessible to a broader audience.</li>
+</ul>
+<h3 id="conclusion">Conclusion</h3>
+<p>Integrating GPT into Excel plugins represents a significant leap forward in making AI accessible and usable in everyday applications. This guide and the provided example serve as a starting point for beginners to explore the integration of AI into Excel, highlighting the steps involved and the benefits of such an approach. As you become more comfortable with these concepts, you can expand upon this foundation to create even more sophisticated and customized Excel plugins, leveraging the full power of AI to transform how we work with data.</p> </content></div></div></div></div> <div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/_pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div>  </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2024<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2024-03-15<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div> </body></html>
