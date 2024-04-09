@@ -522,3 +522,4 @@
 /posts/tech/cpp/Boost_C++20_programming.md
 /posts/tech/2024/azure_cloud_storage.md
 /posts/tech/2024/pytest_adding_fixtures.md
+/posts/tech/2024/getting_started_with_zeep.md
