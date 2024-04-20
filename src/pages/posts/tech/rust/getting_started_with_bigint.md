@@ -17,8 +17,8 @@ First, let's add the `num-bigint` and `num-traits` crates to our project. Add th
 
 ```toml
 [dependencies]
-num-bigint = "0.4"
-num-traits = "0.2"
+num-bigint = "0.4.4"
+num-traits = "0.2.18"
 ```
 
 Now, you can use the `BigInt` and `BigUint` types in your Rust code, as well as various traits provided by `num-traits`.
@@ -49,14 +49,14 @@ Here, we're using the `From` trait to convert primitive integers to `BigInt` and
 `num-bigint` supports various arithmetic operations like addition, subtraction, multiplication, and division. Here's an example of how you can perform these operations:
 
 ```rust
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigInt;
 use num_traits::Zero;
 
 fn main() {
-    let a: BigInt = 12345678901234567890_i64.into();
-    let b: BigInt = 98765432109876543210_i64.into();
+    let a: BigInt = "12345678901234567890".parse().unwrap();
+    let b: BigInt = "98765432109876543210".parse().unwrap();
 
-    let sum = &a + &b;
+    let sum = &a + &b; // Use references for arithmetic operations
     let difference = &b - &a;
     let product = &a * &b;
 
@@ -102,19 +102,22 @@ fn main() {
 ```rust
 use num_bigint::{BigInt, BigUint};
 use num_traits::One;
+use num_integer::Integer;
+
 
 fn main() {
-    let a: BigInt = 12345.into();
-    let b: BigInt = 67890.into();
+    let a: BigInt = BigInt::from(12345); // Explicitly creating BigInt from integer
+    let b: BigInt = BigInt::from(67890); // Explicitly creating BigInt from integer
 
-    let modulo = &a % &b;
-    let gcd = a.gcd(&b);
-    let exp = BigUint::one() << 100; // 2^100
+    let modulo = &a % &b; // No changes needed here
+    let gcd = a.gcd(&b); // No changes needed here
+    let exp = BigUint::one() << 100; // This calculates 2^100 correctly
 
     println!("Modulo: {}", modulo);
     println!("GCD: {}", gcd);
     println!("2^100: {}", exp);
 }
+
 ```
 
 In this example, we're using the `%` operator to calculate the modulo, the `gcd` method to find the greatest common divisor, and bit-shifting to calculate 2 raised to the power of 100.
