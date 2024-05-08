@@ -8,6 +8,7 @@ imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark
 ---
 
 ### 1. Ensure the Compute Engine Instance Has a Static IP Address
+
 By default, Google Compute Engine instances are assigned ephemeral IP addresses, which can change upon reboot. You will want a static IP to ensure your subdomain continues to point to the instance even after restarts.
 
 - **Assign a static IP**: Go to the Google Cloud Console, navigate to the "VPC network" section, then to "External IP addresses". Find your instance’s IP, change it from "Ephemeral" to "Static", and confirm the reservation.

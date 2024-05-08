@@ -22,30 +22,36 @@ In the ever-evolving landscape of web scraping, proxies stand as a pivotal tool 
 
 Web scraping for proxies involves extracting proxy IP addresses and ports from various websites that list such information. Here’s a simplified explanation of how you can use Python to scrape proxies:
 
-#### Tools and Libraries Required:
+#### Tools and Libraries Required
+
 - **Requests**: To send HTTP requests to proxy listing websites.
 - **BeautifulSoup**: For parsing HTML and XML documents.
 - **Random User Agent**: To vary user-agent strings and reduce the chance of detection.
 - **Base64**: For decoding encoded information that may contain proxy details.
 
-#### Steps to Scrape Proxies:
+#### Steps to Scrape Proxies
+
 1. **Setup Requests Session**: Initialize a session and set a random user-agent to mimic a real user's browser behavior.
+
    ```python
    session = requests.Session()
    session.headers.update({'User-Agent': mk_user_agent()})
    ```
 
 2. **Send HTTP Request**: Fetch the webpage containing the proxy list.
+
    ```python
    response = session.get(url)
    ```
 
 3. **Parse the Response**: Use BeautifulSoup to parse the HTML content.
+
    ```python
    soup = BeautifulSoup(response.text, 'html.parser')
    ```
 
 4. **Extract Proxy Details**: Locate the HTML table or script tags where proxy details are listed and extract IPs and ports. For encoded details (e.g., Base64 encoded IPs), decode them to get the plain text.
+
    ```python
    pattern = re.compile(r'Base64\.decode\("([^"]+)"\)')
    encoded_string = pattern.search(js_code).group(1)
@@ -54,7 +60,8 @@ Web scraping for proxies involves extracting proxy IP addresses and ports from v
 
 5. **Compile Proxy List**: Assemble a list of proxies in the desired format (`http://IP:Port`).
 
-#### Example Code:
+#### Example Code
+
 To effectively extract proxy details from a website using BeautifulSoup in Python, follow these practical steps to parse tables and retrieve IP addresses and ports. This guide includes examples to help you easily integrate these methods into your projects.
 
 1. **Setting Up**: Start by making an HTTP request to the target website. For this, use the `requests` library:
@@ -114,7 +121,7 @@ To prevent scraping, websites employ various techniques:
 3. **CAPTCHAs**: Challenging users to complete tasks that are difficult for bots.
 4. **IP Blocking**: Blocking IPs that exhibit non-human behavior or exceed request thresholds.
 
-#### Navigating Around Countermeasures:
+#### Navigating Around Countermeasures
 
 - **Rotating Proxies and User-Agents**: Regularly rotate between different proxies and user-agent strings to mimic genuine user interaction.
 - **Handling JavaScript**: Utilize tools like Selenium or Puppeteer that can render JavaScript if proxies are loaded dynamically through scripts.
