@@ -2,7 +2,7 @@
 pubDate: "2024-06-10T10:00:00.000Z"
 title: "Configuing a Subdomain for Google Compute Engine and Setting Up FastAPI with Apache"
 description: "A comprehensive guide on how to point a subdomain to a Google Compute Engine instance and set up a FastAPI application using Apache as a reverse proxy. This tutorial includes steps from assigning a static IP to your instance, configuring DNS, and setting up SSL with Apache to serve FastAPI applications securely."
-tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL/TLS Certificates", "Web Development", "Proxy Configuration"]
+tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL Certificates", "Web Development", "Proxy Configuration"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark-room-Lhzabp9UrSU"
 ---
