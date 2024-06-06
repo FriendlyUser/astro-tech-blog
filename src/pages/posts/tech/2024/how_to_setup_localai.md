@@ -16,6 +16,7 @@ Large Language Models (LLMs) have revolutionized the field of artificial intelli
 ### The Role of Large Language Models
 
 LLMs are at the forefront of AI advancements, enabling applications across various domains such as healthcare, finance, education, and customer service. Their ability to understand context, generate coherent responses, and perform intricate tasks makes them invaluable. However, deploying these models typically requires significant computational resources, often hosted on powerful servers. This server-side approach, while effective, comes with several drawbacks:
+
 - **Privacy Concerns**: Sensitive data transmitted to servers can be vulnerable to breaches.
 - **Latency**: Round-trip times to and from the server can introduce delays.
 - **Internet Dependency**: Server-side models require a reliable internet connection.
@@ -23,6 +24,7 @@ LLMs are at the forefront of AI advancements, enabling applications across vario
 ### Advantages of On-Device AI
 
 On-device AI, or local AI, mitigates these issues by processing data directly on the user's device. This approach offers several key benefits:
+
 - **Enhanced Privacy**: Data remains on the device, reducing the risk of breaches.
 - **Improved Performance**: Local processing can reduce latency and provide faster responses.
 - **Offline Capabilities**: AI functionalities remain available even without internet access.
@@ -95,7 +97,6 @@ export const streamAdapter: ChatAdapter = {
 ```
 
 To use this code, you will need to install a version of chrome that has Google Gemini Nano enabled (at this time of writing you will need chrome dev). To preview this logic you can go to localai.space/chat.
-
 
 ### Exploring Google’s Built-In AI
 

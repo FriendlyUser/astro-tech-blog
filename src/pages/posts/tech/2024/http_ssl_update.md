@@ -1,5 +1,5 @@
 ---
-pubDate: "2024-06-05T10:00:00.000Z"
+pubDate: "2024-06-10T10:00:00.000Z"
 title: "Configuing a Subdomain for Google Compute Engine and Setting Up FastAPI with Apache"
 description: "A comprehensive guide on how to point a subdomain to a Google Compute Engine instance and set up a FastAPI application using Apache as a reverse proxy. This tutorial includes steps from assigning a static IP to your instance, configuring DNS, and setting up SSL with Apache to serve FastAPI applications securely."
 tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL/TLS Certificates", "Web Development", "Proxy Configuration"]
@@ -14,6 +14,7 @@ By default, Google Compute Engine instances are assigned ephemeral IP addresses,
 - **Assign a static IP**: Go to the Google Cloud Console, navigate to the "VPC network" section, then to "External IP addresses". Find your instance’s IP, change it from "Ephemeral" to "Static", and confirm the reservation.
 
 ### 2. Configure DNS Records
+
 Next, you'll need to configure your DNS settings. This involves adding an A record that points your subdomain to the static IP address of your Compute Engine instance.
 
 - **Access your DNS provider**: Log in to the administrative console for your domain (wherever your domain's DNS is managed, such as GoDaddy, Namecheap, Cloudflare, etc.).
@@ -25,9 +26,11 @@ Next, you'll need to configure your DNS settings. This involves adding an A reco
   - **TTL (Time to Live)**: This is optional and determines how long the DNS servers should cache the information. The default is typically fine.
 
 ### 3. Wait for DNS Propagation
+
 DNS changes can take some time to propagate, typically anywhere from a few minutes to up to 48 hours, though usually much faster (often within an hour). During this time, not all users might be directed to your new IP address when accessing the subdomain.
 
 ### 4. Verify DNS Configuration
+
 You can verify that the DNS record is set up correctly by using tools like `nslookup`, `dig`, or online services to check DNS records. Here’s how you can use `nslookup`:
 
 - Open a command prompt or terminal.
@@ -35,6 +38,7 @@ You can verify that the DNS record is set up correctly by using tools like `nslo
 - Check that the response shows the correct IP address of your Compute Engine instance.
 
 ### 5. Configure Your Server (Optional)
+
 If your Compute Engine instance is running a web server or similar service, make sure it's configured to respond to requests on the subdomain:
 
 - **For web servers** (like Apache or Nginx), you might need to set up a virtual host or server block to specifically handle requests for the subdomain.
@@ -47,12 +51,14 @@ Once the DNS update has fully propagated and your server is configured to handle
 First, ensure that you have Python and FastAPI installed on your system, along with Apache.
 
 - **Install Apache**:
+
   ```bash
   sudo apt update
   sudo apt install apache2
   ```
 
 - **Install FastAPI and Uvicorn** (FastAPI's preferred ASGI server):
+
   ```bash
   sudo apt install python3-pip
   pip3 install fastapi uvicorn
@@ -63,6 +69,7 @@ First, ensure that you have Python and FastAPI installed on your system, along w
 Prepare your FastAPI application. If you don't have one, you can create a simple example:
 
 - **Create a new file** (`main.py`):
+
   ```python
   from fastapi import FastAPI
 
@@ -74,6 +81,7 @@ Prepare your FastAPI application. If you don't have one, you can create a simple
   ```
 
 - **Run it locally** (for testing):
+
   ```bash
   uvicorn main:app --host 0.0.0.0 --port 8000
   ```
@@ -81,16 +89,19 @@ Prepare your FastAPI application. If you don't have one, you can create a simple
 ### Step 3: Set Up Apache as a Reverse Proxy
 
 - **Enable necessary Apache modules**:
+
   ```bash
   sudo a2enmod proxy proxy_http ssl
   ```
 
 - **Create a new Apache configuration** for your site or edit an existing one:
+
   ```bash
   sudo nano /etc/apache2/sites-available/yourdomain.com.conf
   ```
 
 - **Insert the following configuration**, adjusting ServerName, SSLCertificateFile, and SSLCertificateKeyFile as needed:
+
   ```apache
   <VirtualHost *:443>
       ServerName yourdomain.com
@@ -117,6 +128,7 @@ Prepare your FastAPI application. If you don't have one, you can create a simple
   ```
 
 - **Enable the site and restart Apache**:
+
   ```bash
   sudo a2ensite yourdomain.com.conf
   sudo systemctl restart apache2
@@ -125,6 +137,7 @@ Prepare your FastAPI application. If you don't have one, you can create a simple
 ### Step 4: Obtain and Configure SSL/TLS Certificates
 
 - **Use Certbot (from Let's Encrypt) for a free SSL certificate**:
+
   ```bash
   sudo apt-get install certbot python3-certbot-apache
   sudo certbot --apache -d yourdomain.com
@@ -136,7 +149,7 @@ Prepare your FastAPI application. If you don't have one, you can create a simple
 
 After setting up everything, access `https://yourdomain.com` in your browser to see if your FastAPI application is served over HTTPS via Apache. You can check the Apache and FastAPI logs for any errors or debugging information.
 
-### Notes:
+### Notes
 
 - **Firewall Settings**: Ensure your firewall settings allow traffic on both ports 80 and 443.
 - **DNS Settings**: Make sure your DNS records are pointing to the server where Apache is installed.
