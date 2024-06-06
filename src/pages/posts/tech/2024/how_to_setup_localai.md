@@ -96,7 +96,7 @@ export const streamAdapter: ChatAdapter = {
 };
 ```
 
-To use this code, you will need to install a version of chrome that has Google Gemini Nano enabled (at this time of writing you will need chrome dev). To preview this logic you can go to localai.space/chat.
+To use this code, you will need to install a version of chrome that has Google Gemini Nano enabled (at this time of writing you will need chrome dev). To preview this logic you can go to [https://localai.space/chat](localai.space).
 
 ### Exploring Google’s Built-In AI
 
