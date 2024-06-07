@@ -7,7 +7,7 @@ layout: "@/templates/BasePost.astro"
 imgSrc: "https://images.unsplash.com/photo-1525338078858-d762b5e32f2c"
 ---
 
-# The Importance of Large Language Models and Privacy with Local AI (On-Device)
+## The Importance of Large Language Models and Privacy with Local AI (On-Device)
 
 ## Introduction
 
