@@ -163,9 +163,9 @@
 <p>In LaTeX, there are several commands that are used to signal the end of the document. These commands serve to close any open environments and finalize the document output. Here are the most common ending commands:</p>
 <ol>
 <li>“\end{document}”: This command is used to signal the end of the document. It should always be placed at the very end of the document, after all other content.</li>
-<li>“\end{abstract}”: This command is used to signal the end of the abstract environment. It should be placed at the end of the abstract section, before the start of the main text.</li>
-<li>“\end{dedication}”: This command is used to signal the end of the dedication environment. It should be placed at the end of the dedication section, before the start of the main text.</li>
-<li>“\end{figure}” or “\end{table}”: These commands are used to signal the end of the figure or table environment, respectively. They should be placed at the end of the figure or table, after any captions or other content.</li>
+<li>”\end{abstract}”: This command is used to signal the end of the abstract environment. It should be placed at the end of the abstract section, before the start of the main text.</li>
+<li>”\end{dedication}”: This command is used to signal the end of the dedication environment. It should be placed at the end of the dedication section, before the start of the main text.</li>
+<li>”\end{figure}” or “\end{table}”: These commands are used to signal the end of the figure or table environment, respectively. They should be placed at the end of the figure or table, after any captions or other content.</li>
 </ol>
 <p>It’s important to note that all of these ending commands should be used to close the corresponding environment or section. If an environment is not properly closed with its ending command, LaTeX may produce errors or unexpected output. It’s also important to ensure that the ending commands are placed in the correct location within the document. By placing the commands in the correct location, you can ensure that the document output is accurate and complete.</p>
 <p>In academic writing, it’s common to cite sources and provide a bibliography of references used in the document. LaTeX makes it easy to manage citations and create a bibliography using built-in commands. Here’s an introduction to using the bibliography and citation commands in LaTeX:</p>
@@ -334,17 +334,17 @@
 </ol>
 <ul>
 <li>“\citep{key}”: This command generates a citation in parentheses, like (Author, Year).</li>
-<li>“\citet{key}”: This command generates a citation in text, like Author (Year).</li>
-<li>“\citeauthor{key}”: This command generates the author’s name, like Author.</li>
-<li>“\citeyear{key}”: This command generates the publication year, like (Year).</li>
+<li>”\citet{key}”: This command generates a citation in text, like Author (Year).</li>
+<li>”\citeauthor{key}”: This command generates the author’s name, like Author.</li>
+<li>”\citeyear{key}”: This command generates the publication year, like (Year).</li>
 </ul>
 <ol start="4">
 <li>Customizing citation styles: The natbib package allows you to customize your citation style using various options. For example:</li>
 </ol>
 <ul>
 <li>“round”: This option makes the citations appear in round brackets instead of square brackets.</li>
-<li>“numbers”: This option makes the citations appear as numbers instead of author-year pairs.</li>
-<li>“sort&#x26;compress”: This option sorts and compresses multiple citations into a range, like [1-3].</li>
+<li>”numbers”: This option makes the citations appear as numbers instead of author-year pairs.</li>
+<li>”sort&#x26;compress”: This option sorts and compresses multiple citations into a range, like [1-3].</li>
 </ul>
 <p>You can add these options to the “\bibliographystyle” command, like this:</p>
 <pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#66D9EF">\bibliographystyle</span><span style="color:#F8F8F2">{plainnat}</span></span>
