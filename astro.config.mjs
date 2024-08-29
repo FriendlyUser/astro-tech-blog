@@ -3,6 +3,9 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import robotsTxt from 'astro-robots-txt';
+import { rehypeShiki } from '@astrojs/markdown-remark'
+import rehypeMermaid from 'rehype-mermaid'
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,6 +23,11 @@ export default defineConfig({
       // https://github.com/shikijs/shiki/blob/main/docs/themes.md
       theme: 'monokai',
     },
+    rehypePlugins: [
+      rehypeMermaid,
+      rehypeShiki,
+    ],
   },
+  
   integrations: [react(), tailwind({}), sitemap(), robotsTxt()],
 });

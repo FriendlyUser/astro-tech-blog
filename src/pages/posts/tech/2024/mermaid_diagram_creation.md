@@ -1,10 +1,10 @@
 ---
-title = "Mastering Diagram Creation with Mermaid: From Flowcharts to Gantt Charts"
-description = "Dive into the world of Mermaid, a versatile diagramming tool that uses simple text-based syntax. Learn how to create flowcharts, sequence diagrams, Gantt charts, and more, directly in your documentation or web projects. Discover advanced features and practical tips for integrating Mermaid into your workflow."
-tags = ["Mermaid", "Diagrams", "Flowcharts", "Gantt Charts", "Documentation", "Visualization", "JavaScript"]
-pubDate = "2024-03-23T19:17:25.000Z"
-layout = "@/templates/BasePost.astro"
-imgSrc = "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
+title: "Mastering Diagram Creation with Mermaid: From Flowcharts to Gantt Charts"
+description: "Dive into the world of Mermaid, a versatile diagramming tool that uses simple text-based syntax. Learn how to create flowcharts, sequence diagrams, Gantt charts, and more, directly in your documentation or web projects. Discover advanced features and practical tips for integrating Mermaid into your workflow."
+tags: ["Mermaid", "Diagrams", "Flowcharts", "Gantt Charts", "Documentation", "Visualization", "JavaScript"]
+pubDate: "2024-08-29T19:17:25.000Z"
+layout: "@/templates/BasePost.astro"
+imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
 ---
 
 ## A Comprehensive Guide to Using Mermaid for Diagramming
