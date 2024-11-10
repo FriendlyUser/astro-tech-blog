@@ -181,6 +181,28 @@ You can also use ControlClick command to click a specific control on a window wi
 ControlClick Button2, WindowTitle
 ```
 
+Script in order to resize windows.
+
+```
+#Requires AutoHotkey v2.0-
+#Warn
+#SingleInstance
+
+#=::resizeWindow(WinGetID("A")) ; [Win]+[=]
+
+resizeWindow(window) {
+    WinGetPos , , &W, &H, window
+    width := InputBox("Width: " W "px", "Resize", "w100 h84", W - Mod(W, 4))
+    if (width.Result = "OK") {
+        height := InputBox("Height: " H "px", "Resize", "w100 h84", H - Mod(H, 4))
+        if (height.Result = "OK") {
+            WinMove , , width.Value, height.Value, window
+        }
+    }
+    return
+}
+```
+
 For more details and examples, please refer to https://www.autohotkey.com/docs/commands/Click.html, https://www.autohotkey.com/docs/commands/MouseClick.html, and https://www.autohotkey.com/docs/commands/ControlClick.html.
 
 You can record mouse actions with Pulover's Macro Creator by following these steps :
@@ -215,5 +237,6 @@ You can record keyboard actions with Pulover's Macro Creator by following these 
 - Make keyboard actions. You can also record mouse actions if you want.
 - Press the record hotkey again to stop.
 - Press the playback hotkey (default is F3) to reproduce your actions.
+
 
 You can also edit, save, load, and export your recorded macros using Pulover's Macro Creator. For more details and examples, please refer to https://www.macrocreator.com/docs/Tutorial.html and https://www.macrocreator.com/help/.
