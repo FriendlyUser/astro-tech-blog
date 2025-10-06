@@ -2,7 +2,7 @@
 title: "AI Training Platforms Compared: Outlier vs. Appen vs. Aligner - Why the Newcomer Wins in 2025"
 description: "A deep dive into AI training platforms Outlier, Appen, and the new Aligner. Discover the pros and cons of each, the impact of Meta's acquisition on Outlier, and why Aligner is the top choice for remote AI work."
 tags: ["AI Training", "Aligner", "Outlier", "Appen", "Remote Work", "Gig Economy", "Artificial Intelligence", "Side Hustle"]
-pubDate: "2025-10-03T19:17:25.000Z"
+pubDate: "2025-10-07T19:17:25.000Z"
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
 ---

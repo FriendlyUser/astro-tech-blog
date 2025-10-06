@@ -74,6 +74,7 @@ def make_articles_for_medium():
     # find all markdown files in the post folders
     for postFolder in postFolders:
         for post in glob.glob(f"{basePostFolder}/{postFolder}/*.md"):
+            print(post)
             if posted_articles >= max_posted_articles:
               print("Max articles posted")
               break
@@ -88,7 +89,7 @@ def make_articles_for_medium():
             # pubDate > currDate
             try:
               if parse(post_contents["pubDate"]).replace(tzinfo=None) < datetime.now():
-                  # print(f"Skipping {adjustedPost} because date is in the past")
+                  print(f"Skipping {adjustedPost} because date is in the past")
                   continue
               else: 
                   pass
