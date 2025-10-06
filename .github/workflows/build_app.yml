@@ -23,7 +23,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         name: Update node
         with:
           node-version: '18'
