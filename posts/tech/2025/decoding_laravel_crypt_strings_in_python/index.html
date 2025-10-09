@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="en"> <head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Replicating Laravel&#39;s Crypt::decryptString Logic in Python - FriendlyUsers Tech Blog</title><meta name="description" content="A technical deep dive into decoding Laravel encrypted strings using Python's 'pycryptodome' library. Learn the AES-256-CBC, HMAC-SHA256 protocol used by Laravel and how to successfully verify the MAC and decrypt the payload outside the PHP environment."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch (err) {
+          // do nothing here
+        }
+      }
+    </script><!-- Google Tag Manager --><!-- End Google Tag Manager --><link rel="stylesheet" href="/_astro/index.DFWZl3Z8.css" />
+<style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);-webkit-clip-path:inset(50%);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}@media print{.no-print,.no-print *{display:none!important}}
+</style><script type="module" src="/_astro/hoisted.CcuKkQrI.js"></script></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Replicating Laravel&#x27;s Crypt::decryptString Logic in Python</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2025-10-17T19:17:25.000Z</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Laravel" style="padding-right:3px"> <category>Laravel<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Cryptography" style="padding-right:3px"> <category>Cryptography<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/Python" style="padding-right:3px"> <category>Python<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/AES-256-CBC" style="padding-right:3px"> <category>AES-256-CBC<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/HMAC-SHA256" style="padding-right:3px"> <category>HMAC-SHA256<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/pycryptodome" style="padding-right:3px"> <category>pycryptodome<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/3267094508_short_ruler_in_the_grass.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <h2 id="decoding-laravel-encrypted-strings-a-deep-dive-with-python">Decoding Laravel Encrypted Strings: A Deep Dive with Python 🐍</h2>
+<p>Laravel, a popular PHP web framework, uses a robust mechanism for encrypting data, primarily via the <code>Crypt</code> facade and functions like <code>encryptString()</code>. This encryption is essential for securely storing sensitive data in databases or passing it across channels. If you ever need to <strong>decouple</strong> a Laravel application from its data—perhaps for migration, auditing, or integration with a non-PHP service—you’ll need to replicate its decryption logic.</p>
+<p>This article dissects the Python code provided, explaining the cryptographic process Laravel employs and how to successfully decrypt its strings outside the PHP ecosystem, using <strong>Python’s <code>pycryptodome</code></strong> library and standard modules.</p>
+<hr>
+<h2 id="understanding-laravels-encryption-protocol">Understanding Laravel’s Encryption Protocol</h2>
+<p>Laravel’s encryption is built upon a standard, secure protocol. Knowing the components is crucial for successful decryption:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">Component</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left"><strong>Algorithm</strong></td><td align="left"><strong>AES-256-CBC</strong> (Advanced Encryption Standard with Cipher Block Chaining).</td></tr><tr><td align="left"><strong>Key Size</strong></td><td align="left"><strong>256 bits</strong> (32 bytes), derived from the <code>APP_KEY</code> in the <code>.env</code> file.</td></tr><tr><td align="left"><strong>Initialization Vector (IV)</strong></td><td align="left">A <strong>16-byte</strong> random string, ensuring identical plaintext encrypts to different ciphertext each time.</td></tr><tr><td align="left"><strong>Message Authentication Code (MAC)</strong></td><td align="left">A <strong>HMAC-SHA256</strong> hash used for integrity and authenticity checks.</td></tr><tr><td align="left"><strong>Payload Format</strong></td><td align="left">A JSON object containing <code>iv</code>, <code>value</code>, and <code>mac</code>, all <strong>Base64-encoded</strong>, and then the entire JSON is <strong>Base64-encoded</strong> again.</td></tr></tbody></table>
+<p>This multi-step encoding ensures a single, URL-safe, and text-friendly encrypted string.</p>
+<hr>
+<h2 id="step-by-step-decryption-in-python">Step-by-Step Decryption in Python</h2>
+<p>The provided Python function, <code>decrypt_laravel_string</code>, precisely mirrors the reverse of Laravel’s encryption process.</p>
+<h3 id="1-extracting-the-encryption-key">1. Extracting the Encryption Key</h3>
+<p>The <strong><code>APP_KEY</code></strong> in a Laravel <code>.env</code> file is often prefixed with <code>base64:</code>. The first step is to strip this prefix and decode the remaining string to get the raw 32-byte key.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#88846F"># 1. Decode the APP_KEY from its 'base64:' format</span></span>
+<span class="line"><span style="color:#F8F8F2">key </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(app_key.split(</span><span style="color:#E6DB74">'base64:'</span><span style="color:#F8F8F2">)[</span><span style="color:#AE81FF">1</span><span style="color:#F8F8F2">])</span></span></code></pre>
+<h3 id="2-decoding-and-parsing-the-payload">2. Decoding and Parsing the Payload</h3>
+<p>The entire encrypted string is a single Base64-encoded JSON payload. This must be decoded back into a JSON string, and then parsed into a Python dictionary.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#88846F"># 2. Base64 decode the encrypted payload</span></span>
+<span class="line"><span style="color:#F8F8F2">payload </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(encrypted_str)</span></span>
+<span class="line"><span style="color:#F8F8F2"> </span></span>
+<span class="line"><span style="color:#88846F"># 3. Parse the JSON to get iv, value, and mac</span></span>
+<span class="line"><span style="color:#F8F8F2">data </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> json.loads(payload)</span></span></code></pre>
+<p>Once parsed, the values for <code>iv</code> (Initialization Vector) and <code>value</code> (the ciphertext) are themselves Base64-encoded and must be decoded to their raw byte format for the actual decryption.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F8F8F2">iv </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(data[</span><span style="color:#E6DB74">'iv'</span><span style="color:#F8F8F2">])</span></span>
+<span class="line"><span style="color:#F8F8F2">value </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(data[</span><span style="color:#E6DB74">'value'</span><span style="color:#F8F8F2">])</span></span>
+<span class="line"><span style="color:#F8F8F2">mac </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'mac'</span><span style="color:#F8F8F2">] </span><span style="color:#88846F"># Stays as a hex string for comparison</span></span></code></pre>
+<h3 id="3-verifying-the-mac-integrity-check-️">3. Verifying the MAC (Integrity Check) 🛡️</h3>
+<p>The <strong>Message Authentication Code (MAC)</strong> is the cornerstone of secure decryption. It ensures that the encrypted data has not been tampered with since it was created.</p>
+<p>The MAC is calculated using <strong>HMAC-SHA256</strong> over the <strong>concatenation</strong> of the Base64-encoded <code>iv</code> and <code>value</code> strings, using the raw encryption <code>key</code>.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#88846F"># 4. Verify the MAC</span></span>
+<span class="line"><span style="color:#F8F8F2">message </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'iv'</span><span style="color:#F8F8F2">] </span><span style="color:#F92672">+</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'value'</span><span style="color:#F8F8F2">]</span></span>
+<span class="line"><span style="color:#F8F8F2">expected_mac </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> hmac.new(key, </span><span style="color:#FD971F;font-style:italic">msg</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">message.encode(), </span><span style="color:#FD971F;font-style:italic">digestmod</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">hashlib.sha256).hexdigest()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">if</span><span style="color:#F92672"> not</span><span style="color:#F8F8F2"> hmac.compare_digest(expected_mac, mac):</span></span>
+<span class="line"><span style="color:#F92672">    raise</span><span style="color:#66D9EF;font-style:italic"> ValueError</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"MAC is invalid. The payload has been tampered with."</span><span style="color:#F8F8F2">)</span></span></code></pre>
+<p>If the calculated MAC doesn’t match the one in the payload, the function raises an error, preventing the decryption of potentially malicious data.</p>
+<h3 id="4-decrypting-the-ciphertext">4. Decrypting the Ciphertext</h3>
+<p>With the key and IV successfully extracted and the MAC verified, the final step is the <strong>AES-256-CBC</strong> decryption. This requires the <code>pycryptodome</code> library’s <code>AES</code> module.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#88846F"># 5. Decrypt the value using AES-256-CBC</span></span>
+<span class="line"><span style="color:#F8F8F2">cipher </span><span style="color:#F92672">=</span><span style="color:#AE81FF"> AES</span><span style="color:#F8F8F2">.new(key, </span><span style="color:#AE81FF">AES</span><span style="color:#F8F8F2">.</span><span style="color:#AE81FF">MODE_CBC</span><span style="color:#F8F8F2">, iv)</span></span>
+<span class="line"><span style="color:#F8F8F2">decrypted_padded </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> cipher.decrypt(value)</span></span></code></pre>
+<p>The output of the decryption step, <code>decrypted_padded</code>, includes padding (usually PKCS#7) to ensure the plaintext was a multiple of the 16-byte block size. This padding must be removed.</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#88846F"># 6. Unpad the decrypted data and return as a string</span></span>
+<span class="line"><span style="color:#F8F8F2">decrypted </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> unpad(decrypted_padded, </span><span style="color:#AE81FF">AES</span><span style="color:#F8F8F2">.block_size)</span></span>
+<span class="line"><span style="color:#F92672">return</span><span style="color:#F8F8F2"> decrypted.decode(</span><span style="color:#E6DB74">'utf-8'</span><span style="color:#F8F8F2">)</span></span></code></pre>
+<p>Finally, the resulting bytes are decoded into a standard UTF-8 string, yielding the original plaintext.</p>
+<hr>
+<h2 id="summary-of-dependencies">Summary of Dependencies</h2>
+<p>To execute this decryption logic successfully, you must have the <strong><code>pycryptodome</code></strong> library installed, as it provides the necessary robust cryptographic primitives (AES cipher and unpadding utility).</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#A6E22E">pip</span><span style="color:#E6DB74"> install</span><span style="color:#E6DB74"> pycryptodome</span></span></code></pre>
+<p>The other modules (<code>base64</code>, <code>json</code>, <code>hmac</code>, <code>hashlib</code>) are included in Python’s standard library.</p>
+<p>The full sample code is</p>
+<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> base64</span></span>
+<span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> json</span></span>
+<span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> hmac</span></span>
+<span class="line"><span style="color:#F92672">import</span><span style="color:#F8F8F2"> hashlib</span></span>
+<span class="line"><span style="color:#F92672">from</span><span style="color:#F8F8F2"> Crypto.Cipher </span><span style="color:#F92672">import</span><span style="color:#AE81FF"> AES</span></span>
+<span class="line"><span style="color:#F92672">from</span><span style="color:#F8F8F2"> Crypto.Util.Padding </span><span style="color:#F92672">import</span><span style="color:#F8F8F2"> unpad</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#66D9EF;font-style:italic">def</span><span style="color:#A6E22E"> decrypt_laravel_string</span><span style="color:#F8F8F2">(</span><span style="color:#FD971F;font-style:italic">encrypted_str</span><span style="color:#F8F8F2">, </span><span style="color:#FD971F;font-style:italic">app_key</span><span style="color:#F8F8F2">):</span></span>
+<span class="line"><span style="color:#E6DB74">    """</span></span>
+<span class="line"><span style="color:#E6DB74">    Decrypts a string that was encrypted using Laravel's Crypt::encryptString.</span></span>
+<span class="line"><span style="color:#E6DB74">    """</span></span>
+<span class="line"><span style="color:#F92672">    try</span><span style="color:#F8F8F2">:</span></span>
+<span class="line"><span style="color:#88846F">        # 1. Decode the APP_KEY from its 'base64:' format</span></span>
+<span class="line"><span style="color:#F8F8F2">        key </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(app_key.split(</span><span style="color:#E6DB74">'base64:'</span><span style="color:#F8F8F2">)[</span><span style="color:#AE81FF">1</span><span style="color:#F8F8F2">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F">        # 2. Base64 decode the encrypted payload</span></span>
+<span class="line"><span style="color:#F8F8F2">        payload </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(encrypted_str)</span></span>
+<span class="line"><span style="color:#F8F8F2">        </span></span>
+<span class="line"><span style="color:#88846F">        # 3. Parse the JSON to get iv, value, and mac</span></span>
+<span class="line"><span style="color:#F8F8F2">        data </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> json.loads(payload)</span></span>
+<span class="line"><span style="color:#F8F8F2">        iv </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(data[</span><span style="color:#E6DB74">'iv'</span><span style="color:#F8F8F2">])</span></span>
+<span class="line"><span style="color:#F8F8F2">        value </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> base64.b64decode(data[</span><span style="color:#E6DB74">'value'</span><span style="color:#F8F8F2">])</span></span>
+<span class="line"><span style="color:#F8F8F2">        mac </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'mac'</span><span style="color:#F8F8F2">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F">        # 4. Verify the MAC to ensure the data was not tampered with</span></span>
+<span class="line"><span style="color:#F8F8F2">        message </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'iv'</span><span style="color:#F8F8F2">] </span><span style="color:#F92672">+</span><span style="color:#F8F8F2"> data[</span><span style="color:#E6DB74">'value'</span><span style="color:#F8F8F2">]</span></span>
+<span class="line"><span style="color:#F8F8F2">        expected_mac </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> hmac.new(key, </span><span style="color:#FD971F;font-style:italic">msg</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">message.encode(), </span><span style="color:#FD971F;font-style:italic">digestmod</span><span style="color:#F92672">=</span><span style="color:#F8F8F2">hashlib.sha256).hexdigest()</span></span>
+<span class="line"><span style="color:#F8F8F2">        </span></span>
+<span class="line"><span style="color:#F92672">        if</span><span style="color:#F92672"> not</span><span style="color:#F8F8F2"> hmac.compare_digest(expected_mac, mac):</span></span>
+<span class="line"><span style="color:#F92672">            raise</span><span style="color:#66D9EF;font-style:italic"> ValueError</span><span style="color:#F8F8F2">(</span><span style="color:#E6DB74">"MAC is invalid. The payload has been tampered with."</span><span style="color:#F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F">        # 5. Decrypt the value using AES-256-CBC</span></span>
+<span class="line"><span style="color:#F8F8F2">        cipher </span><span style="color:#F92672">=</span><span style="color:#AE81FF"> AES</span><span style="color:#F8F8F2">.new(key, </span><span style="color:#AE81FF">AES</span><span style="color:#F8F8F2">.</span><span style="color:#AE81FF">MODE_CBC</span><span style="color:#F8F8F2">, iv)</span></span>
+<span class="line"><span style="color:#F8F8F2">        decrypted_padded </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> cipher.decrypt(value)</span></span>
+<span class="line"><span style="color:#F8F8F2">        </span></span>
+<span class="line"><span style="color:#88846F">        # 6. Unpad the decrypted data and return as a string</span></span>
+<span class="line"><span style="color:#F8F8F2">        decrypted </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> unpad(decrypted_padded, </span><span style="color:#AE81FF">AES</span><span style="color:#F8F8F2">.block_size)</span></span>
+<span class="line"><span style="color:#F92672">        return</span><span style="color:#F8F8F2"> decrypted.decode(</span><span style="color:#E6DB74">'utf-8'</span><span style="color:#F8F8F2">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F92672">    except</span><span style="color:#66D9EF;font-style:italic"> Exception</span><span style="color:#F92672"> as</span><span style="color:#F8F8F2"> e:</span></span>
+<span class="line"><span style="color:#F92672">        return</span><span style="color:#66D9EF;font-style:italic"> f</span><span style="color:#E6DB74">"An error occurred: </span><span style="color:#AE81FF">{</span><span style="color:#F8F8F2">e</span><span style="color:#AE81FF">}</span><span style="color:#E6DB74">"</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F"># --- Usage ---</span></span>
+<span class="line"><span style="color:#88846F"># Your Laravel APP_KEY from the .env file</span></span>
+<span class="line"><span style="color:#AE81FF">LARAVEL_APP_KEY</span><span style="color:#F92672"> =</span><span style="color:#E6DB74"> "base64:..."</span><span style="color:#F8F8F2"> </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#88846F"># The encrypted string from your database</span></span>
+<span class="line"><span style="color:#AE81FF">ENCRYPTED_STRING</span><span style="color:#F92672"> =</span><span style="color:#E6DB74"> "eyJpdiI6Ik9MbUpk...iJ9"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F8F8F2">decrypted_message </span><span style="color:#F92672">=</span><span style="color:#F8F8F2"> decrypt_laravel_string(</span><span style="color:#AE81FF">ENCRYPTED_STRING</span><span style="color:#F8F8F2">, </span><span style="color:#AE81FF">LARAVEL_APP_KEY</span><span style="color:#F8F8F2">)</span></span>
+<span class="line"><span style="color:#66D9EF">print</span><span style="color:#F8F8F2">(decrypted_message)</span></span></code></pre>
+<p>The code essentially runs this logic <code>Crypt::decryptString($value);</code> assuming the right key is used.</p> </content></div></div></div></div> <div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/_pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div>  </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2025<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2025-10-09<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div> </body></html>
