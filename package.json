@@ -52,18 +52,8 @@
     "vue-material-design-icons": "^5.0.0"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "^6.3.9",
     "date-fns": "^2.28.0",
     "react": "^18.2.0"
-  },
-  "resolutions": {
-    "astro": "^4.4.15"
-  },
-  "overrides": {
-    "astro": "^4.4.15"
-  },
-  "volta": {
-    "node": "16.15.1"
   },
   "author": "FriendlyUser (https://github.com/friendlyuser)"
 }
