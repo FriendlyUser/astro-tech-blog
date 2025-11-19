@@ -1,18 +1,16 @@
-import {
-  GradientText,
-  HeroAvatar,
-  HeroSocial,
-  Section,
-} from 'astro-boilerplate-components';
+// import {
+//   GradientText,
+
+// } from 'astro-boilerplate-components';
+
+import { HeroAvatar } from '@/components/HeroAvatar';
+import { HeroSocial } from '@/components/HeroSocial';
+import { Section } from '@/components/Section';
 
 const Hero = () => (
   <Section>
     <HeroAvatar
-      title={
-        <>
-          Hi there, I'm <GradientText>David</GradientText> 👋
-        </>
-      }
+      title={<>Hi there, I'm David 👋</>}
       description={
         <>
           I am a software developer who blogs and deploys tools for investing.

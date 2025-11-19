@@ -1,7 +1,7 @@
 ---
-import {Tags } from "astro-boilerplate-components";
+import { Tags } from '@/components/Tags';
 
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
+// import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import { BlogPost } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
@@ -9,7 +9,7 @@ import { AppConfig } from '@/utils/AppConfig';
 import BottomSection from '../partials/BottomSection.astro';
 
 export interface Props {
-  content: CustomIFrontMatter;
+  content: any;
 }
 
 const { content } = Astro.props as Props;

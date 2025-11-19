@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import robotsTxt from 'astro-robots-txt';
 import { rehypeShiki } from '@astrojs/markdown-remark'
-import rehypeMermaid from 'rehype-mermaid'
+// import rehypeMermaid from 'rehype-mermaid'
 
 
 // https://astro.build/config
@@ -24,7 +24,7 @@ export default defineConfig({
       theme: 'monokai',
     },
     rehypePlugins: [
-      rehypeMermaid,
+      // rehypeMermaid,
       rehypeShiki,
     ],
   },
