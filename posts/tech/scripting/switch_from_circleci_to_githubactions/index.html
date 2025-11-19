@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>How I converted circleCi to github actions - FriendlyUsers Tech Blog</title><meta name="description" content="For my latex diagrams project I converted the ci from circle to github actions."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="text/javascript">
+<!DOCTYPE html><html lang="en"> <head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.QW52Ox2j.js"></script><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>How I converted circleCi to github actions - FriendlyUsers Tech Blog</title><meta name="description" content="For my latex diagrams project I converted the ci from circle to github actions."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="module">(function(e,n,r,t,m){e[t]=e[t]||[],e[t].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var g=n.getElementsByTagName(r)[0],a=n.createElement(r),s="";a.async=!0,a.src="https://www.googletagmanager.com/gtm.js?id="+m+s,g.parentNode.insertBefore(a,g)})(window,document,"script","dataLayer","GTM-K8P5P8FQ");</script><script type="text/javascript">
       let slideIndex = 1;
       showSlides(slideIndex);
 
@@ -35,9 +35,33 @@
           // do nothing here
         }
       }
-    </script><!-- Google Tag Manager --><!-- End Google Tag Manager --><link rel="stylesheet" href="/_astro/index.DFWZl3Z8.css" />
-<style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);-webkit-clip-path:inset(50%);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}@media print{.no-print,.no-print *{display:none!important}}
-</style><script type="module" src="/_astro/hoisted.CcuKkQrI.js"></script></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog">GitHub</a></li><li class="hover:text-white"><a href="/photos">Photos</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How I converted circleCi to github actions</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Sun, 19 Feb 2023</div><div class="flex place-content-center pt-2"><div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/github actions" style="padding-right:3px"> <category>github actions<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/circleci" style="padding-right:3px"> <category>circleci<!-- --> </category></a></div> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-cyan-400 text-cyan-900"> <a href="/tags/ci" style="padding-right:3px"> <category>ci<!-- --> </category></a></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-w-3 aspect-h-2"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1924742632.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <p>Continuous Integration (CI) is a software development practice that involves continuously integrating code changes into a single codebase repository, typically multiple times a day. The main goal of Continuous Integration is to catch and fix integration problems as early as possible in the development process, which helps to ensure that the code remains stable and that the software is always in a releasable state.</p>
+    </script><!-- Google Tag Manager --><script type="module">window.dataLayer=window.dataLayer||[];function a(){dataLayer.push(arguments)}a("js",new Date);a("config","UA-119155027-6");</script><!-- End Google Tag Manager --><link rel="stylesheet" href="/_astro/index.BvkiO192.css">
+<style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}@media print{.no-print,.no-print *{display:none!important}}
+</style></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts" target="_self">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog" target="_self">GitHub</a></li><li class="hover:text-white"><a href="/photos" target="_self">Photos</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">How I converted circleCi to github actions</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->Sun, 19 Feb 2023</div><div class="flex place-content-center pt-2"><div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/latex" style="padding-right:3px"> <category>latex<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/github actions" style="padding-right:3px"> <category>github actions<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/circleci" style="padding-right:3px"> <category>circleci<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/ci" style="padding-right:3px"> <category>ci<!-- --> </category></a></span></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-h-2 aspect-w-3"><img class="h-full w-full rounded-lg object-cover object-center" src="/imgs/2023/1924742632.png" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <p>Continuous Integration (CI) is a software development practice that involves continuously integrating code changes into a single codebase repository, typically multiple times a day. The main goal of Continuous Integration is to catch and fix integration problems as early as possible in the development process, which helps to ensure that the code remains stable and that the software is always in a releasable state.</p>
 <p>In practice, Continuous Integration is typically achieved through automated build and testing processes. Whenever code changes are committed to the repository, an automated build process is triggered which compiles the code, runs automated tests and checks the code for any syntax errors or other problems. If the build and tests are successful, the code changes are considered to be integrated and can be safely merged into the main branch of the codebase. If the build or tests fail, the development team is notified, and the code can be corrected before it’s merged into the main branch.</p>
 <p>Continuous Integration is an important aspect of Agile software development and is often used in combination with Continuous Deployment and Continuous Delivery to provide a fast, reliable, and efficient software delivery pipeline.</p>
 <p>CircleCI is a cloud-based Continuous Integration and Continuous Deployment (CI/CD) platform that provides an automated process for building, testing, and deploying software applications. It helps teams to detect and fix integration problems as early as possible in the development process, allowing them to reduce the time-to-market and improve the overall quality of their applications.</p>
@@ -45,61 +69,61 @@
 <p>GitHub Actions is a similar service that is integrated with GitHub. It provides a platform for automating software workflows, including Continuous Integration, Continuous Deployment, and Continuous Delivery. GitHub Actions can be triggered by events like code commits or pull requests, and it provides a wide range of pre-built actions for tasks like building, testing, and deploying applications.</p>
 <p>In comparison, both CircleCI and GitHub Actions offer similar functionality, but there are some differences. For example, CircleCI has a more robust and flexible environment, while GitHub Actions is tightly integrated with the GitHub ecosystem and provides native integration with other GitHub services like pull requests and issue tracking. Another difference is that CircleCI offers more resources for parallelism and concurrency, making it better suited for complex build and test processes.</p>
 <p>Ultimately, the choice between CircleCI and GitHub Actions will depend on the specific needs of your team and the characteristics of your projects. Both are powerful tools for Continuous Integration and Continuous Deployment and can help teams to deliver high-quality software applications quickly and reliably.</p>
-<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672"> version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672">jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  latex</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    docker</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">grandfleet/dolwarp:v0.70</span></span>
-<span class="line"><span style="color:#F92672">    working_directory</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">~/latex</span></span>
-<span class="line"><span style="color:#88846F">    # Make pdf documents with tex</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#E6DB74">checkout</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">persist_to_workspace</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          root</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F92672">          paths</span><span style="color:#F8F8F2">: </span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">BlogDiagrams/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">ControlSystems/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">DSP/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">DVP/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">ElectroMag/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">EngineeringSoftwareDesign/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">PCC/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">ReportDiagrams/*.pdf</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">store_artifacts</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          root</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D"> version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  latex</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    docker</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">grandfleet/dolwarp:v0.70</span></span>
+<span class="line"><span style="color:#85E89D">    working_directory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">~/latex</span></span>
+<span class="line"><span style="color:#6A737D">    # Make pdf documents with tex</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">checkout</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">persist_to_workspace</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          root</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">          paths</span><span style="color:#E1E4E8">: </span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">BlogDiagrams/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">ControlSystems/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">DSP/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">DVP/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">ElectroMag/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">EngineeringSoftwareDesign/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">PCC/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">ReportDiagrams/*.pdf</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">store_artifacts</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          root</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#88846F">  # think about restricting to master, but whatever, I don't update that much</span></span>
-<span class="line"><span style="color:#F92672">  trigger</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    docker</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">node:latest</span></span>
-<span class="line"><span style="color:#F92672">    working_directory</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">~/docs</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">"Trigger saber npx build"</span></span>
-<span class="line"><span style="color:#F92672">          command</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span><span style="color:#F44747"> </span></span>
-<span class="line"><span style="color:#E6DB74">            curl -X POST https://circleci.com/api/v2/project/gh/FriendlyUser/dli-vue-docs/pipeline?circle_token=${CIRCLE_API_TOKEN} \</span></span>
-<span class="line"><span style="color:#E6DB74">            -H 'Circle-Token: ${CIRCLE_API_TOKEN}' \</span></span>
-<span class="line"><span style="color:#E6DB74">            -H 'Content-Type: application/json' \</span></span>
-<span class="line"><span style="color:#E6DB74">            -H 'Accept: application/json' \</span></span>
-<span class="line"><span style="color:#E6DB74">            -H 'x-attribution-login: Circle CI' \</span></span>
-<span class="line"><span style="color:#E6DB74">            -H 'x-attribution-actor-id: TFT'</span></span>
+<span class="line"><span style="color:#6A737D">  # think about restricting to master, but whatever, I don't update that much</span></span>
+<span class="line"><span style="color:#85E89D">  trigger</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    docker</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">node:latest</span></span>
+<span class="line"><span style="color:#85E89D">    working_directory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">~/docs</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Trigger saber npx build"</span></span>
+<span class="line"><span style="color:#85E89D">          command</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span><span style="color:#FDAEB7;font-style:italic"> </span></span>
+<span class="line"><span style="color:#9ECBFF">            curl -X POST https://circleci.com/api/v2/project/gh/FriendlyUser/dli-vue-docs/pipeline?circle_token=${CIRCLE_API_TOKEN} \</span></span>
+<span class="line"><span style="color:#9ECBFF">            -H 'Circle-Token: ${CIRCLE_API_TOKEN}' \</span></span>
+<span class="line"><span style="color:#9ECBFF">            -H 'Content-Type: application/json' \</span></span>
+<span class="line"><span style="color:#9ECBFF">            -H 'Accept: application/json' \</span></span>
+<span class="line"><span style="color:#9ECBFF">            -H 'x-attribution-login: Circle CI' \</span></span>
+<span class="line"><span style="color:#9ECBFF">            -H 'x-attribution-actor-id: TFT'</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">workflows</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672">  build_and_test</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">trigger</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          requires</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F92672">          filters</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">            branches</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">              only</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">                - </span><span style="color:#E6DB74">master</span></span>
-<span class="line"><span style="color:#F8F8F2"> </span></span></code></pre>
+<span class="line"><span style="color:#85E89D">workflows</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">  build_and_test</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">trigger</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          requires</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#85E89D">          filters</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">            branches</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">              only</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">                - </span><span style="color:#9ECBFF">master</span></span>
+<span class="line"><span style="color:#E1E4E8"> </span></span></code></pre>
 <p>This is a YAML configuration file for CircleCI, a Continuous Integration (CI) platform. The configuration file defines a workflow that consists of two jobs: “latex” and “trigger”.</p>
 <p>The “latex” job uses a Docker image “grandfleet/dolwarp:v0.70” as the environment for building, testing, and deploying code. The job performs several steps, including updating the system, installing necessary packages, checking out the code from the repository, and running the script “compile_tex.sh”. The script is used to compile TeX files into PDF documents. After the script execution, the artifacts (PDF documents) are persisted in the workspace and stored as artifacts.</p>
 <p>The “trigger” job uses a Node.js environment and triggers another pipeline to run. It makes an HTTP POST request to CircleCI’s API, passing an API token as an environment variable and several headers, to trigger the pipeline.</p>
@@ -107,123 +131,123 @@
 <p>In conclusion, this YAML configuration file defines a CircleCI workflow for building, testing, and deploying code changes, as well as triggering another pipeline for additional steps in the software development process.</p>
 <p>Yes, triggering another workflow from a workflow in CircleCI is possible. To do this, you can make use of the CircleCI API and the “curl” command in your job steps to send an HTTP request to the API endpoint that triggers another workflow.</p>
 <p>Here is an example of triggering another workflow from a workflow in CircleCI:</p>
-<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672">yaml`version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672">jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> trigger\_workflow</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> docker</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#F92672">image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">node:latest</span></span>
-<span class="line"><span style="color:#F92672"> working\_directory</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">~/</span></span>
-<span class="line"><span style="color:#F92672"> steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">"Trigger another workflow"</span></span>
-<span class="line"><span style="color:#F92672"> command</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span><span style="color:#F44747"> </span></span>
-<span class="line"><span style="color:#E6DB74"> curl -X POST https://circleci.com/api/v2/project/gh/&#x3C;OWNER>/&#x3C;REPO>/pipeline \</span></span>
-<span class="line"><span style="color:#E6DB74"> -H 'Circle-Token: ${CIRCLE\_API\_TOKEN}' \</span></span>
-<span class="line"><span style="color:#E6DB74"> -H 'Content-Type: application/json' \</span></span>
-<span class="line"><span style="color:#E6DB74"> -H 'Accept: application/json' \</span></span>
-<span class="line"><span style="color:#E6DB74"> -d '{ "branch": "${CIRCLE\_BRANCH}" }'</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">yaml`version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> trigger\_workflow</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> docker</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#85E89D">image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">node:latest</span></span>
+<span class="line"><span style="color:#85E89D"> working\_directory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">~/</span></span>
+<span class="line"><span style="color:#85E89D"> steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Trigger another workflow"</span></span>
+<span class="line"><span style="color:#85E89D"> command</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span><span style="color:#FDAEB7;font-style:italic"> </span></span>
+<span class="line"><span style="color:#9ECBFF"> curl -X POST https://circleci.com/api/v2/project/gh/&#x3C;OWNER>/&#x3C;REPO>/pipeline \</span></span>
+<span class="line"><span style="color:#9ECBFF"> -H 'Circle-Token: ${CIRCLE\_API\_TOKEN}' \</span></span>
+<span class="line"><span style="color:#9ECBFF"> -H 'Content-Type: application/json' \</span></span>
+<span class="line"><span style="color:#9ECBFF"> -H 'Accept: application/json' \</span></span>
+<span class="line"><span style="color:#9ECBFF"> -d '{ "branch": "${CIRCLE\_BRANCH}" }'</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">workflows</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672"> build\_and\_test</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#F92672">trigger\_workflow</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> filters</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> branches</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> only</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#E6DB74">master</span></span></code></pre>
+<span class="line"><span style="color:#85E89D">workflows</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D"> build\_and\_test</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#85E89D">trigger\_workflow</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> filters</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> branches</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> only</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#9ECBFF">master</span></span></code></pre>
 <p>In this example, the “trigger_workflow” job uses a Node.js environment and sends an HTTP POST request to the CircleCI API endpoint that triggers another workflow. The request includes the CircleCI API token as a header, and the branch name is passed as a data payload in the request body.</p>
 <p>The workflow defined in this configuration file is called “build_and_test”, which runs the “trigger_workflow” job. The “trigger_workflow” job is only triggered for the “master” branch.</p>
 <p>Note that you need to replace the placeholders <code>&#x3C;OWNER></code> and <code>&#x3C;REPO></code> with the GitHub repository owner name and repository name, respectively. Also, the <code>CIRCLE_API_TOKEN</code> environment variable needs to be set in the CircleCI project’s environment variables to provide the API token.</p>
-<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672"> version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672">jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  latex</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    docker</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">grandfleet/dolwarp:v0.70</span></span>
-<span class="line"><span style="color:#F92672">    working_directory</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">~/latex</span></span>
-<span class="line"><span style="color:#88846F">    # Make pdf documents with tex</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">yes YES | git clone https://github.com/FriendlyUser/LatexDiagrams.git || true</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Build Tex</span></span>
-<span class="line"><span style="color:#F92672">          command</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">            cd LatexDiagrams</span></span>
-<span class="line"><span style="color:#E6DB74">            chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md || true</span></span>
-<span class="line"><span style="color:#E6DB74">            chmod +x ./CompileSaberMd.sh &#x26;&#x26; ./CompileSaberMd.sh</span></span>
-<span class="line"><span style="color:#E6DB74">            pwd</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">store_artifacts</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">/data/latex/LatexDiagrams/saber</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">persist_to_workspace</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          root</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F92672">          paths</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">          - </span><span style="color:#E6DB74">LatexDiagrams/saber</span></span>
-<span class="line"><span style="color:#F8F8F2">          - </span><span style="color:#E6DB74">saber</span></span>
-<span class="line"><span style="color:#F8F8F2">          - </span><span style="color:#E6DB74">LatexDiagrams</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D"> version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  latex</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    docker</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">grandfleet/dolwarp:v0.70</span></span>
+<span class="line"><span style="color:#85E89D">    working_directory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">~/latex</span></span>
+<span class="line"><span style="color:#6A737D">    # Make pdf documents with tex</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">yes YES | git clone https://github.com/FriendlyUser/LatexDiagrams.git || true</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Build Tex</span></span>
+<span class="line"><span style="color:#85E89D">          command</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd LatexDiagrams</span></span>
+<span class="line"><span style="color:#9ECBFF">            chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md || true</span></span>
+<span class="line"><span style="color:#9ECBFF">            chmod +x ./CompileSaberMd.sh &#x26;&#x26; ./CompileSaberMd.sh</span></span>
+<span class="line"><span style="color:#9ECBFF">            pwd</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">store_artifacts</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">/data/latex/LatexDiagrams/saber</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">persist_to_workspace</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          root</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">          paths</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">          - </span><span style="color:#9ECBFF">LatexDiagrams/saber</span></span>
+<span class="line"><span style="color:#E1E4E8">          - </span><span style="color:#9ECBFF">saber</span></span>
+<span class="line"><span style="color:#E1E4E8">          - </span><span style="color:#9ECBFF">LatexDiagrams</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">  saber</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    docker</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">circleci/node:14.17</span><span style="color:#88846F"> # ...with this image as the primary container; this is where all `steps` will run</span></span>
-<span class="line"><span style="color:#F92672">    environment</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">TARGET_BRANCH</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">gh-pages</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">USERNAME</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">FriendlyUser</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">REPO</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">dli-vue-docs</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#E6DB74">checkout</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">attach_workspace</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          at</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ls &#x26;&#x26; npm update &#x26;&#x26; npm install &#x26;&#x26; npm update || true</span></span>
-<span class="line"><span style="color:#88846F">      # move build files in saber pages and go back to the root folder</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">cd LatexDiagrams/saber &#x26;&#x26; ls &#x26;&#x26; mv static ../../ &#x26;&#x26; cp -r pages ../../ &#x26;&#x26; cd ../../</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ls</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">: </span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">saber build</span></span>
-<span class="line"><span style="color:#F92672">          command</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">            ls</span></span>
-<span class="line"><span style="color:#E6DB74">            npm run update || true &#x26;&#x26; npm run build</span></span>
-<span class="line"><span style="color:#E6DB74">            # sed -i '36i script: [{src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", "data-ad-client": "ca-pub-2479144310234386", async: true }]' saber-browser.js</span></span>
-<span class="line"><span style="color:#E6DB74">            # npx saber build</span></span>
-<span class="line"><span style="color:#E6DB74">            cp assets/ads.txt public || true</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">run</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">deployment</span></span>
-<span class="line"><span style="color:#F92672">          command</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">            git config --global user.email "lidavid@uvic.ca"</span></span>
-<span class="line"><span style="color:#E6DB74">            git config --global user.name "$USERNAME"</span></span>
-<span class="line"><span style="color:#E6DB74">            git clone $CIRCLE_REPOSITORY_URL out</span></span>
-<span class="line"><span style="color:#E6DB74">            cd out</span></span>
-<span class="line"><span style="color:#E6DB74">            git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH</span></span>
-<span class="line"><span style="color:#E6DB74">            git rm -rf .</span></span>
-<span class="line"><span style="color:#E6DB74">            echo "" > .nojekyl</span></span>
-<span class="line"><span style="color:#E6DB74">            cd ../</span></span>
-<span class="line"><span style="color:#E6DB74">            ls</span></span>
-<span class="line"><span style="color:#E6DB74">            cp -a public/ out/</span></span>
-<span class="line"><span style="color:#E6DB74">            mkdir -p out/.circleci &#x26;&#x26; cp -a .circleci/. out/.circleci/.</span></span>
-<span class="line"><span style="color:#E6DB74">            cd out</span></span>
-<span class="line"><span style="color:#E6DB74">            cp -r public/ . || true</span></span>
-<span class="line"><span style="color:#E6DB74">            git remote rm origin</span></span>
-<span class="line"><span style="color:#E6DB74">            git remote add origin https://$USERNAME:$GITHUB_TOKEN@github.com/$USERNAME/$REPO.git</span></span>
-<span class="line"><span style="color:#E6DB74">            echo "" > .nojekyll || true</span></span>
-<span class="line"><span style="color:#E6DB74">            git add -A</span></span>
-<span class="line"><span style="color:#E6DB74">            git commit -m "Automated deployment: ${CIRCLE_SHA1} [ci skip]" --allow-empty</span></span>
-<span class="line"><span style="color:#E6DB74">            git push origin $TARGET_BRANCH</span></span>
-<span class="line"><span style="color:#E6DB74">            # sudo npm install -g surge</span></span>
-<span class="line"><span style="color:#E6DB74">            # rm -rf .git</span></span>
-<span class="line"><span style="color:#E6DB74">            # echo  dli-vue-docs.surge.sh > CNAME</span></span>
-<span class="line"><span style="color:#E6DB74">            # echo | surge . dli-vue-docs.surge.sh</span></span>
+<span class="line"><span style="color:#85E89D">  saber</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    docker</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">circleci/node:14.17</span><span style="color:#6A737D"> # ...with this image as the primary container; this is where all `steps` will run</span></span>
+<span class="line"><span style="color:#85E89D">    environment</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">TARGET_BRANCH</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">gh-pages</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">USERNAME</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">FriendlyUser</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">REPO</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">dli-vue-docs</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">checkout</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">attach_workspace</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          at</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ls &#x26;&#x26; npm update &#x26;&#x26; npm install &#x26;&#x26; npm update || true</span></span>
+<span class="line"><span style="color:#6A737D">      # move build files in saber pages and go back to the root folder</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">cd LatexDiagrams/saber &#x26;&#x26; ls &#x26;&#x26; mv static ../../ &#x26;&#x26; cp -r pages ../../ &#x26;&#x26; cd ../../</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ls</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">: </span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">saber build</span></span>
+<span class="line"><span style="color:#85E89D">          command</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">            ls</span></span>
+<span class="line"><span style="color:#9ECBFF">            npm run update || true &#x26;&#x26; npm run build</span></span>
+<span class="line"><span style="color:#9ECBFF">            # sed -i '36i script: [{src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", "data-ad-client": "ca-pub-2479144310234386", async: true }]' saber-browser.js</span></span>
+<span class="line"><span style="color:#9ECBFF">            # npx saber build</span></span>
+<span class="line"><span style="color:#9ECBFF">            cp assets/ads.txt public || true</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">run</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">deployment</span></span>
+<span class="line"><span style="color:#85E89D">          command</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">            git config --global user.email "lidavid@uvic.ca"</span></span>
+<span class="line"><span style="color:#9ECBFF">            git config --global user.name "$USERNAME"</span></span>
+<span class="line"><span style="color:#9ECBFF">            git clone $CIRCLE_REPOSITORY_URL out</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd out</span></span>
+<span class="line"><span style="color:#9ECBFF">            git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH</span></span>
+<span class="line"><span style="color:#9ECBFF">            git rm -rf .</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "" > .nojekyl</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd ../</span></span>
+<span class="line"><span style="color:#9ECBFF">            ls</span></span>
+<span class="line"><span style="color:#9ECBFF">            cp -a public/ out/</span></span>
+<span class="line"><span style="color:#9ECBFF">            mkdir -p out/.circleci &#x26;&#x26; cp -a .circleci/. out/.circleci/.</span></span>
+<span class="line"><span style="color:#9ECBFF">            cd out</span></span>
+<span class="line"><span style="color:#9ECBFF">            cp -r public/ . || true</span></span>
+<span class="line"><span style="color:#9ECBFF">            git remote rm origin</span></span>
+<span class="line"><span style="color:#9ECBFF">            git remote add origin https://$USERNAME:$GITHUB_TOKEN@github.com/$USERNAME/$REPO.git</span></span>
+<span class="line"><span style="color:#9ECBFF">            echo "" > .nojekyll || true</span></span>
+<span class="line"><span style="color:#9ECBFF">            git add -A</span></span>
+<span class="line"><span style="color:#9ECBFF">            git commit -m "Automated deployment: ${CIRCLE_SHA1} [ci skip]" --allow-empty</span></span>
+<span class="line"><span style="color:#9ECBFF">            git push origin $TARGET_BRANCH</span></span>
+<span class="line"><span style="color:#9ECBFF">            # sudo npm install -g surge</span></span>
+<span class="line"><span style="color:#9ECBFF">            # rm -rf .git</span></span>
+<span class="line"><span style="color:#9ECBFF">            # echo  dli-vue-docs.surge.sh > CNAME</span></span>
+<span class="line"><span style="color:#9ECBFF">            # echo | surge . dli-vue-docs.surge.sh</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">workflows</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  version</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">2</span></span>
-<span class="line"><span style="color:#F92672">  build_and_test</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">latex</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          filters</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">              branches</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">                ignore</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">                  - </span><span style="color:#E6DB74">gh-pages</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">saber</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          requires</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">            - </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F8F8F2"> </span></span></code></pre>
+<span class="line"><span style="color:#85E89D">workflows</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  version</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">  build_and_test</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">latex</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          filters</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">              branches</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">                ignore</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">                  - </span><span style="color:#9ECBFF">gh-pages</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">saber</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          requires</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            - </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#E1E4E8"> </span></span></code></pre>
 <p>This YAML file defines a CircleCI configuration that builds a LaTeX document and a Vue.js-based static site. The file has two jobs, “latex” and “saber”.</p>
 <p>The “latex” job runs inside a Docker container based on the “grandfleet/dolwarp:v0.70” image. The steps of the job are:</p>
 <ul>
@@ -245,133 +269,133 @@
 <p>Finally, the file defines a workflow named “build_and_test”, which runs the “latex” job first, and then the “saber” job, which requires the “latex” job to complete successfully. The “latex” job is ignored for branches named “gh-pages”.</p>
 <p>You can use GitHub Actions to trigger a deployment to GitHub Pages by setting up a workflow in your repository. The workflow will run whenever you push changes to the repository or when a specific event occurs.</p>
 <p>Here’s an example of a workflow that deploys a static website to GitHub Pages using the <code>actions/github-pages</code> action:</p>
-<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#F92672">yaml`name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Deploy to GitHub Pages</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">yaml`name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#AE81FF">on</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> push</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> branches</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#E6DB74">main</span></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> branches</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#9ECBFF">main</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">env</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> ACCESS\_TOKEN</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">${{ secrets.ACCESS\_TOKEN }}</span></span>
+<span class="line"><span style="color:#85E89D">env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> ACCESS\_TOKEN</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.ACCESS\_TOKEN }}</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672">jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> deploy</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> runs-on</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> deploy</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F92672"> steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Checkout code</span></span>
-<span class="line"><span style="color:#F92672"> uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/checkout@v2</span></span>
+<span class="line"><span style="color:#85E89D"> steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout code</span></span>
+<span class="line"><span style="color:#85E89D"> uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v2</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#F8F8F2"> - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Deploy to GitHub Pages</span></span>
-<span class="line"><span style="color:#F92672"> uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/github-pages@v3</span></span>
-<span class="line"><span style="color:#F92672"> with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672"> token</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">${{ env.ACCESS\_TOKEN }}</span></span>
-<span class="line"><span style="color:#F92672"> target-branch</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">gh-pages</span></span></code></pre>
+<span class="line"><span style="color:#E1E4E8"> - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Deploy to GitHub Pages</span></span>
+<span class="line"><span style="color:#85E89D"> uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/github-pages@v3</span></span>
+<span class="line"><span style="color:#85E89D"> with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D"> token</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ env.ACCESS\_TOKEN }}</span></span>
+<span class="line"><span style="color:#85E89D"> target-branch</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">gh-pages</span></span></code></pre>
 <p>In this example, the workflow will run whenever you push changes to the <code>main</code> branch of your repository. The workflow will check out your code and then use the <code>actions/github-pages</code> action to deploy the static website to the <code>gh-pages</code> branch of your repository.</p>
 <p>You can store the GitHub access token in the repository secrets to prevent it from being leaked.</p>
 <p>Note that this is just one way to set up a deployment to GitHub Pages using GitHub Actions. You can also use other actions or write your own custom deployment scripts if needed.</p>
-<pre class="astro-code monokai" style="background-color:#272822;color:#F8F8F2; overflow-x: auto;" tabindex="0"><code><span class="line"><span style="color:#E6DB74"> ---</span></span>
-<span class="line"><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Full Build</span></span>
-<span class="line"><span style="color:#AE81FF">on</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  push</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    branches</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#E6DB74">master</span></span>
-<span class="line"><span style="color:#F92672">jobs</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">  buildtex</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    runs-on</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ubuntu-latest</span></span>
-<span class="line"><span style="color:#F92672">    container</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">      image</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">docker://grandfleet/dolwarp:v0.70</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Checkout code</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/checkout@v3</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Install dependencies</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">          apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Compile TeX</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">          chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh</span></span>
-<span class="line"><span style="color:#E6DB74">          ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Persist Tex Artifacts</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/upload-artifact@v1</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          id</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F92672">  buildfiles</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">    needs</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">buildtex</span></span>
-<span class="line"><span style="color:#F92672">    runs-on</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ubuntu-latest</span></span>
-<span class="line"><span style="color:#F92672">    steps</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Checkout code</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/checkout@v3</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Download Latex Artifacts</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/download-artifact@v1</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">latex</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#AE81FF">.</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Commit files</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">></span></span>
-<span class="line"><span style="color:#E6DB74">          mkdir ~/.git</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#9ECBFF"> ---</span></span>
+<span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Full Build</span></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#9ECBFF">master</span></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  buildtex</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    container</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      image</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">docker://grandfleet/dolwarp:v0.70</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout code</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v3</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Install dependencies</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          apt-get update &#x26;&#x26; apt-get install xpdf imagemagick git -y</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Compile TeX</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          chmod +x ./compile_tex.sh &#x26;&#x26; ./compile_tex.sh</span></span>
+<span class="line"><span style="color:#9ECBFF">          ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Persist Tex Artifacts</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/upload-artifact@v1</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          id</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#85E89D">  buildfiles</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    needs</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">buildtex</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout code</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v3</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Download Latex Artifacts</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/download-artifact@v1</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">latex</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">.</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Commit files</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">></span></span>
+<span class="line"><span style="color:#9ECBFF">          mkdir ~/.git</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#E6DB74">          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#E6DB74">          git config --local user.name "github-actions[bot]"</span></span>
+<span class="line"><span style="color:#9ECBFF">          git config --local user.name "github-actions[bot]"</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#E6DB74">          git add ReadMe.md *.png || true</span></span>
+<span class="line"><span style="color:#9ECBFF">          git add ReadMe.md *.png || true</span></span>
 <span class="line"></span>
-<span class="line"><span style="color:#E6DB74">          git commit -m "Update images and readme" || true</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Push changes</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">ad-m/github-push-action@master</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Compile Saber docs</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">chmod +x ./CompileSaberMd.sh &#x26;&#x26; ./CompileSaberMd.sh</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Setup Node</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/setup-node@v3</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          node-version</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">14.x</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Checkout dli-vue-docs</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/checkout@v2</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          repository</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">FriendlyUser/dli-vue-docs</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">dli-vue-docs</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Move saber folder</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">          mv saber/pages/* dli-vue-docs/pages/</span></span>
-<span class="line"><span style="color:#E6DB74">          ls saber/static/software || true</span></span>
-<span class="line"><span style="color:#E6DB74">          mv saber/static dli-vue-docs || true</span></span>
-<span class="line"><span style="color:#E6DB74">          mv saber dli-vue-docs || true</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Persist artifacts</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/upload-artifact@v1</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">dli-vue-docs</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">saber</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">setup node</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">          cd dli-vue-docs</span></span>
-<span class="line"><span style="color:#E6DB74">          ls</span></span>
-<span class="line"><span style="color:#E6DB74">          npm install</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">build app</span></span>
-<span class="line"><span style="color:#F92672">        run</span><span style="color:#F8F8F2">: </span><span style="color:#F92672">|</span></span>
-<span class="line"><span style="color:#E6DB74">          rm -rf .git</span></span>
-<span class="line"><span style="color:#E6DB74">          cd dli-vue-docs</span></span>
-<span class="line"><span style="color:#E6DB74">          npm run build</span></span>
-<span class="line"><span style="color:#E6DB74">          cp assets/ads.txt public || true</span></span>
-<span class="line"><span style="color:#E6DB74">          rm -rf .git</span></span>
-<span class="line"><span style="color:#E6DB74">          ls</span></span>
-<span class="line"><span style="color:#E6DB74">          mv public ../</span></span>
-<span class="line"><span style="color:#E6DB74">          cd ../</span></span>
-<span class="line"><span style="color:#E6DB74">          ls </span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">crazy-max/ghaction-github-pages@v3</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          target_branch</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">gh-pages</span></span>
-<span class="line"><span style="color:#F92672">          build_dir</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">public</span></span>
-<span class="line"><span style="color:#F92672">        env</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          GITHUB_TOKEN</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">${{ secrets.GITHUB_TOKEN }}</span></span>
-<span class="line"><span style="color:#F8F8F2">      - </span><span style="color:#F92672">name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">Persist artifacts</span></span>
-<span class="line"><span style="color:#F92672">        uses</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">actions/upload-artifact@v1</span></span>
-<span class="line"><span style="color:#F92672">        with</span><span style="color:#F8F8F2">:</span></span>
-<span class="line"><span style="color:#F92672">          path</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">public</span></span>
-<span class="line"><span style="color:#F92672">          name</span><span style="color:#F8F8F2">: </span><span style="color:#E6DB74">output</span></span>
-<span class="line"><span style="color:#F8F8F2"> </span></span></code></pre>
+<span class="line"><span style="color:#9ECBFF">          git commit -m "Update images and readme" || true</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Push changes</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ad-m/github-push-action@master</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Compile Saber docs</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">chmod +x ./CompileSaberMd.sh &#x26;&#x26; ./CompileSaberMd.sh</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Setup Node</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/setup-node@v3</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          node-version</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">14.x</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Checkout dli-vue-docs</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v2</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          repository</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">FriendlyUser/dli-vue-docs</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">dli-vue-docs</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Move saber folder</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          mv saber/pages/* dli-vue-docs/pages/</span></span>
+<span class="line"><span style="color:#9ECBFF">          ls saber/static/software || true</span></span>
+<span class="line"><span style="color:#9ECBFF">          mv saber/static dli-vue-docs || true</span></span>
+<span class="line"><span style="color:#9ECBFF">          mv saber dli-vue-docs || true</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Persist artifacts</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/upload-artifact@v1</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">dli-vue-docs</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">saber</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">setup node</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          cd dli-vue-docs</span></span>
+<span class="line"><span style="color:#9ECBFF">          ls</span></span>
+<span class="line"><span style="color:#9ECBFF">          npm install</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">build app</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          rm -rf .git</span></span>
+<span class="line"><span style="color:#9ECBFF">          cd dli-vue-docs</span></span>
+<span class="line"><span style="color:#9ECBFF">          npm run build</span></span>
+<span class="line"><span style="color:#9ECBFF">          cp assets/ads.txt public || true</span></span>
+<span class="line"><span style="color:#9ECBFF">          rm -rf .git</span></span>
+<span class="line"><span style="color:#9ECBFF">          ls</span></span>
+<span class="line"><span style="color:#9ECBFF">          mv public ../</span></span>
+<span class="line"><span style="color:#9ECBFF">          cd ../</span></span>
+<span class="line"><span style="color:#9ECBFF">          ls </span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">crazy-max/ghaction-github-pages@v3</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          target_branch</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">gh-pages</span></span>
+<span class="line"><span style="color:#85E89D">          build_dir</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">public</span></span>
+<span class="line"><span style="color:#85E89D">        env</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          GITHUB_TOKEN</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">${{ secrets.GITHUB_TOKEN }}</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Persist artifacts</span></span>
+<span class="line"><span style="color:#85E89D">        uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/upload-artifact@v1</span></span>
+<span class="line"><span style="color:#85E89D">        with</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">          path</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">public</span></span>
+<span class="line"><span style="color:#85E89D">          name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">output</span></span>
+<span class="line"><span style="color:#E1E4E8"> </span></span></code></pre>
 <p>The above Github Actions workflow does the following:</p>
 <ol>
 <li>Triggers on a push event to the “master” branch.</li>
@@ -393,4 +417,10 @@
 <li><a href="https://github.com/FriendlyUser/dli-vue-docs/blob/master/.circleci/config.yml">https://github.com/FriendlyUser/dli-vue-docs/blob/master/.circleci/config.yml</a></li>
 <li><a href="https://github.com/FriendlyUser/dolwarp">https://github.com/FriendlyUser/dolwarp</a></li>
 <li><a href="https://github.com/FriendlyUser/LatexDiagrams">https://github.com/FriendlyUser/LatexDiagrams</a></li>
-</ul> <h5>Related Projects</h5> <a href="https://github.com/FriendlyUser/LatexDiagrams" style="text-decoration:none;width:200px;text-align:center"> <h3> <div class="rounded-md px-2 py-1 text-xs font-semibold bg-red-400 text-red-900">LatexDiagrams</div> </h3> </a> </content></div></div></div></div> <div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/_pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/_pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div>  </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2025<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2025-11-17<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div> </body></html>
+</ul> <h5>Related Projects</h5> <a href="https://github.com/FriendlyUser/LatexDiagrams" style="text-decoration:none;width:200px;text-align:center"> <h3> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-red-400 text-red-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left">LatexDiagrams</span></div> </h3> </a> </content></div></div></div></div> <div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div> <script type="module">window.addEventListener("DOMContentLoaded",e=>{setTimeout(()=>{new PagefindUI({element:"#search"})},2e3)});</script> </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2025<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2025-11-19<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div> </body></html>
