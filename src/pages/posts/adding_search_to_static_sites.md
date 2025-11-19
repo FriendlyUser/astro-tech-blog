@@ -44,6 +44,8 @@ Then you can run the following command to search for content in your site:
 </script>
 ```
 
+For the newest version of pagefind, v1.x, use `/pagefind` instead.
+
 As described by the pagefind documentation, you can use the search bar to search for content in your site.
 
 Another thing to keep in mind is that you can choose to not index certain pages.
