@@ -35,7 +35,7 @@ const Navbar = () => (
         <NavMenuItem href="https://github.com/FriendlyUser/astro-tech-blog">
           GitHub
         </NavMenuItem>
-        <NavMenuItem href="/photos">Photos</NavMenuItem>
+        {/* <NavMenuItem href="/photos">Photos</NavMenuItem> */}
       </NavMenu>
     </NavbarTwoColumns>
   </Section>
