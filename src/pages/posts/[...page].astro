@@ -1,23 +1,19 @@
 ---
-import type { FrontmatterPage } from 'astro-boilerplate-components';
-import {
-  BlogGallery,
-  NewerOlderPagination,
-  PaginationHeader,
-  Section,
-} from 'astro-boilerplate-components';
 
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
+// import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
-
+import { NewerOlderPagination } from '@/components/NewerOlderPagination';
+import { PaginationHeader } from '@/components/PaginationHeader';
+import { Section } from '@/components/Section';
+import { BlogGallery } from '@/components/BlogGallery';
 type GetStaticPaths = {
   paginate: any;
 }; // Overrides `GetStaticPathsOptions` types from Astro
 
 export async function getStaticPaths({ paginate }: GetStaticPaths) {
-  const allPosts = await Astro.glob<CustomIFrontMatter>('./**/*.md(x)?');
+  const allPosts = await Astro.glob<any>('./**/*.md(x)?');
   const sortedPosts = sortByDate(allPosts as any);
   // const filteredPosts = sortedPosts.filter((post) => {
   //   const postDate = new Date(post.frontmatter.pubDate);
@@ -29,7 +25,7 @@ export async function getStaticPaths({ paginate }: GetStaticPaths) {
 }
 
 interface Props {
-  page: FrontmatterPage;
+  page: any;
 }
 
 const { page } = Astro.props as Props;

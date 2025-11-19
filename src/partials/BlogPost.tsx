@@ -1,15 +1,15 @@
-import type { IFrontmatter } from 'astro-boilerplate-components';
-import { ColorTags, Section, Tags } from 'astro-boilerplate-components';
 import type { ReactNode } from 'react';
 
+import { Section } from '@/components/Section';
+import { ColorTags, Tags } from '@/components/Tags';
 import { AppConfig } from '@/utils/AppConfig';
 
-export interface CustomIFrontMatter extends IFrontmatter {
-  tags: string[];
-  projects?: any[];
-}
+// export interface CustomIFrontMatter extends IFrontmatter {
+//   tags: string[];
+//   projects?: any[];
+// }
 type IBlogPostProps = {
-  frontmatter: CustomIFrontMatter;
+  frontmatter: any;
   children: ReactNode;
 };
 
@@ -70,7 +70,7 @@ const BlogPost = (props: IBlogPostProps) => (
         })}
       </div>
       <div className="mx-auto mt-5 max-w-prose">
-        <div className="aspect-w-3 aspect-h-2">
+        <div className="aspect-h-2 aspect-w-3">
           <img
             className="h-full w-full rounded-lg object-cover object-center"
             src={props?.frontmatter.imgSrc}

@@ -1,5 +1,4 @@
-import { Section } from 'astro-boilerplate-components';
-
+import { Section } from '@/components/Section';
 import { AppConfig } from '@/utils/AppConfig';
 // current date in YYYY-MM-DD format
 const date = new Date().toISOString().split('T')[0];

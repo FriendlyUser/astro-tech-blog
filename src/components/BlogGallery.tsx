@@ -1,6 +1,6 @@
 import type { MarkdownInstance } from 'astro';
 
-import { BlogCard } from '@/components/BlogCard';
+import { BlogCard } from './BlogCard';
 
 type IRecentPostsProps = {
   postList: MarkdownInstance<any>[];
