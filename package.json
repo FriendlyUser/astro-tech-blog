@@ -10,7 +10,6 @@
     "postbuild": "pagefind --source dist",
     "preview": "astro preview",
     "clean": "rimraf dist",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.astro .",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -41,7 +40,6 @@
     "eslint-plugin-tailwindcss": "^3.5.2",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.1",
-    "lint-staged": "^12.5.0",
     "pagefind": "^1.4.0",
     "patch-package": "6.5.1",
     "prettier": "^2.6.2",
