@@ -1,5 +1,5 @@
 ---
-title: Advanced Git: Cherry-picking, Merge Strategies, and Release Management
+title: Advanced Git - Cherry-picking, Merge Strategies, and Release Management
 description: Strategies for managing specific commits and handling merge conflicts automatically
 alt: A diagram of git branches merging with conflict resolution
 pubDate: Saturday, 30 November 2025 13:00:00 GMT
