@@ -525,3 +525,4 @@
 /posts/tech/2024/getting_started_with_zeep.md
 /posts/tech/2024/how_to_setup_localai.md
 /posts/tech/2025/ai_training_platforms.md
+/posts/tech/scripting/advanced_git_with_cherry_picking.md
