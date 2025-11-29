@@ -5,8 +5,7 @@ alt: A diagram of git branches merging with conflict resolution
 pubDate: Saturday, 30 November 2025 13:00:00 GMT
 tags: ["git", "bash", "devops"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '//imgs/2023/bear_book_1.png'
-imgAlt: 'git branches merging'
+imgSrc: '/imgs/2023/bear_book_1.png'
 ---
 
 To apply specific commits from one branch to another without merging the entire history, you can use the `git cherry-pick` command. This is particularly useful for applying hotfixes to production branches.
