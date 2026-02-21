@@ -526,3 +526,4 @@
 /posts/tech/2024/how_to_setup_localai.md
 /posts/tech/2025/ai_training_platforms.md
 /posts/tech/scripting/advanced_git_with_cherry_picking.md
+/posts/tech/2026/using_svgs_in_websites_with_ai.md
