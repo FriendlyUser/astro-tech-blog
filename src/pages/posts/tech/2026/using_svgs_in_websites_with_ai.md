@@ -2,7 +2,7 @@
 title: "Revolutionizing Web Performance: Using Gemini 3.1-Pro-Preview for AI-Generated SVGs"
 description: "Discover how to replace heavy JavaScript web animations with AI-generated SVGs using Gemini 3.1-Pro-Preview. A deep dive into the devcraft repository, Vite tooling, and best prompting techniques for scalable vector graphics."
 tags: ["Web Performance", "SVG", "Generative AI", "Gemini 3.1-Pro-Preview", "Vite", "Web Development", "Prompt Engineering"]
-pubDate: "2025-10-07T19:17:25.000Z"
+pubDate: "2026-03-01T19:17:25.000Z"
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://raw.githubusercontent.com/FriendlyUser/devcraft/refs/heads/main/src/icons/bring_to_life.svg"
 ---
