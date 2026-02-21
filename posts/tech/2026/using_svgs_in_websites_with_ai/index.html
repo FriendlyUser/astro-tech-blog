@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"> <head><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.QW52Ox2j.js"></script><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Revolutionizing Web Performance: Using Gemini 3.1-Pro-Preview for AI-Generated SVGs - FriendlyUsers Tech Blog</title><meta name="description" content="Discover how to replace heavy JavaScript web animations with AI-generated SVGs using Gemini 3.1-Pro-Preview. A deep dive into the devcraft repository, Vite tooling, and best prompting techniques for scalable vector graphics."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="module">(function(e,n,r,t,m){e[t]=e[t]||[],e[t].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var g=n.getElementsByTagName(r)[0],a=n.createElement(r),s="";a.async=!0,a.src="https://www.googletagmanager.com/gtm.js?id="+m+s,g.parentNode.insertBefore(a,g)})(window,document,"script","dataLayer","GTM-K8P5P8FQ");</script><script type="text/javascript">
+      let slideIndex = 1;
+      showSlides(slideIndex);
+
+      function plusSlides(n) {
+        showSlides((slideIndex += n));
+      }
+
+      function currentSlide(n) {
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        try {
+          let i;
+          let slides = document.getElementsByClassName('mySlides');
+          let dots = document.getElementsByClassName('demo');
+          let captionText = document.getElementById('caption');
+          if (n > slides.length) {
+            slideIndex = 1;
+          }
+          if (n < 1) {
+            slideIndex = slides.length;
+          }
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = 'none';
+          }
+          for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(' active', '');
+          }
+          slides[slideIndex - 1].style.display = 'block';
+          dots[slideIndex - 1].className += ' active';
+          captionText.innerHTML = dots[slideIndex - 1].alt;
+        } catch (err) {
+          // do nothing here
+        }
+      }
+    </script><!-- Google Tag Manager --><script type="module">window.dataLayer=window.dataLayer||[];function a(){dataLayer.push(arguments)}a("js",new Date);a("config","UA-119155027-6");</script><!-- End Google Tag Manager --><link rel="stylesheet" href="/_astro/index.BvkiO192.css">
+<style>.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}@media print{.no-print,.no-print *{display:none!important}}
+</style></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts" target="_self">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog" target="_self">GitHub</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Revolutionizing Web Performance: Using Gemini 3.1-Pro-Preview for AI-Generated SVGs</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2026-03-01T19:17:25.000Z</div><div class="flex place-content-center pt-2"><div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Web Performance" style="padding-right:3px"> <category>Web Performance<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/SVG" style="padding-right:3px"> <category>SVG<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Generative AI" style="padding-right:3px"> <category>Generative AI<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Gemini 3.1-Pro-Preview" style="padding-right:3px"> <category>Gemini 3.1-Pro-Preview<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Vite" style="padding-right:3px"> <category>Vite<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Web Development" style="padding-right:3px"> <category>Web Development<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Prompt Engineering" style="padding-right:3px"> <category>Prompt Engineering<!-- --> </category></a></span></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-h-2 aspect-w-3"><img class="h-full w-full rounded-lg object-cover object-center" src="https://raw.githubusercontent.com/FriendlyUser/devcraft/refs/heads/main/src/icons/bring_to_life.svg" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <h1 id="revolutionizing-web-performance-using-gemini-31-pro-preview-for-ai-generated-svgs">Revolutionizing Web Performance: Using Gemini 3.1-Pro-Preview for AI-Generated SVGs</h1>
+<p>Web animations have long been a double-edged sword for developers. While they drastically enhance user experience and engagement, relying on heavy animation libraries can bloat your bundle size, increase load times, and drag down your Core Web Vitals. Enter <strong>AI-generated SVGs</strong>, a modern web performance hack that is changing how we build user interfaces.</p>
+<p>A prime example of this paradigm shift is the <a href="https://github.com/FriendlyUser/devcraft">Devcraft repository</a> by me. Designed as a software development consultancy website, this project leans heavily on the bleeding-edge <strong>Gemini 3.1-Pro-Preview</strong> model to generate intricate, lightweight SVG assets. By doing so, it entirely bypasses the need for time-consuming and resource-heavy web animations.</p>
+<p>Let’s dive into how this repository is structured, the tooling driving it, and how the Vite ecosystem takes SVG management to the next level.</p>
+<hr>
+<h2 id="exploring-the-devcraft-repository">Exploring the Devcraft Repository</h2>
+<p>The <code>devcraft</code> repository is structured as a modern, lightweight frontend application bootstrapped via AI Studio. With a clear focus on performance and minimal overhead, the project utilizes <strong>TypeScript</strong> for safe, predictable code, standard HTML/CSS, and relies on modern configuration files (<code>tsconfig.json</code>, <code>vite.config.ts</code>) to manage its build process.</p>
+<p>Rather than spending hours manually keyframing complex UI sequences or loading bulky external libraries like Lottie or Framer Motion, the developer utilized Gemini 3.1-Pro-Preview to design the visual layer.</p>
+<h2 id="replacing-heavy-web-animations-with-ai-generated-svgs">Replacing Heavy Web Animations with AI-Generated SVGs</h2>
+<p>Complex web animations often require heavy JavaScript execution, leading to:</p>
+<ul>
+<li><strong>Render-blocking issues</strong> during the initial page load.</li>
+<li><strong>High CPU usage</strong>, which drains battery life on mobile devices.</li>
+<li><strong>Longer development times</strong> spent tweaking keyframes and states.</li>
+</ul>
+<p>By using <strong>Gemini 3.1-Pro-Preview</strong>, the Devcraft repository highlights a smarter workflow. The developer prompted the AI to generate complex, scalable vector graphics (SVGs) that inherently carry enough visual depth and structure to replace traditional animations.</p>
+<h3 id="the-performance-benefits">The Performance Benefits:</h3>
+<ol>
+<li><strong>Zero JS Overhead:</strong> SVGs are rendered natively by the browser’s graphics engine, keeping the main thread free.</li>
+<li><strong>Instant Loading:</strong> Vector graphics consist of XML code, meaning they have a fraction of the file size compared to GIFs, videos, or JS-driven animation bundles.</li>
+<li><strong>Massive Time Savings:</strong> Instead of manually designing and timing animations, Gemini 3.1-Pro-Preview instantly generates code-ready vector assets tailored specifically to the prompt. Developers can even ask Gemini to embed native CSS transitions directly inside the SVG code for lightweight, zero-JS interactivity.</li>
+</ol>
+<h2 id="prompts-to-generate-svgs">Prompts to Generate SVGs</h2>
+<p>With the improvements to the latest Gemini model, we can now generate complex, animated, and structurally sound SVG graphics purely through text.</p>
+<p>For example, a simple prompt like:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Create an svg of a man typing on a computer and then bringing an painting to life, flat ui design.</span></span></code></pre>
+<p>Results in this highly detailed, animated graphic:</p>
+<img src="https://raw.githubusercontent.com/FriendlyUser/devcraft/refs/heads/main/src/icons/bring_to_life.svg" width="600" alt="Man bringing a painting to life">
+<h3 id="best-prompting-techniques-for-svgs--images">Best Prompting Techniques for SVGs &#x26; Images</h3>
+<p>Generating raw SVG code is fundamentally different from prompting image generators like Midjourney or DALL-E. Instead of just describing <em>what</em> you want to see, you must also describe <em>how it should be built</em>.</p>
+<p>Here are the best practices for getting production-ready SVGs:</p>
+<h4 id="1-define-the-exact-aesthetic--style">1. Define the Exact Aesthetic &#x26; Style</h4>
+<p>AI models know a vast array of design systems. If you don’t specify a style, you’ll likely get a messy mix of gradients and strokes. Use specific design keywords:</p>
+<ul>
+<li><strong>Good:</strong> <code>Make a cool illustration of a server.</code></li>
+<li><strong>Better:</strong> <code>Create an SVG illustration of a cloud server using a Flat UI design style, utilizing simple geometric shapes, clean solid colors, and no outlines.</code></li>
+<li><strong>Keywords to try:</strong> <em>Flat UI, Corporate Memphis, Isometric, Line Art, Neumorphism, Material Design, Pastel Color Palette, Monochromatic.</em></li>
+</ul>
+<h4 id="2-lay-out-the-composition-spatiality">2. Lay Out the Composition Spatiality</h4>
+<p>LLMs need to know where to place elements within the coordinate system (<code>viewBox</code>). Guide the layout by explicitly mentioning positioning.</p>
+<ul>
+<li><strong>Example:</strong> <code>"Split the canvas into two halves. On the left side (x=0 to 400), place the user working on a laptop. On the right side (x=400 to 800), place a floating holographic dashboard."</code></li>
+</ul>
+<h4 id="3-dictate-the-technical-constraints">3. Dictate the Technical Constraints</h4>
+<p>To ensure your SVG drops perfectly into your web project without breaking, set the technical ground rules in your prompt.</p>
+<ul>
+<li><strong>Specify the ViewBox:</strong> <code>"Use a viewBox of 0 0 1000 600."</code></li>
+<li><strong>Styling Methods:</strong> <code>"Use inline CSS enclosed in a &#x3C;style> tag."</code> or <code>"Only use standard presentation attributes (fill, stroke) without external CSS."</code></li>
+<li><strong>Font Handling:</strong> <code>"Use system fonts (system-ui, sans-serif) so no external web fonts are required."</code></li>
+</ul>
+<h4 id="4-color-palettes-and-lighting-filters">4. Color Palettes and Lighting (Filters)</h4>
+<p>If you want a specific mood, give the AI exact Hex codes or describe the lighting. Modern LLMs are excellent at applying SVG filters like drop shadows and glows if you ask for them.</p>
+<ul>
+<li><strong>Example:</strong> <code>"Use a dark mode color palette (Background: #0F172A, Accents: #38BDF8 and #F472B6). Add an SVG &#x3C;feGaussianBlur> filter to create a glowing neon effect behind the data nodes."</code></li>
+</ul>
+<h4 id="5-orchestrating-css-animations">5. Orchestrating CSS Animations</h4>
+<p>The latest models excel at writing complex <code>@keyframes</code> animations directly into the SVG. To get smooth, logical animations, describe the <strong>timeline</strong> and <strong>easing</strong>.</p>
+<ul>
+<li><strong>Actionable Prompting:</strong> <code>"Animate the SVG using CSS. Make the gear in the center spin infinitely using a linear timing function. Have the checkmark pop in after a 2-second delay using a cubic-bezier bouncy easing function. Ensure the animation loops seamlessly."</code></li>
+<li><strong>Grouping:</strong> Remind the AI to group elements for animation: <code>"Wrap the bird elements in a &#x3C;g> tag and apply a floating transform animation to the group."</code></li>
+</ul>
+<h4 id="6-the-layered-iteration-technique">6. The “Layered Iteration” Technique</h4>
+<p>If you want something incredibly complex, don’t ask for it all in one prompt. Build it in layers:</p>
+<ol>
+<li><strong>Prompt 1 (Base):</strong> <code>"Create a flat UI SVG of an office desk with a computer."</code></li>
+<li><strong>Prompt 2 (Additions):</strong> <code>"Great. Now add a coffee cup on the right with animated steam rising from it."</code></li>
+<li><strong>Prompt 3 (Refinements):</strong> <code>"Fix the steam animation so it fades to opacity 0 before looping, and change the background to a soft pastel yellow."</code></li>
+</ol>
+<h3 id="summary-cheat-sheet-for-svg-prompting">Summary Cheat Sheet for SVG Prompting</h3>
+<p>When crafting your next prompt, try to fill in these blanks:</p>
+<blockquote>
+<p>Create an SVG of <strong>[Subject]</strong> doing <strong>[Action]</strong>.
+Use a <strong>[Design Style]</strong> aesthetic with a <strong>[Specific Color Palette]</strong>.
+Set the viewBox to <strong>[Dimensions]</strong>.
+Ensure the composition features <strong>[Element A]</strong> on the left and <strong>[Element B]</strong> on the right.
+Add CSS animations so that <strong>[Element]</strong> does <strong>[Specific Movement]</strong> with a <strong>[Delay/Easing]</strong>.
+Keep the code clean, use <code>&#x3C;g></code> tags for grouping, and rely only on system fonts.</p>
+</blockquote>
+<h2 id="tooling-vite-and-svg-optimization">Tooling: Vite and SVG Optimization</h2>
+<p>Under the hood, <code>devcraft</code> uses cutting-edge frontend tooling to ensure these AI-generated assets are delivered as efficiently as possible.</p>
+<h3 id="vite-the-build-tool-of-choice">Vite: The Build Tool of Choice</h3>
+<p>The presence of <code>vite.config.ts</code> confirms that <strong>Vite</strong> is the backbone of this project. Vite offers incredibly fast Hot Module Replacement (HMR) during development and utilizes Rollup for highly optimized, tree-shaken production builds. For a project relying heavily on detailed, AI-generated SVGs, Vite’s fast compilation and lightweight output are perfect.</p>
+<h3 id="vite-packages-for-svg-management">Vite Packages for SVG Management</h3>
+<p>Handling raw SVGs can sometimes clutter the DOM or lead to caching issues. Within the Vite ecosystem, developers typically leverage specific Vite packages to streamline SVG implementation:</p>
+<ul>
+<li><strong><code>vite-svg-loader</code> / <code>vite-plugin-svgr</code>:</strong> These plugins are game-changers. They allow developers to import AI-generated SVGs directly as reusable UI components. This means you can easily manipulate, style, and scale the AI’s output using standard frontend props.</li>
+<li><strong>SVGO (SVG Optimizer):</strong> AI models like Gemini are incredibly powerful, but they can occasionally generate SVGs with redundant XML tags, empty groups, or unnecessary metadata. Vite can seamlessly pipe SVGs through SVGO plugins to minify and clean the AI-generated code before it reaches the production build.</li>
+</ul>
+<h2 id="how-to-run-the-devcraft-project">How to Run the Devcraft Project</h2>
+<p>If you want to explore the repository yourself and see AI integration in action, the local setup is straightforward:</p>
+<ol>
+<li>Ensure <strong>Node.js</strong> is installed on your machine.</li>
+<li>Clone the repository and install dependencies with <code>npm install</code>.</li>
+<li>Create an <code>.env.local</code> file and set your <code>GEMINI_API_KEY</code> to connect to the Gemini API.</li>
+<li>Run <code>npm run dev</code> to spin up the local Vite server.</li>
+</ol>
+<h2 id="check-out-the-live-preview">Check Out the Live Preview</h2>
+<p>The Devcraft repository is a testament to how developers can leverage AI not just for writing boilerplate code, but for actively solving web performance bottlenecks. By swapping out heavy JavaScript animations for Gemini 3.1-Pro-Preview generated SVGs, the result is a lightning-fast, visually appealing digital consultancy site.</p>
+<p>🔗 <strong>Live Preview Link:</strong> <a href="https://friendlyuser.github.io/devcraft">https://friendlyuser.github.io/devcraft</a></p>
+<hr>
+<p><em>Disclaimer: Please note that the live preview page linked above contains advertisements.</em></p> </content></div></div></div></div> <div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/davidli012345@gmail.com" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane"/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input class="block w-full appearance-none rounded border border-gray-200  py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">E-mail</label><input class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email"/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-password">Message</label><textarea class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message"></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-1 text-sm font-medium text-gray-700 hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div><div class="md:w-2/3"></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div> <script type="module">window.addEventListener("DOMContentLoaded",e=>{setTimeout(()=>{new PagefindUI({element:"#search"})},2e3)});</script> </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2026<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2026-02-21<!-- -->.</div></div><script src="https://cdn.botpress.cloud/webchat/v0/inject.js"></script><script src="https://mediafiles.botpress.cloud/0df54034-3318-451a-aed0-3923a4ee25a5/webchat/config.js" defer=""></script></div> </body></html>
