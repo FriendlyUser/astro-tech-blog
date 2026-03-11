@@ -8,7 +8,7 @@ import { rehypeShiki } from '@astrojs/markdown-remark'
 
 // https://astro.build/config
 export default defineConfig({
-  base: '.', // Set a path prefix.
+  // base: '.', // Set a path prefix.
   site: 'https://friendlyuser.github.io', // Use to generate your sitemap and canonical URLs in your final build.
 
 
