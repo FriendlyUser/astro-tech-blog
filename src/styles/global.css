@@ -65,3 +65,7 @@
     }
   }
 }
+
+.gsap-animate {
+  transition: none !important;
+}
