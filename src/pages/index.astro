@@ -1,16 +1,15 @@
 ---
 // import { CTA } from '@/partials/CTA';
-import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import { Hero } from '@/partials/Hero';
 import { ProjectList } from '@/partials/ProjectList';
 import { RecentPosts } from '@/partials/RecentPosts';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
-
+import "../styles/global.css";
 import BottomSection from '../partials/BottomSection.astro';
 
-const allPosts = await Astro.glob<CustomIFrontMatter>('./posts/**/*.md');
+const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
 const sortedPosts = sortByDate(allPosts);
 
 // filter out dates that are in the future
@@ -27,6 +26,9 @@ const { description } = AppConfig;
 ---
 
 <Base head={{ title, description }}>
+  <h1 class="text-3xl font-bold underline">
+    Hello world!
+  </h1>
   <Hero />
   <ProjectList />
   <RecentPosts postList={lastThreePosts} />

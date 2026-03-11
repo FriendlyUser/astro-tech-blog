@@ -1,8 +1,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import robotsTxt from 'astro-robots-txt';
+import tailwindcss from "@tailwindcss/vite";
 import { rehypeShiki } from '@astrojs/markdown-remark'
 // import rehypeMermaid from 'rehype-mermaid'
 
@@ -29,5 +28,5 @@ export default defineConfig({
     ],
   },
   
-  integrations: [react(), tailwind({}), sitemap(), robotsTxt()],
+  integrations: [react(), tailwindcss(), sitemap()],
 });

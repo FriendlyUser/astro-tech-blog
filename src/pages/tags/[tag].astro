@@ -2,7 +2,7 @@
 import { PaginationHeader } from '@/components/PaginationHeader';
 import { Section } from '@/components/Section';
 import { BlogGallery } from '@/components/BlogGallery';
-
+import "../../styles/global.css";
 // import type { CustomIFrontMatter } from '@/partials/BlogPost';
 import Base from '@/templates/Base.astro';
 import { AppConfig } from '@/utils/AppConfig';
@@ -10,10 +10,10 @@ import { sortByDate } from '@/utils/Posts';
 
 import BottomSection from '../../partials/BottomSection.astro';
 
-const allPosts = await Astro.glob<any>('../posts/**/*.md(x)?');
-
+// const allPosts = await Astro.glob<any>('../posts/**/*.md(x)?');
+const allPosts = Object.values(import.meta.glob('../posts/**/*.md(x)?', { eager: true }));
 export async function getStaticPaths() {
-  const thePosts = await Astro.glob<any>('../posts/**/*.md(x)?');
+  const thePosts = Object.values(import.meta.glob('../posts/**/*.md(x)?', { eager: true }));
   const sortedPosts = sortByDate(thePosts as any);
   // get all tags
   const tags = sortedPosts
