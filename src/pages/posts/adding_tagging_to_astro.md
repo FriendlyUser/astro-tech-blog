@@ -11,6 +11,8 @@ imgAlt: 'Image post 6'
 
 ## Summary
 
+See https://docs.astro.build/en/guides/upgrade-to/v6/
+
 While adding tags to my personal blog, I was surprised at how easy it is. For each individual post, I have noticed how easy it is. To start, add the tag to each individual blog post in markdown, this is similar to how other frameworks like hugo academic expect posts to be tagged.
 
 

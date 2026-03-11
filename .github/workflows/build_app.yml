@@ -34,7 +34,7 @@ jobs:
       - name: update config
         run: |
           npm run build
-          echo > dist/.nojekyll 
+          touch dist/.nojekyll
       
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3

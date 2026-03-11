@@ -1,5 +1,6 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
 
 import { Footer } from '@/partials/Footer';
 import { Navbar } from '@/partials/Navbar';
@@ -22,10 +23,10 @@ const pageFindUiText = '#000000';
 
 <html lang="en">
   <head>
-    <ViewTransitions />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <script src="https://kit.fontawesome.com/741a79b827.js" crossorigin="anonymous"></script>
     <meta name="description" content={description} />
     <meta name="author" content={AppConfig.author} />
 
@@ -58,58 +59,7 @@ const pageFindUiText = '#000000';
 
       gtag('config', 'UA-119155027-6');
     </script>
-    <script type="text/javascript">
-      let slideIndex = 1;
-      showSlides(slideIndex);
-
-      function plusSlides(n) {
-        showSlides((slideIndex += n));
-      }
-
-      function currentSlide(n) {
-        showSlides((slideIndex = n));
-      }
-
-      function showSlides(n) {
-        try {
-          let i;
-          let slides = document.getElementsByClassName('mySlides');
-          let dots = document.getElementsByClassName('demo');
-          let captionText = document.getElementById('caption');
-          if (n > slides.length) {
-            slideIndex = 1;
-          }
-          if (n < 1) {
-            slideIndex = slides.length;
-          }
-          for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = 'none';
-          }
-          for (i = 0; i < dots.length; i++) {
-            dots[i].className = dots[i].className.replace(' active', '');
-          }
-          slides[slideIndex - 1].style.display = 'block';
-          dots[slideIndex - 1].className += ' active';
-          captionText.innerHTML = dots[slideIndex - 1].alt;
-        } catch (err) {
-          // do nothing here
-        }
-      }
-    </script>
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-K8P5P8FQ');
-    </script>
-    <!-- End Google Tag Manager -->
+    <ClientRouter />
   </head>
   <body class="bg-slate-900 text-gray-100">
     <!-- Google Tag Manager (noscript) -->
