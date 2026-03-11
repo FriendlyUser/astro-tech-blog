@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+@layer base {
+  content {
+    /* Headings with automatic sizes, font-weight, and spacing */
+    h1 {
+      @apply text-4xl font-extrabold mt-16 mb-8;
+    }
+    h2 {
+      @apply text-3xl font-bold mt-12 mb-6;
+    }
+    h3 {
+      @apply text-2xl font-bold mt-10 mb-5;
+    }
+    h4 {
+      @apply text-xl font-semibold mt-8 mb-4;
+    }
+
+    /* Paragraphs with spacing and line height */
+    p {
+      @apply text-lg mb-6 leading-relaxed;
+    }
+
+    /* Lists with spacing and indentation */
+    ul, ol {
+      @apply mb-6 pl-6;
+    }
+    ul {
+      @apply list-disc;
+    }
+    ol {
+      @apply list-decimal;
+    }
+    li {
+      @apply mb-3 text-lg;
+    }
+
+    /* Code blocks with spacing and padding */
+    pre {
+      @apply p-8 rounded-2xl mb-8 mt-8;
+    }
+
+    code {
+      @apply p-8 rounded-2xl mb-8 mt-8;
+    }
+
+    /* Images with spacing and rounded corners */
+    img {
+      @apply rounded-xl mb-8 mx-auto;
+    }
+
+    /* Horizontal rules with spacing */
+    hr {
+      @apply border-t-2 border-gray-700 my-12;
+    }
+
+    /* Blockquotes with spacing and border */
+    blockquote {
+      @apply border-l-8 border-cyan-500 pl-8 my-10 italic;
+    }
+
+    /* Links with color and hover effect */
+    a {
+      @apply text-cyan-400 hover:text-cyan-300 font-medium;
+    }
+  }
+}
