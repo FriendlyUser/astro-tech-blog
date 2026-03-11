@@ -1,3 +1,2 @@
 User-agent: *
-Allow: /
-Sitemap: https://friendlyuser.github.io/sitemap-index.xml
+Disallow: /
