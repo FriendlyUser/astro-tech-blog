@@ -12,7 +12,7 @@ const HeroAvatar = (props: IHeroAvatarProps) => (
     <div>
       <h1 className="text-3xl font-bold">{props.title}</h1>
 
-      <p className="mt-6 text-xl leading-9">{props.description}</p>
+      <div className="mt-6 text-xl leading-9">{props.description}</div>
 
       <div className="mt-3 flex gap-1">{props.socialButtons}</div>
     </div>
