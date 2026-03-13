@@ -31,7 +31,7 @@ const skills = [
   { name: 'Bitbucket', icon: 'fa-brands fa-bitbucket', color: 'text-blue-600' },
   { name: "Android", icon: 'fa-brands fa-android', color: 'text-green-800'}, 
   { name: "Markdown", icon: 'fa-brands fa-markdown', color: 'text-black-300'},
-  { name: "Tailwind css", icon: 'fa-brands fa-tailwind-css', color: "text-cyan-500'},
+  { name: "Tailwind css", icon: 'fa-brands fa-tailwind-css', color: "text-cyan-500"},
   { name: 'Jira', icon: 'fa-brands fa-jira', color: 'text-blue-500' },
   { name: 'Stripe', icon: 'fa-brands fa-stripe', color: 'text-indigo-500' },
   { name: 'Font Awesome', icon: 'fa-brands fa-font-awesome', color: 'text-blue-400' },
