@@ -25,11 +25,11 @@ const skills = [
 const workHistory = [
   {
     id: 1,
-    role: "IT-02 Software Engineer",
+    role: "IT-02 Analyst",
     company: "Canada School of Public Service (CSPS)",
     year: "2025 - Present",
     description: "Developing AI-powered internal tools and chatbots. Modernizing public service IT infrastructure using cloud-native solutions.",
-    tags: ["Azure", "Openai", "Node.js"],
+    tags: ["Azure", "Openai", "Node.js", "Python"],
     color: "cyan"
   },
   {
@@ -62,7 +62,7 @@ const workHistory = [
   {
     id: 5,
     role: "Software Developer",
-    company: "Shop Your Own Mortgage",
+    company: "Stealth Startup",
     year: "2018 - 2021",
     description: "Developed complex financial questionnaires and mobile apps using modern JS frameworks.",
     tags: ["Node.js", "PHP", "JavaScript"],
@@ -72,7 +72,7 @@ const workHistory = [
     id: 6,
     role: "B.Sc. Computer Science",
     company: "University of Victoria (UVic)",
-    year: "Class of 2018",
+    year: "Class of 2019",
     description: "Specialized in Software Engineering and Algorithms. Completed multiple industry co-op terms.",
     tags: ["Java", "Linux", "Git"],
     color: "indigo"
@@ -80,8 +80,8 @@ const workHistory = [
 ];
 
 // Color mapping helper
-const getColorClasses = (color) => {
-  const schemes = {
+const getColorClasses = (color: any) => {
+  const schemes: any = {
     cyan: "border-cyan-500/30 shadow-cyan-500/10 text-cyan-400",
     indigo: "border-indigo-500/30 shadow-indigo-500/10 text-indigo-400",
     emerald: "border-emerald-500/30 shadow-emerald-500/10 text-emerald-400",
@@ -93,7 +93,53 @@ const getColorClasses = (color) => {
 export default function Timeline() {
   const containerRef = useRef(null);
 
+  // Helper for hover animations
+  const onCardEnter = (e: any, color: any) => {
+    const card = e.currentTarget;
+    const row = card.closest('.timeline-row');
+    const node = row.querySelector('.timeline-node');
+    
+    // Animate Card
+    gsap.to(card, {
+      y: -10,
+      scale: 1.02,
+      backgroundColor: "rgba(15, 23, 42, 0.8)", // Darker slate
+      boxShadow: `0 20px 40px -10px var(--glow-color)`,
+      duration: 0.4,
+      ease: "power2.out"
+    });
+
+    // Animate Node
+    gsap.to(node, {
+      scale: 1.5,
+      backgroundColor: color === 'cyan' ? '#22d3ee' : color === 'indigo' ? '#818cf8' : '#34d399',
+      duration: 0.3
+    });
+  };
+
+  const onCardLeave = (e) => {
+    const card = e.currentTarget;
+    const row = card.closest('.timeline-row');
+    const node = row.querySelector('.timeline-node');
+
+    gsap.to(card, {
+      y: 0,
+      scale: 1,
+      backgroundColor: "rgba(15, 23, 42, 0.6)",
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+      duration: 0.4,
+      ease: "power2.inOut"
+    });
+
+    gsap.to(node, {
+      scale: 1,
+      backgroundColor: "#020617", // Back to slate-950
+      duration: 0.3
+    });
+  };
+
   useGSAP(() => {
+    // Scroll Animations
     gsap.fromTo(".timeline-line", { scaleY: 0 }, {
       scaleY: 1,
       ease: "none",
@@ -105,20 +151,19 @@ export default function Timeline() {
       },
     });
 
-    const rows = gsap.utils.toArray(".timeline-row");
-    rows.forEach((row) => {
+    gsap.utils.toArray(".timeline-row").forEach((row: any) => {
       const card = row.querySelector(".timeline-card");
       const node = row.querySelector(".timeline-node");
-      const tl = gsap.timeline({
+      
+      gsap.timeline({
         scrollTrigger: {
           trigger: row,
           start: "top 85%",
           toggleActions: "play none none reverse",
         },
-      });
-
-      tl.fromTo(node, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out" })
-        .fromTo(card, { x: row.dataset.side === "left" ? -30 : 30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, "-=0.2");
+      })
+      .fromTo(node, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4 })
+      .fromTo(card, { x: row.dataset.side === "left" ? -30 : 30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5 }, "-=0.2");
     });
   }, { scope: containerRef });
 
@@ -129,19 +174,26 @@ export default function Timeline() {
           Professional Journey
         </h2>
 
-        <div className="relative">
-          <div className="timeline-line absolute left-6 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-indigo-500 to-emerald-500 transform md:-translate-x-1/2 origin-top rounded-full z-0 opacity-50" />
+        <div className="relative mt-2">
+          <div className="timeline-line absolute left-6 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-indigo-500 to-emerald-500 transform md:-translate-x-1/2 origin-top rounded-full z-0 opacity-30" />
 
           {workHistory.map((item, index) => {
             const isLeft = index % 2 === 0;
             const colorClass = getColorClasses(item.color);
+            // Define a CSS variable for the glow color based on the item theme
+            const glowColor = item.color === 'cyan' ? 'rgba(34, 211, 238, 0.2)' : item.color === 'indigo' ? 'rgba(129, 140, 248, 0.2)' : 'rgba(52, 211, 153, 0.2)';
 
             return (
               <div key={item.id} data-side={isLeft ? "left" : "right"} className="timeline-row relative flex w-full mb-20 z-10">
-                <div className={`timeline-node absolute left-6 md:left-1/2 top-10 md:top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-950 border-2 rounded-full z-20 ${colorClass.split(' ')[0].replace('border-', 'border-')}`} />
+                <div className={`timeline-node absolute left-6 md:left-1/2 top-10 md:top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-950 border-2 rounded-full z-20 transition-colors duration-500 ${colorClass.split(' ')[0]}`} />
                 
                 <div className={`flex w-full ${isLeft ? "md:justify-start" : "md:justify-end"} justify-end`}>
-                  <div className={`timeline-card w-[calc(100%-4rem)] md:w-[45%] bg-slate-900/60 backdrop-blur-xl p-7 rounded-3xl border shadow-2xl transition-all duration-500 hover:scale-[1.02] ${colorClass}`}>
+                  <div 
+                    onMouseEnter={(e) => onCardEnter(e, item.color)}
+                    onMouseLeave={onCardLeave}
+                    style={{ '--glow-color': glowColor }}
+                    className={`timeline-card cursor-pointer w-[calc(100%-4rem)] md:w-[45%] bg-slate-900/60 backdrop-blur-xl p-7 rounded-3xl border shadow-2xl ${colorClass}`}
+                  >
                     <span className="inline-block py-1 px-3 rounded-full bg-slate-800 text-[10px] font-bold uppercase tracking-widest mb-4 border border-slate-700">
                       {item.year}
                     </span>
@@ -152,13 +204,12 @@ export default function Timeline() {
                     </h4>
                     <p className="text-slate-400 text-sm leading-relaxed mb-6">{item.description}</p>
                     
-                    {/* Integrated Skill Icons */}
                     <div className="flex flex-wrap gap-3 pt-4 border-t border-white/5">
                       {item.tags.map(tagName => {
                         const skillMatch = skills.find(s => s.name === tagName);
                         return (
-                          <div key={tagName} className="flex items-center gap-2 px-3 py-1.5 bg-slate-950/50 rounded-lg border border-white/5 hover:border-white/10 transition-colors group">
-                            <i className={`${skillMatch?.icon || 'fa-solid fa-code'} ${skillMatch?.color || 'text-slate-400'} text-sm group-hover:scale-110 transition-transform`}></i>
+                          <div key={tagName} className="flex items-center gap-2 px-3 py-1.5 bg-slate-950/50 rounded-lg border border-white/5">
+                            <i className={`${skillMatch?.icon || 'fa-solid fa-code'} ${skillMatch?.color || 'text-slate-400'} text-sm`}></i>
                             <span className="text-[11px] font-semibold text-slate-300">{tagName}</span>
                           </div>
                         );
