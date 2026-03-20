@@ -1,0 +1,1 @@
+import{j as e}from"./index.CMctGshI.js";const i=t=>e.jsxs("div",{className:"mx-auto max-w-screen-lg px-3 py-6",children:[t.title&&e.jsx("div",{className:"mb-6 text-2xl font-bold",children:t.title}),t.children]});export{i as S};
