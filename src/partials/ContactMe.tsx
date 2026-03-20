@@ -2,7 +2,7 @@
 const ContactMe = () => (
   <form
     className="max-w-lg"
-    action="https://formspree.io/f/davidli012345@gmail.com"
+    action="https://formspree.io/f/xdovqvao"
     method="POST"
   >
     <div className="-mx-3 mb-6 flex flex-wrap">
