@@ -5,6 +5,7 @@ import { ProjectList } from '@/partials/ProjectList';
 import { RecentPosts } from '@/partials/RecentPosts';
 import { SkillList } from '@/partials/SkillList';
 import Base from '@/templates/Base.astro';
+import Timeline from '@/components/Timeline';
 import { AppConfig } from '@/utils/AppConfig';
 import { sortByDate } from '@/utils/Posts';
 import "../styles/global.css";
@@ -28,6 +29,7 @@ const { description } = AppConfig;
 
 <Base head={{ title, description }}>
   <Hero client:visible />
+  <Timeline client:visible />
   <SkillList client:visible />
   <RecentPosts postList={lastThreePosts} />
   <ProjectList client:visible />
