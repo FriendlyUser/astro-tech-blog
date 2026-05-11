@@ -74,7 +74,7 @@ const workHistory = [
     company: "University of Victoria (UVic)",
     year: "Class of 2019",
     description: "Specialized in Software Engineering and Algorithms. Completed multiple industry co-op terms.",
-    tags: ["Java", "Linux", "Git", "Python", "Matlab"],
+    tags: ["Java", "Linux", "Git", "Python"],
     color: "indigo"
   }
 ];
