@@ -25,5 +25,7 @@ export default defineConfig({
   },
   vite: { plugins: [tailwindcss()]},
   // sitemap(), 
-  integrations: [react(), sitemap()]
+  integrations: [react(), sitemap({
+      customPages: ['https://friendlyuser.github.io/ads.txt'],
+  })]
 });
