@@ -70,11 +70,11 @@ const workHistory = [
   },
   {
     id: 6,
-    role: "B.Sc. Computer Science",
+    role: "B.Eng. Computer Engineering",
     company: "University of Victoria (UVic)",
     year: "Class of 2019",
     description: "Specialized in Software Engineering and Algorithms. Completed multiple industry co-op terms.",
-    tags: ["Java", "Linux", "Git"],
+    tags: ["Java", "Linux", "Git", "Python"],
     color: "indigo"
   }
 ];
