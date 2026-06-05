@@ -26,6 +26,7 @@ export default defineConfig({
   vite: { plugins: [tailwindcss()]},
   // sitemap(), 
   integrations: [react(), sitemap({
-      customPages: ['https://friendlyuser.github.io/ads.txt'],
-  })]
+      // Change the full URL to a relative path
+      customPages: ['/ads.txt'],
+    })]
 });
