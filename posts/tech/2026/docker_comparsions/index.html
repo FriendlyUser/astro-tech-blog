@@ -47,9 +47,14 @@
 <h2 id="1-the-core-architecture-of-modern-container-runtimes">1. The Core Architecture of Modern Container Runtimes</h2>
 <p>To understand why alternatives to Docker exist, we must break down what Docker actually is. Docker is a monolithic platform that orchestrates multiple tasks: image building, registry interaction, container management, volume handling, and networking. Under the OCI specification, this monolith is broken down into modular components.</p>
 <pre class="mermaid">graph TD
-    A[High-Level Orchestrator&#x3C;br>&#x3C;i>Kubernetes, Nomad, Podman Desktop&#x3C;/i>] --> B[High-Level Container Runtime / CRI Daemon&#x3C;br>&#x3C;i>containerd, CRI-O, podman&#x3C;/i>]
-    B --> C[Low-Level Runtime / OCI-Compliant&#x3C;br>&#x3C;i>runc, crun, gVisor, Kata&#x3C;/i>]
-    C --> D[Host OS Kernel Features&#x3C;br>&#x3C;i>Namespaces, Cgroups, Seccomp, LSM&#x3C;/i>]
+    A["High-Level Orchestrator&#x3C;br>(Kubernetes, Nomad, Podman Desktop)"]
+    B["High-Level Container Runtime / CRI Daemon&#x3C;br>(containerd, CRI-O, podman)"]
+    C["Low-Level Runtime / OCI-Compliant&#x3C;br>(runc, crun, gVisor, Kata)"]
+    D["Host OS Kernel Features&#x3C;br>(Namespaces, Cgroups, Seccomp, LSM)"]
+
+    A --> B
+    B --> C
+    C --> D
 
     style A fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff
     style B fill:#aec7e8,stroke:#333,stroke-width:1px,color:#000
@@ -179,19 +184,19 @@
 <h3 id="option-b-the-modern-approach-native-wsl-containers-via-wslcexe">Option B: The Modern Approach (Native WSL Containers via <code>wslc.exe</code>)</h3>
 <p>Microsoft native integration offers native Linux container capabilities through <strong>WSL Containers</strong> (<code>wslc.exe</code>). This model executes containerized workloads inside dedicated, lightweight Hyper-V VMs directly managed by the host subsystem without requiring a third-party management layer.</p>
 <pre class="mermaid">graph LR
-    subgraph WinHost[Windows 11 Host Engine]
-        CLI[PowerShell / Terminal &#x3C;br> &#x3C;b>wslc.exe CLI&#x3C;/b>]
+    subgraph WinHost[" Windows 11 Host Engine "]
+        CLI["PowerShell / Windows Terminal&#x3C;br>&#x3C;b>wslc.exe CLI Engine&#x3C;/b>"]
     end
 
-    subgraph HyperV[Isolated Architecture]
-        VM[Dedicated Hyper-V VM]
-        subgraph ContainerEnv[Container Sandbox]
-            LC[Linux Container Process]
+    subgraph HyperV[" Isolated Architecture Layer "]
+        VM["Dedicated Hyper-V VM Core"]
+        subgraph ContainerEnv[" Container Sandbox Environment "]
+            LC["Linux Container Runtime Process"]
         end
     end
 
     CLI -->|Executes Control Signals| VM
-    VM -->|Isolates Process| LC
+    VM -->|Isolates Guest Guest Space| LC
 
     style WinHost fill:#1f77b4,color:#fff,stroke:#333
     style HyperV fill:#f5f5f5,color:#000,stroke:#333
@@ -234,19 +239,19 @@
 <h3 id="option-b-colima--lima-the-fully-open-source-stack">Option B: Colima + Lima (The Fully Open-Source Stack)</h3>
 <p>For teams seeking a completely open-source toolchain on macOS, the preferred configuration pairs <strong>Lima</strong> (Linux Machines on Mac) with <strong>Colima</strong> (Container Run-times on Lima).</p>
 <pre class="mermaid">graph TD
-    subgraph Host[macOS Local Host]
-        CLI[colima CLI Engine]
+    subgraph Host[" macOS Local Host Space "]
+        CLI["colima Command Line Interface Engine"]
     end
     
-    subgraph LimaEnv[Lima Virtualization Subsystem]
-        VM[Target Alpine / Ubuntu Linux VM]
-        subgraph EngineSpace[Runtime Core]
-            CE[containerd / docker-ce Engine]
+    subgraph LimaEnv[" Lima Virtualization Subsystem Subtree "]
+        VM["Target Alpine / Ubuntu Linux Virtual Machine Guest"]
+        subgraph EngineSpace[" Runtime Infrastructure Core "]
+            CE["containerd / docker-ce Core Daemon Layer"]
         end
     end
 
     CLI -->|Provisions via QEMU or Virtualization.framework| VM
-    VM -->|Orchestrates Host Containers| CE
+    VM -->|Orchestrates Host Containers Inside Guest| CE
 
     style Host fill:#2ca02c,color:#fff,stroke:#333
     style LimaEnv fill:#fff7ec,color:#000,stroke:#333
@@ -267,24 +272,24 @@
 <h2 id="6-deep-dive-apples-native-container-engine-applecontainer">6. Deep Dive: Apple’s Native Container Engine (<code>apple/container</code>)</h2>
 <p>Apple fundamentally changed the container landscape on macOS by open-sourcing <strong><code>apple/container</code></strong> (built upon the foundational <code>apple/containerization</code> Swift package). Unlike every other tool mentioned—which rely on one massive, always-on, shared Linux Virtual Machine running a shared kernel for all your containers—Apple’s native tool introduces an isolated <strong>per-container micro-VM architecture</strong>.</p>
 <pre class="mermaid">graph TD
-    subgraph Mac[macOS Apple Silicon Host Host]
-        APIServer[container-apiserver Daemon]
+    subgraph Mac[" macOS Apple Silicon Silicon Base Host "]
+        APIServer["container-apiserver Micro-Daemon Management Plane"]
     end
 
-    subgraph MicroVMA[Micro-VM Sandbox: Web App]
-        subgraph GuestLinuxA[Optimized Linux Kernel Mini-Core]
-            InitA[vminitd init PID 1] --> ProcA[Linux Application Process]
+    subgraph MicroVMA[" Micro-VM Sandbox Ecosystem: Frontend Web App "]
+        subgraph GuestLinuxA[" Highly Optimized Mini Linux Kernel Configuration "]
+            InitA["vminitd entry point init (PID 1)"] --> ProcA["Isolated Linux Application Runtime Process"]
         end
     end
 
-    subgraph MicroVMB[Micro-VM Sandbox: Database]
-        subgraph GuestLinuxB[Optimized Linux Kernel Mini-Core]
-            InitB[vminitd init PID 1] --> ProcB[Linux Database Process]
+    subgraph MicroVMB[" Micro-VM Sandbox Ecosystem: Core Storage Database "]
+        subgraph GuestLinuxB[" Highly Optimized Mini Linux Kernel Configuration "]
+            InitB["vminitd entry point init (PID 1)"] --> ProcB["Isolated Linux Database Runtime Process"]
         end
     end
 
-    APIServer -->|Spawns Hypervisor Session via VSOCK| InitA
-    APIServer -->|Spawns Hypervisor Session via VSOCK| InitB
+    APIServer -->|Spawns Hypervisor Sessions via Native VSOCK Link| InitA
+    APIServer -->|Spawns Hypervisor Sessions via Native VSOCK Link| InitB
 
     style Mac fill:#7f7f7f,color:#fff,stroke:#333
     style MicroVMA fill:#e377c2,color:#000,stroke:#333
