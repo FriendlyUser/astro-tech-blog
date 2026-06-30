@@ -69,7 +69,7 @@ const BlogPost = (props: IBlogPostProps) => (
           );
         })}
       </div>
-      <div className="mx-auto mt-5 max-w-prose">
+      <div className="mx-auto mt-5 max-w-7xl">
         <div className="aspect-h-2 aspect-w-3">
           <img
             className="h-full w-full rounded-lg object-cover object-center"
