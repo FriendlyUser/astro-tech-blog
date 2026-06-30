@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks - FriendlyUsers Tech Blog</title><script src="https://kit.fontawesome.com/741a79b827.js" crossorigin="anonymous"></script><meta name="description" content="Ditch Docker Desktop. Explore modern OCI-compliant alternatives like Podman, containerd, OrbStack, and native host engines including Windows wslc.exe and Apple's native container toolchain without daemon overhead."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="module">window.dataLayer=window.dataLayer||[];function a(){dataLayer.push(arguments)}a("js",new Date);a("config","UA-119155027-6");</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DmQZLfuR.js"></script><link rel="stylesheet" href="/_astro/Base.CqmgK3BG.css"></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts" target="_self">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog" target="_self">GitHub</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2026-06-30T19:31:12.000Z</div><div class="flex place-content-center pt-2"><div class="
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks - FriendlyUsers Tech Blog</title><script src="https://kit.fontawesome.com/741a79b827.js" crossorigin="anonymous"></script><meta name="description" content="Ditch Docker Desktop. Explore modern OCI-compliant alternatives like Podman, containerd, OrbStack, and native host engines including Windows wslc.exe and Apple's native container toolchain without daemon overhead."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="module">window.dataLayer=window.dataLayer||[];function a(){dataLayer.push(arguments)}a("js",new Date);a("config","UA-119155027-6");</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DmQZLfuR.js"></script><link rel="stylesheet" href="/_astro/Base.CqmgK3BG.css"><script type="module" src="/_astro/page.HW8Vkab9.js"></script></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts" target="_self">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog" target="_self">GitHub</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2026-06-30T19:31:12.000Z</div><div class="flex place-content-center pt-2"><div class="
       // Layout //      Shape (Updated
       to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
       px-2.5 py-0.5                      text-xs font-medium
@@ -46,15 +46,15 @@
 <hr>
 <h2 id="1-the-core-architecture-of-modern-container-runtimes">1. The Core Architecture of Modern Container Runtimes</h2>
 <p>To understand why alternatives to Docker exist, we must break down what Docker actually is. Docker is a monolithic platform that orchestrates multiple tasks: image building, registry interaction, container management, volume handling, and networking. Under the OCI specification, this monolith is broken down into modular components.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
-<span class="line"><span style="color:#E1E4E8">    A[High-Level Orchestrator&#x3C;br>&#x3C;i>Kubernetes, Nomad, Podman Desktop&#x3C;/i>] --> B[High-Level Container Runtime / CRI Daemon&#x3C;br>&#x3C;i>containerd, CRI-O, podman&#x3C;/i>]</span></span>
-<span class="line"><span style="color:#E1E4E8">    B --> C[Low-Level Runtime / OCI-Compliant&#x3C;br>&#x3C;i>runc, crun, gVisor, Kata&#x3C;/i>]</span></span>
-<span class="line"><span style="color:#E1E4E8">    C --> D[Host OS Kernel Features&#x3C;br>&#x3C;i>Namespaces, Cgroups, Seccomp, LSM&#x3C;/i>]</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    style A fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff</span></span>
-<span class="line"><span style="color:#E1E4E8">    style B fill:#aec7e8,stroke:#333,stroke-width:1px,color:#000</span></span>
-<span class="line"><span style="color:#E1E4E8">    style C fill:#ffbb78,stroke:#333,stroke-width:1px,color:#000</span></span>
-<span class="line"><span style="color:#E1E4E8">    style D fill:#2ca02c,stroke:#fff,stroke-width:2px,color:#fff</span></span></code></pre>
+<pre class="mermaid">graph TD
+    A[High-Level Orchestrator&#x3C;br>&#x3C;i>Kubernetes, Nomad, Podman Desktop&#x3C;/i>] --> B[High-Level Container Runtime / CRI Daemon&#x3C;br>&#x3C;i>containerd, CRI-O, podman&#x3C;/i>]
+    B --> C[Low-Level Runtime / OCI-Compliant&#x3C;br>&#x3C;i>runc, crun, gVisor, Kata&#x3C;/i>]
+    C --> D[Host OS Kernel Features&#x3C;br>&#x3C;i>Namespaces, Cgroups, Seccomp, LSM&#x3C;/i>]
+
+    style A fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff
+    style B fill:#aec7e8,stroke:#333,stroke-width:1px,color:#000
+    style C fill:#ffbb78,stroke:#333,stroke-width:1px,color:#000
+    style D fill:#2ca02c,stroke:#fff,stroke-width:2px,color:#fff</pre>
 <h3 id="high-level-runtimes-vs-low-level-runtimes">High-Level Runtimes vs. Low-Level Runtimes</h3>
 <ul>
 <li><strong>Low-Level Runtimes (OCI Runtimes):</strong> These are responsible for the actual creation of the sandbox environment. They configure host Linux cgroups and namespaces, and execute the container process. The de facto standard is <strong><code>runc</code></strong> (written in Go), though alternatives like <strong><code>crun</code></strong> (written in C) offer significantly faster execution times and lower memory footprints.</li>
@@ -178,24 +178,24 @@
 <hr>
 <h3 id="option-b-the-modern-approach-native-wsl-containers-via-wslcexe">Option B: The Modern Approach (Native WSL Containers via <code>wslc.exe</code>)</h3>
 <p>Microsoft native integration offers native Linux container capabilities through <strong>WSL Containers</strong> (<code>wslc.exe</code>). This model executes containerized workloads inside dedicated, lightweight Hyper-V VMs directly managed by the host subsystem without requiring a third-party management layer.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph LR</span></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph WinHost[Windows 11 Host Engine]</span></span>
-<span class="line"><span style="color:#E1E4E8">        CLI[PowerShell / Terminal &#x3C;br> &#x3C;b>wslc.exe CLI&#x3C;/b>]</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph HyperV[Isolated Architecture]</span></span>
-<span class="line"><span style="color:#E1E4E8">        VM[Dedicated Hyper-V VM]</span></span>
-<span class="line"><span style="color:#E1E4E8">        subgraph ContainerEnv[Container Sandbox]</span></span>
-<span class="line"><span style="color:#E1E4E8">            LC[Linux Container Process]</span></span>
-<span class="line"><span style="color:#E1E4E8">        end</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    CLI -->|Executes Control Signals| VM</span></span>
-<span class="line"><span style="color:#E1E4E8">    VM -->|Isolates Process| LC</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    style WinHost fill:#1f77b4,color:#fff,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style HyperV fill:#f5f5f5,color:#000,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style ContainerEnv fill:#e1f5fe,color:#000,stroke:#0288d1</span></span></code></pre>
+<pre class="mermaid">graph LR
+    subgraph WinHost[Windows 11 Host Engine]
+        CLI[PowerShell / Terminal &#x3C;br> &#x3C;b>wslc.exe CLI&#x3C;/b>]
+    end
+
+    subgraph HyperV[Isolated Architecture]
+        VM[Dedicated Hyper-V VM]
+        subgraph ContainerEnv[Container Sandbox]
+            LC[Linux Container Process]
+        end
+    end
+
+    CLI -->|Executes Control Signals| VM
+    VM -->|Isolates Process| LC
+
+    style WinHost fill:#1f77b4,color:#fff,stroke:#333
+    style HyperV fill:#f5f5f5,color:#000,stroke:#333
+    style ContainerEnv fill:#e1f5fe,color:#000,stroke:#0288d1</pre>
 <h4 id="prerequisite-validation">Prerequisite Validation</h4>
 <p>Ensure your WSL architecture is up to date via PowerShell:</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#E1E4E8">wsl </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">update</span></span>
@@ -233,24 +233,24 @@
 <hr>
 <h3 id="option-b-colima--lima-the-fully-open-source-stack">Option B: Colima + Lima (The Fully Open-Source Stack)</h3>
 <p>For teams seeking a completely open-source toolchain on macOS, the preferred configuration pairs <strong>Lima</strong> (Linux Machines on Mac) with <strong>Colima</strong> (Container Run-times on Lima).</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph Host[macOS Local Host]</span></span>
-<span class="line"><span style="color:#E1E4E8">        CLI[colima CLI Engine]</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"><span style="color:#E1E4E8">    </span></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph LimaEnv[Lima Virtualization Subsystem]</span></span>
-<span class="line"><span style="color:#E1E4E8">        VM[Target Alpine / Ubuntu Linux VM]</span></span>
-<span class="line"><span style="color:#E1E4E8">        subgraph EngineSpace[Runtime Core]</span></span>
-<span class="line"><span style="color:#E1E4E8">            CE[containerd / docker-ce Engine]</span></span>
-<span class="line"><span style="color:#E1E4E8">        end</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    CLI -->|Provisions via QEMU or Virtualization.framework| VM</span></span>
-<span class="line"><span style="color:#E1E4E8">    VM -->|Orchestrates Host Containers| CE</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    style Host fill:#2ca02c,color:#fff,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style LimaEnv fill:#fff7ec,color:#000,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style EngineSpace fill:#fee8c8,color:#000,stroke:#fdbb84</span></span></code></pre>
+<pre class="mermaid">graph TD
+    subgraph Host[macOS Local Host]
+        CLI[colima CLI Engine]
+    end
+    
+    subgraph LimaEnv[Lima Virtualization Subsystem]
+        VM[Target Alpine / Ubuntu Linux VM]
+        subgraph EngineSpace[Runtime Core]
+            CE[containerd / docker-ce Engine]
+        end
+    end
+
+    CLI -->|Provisions via QEMU or Virtualization.framework| VM
+    VM -->|Orchestrates Host Containers| CE
+
+    style Host fill:#2ca02c,color:#fff,stroke:#333
+    style LimaEnv fill:#fff7ec,color:#000,stroke:#333
+    style EngineSpace fill:#fee8c8,color:#000,stroke:#fdbb84</pre>
 <p>Colima provisions an thin, headless Linux VM inside macOS using QEMU or Apple Virtualization.framework, then configures <code>containerd</code> or <code>docker-ce</code> runtimes inside that VM.</p>
 <h4 id="pure-cli-implementation-walkthrough">Pure CLI Implementation Walkthrough</h4>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Install the core CLI toolchains</span></span>
@@ -266,29 +266,29 @@
 <hr>
 <h2 id="6-deep-dive-apples-native-container-engine-applecontainer">6. Deep Dive: Apple’s Native Container Engine (<code>apple/container</code>)</h2>
 <p>Apple fundamentally changed the container landscape on macOS by open-sourcing <strong><code>apple/container</code></strong> (built upon the foundational <code>apple/containerization</code> Swift package). Unlike every other tool mentioned—which rely on one massive, always-on, shared Linux Virtual Machine running a shared kernel for all your containers—Apple’s native tool introduces an isolated <strong>per-container micro-VM architecture</strong>.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph Mac[macOS Apple Silicon Host Host]</span></span>
-<span class="line"><span style="color:#E1E4E8">        APIServer[container-apiserver Daemon]</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph MicroVMA[Micro-VM Sandbox: Web App]</span></span>
-<span class="line"><span style="color:#E1E4E8">        subgraph GuestLinuxA[Optimized Linux Kernel Mini-Core]</span></span>
-<span class="line"><span style="color:#E1E4E8">            InitA[vminitd init PID 1] --> ProcA[Linux Application Process]</span></span>
-<span class="line"><span style="color:#E1E4E8">        end</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    subgraph MicroVMB[Micro-VM Sandbox: Database]</span></span>
-<span class="line"><span style="color:#E1E4E8">        subgraph GuestLinuxB[Optimized Linux Kernel Mini-Core]</span></span>
-<span class="line"><span style="color:#E1E4E8">            InitB[vminitd init PID 1] --> ProcB[Linux Database Process]</span></span>
-<span class="line"><span style="color:#E1E4E8">        end</span></span>
-<span class="line"><span style="color:#E1E4E8">    end</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    APIServer -->|Spawns Hypervisor Session via VSOCK| InitA</span></span>
-<span class="line"><span style="color:#E1E4E8">    APIServer -->|Spawns Hypervisor Session via VSOCK| InitB</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E1E4E8">    style Mac fill:#7f7f7f,color:#fff,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style MicroVMA fill:#e377c2,color:#000,stroke:#333</span></span>
-<span class="line"><span style="color:#E1E4E8">    style MicroVMB fill:#17becf,color:#000,stroke:#333</span></span></code></pre>
+<pre class="mermaid">graph TD
+    subgraph Mac[macOS Apple Silicon Host Host]
+        APIServer[container-apiserver Daemon]
+    end
+
+    subgraph MicroVMA[Micro-VM Sandbox: Web App]
+        subgraph GuestLinuxA[Optimized Linux Kernel Mini-Core]
+            InitA[vminitd init PID 1] --> ProcA[Linux Application Process]
+        end
+    end
+
+    subgraph MicroVMB[Micro-VM Sandbox: Database]
+        subgraph GuestLinuxB[Optimized Linux Kernel Mini-Core]
+            InitB[vminitd init PID 1] --> ProcB[Linux Database Process]
+        end
+    end
+
+    APIServer -->|Spawns Hypervisor Session via VSOCK| InitA
+    APIServer -->|Spawns Hypervisor Session via VSOCK| InitB
+
+    style Mac fill:#7f7f7f,color:#fff,stroke:#333
+    style MicroVMA fill:#e377c2,color:#000,stroke:#333
+    style MicroVMB fill:#17becf,color:#000,stroke:#333</pre>
 <h3 id="the-architectural-shift-per-container-micro-vms">The Architectural Shift: Per-Container Micro-VMs</h3>
 <p>When you execute a container using <code>apple/container</code>, the runtime spins up a dedicated, hyper-isolated lightweight instance of an optimized Linux kernel specifically for that process.</p>
 <ul>
