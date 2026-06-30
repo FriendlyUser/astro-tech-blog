@@ -3,6 +3,7 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from "@tailwindcss/vite";
 import { rehypeShiki } from '@astrojs/markdown-remark'
+import mermaid from 'astro-mermaid';
 // import rehypeMermaid from 'rehype-mermaid'
 
 
@@ -25,8 +26,15 @@ export default defineConfig({
   },
   vite: { plugins: [tailwindcss()]},
   // sitemap(), 
-  integrations: [react(), sitemap({
+  integrations: [
+    react(), 
+    sitemap({
       // Change the full URL to a relative path
       customPages: ['/ads.txt'],
-    })]
+    }),
+    mermaid({
+      theme: 'forest',
+      autoTheme: true
+    })
+  ]
 });
