@@ -21,9 +21,14 @@ To understand why alternatives to Docker exist, we must break down what Docker a
 
 ```mermaid
 graph TD
-    A[High-Level Orchestrator<br><i>Kubernetes, Nomad, Podman Desktop</i>] --> B[High-Level Container Runtime / CRI Daemon<br><i>containerd, CRI-O, podman</i>]
-    B --> C[Low-Level Runtime / OCI-Compliant<br><i>runc, crun, gVisor, Kata</i>]
-    C --> D[Host OS Kernel Features<br><i>Namespaces, Cgroups, Seccomp, LSM</i>]
+    A["High-Level Orchestrator<br>(Kubernetes, Nomad, Podman Desktop)"]
+    B["High-Level Container Runtime / CRI Daemon<br>(containerd, CRI-O, podman)"]
+    C["Low-Level Runtime / OCI-Compliant<br>(runc, crun, gVisor, Kata)"]
+    D["Host OS Kernel Features<br>(Namespaces, Cgroups, Seccomp, LSM)"]
+
+    A --> B
+    B --> C
+    C --> D
 
     style A fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff
     style B fill:#aec7e8,stroke:#333,stroke-width:1px,color:#000
@@ -146,19 +151,19 @@ Microsoft native integration offers native Linux container capabilities through 
 
 ```mermaid
 graph LR
-    subgraph WinHost[Windows 11 Host Engine]
-        CLI[PowerShell / Terminal <br> <b>wslc.exe CLI</b>]
+    subgraph WinHost[" Windows 11 Host Engine "]
+        CLI["PowerShell / Windows Terminal<br><b>wslc.exe CLI Engine</b>"]
     end
 
-    subgraph HyperV[Isolated Architecture]
-        VM[Dedicated Hyper-V VM]
-        subgraph ContainerEnv[Container Sandbox]
-            LC[Linux Container Process]
+    subgraph HyperV[" Isolated Architecture Layer "]
+        VM["Dedicated Hyper-V VM Core"]
+        subgraph ContainerEnv[" Container Sandbox Environment "]
+            LC["Linux Container Runtime Process"]
         end
     end
 
     CLI -->|Executes Control Signals| VM
-    VM -->|Isolates Process| LC
+    VM -->|Isolates Guest Guest Space| LC
 
     style WinHost fill:#1f77b4,color:#fff,stroke:#333
     style HyperV fill:#f5f5f5,color:#000,stroke:#333
@@ -225,19 +230,19 @@ For teams seeking a completely open-source toolchain on macOS, the preferred con
 
 ```mermaid
 graph TD
-    subgraph Host[macOS Local Host]
-        CLI[colima CLI Engine]
+    subgraph Host[" macOS Local Host Space "]
+        CLI["colima Command Line Interface Engine"]
     end
     
-    subgraph LimaEnv[Lima Virtualization Subsystem]
-        VM[Target Alpine / Ubuntu Linux VM]
-        subgraph EngineSpace[Runtime Core]
-            CE[containerd / docker-ce Engine]
+    subgraph LimaEnv[" Lima Virtualization Subsystem Subtree "]
+        VM["Target Alpine / Ubuntu Linux Virtual Machine Guest"]
+        subgraph EngineSpace[" Runtime Infrastructure Core "]
+            CE["containerd / docker-ce Core Daemon Layer"]
         end
     end
 
     CLI -->|Provisions via QEMU or Virtualization.framework| VM
-    VM -->|Orchestrates Host Containers| CE
+    VM -->|Orchestrates Host Containers Inside Guest| CE
 
     style Host fill:#2ca02c,color:#fff,stroke:#333
     style LimaEnv fill:#fff7ec,color:#000,stroke:#333
@@ -270,24 +275,24 @@ Apple fundamentally changed the container landscape on macOS by open-sourcing **
 
 ```mermaid
 graph TD
-    subgraph Mac[macOS Apple Silicon Host Host]
-        APIServer[container-apiserver Daemon]
+    subgraph Mac[" macOS Apple Silicon Silicon Base Host "]
+        APIServer["container-apiserver Micro-Daemon Management Plane"]
     end
 
-    subgraph MicroVMA[Micro-VM Sandbox: Web App]
-        subgraph GuestLinuxA[Optimized Linux Kernel Mini-Core]
-            InitA[vminitd init PID 1] --> ProcA[Linux Application Process]
+    subgraph MicroVMA[" Micro-VM Sandbox Ecosystem: Frontend Web App "]
+        subgraph GuestLinuxA[" Highly Optimized Mini Linux Kernel Configuration "]
+            InitA["vminitd entry point init (PID 1)"] --> ProcA["Isolated Linux Application Runtime Process"]
         end
     end
 
-    subgraph MicroVMB[Micro-VM Sandbox: Database]
-        subgraph GuestLinuxB[Optimized Linux Kernel Mini-Core]
-            InitB[vminitd init PID 1] --> ProcB[Linux Database Process]
+    subgraph MicroVMB[" Micro-VM Sandbox Ecosystem: Core Storage Database "]
+        subgraph GuestLinuxB[" Highly Optimized Mini Linux Kernel Configuration "]
+            InitB["vminitd entry point init (PID 1)"] --> ProcB["Isolated Linux Database Runtime Process"]
         end
     end
 
-    APIServer -->|Spawns Hypervisor Session via VSOCK| InitA
-    APIServer -->|Spawns Hypervisor Session via VSOCK| InitB
+    APIServer -->|Spawns Hypervisor Sessions via Native VSOCK Link| InitA
+    APIServer -->|Spawns Hypervisor Sessions via Native VSOCK Link| InitB
 
     style Mac fill:#7f7f7f,color:#fff,stroke:#333
     style MicroVMA fill:#e377c2,color:#000,stroke:#333
