@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks - FriendlyUsers Tech Blog</title><script src="https://kit.fontawesome.com/741a79b827.js" crossorigin="anonymous"></script><meta name="description" content="Ditch Docker Desktop. Explore modern OCI-compliant alternatives like Podman, containerd, OrbStack, and native host engines including Windows wslc.exe and Apple's native container toolchain without daemon overhead."><meta name="author" content="David Li"><link rel="alternate" type="application/rss+xml" href="/rss.xml"><link rel="icon" type="image/x-icon" href="/favicon.ico"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386" crossorigin="anonymous"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script><script type="module">window.dataLayer=window.dataLayer||[];function a(){dataLayer.push(arguments)}a("js",new Date);a("config","UA-119155027-6");</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DmQZLfuR.js"></script><link rel="stylesheet" href="/_astro/Base.CqmgK3BG.css"></head> <body class="bg-slate-900 text-gray-100"> <!-- Google Tag Manager (noscript) --> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8P5P8FQ" height="0" width="0" style="display:none;visibility:hidden"></iframe> </noscript> <!-- End Google Tag Manager (noscript) --> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="flex flex-col gap-y-3 sm:flex-row sm:items-center sm:justify-between"><a href="/"><div class="flex items-center bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-xl font-bold text-transparent"><svg class="mr-1 h-10 w-10 stroke-cyan-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0h24v24H0z" stroke="none"></path><rect x="3" y="12" width="6" height="8" rx="1"></rect><rect x="9" y="8" width="6" height="12" rx="1"></rect><rect x="15" y="4" width="6" height="16" rx="1"></rect><path d="M4 20h14"></path></svg>David&#x27;s Blog</div></a><nav><ul class="flex gap-x-3 font-medium text-gray-200"><li class="hover:text-white"><a href="/posts" target="_self">Blogs</a></li><li class="hover:text-white"><a href="https://github.com/FriendlyUser/astro-tech-blog" target="_self">GitHub</a></li></ul></nav></div></div> <div data-pagefind-body>  <div class="mx-auto max-w-screen-lg px-3 py-6"><div><h1 class="text-center text-3xl font-bold">Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks</h1><div class="mt-2 text-center text-sm text-gray-400">By <!-- -->David Li<!-- --> on <!-- -->2026-06-30T19:31:12.000Z</div><div class="flex place-content-center pt-2"><div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/DevOps" style="padding-right:3px"> <category>DevOps<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Containers" style="padding-right:3px"> <category>Containers<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Docker Alternatives" style="padding-right:3px"> <category>Docker Alternatives<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Podman" style="padding-right:3px"> <category>Podman<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/WSL2" style="padding-right:3px"> <category>WSL2<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Apple Silicon" style="padding-right:3px"> <category>Apple Silicon<!-- --> </category></a></span></div> <div class="
+      // Layout //      Shape (Updated
+      to match your               &quot;For&quot; snippet) // Typography inline-flex max-w-full items-center rounded-full
+      px-2.5 py-0.5                      text-xs font-medium
+      bg-cyan-400 text-cyan-900          // Dynamic Color
+      h-fit
+    " style="height:fit-content"><span class="line-clamp-2 break-words text-left"> <a href="/tags/Infrastructure" style="padding-right:3px"> <category>Infrastructure<!-- --> </category></a></span></div> </div><div class="mx-auto mt-5 max-w-prose"><div class="aspect-h-2 aspect-w-3"><img class="h-full w-full rounded-lg object-cover object-center" src="https://raw.githubusercontent.com/FriendlyUser/devcraft/refs/heads/main/src/icons/bring_to_life.svg" loading="lazy"/></div><div class="prose prose-invert mt-8 prose-img:rounded-lg"><content> <h1 id="beyond-the-whale-the-architecture-trade-offs-and-implementation-of-post-docker-container-frameworks">Beyond the Whale: The Architecture, Trade-Offs, and Implementation of Post-Docker Container Frameworks</h1>
+<p>For nearly a decade, the word “Docker” has been used interchangeably with “container.” However, shifting enterprise licensing models, architectural bottlenecks, and security considerations have forced a fundamental re-evaluation of the container stack.</p>
+<p>Modern containerization is governed by open standards, specifically the Open Container Initiative (OCI). This decoupling of the container ecosystem allows engineers to swap the monolithic daemon (<code>dockerd</code>) for highly optimized, modular alternatives.</p>
+<hr>
+<h2 id="1-the-core-architecture-of-modern-container-runtimes">1. The Core Architecture of Modern Container Runtimes</h2>
+<p>To understand why alternatives to Docker exist, we must break down what Docker actually is. Docker is a monolithic platform that orchestrates multiple tasks: image building, registry interaction, container management, volume handling, and networking. Under the OCI specification, this monolith is broken down into modular components.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
+<span class="line"><span style="color:#E1E4E8">    A[High-Level Orchestrator&#x3C;br>&#x3C;i>Kubernetes, Nomad, Podman Desktop&#x3C;/i>] --> B[High-Level Container Runtime / CRI Daemon&#x3C;br>&#x3C;i>containerd, CRI-O, podman&#x3C;/i>]</span></span>
+<span class="line"><span style="color:#E1E4E8">    B --> C[Low-Level Runtime / OCI-Compliant&#x3C;br>&#x3C;i>runc, crun, gVisor, Kata&#x3C;/i>]</span></span>
+<span class="line"><span style="color:#E1E4E8">    C --> D[Host OS Kernel Features&#x3C;br>&#x3C;i>Namespaces, Cgroups, Seccomp, LSM&#x3C;/i>]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    style A fill:#1f77b4,stroke:#fff,stroke-width:2px,color:#fff</span></span>
+<span class="line"><span style="color:#E1E4E8">    style B fill:#aec7e8,stroke:#333,stroke-width:1px,color:#000</span></span>
+<span class="line"><span style="color:#E1E4E8">    style C fill:#ffbb78,stroke:#333,stroke-width:1px,color:#000</span></span>
+<span class="line"><span style="color:#E1E4E8">    style D fill:#2ca02c,stroke:#fff,stroke-width:2px,color:#fff</span></span></code></pre>
+<h3 id="high-level-runtimes-vs-low-level-runtimes">High-Level Runtimes vs. Low-Level Runtimes</h3>
+<ul>
+<li><strong>Low-Level Runtimes (OCI Runtimes):</strong> These are responsible for the actual creation of the sandbox environment. They configure host Linux cgroups and namespaces, and execute the container process. The de facto standard is <strong><code>runc</code></strong> (written in Go), though alternatives like <strong><code>crun</code></strong> (written in C) offer significantly faster execution times and lower memory footprints.</li>
+<li><strong>High-Level Runtimes (Container Daemons):</strong> These manage the lifecycle of images, abstract network configurations, pull layers from registries, and hand off decrypted OCI bundles to the low-level runtime. <strong><code>containerd</code></strong> and <strong><code>CRI-O</code></strong> fall into this category.</li>
+</ul>
+<h3 id="the-oci-standard-images-and-runtimes">The OCI Standard: Images and Runtimes</h3>
+<p>The Open Container Initiative guarantees interoperability across two specifications:</p>
+<ol>
+<li><strong>Image Specification:</strong> Defines the layout of an archive consisting of layer tarballs and a configuration JSON containing environment variables, entry points, and architectures.</li>
+<li><strong>Runtime Specification:</strong> Dictates how that unpacked image structure is mapped to host OS features to spin up a process.</li>
+</ol>
+<p>Any modern alternative tool can pull an image built with Docker and run it natively, as long as it adheres to these specifications.</p>
+<hr>
+<h2 id="2-comprehensive-comparison-of-major-docker-alternatives">2. Comprehensive Comparison of Major Docker Alternatives</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Metric / Feature</th><th>Podman</th><th>containerd + nerdctl</th><th>Rancher Desktop</th><th>OrbStack (macOS)</th></tr></thead><tbody><tr><td><strong>Architecture</strong></td><td>Daemonless, Rootless</td><td>Daemon-based, Root</td><td>Daemon-backed VM</td><td>Lightweight Native VM</td></tr><tr><td><strong>Primary OS</strong></td><td>Linux (Native), Mac/Win (VM)</td><td>Linux (Native), Mac (via Lima)</td><td>Windows, macOS, Linux</td><td>macOS Only</td></tr><tr><td><strong>K8s Integration</strong></td><td>Play/Generate Kube YAML</td><td>Via <code>k3s</code> / <code>kind</code></td><td>Built-in <code>k3s</code></td><td>Built-in</td></tr><tr><td><strong>License</strong></td><td>Apache 2.0 (Open Source)</td><td>Apache 2.0 (Open Source)</td><td>Apache 2.0 (Open Source)</td><td>Proprietary (Free for Personal)</td></tr><tr><td><strong>Resource Usage</strong></td><td>Very Low</td><td>Low</td><td>Moderate to High</td><td>Extremely Low</td></tr><tr><td><strong>Drop-in CLI Compatibility</strong></td><td>Excellent (<code>alias docker=podman</code>)</td><td>High (<code>nerdctl</code>)</td><td>Standard Docker CLI</td><td>Identical Docker CLI</td></tr></tbody></table>
+<hr>
+<h2 id="3-deep-dive-into-alternatives">3. Deep Dive into Alternatives</h2>
+<h3 id="podman-pod-manager">Podman (Pod Manager)</h3>
+<p>Podman, engineered primarily by Red Hat, is the most direct substitute for Docker.</p>
+<ul>
+<li><strong>Daemonless Architecture:</strong> Docker relies on a centralized daemon (<code>dockerd</code>) running with root privileges. If the daemon crashes, all managed containers go down. Podman eliminates this single point of failure; it executes containers as standard fork/exec child processes of the calling user or service manager (<code>systemd</code>).</li>
+<li><strong>Rootless Execution:</strong> Podman leverages user namespaces (<code>user_namespaces(7)</code>) to map arbitrary host User IDs (UIDs) to root/non-root UIDs inside the container. This limits potential container breakout vulnerabilities, as the process executing inside the container has no privileges on the host system.</li>
+</ul>
+<h3 id="containerd--nerdctl">Containerd &#x26; Nerdctl</h3>
+<ul>
+<li><strong><code>containerd</code>:</strong> Originally stripped out of Docker itself, <code>containerd</code> is a CNCF-graduated high-level container runtime. It is the underlying muscle for production Kubernetes clusters worldwide.</li>
+<li><strong><code>nerdctl</code>:</strong> Because <code>containerd</code> is intended as a programmatic backend, its native CLI tool (<code>ctr</code>) is intentionally unpolished. To bridge the developer experience gap, the community built <code>nerdctl</code> (Nerd Control). It provides a drop-in UX for <code>containerd</code> that supports cutting-edge features like lazy-pulling (e.g., eStargz) and encrypted OCI images.</li>
+</ul>
+<h3 id="rancher-desktop">Rancher Desktop</h3>
+<p>Managed by SUSE, Rancher Desktop packages open-source container utilities into a cohesive desktop GUI app. It lets you select your high-level container runtime backend (<code>containerd</code> or standard Moby/Docker engine) and comes tightly coupled with a local Kubernetes cluster powered by <strong><code>k3s</code></strong>.</p>
+<hr>
+<h2 id="4-native-windows-containers-via-wsl-2-without-docker-desktop">4. Native Windows Containers via WSL 2 Without Docker Desktop</h2>
+<p>Historically, running Linux or native Windows containers on Windows meant installing Docker Desktop, which enforces complex commercial licensing and consumes notable background resources. Microsoft provides fully native alternatives.</p>
+<h3 id="option-a-the-legacymanual-approach-manual-engine-installation-in-wsl-2">Option A: The Legacy/Manual Approach (Manual Engine Installation in WSL 2)</h3>
+<p>You can set up a completely decoupled open-source Docker engine directly inside an independent WSL 2 Linux distribution.</p>
+<h4 id="step-1-purge-docker-desktop-and-unregister-environments">Step 1: Purge Docker Desktop and Unregister Environments</h4>
+<p>Run these commands from an elevated administrative PowerShell prompt:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#6A737D"># Uninstall the application manually from Settings or App &#x26; Features, then:</span></span>
+<span class="line"><span style="color:#E1E4E8">wsl </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">unregister docker</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">desktop</span></span>
+<span class="line"><span style="color:#E1E4E8">wsl </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">unregister docker</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">desktop</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">data</span></span>
+<span class="line"></span></code></pre>
+<h4 id="step-2-set-up-docker-ce-inside-ubuntu-wsl-2">Step 2: Set Up Docker-CE inside Ubuntu WSL 2</h4>
+<p>Boot into your raw WSL 2 distro (e.g., Ubuntu) and run the following configuration commands:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Update local packages</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt-get</span><span style="color:#9ECBFF"> update</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt-get</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> ca-certificates</span><span style="color:#9ECBFF"> curl</span><span style="color:#9ECBFF"> gnupg</span><span style="color:#9ECBFF"> lsb-release</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Add Docker's official GPG key</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> /etc/apt/keyrings</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -fsSL</span><span style="color:#9ECBFF"> https://download.docker.com/linux/ubuntu/gpg</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sudo</span><span style="color:#9ECBFF"> gpg</span><span style="color:#79B8FF"> --dearmor</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> /etc/apt/keyrings/docker.gpg</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Set up the repository structure</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "deb [arch=$(</span><span style="color:#B392F0">dpkg</span><span style="color:#79B8FF"> --print-architecture</span><span style="color:#9ECBFF">) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(</span><span style="color:#B392F0">lsb_release</span><span style="color:#79B8FF"> -cs</span><span style="color:#9ECBFF">) stable"</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sudo</span><span style="color:#9ECBFF"> tee</span><span style="color:#9ECBFF"> /etc/apt/sources.list.d/docker.list</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> /dev/null</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install the engine binaries natively</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt-get</span><span style="color:#9ECBFF"> update</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> apt-get</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -y</span><span style="color:#9ECBFF"> docker-ce</span><span style="color:#9ECBFF"> docker-ce-cli</span><span style="color:#9ECBFF"> containerd.io</span><span style="color:#9ECBFF"> docker-buildx-plugin</span><span style="color:#9ECBFF"> docker-compose-plugin</span></span>
+<span class="line"></span></code></pre>
+<h4 id="step-3-configure-init--systemd-compatibility">Step 3: Configure Init / Systemd Compatibility</h4>
+<p>Modern WSL 2 natively supports <code>systemd</code>. Ensure it is active by modifying your <code>/etc/wsl.conf</code> within the Linux instance:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ini"><code><span class="line"><span style="color:#B392F0">[boot]</span></span>
+<span class="line"><span style="color:#F97583">systemd</span><span style="color:#E1E4E8">=true</span></span>
+<span class="line"></span></code></pre>
+<p>Restart your WSL instance from PowerShell (<code>wsl --shutdown</code>), re-enter, and execute:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> systemctl</span><span style="color:#9ECBFF"> enable</span><span style="color:#79B8FF"> --now</span><span style="color:#9ECBFF"> docker</span></span>
+<span class="line"><span style="color:#B392F0">sudo</span><span style="color:#9ECBFF"> usermod</span><span style="color:#79B8FF"> -aG</span><span style="color:#9ECBFF"> docker</span><span style="color:#E1E4E8"> $USER</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="option-b-the-modern-approach-native-wsl-containers-via-wslcexe">Option B: The Modern Approach (Native WSL Containers via <code>wslc.exe</code>)</h3>
+<p>Microsoft native integration offers native Linux container capabilities through <strong>WSL Containers</strong> (<code>wslc.exe</code>). This model executes containerized workloads inside dedicated, lightweight Hyper-V VMs directly managed by the host subsystem without requiring a third-party management layer.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph LR</span></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph WinHost[Windows 11 Host Engine]</span></span>
+<span class="line"><span style="color:#E1E4E8">        CLI[PowerShell / Terminal &#x3C;br> &#x3C;b>wslc.exe CLI&#x3C;/b>]</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph HyperV[Isolated Architecture]</span></span>
+<span class="line"><span style="color:#E1E4E8">        VM[Dedicated Hyper-V VM]</span></span>
+<span class="line"><span style="color:#E1E4E8">        subgraph ContainerEnv[Container Sandbox]</span></span>
+<span class="line"><span style="color:#E1E4E8">            LC[Linux Container Process]</span></span>
+<span class="line"><span style="color:#E1E4E8">        end</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    CLI -->|Executes Control Signals| VM</span></span>
+<span class="line"><span style="color:#E1E4E8">    VM -->|Isolates Process| LC</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    style WinHost fill:#1f77b4,color:#fff,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style HyperV fill:#f5f5f5,color:#000,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style ContainerEnv fill:#e1f5fe,color:#000,stroke:#0288d1</span></span></code></pre>
+<h4 id="prerequisite-validation">Prerequisite Validation</h4>
+<p>Ensure your WSL architecture is up to date via PowerShell:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#E1E4E8">wsl </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">update</span></span>
+<span class="line"><span style="color:#E1E4E8">wslc version</span></span>
+<span class="line"></span></code></pre>
+<h4 id="managing-wsl-containers-natively">Managing WSL Containers Natively</h4>
+<p>To pull an OCI image and initialize a sandbox directly from standard host command lines without an active Docker daemon daemon:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="powershell"><code><span class="line"><span style="color:#6A737D"># Run a transient interactive bash environment</span></span>
+<span class="line"><span style="color:#E1E4E8">wslc run </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">rm </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">it ubuntu:latest bash</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Launch a background web server mapping host ports</span></span>
+<span class="line"><span style="color:#E1E4E8">wslc run </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">d </span><span style="color:#F97583">--</span><span style="color:#E1E4E8">rm </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">p </span><span style="color:#79B8FF">8080</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">80</span><span style="color:#F97583"> --</span><span style="color:#E1E4E8">name local</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">web nginx:alpine</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Query running instances</span></span>
+<span class="line"><span style="color:#E1E4E8">wslc container list</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="5-apple-silicon-architecture-high-performance-containers-without-docker-desktop">5. Apple Silicon Architecture: High-Performance Containers Without Docker Desktop</h2>
+<p>On Apple Silicon (M1/M2/M3/M4) Macs, traditional container runtimes suffer from two main performance issues: Rosetta 2 emulation layer bottlenecks for x86_64 target images, and massive file synchronization overhead over virtualized block stores.</p>
+<h3 id="option-a-orbstack-the-ultra-lightweight-commercial-challenger">Option A: OrbStack (The Ultra-Lightweight Commercial Challenger)</h3>
+<p>OrbStack is a proprietary, hyper-optimized drop-in alternative for macOS written in native Swift. It interacts directly with the Apple <strong>Virtualization.framework</strong> kernel APIs.</p>
+<ul>
+<li><strong>Dynamic Allocation:</strong> Unlike Docker Desktop, which reserves a fixed segment of RAM (e.g., 8GB locked uniformly), OrbStack treats memory elastically. It dynamically requests memory from macOS and returns it immediately when processes idle.</li>
+<li><strong>VirtioFS Architecture:</strong> It replaces heavy gRPC-fuse syncing engines with low-level VirtioFS bindings, delivering near-native disk read/write access speeds when performing hot-reloading operations in bind mounts.</li>
+</ul>
+<h4 id="setup-and-operation-via-homebrew">Setup and Operation via Homebrew</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Install via brew</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> orbstack</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># The background orchestration engine initializes in less than a second. </span></span>
+<span class="line"><span style="color:#6A737D"># It provides immediate drop-in docker binary context paths.</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> ps</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> compose</span><span style="color:#9ECBFF"> up</span><span style="color:#79B8FF"> -d</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="option-b-colima--lima-the-fully-open-source-stack">Option B: Colima + Lima (The Fully Open-Source Stack)</h3>
+<p>For teams seeking a completely open-source toolchain on macOS, the preferred configuration pairs <strong>Lima</strong> (Linux Machines on Mac) with <strong>Colima</strong> (Container Run-times on Lima).</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph Host[macOS Local Host]</span></span>
+<span class="line"><span style="color:#E1E4E8">        CLI[colima CLI Engine]</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph LimaEnv[Lima Virtualization Subsystem]</span></span>
+<span class="line"><span style="color:#E1E4E8">        VM[Target Alpine / Ubuntu Linux VM]</span></span>
+<span class="line"><span style="color:#E1E4E8">        subgraph EngineSpace[Runtime Core]</span></span>
+<span class="line"><span style="color:#E1E4E8">            CE[containerd / docker-ce Engine]</span></span>
+<span class="line"><span style="color:#E1E4E8">        end</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    CLI -->|Provisions via QEMU or Virtualization.framework| VM</span></span>
+<span class="line"><span style="color:#E1E4E8">    VM -->|Orchestrates Host Containers| CE</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    style Host fill:#2ca02c,color:#fff,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style LimaEnv fill:#fff7ec,color:#000,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style EngineSpace fill:#fee8c8,color:#000,stroke:#fdbb84</span></span></code></pre>
+<p>Colima provisions an thin, headless Linux VM inside macOS using QEMU or Apple Virtualization.framework, then configures <code>containerd</code> or <code>docker-ce</code> runtimes inside that VM.</p>
+<h4 id="pure-cli-implementation-walkthrough">Pure CLI Implementation Walkthrough</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Install the core CLI toolchains</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> colima</span><span style="color:#9ECBFF"> docker</span><span style="color:#9ECBFF"> docker-compose</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Initialize Colima leveraging native macOS virtualization and Rosetta 2 emulation</span></span>
+<span class="line"><span style="color:#B392F0">colima</span><span style="color:#9ECBFF"> start</span><span style="color:#79B8FF"> --runtime</span><span style="color:#9ECBFF"> docker</span><span style="color:#79B8FF"> --vm-type=vz</span><span style="color:#79B8FF"> --vz-rosetta</span><span style="color:#79B8FF"> --cpu</span><span style="color:#79B8FF"> 4</span><span style="color:#79B8FF"> --memory</span><span style="color:#79B8FF"> 8</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Verify socket health status</span></span>
+<span class="line"><span style="color:#B392F0">colima</span><span style="color:#9ECBFF"> status</span></span>
+<span class="line"></span></code></pre>
+<p>By utilizing <code>--vm-type=vz --vz-rosetta</code>, any compiled x86_64 image layout pulled down from remote registries will run via hardware-accelerated Apple Silicon translation, bypassing slow QEMU instruction translation.</p>
+<hr>
+<h2 id="6-deep-dive-apples-native-container-engine-applecontainer">6. Deep Dive: Apple’s Native Container Engine (<code>apple/container</code>)</h2>
+<p>Apple fundamentally changed the container landscape on macOS by open-sourcing <strong><code>apple/container</code></strong> (built upon the foundational <code>apple/containerization</code> Swift package). Unlike every other tool mentioned—which rely on one massive, always-on, shared Linux Virtual Machine running a shared kernel for all your containers—Apple’s native tool introduces an isolated <strong>per-container micro-VM architecture</strong>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="mermaid"><code><span class="line"><span style="color:#E1E4E8">graph TD</span></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph Mac[macOS Apple Silicon Host Host]</span></span>
+<span class="line"><span style="color:#E1E4E8">        APIServer[container-apiserver Daemon]</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph MicroVMA[Micro-VM Sandbox: Web App]</span></span>
+<span class="line"><span style="color:#E1E4E8">        subgraph GuestLinuxA[Optimized Linux Kernel Mini-Core]</span></span>
+<span class="line"><span style="color:#E1E4E8">            InitA[vminitd init PID 1] --> ProcA[Linux Application Process]</span></span>
+<span class="line"><span style="color:#E1E4E8">        end</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    subgraph MicroVMB[Micro-VM Sandbox: Database]</span></span>
+<span class="line"><span style="color:#E1E4E8">        subgraph GuestLinuxB[Optimized Linux Kernel Mini-Core]</span></span>
+<span class="line"><span style="color:#E1E4E8">            InitB[vminitd init PID 1] --> ProcB[Linux Database Process]</span></span>
+<span class="line"><span style="color:#E1E4E8">        end</span></span>
+<span class="line"><span style="color:#E1E4E8">    end</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    APIServer -->|Spawns Hypervisor Session via VSOCK| InitA</span></span>
+<span class="line"><span style="color:#E1E4E8">    APIServer -->|Spawns Hypervisor Session via VSOCK| InitB</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    style Mac fill:#7f7f7f,color:#fff,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style MicroVMA fill:#e377c2,color:#000,stroke:#333</span></span>
+<span class="line"><span style="color:#E1E4E8">    style MicroVMB fill:#17becf,color:#000,stroke:#333</span></span></code></pre>
+<h3 id="the-architectural-shift-per-container-micro-vms">The Architectural Shift: Per-Container Micro-VMs</h3>
+<p>When you execute a container using <code>apple/container</code>, the runtime spins up a dedicated, hyper-isolated lightweight instance of an optimized Linux kernel specifically for that process.</p>
+<ul>
+<li><strong>The Control Plane (<code>container-apiserver</code>):</strong> Managed as a macOS native launch agent, the API server handles container requests and interacts with specialized XPC helpers (like <code>container-core-images</code> for OCI layer caching and <code>container-network-vmnet</code> for local virtual routing).</li>
+<li><strong>The Guest Init System (<code>vminitd</code>):</strong> Inside each micro-VM, Apple drops a custom, ultra-minimal init binary called <code>vminitd</code>. It is spawned as PID 1, communicates directly with the host macOS control plane using gRPC over hypervisor sockets (<code>vsock</code>), maps signals, forwards bidirectional standard I/O streams, and boots the target container process in milliseconds.</li>
+<li><strong>Elastic Memory Reclamation:</strong> Because isolation happens at the hypervisor layer rather than a shared kernel namespace layer, when an individual container stops or goes idle, its entire hardware memory segment is fully reclaimed and released back to macOS immediately.</li>
+</ul>
+<hr>
+<h3 id="deep-optimization-for-apple-silicon-hardware">Deep Optimization for Apple Silicon Hardware</h3>
+<p>The <code>apple/container</code> ecosystem is explicitly built to exploit the microarchitectural advantages of Apple Silicon (M-series SOCs). It completely drops legacy Intel x86 support to avoid abstraction overhead.</p>
+<h4 id="1-hardware-accelerated-virtualization-via-virtualizationframework">1. Hardware-Accelerated Virtualization via <code>Virtualization.framework</code></h4>
+<p>Instead of using complex hypervisor layers like QEMU, the Swift toolchain talks natively to macOS kernel APIs. It utilizes hardware virtualization extensions built directly into the M-series performance cores (P-cores) to execute guest OS instructions directly at bare-metal speed with near-zero instruction translation latency.</p>
+<h4 id="2-native-rosetta-2-translation-for-cross-architecture-pipelines">2. Native Rosetta 2 Translation for Cross-Architecture Pipelines</h4>
+<p>Running x86_64 (<code>amd64</code>) Linux containers on ARM64 developer machines is traditionally a performance nightmare due to software emulation. Apple’s framework pipes x86 instructions through a special hardware-backed Rosetta translation hook inside the Linux kernel configuration.</p>
+<ul>
+<li>This maps complex instruction sets into ARM64 instructions at runtime using the chip’s internal, hardware-level page table toggles (such as alternate memory ordering modes native to Apple Silicon).</li>
+</ul>
+<h4 id="3-hyper-optimized-storage-via-memory-mapped-blocks">3. Hyper-Optimized Storage via Memory-Mapped Blocks</h4>
+<p>File synchronization over standard Docker volumes is typically slowed down by translation bridges. Apple bypasses this entirely. The <code>apple/containerization</code> package formats native block devices from the Mac’s unified memory structure and attaches them straight to the guest via lightning-fast <code>VIRTIO</code> storage drivers.</p>
+<hr>
+<h3 id="implementation-walkthrough-going-dockerless-with-applecontainer">Implementation Walkthrough: Going Dockerless with <code>apple/container</code></h3>
+<h4 id="step-1-toolchain-installation">Step 1: Toolchain Installation</h4>
+<p>Because it relies tightly on system APIs added in modern macOS releases, ensure you are running Xcode command-line tools and install the package binaries:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Verify Apple Silicon native environment</span></span>
+<span class="line"><span style="color:#B392F0">uname</span><span style="color:#79B8FF"> -m</span><span style="color:#6A737D"> # Should output: arm64</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Install using homebrew or pull the signed pkg from apple/container GitHub releases</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> apple-container</span></span>
+<span class="line"></span></code></pre>
+<h4 id="step-2-system-initialization">Step 2: System Initialization</h4>
+<p>To bring up the local native control plane, initialize the daemon-free API server architectures:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Start the system launch agents and virtual network interfaces</span></span>
+<span class="line"><span style="color:#B392F0">container</span><span style="color:#9ECBFF"> system</span><span style="color:#9ECBFF"> start</span></span>
+<span class="line"></span></code></pre>
+<p>This automatically initializes the structured TOML configuration layout located globally at <code>~/.config/container/config.toml</code>.</p>
+<h4 id="step-3-running-oci-workloads-natively">Step 3: Running OCI Workloads Natively</h4>
+<p>The syntax natively accepts OCI-compliant formats. You can pull directly from Docker Hub or GitHub Container Registry (GHCR) without needing any Docker translation layers:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Run a transient interactive Bash environment</span></span>
+<span class="line"><span style="color:#B392F0">container</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> --rm</span><span style="color:#79B8FF"> -it</span><span style="color:#9ECBFF"> ubuntu:latest</span><span style="color:#9ECBFF"> bash</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Launch an Nginx background instance with explicit hardware limitations</span></span>
+<span class="line"><span style="color:#B392F0">container</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -d</span><span style="color:#79B8FF"> --name</span><span style="color:#9ECBFF"> native-web</span><span style="color:#79B8FF"> --cpus</span><span style="color:#79B8FF"> 2</span><span style="color:#79B8FF"> --memory</span><span style="color:#9ECBFF"> 2g</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> 8080:80</span><span style="color:#9ECBFF"> nginx:alpine</span></span>
+<span class="line"></span></code></pre>
+<h4 id="step-4-provisioning-long-lived-container-machines">Step 4: Provisioning Long-Lived “Container Machines”</h4>
+<p>A standout feature of the tool is <strong>Container Machines</strong> (similar to WSL for Mac). This lets you turn any standard OCI container image containing an init system (<code>/sbin/init</code>) into a persistent, deeply integrated local Linux workspace.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Spin up a persistent Ubuntu development node</span></span>
+<span class="line"><span style="color:#B392F0">container</span><span style="color:#9ECBFF"> machine</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> MyLinuxWorkspace</span><span style="color:#9ECBFF"> ubuntu:latest</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Enter the environment</span></span>
+<span class="line"><span style="color:#B392F0">container</span><span style="color:#9ECBFF"> machine</span><span style="color:#9ECBFF"> shell</span><span style="color:#9ECBFF"> MyLinuxWorkspace</span></span>
+<span class="line"></span></code></pre>
+<p>Inside this machine shell, your macOS host home directory is automatically mounted, file changes persist between reboots, and the shell context natively assumes your exact Mac user identity and permissions.</p>
+<h2 id="6-migration-guide--potential-pitfalls">6. Migration Guide &#x26; Potential Pitfalls</h2>
+<p>When moving away from Docker Desktop, keep these technical details in mind to prevent broken pipelines:</p>
+<h3 id="1-hardcoded-unix-socket-locations">1. Hardcoded Unix Socket Locations</h3>
+<p>Many tools, test frameworks (like Testcontainers), and CI scripts expect the system daemon socket to live at <code>/var/run/docker.sock</code>. When migrating to Podman or rootless setups, this path shifts.</p>
+<ul>
+<li><em>The Fix:</em> Export environmental overrides pointing to the alternate socket path:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> DOCKER_HOST</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"unix://</span><span style="color:#E1E4E8">$HOME</span><span style="color:#9ECBFF">/.local/share/containers/storage/run/podman/podman.sock"</span></span>
+<span class="line"></span></code></pre>
+<h3 id="2-configuration-objects-dockerconfigjson">2. Configuration Objects (<code>.docker/config.json</code>)</h3>
+<p>Credential helpers for cloud registries (AWS ECR, Google Artifact Registry) often write auth tokens into <code>~/.docker/config.json</code>. Alternate tools like Podman query <code>~/.config/containers/auth.json</code> instead. You can bridge this gap by creating symbolic links or explicitly passing configuration arguments during compilation runs.</p>
+<hr>
+<h2 id="summary-recommendation-which-tool-to-choose">Summary Recommendation: Which Tool to Choose?</h2>
+<ul>
+<li>If your deployment environment is tightly coupled with <strong>Red Hat, OpenShift, or corporate security compliance policies requiring rootless execution</strong>, migrate fully to <strong>Podman</strong>.</li>
+<li>If you are developing exclusively on <strong>macOS and need maximum raw filesystem execution speed</strong>, choose <strong>OrbStack</strong>.</li>
+<li>If you need a <strong>100% open-source, highly granular development environment on Mac</strong>, configure <strong>Colima</strong>.</li>
+<li>If you are operating on a <strong>modern Windows platform</strong>, run Docker directly within a <strong>systemd-enabled WSL 2 Linux distribution</strong> or use <strong>native WSL Containers (<code>wslc.exe</code>)</strong>.</li>
+</ul> </content></div></div></div></div> <script type="module">window.addEventListener("DOMContentLoaded",e=>{setTimeout(()=>{new PagefindUI({element:"#search"})},2e3)});</script><div class="mx-auto max-w-screen-lg px-3 py-6"> <div class="no-print flex w-full"> <form class="max-w-lg" action="https://formspree.io/f/xpqybvwy" method="POST"><div class="-mx-3 mb-6 flex flex-wrap"><div class="mb-6 w-full px-3 md:mb-0 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-first-name">First Name</label><input name="firstName" class="mb-3 block w-full appearance-none rounded py-3 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none" id="grid-first-name" type="text" placeholder="Jane" required=""/></div><div class="w-full px-3 md:w-1/2"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="grid-last-name">Last Name</label><input name="lastName" class="block w-full appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="grid-last-name" type="text" placeholder="Doe" required=""/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="email">E-mail</label><input name="email" class="mb-3 block w-full appearance-none rounded border py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="email" type="email" required=""/></div></div><div class="-mx-3 mb-6 flex flex-wrap"><div class="w-full px-3"><label class="mb-2 block text-xs font-bold uppercase tracking-wide" for="message">Message</label><textarea name="message" class="no-resize mb-3 block h-48 w-full resize-none appearance-none rounded border border-gray-200 py-3 px-4 leading-tight text-gray-700 focus:border-gray-500 focus:bg-white focus:outline-none" id="message" required=""></textarea></div></div><div class="md:flex md:items-center"><div class="md:w-1/3"><button class="ml-2 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 px-6 py-2 text-sm font-medium text-white hover:from-sky-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-600/50" type="submit">Send</button></div></div></form> <div class="ml-3 max-w-lg bg-slate-300"> <link href="/pagefind/pagefind-ui.css" rel="stylesheet"> <script src="/pagefind/pagefind-ui.js" type="text/javascript"></script> <div id="search" class="ml-3 p-4"></div>  </div> </div> </div>  </div> <div class="mx-auto max-w-screen-lg px-3 py-6"><div class="no-print border-t border-gray-600 pt-5"><div class="text-sm text-gray-200">© Copyright <!-- -->2026<!-- --> by <!-- -->FriendlyUsers Tech Blog<!-- -->. Built with ♥ by<!-- --> <a class="text-cyan-400 transition-colors hover:underline" href="https://github.com/FriendlyUser" target="_blank" rel="noopener noreferrer">FriendlyUser</a>. Last updated on <!-- -->2026-06-30<!-- -->.</div></div></div> </body></html>
