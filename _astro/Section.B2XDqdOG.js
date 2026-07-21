@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.DwZMzjJb.js";var t=e(),n=e=>(0,t.jsxs)(`div`,{className:`mx-auto max-w-screen-lg px-3 py-6`,children:[e.title&&(0,t.jsx)(`div`,{className:`mb-6 text-2xl font-bold`,children:e.title}),e.children]});export{n as t};

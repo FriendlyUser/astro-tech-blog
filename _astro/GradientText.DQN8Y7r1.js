@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime.DwZMzjJb.js";var t=e(),n=e=>(0,t.jsx)(`span`,{className:`bg-gradient-to-br from-sky-500 to-cyan-400 bg-clip-text text-transparent`,children:e.children});export{n as t};
