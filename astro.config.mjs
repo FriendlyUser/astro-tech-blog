@@ -1,11 +1,9 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, memoryCache } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from "@tailwindcss/vite";
-import { rehypeShiki } from '@astrojs/markdown-remark'
 import mermaid from 'astro-mermaid';
-// import rehypeMermaid from 'rehype-mermaid'
-
+import { unified } from '@astrojs/markdown-remark';
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,12 +17,12 @@ export default defineConfig({
       // https://github.com/shikijs/shiki/blob/main/docs/themes.md
       theme: 'monokai',
     },
-    rehypePlugins: [
-      // rehypeMermaid,
-      rehypeShiki,
-    ],
+    processor: unified(),
   },
   vite: { plugins: [tailwindcss()]},
+  cache: {
+    provider: memoryCache(),
+  },
   // sitemap(), 
   integrations: [
     react(), 
