@@ -5,13 +5,21 @@
  * Content lives in src/data/portfolio.ts; blog stats come from the posts at build time.
  */
 import { chapters, investTools, links, profile, projects, skillGroups } from '@/data/portfolio';
-import { blogStats } from '@/utils/blogStats';
+import { getBlogIndex } from '@/utils/blogIndex';
 import { silhouette } from '@/utils/silhouettes';
 import '@/styles/portfolio.css';
 
-// Raw text (not compiled modules) so the posts' layout CSS stays out of this page.
-const rawPosts = import.meta.glob('./posts/**/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
-const stats = blogStats(rawPosts);
+// Blog posts come from the Starlight content collection (only their data is read here,
+// so no post CSS is pulled into this page).
+const index = await getBlogIndex();
+const stats = {
+  total: index.posts.length,
+  topics: index.topics.map((t) => ({
+    ...t,
+    examples: t.posts.slice(0, 3).map((p) => ({ title: p.title, url: p.url })),
+  })),
+  stars: index.posts.map((p) => ({ title: p.title, url: p.url, date: p.day, topic: p.topic })),
+};
 const recent = stats.stars.slice(0, 6);
 const topicIndex = new Map(stats.topics.map((t, i) => [t.id, i]));
 
@@ -100,6 +108,7 @@ const fmt = (d: string) =>
         <a href="#skills">Skills</a>
         <a href="#contact">Contact</a>
         <a href={links.blog}>Blog</a>
+        <a href={links.topics}>Topics</a>
         <a href={links.github} rel="me noopener">GitHub</a>
       </nav>
     </header>
@@ -211,6 +220,7 @@ const fmt = (d: string) =>
                     {t.examples.map((e) => (
                       <a href={e.url}>{e.title}</a>
                     ))}
+                    <a class="topic__all" href={`${links.topics}${t.id}/`}>All {t.count} {t.name} posts &rarr;</a>
                   </div>
                 </li>
               ))

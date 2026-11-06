@@ -1,0 +1,89 @@
+---
+/** Topic overview: the same clusters as the homepage constellation. */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { formatDate, getBlogIndex, topicUrl } from '@/utils/blogIndex';
+
+const { topics, posts } = await getBlogIndex();
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Topics',
+    description: `${posts.length} posts grouped into ${topics.length} topics.`,
+    tableOfContents: false,
+    pagefind: false,
+  }}
+>
+  <p>
+    Every post is grouped into one topic, the same clusters that make up the constellation on the <a href="/#writing">homepage</a>.
+  </p>
+  <ul class="topic-grid not-content">
+    {
+      topics.map((t) => (
+        <li>
+          <a href={topicUrl(t.id)} style={`--c:${t.color}`}>
+            <span class="topic-grid__head">
+              <span class="topic-grid__name">{t.name}</span>
+              <span class="topic-grid__count">{t.count}</span>
+            </span>
+            <span class="topic-grid__blurb">{t.blurb}</span>
+            {t.posts[0] && (
+              <span class="topic-grid__latest">
+                Latest: {t.posts[0].title} · {formatDate(t.posts[0].date)}
+              </span>
+            )}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</StarlightPage>
+
+<style>
+  .topic-grid {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.9rem;
+  }
+  .topic-grid a {
+    display: grid;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-top: 2px solid var(--c);
+    border-radius: 4px;
+    background: var(--sl-color-bg-nav);
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+  .topic-grid a:hover {
+    border-color: var(--c);
+  }
+  .topic-grid__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .topic-grid__name {
+    font-family: var(--pf-serif);
+    font-size: 1.35rem;
+  }
+  .topic-grid__count {
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-sm);
+    color: var(--c);
+  }
+  .topic-grid__blurb {
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .topic-grid__latest {
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+</style>

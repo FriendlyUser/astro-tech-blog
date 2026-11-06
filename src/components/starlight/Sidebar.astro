@@ -1,0 +1,73 @@
+---
+/**
+ * Starlight Sidebar override (varsha structure: persister + sublist + mobile footer).
+ *
+ * Instead of listing all ~555 posts on every page, the sidebar is built from the blog
+ * index: site navigation, topics with post counts, then either more posts from the
+ * current post's topic or the most recent posts.
+ */
+import MobileMenuFooter from '@astrojs/starlight/components/MobileMenuFooter.astro';
+import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro';
+import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro';
+import { getBlogIndex, topicOf, topicUrl } from '@/utils/blogIndex';
+
+type Entry = Parameters<typeof SidebarSublist>[0]['sublist'][number];
+
+const index = await getBlogIndex();
+const norm = (p: string) => decodeURI(p).replace(/\/?$/, '/');
+const here = norm(Astro.url.pathname);
+
+const link = (label: string, href: string, count?: number): Entry => ({
+  type: 'link',
+  label,
+  href,
+  isCurrent: norm(href) === here,
+  badge: count == null ? undefined : { text: String(count), variant: 'default' },
+  attrs: {},
+});
+const group = (label: string, entries: Entry[], collapsed = false): Entry => ({
+  type: 'group',
+  label,
+  entries,
+  collapsed,
+  badge: undefined,
+});
+
+const current = index.byUrl.get(here);
+const topicFromPath = here.match(/^\/topics\/([^/]+)\/$/)?.[1];
+const focusTopic = current?.topic ?? topicFromPath;
+
+let related: Entry;
+if (focusTopic) {
+  const posts = (index.byTopic.get(focusTopic) ?? []).slice(0, 12);
+  related = group(`More ${topicOf(focusTopic).name}`, [
+    ...posts.map((p) => link(p.title, p.url)),
+    link(`All ${topicOf(focusTopic).name} posts`, topicUrl(focusTopic)),
+  ]);
+} else {
+  related = group('Recent posts', index.posts.slice(0, 10).map((p) => link(p.title, p.url)));
+}
+
+const sublist: Entry[] = [
+  group('Navigate', [
+    link('Home', '/'),
+    link('All posts', '/posts/', index.posts.length),
+    link('Topics', '/topics/'),
+    link('Classic site', '/old_site/'),
+  ]),
+  related,
+  group(
+    'Topics',
+    index.topics.map((t) => link(t.name, topicUrl(t.id), t.count)),
+    Boolean(current)
+  ),
+];
+---
+
+<SidebarPersister>
+  <SidebarSublist sublist={sublist} />
+</SidebarPersister>
+
+<div class="md:sl-hidden">
+  <MobileMenuFooter />
+</div>

@@ -1,55 +1,40 @@
 ---
+/** Paginated list of every post: /posts/, /posts/2/, ... (rendered inside Starlight). */
+import type { GetStaticPaths, Page } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import PostList from '@/components/blog/PostList.astro';
+import Pager from '@/components/blog/Pager.astro';
+import { getBlogIndex, topicUrl, type Post } from '@/utils/blogIndex';
 
-// import type { CustomIFrontMatter } from '@/partials/BlogPost';
-import Base from '@/templates/Base.astro';
-import { AppConfig } from '@/utils/AppConfig';
-import { sortByDate } from '@/utils/Posts';
-import { NewerOlderPagination } from '@/components/NewerOlderPagination';
-import { PaginationHeader } from '@/components/PaginationHeader';
-import { Section } from '@/components/Section';
-import { BlogGallery } from '@/components/BlogGallery';
-import "../../styles/global.css";
-type GetStaticPaths = {
-  paginate: any;
-}; // Overrides `GetStaticPathsOptions` types from Astro
+export const getStaticPaths = (async ({ paginate }) => {
+  const { posts } = await getBlogIndex();
+  return paginate(posts, { pageSize: 12 });
+}) satisfies GetStaticPaths;
 
-export async function getStaticPaths({ paginate }: GetStaticPaths) {
-  const allPosts = Object.values(import.meta.glob('./**/*.{md,mdx}', { eager: true}));
-  const sortedPosts = sortByDate(allPosts);
-  // const filteredPosts = sortedPosts.filter((post) => {
-  //   const postDate = new Date(post.frontmatter.pubDate);
-  //   const today = new Date();
-  //   return postDate <= today;
-  // });
-  // Return a paginated collection of paths for all posts
-  return paginate(sortedPosts, { pageSize: 6 });
-}
-
-interface Props {
-  page: any;
-}
-
-const { page } = Astro.props as Props;
-const titleSuffix = ` - ${AppConfig.site_name}`;
-const titleBase = `Page ${page.currentPage}`;
-const title = titleBase + titleSuffix;
-const description = 'Blog post iteration for Astro styled with Tailwind CSS.';
+const { page } = Astro.props as { page: Page<Post> };
+const { topics, posts } = await getBlogIndex();
+const title = page.currentPage === 1 ? 'Blog' : `Blog — page ${page.currentPage}`;
 ---
 
-<Base head={{ title, description }}>
-  <Section>
-    <PaginationHeader
-      title="FriendlyUser's blog"
-      description="More posts in my blog."
-    />
-  </Section>
-
-  <Section>
-    <BlogGallery postList={page.data} />
-  </Section>
-
-  <Section>
-    <NewerOlderPagination page={page} />
-  </Section>
-  <div data-pagefind-body></div>
-</Base>
+<StarlightPage
+  frontmatter={{
+    title,
+    description: `All ${posts.length} posts on FriendlyUser's tech blog, newest first.`,
+    tableOfContents: false,
+    pagefind: false,
+  }}
+>
+  <p>
+    {posts.length} posts on software development, newest first. Browse by topic:
+    {
+      topics.map((t, i) => (
+        <>
+          <a href={topicUrl(t.id)}>{t.name}</a>
+          {i < topics.length - 1 ? ', ' : '.'}
+        </>
+      ))
+    }
+  </p>
+  <PostList posts={page.data} />
+  <Pager page={page} />
+</StarlightPage>

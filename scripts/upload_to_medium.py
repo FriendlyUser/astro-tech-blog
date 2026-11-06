@@ -58,7 +58,7 @@ def make_articles_for_medium():
     Returns:
         str: The function comment for the given function body.
     """
-    basePostFolder = "src/pages"
+    basePostFolder = "src/content/docs"  # posts moved here when the blog switched to Starlight; URLs are unchanged
     postFolders = ["posts/stonks/web", "posts/stonks/ta", "posts", "posts/stonks", "posts/tech", "posts/tech/css", "posts/tech/dapps", "posts/tech/flutter", "posts/tech/java", "posts/tech/js", "posts/tech/net", "posts/tech/python", "posts/tech/scripting", "posts/tech/go", "posts/random", "posts/tech/utils", "posts/tech/2023", "posts/tech/php", "posts/tech/python/introToPython", "posts/tech/rust", "posts/tech/react", 
     "posts/tech/js/ui", "posts/stonks/thoughts", 
     "posts/tech/tex", "posts/tech/python/projects", "posts/tech/vue", "posts/tech/autohotkey", "posts/tech/ai", "posts/tech/cpp", "posts/tech/deno", "posts/tech/kotlin", "posts/tech/2024", "posts/flipp_grocery_scrapper.md", "posts/tech/2025", "posts/tech/2026"]

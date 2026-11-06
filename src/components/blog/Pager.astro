@@ -1,0 +1,62 @@
+---
+/** Newer / older page links for paginated post lists. */
+import type { Page } from 'astro';
+
+interface Props {
+  page: Page<unknown>;
+}
+const { page } = Astro.props;
+---
+
+{
+  page.lastPage > 1 && (
+    <nav class="pager not-content" aria-label="Pagination">
+      {page.url.prev ? (
+        <a href={page.url.prev} rel="prev">
+          &larr; Newer
+        </a>
+      ) : (
+        <span />
+      )}
+      <span class="pager__now">
+        Page {page.currentPage} of {page.lastPage}
+      </span>
+      {page.url.next ? (
+        <a href={page.url.next} rel="next">
+          Older &rarr;
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-sm);
+  }
+  .pager a {
+    color: var(--sl-color-white);
+    text-decoration: none;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 4px;
+    justify-self: start;
+  }
+  .pager a[rel='next'] {
+    justify-self: end;
+  }
+  .pager a:hover {
+    border-color: var(--pf-accent);
+  }
+  .pager__now {
+    color: var(--sl-color-gray-3);
+  }
+</style>

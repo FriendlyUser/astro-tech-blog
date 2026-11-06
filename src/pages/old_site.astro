@@ -8,21 +8,25 @@ import Base from '@/templates/Base.astro';
 import Timeline from '@/components/Timeline';
 import AnimatedLaptop from '@/components/AnimatedLaptop';
 import { AppConfig } from '@/utils/AppConfig';
-import { sortByDate } from '@/utils/Posts';
+import { getBlogIndex } from '@/utils/blogIndex';
 import "../styles/global.css";
 import BottomSection from '../partials/BottomSection.astro';
 
-const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
-const sortedPosts = sortByDate(allPosts);
-
-// filter out dates that are in the future
-const filteredPosts = sortedPosts.filter((post) => {
-  const postDate = new Date(post.frontmatter.pubDate);
-  const today = new Date();
-  return postDate <= today;
-});
-
-const lastThreePosts = filteredPosts.slice(0, 3);
+// The classic homepage, kept as it was before the three.js redesign. Posts now live in
+// the Starlight content collection, so map the newest three to the
+// { url, frontmatter } shape the original React components expect.
+const { posts } = await getBlogIndex();
+const lastThreePosts = posts.slice(0, 3).map((p) => ({
+  url: p.url,
+  frontmatter: {
+    title: p.title,
+    description: p.description,
+    pubDate: p.date.toISOString(),
+    tags: p.tags,
+    imgSrc: p.imgSrc,
+    imgAlt: p.imgAlt,
+  },
+})) as any[];
 
 const { title } = AppConfig;
 const { description } = AppConfig;

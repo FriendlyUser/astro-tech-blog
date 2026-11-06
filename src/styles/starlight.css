@@ -1,0 +1,140 @@
+/* Starlight theme for the blog pages. Structure adapted from the varsha web-ui-template
+   (MIT) via work-notes-astro; palette and type match the three.js homepage
+   (src/styles/portfolio.css): near-black, bone white, cyan data light, permit-yellow accent. */
+
+:root {
+  --pf-accent: #f5c518;
+  --pf-cyan: #5ad1e6;
+  --sl-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --sl-font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+  --pf-serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  --sl-content-width: 50rem;
+  --sl-sidebar-width: 19rem;
+}
+
+:root,
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #3a3006;
+  --sl-color-accent: #f5c518;
+  --sl-color-accent-high: #ffe27a;
+  --sl-color-white: #ece6da;
+  --sl-color-gray-1: #d9d3c6;
+  --sl-color-gray-2: #b8b3a8;
+  --sl-color-gray-3: #8e94a3;
+  --sl-color-gray-4: #5c6474;
+  --sl-color-gray-5: #333b48;
+  --sl-color-gray-6: #1a212c;
+  --sl-color-gray-7: #11161e;
+  --sl-color-black: #07090d;
+  --sl-color-bg: #07090d;
+  --sl-color-bg-nav: #0b0f15;
+  --sl-color-bg-sidebar: #0b0f15;
+  --sl-color-bg-inline-code: #161d28;
+  --sl-color-hairline: #1f2733;
+  --sl-color-hairline-light: #2b3442;
+  --sl-color-text-accent: #ffd84a;
+}
+
+:root[data-theme='light'] {
+  --pf-accent: #9a7300;
+  --sl-color-accent-low: #f3e6b5;
+  --sl-color-accent: #8a6700;
+  --sl-color-accent-high: #4f3b00;
+  --sl-color-white: #13171e;
+  --sl-color-gray-1: #252b35;
+  --sl-color-gray-2: #3d4452;
+  --sl-color-gray-3: #5d6574;
+  --sl-color-gray-4: #9aa0aa;
+  --sl-color-gray-5: #c9c5bb;
+  --sl-color-gray-6: #e4dfd3;
+  --sl-color-gray-7: #efeae0;
+  --sl-color-black: #f6f2ea;
+  --sl-color-bg: #f6f2ea;
+  --sl-color-bg-nav: #efeae0;
+  --sl-color-bg-sidebar: #efeae0;
+  --sl-color-bg-inline-code: #e6e0d2;
+  --sl-color-hairline: #d8d2c4;
+  --sl-color-hairline-light: #c9c2b2;
+  --sl-color-text-accent: #6e5200;
+}
+
+/* Editorial headings like the homepage. */
+.content-panel h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.hero h1 {
+  font-family: var(--pf-serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.content-panel h1 {
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.08;
+}
+.sl-markdown-content h2 {
+  margin-top: 2.4rem;
+}
+
+.sl-markdown-content {
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--sl-color-text-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.sl-markdown-content code:not(:where(.not-content *)) {
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 3px;
+  font-size: 0.88em;
+  background: var(--sl-color-bg-inline-code);
+}
+
+.sl-markdown-content img {
+  border-radius: 4px;
+}
+
+/* Sidebar: mono group labels, active link marked with the accent rule. */
+#starlight__sidebar .group-label .large {
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-3);
+}
+#starlight__sidebar a[aria-current='page'] {
+  background: color-mix(in srgb, var(--sl-color-accent) 10%, transparent);
+  color: var(--sl-color-white);
+  box-shadow: inset 2px 0 0 var(--sl-color-accent);
+}
+
+/* Code blocks: hairline frames, no heavy shadows. */
+.expressive-code {
+  margin: 1rem 0 1.35rem;
+}
+.expressive-code .frame {
+  border: 1px solid var(--sl-color-hairline) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.expressive-code .frame pre {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Cards used on the /posts, /topics and /tags pages. */
+.sl-markdown-content .card {
+  border-color: var(--sl-color-hairline);
+  border-radius: 4px;
+  background: var(--sl-color-bg-nav);
+}
+
+/* Header search button in the same mono style as the nav. */
+site-search button[data-open-modal] {
+  font-family: var(--sl-font-mono);
+}
