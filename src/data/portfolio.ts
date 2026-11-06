@@ -98,7 +98,7 @@ export const chapters: Chapter[] = [
     index: '03',
     label: 'Construction data',
     title: 'Turning permits into data.',
-    years: '2023 – present',
+    years: '2023',
     role: 'Software Engineer',
     org: 'Yellowsheet Construction Data',
     location: 'Remote, BC',
