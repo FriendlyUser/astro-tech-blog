@@ -427,6 +427,9 @@ main {
   padding: 0;
 }
 .tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.28rem 0.55rem;
   border: 1px solid var(--faint);
   font: 500 0.7rem/1 var(--mono);
@@ -627,6 +630,11 @@ main {
   background: var(--c);
   box-shadow: 0 0 10px var(--c);
 }
+.topic__icon {
+  width: 1rem;
+  height: 1rem;
+  filter: drop-shadow(0 0 6px var(--c));
+}
 .topic__count {
   margin-left: auto;
   font: 500 0.78rem var(--mono);
@@ -770,6 +778,35 @@ main {
 }
 
 /* ---------- Skills & contact ---------- */
+/* Toolbox: the classic site's technology logos, as a static grid. */
+.toolbox {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr));
+  gap: 0.5rem;
+}
+.toolbox li {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 0.4rem 0.75rem;
+  border: 1px solid var(--faint);
+  background: rgba(7, 9, 13, 0.6);
+  font: 500 0.68rem/1.2 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-align: center;
+  transition: border-color 0.2s, transform 0.3s var(--ease);
+}
+.toolbox li:hover {
+  border-color: var(--logo, var(--accent));
+  transform: translateY(-2px);
+}
+.toolbox .tech-icon {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--logo) 35%, transparent));
+}
 .skills__grid {
   margin: 0;
   display: grid;

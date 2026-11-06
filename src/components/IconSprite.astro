@@ -1,0 +1,25 @@
+---
+/** Defines each icon once as an SVG <symbol>; pair with <TechIcon sprite />. */
+import { iconId, type IconDef } from '@/utils/techIcons';
+
+interface Props {
+  icons: IconDef[];
+}
+const unique = [...new Map(Astro.props.icons.map((i) => [iconId(i), i])).values()];
+---
+
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+  {
+    unique.map((i) => {
+      const [w, h, , , data] = i.icon;
+      const paths = Array.isArray(data) ? data : [data];
+      return (
+        <symbol id={iconId(i)} viewBox={`0 0 ${w} ${h}`}>
+          {paths.map((d) => (
+            <path d={d} />
+          ))}
+        </symbol>
+      );
+    })
+  }
+</svg>

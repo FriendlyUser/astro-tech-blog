@@ -2,6 +2,8 @@
 /** Topic overview: the same clusters as the homepage constellation. */
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { formatDate, getBlogIndex, topicUrl } from '@/utils/blogIndex';
+import { TOPIC_ICONS } from '@/utils/techIcons';
+import TechIcon from '@/components/TechIcon.astro';
 
 const { topics, posts } = await getBlogIndex();
 ---
@@ -23,7 +25,10 @@ const { topics, posts } = await getBlogIndex();
         <li>
           <a href={topicUrl(t.id)} style={`--c:${t.color}`}>
             <span class="topic-grid__head">
-              <span class="topic-grid__name">{t.name}</span>
+              <span class="topic-grid__name">
+                {TOPIC_ICONS[t.id] && <TechIcon icon={TOPIC_ICONS[t.id]!} color={t.color} size="1.15rem" />}
+                {t.name}
+              </span>
               <span class="topic-grid__count">{t.count}</span>
             </span>
             <span class="topic-grid__blurb">{t.blurb}</span>
@@ -70,6 +75,9 @@ const { topics, posts } = await getBlogIndex();
     gap: 1rem;
   }
   .topic-grid__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     font-family: var(--pf-serif);
     font-size: 1.35rem;
   }
@@ -77,6 +85,9 @@ const { topics, posts } = await getBlogIndex();
     font-family: var(--sl-font-mono);
     font-size: var(--sl-text-sm);
     color: var(--c);
+  }
+  :global(:root[data-theme='light']) .topic-grid__count {
+    color: color-mix(in srgb, var(--c) 55%, #111);
   }
   .topic-grid__blurb {
     font-size: var(--sl-text-sm);
