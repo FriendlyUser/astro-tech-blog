@@ -7,6 +7,9 @@
 import { chapters, investTools, links, profile, projects, skillGroups } from '@/data/portfolio';
 import { getBlogIndex } from '@/utils/blogIndex';
 import { silhouette } from '@/utils/silhouettes';
+import { TOOLBOX, TOPIC_ICONS, logoFor } from '@/utils/techIcons';
+import TechIcon from '@/components/TechIcon.astro';
+import IconSprite from '@/components/IconSprite.astro';
 import '@/styles/portfolio.css';
 
 // Blog posts come from the Starlight content collection (only their data is read here,
@@ -35,6 +38,13 @@ const title = `${profile.name} — Software Developer | ${profile.handle}`;
 const description = `${profile.tagline} Portfolio and blog of ${profile.name}, a software developer in ${profile.location}.`;
 const canonical = new URL('/', Astro.site ?? 'https://friendlyuser.github.io');
 const year = new Date().getFullYear();
+
+// Every logo used on this page, defined once in an SVG sprite.
+const spriteIcons = [
+  ...TOOLBOX.map((l) => l.icon),
+  ...Object.values(TOPIC_ICONS),
+  ...chapters.flatMap((c) => (c.tags ?? []).map((t) => logoFor(t)?.icon).filter((i) => i !== undefined)),
+];
 
 const words = (s: string) => s.split(' ');
 const hero = chapters[0]!;
@@ -81,6 +91,7 @@ const fmt = (d: string) =>
   </head>
   <body class="pf">
     <a class="pf-skip" href="#main">Skip to content</a>
+    <IconSprite icons={spriteIcons} />
 
     <canvas id="pf-scene" aria-hidden="true"></canvas>
     <div class="pf-fallback" aria-hidden="true"></div>
@@ -187,9 +198,15 @@ const fmt = (d: string) =>
                   ))}
                 </ul>
                 <ul class="tags" aria-label="Technologies">
-                  {c.tags?.map((t) => (
-                    <li>{t}</li>
-                  ))}
+                  {c.tags?.map((t) => {
+                    const l = logoFor(t);
+                    return (
+                      <li>
+                        {l && <TechIcon sprite icon={l.icon} color={l.color} />}
+                        {t}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
               <p class="chapter__year" aria-hidden="true">{c.years?.slice(0, 4)}</p>
@@ -212,7 +229,11 @@ const fmt = (d: string) =>
               stats.topics.map((t, i) => (
                 <li>
                   <button type="button" class="topic" data-topic={i} style={`--c:${t.color}`} aria-pressed="false" aria-describedby={`topic-${t.id}`}>
-                    <span class="topic__dot" aria-hidden="true" />
+                    {TOPIC_ICONS[t.id] ? (
+                      <TechIcon sprite icon={TOPIC_ICONS[t.id]!} color={t.color} class="topic__icon" />
+                    ) : (
+                      <span class="topic__dot" aria-hidden="true" />
+                    )}
                     <span class="topic__name">{t.name}</span>
                     <span class="topic__count">{t.count}</span>
                   </button>
@@ -285,6 +306,16 @@ const fmt = (d: string) =>
 
           <div id="skills" class="skills">
             <h3 class="subhead">Skills</h3>
+            <ul class="toolbox" aria-label="Toolbox">
+              {
+                TOOLBOX.map((l) => (
+                  <li>
+                    <TechIcon sprite icon={l.icon} color={l.color} size="1.6rem" />
+                    <span>{l.name}</span>
+                  </li>
+                ))
+              }
+            </ul>
             <dl class="skills__grid">
               {
                 skillGroups.map((g) => (
@@ -322,7 +353,7 @@ const fmt = (d: string) =>
     </div>
 
     <footer class="pf-footer">
-      <p>&copy; {year} {profile.name} · Built with Astro and three.js · <a href={links.source}>Source</a> · <a href="/old_site/">Classic site</a></p>
+      <p>&copy; {year} {profile.name} · Built with Astro and three.js · <a href={links.source}>Source</a> · <a href="/old_site/">Classic site</a> · Logos: <a href="https://fontawesome.com/license/free">Font Awesome Free</a> (CC BY 4.0)</p>
     </footer>
 
     <script type="application/json" id="pf-data" set:html={JSON.stringify(sceneData)} />

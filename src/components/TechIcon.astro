@@ -1,0 +1,51 @@
+---
+/**
+ * Inline SVG for a Font Awesome Free icon (CC BY 4.0, https://fontawesome.com/license/free).
+ * Rendered at build time, so no icon font or script reaches the browser.
+ * Colour comes from `color` (as --logo) or falls back to currentColor.
+ *
+ * With `sprite`, it emits <use href="#id"> and expects <IconSprite> on the page to define
+ * the symbol once, so pages that repeat a logo many times stay small.
+ */
+import { iconId, type IconDef } from '@/utils/techIcons';
+
+interface Props {
+  icon: IconDef;
+  color?: string;
+  size?: string;
+  label?: string;
+  class?: string;
+  sprite?: boolean;
+}
+const { icon, color, size = '1em', label, class: cls, sprite = false } = Astro.props;
+const [w, h, , , data] = icon.icon;
+const paths = Array.isArray(data) ? data : [data];
+---
+
+<svg
+  class:list={['tech-icon', cls]}
+  viewBox={`0 0 ${w} ${h}`}
+  width={size}
+  height={size}
+  style={color ? `--logo:${color}` : undefined}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  {sprite ? <use href={`#${iconId(icon)}`} /> : paths.map((d) => <path d={d} fill="currentColor" />)}
+</svg>
+
+<style>
+  .tech-icon {
+    display: inline-block;
+    flex: 0 0 auto;
+    vertical-align: -0.125em;
+    color: var(--logo, currentColor);
+    fill: currentColor;
+    overflow: visible;
+  }
+  :global(:root[data-theme='light']) .tech-icon {
+    color: color-mix(in srgb, var(--logo, currentColor) 62%, #111);
+  }
+</style>

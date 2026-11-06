@@ -5,6 +5,8 @@
  */
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import { formatDate, getBlogIndex, tagUrl, topicOf, topicUrl } from '@/utils/blogIndex';
+import { TOPIC_ICONS } from '@/utils/techIcons';
+import TechIcon from '@/components/TechIcon.astro';
 
 const { entry } = Astro.locals.starlightRoute;
 const index = await getBlogIndex();
@@ -18,7 +20,8 @@ const topic = post ? topicOf(post.topic) : undefined;
     <div class="post-meta">
       <time datetime={post.date.toISOString()}>{formatDate(post.date)}</time>
       {topic && (
-        <a class="post-topic" href={topicUrl(topic.id)} style={`--c:${topic.color}`}>
+        <a class="post-topic" href={topicUrl(topic.id)}>
+          {TOPIC_ICONS[topic.id] && <TechIcon icon={TOPIC_ICONS[topic.id]!} color={topic.color} />}
           {topic.name}
         </a>
       )}
@@ -58,14 +61,6 @@ const topic = post ? topicOf(post.topic) : undefined;
     gap: 0.4rem;
     color: var(--sl-color-white);
     text-decoration: none;
-  }
-  .post-topic::before {
-    content: '';
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--c);
-    box-shadow: 0 0 8px var(--c);
   }
   .post-tags {
     display: flex;

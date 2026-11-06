@@ -1,6 +1,8 @@
 ---
 /** Card list of blog posts used by /posts, /topics/* and /tags/* (inside StarlightPage). */
 import { formatDate, topicOf, type Post } from '@/utils/blogIndex';
+import { TOPIC_ICONS } from '@/utils/techIcons';
+import TechIcon from '@/components/TechIcon.astro';
 
 interface Props {
   posts: Post[];
@@ -22,7 +24,8 @@ const { posts, images = true } = Astro.props;
             )}
             <span class="post-card__meta">
               <time datetime={p.date.toISOString()}>{formatDate(p.date)}</time>
-              <span class="post-card__topic" style={`--c:${topic.color}`}>
+              <span class="post-card__topic">
+                {TOPIC_ICONS[topic.id] && <TechIcon icon={TOPIC_ICONS[topic.id]!} color={topic.color} />}
                 {topic.name}
               </span>
             </span>
@@ -92,13 +95,6 @@ const { posts, images = true } = Astro.props;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-  }
-  .post-card__topic::before {
-    content: '';
-    width: 0.45rem;
-    height: 0.45rem;
-    border-radius: 50%;
-    background: var(--c);
   }
   .post-card__title {
     font-family: var(--pf-serif);
