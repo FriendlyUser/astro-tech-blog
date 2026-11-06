@@ -14,7 +14,7 @@ type GetStaticPaths = {
 }; // Overrides `GetStaticPathsOptions` types from Astro
 
 export async function getStaticPaths({ paginate }: GetStaticPaths) {
-  const allPosts = Object.values(import.meta.glob('./**/*.md(x)?', { eager: true}));
+  const allPosts = Object.values(import.meta.glob('./**/*.{md,mdx}', { eager: true}));
   const sortedPosts = sortByDate(allPosts);
   // const filteredPosts = sortedPosts.filter((post) => {
   //   const postDate = new Date(post.frontmatter.pubDate);

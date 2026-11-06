@@ -1,0 +1,41 @@
+---
+// import { CTA } from '@/partials/CTA';
+import { Hero } from '@/partials/Hero';
+import { ProjectList } from '@/partials/ProjectList';
+import { RecentPosts } from '@/partials/RecentPosts';
+import { SkillList } from '@/partials/SkillList';
+import Base from '@/templates/Base.astro';
+import Timeline from '@/components/Timeline';
+import AnimatedLaptop from '@/components/AnimatedLaptop';
+import { AppConfig } from '@/utils/AppConfig';
+import { sortByDate } from '@/utils/Posts';
+import "../styles/global.css";
+import BottomSection from '../partials/BottomSection.astro';
+
+const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
+const sortedPosts = sortByDate(allPosts);
+
+// filter out dates that are in the future
+const filteredPosts = sortedPosts.filter((post) => {
+  const postDate = new Date(post.frontmatter.pubDate);
+  const today = new Date();
+  return postDate <= today;
+});
+
+const lastThreePosts = filteredPosts.slice(0, 3);
+
+const { title } = AppConfig;
+const { description } = AppConfig;
+---
+
+<Base head={{ title, description }}>
+  <Hero client:visible />
+  <Timeline client:visible />
+  <SkillList client:visible />
+  <AnimatedLaptop client:visible />
+  <RecentPosts postList={lastThreePosts} />
+  <ProjectList client:visible />
+  <BottomSection />
+
+  <div data-pagefind-body></div>
+</Base>
