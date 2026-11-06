@@ -1,0 +1,97 @@
+---
+/**
+ * Starlight PageTitle override: on blog posts, add the publish date, topic, tags and
+ * cover image under the title (what the old BasePost layout showed).
+ */
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import { formatDate, getBlogIndex, tagUrl, topicOf, topicUrl } from '@/utils/blogIndex';
+
+const { entry } = Astro.locals.starlightRoute;
+const index = await getBlogIndex();
+const post = index.byUrl.get(`/${entry.id}/`);
+const topic = post ? topicOf(post.topic) : undefined;
+---
+
+<Default />
+{
+  post && (
+    <div class="post-meta">
+      <time datetime={post.date.toISOString()}>{formatDate(post.date)}</time>
+      {topic && (
+        <a class="post-topic" href={topicUrl(topic.id)} style={`--c:${topic.color}`}>
+          {topic.name}
+        </a>
+      )}
+      {post.tags.length > 0 && (
+        <ul class="post-tags" aria-label="Tags">
+          {post.tags.slice(0, 6).map((t) => (
+            <li>
+              <a href={tagUrl(t)}>#{t}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+{
+  post?.imgSrc && (
+    <img class="post-cover" src={post.imgSrc} alt={post.imgAlt ?? ''} width="1200" height="630" decoding="async" fetchpriority="high" />
+  )
+}
+
+<style>
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin-top: 0.75rem;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.06em;
+    color: var(--sl-color-gray-3);
+  }
+  .post-topic {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+  .post-topic::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 8px var(--c);
+  }
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .post-tags a {
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+  }
+  .post-tags a:hover,
+  .post-topic:hover {
+    color: var(--pf-accent);
+  }
+  .post-cover {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 22rem;
+    margin-top: 1.5rem;
+    object-fit: cover;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 4px;
+    background: var(--sl-color-bg-nav);
+  }
+</style>

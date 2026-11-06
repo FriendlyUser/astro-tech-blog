@@ -1,20 +1,23 @@
-import rss, { pagesGlobToRssItems } from '@astrojs/rss';
+import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
 
 import { AppConfig } from '@/utils/AppConfig';
+import { getBlogIndex } from '@/utils/blogIndex';
 
-export const get = async (context: any) =>
-  rss({
-    // `<title>` field in output xml
-    title: AppConfig.title,
-    // `<description>` field in output xml
+// Astro 7 endpoints export uppercase method handlers (the old `get` export no longer ran).
+export async function GET(context: APIContext) {
+  const { posts } = await getBlogIndex();
+  return rss({
+    title: AppConfig.site_name,
     description: AppConfig.description,
-    // base URL for RSS <item> links
-    // SITE will use "site" from your project's astro.config.
-    site: context.site,
-    // list of `<item>`s in output xml
-    // simple example: generate items for every md file in /src/pages
-    // see "Generating items" section for required frontmatter and advanced use cases
-    items: await pagesGlobToRssItems(import.meta.glob('./**/*.{md,mdx}')),
-    // (optional) inject custom xml
+    site: context.site ?? 'https://friendlyuser.github.io',
+    items: posts.map((p) => ({
+      title: p.title,
+      description: p.description,
+      pubDate: p.date,
+      link: p.url,
+      categories: p.tags,
+    })),
     customData: `<language>en-us</language>`,
   });
+}

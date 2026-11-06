@@ -1,0 +1,96 @@
+---
+/**
+ * Starlight Footer override: the default footer (edit link), newer/older post links
+ * for blog posts, and a site credit that points back to the homepage and classic site.
+ */
+import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
+import { getBlogIndex } from '@/utils/blogIndex';
+
+const { entry } = Astro.locals.starlightRoute;
+const index = await getBlogIndex();
+const i = index.posts.findIndex((p) => p.id === entry.id);
+const newer = i > 0 ? index.posts[i - 1] : undefined;
+const older = i >= 0 ? index.posts[i + 1] : undefined;
+const year = new Date().getFullYear();
+---
+
+<DefaultFooter />
+
+{
+  i >= 0 && (newer || older) && (
+    <nav class="post-nav" aria-label="More posts">
+      {older ? (
+        <a class="post-nav__link" href={older.url} rel="prev">
+          <span>Older post</span>
+          {older.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      {newer && (
+        <a class="post-nav__link post-nav__link--next" href={newer.url} rel="next">
+          <span>Newer post</span>
+          {newer.title}
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<p class="site-credit">
+  &copy; {year} David Li · <a href="/">Home</a> · <a href="/posts/">Blog</a> · <a href="/rss.xml">RSS</a> ·
+  <a href="/old_site/">Classic site</a> · Built with Astro, Starlight and three.js
+</p>
+
+<style>
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .post-nav__link {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 4px;
+    color: var(--sl-color-white);
+    text-decoration: none;
+    font-size: var(--sl-text-sm);
+    line-height: 1.35;
+    transition: border-color 120ms ease;
+  }
+  .post-nav__link span {
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sl-color-gray-3);
+  }
+  .post-nav__link--next {
+    text-align: end;
+  }
+  .post-nav__link:hover {
+    border-color: var(--pf-accent);
+  }
+  .site-credit {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sl-color-hairline);
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+  .site-credit a {
+    color: var(--sl-color-gray-2);
+  }
+  @media (max-width: 40rem) {
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+    .post-nav__link--next {
+      text-align: start;
+    }
+  }
+</style>

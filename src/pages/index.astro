@@ -1,41 +1,333 @@
 ---
-// import { CTA } from '@/partials/CTA';
-import { Hero } from '@/partials/Hero';
-import { ProjectList } from '@/partials/ProjectList';
-import { RecentPosts } from '@/partials/RecentPosts';
-import { SkillList } from '@/partials/SkillList';
-import Base from '@/templates/Base.astro';
-import Timeline from '@/components/Timeline';
-import AnimatedLaptop from '@/components/AnimatedLaptop';
-import { AppConfig } from '@/utils/AppConfig';
-import { sortByDate } from '@/utils/Posts';
-import "../styles/global.css";
-import BottomSection from '../partials/BottomSection.astro';
+/**
+ * Three.js portfolio homepage. A fixed WebGL "night harbour city of data" sits behind
+ * editorial HTML; scrolling moves one camera through a district per career chapter.
+ * Content lives in src/data/portfolio.ts; blog stats come from the posts at build time.
+ */
+import { chapters, investTools, links, profile, projects, skillGroups } from '@/data/portfolio';
+import { getBlogIndex } from '@/utils/blogIndex';
+import { silhouette } from '@/utils/silhouettes';
+import '@/styles/portfolio.css';
 
-const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
-const sortedPosts = sortByDate(allPosts);
+// Blog posts come from the Starlight content collection (only their data is read here,
+// so no post CSS is pulled into this page).
+const index = await getBlogIndex();
+const stats = {
+  total: index.posts.length,
+  topics: index.topics.map((t) => ({
+    ...t,
+    examples: t.posts.slice(0, 3).map((p) => ({ title: p.title, url: p.url })),
+  })),
+  stars: index.posts.map((p) => ({ title: p.title, url: p.url, date: p.day, topic: p.topic })),
+};
+const recent = stats.stars.slice(0, 6);
+const topicIndex = new Map(stats.topics.map((t, i) => [t.id, i]));
 
-// filter out dates that are in the future
-const filteredPosts = sortedPosts.filter((post) => {
-  const postDate = new Date(post.frontmatter.pubDate);
-  const today = new Date();
-  return postDate <= today;
-});
+// Compact payload for the scene: one star per post (topic index + age in days).
+const now = Date.now();
+const sceneData = {
+  chapters: chapters.map((c) => c.scene),
+  topics: stats.topics.map((t) => ({ id: t.id, name: t.name, color: t.color, count: t.count })),
+  stars: stats.stars.map((s) => [topicIndex.get(s.topic) ?? 0, Math.round((now - Date.parse(s.date)) / 86400000)]),
+};
 
-const lastThreePosts = filteredPosts.slice(0, 3);
+const title = `${profile.name} — Software Developer | ${profile.handle}`;
+const description = `${profile.tagline} Portfolio and blog of ${profile.name}, a software developer in ${profile.location}.`;
+const canonical = new URL('/', Astro.site ?? 'https://friendlyuser.github.io');
+const year = new Date().getFullYear();
 
-const { title } = AppConfig;
-const { description } = AppConfig;
+const words = (s: string) => s.split(' ');
+const hero = chapters[0]!;
+const careers = chapters.filter((c) => c.org);
+const writing = chapters.find((c) => c.id === 'writing')!;
+const contact = chapters.find((c) => c.id === 'contact')!;
+const fmt = (d: string) =>
+  new Date(d + 'T12:00:00Z').toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
 ---
 
-<Base head={{ title, description }}>
-  <Hero client:visible />
-  <Timeline client:visible />
-  <SkillList client:visible />
-  <AnimatedLaptop client:visible />
-  <RecentPosts postList={lastThreePosts} />
-  <ProjectList client:visible />
-  <BottomSection />
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={profile.name} />
+    <meta name="theme-color" content="#07090d" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="FriendlyUser's blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <script is:inline>
+      // Hide-then-reveal styles apply only when JS runs; if the page script never boots, show everything.
+      document.documentElement.classList.add('js');
+      setTimeout(function () {
+        if (!document.documentElement.classList.contains('pf-booted')) document.documentElement.classList.remove('js');
+      }, 4000);
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics, same property as the blog pages -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'UA-119155027-6');
+    </script>
+  </head>
+  <body class="pf">
+    <a class="pf-skip" href="#main">Skip to content</a>
 
-  <div data-pagefind-body></div>
-</Base>
+    <canvas id="pf-scene" aria-hidden="true"></canvas>
+    <div class="pf-fallback" aria-hidden="true"></div>
+    <div class="pf-veil" aria-hidden="true"></div>
+
+    <div class="pf-foreground" aria-hidden="true">
+      {
+        chapters.map((c, i) => (
+          <svg class="pf-fg" data-fg={i} viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice">
+            <path d={silhouette(c.scene, i + 7)} />
+          </svg>
+        ))
+      }
+    </div>
+
+    <header class="pf-nav">
+      <a class="pf-brand" href="#hello" aria-label={`${profile.handle} home`}>
+        <span class="pf-brand__mark" aria-hidden="true"></span>
+        <span>{profile.handle}</span>
+      </a>
+      <button class="pf-menu" type="button" aria-expanded="false" aria-controls="pf-links">Menu</button>
+      <nav id="pf-links" class="pf-links" aria-label="Primary">
+        <a href="#foundations">Work</a>
+        <a href="#writing">Writing</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+        <a href={links.blog}>Blog</a>
+        <a href={links.topics}>Topics</a>
+        <a href={links.github} rel="me noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <nav class="pf-rail" aria-label="Chapters">
+      <ol>
+        {
+          chapters.map((c, i) => (
+            <li>
+              <a href={`#${c.id}`} data-rail={i}>
+                <span class="pf-rail__num">{c.index}</span>
+                <span class="pf-rail__label">{c.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="pf-dock" role="group" aria-label="Chapter controls">
+      <button type="button" class="pf-dock__btn" data-step="-1" aria-label="Previous chapter">&larr;</button>
+      <p class="pf-dock__now" aria-live="polite"><span data-dock-num>00</span> <span data-dock-label>{hero.label}</span></p>
+      <button type="button" class="pf-dock__btn" data-step="1" aria-label="Next chapter">&rarr;</button>
+    </div>
+
+    <main id="main">
+      <section class="chapter chapter--hero" id={hero.id} data-chapter="0" aria-labelledby="hello-title">
+        <div class="chapter__inner">
+          <p class="kicker"><span class="kicker__num">{hero.index}</span>{hero.label}</p>
+          <h1 id="hello-title" class="display display--xl" data-reveal>
+            {words(hero.title).map((w, i) => (<><span class="w" style={`--i:${i}`}>{w}</span>{' '}</>))}
+          </h1>
+          <p class="lede">{profile.tagline}</p>
+          <p class="body">{profile.intro}</p>
+          <div class="pf-terminal" role="group" aria-label="Skills overview">
+            <p class="pf-terminal__line"><span>&gt;</span> initializing environment...</p>
+            <p class="pf-terminal__line"><span>&gt;</span> loading core_skills.sh</p>
+            <p class="pf-terminal__line"><b>[OK]</b> Advanced LLM usage &amp; prompting</p>
+            <p class="pf-terminal__line"><b>[OK]</b> Data pipelines, OCR &amp; automation</p>
+            <p class="pf-terminal__line"><b>[OK]</b> Front-end architecture</p>
+            <p class="pf-terminal__line"><b>[OK]</b> Robust back-end systems</p>
+            <p class="pf-terminal__line"><span>&gt;</span> ready<i class="pf-caret" aria-hidden="true"></i></p>
+          </div>
+          <p class="actions">
+            <a class="btn btn--solid" href="#foundations">See the work</a>
+            <a class="btn" href={links.blog}>Read the blog ({stats.total} posts)</a>
+          </p>
+        </div>
+        <p class="pf-cue" aria-hidden="true">Scroll</p>
+      </section>
+
+      {
+        careers.map((c) => {
+          const i = chapters.indexOf(c);
+          return (
+            <section class="chapter" id={c.id} data-chapter={i} aria-labelledby={`${c.id}-title`}>
+              <div class="chapter__inner">
+                <p class="kicker">
+                  <span class="kicker__num">{c.index}</span>
+                  {c.label}
+                  <span class="kicker__rule" aria-hidden="true" />
+                  <span>{c.years}</span>
+                </p>
+                <h2 id={`${c.id}-title`} class="display" data-reveal>
+                  {words(c.title).map((w, j) => (<><span class="w" style={`--i:${j}`}>{w}</span>{' '}</>))}
+                </h2>
+                <p class="role">
+                  <strong>{c.role}</strong>
+                  <span> · {c.org}</span>
+                  {c.location && <span> · {c.location}</span>}
+                </p>
+                <p class="body">{c.summary}</p>
+                <ul class="highlights">
+                  {c.highlights?.map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+                <ul class="tags" aria-label="Technologies">
+                  {c.tags?.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              </div>
+              <p class="chapter__year" aria-hidden="true">{c.years?.slice(0, 4)}</p>
+            </section>
+          );
+        })
+      }
+
+      <section class="chapter chapter--writing" id={writing.id} data-chapter={chapters.indexOf(writing)} aria-labelledby="writing-title">
+        <div class="chapter__inner chapter__inner--wide">
+          <div class="writing__intro">
+          <p class="kicker"><span class="kicker__num">{writing.index}</span>{writing.label}<span class="kicker__rule" aria-hidden="true"></span><span>{stats.total} posts</span></p>
+          <h2 id="writing-title" class="display" data-reveal>
+            {words(writing.title).map((w, i) => (<><span class="w" style={`--i:${i}`}>{w}</span>{' '}</>))}
+          </h2>
+          <p class="body">{writing.summary}</p>
+
+          <ul class="topics" aria-label="Posts by topic">
+            {
+              stats.topics.map((t, i) => (
+                <li>
+                  <button type="button" class="topic" data-topic={i} style={`--c:${t.color}`} aria-pressed="false" aria-describedby={`topic-${t.id}`}>
+                    <span class="topic__dot" aria-hidden="true" />
+                    <span class="topic__name">{t.name}</span>
+                    <span class="topic__count">{t.count}</span>
+                  </button>
+                  <div class="topic__peek" id={`topic-${t.id}`}>
+                    {t.examples.map((e) => (
+                      <a href={e.url}>{e.title}</a>
+                    ))}
+                    <a class="topic__all" href={`${links.topics}${t.id}/`}>All {t.count} {t.name} posts &rarr;</a>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+          </div>
+
+          <h3 class="subhead">Latest posts</h3>
+          <ol class="posts">
+            {
+              recent.map((p) => (
+                <li>
+                  <a href={p.url}>
+                    <time datetime={p.date}>{fmt(p.date)}</time>
+                    <span>{p.title}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="actions"><a class="btn" href={links.blog}>All {stats.total} posts &rarr;</a></p>
+
+          <h3 class="subhead">Investing tools <a class="subhead__link" href={links.invest}>dli-invest</a></h3>
+          <div class="ticker" role="region" aria-label="Investing tools">
+            <ul class="ticker__track">
+              {
+                [...investTools, ...investTools].map((t, i) => (
+                  <li aria-hidden={i >= investTools.length ? 'true' : undefined}>
+                    <a href={`${links.invest}/${t.name}`} tabindex={i >= investTools.length ? -1 : undefined}>
+                      <b>{t.name}</b> {t.note}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <h3 class="subhead">Projects</h3>
+          <ul class="projects">
+            {
+              projects.map((p) => (
+                <li class="project">
+                  <a href={p.href}>
+                    <span class="project__name">{p.name}</span>
+                    <span class="project__desc">{p.description}</span>
+                    <span class="project__tags">{p.tags.join(' · ')}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <section class="chapter chapter--contact" id={contact.id} data-chapter={chapters.indexOf(contact)} aria-labelledby="contact-title">
+        <div class="chapter__inner chapter__inner--wide">
+          <p class="kicker"><span class="kicker__num">{contact.index}</span>{contact.label}</p>
+          <h2 id="contact-title" class="display" data-reveal>
+            {words(contact.title).map((w, i) => (<><span class="w" style={`--i:${i}`}>{w}</span>{' '}</>))}
+          </h2>
+          <p class="body">{contact.summary}</p>
+
+          <div id="skills" class="skills">
+            <h3 class="subhead">Skills</h3>
+            <dl class="skills__grid">
+              {
+                skillGroups.map((g) => (
+                  <div class="skills__group">
+                    <dt>{g.name}</dt>
+                    <dd>{g.items.join(' · ')}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+
+          <div class="contact">
+            <ul class="contact__links">
+              <li><a href={links.github} rel="me noopener">GitHub <span>FriendlyUser</span></a></li>
+              <li><a href={links.linkedin} rel="me noopener">LinkedIn <span>David Li</span></a></li>
+              <li><a href={links.invest}>Investing tools <span>dli-invest</span></a></li>
+              <li><a href={links.blog}>Blog <span>{stats.total} posts</span></a></li>
+              <li><a href={links.rss}>RSS <span>feed</span></a></li>
+              <li><a href={links.store}>Store <span>Redbubble</span></a></li>
+            </ul>
+            <form class="contact__form" action={links.contactForm} method="POST">
+              <label>Name<input name="name" autocomplete="name" required /></label>
+              <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+              <label class="contact__msg">Message<textarea name="message" rows="4" required></textarea></label>
+              <button class="btn btn--solid" type="submit">Send message</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="pf-labels" aria-hidden="true">
+      {stats.topics.map((t, i) => <span class="pf-label" data-label={i} style={`--c:${t.color}`}>{t.name}</span>)}
+    </div>
+
+    <footer class="pf-footer">
+      <p>&copy; {year} {profile.name} · Built with Astro and three.js · <a href={links.source}>Source</a> · <a href="/old_site/">Classic site</a></p>
+    </footer>
+
+    <script type="application/json" id="pf-data" set:html={JSON.stringify(sceneData)} />
+    <script>
+      import '@/scripts/portfolio/main';
+    </script>
+  </body>
+</html>

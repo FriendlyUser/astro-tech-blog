@@ -1,0 +1,26 @@
+---
+/** All posts in one topic, newest first. */
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import PostList from '@/components/blog/PostList.astro';
+import { getBlogIndex, type TopicSummary } from '@/utils/blogIndex';
+
+export const getStaticPaths = (async () => {
+  const { topics } = await getBlogIndex();
+  return topics.map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
+}) satisfies GetStaticPaths;
+
+const { topic } = Astro.props as { topic: TopicSummary };
+---
+
+<StarlightPage
+  frontmatter={{
+    title: topic.name,
+    description: `${topic.count} posts about ${topic.name}. ${topic.blurb}`,
+    tableOfContents: false,
+    pagefind: false,
+  }}
+>
+  <p>{topic.blurb} {topic.count} posts, newest first. <a href="/topics/">All topics</a></p>
+  <PostList posts={topic.posts} />
+</StarlightPage>

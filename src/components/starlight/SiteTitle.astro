@@ -1,0 +1,96 @@
+---
+// Starlight SiteTitle override: the same brand mark and primary links as the
+// three.js homepage nav, so moving between the homepage and the blog feels like one site.
+const path = Astro.url.pathname;
+const links = [
+  { label: 'Home', href: '/' },
+  { label: 'Work', href: '/#foundations' },
+  { label: 'Blog', href: '/posts/', match: (p: string) => p.startsWith('/posts') || p.startsWith('/tags') },
+  { label: 'Topics', href: '/topics/', match: (p: string) => p.startsWith('/topics') },
+  { label: 'Contact', href: '/#contact' },
+];
+---
+
+<div class="title-row sl-flex">
+  <a href="/" class="site-title sl-flex" aria-label="FriendlyUser home">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span translate="no">FriendlyUser</span>
+  </a>
+  <nav class="title-nav" aria-label="Primary">
+    {
+      links.map((l) => (
+        <a href={l.href} aria-current={l.match?.(path) ? 'page' : undefined}>
+          {l.label}
+        </a>
+      ))
+    }
+  </nav>
+</div>
+
+<style>
+  @layer starlight.core {
+    .title-row {
+      align-items: center;
+      gap: 1.5rem;
+      min-width: 0;
+    }
+
+    .site-title {
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--sl-font-mono);
+      font-size: var(--sl-text-base);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--sl-color-white);
+      text-decoration: none;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 0.9rem;
+      height: 0.9rem;
+      flex: 0 0 auto;
+      border: 1.5px solid var(--pf-accent);
+      transform: rotate(45deg);
+      box-shadow:
+        inset 0 0 0 3px var(--sl-color-bg-nav),
+        inset 0 0 0 6px var(--pf-accent);
+    }
+
+    .title-nav {
+      display: flex;
+      align-items: baseline;
+      gap: 1.1rem;
+      font-family: var(--sl-font-mono);
+      font-size: var(--sl-text-xs);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .title-nav a {
+      color: var(--sl-color-gray-3);
+      text-decoration: none;
+      transition: color 120ms ease;
+    }
+
+    .title-nav a[aria-current='page'],
+    .site-title:hover,
+    .title-nav a:hover {
+      color: var(--sl-color-white);
+    }
+
+    .title-nav a[aria-current='page'] {
+      box-shadow: 0 2px 0 var(--pf-accent);
+    }
+
+    @media (max-width: 52rem) {
+      .title-nav {
+        display: none;
+      }
+    }
+  }
+</style>

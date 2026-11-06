@@ -1,74 +1,27 @@
 ---
-import { PaginationHeader } from '@/components/PaginationHeader';
-import { Section } from '@/components/Section';
-import { BlogGallery } from '@/components/BlogGallery';
-import "../../styles/global.css";
-// import type { CustomIFrontMatter } from '@/partials/BlogPost';
-import Base from '@/templates/Base.astro';
-import { AppConfig } from '@/utils/AppConfig';
-import { sortByDate } from '@/utils/Posts';
+/** All posts with one tag (same /tags/<tag>/ URLs as before the Starlight move). */
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import PostList from '@/components/blog/PostList.astro';
+import { getBlogIndex, type Post } from '@/utils/blogIndex';
 
-import BottomSection from '../../partials/BottomSection.astro';
-
-// const allPosts = await Astro.glob<any>('../posts/**/*.md(x)?');
-const allPosts = Object.values(import.meta.glob('../posts/**/*.md(x)?', { eager: true }));
-export async function getStaticPaths() {
-  const thePosts = Object.values(import.meta.glob('../posts/**/*.md(x)?', { eager: true }));
-  const sortedPosts = sortByDate(thePosts as any);
-  // get all tags
-  const tags = sortedPosts
-    .map((post) => {
-      const items = post.frontmatter?.tags;
-      return items;
-    })
-    .reduce((acc, val) => acc.concat(val), []);
-
-  // get unique tags
-  const uniqueTags = [...new Set(tags)];
-  // map to params
-  const paths = uniqueTags.map((tag) => {
-    return {
-      params: {
-        tag,
-      },
-    };
-  });
-  return paths;
-}
+export const getStaticPaths = (async () => {
+  const { byTag } = await getBlogIndex();
+  return [...byTag.entries()].map(([tag, posts]) => ({ params: { tag }, props: { posts } }));
+}) satisfies GetStaticPaths;
 
 const { tag } = Astro.params;
-
-const titleSuffix = ` - ${AppConfig.site_name}`;
-const titleBase = `Blog page ${tag}`;
-const title = titleBase + titleSuffix;
-const description = 'Page filled with posts based on tag.';
-
-const posts = allPosts
-  .filter((post) => {
-    const { tags } = post.frontmatter;
-    return tags.includes(tag as string);
-  })
-  .filter((post) => post !== null);
-
-// .sort((a, b) => { return new Date(b.frontmatter?.pubDate) - new Date(a.frontmatter?.pubDate);
+const { posts } = Astro.props as { posts: Post[] };
 ---
 
-<Base head={{ title, description }}>
-  <Section>
-    <PaginationHeader
-      title={`${tag} posts`}
-      description={`All posts with the tag ${tag}.`}
-    />
-  </Section>
-
-  <Section>
-    <BlogGallery postList={posts} />
-  </Section>
-
-  <!-- <Section>
-     <NewerOlderPagination page={page} />
-   </Section> -->
-  <div data-pagefind-body></div>
-
-  <BottomSection />
-</Base>
+<StarlightPage
+  frontmatter={{
+    title: `#${tag}`,
+    description: `${posts.length} posts tagged ${tag}.`,
+    tableOfContents: false,
+    pagefind: false,
+  }}
+>
+  <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged <strong>{tag}</strong>. <a href="/posts/">All posts</a></p>
+  <PostList posts={posts} />
+</StarlightPage>

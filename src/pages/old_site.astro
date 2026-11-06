@@ -1,0 +1,45 @@
+---
+// import { CTA } from '@/partials/CTA';
+import { Hero } from '@/partials/Hero';
+import { ProjectList } from '@/partials/ProjectList';
+import { RecentPosts } from '@/partials/RecentPosts';
+import { SkillList } from '@/partials/SkillList';
+import Base from '@/templates/Base.astro';
+import Timeline from '@/components/Timeline';
+import AnimatedLaptop from '@/components/AnimatedLaptop';
+import { AppConfig } from '@/utils/AppConfig';
+import { getBlogIndex } from '@/utils/blogIndex';
+import "../styles/global.css";
+import BottomSection from '../partials/BottomSection.astro';
+
+// The classic homepage, kept as it was before the three.js redesign. Posts now live in
+// the Starlight content collection, so map the newest three to the
+// { url, frontmatter } shape the original React components expect.
+const { posts } = await getBlogIndex();
+const lastThreePosts = posts.slice(0, 3).map((p) => ({
+  url: p.url,
+  frontmatter: {
+    title: p.title,
+    description: p.description,
+    pubDate: p.date.toISOString(),
+    tags: p.tags,
+    imgSrc: p.imgSrc,
+    imgAlt: p.imgAlt,
+  },
+})) as any[];
+
+const { title } = AppConfig;
+const { description } = AppConfig;
+---
+
+<Base head={{ title, description }}>
+  <Hero client:visible />
+  <Timeline client:visible />
+  <SkillList client:visible />
+  <AnimatedLaptop client:visible />
+  <RecentPosts postList={lastThreePosts} />
+  <ProjectList client:visible />
+  <BottomSection />
+
+  <div data-pagefind-body></div>
+</Base>
