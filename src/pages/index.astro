@@ -4,6 +4,7 @@
  * editorial HTML; scrolling moves one camera through a district per career chapter.
  * Content lives in src/data/portfolio.ts; blog stats come from the posts at build time.
  */
+import { GA4_ID, gtagInit } from '@/utils/analytics.mjs';
 import { chapters, investTools, links, profile, projects, skillGroups } from '@/data/portfolio';
 import { getBlogIndex } from '@/utils/blogIndex';
 import { silhouette } from '@/utils/silhouettes';
@@ -78,16 +79,9 @@ const fmt = (d: string) =>
         if (!document.documentElement.classList.contains('pf-booted')) document.documentElement.classList.remove('js');
       }, 4000);
     </script>
-    <!-- Global site tag (gtag.js) - Google Analytics, same property as the blog pages -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119155027-6"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', 'UA-119155027-6');
-    </script>
+    <!-- Google Analytics 4, only when GA4_ID is set in src/utils/analytics.mjs -->
+    {GA4_ID && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}></script>}
+    {GA4_ID && <script is:inline set:html={gtagInit} />}
   </head>
   <body class="pf">
     <a class="pf-skip" href="#main">Skip to content</a>

@@ -1,14 +1,13 @@
 name: Build For Github
-# Don't want to burn my private minutes at this point
+# Build check only. The live site is built and deployed to FriendlyUser.github.io by
+# github_repo.yml ("Build Main Site"). This workflow used to deploy the same build to
+# this repo's gh-pages branch, which served a duplicate copy of the whole site at
+# https://friendlyuser.github.io/astro-tech-blog/ (indexed by Google).
 on:
   push:
     branches:
-      - master
-      - main
       - feature/*
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '30 21 * * 1-6/3'
+  pull_request:
 
 jobs:
   make_website:
@@ -31,17 +30,8 @@ jobs:
       - name: install astro
         run: npm install --force
 
-      - name: update config
+      - name: build
         run: |
+          # node_modules (cached) holds Astro's rendered-content cache; start from fresh content.
+          rm -rf node_modules/.astro
           npm run build
-          touch dist/.nojekyll
-      
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: dist
-
-
-        

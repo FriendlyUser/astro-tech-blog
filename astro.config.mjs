@@ -6,27 +6,57 @@ import tailwindcss from '@tailwindcss/vite';
 import mermaid from 'astro-mermaid';
 import { unified } from '@astrojs/markdown-remark';
 import remarkDropLeadingH1 from './src/utils/remarkDropLeadingH1.mjs';
+import { ADSENSE_CLIENT, GA4_ID, gtagInit } from './src/utils/analytics.mjs';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SITE = 'https://friendlyuser.github.io';
 const REPO = 'https://github.com/FriendlyUser/astro-tech-blog';
 
-// Same Google Analytics / AdSense tags the blog pages always had.
+// AdSense on every Starlight page, plus Google Analytics 4 once GA4_ID is set.
 const analyticsHead = [
   {
     tag: 'script',
     attrs: {
       async: true,
-      src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2479144310234386',
+      src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`,
       crossorigin: 'anonymous',
     },
   },
-  { tag: 'script', attrs: { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=UA-119155027-6' } },
-  {
-    tag: 'script',
-    content:
-      "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-119155027-6');",
-  },
+  ...(GA4_ID
+    ? [
+        { tag: 'script', attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}` } },
+        { tag: 'script', content: gtagInit },
+      ]
+    : []),
 ];
+
+// Sitemap: <lastmod> from each post's pubDate, keyed by URL path.
+const POSTS_DIR = fileURLToPath(new URL('./src/content/docs/posts/', import.meta.url));
+function postDates() {
+  const dates = new Map();
+  const walk = (dir) => {
+    for (const ent of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, ent.name);
+      if (ent.isDirectory()) walk(full);
+      else if (/\.mdx?$/i.test(ent.name)) {
+        const m = readFileSync(full, 'utf8').match(/^pubDate:\s*['"]?(.+?)['"]?\s*$/m);
+        const d = m ? new Date(m[1]) : undefined;
+        if (!d || Number.isNaN(d.valueOf())) continue;
+        const rel = relative(POSTS_DIR, full).replace(/\\/g, '/').replace(/\.mdx?$/i, '');
+        dates.set(`/posts/${rel}/`, d.toISOString());
+      }
+    }
+  };
+  walk(POSTS_DIR);
+  return dates;
+}
+const POST_DATES = postDates();
+
+// Kept out of the sitemap: tag pages (mostly one or two posts each; the /topics/ pages
+// are the hubs) and the classic homepage.
+const SITEMAP_EXCLUDE = [/\/tags\//, /\/old_site\/$/];
 
 // https://astro.build/config
 export default defineConfig({
@@ -61,6 +91,7 @@ export default defineConfig({
         Sidebar: './src/components/starlight/Sidebar.astro',
         PageTitle: './src/components/starlight/PageTitle.astro',
         Footer: './src/components/starlight/Footer.astro',
+        Head: './src/components/starlight/Head.astro',
       },
       customCss: ['./src/styles/starlight.css'],
       head: analyticsHead,
@@ -95,7 +126,15 @@ export default defineConfig({
     }),
     react(),
     sitemap({
-      customPages: [`${SITE}/ads.txt`],
+      filter: (page) => !SITEMAP_EXCLUDE.some((re) => re.test(page)),
+      serialize(item) {
+        let path = new URL(item.url).pathname;
+        try {
+          path = decodeURI(path);
+        } catch {}
+        const lastmod = POST_DATES.get(path);
+        return lastmod ? { ...item, lastmod } : item;
+      },
     }),
   ],
 });

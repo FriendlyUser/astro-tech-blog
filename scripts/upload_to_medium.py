@@ -2,7 +2,9 @@ import os
 import frontmatter
 import glob
 import requests
-import time 
+import time
+import re
+from urllib.parse import quote
 from dateutil.parser import parse
 from datetime import datetime
 from dotenv import load_dotenv
@@ -19,7 +21,10 @@ def publish_to_medium(data):
     """
     token = os.getenv("MEDIUM_TOKEN")
     baseUrl = "https://friendlyuser.github.io"
-    canonicalUrl = f"{baseUrl}{data['slug']}"
+    # slug is the file path ("/posts/tech/2023/Foo.md"); the live page is "/posts/tech/2023/Foo/".
+    # Pointing Medium's canonical at the ".md" path (a 404) made Medium the original copy.
+    pagePath = re.sub(r"\.mdx?$", "", data["slug"]) + "/"
+    canonicalUrl = f"{baseUrl}{quote(pagePath, safe='/')}"
     # url encode imgSrc
     adjustedImgSrc = data["imgSrc"].replace(" ", "%20").replace("ﾂｷ","·")
     titleImg = f'![title img]({baseUrl}{adjustedImgSrc})'

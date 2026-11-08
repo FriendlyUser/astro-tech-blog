@@ -20,6 +20,9 @@ const { posts } = Astro.props as { posts: Post[] };
     description: `${posts.length} posts tagged ${tag}.`,
     tableOfContents: false,
     pagefind: false,
+    // Tags with only one or two posts make thin pages; keep them out of search results
+    // but let crawlers follow their links.
+    head: posts.length < 3 ? [{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, follow' } }] : [],
   }}
 >
   <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged <strong>{tag}</strong>. <a href="/posts/">All posts</a></p>
