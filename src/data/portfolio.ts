@@ -3,8 +3,7 @@
  *
  * Edit facts here, not in the scene code. Each career chapter maps to one
  * "district" the camera visits (see `scene` keys in src/scripts/portfolio/scene.ts).
- * Sources: friendlyuser.github.io, jobs/data/ref/resume_full.md (job_agents),
- * and the 2020-2026 work notes (work-notes-astro).
+ * Sources: friendlyuser.github.io and jobs/data/ref/resume_full.md (job_agents).
  */
 
 export type Chapter = {
