@@ -170,7 +170,7 @@ export const chapters: Chapter[] = [
 export const skillGroups: { name: string; items: string[] }[] = [
   { name: 'Languages', items: ['Python', 'PHP', 'TypeScript', 'JavaScript', 'C#', 'SQL', 'Go', 'Rust', 'Java', 'Kotlin', 'Dart', 'C++', 'TeX'] },
   { name: 'Frontend', items: ['Vue 3', 'Quasar', 'React', 'Next.js', 'React Native', 'Flutter', 'Astro', 'Tailwind CSS', 'Sass'] },
-  { name: 'Backend', items: ['Laravel', 'FastAPI', 'Django', 'Flask', '.NET Web API', 'Node.js', 'Spring Boot', 'REST & OpenAPI', 'SOAP'] },
+  { name: 'Backend', items: ['Laravel', 'FastAPI', 'Django', 'Flask', 'ASP.NET', '.NET Web API', 'Node.js', 'Spring Boot', 'REST & OpenAPI', 'SOAP'] },
   { name: 'AI & data', items: ['Gemini', 'OpenAI / Azure OpenAI', 'LangChain', 'Azure AI Search', 'pandas', 'spaCy', 'NLTK', 'pdfplumber', 'OCRmyPDF', 'Streamlit'] },
   { name: 'Automation', items: ['Browser automation', 'BeautifulSoup', 'GitHub Actions', 'Scheduled pipelines', 'Discord alerts'] },
   { name: 'Data stores', items: ['MySQL / MariaDB', 'SQL Server', 'PostgreSQL', 'Cosmos DB', 'MongoDB', 'Elasticsearch'] },
