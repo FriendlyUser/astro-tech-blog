@@ -38,6 +38,9 @@ jobs:
 
       - name: update config
         run: |
+          # node_modules is cached between runs, and with it Astro's rendered-content cache,
+          # which does not notice remark plugin changes. Start each build from fresh content.
+          rm -rf node_modules/.astro
           sed -i 's/astro-tech-blog\///g' astro.config.mjs
           npm run build
       
