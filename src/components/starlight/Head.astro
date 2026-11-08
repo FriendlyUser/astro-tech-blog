@@ -1,0 +1,57 @@
+---
+/**
+ * Starlight Head override: keeps Starlight's default tags and adds, for blog posts,
+ * a share image (og:image / twitter:image from the post's `imgSrc`), the publish date,
+ * and BlogPosting structured data. The 404 page is marked noindex.
+ */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import Default from '@astrojs/starlight/components/Head.astro';
+import { getBlogIndex } from '@/utils/blogIndex';
+
+const route = Astro.locals.starlightRoute;
+const site = Astro.site ?? new URL('https://friendlyuser.github.io');
+const isNotFound = route.id === '404';
+
+const index = await getBlogIndex();
+const post = isNotFound ? undefined : index.byUrl.get(`/${route.entry.id}/`);
+
+/** Absolute URL for a cover image, or undefined if it is missing or not an image URL. */
+function coverUrl(src?: string): string | undefined {
+  if (!src) return undefined;
+  if (/^https?:\/\//.test(src)) {
+    // unsplash.com/photos/... links are HTML pages, not images.
+    return /unsplash\.com\/photos\//.test(src) ? undefined : src;
+  }
+  // Builds run from the repo root, so public/ is relative to the working directory.
+  return existsSync(join(process.cwd(), 'public', src)) ? new URL(src, site).href : undefined;
+}
+
+const image = coverUrl(post?.imgSrc);
+// Reuse Starlight's own canonical so the structured data matches it exactly.
+const canonical =
+  (route.head.find((h) => h.tag === 'link' && h.attrs?.rel === 'canonical')?.attrs?.href as string | undefined) ??
+  new URL(Astro.url.pathname, site).href;
+const jsonLd = post && {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: post.description || undefined,
+  datePublished: post.date.toISOString(),
+  url: canonical,
+  mainEntityOfPage: canonical,
+  image: image ? [image] : undefined,
+  keywords: post.tags.length ? post.tags.join(', ') : undefined,
+  author: { '@type': 'Person', name: 'David Li', url: site.href },
+  publisher: { '@type': 'Person', name: 'David Li', url: site.href },
+};
+---
+
+<Default />
+{isNotFound && <meta name="robots" content="noindex" />}
+{image && <meta property="og:image" content={image} />}
+{image && post?.imgAlt && <meta property="og:image:alt" content={post.imgAlt} />}
+{image && <meta name="twitter:image" content={image} />}
+{post && <meta property="article:published_time" content={post.date.toISOString()} />}
+{post?.tags.slice(0, 6).map((t) => <meta property="article:tag" content={t} />)}
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

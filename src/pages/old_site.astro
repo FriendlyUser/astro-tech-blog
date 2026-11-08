@@ -32,7 +32,7 @@ const { title } = AppConfig;
 const { description } = AppConfig;
 ---
 
-<Base head={{ title, description }}>
+<Base head={{ title, description, robots: 'noindex, follow' }}>
   <Hero client:visible />
   <Timeline client:visible />
   <SkillList client:visible />
