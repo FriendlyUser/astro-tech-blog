@@ -9,6 +9,7 @@
  */
 import {
   faAndroid,
+  faApple,
   faAws,
   faBitbucket,
   faClaude,
@@ -47,6 +48,7 @@ import {
 import {
   faChartLine,
   faCode,
+  faCubes,
   faDatabase,
   faMicrochip,
   faPenNib,
@@ -77,6 +79,7 @@ const LOGOS: Record<string, Logo> = {
   rust: logo('Rust', faRust, '#f08a5d'),
   flutter: logo('Flutter', faFlutter, '#22d3ee'),
   android: logo('Android', faAndroid, '#22c55e'),
+  ios: logo('iOS', faApple, '#f3f4f6'),
   swift: logo('Swift', faSwift, '#fb923c'),
   html: logo('HTML5', faHtml5, '#f97316'),
   css: logo('CSS', faCss3, '#38bdf8'),
@@ -90,6 +93,7 @@ const LOGOS: Record<string, Logo> = {
   jira: logo('Jira', faJira, '#3b82f6'),
   aws: logo('AWS', faAws, '#fb923c'),
   microsoft: logo('Microsoft', faMicrosoft, '#22d3ee'),
+  powerapps: logo('Power Apps', faCubes, '#c084fc'),
   google: logo('Google', faGoogle, '#60a5fa'),
   linux: logo('Linux', faLinux, '#e5e7eb'),
   ubuntu: logo('Ubuntu', faUbuntu, '#f97316'),
@@ -126,7 +130,8 @@ const ALIASES: Record<string, string> = {
   '.net': 'microsoft',
   '.net web api': 'microsoft',
   'asp.net': 'microsoft',
-  'power apps': 'microsoft',
+  'power apps': 'powerapps',
+  dataverse: 'powerapps',
   'microsoft lists': 'microsoft',
   'sql server': 'sql',
   mysql: 'sql',
@@ -138,6 +143,7 @@ const ALIASES: Record<string, string> = {
   'google cloud run': 'google',
   'openai / azure openai': 'openai',
   'hugging face': 'ai',
+  apple: 'ios',
 };
 
 const norm = (s: string) => s.trim().toLowerCase();
@@ -151,7 +157,7 @@ export function logoFor(name: string): Logo | undefined {
 /** Toolbox strip on the homepage (the old site's skills marquee, reimagined). */
 export const TOOLBOX = [
   'python', 'typescript', 'javascript', 'php', 'laravel', 'vue', 'react', 'node',
-  'go', 'rust', 'java', 'flutter', 'android', 'docker', 'aws', 'microsoft',
+  'go', 'rust', 'java', 'flutter', 'android', 'ios', 'docker', 'aws', 'microsoft', 'powerapps',
   'google', 'linux', 'git', 'github', 'stripe', 'openai', 'claude', 'tailwind', 'sass',
   'html', 'css', 'markdown',
 ].map((k) => LOGOS[k]!);
