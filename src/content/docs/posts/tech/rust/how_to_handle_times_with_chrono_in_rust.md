@@ -1,138 +1,125 @@
 ---
-title: Using the Chrono Crate in Rust for Time and Date Handling
-description: In this article, we will explore the features of the Chrono crate and demonstrate how to use it for various time and date operations.
+title: Dates and times in Rust with the chrono crate
+description: Create, parse, format and do arithmetic on dates and times with chrono, using the non-deprecated constructors and calendar-aware month math.
 alt: my first blog post
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 Feb 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/335264211.png'
 ---
 
-# Using the Chrono Crate in Rust for Time and Date Handling
+The Rust standard library has `std::time::Instant` and `SystemTime` for measuring elapsed time, but nothing for calendar dates, time zones or formatting. [chrono](https://docs.rs/chrono) fills that gap and is the most widely used crate for it.
 
-Rust is a systems programming language that aims to provide memory safety, concurrency, and performance. For handling time and date operations, Rust has a popular crate called Chrono. Chrono is a comprehensive library that provides support for various time-related operations, including parsing, formatting, and arithmetic.
+Examples here are written against chrono 0.4.45. Many older examples use `NaiveDate::from_ymd` and `NaiveTime::from_hms`; those have been deprecated since 0.4.23 because they panic on invalid input. Use the `_opt` versions, which return `Option`.
 
-In this article, we will explore the features of the Chrono crate and demonstrate how to use it for various time and date operations.
+## Setup
 
-## Prerequisites
-
-To follow this article, you should have:
-
-- A basic understanding of the Rust programming language
-- [Rust and Cargo installed](https://www.rust-lang.org/tools/install) on your system
-
-## Setting Up the Project
-
-To begin, let's create a new Rust project using Cargo:
-
-```sh
-$ cargo new chrono_demo
-$ cd chrono_demo
+```bash
+cargo new chrono_demo
+cd chrono_demo
+cargo add chrono
 ```
-
-Next, add the Chrono crate to the `Cargo.toml` file:
 
 ```toml
 [dependencies]
 chrono = "0.4"
 ```
 
-After adding the dependency, run `cargo build` to download and compile the Chrono crate.
+## The main types
 
-## Working with Chrono
+- `NaiveDate`, `NaiveTime`, `NaiveDateTime`: a calendar date, a wall-clock time, and both together, with no time zone attached.
+- `DateTime<Tz>`: an exact instant together with a time zone. `Tz` is usually `Utc`, `Local` (the system zone), or `FixedOffset` (e.g. `+05:30`, which is what you get from parsing an RFC 3339 string).
+- `TimeDelta`: a signed duration. `chrono::Duration` is an older alias for the same type.
 
-Now that our project is set up, let's explore the main features of Chrono.
+Use naive types for things like birthdays or "9:00 every day". Use `DateTime<Utc>` for timestamps you store or compare, and convert to a local zone only for display.
 
-### Creating Date and Time Objects
-
-Chrono provides several structs to represent date and time objects:
-
-- `NaiveDate`: Represents a date without timezone information
-- `NaiveTime`: Represents a time without timezone information
-- `NaiveDateTime`: Represents a date and time without timezone information
-- `DateTime<Utc>`: Represents a date and time with timezone information (using the UTC timezone)
-
-Here's an example of creating different date and time objects:
+## Creating values
 
 ```rust
-use chrono::{NaiveDate, NaiveTime, NaiveDateTime, Utc};
+use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime, Utc};
 
 fn main() {
-    let date = NaiveDate::from_ymd(2023, 4, 16);
-    let time = NaiveTime::from_hms(12, 34, 56);
-    let datetime = NaiveDateTime::new(date, time);
+    let date = NaiveDate::from_ymd_opt(2023, 4, 16).expect("valid date");
+    let time = NaiveTime::from_hms_opt(12, 34, 56).expect("valid time");
+    let datetime = NaiveDateTime::new(date, time); // or date.and_time(time)
 
-    let utc_datetime = Utc::now();
+    let now_utc = Utc::now();
+    let now_local = now_utc.with_timezone(&Local);
 
-    println!("Date: {}", date);
-    println!("Time: {}", time);
-    println!("DateTime: {}", datetime);
-    println!("UTC DateTime: {}", utc_datetime);
+    println!("Date:     {date}");      // 2023-04-16
+    println!("Time:     {time}");      // 12:34:56
+    println!("DateTime: {datetime}");  // 2023-04-16 12:34:56
+    println!("UTC now:  {now_utc}");
+    println!("Local:    {now_local}");
+
+    // Invalid input gives None instead of panicking.
+    assert!(NaiveDate::from_ymd_opt(2023, 2, 30).is_none());
 }
 ```
 
-### Parsing and Formatting Dates and Times
+## Parsing and formatting
 
-Chrono allows you to parse and format dates and times using format strings. The format strings use placeholders that correspond to different date and time components.
-
-Here's an example of parsing and formatting dates and times:
+`parse_from_str` and `format` use strftime-style specifiers (`%Y`, `%m`, `%d`, `%H`, ...). The full list is in [`chrono::format::strftime`](https://docs.rs/chrono/latest/chrono/format/strftime/index.html).
 
 ```rust
-use chrono::{NaiveDate, NaiveDateTime, DateTime, Utc, LocalResult};
+use chrono::{DateTime, NaiveDate, Utc};
 
-fn main() {
-    // Parsing a date from a string
-    let date_str = "2023-04-16";
-    let parsed_date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").unwrap();
-    println!("Parsed Date: {}", parsed_date);
+fn main() -> Result<(), chrono::ParseError> {
+    // Date only
+    let date = NaiveDate::parse_from_str("2023-04-16", "%Y-%m-%d")?;
+    println!("{}", date.format("%A, %B %e, %Y")); // Sunday, April 16, 2023
 
-    // Formatting a date as a string
-    let formatted_date = parsed_date.format("%A, %B %e, %Y");
-    println!("Formatted Date: {}", formatted_date);
+    // RFC 3339 / ISO 8601 timestamp; the result keeps the offset it was given
+    let dt = DateTime::parse_from_rfc3339("2023-04-16T12:34:56+02:00")?;
+    println!("{}", dt.format("%Y-%m-%d %H:%M:%S %z")); // 2023-04-16 12:34:56 +0200
 
-    // Parsing a datetime from a string
-    let datetime_str = "2023-04-16T12:34:56Z";
-    let parsed_datetime = DateTime::parse_from_rfc3339(datetime_str).unwrap();
-    println!("Parsed DateTime: {}", parsed_datetime);
+    // Convert to UTC for storage or comparison
+    let utc: DateTime<Utc> = dt.with_timezone(&Utc);
+    println!("{}", utc.to_rfc3339()); // 2023-04-16T10:34:56+00:00
 
-    // Formatting a datetime as a string
-    let formatted_datetime = parsed_datetime.format("%Y-%m-%dT%H:%M:%S%z");
-    println!("Formatted DateTime: {}", formatted_datetime);
+    Ok(())
 }
 ```
 
-### Time Arithmetic and Comparisons
+Parse errors come back as `chrono::ParseError`, so `?` works instead of `unwrap()`.
 
-Chrono allows you to perform arithmetic operations and comparisons on date and time objects. You can add or subtract durations, compare dates and times, and calculate the difference between two dates or times.
-
-Here's an example of time arithmetic and comparisons:
+## Arithmetic and comparisons
 
 ```rust
-use chrono::{NaiveDate, Duration};
+use chrono::{Months, NaiveDate, TimeDelta};
 
 fn main() {
-    let date1 = NaiveDate::from_ymd(2023, 4, 16);
-    let date2 = NaiveDate::from_ymd(2023, 5, 1);
+    let start = NaiveDate::from_ymd_opt(2023, 1, 31).unwrap();
+    let end = NaiveDate::from_ymd_opt(2023, 5, 1).unwrap();
 
-    // Adding and subtracting durations
-    let date_plus_one_week = date1 + Duration::days(7);
-    let date_minus_one_month = date1 - Duration::days(30);
-    println!("One week later: {}", date_plus_one_week);
-    println!("One month earlier: {}", date_minus_one_month);
+    // Fixed-length durations
+    let next_week = start + TimeDelta::days(7);
+    println!("One week later: {next_week}"); // 2023-02-07
 
-    // Comparing dates
-    if date1 < date2 {
-        println!("{} is earlier than {}", date1, date2);
+    // Calendar months: clamps to the last valid day of the month
+    let next_month = start.checked_add_months(Months::new(1)).unwrap();
+    println!("One month later: {next_month}"); // 2023-02-28
+
+    // Comparisons use the normal operators
+    if start < end {
+        println!("{start} is before {end}");
     }
 
-    // Calculating the difference between dates
-    let duration = date2 - date1;
-    println!("There are {} days between {} and {}", duration.num_days(), date1, date2);
+    // Subtracting two dates gives a TimeDelta
+    let gap = end - start;
+    println!("{} days between them", gap.num_days()); // 90
 }
 ```
 
-## Conclusion
+`TimeDelta::days(30)` is not "one month": months have 28 to 31 days, so use `Months` with `checked_add_months` / `checked_sub_months` for calendar math. The `+` and `-` operators panic on overflow; `checked_add_signed` and `checked_sub_signed` return `Option` instead.
 
-In this article, we have explored the Chrono crate in Rust for handling time and date operations. Wecovered how to create date and time objects, parse and format dates and times, and perform time arithmetic and comparisons. The Chrono crate provides a powerful and easy-to-use API for working with dates and times, making it an essential tool for Rust developers.
+## Gotchas
 
-To further explore the Chrono crate and its features, check out the [official documentation](https://docs.rs/chrono/0.4.19/chrono/).
+- For named time zones such as `America/Toronto`, with daylight saving rules, add the [chrono-tz](https://docs.rs/chrono-tz) crate. `FixedOffset` only knows a fixed offset.
+- Converting a naive local time to a zoned one can be ambiguous or impossible around DST changes. `TimeZone::from_local_datetime` returns a `MappedLocalTime` (called `LocalResult` in older releases) with `Single`, `Ambiguous` and `None` variants, so you have to handle those cases.
+- [jiff](https://docs.rs/jiff) is a newer date/time crate with time zone support built in. It is worth a look for new projects that do a lot of zone-aware arithmetic.
+
+## Further reading
+
+- [chrono documentation](https://docs.rs/chrono/latest/chrono/)

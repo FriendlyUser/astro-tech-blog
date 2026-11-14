@@ -1,34 +1,217 @@
 ---
-title: How to create a todolist application using nextjs and neon serverless postgres
-description: "Describes a Next.js project that uses a PostgreSQL database to manage to-do items."
+title: Build a to-do list with Next.js API routes and Neon Postgres
+description: "A Next.js to-do app with an MUI frontend, SWR data fetching, Pages Router API routes, and a Neon Postgres database accessed through node-postgres."
 alt: my first blog post
-tags: ["react","js"]
+tags: ["react","js","nextjs","typescript","sql"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 16 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/neon_article.jpeg'
 ---
 
-# Overview
-The Next.js Todo List app is a single-page application, which means that it only has one page. This page is served by the Next.js server, which also handles all of the API requests. The app uses Next API functions to handle the API requests, and Neon Serverless Postgres for the database.
+This is a walkthrough of a small to-do app I built with Next.js. It is a single page: an MUI frontend that fetches data with SWR, two API routes (`/api/search` and `/api/todo`) built with Next.js API routes, and a Postgres database hosted on [Neon](https://neon.com). Neon is a separate company from Vercel, but it is available as a Vercel Marketplace integration, which makes it easy to wire into a Vercel deployment.
 
-The Next.js server is a Node.js server that is used to serve the Next.js app. It also handles all of the API requests. The Next.js server uses Next API functions to handle the API requests. Next API functions are a way to write API routes in Next.js. They are easy to use and they make it easy to write reusable API code.
+The project was written against Next.js 13.3, MUI v5, SWR 2 and `pg` 8. It uses the Pages Router (`pages/api/...`), which current Next.js versions still support. If you use the App Router instead, the same handlers become [Route Handlers](https://nextjs.org/docs/app/api-reference/file-conventions/route) in `app/api/.../route.ts`.
 
-Neon Serverless Postgres is a serverless database that is hosted on Vercel. It is a great choice for Next.js apps because it is easy to use and it is very scalable. Neon Serverless Postgres is also very affordable.
+## Database
+
+The app uses one table:
+
+```sql
+CREATE TABLE todo (
+  id SERIAL PRIMARY KEY,
+  text TEXT NOT NULL,
+  completed BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+
+The shared types live in `utils/types.ts`:
+
+```ts
+export interface TodoItem {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+export interface ErrorMessage {
+  message: string;
+}
+```
+
+### Connecting to Neon
+
+`utils/db.ts` creates a single `pg` connection pool that the API routes share:
+
+```ts
+import { Pool } from 'pg';
+
+// On Vercel, the Neon integration sets DATABASE_URL.
+// Locally, if DATABASE_URL is unset, pg falls back to the PGHOST, PGUSER,
+// PGDATABASE, PGPASSWORD and PGPORT environment variables.
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export default pool;
+```
+
+Neon connection strings already include `sslmode=require`, so there is no need for an `ssl` option. In particular, don't set `rejectUnauthorized: false`, which turns off certificate verification. Note that the Vercel integration's `DATABASE_URL` points at Neon's pooled (PgBouncer) endpoint by default.
+
+## Backend (API routes)
+
+### `/api/search`
+
+The frontend uses this route for both lists. It accepts three optional query parameters:
+
+- `search`: a substring to match against the task text (case-insensitive, using `ILIKE`)
+- `completed`: `true` or `false`
+- `size`: the maximum number of rows to return
+
+```ts
+// pages/api/search.ts
+import pool from '@/utils/db';
+import type { ErrorMessage, TodoItem } from '@/utils/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+type Data = TodoItem[] | ErrorMessage;
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    return res.status(405).json({ message: `Method ${req.method} Not Allowed` });
+  }
+
+  const { search, completed, size } = req.query;
+  const conditions: string[] = [];
+  const values: (string | number)[] = [];
+
+  if (typeof search === 'string' && search !== '') {
+    values.push(`%${search}%`);
+    conditions.push(`text ILIKE $${values.length}`);
+  }
+
+  if (completed === 'true' || completed === 'false') {
+    values.push(completed);
+    conditions.push(`completed = $${values.length}`);
+  }
+
+  let query = 'SELECT id, text, completed FROM todo';
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(' AND ')}`;
+  }
+  query += ' ORDER BY id DESC';
+
+  const limit = Number(size);
+  if (Number.isInteger(limit) && limit > 0) {
+    values.push(limit);
+    query += ` LIMIT $${values.length}`;
+  }
+
+  try {
+    const { rows } = await pool.query<TodoItem>(query, values);
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+```
+
+Building the `WHERE` clause from an array of conditions avoids the classic bug of forgetting the `AND` between clauses. Every user-supplied value, including the `LIMIT`, goes through a `$n` placeholder so nothing from the query string is concatenated into the SQL. The `ORDER BY id DESC` makes `size` return the most recent rows rather than an arbitrary subset.
+
+### `/api/todo`
+
+This route handles create, update and delete, plus a plain `GET`:
+
+```ts
+// pages/api/todo.ts
+import pool from '@/utils/db';
+import type { ErrorMessage, TodoItem } from '@/utils/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+type Data = TodoItem | TodoItem[] | ErrorMessage;
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
+  const { method } = req;
+
+  try {
+    switch (method) {
+      case 'GET': {
+        const { completed } = req.query;
+        let query = 'SELECT id, text, completed FROM todo';
+        const values: string[] = [];
+        if (completed === 'true' || completed === 'false') {
+          query += ' WHERE completed = $1';
+          values.push(completed);
+        }
+        query += ' ORDER BY id DESC';
+        const { rows } = await pool.query<TodoItem>(query, values);
+        return res.status(200).json(rows);
+      }
+
+      case 'POST': {
+        const { text, completed = false } = req.body;
+        if (typeof text !== 'string' || text.trim() === '') {
+          return res.status(400).json({ message: 'text is required' });
+        }
+        const { rows } = await pool.query<TodoItem>(
+          'INSERT INTO todo (text, completed) VALUES ($1, $2) RETURNING id, text, completed',
+          [text, completed]
+        );
+        return res.status(201).json(rows[0]);
+      }
+
+      case 'PUT': {
+        const { id } = req.query;
+        const { completed } = req.body;
+        const { rows } = await pool.query<TodoItem>(
+          'UPDATE todo SET completed = $1 WHERE id = $2 RETURNING id, text, completed',
+          [completed, id]
+        );
+        if (rows.length === 0) {
+          return res.status(404).json({ message: 'Task not found' });
+        }
+        return res.status(200).json(rows[0]);
+      }
+
+      case 'DELETE': {
+        // With ?id=..., delete one task; without it, delete every task.
+        const { id } = req.query;
+        if (id) {
+          await pool.query('DELETE FROM todo WHERE id = $1', [id]);
+        } else {
+          await pool.query('DELETE FROM todo');
+        }
+        return res.status(204).end();
+      }
+
+      default:
+        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+        return res.status(405).json({ message: `Method ${method} Not Allowed` });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+```
+
+Next.js parses JSON request bodies for API routes automatically when the client sends `Content-Type: application/json`, which is why `req.body` can be destructured directly.
 
 ## Frontend
 
-The key parts of the following Next.js "/" route are:
+The page (`pages/index.tsx`) keeps two pieces of local state, the new task text and the search text, and uses two `useSWR` calls: one for open tasks and one for the 10 most recent finished tasks. Each SWR key is the request URL, so changing the search text changes the key and SWR fetches the filtered list. After a write, the handlers call `mutate(key)` to revalidate both lists. `refreshInterval` also refetches every 60 seconds.
 
-* The use of the `useSWR` hook to fetch data from an API.
-* The use of the `useState` hook to manage the state of the application, such as the text of the new to-do item and the search text.
-* The use of the `useEffect` hook to fetch data from the API when the page loads or when the search text changes.
-* The use of the `handleAddTodoItem` function to add a new to-do item to the list.
-* The use of the `handleCheckboxChange` function to toggle the completion status of a to-do item.
-* The use of the `handleDeleteAllTasksClick` function to delete all to-do items from the list.
-
-
-```jsx
-import React, { useState, useEffect } from 'react';
+```tsx
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -39,133 +222,110 @@ import {
   Paper,
   Checkbox,
   FormControlLabel,
-  IconButton,
   Box,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Accordion from '@mui/material/Accordion';
 import useSWR, { useSWRConfig } from 'swr';
+import type { TodoItem } from '@/utils/types';
 import classes from './index.module.css';
 
-
 const maxTodoListItems = 10;
-interface TodoItem {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+
+const fetchResults = async (url: string): Promise<TodoItem[]> => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('Failed to fetch tasks');
+  }
+  const data: TodoItem[] = (await res.json()) ?? [];
+  // Sort alphabetically by text, ignoring case.
+  return data.sort((a, b) =>
+    a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })
+  );
+};
+
 const App = () => {
-  const [todoItemText, setTodoItemText] = useState(''); // text of the new to-do item [controlled component
+  const [todoItemText, setTodoItemText] = useState('');
   const [searchText, setSearchText] = useState('');
+  const { mutate } = useSWRConfig();
 
-  const { mutate } = useSWRConfig()
+  const searchParam = searchText ? `&search=${encodeURIComponent(searchText)}` : '';
+  const completeKey = `/api/search?completed=true&size=${maxTodoListItems}${searchParam}`;
+  const incompleteKey = `/api/search?completed=false${searchParam}`;
 
-  const completeKey = `/api/search?completed=true&size=${maxTodoListItems}${searchText ? `&search=${searchText}` : ""}`;
-  const incompleteKey = `/api/search?completed=false${searchText ? `&search=${searchText}` : ""}`;
+  const swrOptions = { refreshInterval: 60 * 1000 };
+  const { data: incompleteResults = [] } = useSWR(incompleteKey, fetchResults, swrOptions);
+  const { data: completeResults = [] } = useSWR(completeKey, fetchResults, swrOptions);
 
-  const fetchResults = (url: string): Promise<TodoItem[]> => {
-    return fetch(url)
-    .then((res) =>  {
-      // Handle HTTP errors
-      if (!res.ok) {
-        throw new Error('Failed to fetch tasks');
-      }
-      return res.json()
-    })
-    .then((data: TodoItem[]) => {
-      if (!data) {
-        return [];
-      }
-      // sort by text field
-      const sorted = data.sort((a, b) => {
-        const textA = a?.text?.toUpperCase();
-        const textB = b?.text?.toUpperCase();
-        if (textA < textB) {
-          return -1;
-        }
-        if (textA > textB) {
-          return 1;
-        }
-        return 0;
-      });
-      return sorted;
-    });
-  }
-
-  // refresh every 60 seconds automatically
-  const fetcherOptions = {
-    refreshInterval: 1000*60,
-  }
-  const { data: incompleteResults = [] } = useSWR(incompleteKey, fetchResults, fetcherOptions)
-
-  const { data: completeResults = []} = useSWR(completeKey, fetchResults, fetcherOptions)
+  const refreshLists = () => {
+    mutate(incompleteKey);
+    mutate(completeKey);
+  };
 
   const handleAddTodoItem = async () => {
     try {
       const response = await fetch('/api/todo', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          text: todoItemText,
-          completed: false,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: todoItemText, completed: false }),
       });
       if (!response.ok) {
         throw new Error('Failed to add task');
       }
-      mutate(incompleteKey);
-      mutate(completeKey);
+      refreshLists();
       setTodoItemText('');
     } catch (error) {
       console.error(error);
-      // Handle the error, such as displaying an error message to the user or retrying the request
     }
   };
-  const handleSearchTextChange = (event: any) => {
-    setSearchText(event.target.value);
-  };
 
-  const handleCheckboxChange = async (event: any, id: string) => {
+  const handleCheckboxChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => {
     try {
-      const { checked } = event.target;
       const response = await fetch(`/api/todo?id=${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ completed: checked }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: event.target.checked }),
       });
       if (!response.ok) {
         throw new Error('Failed to update task');
       }
-      mutate(incompleteKey);
-      mutate(completeKey);
+      refreshLists();
     } catch (error) {
       console.error(error);
-      // Handle the error, such as displaying an error message to the user or retrying the request
     }
   };
 
   const handleDeleteAllTasksClick = async () => {
     try {
-      const response = await fetch('/api/todo', {
-        method: 'DELETE',
-      });
+      const response = await fetch('/api/todo', { method: 'DELETE' });
       if (!response.ok) {
         throw new Error('Failed to delete tasks');
       }
-      mutate(incompleteKey);
-      mutate(completeKey);
+      refreshLists();
     } catch (error) {
       console.error(error);
-      // Handle the error, such as displaying an error message to the user or retrying the request
     }
   };
 
+  const renderItems = (items: TodoItem[]) =>
+    items.map((item) => (
+      <div key={item.id}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={item.completed}
+              onChange={(event) => handleCheckboxChange(event, item.id)}
+            />
+          }
+          label={item.text}
+          className={classes.checkbox}
+        />
+      </div>
+    ));
+
   return (
-    <>
     <div className={classes.root}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" className={classes.appBar}>
@@ -173,37 +333,34 @@ const App = () => {
             <Typography variant="h6" className={classes.title} sx={{ mr: 2 }}>
               Todo List
             </Typography>
-            <Typography variant="h6" color="inherit" component="div">
-              <div className={classes.deleteButton} onClick={handleDeleteAllTasksClick}>
-                <DeleteIcon /> Delete all tasks
-              </div>
-            </Typography>
+            <Button color="inherit" startIcon={<DeleteIcon />} onClick={handleDeleteAllTasksClick}>
+              Delete all tasks
+            </Button>
           </Toolbar>
         </AppBar>
       </Box>
-      <br />
-      <br />
       <div className={classes.mainWrapper}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <Paper className={classes.paper}>
-              <div className={classes.form}>
-                <TextField
-                  label="Add new task"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={todoItemText}
-                  onChange={(event) => setTodoItemText(event.target.value)}
-                />
-              </div>
-              </Paper>
-              <br />
-              <Button type="button" variant="contained" color="primary" disabled={todoItemText === ""} onClick={() => {
-                handleAddTodoItem();
-              }}>
-                  Add
-              </Button>
+              <TextField
+                label="Add new task"
+                variant="outlined"
+                fullWidth
+                required
+                value={todoItemText}
+                onChange={(event) => setTodoItemText(event.target.value)}
+              />
+            </Paper>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+              disabled={todoItemText.trim() === ''}
+              onClick={handleAddTodoItem}
+            >
+              Add
+            </Button>
           </Grid>
           <Grid item xs={12} sm={6}>
             <Paper className={classes.paper}>
@@ -211,309 +368,43 @@ const App = () => {
                 label="Search tasks"
                 variant="outlined"
                 fullWidth
-                className={classes.search}
                 value={searchText}
-                onChange={handleSearchTextChange}
+                onChange={(event) => setSearchText(event.target.value)}
               />
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6}>
             <h2>Todo Items</h2>
-            {incompleteResults?.map((item) => (
-                <div key={item.id}>
-                  <FormControlLabel
-                    control={<Checkbox checked={item.completed} onChange={(event) => handleCheckboxChange(event, item.id)} name="checked" />}
-                    label={item.text}
-                    className={classes.checkbox}
-                  />
-                </div>
-            ))}
+            {renderItems(incompleteResults)}
           </Grid>
           <Grid item xs={12} sm={6}>
-          <h2>Finished Items</h2>
-          {completeResults?.map((item) => (
-              <div key={item.id}>
-                <FormControlLabel
-                  control={<Checkbox checked={item.completed} name="checked" onChange={(event) => handleCheckboxChange(event, item.id)}  />}
-                  label={item.text}
-                  // disabled
-                  className={classes.checkbox}
-                />
-              </div>
-            ))}
+            <h2>Finished Items</h2>
+            {renderItems(completeResults)}
           </Grid>
         </Grid>
       </div>
     </div>
-    </>
   );
 };
 
 export default App;
 ```
 
-The `useSWR` hook is a React hook that makes it easy to fetch data from an API and update the state of your application when the data changes. The `useState` hook is a React hook that makes it easy to manage the state of your application, such as the text of the new to-do item and the search text. The `useEffect` hook is a React hook that makes it easy to run code when the page loads or when certain events occur, such as when the search text changes. The `handleAddTodoItem` function is a function that adds a new to-do item to the list. The `handleCheckboxChange` function is a function that toggles the completion status of a to-do item. The `handleDeleteAllTasksClick` function is a function that deletes all to-do items from the list.
+The `classes` come from a CSS module (`index.module.css`) in the repo; any styling works.
 
+## Gotchas
 
-Here are the UI elements used in the code you provided:
+- **MUI version.** The `<Grid item xs={12} sm={6}>` syntax is MUI v5/v6. In MUI v7 that component is renamed `GridLegacy`, and the new `Grid` drops the `item` prop in favour of `size={{ xs: 12, sm: 6 }}`.
+- **Search on every keystroke.** Each keypress creates a new SWR key and a new request. For a real app, debounce the search text before building the key.
+- **Delete all has no confirmation.** `DELETE /api/todo` without an `id` wipes the table, and anyone who can reach the deployment can call it. There is no authentication in this project.
+- **`encodeURIComponent` the search text.** Without it, a search containing `&` or `#` breaks the query string.
 
-- AppBar: This is a toolbar that is displayed at the top of the page. It contains the title of the application and a button to delete all tasks.
-- Toolbar: This is a container for the AppBar's contents.
-- Typography: This is a React component that renders text with different styles.
-- Button: This is a React component that renders a button.
-- TextField: This is a React component that renders a text input field.
-- Grid: This is a React component that lays out its children in a grid.
-- Paper: This is a React component that renders a paper-like container.
-- Checkbox: This is a React component that renders a checkbox.
-- FormControlLabel: This is a React component that renders a label and a checkbox together.
-- IconButton: This is a React component that renders a button with an icon.
-- Box: This is a React component that renders a box.
+The app is deployed at https://todonextjs-six.vercel.app.
 
-The state management for useSWR works as follows:
+## References
 
-When the useSWR hook is first called, it fetches the data from the API and stores it in the state.
-If the data changes, the useSWR hook will fetch the new data from the API and update the state.
-The state is then used to render the UI.
-For example, when the search text changes, the useSWR hook will fetch the new data from the API and update the state. The state is then used to render the list of tasks, which will now be filtered by the new search text.
-
-
-The TodoList app makes three API calls:
-
-* A GET request to `/api/search` with the query parameters `completed` and `size` to get a list of tasks.
-* A POST request to `/api/todo` to add a new task.
-* PUT /api/todo with the task ID and the new completed value to update a task.
-
-The `/api/search` endpoint takes two query parameters:
-
-* `completed` - A boolean value indicating whether the tasks should be completed or not.
-* `size` - The number of tasks to return.
-
-The `/api/todo`endpoint with a `POST` request takes a JSON object with the following properties:
-
-* `text` - The text of the task.
-* `completed` - A boolean value indicating whether the task is completed or not.
-
-The PUT call is made by the handleCheckboxChange function when the user checks or unchecks a checkbox. The function makes a request to the /api/todo endpoint with the task ID and the new completed value.
-
-The TodoList app also uses the `useSWR` hook to cache the results of the `/api/search` endpoint. This means that the app will only make a request to the server if the cache is expired or if the query parameters have changed.
-
-## Backend (API Routes)
-The API handler function for `search` that takes two parameters:
-
-req: The request object, which contains information about the request, such as the query parameters and the body.
-res: The response object, which is used to send the response back to the client.
-The function first checks if the request is a GET request. If it is, the function parses the query parameters and builds a SQL query. The query is then executed against the database and the results are returned to the client.
-
-If the request is not a GET request, the function returns an error message.
-
-Here is a more detailed explanation of what each part of the code does:
-
-```ts
-// Import the pool object from the utils/db file.
-import pool from '@/utils/db';
-
-// Import the ErrorMessage and TodoItem types from the utils/types file.
-import { ErrorMessage, TodoItem } from '@/utils/types';
-
-// Import the NextApiRequest and NextApiResponse types from the next library.
-import type { NextApiRequest, NextApiResponse } from 'next';
-
-// Define the Data type, which can either be an array of TodoItem objects or an ErrorMessage object.
-type Data = TodoItem[] | ErrorMessage;
-
-// Export the default handler function.
-export default async function handler(
-  // The request object.
-  req: NextApiRequest,
-  // The response object.
-  res: NextApiResponse<Data>
-) {
-  // Try to execute the request.
-  try {
-    // Get the number of arguments that have been passed to the query.
-    let numArgs = 1;
-
-    // Get the query parameters.
-    const { search, completed, size } = req.query;
-
-    // Build the SQL query.
-    let query = 'SELECT * FROM todo WHERE';
-
-    // Create an array to store the values that will be used in the query.
-    const values = [];
-
-    // If the search parameter is not empty, add a condition to the query that matches the search term.
-    if (search) {
-      query += ` text ILIKE $${numArgs}`;
-      values.push(`%${search}%`);
-      numArgs++;
-    } else {
-      // If the search parameter is empty, add a condition that always evaluates to true.
-      // This is necessary because the WHERE clause must always have at least one condition.
-      query += ' 1=1';
-    }
-
-    // If the completed parameter is true, add a condition to the query that matches completed tasks.
-    if (completed) {
-      if (search) {
-        // If the search parameter is not empty, add an AND operator to the query.
-        query += '  ' + search ? ' AND' : '';
-      }
-      query += ` completed = $${numArgs}`;
-      values.push(completed);
-    }
-
-    // If the size parameter is not empty, add a LIMIT clause to the query.
-    if (size) {
-      query += ` LIMIT ${size}`;
-    }
-
-    // Execute the query and get the results.
-    const { rows } = await pool.query(query, values);
-
-    // Send the results back to the client.
-    res.status(200).json(rows);
-  } catch (error) {
-    // Log the error.
-    console.error(error);
-
-    // Send an error message back to the client.
-    res.status(500).json({ message: 'Internal server error' });
-  }
-}
-```
-
-To connect to the neon database, you can use vercel integrations to do the heavy lifting.
-
-This will add POSTGRES Environment Variables to your project, which you can use to connect to the database.
-
-```tsx
-// Import the Pool class from the pg library.
-import { Pool } from 'pg';
-
-// Create a new Pool object.
-const pool = new Pool({
-  // The hostname of the database server.
-  host: process.env.PGHOST,
-  // The username for the database connection.
-  user: process.env.PGUSER,
-  // The name of the database to connect to.
-  database: process.env.PGDATABASE,
-  // The password for the database connection.
-  password: process.env.PGPASSWORD,
-  // An alternative way to specify the connection parameters.
-  connectionString: process.env.DATABASE_URL,
-  // A configuration object for the SSL connection.
-  ssl: {
-    // Do not reject unauthorized certificates.
-    rejectUnauthorized: false,
-  },
-});
-
-// Export the pool so that it can be used by other parts of the application.
-export default pool;
-```
-
-The `todo` API handler function that takes two parameters:
-
-req: The request object, which contains information about the request, such as the query parameters and the body.
-res: The response object, which is used to send the response back to the client.
-The function first checks the request method. If the request method is GET, the function parses the query parameters and builds a SQL query. The query is then executed against the database and the results are returned to the client.
-
-If the request method is POST, the function parses the request body and builds a SQL query. The query is then executed against the database and the new row is inserted.
-
-If the request method is PUT, the function parses the request body and builds a SQL query. The query is then executed against the database and the existing row is updated.
-
-If the request method is DELETE, the function parses the request body and builds a SQL query. The query is then executed against the database and the existing row is deleted.
-
-If the request method is not supported, the function returns an error message.
-
-Here is a more detailed explanation of what each part of the code does:
-
-```ts
-import pool from '@/utils/db';
-import { ErrorMessage, TodoItem } from '@/utils/types';
-import type { NextApiRequest, NextApiResponse } from 'next';
-
-type Data = TodoItem[] | ErrorMessage;
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  const { method } = req;
-
-  switch (method) {
-    case 'GET':
-      try {
-        const { completed } = req.query;
-        let query = 'SELECT * FROM todo';
-        const values = [];
-    
-        if (completed !== undefined) {
-          query += ' WHERE completed = $1';
-          values.push(completed);
-        }
-    
-        query += ' ORDER BY id DESC';
-    
-        const { rows } = await pool.query(query, values);
-        res.status(200).json(rows);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
-      break;
-    case 'POST':
-      try {
-        const { text, completed } = req.body;
-        const { rows } = await pool.query('INSERT INTO todo (text, completed) VALUES ($1, $2) RETURNING id, text, completed', [text, completed]);
-        res.status(201).json(rows[0]);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
-      break;
-    case 'PUT':
-      try {
-        const { id } = req.query;
-        const { completed } = req.body;
-        const data = await pool.query('UPDATE todo SET completed = $1 WHERE id = $2', [ completed, id]);
-        // console.log("rows", data);
-        res.status(200).json(data as any);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
-      break;
-    case 'DELETE':
-      try {
-        const { id } = req.query;
-        let queryString = 'DELETE FROM todo';
-        let queryParams = [];
-        if (id) {
-          queryString += ' WHERE id = $1';
-          queryParams.push(id);
-        }
-        await pool.query(queryString, queryParams);
-        res.status(204).end();
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-      }
-      break;
-    default:
-      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-      res.status(405).json({ message: `Method ${method} Not Allowed` });
-  }
-}
-```
-
-The Next.js Todo List app is a great example of how to use Next.js, Next API functions, and Neon Serverless Postgres to build a simple and scalable web application.
-
-
-Deployed to https://todonextjs-six.vercel.app
-
-## References:
-
-* https://github.com/FriendlyUser/todonextjs
+- Source: https://github.com/FriendlyUser/todonextjs
+- [Next.js API routes (Pages Router)](https://nextjs.org/docs/pages/building-your-application/routing/api-routes)
+- [SWR docs](https://swr.vercel.app/docs/getting-started)
+- [node-postgres pooling](https://node-postgres.com/features/pooling)
+- [Neon on Vercel](https://neon.com/docs/guides/vercel-overview)

@@ -1,145 +1,171 @@
 ---
-title: Understanding Swift's Closures A Comprehensive Guide
+title: "Swift closures: syntax, capturing values, escaping and autoclosures"
 pubDate: "2025-04-11T21:26:55.000Z"
-description: "This article will explore the different aspects of closures in Swift, including their syntax, capture and storage of constants and variables, and use cases."
-tags: []
+lastUpdated: 2026-11-14
+description: "How Swift closures work: the short syntax forms, trailing closures, how values are captured, @escaping, retain cycles with [weak self], and @autoclosure."
+tags: ["swift"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3613662819.png
 ---
-# Understanding Swift's Closures: A Comprehensive Guide
 
-In Swift, closures are self-contained blocks of functionality that can be passed around and used in your code. They are similar to blocks in C and Objective-C or lambdas in other programming languages. This article will explore the different aspects of closures in Swift, including their syntax, capture and storage of constants and variables, and use cases.
+A closure in Swift is a block of code you can store in a variable or pass to a function, like a lambda in other languages or a block in Objective-C. Functions are closures too: a global function is a named closure that captures nothing, a nested function can capture values from the function around it, and a closure expression is the unnamed `{ ... in ... }` form.
 
-## Table of Contents
+## Syntax, from long to short
 
-1. [Introduction to Closures](#introduction-to-closures)
-2. [Closure Syntax](#closure-syntax)
-3. [Trailing Closures](#trailing-closures)
-4. [Capture and Storage of Constants and Variables](#capture-and-storage)
-5. [Autoclosures](#autoclosures)
-6. [Use Cases](#use-cases)
-7. [Conclusion](#conclusion)
-
-## 1. Introduction to Closures <a name="introduction-to-closures"></a>
-
-Closures in Swift can capture and store references to variables and constants from the surrounding context in which they are defined. This is known as *capturing values*. Swift handles all memory management of capturing for you, so you don't have to worry about memory leaks.
-
-There are three types of closures in Swift:
-
-1. Global functions: These are functions that have a name but don't capture any values.
-2. Nested functions: These are functions that are defined within another function, and can capture values from the enclosing function.
-3. Closure expressions: These are unnamed closures written in a lightweight syntax that can capture values from their surrounding context.
-
-## 2. Closure Syntax <a name="closure-syntax"></a>
-
-Closure expressions have a clean, clear syntax with optimizations that encourage minimalism. The syntax for a closure expression is as follows:
+The full form spells out parameter and return types:
 
 ```swift
-{ (parameters) -> ReturnType in
-    statements
-}
-```
-
-Here's an example of a simple closure that takes two integers and returns their sum:
-
-```swift
-let addIntegers = { (a: Int, b: Int) -> Int in
+let add = { (a: Int, b: Int) -> Int in
     return a + b
 }
-print(addIntegers(3, 5)) // Output: 8
+print(add(3, 5)) // 8
 ```
 
-Swift's type inference system allows for further simplification of closure syntax. If the types of the closure parameters and return type can be inferred from the context, they can be omitted:
+When the type is known from context, Swift infers the parameter and return types:
 
 ```swift
-let addIntegers: (Int, Int) -> Int = { a, b in
+let add: (Int, Int) -> Int = { a, b in
     return a + b
 }
 ```
 
-Additionally, if the closure consists of only a single expression, the `return` keyword can be omitted:
+A single-expression body returns its value implicitly:
 
 ```swift
-let addIntegers: (Int, Int) -> Int = { a, b in a + b }
+let add: (Int, Int) -> Int = { a, b in a + b }
 ```
 
-## 3. Trailing Closures <a name="trailing-closures"></a>
+And you can drop the parameter names and use `$0`, `$1`, and so on:
 
-If a closure expression is the last argument of a function, and the closure expression is lengthy, you can write it as a *trailing closure* for improved readability. A trailing closure is written after the function call's parentheses, even though it is still an argument to the function. Here's an example:
+```swift
+let add: (Int, Int) -> Int = { $0 + $1 }
+```
+
+Operators are functions too, so `let add: (Int, Int) -> Int = (+)` also works.
+
+## Trailing closures
+
+If the last argument of a call is a closure, you can write it after the parentheses. If it's the only argument, you can drop the parentheses entirely:
 
 ```swift
 func performOperation(_ a: Int, _ b: Int, operation: (Int, Int) -> Int) -> Int {
-    return operation(a, b)
+    operation(a, b)
 }
 
-let result = performOperation(10, 5) { (a, b) in
-    return a * b
-}
+let product = performOperation(10, 5) { a, b in a * b }
+print(product) // 50
 
-print(result) // Output: 50
+let numbers = [5, 3, 8, 1]
+let sorted = numbers.sorted { $0 > $1 }
+print(sorted) // [8, 5, 3, 1]
 ```
 
-## 4. Capture and Storage of Constants and Variables <a name="capture-and-storage"></a>
+A call can also take several trailing closures. The first is unlabelled and the rest use their argument labels, which is common in SwiftUI APIs.
 
-Closures can capture and store references to constants and variables from the surrounding context in which they are defined. This allows the closure to have access to and modify these values even after the context has been exited. Here's an example:
+## Capturing values
+
+A closure keeps access to the variables it uses from the surrounding scope, even after that scope has returned:
 
 ```swift
-func makeIncrementer(incrementAmount: Int) -> () -> Int {
+func makeIncrementer(by amount: Int) -> () -> Int {
     var total = 0
-
-    let incrementer: () -> Int = {
-        total += incrementAmount
+    return {
+        total += amount
         return total
     }
-
-    return incrementer
 }
 
-let incrementByTwo = makeIncrementer(incrementAmount: 2)
-print(incrementByTwo()) // Output: 2
-print(incrementByTwo()) // Output: 4
+let incrementByTwo = makeIncrementer(by: 2)
+print(incrementByTwo()) // 2
+print(incrementByTwo()) // 4
+
+let incrementByTen = makeIncrementer(by: 10)
+print(incrementByTen()) // 10
+print(incrementByTwo()) // 6
 ```
 
-In this example, `incrementByTwo` captures and stores a reference to the `total` variable and `incrementAmount` constant. Even though the context they were created in has been exited, the closure can still access and modify their values.
+Each call to `makeIncrementer` creates a new `total`, so the two incrementers don't share state. Closures are reference types: if you assign `incrementByTwo` to another constant, both names refer to the same closure and the same `total`.
 
-## 5. Autoclosures <a name="autoclosures"></a>
+## Escaping closures and retain cycles
 
-An *autoclosure* is a closure that is automatically created to wrap an expression that's passed as an argument to a function. It doesn't take any arguments, and when called, it returns the value of the expression that's wrapped inside of it. This is useful for delaying the evaluation of the expression until it's needed. You can mark a function parameter as an autoclosure by writing `@autoclosure` before its typeannotation:
+A closure parameter is non-escaping by default: the compiler knows it won't be called after the function returns. If the function stores the closure or calls it later (a completion handler, for example), mark the parameter `@escaping`:
 
 ```swift
-func delayedPrint(_ message: @autoclosure () -> String) {
-    print("Performing some tasks...")
-    print("Message: \(message())")
+final class Downloader {
+    private var completionHandlers: [(String) -> Void] = []
+
+    func fetch(completion: @escaping (String) -> Void) {
+        completionHandlers.append(completion)
+    }
+
+    func finish(with result: String) {
+        completionHandlers.forEach { $0(result) }
+        completionHandlers.removeAll()
+    }
+}
+```
+
+Swift's automatic reference counting does not prevent leaks here. Closures capture strongly by default, so an object that stores a closure which uses `self` creates a strong reference cycle and neither is ever freed. Break it with a capture list:
+
+```swift
+final class ProfileViewModel {
+    private let downloader = Downloader()
+    private(set) var name = ""
+
+    func load() {
+        downloader.fetch { [weak self] result in
+            guard let self else { return }
+            self.name = result
+        }
+    }
+}
+```
+
+In an escaping closure, Swift makes you write `self.` explicitly when you refer to a class instance's members, unless `self` appears in the capture list. That makes the capture visible at the call site.
+
+For new asynchronous code, `async`/`await` usually replaces completion-handler closures, but escaping closures are still everywhere in existing APIs.
+
+## Autoclosures
+
+`@autoclosure` wraps an argument expression in a closure automatically, so the caller writes a plain expression but the function decides whether and when to evaluate it. The standard library uses this for `assert` and the `&&` / `||` operators. A logging function can use it to skip building a message that won't be printed:
+
+```swift
+struct DebugLogger {
+    var isEnabled: Bool
+
+    func log(_ message: @autoclosure () -> String) {
+        if isEnabled {
+            print(message())
+        }
+    }
 }
 
-let name = "John Doe"
-delayedPrint("Hello, \(name)")
+func expensiveDescription() -> String {
+    print("building description...")
+    return "state dump"
+}
+
+var logger = DebugLogger(isEnabled: false)
+logger.log("State: \(expensiveDescription())") // prints nothing; the string is never built
+logger.isEnabled = true
+logger.log("State: \(expensiveDescription())") // builds and prints it
 ```
 
-In this example, the `message` parameter is marked with the `@autoclosure` attribute. This means that when calling the `delayedPrint` function with a string, Swift automatically converts the string into a closure that takes no arguments and returns the string when called. The evaluation of the `message` closure is delayed until it's actually called inside the `delayedPrint` function.
+Use autoclosures sparingly. The call site looks like it evaluates the argument immediately, so delayed evaluation can surprise readers.
 
-## 6. Use Cases <a name="use-cases"></a>
+## Where you'll use closures
 
-Closures are widely used in Swift programming for various purposes. Some common use cases include:
-
-- Asynchronous programming: Closures are often used as completion handlers for asynchronous tasks, such as networking requests or animations.
-
-- Higher-order functions: Functions that take other functions as input parameters or return them as output are called higher-order functions. Many Swift functions in the standard library, such as `map`, `filter`, and `reduce`, utilize closures to manipulate collections.
-
-- Callbacks: Closures can be used as a way to pass around blocks of code that can be executed at a later time or in response to specific events.
-
-- Custom sorting: Closures can be used to provide custom sorting logic when sorting collections.
-
-Here's an example of using a closure with the `filter` function on an array:
+- Collection methods: `map`, `filter`, `reduce`, `sorted(by:)`, `first(where:)`.
+- Callbacks and completion handlers in UIKit and older Foundation APIs.
+- SwiftUI view builders and button actions.
 
 ```swift
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-let evenNumbers = numbers.filter { $0 % 2 == 0 }
-print(evenNumbers) // Output: [2, 4, 6, 8, 10]
+let numbers = Array(1...10)
+let evenSquares = numbers.filter { $0 % 2 == 0 }.map { $0 * $0 }
+print(evenSquares) // [4, 16, 36, 64, 100]
 ```
 
-In this example, the closure provided to the `filter` function checks if a number is even by using the shorthand argument syntax `$0 % 2 == 0`.
+## Further reading
 
-## 7. Conclusion <a name="conclusion"></a>
-
-Closures are a powerful and flexible feature in Swift that enables you to write concise, expressive, and efficient code. They allow you to capture and store references to constants and variables from the surrounding context, and their lightweight syntax makes them easy to use in various situations. Whether you're working with asynchronous tasks, higher-order functions, or custom logic, closures can help you write cleaner and more maintainable code in Swift.
+- [Closures, The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/)
+- [Automatic Reference Counting: strong reference cycles for closures](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/#Strong-Reference-Cycles-for-Closures)

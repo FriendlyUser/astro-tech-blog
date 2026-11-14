@@ -1,69 +1,68 @@
 ---
-description: In this article, we will explore the key features of this library, discuss
-  its benefits, and walk through some examples to demonstrate how to use it effectively
-  in your projects
+description: How the built-in .NET DI container works - registering services, the three lifetimes, scopes, keyed services, and the mistakes scope validation catches.
 imgSrc: /imgs/2023/man_on_horse.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-26T17:49:54.000Z'
-tags: []
-title: Understanding Microsoft.Extensions.DependencyInjection A Deep Dive
+lastUpdated: 2026-11-14
+tags: ["dotnet", "csharp"]
+title: Using Microsoft.Extensions.DependencyInjection, the built-in .NET DI container
 ---
 
-# Understanding Microsoft.Extensions.DependencyInjection: A Deep Dive
+`Microsoft.Extensions.DependencyInjection` is the dependency injection container that ASP.NET Core, the generic host, and most `Microsoft.Extensions.*` libraries are built on. Classes declare what they need in their constructor, you register implementations once at startup, and the container builds the object graph for you. That keeps classes decoupled from concrete implementations and makes them easy to test with fakes.
 
-Microsoft.Extensions.DependencyInjection is a lightweight, extensible dependency injection (DI) library designed for use with .NET applications. This library provides a minimalistic yet powerful framework for managing dependencies in .NET applications. In this article, we will explore the key features of this library, discuss its benefits, and walk through some examples to demonstrate how to use it effectively in your projects.
+In an ASP.NET Core or Worker Service project it's already set up (`builder.Services`). In a plain console app, add the package:
 
-## What is Dependency Injection?
-
-Dependency Injection is a design pattern that promotes the separation of concerns in software development. It encourages loosely coupled components by making dependencies external to the components that use them. DI enables better maintainability, testability, and flexibility of software applications.
-
-## Why Microsoft.Extensions.DependencyInjection?
-
-There are several DI libraries available for .NET developers, such as Autofac, Ninject, and Unity. However, Microsoft.Extensions.DependencyInjection is the default dependency injection framework provided by Microsoft for .NET Core and .NET 5+ applications. It is lightweight, fast, and extensible, making it a suitable choice for small to large projects.
-
-## Getting Started
-
-To start using Microsoft.Extensions.DependencyInjection in your project, you need to install the `Microsoft.Extensions.DependencyInjection` NuGet package. You can do this using the following command:
-
-```
+```bash
 dotnet add package Microsoft.Extensions.DependencyInjection
 ```
 
-## Key Components
+## The moving parts
 
-There are three main components in the Microsoft.Extensions.DependencyInjection library:
+- **`IServiceCollection`**: the list of registrations you build at startup.
+- **`ServiceDescriptor`**: one registration: service type, implementation (type, instance, or factory), and lifetime.
+- **`IServiceProvider`**: the built container that creates and disposes instances.
+- **`IServiceScope`**: a child container that owns scoped instances and disposes them when the scope ends.
 
-1. **IServiceCollection**: This is the central component that holds the collection of service descriptors. It defines the services and their lifetimes.
+## Lifetimes
 
-2. **ServiceDescriptor**: This is a representation of a service, including its type, implementation, and lifetime.
+| Lifetime | Registration | One instance per |
+| --- | --- | --- |
+| Transient | `AddTransient<TService, TImpl>()` | every resolution |
+| Scoped | `AddScoped<TService, TImpl>()` | scope (an HTTP request in ASP.NET Core) |
+| Singleton | `AddSingleton<TService, TImpl>()` | container |
 
-3. **IServiceProvider**: This is the component responsible for creating instances of services, managing their lifetimes, and providing access to them.
+The container disposes the `IDisposable` instances it created when their scope (or, for singletons, the root provider) is disposed. It does not dispose instances you pass in yourself with `AddSingleton(instance)`.
 
-## Service Lifetimes
-
-Microsoft.Extensions.DependencyInjection supports three service lifetimes:
-
-1. **Transient**: A new instance of the service is created each time it is requested. This is suitable for lightweight, stateless services.
-
-2. **Scoped**: An instance of the service is created per scope. In a web application, this means one instance per request.
-
-3. **Singleton**: A single instance of the service is created, and the same instance is used for all requests.
-
-## Registering Services
-
-To register services with the DI container, you need to use the `IServiceCollection` interface. The following methods are commonly used for registering services:
-
-- `AddTransient<TService, TImplementation>()`: Registers a service with a transient lifetime.
-- `AddScoped<TService, TImplementation>()`: Registers a service with a scoped lifetime.
-- `AddSingleton<TService, TImplementation>()`: Registers a service with a singleton lifetime.
-
-## Example
-
-Let's create a simple console application to demonstrate how to use Microsoft.Extensions.DependencyInjection.
+## A console example
 
 ```csharp
-using System;
 using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+services.AddSingleton<IClock, SystemClock>();
+services.AddScoped<IGreeter, ConsoleGreeter>();
+
+using ServiceProvider provider = services.BuildServiceProvider(new ServiceProviderOptions
+{
+    ValidateScopes = true,
+    ValidateOnBuild = true
+});
+
+using (IServiceScope scope = provider.CreateScope())
+{
+    var greeter = scope.ServiceProvider.GetRequiredService<IGreeter>();
+    greeter.Greet("World");
+}
+
+public interface IClock
+{
+    DateTimeOffset Now { get; }
+}
+
+public class SystemClock : IClock
+{
+    public DateTimeOffset Now => DateTimeOffset.Now;
+}
 
 public interface IGreeter
 {
@@ -72,36 +71,50 @@ public interface IGreeter
 
 public class ConsoleGreeter : IGreeter
 {
-    public void Greet(string name)
-    {
-        Console.WriteLine($"Hello, {name}!");
-    }
-}
+    private readonly IClock _clock;
 
-public class Program
-{
-    static void Main(string[] args)
-    {
-        // Configure the service collection
-        var services = new ServiceCollection();
-        services.AddSingleton<IGreeter, ConsoleGreeter>();
+    public ConsoleGreeter(IClock clock) => _clock = clock;
 
-        // Build the service provider
-        var serviceProvider = services.BuildServiceProvider();
-
-        // Resolve and use the service
-        var greeter = serviceProvider.GetService<IGreeter>();
-        greeter.Greet("World");
-    }
+    public void Greet(string name) =>
+        Console.WriteLine($"Hello, {name}! It is {_clock.Now:t}.");
 }
 ```
 
-In this example, we register the `ConsoleGreeter` service as a singleton with the `IGreeter` interface. We then build the service provider and use it to resolve an instance of `IGreeter`. Finally, we call the `Greet` method to display a greeting message.
+A few things worth noting:
 
-## Extending Microsoft.Extensions.DependencyInjection
+- `ConsoleGreeter` gets `IClock` through its constructor. The container picks the constructor whose parameters it can satisfy.
+- `GetRequiredService<T>()` throws if the service isn't registered. `GetService<T>()` returns `null` instead, which usually just moves the failure somewhere less obvious.
+- Scoped services are resolved from a scope. ASP.NET Core creates one per request; in a console app or a `BackgroundService` you create them with `CreateScope()`.
 
-One of the key features of this library is its extensibility. You can easily extend the library by implementing custom service providers or using third-party extensions. This allows you to add additional features or integrate with other DI libraries if needed.
+## What scope validation catches
 
-## Conclusion
+`ValidateScopes` and `ValidateOnBuild` are on by default in the `Development` environment of ASP.NET Core and the generic host. With them enabled, the container throws on two common mistakes:
 
-Microsoft.Extensions.DependencyInjection is a powerful, lightweight dependency injection framework for .NET applications. It provides a simple yet extensible way to manage dependencies in your projects. By using this library, you can promote clean architecture, improve testability, and maintainability in your applications.
+- **Captive dependencies.** A singleton that takes a scoped service in its constructor would keep one instance of that scoped service (say, a `DbContext`) alive for the whole app. With `ValidateOnBuild`, building the provider fails.
+- **Resolving scoped services from the root provider.** `provider.GetRequiredService<IGreeter>()` outside a scope throws, because the instance would never be disposed.
+
+## Keyed services
+
+Since .NET 8 you can register several implementations of one interface under different keys:
+
+```csharp
+services.AddKeyedSingleton<INotifier, EmailNotifier>("email");
+services.AddKeyedSingleton<INotifier, SmsNotifier>("sms");
+
+public class AlertService(
+    [FromKeyedServices("sms")] INotifier notifier)
+{
+    public void Alert(string message) => notifier.Send(message);
+}
+```
+
+Resolve one directly with `provider.GetRequiredKeyedService<INotifier>("email")`. Without keys, registering the same interface twice means the last registration wins for a single dependency, and `IEnumerable<INotifier>` gives you all of them.
+
+## When to reach for another container
+
+The built-in container intentionally leaves out features such as property injection, assembly scanning, and decorators. If you need those, Autofac and similar containers plug in through `IServiceProviderFactory<T>` (for example `builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())`), and libraries like Scrutor add scanning and decoration on top of `IServiceCollection`.
+
+## Further reading
+
+- [Dependency injection in .NET](https://learn.microsoft.com/dotnet/core/extensions/dependency-injection)
+- [Dependency injection guidelines](https://learn.microsoft.com/dotnet/core/extensions/dependency-injection-guidelines)

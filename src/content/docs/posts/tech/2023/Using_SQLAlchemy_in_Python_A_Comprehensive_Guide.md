@@ -1,282 +1,229 @@
 ---
-description: In this article, we will explore SQLAlchemy, a powerful and versatile
-  Object Relational Mapper (ORM) for Python that makes database interactions easy
-  and efficient
+description: "Define models, create tables, and insert, query, update and delete rows with the SQLAlchemy 2.x ORM, plus relationships, transactions and inheritance."
 imgSrc: /imgs/2023/DALL·E 2023-01-16 12.01.55 - Two futuristic towers with a skybridge
   covered in lush foliage, digital art.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T03:02:10.000Z'
-tags: []
-title: Using SQLAlchemy in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ['python', 'sql']
+title: "SQLAlchemy 2.x ORM basics: models, sessions and queries in Python"
 ---
 
-# Using SQLAlchemy in Python: A Comprehensive Guide
+SQLAlchemy is a Python database toolkit with two layers: Core, which builds SQL expressions, and the ORM, which maps Python classes to tables. This post covers the ORM: defining models, creating tables, CRUD operations, relationships, transactions and inheritance.
 
-In this article, we will explore SQLAlchemy, a powerful and versatile Object Relational Mapper (ORM) for Python that makes database interactions easy and efficient. We will learn how to install and use SQLAlchemy, create a simple application, and understand some of its most powerful features.
+The examples use the 2.0-style API (`DeclarativeBase`, `Mapped`, `mapped_column`, `select()`), which is what the current 2.x releases document. If you've seen older code using `declarative_base()` from `sqlalchemy.ext.declarative` and `session.query(...)`, that's the 1.x style; `session.query()` still works as a legacy API, but new code should use `select()`.
 
-## Table of Contents
+Everything below uses SQLite, so it runs without a database server. To use PostgreSQL or MySQL, change the connection URL and install the matching driver; the ORM code stays the same.
 
-1. [Introduction to SQLAlchemy](#introduction)
-2. [Installation](#installation)
-3. [Basic Usage](#basic-usage)
-    1. [Creating Models](#creating-models)
-    2. [Creating and Configuring the Engine](#creating-engine)
-    3. [Creating and Using Sessions](#creating-sessions)
-    4. [Inserting Data](#inserting-data)
-    5. [Querying Data](#querying-data)
-    6. [Updating Data](#updating-data)
-    7. [Deleting Data](#deleting-data)
-4. [Advanced Features](#advanced-features)
-    1. [Relationships](#relationships)
-    2. [Transactions](#transactions)
-    3. [Inheritance](#inheritance)
-5. [Conclusion](#conclusion)
-
-<a name="introduction"></a>
-## 1. Introduction to SQLAlchemy
-
-SQLAlchemy is a popular Python library that provides a full suite of well-organized tools to interact with relational databases. It simplifies the process of writing SQL queries and performing CRUD operations by providing a high-level, Pythonic API.
-
-One of the main advantages of using SQLAlchemy is that it allows developers to write database-agnostic code. This means that you can switch between different SQL databases (such as PostgreSQL, MySQL, SQLite) with minimal code changes.
-
-<a name="installation"></a>
-## 2. Installation
-
-To install SQLAlchemy, simply run the following command:
+## Installation
 
 ```sh
 pip install sqlalchemy
 ```
 
-<a name="basic-usage"></a>
-## 3. Basic Usage
+## Defining models
 
-<a name="creating-models"></a>
-### 3.1. Creating Models
-
-The first step in using SQLAlchemy is to define your data models. Models are Python classes that represent database tables. They define the structure of the tables and the relationships between them. Here's a simple example:
+A model is a class that maps to a table. Type annotations on `Mapped[...]` tell SQLAlchemy the column type and whether it's nullable.
 
 ```python
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import ForeignKey, String, create_engine, select
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    Session,
+    mapped_column,
+    relationship,
+)
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
+
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    age = Column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(50))
+    age: Mapped[int]
 
-    def __repr__(self):
-        return f"<User(name={self.name}, age={self.age})>"
-```
+    posts: Mapped[list["Post"]] = relationship(
+        back_populates="author", cascade="all, delete-orphan"
+    )
 
-In this example, we define a `User` model with three columns: `id`, `name`, and `age`. The `__tablename__` attribute is used to specify the name of the database table.
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, name={self.name!r}, age={self.age})"
 
-<a name="creating-engine"></a>
-### 3.2. Creating and Configuring the Engine
-
-The next step is to create an "engine" that connects to your database. The engine is responsible for managing database connections and translating Python code into SQL commands.
-
-To create an engine, you need to provide a connection string, which specifies the database type, credentials, and other options. Here's an example:
-
-```python
-from sqlalchemy import create_engine
-
-## Replace this connection string with your own
-connection_string = 'sqlite:///example.db'
-
-engine = create_engine(connection_string)
-```
-
-In this example, we create a SQLite database called `example.db`. For other databases, the connection string format will be different. You can find more information about connection strings in the [SQLAlchemy documentation](https://docs.sqlalchemy.org/en/14/core/engines.html).
-
-Once you have created an engine, you can use it to create the tables defined by your models:
-
-```python
-Base.metadata.create_all(engine)
-```
-
-<a name="creating-sessions"></a>
-### 3.3. Creating and Using Sessions
-
-To interact with the database, you need to create a "session". A session is an object that manages the state of your objects and keeps track of any pending changes.
-
-To create a session, you can use the `sessionmaker` function:
-
-```python
-from sqlalchemy.orm import sessionmaker
-
-Session = sessionmaker(bind=engine)
-session = Session()
-```
-
-<a name="inserting-data"></a>
-
-### 3.4. Inserting Data
-
-To insert data into the database, you can create instances of your models and add them to the session. Here's an example:
-
-```python
-new_user = User(name="Alice", age=30)
-session.add(new_user)
-session.commit()
-```
-
-In this example, we create a new `User` object, add it to the session, and then call `session.commit()` to save the changes to the database.
-
-<a name="querying-data"></a>
-
-### 3.5. Querying Data
-
-To query data from the database, you canuse the `session.query()` method. This method returns a `Query` object that allows you to filter, order, and group the results. Here's an example:
-
-```python
-## Get all users
-users = session.query(User).all()
-print(users)
-
-## Get a specific user by ID
-user = session.query(User).get(1)
-print(user)
-
-## Get users with a specific name
-users = session.query(User).filter_by(name="Alice").all()
-print(users)
-
-## Get users with a specific age
-users = session.query(User).filter(User.age == 30).all()
-print(users)
-
-## Get users sorted by age, ascending
-users = session.query(User).order_by(User.age).all()
-print(users)
-```
-
-In this example, we demonstrate various ways to query the `User` model. You can combine filters, ordering, and other options to create complex queries.
-
-<a name="updating-data"></a>
-### 3.6. Updating Data
-
-To update data in the database, you can modify the attributes of your model instances and then call `session.commit()` to save the changes. Here's an example:
-
-```python
-## Update a specific user's age
-user = session.query(User).get(1)
-user.age = 35
-session.commit()
-```
-
-In this example, we update the age of a `User` object and then commit the changes to the database.
-
-<a name="deleting-data"></a>
-### 3.7. Deleting Data
-
-To delete data from the database, you can use the `session.delete()` method. Here's an example:
-
-```python
-## Delete a specific user by ID
-user = session.query(User).get(1)
-session.delete(user)
-session.commit()
-```
-
-In this example, we delete a `User` object from the database and then commit the changes.
-
-<a name="advanced-features"></a>
-
-## 4. Advanced Features
-
-<a name="relationships"></a>
-
-### 4.1. Relationships
-
-SQLAlchemy allows you to define relationships between your models using the `relationship()` function. This makes it easy to navigate between related objects and perform queries that involve multiple tables. Here's an example:
-
-```python
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
 
 class Post(Base):
-    __tablename__ = 'posts'
+    __tablename__ = "posts"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    content = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    content: Mapped[str | None]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    author = relationship("User", back_populates="posts")
+    author: Mapped["User"] = relationship(back_populates="posts")
+```
 
-User.posts = relationship("Post", order_by=Post.id, back_populates="author")
+`Mapped[str]` becomes a `NOT NULL` column; `Mapped[str | None]` is nullable. `age: Mapped[int]` with no `mapped_column()` is fine when you don't need any extra options. `cascade="all, delete-orphan"` means a user's posts are deleted along with the user.
 
+## Creating the engine and tables
+
+The engine manages the connection pool and the SQL dialect. `create_all()` issues `CREATE TABLE` for every model that doesn't have a table yet:
+
+```python
+engine = create_engine("sqlite:///example.db", echo=True)
 Base.metadata.create_all(engine)
 ```
 
-In this example, we define a `Post` model with a foreign key to the `User` model. We then create a relationship between the two models using the `relationship()` function.
+`echo=True` logs every SQL statement, which is useful while learning. See the [engine configuration docs](https://docs.sqlalchemy.org/en/20/core/engines.html) for URL formats for other databases.
 
-<a name="transactions"></a>
-### 4.2. Transactions
+`create_all()` won't alter existing tables. For schema changes in a real project, use [Alembic](https://alembic.sqlalchemy.org/) migrations.
 
-SQLAlchemy provides built-in support for transactions, which allow you to group multiple operations into a single, atomic unit of work. To use transactions, you can use the `session.begin()` method:
+## Sessions
+
+A `Session` tracks the objects you've loaded or added and writes the changes in a transaction when you commit. Use it as a context manager so it's always closed:
 
 ```python
-## Start a new transaction
-session.begin()
-
-try:
-    ## Perform some operations
-    user1 = User(name="Bob", age=25)
-    user2 = User(name="Carol", age=28)
-    session.add_all([user1, user2])
-
-    ## Commit the transaction
-    session.commit()
-except:
-    ## Roll back the transaction in case of errors
-    session.rollback()
-    raise
+with Session(engine) as session:
+    ...
 ```
 
-In this example, we start a new transaction using `session.begin()`, perform some operations, and then commit the transaction using `session.commit()`. If an error occurs, we roll back the transaction using `session.rollback()`.
-
-<a name="inheritance"></a>
-
-### 4.3. Inheritance
-
-SQLAlchemy supports various inheritance strategies, including single table inheritance, concrete table inheritance, and joined table inheritance. This allows you to model complex hierarchies of objects and reuse code between related models. Here's an example using single table inheritance:
+## Inserting rows
 
 ```python
-from sqlalchemy import Enum
+with Session(engine) as session:
+    alice = User(name="Alice", age=30)
+    alice.posts.append(Post(title="Hello", content="First post"))
+    session.add(alice)
+    session.commit()
+```
 
+Adding `alice` also adds her post, because the relationship cascades `save-update` by default.
+
+## Querying
+
+Build a `select()` statement and run it with `session.scalars()` (one ORM object per row) or `session.execute()` (tuples of columns).
+
+```python
+with Session(engine) as session:
+    # All users
+    users = session.scalars(select(User)).all()
+
+    # By primary key
+    user = session.get(User, 1)
+
+    # Filtering
+    alices = session.scalars(select(User).where(User.name == "Alice")).all()
+    thirty_plus = session.scalars(select(User).where(User.age >= 30)).all()
+
+    # Ordering
+    by_age = session.scalars(select(User).order_by(User.age)).all()
+
+    # Exactly one result, or raise
+    alice = session.scalars(select(User).where(User.name == "Alice")).one()
+
+    # Join through the relationship
+    stmt = select(Post.title, User.name).join(Post.author)
+    for title, author_name in session.execute(stmt):
+        print(title, author_name)
+```
+
+`session.get()` replaces the legacy `session.query(User).get(1)`, which is deprecated.
+
+## Updating rows
+
+Change attributes on a loaded object and commit:
+
+```python
+with Session(engine) as session:
+    user = session.get(User, 1)
+    if user is not None:
+        user.age = 35
+        session.commit()
+```
+
+## Deleting rows
+
+```python
+with Session(engine) as session:
+    user = session.get(User, 1)
+    if user is not None:
+        session.delete(user)
+        session.commit()
+```
+
+Alice's post is deleted too, because of the `delete-orphan` cascade on `User.posts`. With the default cascade, SQLAlchemy would instead set the post's `user_id` to `NULL`, and the commit would fail with an `IntegrityError` because that column is `NOT NULL`.
+
+## Transactions
+
+A session starts a transaction automatically on first use. To make a block atomic, with commit on success and rollback on any exception, use `session.begin()` as a context manager:
+
+```python
+with Session(engine) as session:
+    with session.begin():
+        session.add_all([User(name="Bob", age=25), User(name="Carol", age=28)])
+    # committed here, or rolled back if the block raised
+```
+
+Don't call `session.begin()` on a session that has already been used without committing: a transaction is already in progress and SQLAlchemy raises an error.
+
+## Inheritance
+
+SQLAlchemy supports single-table, joined-table and concrete-table inheritance. With single-table inheritance, all subclasses share one table and a discriminator column records which class each row belongs to:
+
+```python
 class Animal(Base):
-    __tablename__ = 'animals'
+    __tablename__ = "animals"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    type = Column(Enum("cat", "dog", name="animal_type"), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    type: Mapped[str] = mapped_column(String(20))
 
     __mapper_args__ = {
-        'polymorphic_identity': 'animal',
-        'polymorphic_on': type
+        "polymorphic_identity": "animal",
+        "polymorphic_on": "type",
     }
+
 
 class Cat(Animal):
-    __mapper_args__ = {
-        'polymorphic_identity': 'cat',
-    }
+    meow_sound: Mapped[str | None]
 
-    meow_sound = Column(String)
+    __mapper_args__ = {"polymorphic_identity": "cat"}
+
 
 class Dog(Animal):
-    __mapper_args__ = {
-        'polymorphic_identity': 'dog',
-    }
+    bark_sound: Mapped[str | None]
 
-    bark_sound = Column(String)
+    __mapper_args__ = {"polymorphic_identity": "dog"}
+
 
 Base.metadata.create_all(engine)
+
+with Session(engine) as session:
+    session.add_all([
+        Cat(name="Tom", meow_sound="meow"),
+        Dog(name="Rex", bark_sound="woof"),
+    ])
+    session.commit()
+
+    for animal in session.scalars(select(Animal)):
+        print(type(animal).__name__, animal.name)  # Cat Tom, Dog Rex
 ```
 
-In this example, we define a base `Animal` model and two subclasses, `Cat` and `Dog`. We use single table inheritance to store
+`Cat` and `Dog` have no `__tablename__`, so their columns are added to the `animals` table. Subclass-only columns must be nullable, since a `Dog` row has no `meow_sound`. Querying `Animal` returns instances of the right subclass based on the `type` column.
+
+Single-table inheritance is simplest and fastest to query, but the table gets wide and sparse as subclasses add columns. Joined-table inheritance gives each subclass its own table at the cost of a join per query.
+
+## Gotchas
+
+- Objects expire after `commit()` by default, so reading an attribute afterwards issues a new `SELECT`. Accessing them after the session has closed raises `DetachedInstanceError`. Pass `expire_on_commit=False` to `Session` if you need to use objects after committing.
+- Accessing a relationship in a loop (`for u in users: u.posts`) runs one query per user. Use `selectinload()` in the `select()` to load them in one extra query.
+- `create_all()` is for prototypes and tests; use Alembic for anything with real data.
+
+## Further reading
+
+- [SQLAlchemy Unified Tutorial](https://docs.sqlalchemy.org/en/20/tutorial/index.html)
+- [ORM Quick Start](https://docs.sqlalchemy.org/en/20/orm/quickstart.html)
+- [Mapping class inheritance hierarchies](https://docs.sqlalchemy.org/en/20/orm/inheritance.html)

@@ -1,174 +1,144 @@
 ---
-title: Utilizing GCSS A Golang CSS Preprocessor
+title: "GCSS: compiling indented CSS from Go"
 pubDate: "2023-05-30T20:37:46.254Z"
-description: "In this article, we will explore how to use GCSS in a Golang project to improve the efficiency and maintainability of your CSS code."
+lastUpdated: 2026-11-14
+description: "GCSS syntax (variables, mixins, nesting, &) and how to compile it to CSS from Go code or the command line with yosssi/gcss."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
+:::caution
+GCSS has not had a commit on its main branch since 2014. It still compiles, but it is unmaintained and supports only a small subset of what Sass does. For new projects, consider [Dart Sass](https://sass-lang.com/dart-sass/) or plain CSS, which now has native nesting and custom properties.
+:::
 
-GCSS is a powerful CSS preprocessor written in Go. If you're a Golang developer looking to streamline your CSS workflow and take advantage of the speed and robustness of the Go ecosystem, GCSS is an excellent choice. In this article, we will explore how to use GCSS in a Golang project to improve the efficiency and maintainability of your CSS code.
+[GCSS](https://github.com/yosssi/gcss) is a CSS preprocessor written in pure Go. You write an indented, brace-free syntax and it outputs CSS. Because it is a Go package, you can compile stylesheets inside a Go web server or build tool without installing Node or Ruby.
 
-## Introduction to GCSS
+## Install
 
-GCSS is a CSS preprocessor designed for Golang developers. It offers features such as nested rules, variables, mixins, and control structures like loops and conditionals. GCSS helps you write cleaner, more maintainable CSS code by providing a modular and DRY (Don't Repeat Yourself) approach to CSS development.
+The library, inside a Go module:
 
-## Installation and Setup
-
-To use GCSS, you first need to install the package in your Golang project. Use the following command to add it to your project:
-
-```bash
-go get -u github.com/yosssi/gcss
+```sh
+go get github.com/yosssi/gcss
 ```
 
-With the package installed, you can now import it into your Golang code:
+The command-line compiler:
 
-```go
-import "github.com/yosssi/gcss"
+```sh
+go install github.com/yosssi/gcss/cmd/gcss@latest
 ```
 
-## Basic GCSS Syntax
+## Syntax
 
-GCSS uses an indented syntax similar to SASS or Stylus. Let's take a look at a simple example:
+GCSS supports four features: variables, mixins, nested selectors, and `&` for the parent selector. Lines starting with `//` are comments and are dropped from the output. There are no loops, conditionals or arithmetic.
 
-```gcss
-body
-  background-color: #f5f5f5
-  font: 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif
-  color: #333
+Indentation must be exactly two spaces per level; GCSS counts spaces and divides by two. Properties are written `name: value` with a space after the colon and no trailing semicolon.
 
-  header
-    background-color: #333
-    padding: 16px
+### Nesting and `&`
 
-    h1
-      color: #fff
-      font-size: 24px
+```text
+nav
+  ul
+    margin: 0
+    padding: 0
+a
+  color: blue
+  &:hover
+    color: red
 ```
 
-When compiled, the above GCSS code will generate the following CSS:
+compiles to (GCSS emits it on one line; formatted here for reading):
 
 ```css
-body {
-  background-color: #f5f5f5;
-  font: 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #333;
-}
-body header {
-  background-color: #333;
-  padding: 16px;
-}
-body header h1 {
-  color: #fff;
-  font-size: 24px;
-}
+nav ul{margin:0;padding:0;}
+a{color:blue;}
+a:hover{color:red;}
 ```
-
-As you can see, GCSS allows you to nest rules, making it easier to read and maintain your CSS code.
-
-## Variables and Mixins
-
-GCSS supports variables and mixins for better code organization and reuse.
 
 ### Variables
 
-Variables are declared using the `$` symbol:
+Variables are declared at the top level with a `$` prefix:
 
-```css
-$primary-color: #0074d9
-$secondary-color: #b6c0ca
+```text
+$base-font: Helvetica, sans-serif
+$main-color: #0074d9
 
 body
-  background-color: $primary-color
-  color: $secondary-color
+  font-family: $base-font
+  color: $main-color
 ```
 
 ### Mixins
 
-Mixins are reusable pieces of code that can be included in other rules:
+A mixin is declared at the top level like a variable with parameters, and invoked inside a selector with the same `$name(...)` form:
 
-```css
-@mixin border-radius($radius)
+```text
+$border-radius($radius)
   -webkit-border-radius: $radius
-  -moz-border-radius: $radius
   border-radius: $radius
 
-.button
-  +border-radius(4px)
+.box
+  $border-radius(10px)
 ```
 
-## Control Structures
+Note that this is not Sass syntax: there is no `@mixin` or `@include`. Other at-rules such as `@media` or `@import` are passed through to the output.
 
-GCSS supports control structures like loops and conditionals, which can help you automate repetitive tasks.
+Declare variables and mixins before the selectors that use them. GCSS compiles the file in a single pass, so a variable used before its declaration comes out as an empty value rather than an error.
 
-### Loops
+## Compiling from Go
 
-You can use `@for` loops to iterate over a range of values:
-
-```css
-@for $i from 1 through 3
-  .col-{$i}
-    width: 100% / $i
-```
-
-### Conditionals
-
-GCSS supports `@if`, `@else if`, and `@else` conditional statements:
-
-```css
-$theme: dark
-
-body
-  @if $theme == dark
-    background-color: #333
-    color: #fff
-  @else
-    background-color: #fff
-    color: #333
-```
-
-## Integration with Golang
-
-To compile your GCSS code within a Golang application, you can use the `gcss.Compile` function:
+`gcss.Compile` reads GCSS from an `io.Reader` and writes CSS to an `io.Writer`. It returns the number of bytes written and an error:
 
 ```go
 package main
 
 import (
-  "fmt"
-  "github.com/yosssi/gcss"
-  "os"
+	"log"
+	"os"
+
+	"github.com/yosssi/gcss"
 )
 
 func main() {
-  gcssFile, err := os.Open("example.gcss")
-  if err != nil {
-    fmt.Println("Error opening GCSS file:", err)
-    return
-  }
-  defer gcssFile.Close()
+	src, err := os.Open("style.gcss")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer src.Close()
 
-  cssFile, err := os.Create("example.css")
-  if err != nil {
-    fmt.Println("Error creating CSS file:", err)
-    return
-  }
-  defer cssFile.Close()
+	dst, err := os.Create("style.css")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dst.Close()
 
-  if err := gcss.Compile(cssFile, gcssFile);err != nil {
-    fmt.Println("Error compiling GCSS:", err)
-    return
-  }
-
-  fmt.Println("GCSS compiled successfully!")
+	if _, err := gcss.Compile(dst, src); err != nil {
+		log.Fatalf("compiling GCSS: %v", err)
+	}
 }
 ```
 
-This code reads a GCSS file, compiles it to CSS, and writes the output to a new CSS file. You can customize the input and output file paths as needed.
+If you just want a `.css` file next to the source, `gcss.CompileFile` does the reading and writing for you and returns the output path:
 
-## Conclusion
+```go
+cssPath, err := gcss.CompileFile("style.gcss") // writes style.css
+if err != nil {
+	log.Fatal(err)
+}
+log.Println("wrote", cssPath)
+```
 
-GCSS is a powerful CSS preprocessor that brings modularity, DRY principles, and the speed of the Go ecosystem to your CSS development. With features like variables, mixins, control structures, and seamless integration with Golang, GCSS can help you write cleaner, more maintainable CSS code.
+## Compiling from the command line
 
-By integrating GCSS into your Golang project, you can benefit from a more efficient and streamlined CSS workflow, allowing you to focus on building beautiful and responsive user interfaces for your applications.
+```sh
+# writes style.css next to style.gcss
+gcss style.gcss
+
+# or read stdin and write stdout
+gcss < style.gcss > style.css
+```
+
+## Further reading
+
+- [GCSS on GitHub](https://github.com/yosssi/gcss)
+- [API reference on pkg.go.dev](https://pkg.go.dev/github.com/yosssi/gcss)

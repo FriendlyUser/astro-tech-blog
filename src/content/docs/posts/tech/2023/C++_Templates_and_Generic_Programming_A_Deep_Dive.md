@@ -1,168 +1,152 @@
 ---
-description: In this article, we will explore C++ templates, a powerful feature that
-  enables generic programming
+description: "How C++ function and class templates work, when to specialise them, variadic templates with fold expressions, and constraining templates with C++20 concepts."
 imgSrc: /imgs/2023/1312348161.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-22T02:43:46.000Z'
-tags: []
-title: C++ Templates and Generic Programming A Deep Dive
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: "C++ templates: function templates, class templates, specialization and variadic templates"
 ---
 
-# C++ Templates and Generic Programming: A Deep Dive
+A template is a recipe the compiler uses to generate a function or class for each set of types you use it with. You write `larger` or `Stack` once, and the compiler stamps out `larger<int>`, `Stack<double>` and so on at compile time. This is how the standard library provides `std::vector<T>` and `std::sort` for any type.
 
-In this article, we will explore C++ templates, a powerful feature that enables generic programming. We will discuss the motivation behind templates, their syntax, and their role in implementing generic algorithms and data structures. We will also touch upon some advanced topics like template specialization and variadic templates.
+From "Function templates" onward, the snippets form a single file, and the `main` at the end calls everything. Compile with `-std=c++20` (concepts need C++20, fold expressions need C++17).
 
-## Table of Contents
+## Template parameters
 
-1. [Introduction to Generic Programming](#introduction-to-generic-programming)
-2. [C++ Templates: Syntax and Basics](#c-templates-syntax-and-basics)
-3. [Template Functions](#template-functions)
-4. [Template Classes](#template-classes)
-5. [Template Specialization](#template-specialization)
-6. [Variadic Templates](#variadic-templates)
-7. [Conclusion](#conclusion)
-
-## Introduction to Generic Programming
-
-Generic programming is a programming paradigm that emphasizes writing code that is reusable and adaptable to a wide range of types. This is achieved by defining algorithms and data structures in a type-agnostic manner, allowing them to operate on various types without the need for duplicate code.
-
-In C++, templates are the primary mechanism for achieving generic programming. They enable developers to write functions and classes that can be used with different types, without explicitly specifying the types at the time of writing the code.
-
-## C++ Templates: Syntax and Basics
-
-Templates in C++ are denoted by the `template` keyword, followed by the template parameters enclosed in angle brackets (`<` and `>`). Template parameters can be either type parameters or non-type parameters.
+A template starts with `template` and a parameter list in angle brackets:
 
 ```cpp
-template<typename T>
+template <typename T>   // type parameter
+template <class T>      // same thing; typename and class are interchangeable here
+template <int N>        // non-type parameter
 ```
 
-In this example, `T` is a type parameter representing an arbitrary type. The `typename` keyword can be replaced with the `class` keyword, as they are interchangeable when defining template type parameters.
+Non-type parameters take compile-time values: integers, enums, pointers and references, and since C++20 also floating-point values and some class types. `std::array<int, 3>` uses one for its size.
+
+## Function templates
 
 ```cpp
-template<class T>
-```
+#include <concepts>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <vector>
 
-Non-type parameters are used to pass values, like integers, as template arguments. Here's an example of a non-type parameter:
-
-```cpp
-template<int N>
-```
-
-## Template Functions
-
-Template functions are functions that can operate on different types using a single implementation. They are defined by specifying the template parameters before the function definition.
-
-```cpp
-template<typename T>
-T max(T a, T b) {
+template <typename T>
+T larger(T a, T b) {
     return (a > b) ? a : b;
 }
 ```
 
-In this example, we define a generic `max` function that works with any type `T` that has the `>` operator defined. To use the function, we simply call it with the desired types:
+`larger(5, 3)` deduces `T = int`, and `larger(2.5, 4.2)` deduces `T = double`. The compiler generates one instantiation per type. Deduction must agree across arguments, so `larger(1, 2.5)` fails to compile; write `larger<double>(1, 2.5)` to pick `T` yourself.
+
+The function is named `larger` rather than `max` on purpose: with arguments from namespace `std` (such as `std::string`), argument-dependent lookup also finds `std::max`, and an unqualified call to your own `max` becomes ambiguous.
+
+## Class templates
 
 ```cpp
-int main() {
-    int a = 5, b = 3;
-    double x = 2.5, y = 4.2;
-
-    std::cout << "Max of integers: " << max(a, b) << std::endl;
-    std::cout << "Max of doubles: " << max(x, y) << std::endl;
-
-    return 0;
-}
-```
-
-The compiler will generate specific instances of the `max` function for each type used during compilation.
-
-## Template Classes
-
-Template classes enable the creation of generic data structures that can hold elements of any type. Similar to template functions, they are defined using the `template` keyword, followed by the template parameters.
-
-```cpp
-template<typename T>
+template <typename T>
 class Stack {
-private:
-    std::vector<T> data;
-
 public:
-    void push(const T& item) {
-        data.push_back(item);
-    }
+    void push(const T& item) { data_.push_back(item); }
 
     T pop() {
-        T item = data.back();
-        data.pop_back();
+        T item = std::move(data_.back());
+        data_.pop_back();
         return item;
     }
 
-    bool empty() const {
-        return data.empty();
-    }
+    bool empty() const { return data_.empty(); }
+
+private:
+    std::vector<T> data_;
 };
 ```
 
-In this example, we define a generic `Stack` class that can hold elements of any type `T`. To use the `Stack` class, we instantiate it with the desired type:
+`Stack<int>` and `Stack<double>` are two unrelated classes generated from the same template. Calling `pop()` on an empty stack is undefined behaviour because `back()` on an empty vector is, so check `empty()` first. (`std::stack` splits this into `top()` and a `pop()` that returns `void`, partly so a throwing copy can't lose an element.)
+
+## Specialization
+
+An explicit specialization replaces the generic implementation for one specific set of template arguments. Comparing two `const char*` with `>` compares addresses, not text, so `larger` gives the wrong answer for C strings. A specialization fixes that:
+
+```cpp
+template <>
+const char* larger<const char*>(const char* a, const char* b) {
+    return (std::strcmp(a, b) > 0) ? a : b;
+}
+```
+
+For function templates, a plain overload (`const char* larger(const char* a, const char* b)`) does the same job and is usually the better choice, because specializations don't take part in overload resolution and the interaction gets confusing.
+
+Class templates also support **partial** specialization, which function templates don't. This one matches every pointer type:
+
+```cpp
+template <typename T>
+struct Describe {
+    static constexpr const char* name = "value";
+};
+
+template <typename T>
+struct Describe<T*> {
+    static constexpr const char* name = "pointer";
+};
+```
+
+## Variadic templates
+
+A parameter pack (`typename... Args`) accepts zero or more template arguments. Before C++17 you processed a pack with recursion: a base case plus a function that peels off the first argument. Since C++17, a fold expression does it in one line:
+
+```cpp
+template <typename... Args>
+auto sum(Args... args) {
+    return (args + ...);
+}
+```
+
+`sum(1, 2, 3, 4, 5)` returns `15`, and `sum(1, 2.5)` returns `3.5` because the result type comes from adding the arguments. The older recursive version usually declared its return type as the type of the first argument, so `sum(1, 2.5)` silently truncated to `3`. A unary fold over `+` with an empty pack doesn't compile, so `sum()` is an error; write `(0 + ... + args)` if you need it to return `0`.
+
+## Constraining templates with concepts
+
+Templates use duck typing: `larger` compiles for any type with `>`, and a type without it produces an error deep inside the template body. C++20 concepts state the requirement up front:
+
+```cpp
+template <std::totally_ordered T>
+T larger_checked(T a, T b) {
+    return (a > b) ? a : b;
+}
+```
+
+Passing a type that isn't ordered now fails at the call site, with an error that names the unmet concept.
+
+## Putting it together
 
 ```cpp
 int main() {
-    Stack<int> intStack;
-    intStack.push(5);
-    intStack.push(3);
-    std::cout << "Popped from intStack: " << intStack.pop() << std::endl;
+    std::cout << larger(5, 3) << ' ' << larger(2.5, 4.2) << '\n';    // 5 4.2
+    std::cout << larger<double>(1, 2.5) << '\n';                      // 2.5
+    std::cout << larger<const char*>("apple", "pear") << '\n';        // pear
 
-    Stack<double> doubleStack;
-    doubleStack.push(2.5);
-    doubleStack.push(4.2);
-    std::cout << "Popped from doubleStack: " << doubleStack.pop() << std::endl;
+    Stack<int> stack;
+    stack.push(5);
+    stack.push(3);
+    std::cout << stack.pop() << '\n';                                 // 3
 
-    return 0;
+    std::cout << Describe<int>::name << ' ' << Describe<int*>::name << '\n';  // value pointer
+
+    std::cout << sum(1, 2, 3, 4, 5) << ' ' << sum(1, 2.5) << '\n';    // 15 3.5
+    std::cout << larger_checked(7, 9) << '\n';                        // 9
 }
 ```
 
-## Template Specialization
+## Gotchas
 
-Template specialization allows you to provide a specific implementation for a particular type or set of types, while still maintaining the generic implementation for other types.
+- Template definitions normally go in headers. The compiler needs the full definition at the point of instantiation, so a template defined only in a `.cpp` file causes linker errors when used from another file.
+- Every distinct set of arguments generates new code, which can increase binary size and compile times.
+- Error messages from unconstrained templates can be long; concepts make them much shorter.
 
-To specialize a template function or class, use the `template<>` keyword, followed by the function or class definition with the specific type(s) for which the specialization is intended.
+## Further reading
 
-```cpp
-template<>
-const char* max(const char* a, const char* b) {
-    return (strcmp(a, b) > 0) ? a : b;
-}
-```
-
-In this example, we provide a specialization of the `max` function for `const char*` types, which compares C-style strings using the`strcmp` function.
-
-## Variadic Templates
-
-Variadic templates allow you to define templates that accept a variable number of template arguments. They use the `...` syntax to denote a parameter pack, which is a list of zero or more template arguments. Variadic templates are particularly useful for creating type-safe functions that accept a variable number of arguments.
-
-Here's an example of a variadic template function that calculates the sum of its arguments:
-
-```cpp
-template<typename T>
-T sum(T first) {
-    return first;
-}
-
-template<typename T, typename... Args>
-T sum(T first, Args... args) {
-    return first + sum(args...);
-}
-```
-
-In this example, we use recursion to process the variable number of arguments. The base case is a single-argument `sum` function, and the recursive case is the variadic `sum` function that adds the first argument to the sum of the remaining arguments.
-
-```cpp
-int main() {
-    std::cout << "Sum of integers: " << sum(1, 2, 3, 4, 5) << std::endl;
-    std::cout << "Sum of doubles: " << sum(1.1, 2.2, 3.3) << std::endl;
-    return 0;
-}
-```
-
-## Conclusion
-
-C++ templates are a powerful feature that enables generic programming, allowing you to write reusable and adaptable code. By understanding and leveraging templates, you can create efficient and flexible algorithms and data structures that can be used with a wide range of types. This article provided an overview of the syntax and basics of C++ templates, as well as some advanced topics like template specialization and variadic templates.
+- [Templates on cppreference](https://en.cppreference.com/w/cpp/language/templates)
+- [Fold expressions](https://en.cppreference.com/w/cpp/language/fold)
+- [Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints)

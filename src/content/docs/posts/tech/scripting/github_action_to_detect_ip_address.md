@@ -1,117 +1,94 @@
 ---
-title: Github action to detect ip addresses
-description: Leveraging free apis to detect ip addresses
+title: A GitHub Action that reports the runner's public IP address and location
+description: Building a TypeScript GitHub Action that looks up the runner's public IP with jsonip.com, fetches location details for it, and exposes them as step outputs.
 alt: github action to detect ip addresses
 tags: ["typescript", "github actions"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 21 July 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/DALL·E 2023-01-07 13.46.29 - banana spaceship.png'
 ---
 
-In this article we will use jsonip and https://iplist.cc in order to gather data the requester's ip address
+:::caution
+`iplist.cc`, which the action used for IP lookups, is now a parked domain and no longer serves the API, so the published action's lookup step will fail. The `getIpInfo` example below uses [ipinfo.io](https://ipinfo.io/) instead, which has a free, token-less tier with rate limits. The action's `action.yml` also declares `using: node16`, a runtime GitHub Actions no longer provides; a maintained version would need `node24`.
+:::
 
-https://jsonip.com is a simple JSON-based API that returns the client's IP address in a JSON object. It is useful for getting the client's IP address in a web application.
+I wanted to know where GitHub-hosted runners are, so I wrote a small action that finds the runner's public IP address and looks up information about it. It calls two free HTTP APIs:
 
-Here is an example response from https://jsonip.com:
-```js
+- [jsonip.com](https://jsonip.com) returns the caller's IP address as `{"ip": "..."}`. Depending on the network this can be an IPv4 or IPv6 address.
+- An IP lookup API that returns the country, city, and network (ASN) for an address. The original action used `https://iplist.cc/api/{ip}`; the example below uses `https://ipinfo.io/{ip}/json`.
+
+An ipinfo.io response looks like this (abbreviated):
+
+```json
 {
-  "ip": "123.456.789.012"
+  "ip": "8.8.8.8",
+  "hostname": "dns.google",
+  "city": "Mountain View",
+  "region": "California",
+  "country": "US",
+  "org": "AS15169 Google LLC",
+  "timezone": "America/Los_Angeles"
 }
 ```
 
-You can send a GET request to https://jsonip.com to retrieve the client's IP address. The response will be a JSON object with a single field, "ip", which contains the client's IP address as a string.
+## Making the requests
 
-
-https://iplist.cc is a website that provides an API for retrieving information about an IP address. The API is a simple JSON-based API that returns a variety of information about the specified IP address, such as the country, region, city, time zone, latitude and longitude, and ASN (Autonomous System Number) information.
-
-You can send a GET request to https://iplist.cc/api/{ip}, where {ip} is the IP address you want to look up, to retrieve information about the IP address. The response will be a JSON object containing the information about the IP address.
-
-Here is an example response from https://iplist.cc/api/123.456.789.012:
-```
-{
-  "ip": "123.456.789.012",
-  "registry": "ARIN",
-  "countrycode": "US",
-  "countryname": "United States",
-  "asn": {
-    "code": "AS7922",
-    "name": "Comcast Cable Communications, Inc.",
-    "route": "123.456.0.0/16",
-    "start": "123.456.0.0",
-    "end": "123.456.255.255",
-    "count": "65536"
-  },
-  "spam": false,
-  "tor": false,
-  "city": "Chicago",
-  "detail": "Illinois, United States",
-  "website": [
-    "comcast.com"
-  ]
-}
-```
-
-## Implementing action
-
-First we will implement the requests using https (built-in node module).
-
-By wrapping the request in a promise, we can still use async functions in javascript and handle errors accordingly.
-
-In the future, we can build a wrapper around the promise to handle timeouts.
+Both requests use Node's built-in `https` module wrapped in a promise, so the action has no runtime dependencies besides `@actions/core`. Two details matter for error handling: network errors are emitted on the *request* object returned by `https.get`, not on the response, and `JSON.parse` can throw if the API returns an HTML error page.
 
 ```ts
-import {IPResponse} from './types'
 import https from 'https'
 
-export async function getIpAddress(): Promise<string> {
+export interface IPResponse {
+  ip: string
+  city?: string
+  region?: string
+  country?: string
+  org?: string
+  [key: string]: unknown
+}
+
+function getJson<T>(url: string): Promise<T> {
   return new Promise((resolve, reject) => {
-    https.get('https://jsonip.com', res => {
-      res.setEncoding('utf8')
-      let body = ''
-      res.on('data', data => {
-        body += data
+    https
+      .get(url, res => {
+        if (res.statusCode !== 200) {
+          res.resume()
+          reject(new Error(`${url} returned HTTP ${res.statusCode}`))
+          return
+        }
+        res.setEncoding('utf8')
+        let body = ''
+        res.on('data', chunk => {
+          body += chunk
+        })
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body) as T)
+          } catch (error) {
+            reject(error)
+          }
+        })
       })
-      res.on('end', () => {
-        const json = JSON.parse(body)
-        resolve(json.ip)
-      })
-      res.on('error', error => {
-        reject(error)
-      })
-    })
+      .on('error', reject)
   })
 }
 
-export const getIpInfo = async (ip: string): Promise<IPResponse> => {
-  return new Promise((resolve, reject) => {
-    https.get(`https://iplist.cc/api/${ip}`, res => {
-      res.setEncoding('utf8')
-      let body = ''
-      res.on('data', data => {
-        body += data
-      })
-      res.on('end', () => {
-        const json = JSON.parse(body)
-        resolve(json)
-      })
-      res.on('error', error => {
-        reject(error)
-      })
-    })
-  })
+export async function getIpAddress(): Promise<string> {
+  const json = await getJson<{ip: string}>('https://jsonip.com')
+  return json.ip
+}
+
+export async function getIpInfo(ip: string): Promise<IPResponse> {
+  return getJson<IPResponse>(`https://ipinfo.io/${ip}/json`)
 }
 ```
 
-This code defines two functions: getIpAddress and getIpInfo.
+On Node 18 and later you could replace `getJson` with the built-in `fetch`; the `https` version works on any Node release.
 
-getIpAddress makes an HTTPS GET request to the https://jsonip.com endpoint and returns the ip field from the response in JSON format as a string.
+## The action's entry point
 
-getIpInfo makes an HTTPS GET request to the https://iplist.cc/api/[ip] endpoint, where [ip] is the value passed as an argument to the function. It returns the entire response from the endpoint in JSON format.
-
-Both functions use the https module from Node.js to make the HTTP request and return a promise that resolves with the desired data or rejects with an error.
-
-
-Importing these functions into the main github action logic we get:
+The entry point gets the IP, looks it up, and sets one step output per field, plus `ip_raw` with the whole object. `core.setOutput` serialises non-string values to JSON. The `milliseconds` input and `wait` helper are left over from the [TypeScript action template](https://github.com/actions/typescript-action) the project was generated from.
 
 ```ts
 import * as core from '@actions/core'
@@ -121,79 +98,51 @@ import {wait} from './wait'
 async function run(): Promise<void> {
   try {
     const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
+    core.debug(`Waiting ${ms} milliseconds ...`) // only shown when ACTIONS_STEP_DEBUG is true
     await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-    // getIpAddress
-    // get ip
+
     const ipAddressOfRunner = await getIpAddress()
     core.debug(`ipAddressOfRunner: ${ipAddressOfRunner}`)
 
-    // get ip info
     const ipInfo = await getIpInfo(ipAddressOfRunner)
-    // output ip info
     core.notice(`ipInfo: ${JSON.stringify(ipInfo)}`)
     core.setOutput('ip_raw', ipInfo)
-    // for each property in ipInfo, set output
     for (const [key, value] of Object.entries(ipInfo)) {
       core.setOutput(key, value)
     }
     core.notice(`ip: ${ipInfo.ip}`)
-    core.notice(`country: ${ipInfo.countryname}`)
+    core.notice(`country: ${ipInfo.country}`)
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    core.setFailed(error instanceof Error ? error.message : String(error))
   }
 }
 
 run()
 ```
 
-It imports the core object from the @actions/core package, as well as the getIpAddress and getIpInfo functions from another module and the wait function from another.
+## Using the action
 
-The code defines an async function called run that does the following:
-
-1. Reads the input milliseconds from the core object and logs a debug message.
-2. Logs the current time in a debug message.
-3. Waits for the number of milliseconds specified by the milliseconds input using the wait function.
-4. Logs the current time in a debug message.
-5. Calls the getIpAddress function and stores the result in a variable called ipAddressOfRunner.
-Logs the ipAddressOfRunner in a debug message.
-6. Calls the getIpInfo function with the ipAddressOfRunner as an argument and stores the result in a variable called ipInfo.
-7. Sets the output ip_raw to the value of ipInfo.
-8. Iterates over the properties of ipInfo and sets an output for each property using the core.setOutput method.
-9. Logs a notice message with the ip and countryname properties of ipInfo.
-10. If an error occurs at any point, the catch block logs the error message using the core.setFailed method. Finally, the run function is called.
-
-### Using action
-
-```bash
+```yaml
 steps:
-  - uses: actions/checkout@v2
+  - uses: actions/checkout@v7
   - uses: FriendlyUser/ip_address_of_runner@v1.0.0
     id: ip-step
     with:
       milliseconds: 1000
-  # script output contents of ip from the step
   - run: |
-      echo "ip: ${{ steps.ip-step.outputs.ip_raw }}"
+      echo "raw: ${{ steps.ip-step.outputs.ip_raw }}"
       echo "ip: ${{ steps.ip-step.outputs.ip }}"
-      echo "ip: ${{ steps.ip-step.outputs.countryname }}"
+      echo "country: ${{ steps.ip-step.outputs.countryname }}"
 ```
 
-This is a GitHub Actions workflow. It looks like this workflow is checking out the code repository and running a step called "ip_address_of_runner" from an action called "FriendlyUser/ip_address_of_runner@v1.0.0". This step is given an id of "ip-step" and is passed an input called "milliseconds" with a value of "1000".
+Outputs are named after the fields in the lookup response, so with the original iplist.cc API the country was in `countryname`; with ipinfo.io it would be `country`. A run in 2023 printed a US address for the runner:
 
-After the step has run, the workflow echoes the contents of the "ip_raw", "ip", and "countryname" outputs from the "ip-step". These outputs are likely provided by the "FriendlyUser/ip_address_of_runner@v1.0.0" action.
-
-The output is
-
-```bash
+```text
 ip: 104.45.204.209
-ip: United States of America
+country: United States of America
 ```
 
-To view the full github action please visit
+## Source
 
-* https://github.com/FriendlyUser/ip_address_of_runner
-* https://github.com/marketplace/actions/ip_address_of_runner
+- https://github.com/FriendlyUser/ip_address_of_runner
+- https://github.com/marketplace/actions/ip_address_of_runner

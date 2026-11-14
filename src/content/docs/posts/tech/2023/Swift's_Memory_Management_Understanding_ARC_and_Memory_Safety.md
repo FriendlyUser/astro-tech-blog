@@ -1,178 +1,204 @@
 ---
-description: In this article, we will delve into the details of Swift's memory management,
-  focusing on Automatic Reference Counting (ARC) and memory safety mechanisms
+description: How Automatic Reference Counting frees Swift class instances, how to break reference cycles with weak and unowned, and what exclusive access and actors protect against.
 imgSrc: /imgs/2023/music_album.jpg
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-24T02:51:50.000Z'
-tags: []
-title: Swift's Memory Management Understanding ARC and Memory Safety
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift memory management: ARC, reference cycles and exclusive access"
 ---
 
-# Swift's Memory Management: Understanding ARC and Memory Safety
+Swift has no tracing garbage collector. Class instances are freed by Automatic Reference Counting (ARC): the compiler inserts retain and release calls, and an instance is deallocated as soon as its last strong reference goes away. Value types (structs, enums) aren't reference counted at all; they're copied. ARC is deterministic and cheap, but it can't detect cycles, so that part is your job.
 
-Swift is a powerful and versatile programming language developed by Apple for iOS, macOS, watchOS, and tvOS app development. One of the key aspects of Swift is its efficient and safe memory management system. In this article, we will delve into the details of Swift's memory management, focusing on Automatic Reference Counting (ARC) and memory safety mechanisms.
+## How ARC works
 
-## Overview of Swift's Memory Management
-
-Swift's memory management is built on two key concepts:
-
-1. **Automatic Reference Counting (ARC)**: Swift's primary mechanism for managing memory, which automatically manages the memory for instances of classes.
-2. **Memory Safety**: Swift's approach to preventing common memory-related issues, such as accessing deallocated memory or data races.
-
-Let's explore these concepts in more detail.
-
-## Automatic Reference Counting (ARC)
-
-ARC is a memory management technique that Swift uses to automatically track and manage the memory used by instances of classes. ARC determines when an instance is no longer needed and deallocates the memory it occupies, ensuring that memory is used efficiently while avoiding leaks.
-
-### How ARC Works
-
-When you create a new instance of a class, ARC allocates a chunk of memory to store information about that instance. This information includes the instance's type, stored property values, and any references to other instances.
-
-ARC keeps track of the number of "strong references" to each instance. A strong reference is a reference that implies ownership and prevents the instance from being deallocated. When the number of strong references to an instance drops to zero, ARC deallocates the instance and frees up its memory.
-
-### ARC in Practice
-
-Consider the following example:
+Each class instance keeps a count of strong references to it. Assigning the instance to a variable, property or constant adds one; that reference going away (reassigned, set to `nil`, or out of scope) removes one. At zero, `deinit` runs and the memory is freed.
 
 ```swift
 class Person {
     let name: String
-    
+    var apartment: Apartment?
+
     init(name: String) {
         self.name = name
     }
-    
+
     deinit {
-        print("\(name) is being deallocated.")
+        print("\(name) is being deallocated")
     }
 }
 
-var person1: Person? = Person(name: "Alice")
-var person2: Person? = person1
+var person1: Person? = Person(name: "Alice")  // 1 strong reference
+var person2: Person? = person1                // 2
+
+person1 = nil  // 1
+person2 = nil  // 0, prints "Alice is being deallocated"
 ```
 
-In this example, we create a new `Person` instance and assign it to `person1`. ARC allocates memory for this instance and sets the reference count to 1. When we assign `person1` to `person2`, ARC increases the reference count to 2. Both `person1` and `person2` have strong references to the same `Person` instance.
+## Reference cycles
 
-If we set both `person1` and `person2` to `nil`, ARC decreases the reference count to 0 and deallocates the `Person` instance:
-
-```swift
-person1 = nil
-person2 = nil // Prints "Alice is being deallocated."
-```
-
-### Strong Reference Cycles
-
-ARC can lead to strong reference cycles, where two or more instances have strong references to each other, preventing them from being deallocated. To resolve these cycles, Swift provides weak and unowned references.
-
-#### Weak References
-
-A weak reference is a reference that does not keep an instance alive. It can be used to break reference cycles. When the instance it refers to is deallocated, the weak reference is automatically set to `nil`. To create a weak reference, use the `weak` keyword:
+If two instances hold strong references to each other, neither count ever reaches zero and both leak. Add an `Apartment` with a `tenant` property:
 
 ```swift
 class Apartment {
     let unit: String
-    weak var tenant: Person?
-    
+    weak var tenant: Person?   // weak breaks the cycle
+
     init(unit: String) {
         self.unit = unit
     }
-    
+
     deinit {
-        print("Apartment \(unit) is being deallocated.")
+        print("Apartment \(unit) is being deallocated")
     }
 }
+
+var john: Person? = Person(name: "John")
+var unit4A: Apartment? = Apartment(unit: "4A")
+
+john!.apartment = unit4A
+unit4A!.tenant = john
+
+john = nil    // prints "John is being deallocated"
+unit4A = nil  // prints "Apartment 4A is being deallocated"
 ```
 
-#### Unowned References
+Without `weak`, setting both variables to `nil` would print nothing: the two objects keep each other alive.
 
-An unowned reference is similar to a weak reference, but it does not become `nil` when the instance it refers to is deallocated. Unowned references should be used when the reference will always have a value and the instance has the same or longer lifetime. To create an unowned reference, use the `unowned` keyword:
+### weak
+
+A `weak` reference doesn't add to the count. When the instance is deallocated, ARC sets the weak reference to `nil`, so it must be an optional `var`. Use it when the other object can go away first (a tenant can move out; a view controller's delegate can be released).
+
+### unowned
+
+An `unowned` reference also doesn't add to the count, but it isn't set to `nil`. Use it when the referenced object always lives at least as long as the referencing one. Accessing an `unowned` reference after the object is gone is a guaranteed runtime crash, not undefined behaviour:
 
 ```swift
 class Customer {
     let name: String
-    var creditCard: CreditCard?
-    
+    var card: CreditCard?
+
     init(name: String) {
         self.name = name
     }
-    
+
     deinit {
-        print("\(name) is being deallocated.")
+        print("\(name) is being deallocated")
     }
 }
 
 class CreditCard {
     let number: UInt64
-    unowned let owner: Customer
-    
-    init(number: UInt64, owner: Customer) {
+    unowned let customer: Customer  // a card never outlives its customer
+
+    init(number: UInt64, customer: Customer) {
         self.number = number
-        self.owner = owner
+        self.customer = customer
     }
-    
+
     deinit {
-        print("CreditCard #\(number) is being deallocated.")
+        print("Card #\(number) is being deallocated")
     }
 }
+
+var alice: Customer? = Customer(name: "Alice")
+alice!.card = CreditCard(number: 1234_5678_9012_3456, customer: alice!)
+alice = nil
+// Alice is being deallocated
+// Card #1234567890123456 is being deallocated
 ```
 
-## Memory Safety
+### Closures
 
-Swift provides several memory safety features to prevent common memory-related issues:
-
-1. **Value Semantics**: Swift uses value semantics for simple data types, such as `Int`, `Double`, and `Bool`, as well as for complex types like `Array`, `Dictionary`, and `Set`. This means that when you assign a value to a variable or pass it as a function argument, a copy of the value is created, preventing unintended data sharing.
-
-2. **Exclusive Access to Memory**: Swift enforces exclusive access to memory, meaning that a variable cannot be accessed for both reading andwriting simultaneously. This prevents data races, which can occur when multiple threads access the same memory simultaneously, leading to unpredictable behavior.
-
-Consider the following example:
+Closures are reference types too. A closure stored on an object that captures `self` strongly is the most common cycle in app code. Break it with a capture list:
 
 ```swift
-func increment(_ x: inout Int) {
-    x += 1
-}
+class Downloader {
+    var onFinish: (() -> Void)?
+    var fileName = "report.pdf"
 
-var value = 0
-increment(&value) // Here, the `increment` function has exclusive access to `value`.
+    func start() {
+        onFinish = { [weak self] in
+            guard let self else { return }
+            print("Finished \(self.fileName)")
+        }
+    }
+}
 ```
 
-Swift ensures exclusive access to memory at both compile-time and run-time. At compile-time, Swift uses static analysis to detect potential violations of the exclusive access rule. At run-time, Swift uses dynamic checks to detect and prevent data races.
+Xcode's Memory Graph debugger and Instruments' Leaks tool will show cycles you missed.
 
-### DispatchQueue and Thread Safety
+## Memory safety
 
-Swift's `DispatchQueue` class provides a way to execute tasks concurrently and safely using a system called Grand Central Dispatch (GCD). GCD manages the execution of tasks on multiple threads, ensuring that tasks are executed in a safe and efficient manner.
+ARC stops you from using freed objects. Swift also has rules that stop other classes of memory bugs.
 
-Here's an example of using `DispatchQueue` to safely update a shared resource:
+### Value semantics
+
+Structs, enums, and the standard library's `Array`, `Dictionary`, `Set` and `String` are value types. Assigning one or passing it to a function gives the receiver its own logical copy, so a change in one place can't show up somewhere else. The collections use copy-on-write: the storage is shared until one side mutates it, so copies are cheap until then.
+
+### Exclusive access
+
+Swift doesn't allow a variable to be modified while something else is reading or writing it. The classic case is an `inout` argument that overlaps with another access to the same variable:
+
+```swift
+var stepSize = 1
+
+func increment(_ number: inout Int) {
+    number += stepSize   // reads stepSize while it's being written via `number`
+}
+
+increment(&stepSize)
+// Runtime error: simultaneous accesses to stepSize
+```
+
+The compiler catches violations it can see statically (such as passing the same variable to two `inout` parameters) and inserts runtime checks for the rest. Since Swift 5 those runtime checks are on in release builds as well as debug.
+
+Exclusivity enforcement is about overlapping accesses, mostly within a single thread. It does not detect data races between threads. For that, use Thread Sanitizer or the compile-time data race checking in the Swift 6 language mode.
+
+## Sharing state between threads
+
+The traditional approach is a serial `DispatchQueue` (from Grand Central Dispatch, part of Apple's Dispatch library rather than the Swift language) guarding the state:
 
 ```swift
 import Dispatch
 
-class Counter {
+final class Counter {
     private var count = 0
-    private let queue = DispatchQueue(label: "com.example.CounterQueue")
-    
+    private let queue = DispatchQueue(label: "com.example.counter")
+
     func increment() {
-        queue.sync {
-            count += 1
-        }
+        queue.sync { count += 1 }
     }
-    
-    func getCount() -> Int {
-        return queue.sync {
-            return count
-        }
+
+    func value() -> Int {
+        queue.sync { count }
     }
 }
 
 let counter = Counter()
 counter.increment()
-print(counter.getCount()) // Prints "1"
+print(counter.value()) // 1
 ```
 
-In this example, we use a serial `DispatchQueue` to synchronize access to the `count` property, ensuring that it is updated safely, even when accessed concurrently.
+With Swift concurrency (Swift 5.5 and later), an `actor` does the same job and the compiler enforces it: code outside the actor must `await` to touch its state.
 
-## Conclusion
+```swift
+actor SafeCounter {
+    private var count = 0
 
-Swift's memory management, built on ARC and memory safety mechanisms, provides an efficient and safe environment for app development. ARC automatically manages memory for instances of classes, while memory safety features like value semantics and exclusive access to memory help prevent common memory-related issues.
+    func increment() { count += 1 }
+    func value() -> Int { count }
+}
 
-By understanding the concepts of ARC, weak and unowned references, and memory safety mechanisms like exclusive access and `DispatchQueue`, you can write more efficient and safer Swift code, ensuring a better experience for both developers and users.
+let safeCounter = SafeCounter()
+await safeCounter.increment()
+print(await safeCounter.value()) // 1
+```
+
+(Top-level `await` works in a `main.swift` file or a script; elsewhere, call these from an `async` function or a `Task`.)
+
+## Further reading
+
+- [Automatic Reference Counting](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/)
+- [Memory Safety](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/memorysafety/)
+- [Concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/)

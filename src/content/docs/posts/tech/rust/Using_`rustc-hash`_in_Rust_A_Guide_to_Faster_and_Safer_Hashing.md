@@ -1,96 +1,128 @@
 ---
-title: Using `rustc-hash` in Rust A Guide to Faster and Safer Hashing
+title: Faster hash maps in Rust with rustc-hash (FxHashMap)
 pubDate: "2023-04-22T16:25:04.921Z"
-description: "This article will discuss the benefits of using `rustc-hash` and provide a tutorial on how to use it in your Rust projects."
-tags: []
+lastUpdated: 2026-11-14
+description: "Swap std's SipHash-based HashMap for rustc-hash's FxHashMap, benchmark the two with Criterion, and know when the faster non-DoS-resistant hasher is a bad idea."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using `rustc-hash` in Rust: A Guide to Faster and Safer Hashing
 
-Rust is known for its focus on performance and memory safety. However, when it comes to hashing, the standard library's `std::collections::HashMap` can sometimes lead to performance bottlenecks. This is where the `rustc-hash` crate comes into play. This article will discuss the benefits of using `rustc-hash` and provide a tutorial on how to use it in your Rust projects.
+`std::collections::HashMap` hashes keys with SipHash 1-3 and a random seed. That makes it
+resistant to hash-flooding (HashDoS) attacks, but it is relatively slow for small keys such as
+integers. [`rustc-hash`](https://crates.io/crates/rustc-hash) is the hasher the Rust compiler
+uses instead: a fast, non-cryptographic hash, exposed as `FxHashMap` and `FxHashSet`. The
+compiler doesn't hash untrusted input, so it trades DoS resistance for speed.
 
-## Why Use `rustc-hash`?
+The hasher is still called `FxHasher` because the crate originally used the "Fx" hash from
+Firefox. Since 2.0 the algorithm has been replaced by a polynomial hash designed by Orson
+Peters (with a separate, wyhash-inspired function for strings and byte slices); the name stayed
+for compatibility.
 
-`rustc-hash` is a fast, non-cryptographic hashing library that was initially developed for use within the Rust compiler. It has since been extracted into a standalone crate, making it available for general use. Its key benefits include:
-
-1. **Performance**: `rustc-hash` uses the FxHash algorithm, which is optimized for performance on small keys, such as integers and strings. This makes it well-suited for many common use cases.
-
-2. **Deterministic output**: Unlike some other hashing algorithms, FxHash produces the same output across different platforms and Rust versions. This can help you avoid hard-to-debug issues due to non-deterministic behavior.
-
-3. **Minimal dependencies**: `rustc-hash` has no dependencies, which is a major advantage for projects that want to minimize their dependency tree.
-
-## How to Use `rustc-hash`
-
-To start using `rustc-hash` in your Rust project, you'll need to add it to your `Cargo.toml` file:
+## Adding the crate
 
 ```toml
 [dependencies]
-rustc-hash = "1.1.0"
+rustc-hash = "2.1"
 ```
 
-Next, let's see how to utilize `rustc-hash` in your Rust code. First, import the necessary items:
+The examples were checked against rustc-hash 2.1.3. The crate has no required dependencies (`rand` is
+optional, behind the `rand` feature) and works in `no_std` with `default-features = false`.
+
+## Using `FxHashMap`
+
+`FxHashMap<K, V>` is a type alias for `HashMap<K, V, FxBuildHasher>`, so it has the full
+`HashMap` API. The one difference: create it with `default()` (or
+`with_capacity_and_hasher`), because `HashMap::new()` only exists for the default `RandomState`
+hasher.
 
 ```rust
 use rustc_hash::FxHashMap;
-use std::collections::hash_map::Entry;
-```
 
-Now, let's create a simple example that demonstrates the usage of `FxHashMap`:
-
-```rust
 fn main() {
-    let mut word_count = FxHashMap::default();
+    let mut word_count: FxHashMap<&str, u32> = FxHashMap::default();
 
     let text = "the quick brown fox jumps over the lazy dog";
     for word in text.split_whitespace() {
-        let count = word_count.entry(word).or_insert(0);
-        *count += 1;
+        *word_count.entry(word).or_insert(0) += 1;
     }
 
     println!("{:?}", word_count);
+    assert_eq!(word_count["the"], 2);
 }
 ```
 
-In this example, we create a word count dictionary using `FxHashMap`. The code iterates over the words in the given `text` and updates the count of each word in the `word_count` map. When run, the program will output the following:
+This prints all eight words with their counts on one line, for example
+`{"the": 2, "fox": 1, ...}`. Iteration order is unspecified, so don't rely on it.
 
-```
-{
-    "the": 2, "quick": 1, "brown": 1, "fox": 1, "jumps": 1, "over": 1, "lazy": 1, "dog": 1
-}
-```
-
-## Comparing `rustc-hash` to `std::collections::HashMap`
-
-To better understand the performance difference between `rustc-hash` and the standard `HashMap`, we can create a simple benchmark comparing the two.
+To size the map up front:
 
 ```rust
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rand::Rng;
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxBuildHasher, FxHashMap};
+
+fn main() {
+    let mut map: FxHashMap<u64, u64> =
+        FxHashMap::with_capacity_and_hasher(10_000, FxBuildHasher);
+    map.insert(1, 2);
+    assert!(map.capacity() >= 10_000);
+}
+```
+
+## Benchmarking against `std::collections::HashMap`
+
+Don't take speed-up claims on trust; measure with your own key types. A
+[Criterion](https://crates.io/crates/criterion) benchmark needs a dev-dependency and a `[[bench]]`
+entry with the default test harness turned off:
+
+```toml
+[dev-dependencies]
+criterion = "0.8"
+
+[[bench]]
+name = "hashmaps"
+harness = false
+```
+
+Then create `benches/hashmaps.rs`:
+
+```rust
 use std::collections::HashMap;
+use std::hint::black_box;
+
+use criterion::{criterion_group, criterion_main, Criterion};
+use rustc_hash::FxHashMap;
+
+/// 10,000 pseudo-random keys from a simple LCG, so no `rand` dependency is needed.
+fn keys() -> Vec<u32> {
+    let mut x: u32 = 12_345;
+    (0..10_000)
+        .map(|_| {
+            x = x.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            x % 1_000_000
+        })
+        .collect()
+}
 
 fn benchmark(c: &mut Criterion) {
-    let mut rng = rand::thread_rng();
-    let keys: Vec<i32> = (0..10_000).map(|_| rng.gen_range(0..1_000_000)).collect();
+    let keys = keys();
 
-    c.bench_function("rustc-hash", |b| {
+    c.bench_function("FxHashMap", |b| {
         b.iter(|| {
             let mut map = FxHashMap::default();
             for &key in &keys {
-                *map.entry(key).or_insert(0) += 1;
+                *map.entry(key).or_insert(0u32) += 1;
             }
-            black_box(&map);
+            black_box(map)
         })
     });
 
-    c.bench_function("std::collections::HashMap", |b| {
+    c.bench_function("std HashMap", |b| {
         b.iter(|| {
             let mut map = HashMap::new();
             for &key in &keys {
-                *map.entry(key).or_insert(0) += 1;
+                *map.entry(key).or_insert(0u32) += 1;
             }
-            black_box(&map);
+            black_box(map)
         })
     });
 }
@@ -99,8 +131,25 @@ criterion_group!(benches, benchmark);
 criterion_main!(benches);
 ```
 
-Running this benchmark will likely show that `rustc-hash` outperforms the standard `HashMap` for this use case.
+Run it with `cargo bench`. Criterion 0.8 deprecates its own `black_box` in favour of
+`std::hint::black_box`, which is what the example uses. For small integer keys like these,
+`FxHashMap` is typically noticeably faster, but the size of the gap depends on your CPU, key type
+and map size.
 
-It's important to note that `rustc-hash` is not suitable for all applications. For example, if you need a cryptographically secure hash, you should use a dedicated cryptographic hashing library instead. Additionally, FxHash may be susceptible to hash collision attacks in untrusted contexts.
+## When not to use it
 
-In conclusion, `rustc-hash` is an excellent choice for many Rust applications requiring fast, deterministic hashing with minimal dependencies. By leveraging its performance characteristics, you can optimize your Rust applications for various use cases.
+- **Untrusted keys.** `FxHasher` is not seeded randomly, so anyone who can choose the keys
+  (HTTP headers, JSON object keys, user IDs from the network) can craft collisions and turn
+  O(1) lookups into O(n). Keep the default `HashMap` there. The crate's optional `rand` feature adds
+  `FxHashMapRand` with a random seed, but that doesn't make the hash cryptographically strong.
+- **Cryptographic use.** It is not a cryptographic hash. Use a crate such as `sha2` or `blake3`.
+- **Persisted or cross-platform hash values.** The output depends on pointer width (32-bit and
+  64-bit targets use different constants) and has changed between crate versions (2.0 replaced the
+  algorithm and 2.1.1 changed it again). Don't store `FxHasher` values or send them between
+  machines.
+
+## Further reading
+
+- [rustc-hash on docs.rs](https://docs.rs/rustc-hash)
+- [rustc-hash changelog](https://github.com/rust-lang/rustc-hash/blob/main/CHANGELOG.md)
+- [The Rust Performance Book: Hashing](https://nnethercote.github.io/perf-book/hashing.html)

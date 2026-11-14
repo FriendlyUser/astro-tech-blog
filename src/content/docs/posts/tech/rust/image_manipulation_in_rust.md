@@ -1,142 +1,116 @@
 ---
-title: Image manipulation in Rust
-description: In this article, we will explore how to create a basic image manipulation library in Rust. We will use the image crate for handling different image formats and implement basic image operations like resizing, rotating, and adjusting brightness/contrast..
+title: Resize, rotate and adjust brightness of images in Rust with the image crate
+description: Build a small Rust library with the image and imageproc crates that loads, resizes, rotates, brightens and adjusts the contrast of images, then saves the results.
 pubDate: Saturday, 24 November 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/2543580613.png'
 ---
 
-Introduction
+The [`image`](https://crates.io/crates/image) crate is the standard way to read, write and edit raster images in pure Rust. It decodes common formats (PNG, JPEG, GIF, WebP, BMP, TIFF and more) into a `DynamicImage` and has methods for resizing, flipping, 90° rotations, blurring and colour adjustments. For anything beyond that, such as rotation by an arbitrary angle, the companion [`imageproc`](https://crates.io/crates/imageproc) crate adds more operations.
 
-Image manipulation is a common task in many applications, from image editing software to computer vision systems. In this article, we will explore how to create a basic image manipulation library in Rust. We will use the image crate for handling different image formats and implement basic image operations like resizing, rotating, and adjusting brightness/contrast.
+This post wraps a few of those operations in a small library crate and calls it from a binary. It's written against `image` 0.25.10 and `imageproc` 0.27.0.
 
-Setting up the Project
-
-To get started, we need to set up a new Rust project. To create a new Rust project, open a terminal window and run the following command:
-
-```
-$ cargo new image_manipulation_lib
-```
-
-This command will create a new Rust project named `image_manipulation_lib`. The project will contain a `Cargo.toml` file that describes the project's dependencies and a `src` directory that contains the project's source code.
-
-The `Cargo.toml` file will look like this:
-
-```toml
-[package]
-name = "image_manipulation_lib"
-version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
-edition = "2018"
-
-[dependencies]
-```
-
-We will add dependencies to the `Cargo.toml` file as we need them.
-
-Loading and Saving Images
-
-To load and save images, we will use the image crate. The image crate provides a simple and convenient API for handling different image formats.
-
-We will create a function named `load_image` that will load an image from a file and return an `image::DynamicImage` object.
-
-```rust
-use image::{DynamicImage, ImageResult, io::Reader};
-
-fn load_image(path: &str) -> ImageResult<DynamicImage> {
-    Reader::open(path)?.decode()
-}
-```
-
-In this function, we use the `io::Reader` struct to open the image file and decode it into a `DynamicImage` object.
-
-We will also create a function named `save_image` that will save an image to a file.
-
-```rust
-use image::{DynamicImage, ImageResult, io::Writer};
-
-fn save_image(image: &DynamicImage, path: &str) -> ImageResult<()> {
-    Writer::open(path)?.write_image(image)
-}
-```
-
-In this function, we use the `io::Writer` struct to open a file for writing and write the image data to the file.
-
-Resizing Images
-
-To resize an image, we will use the `resize` method of the `DynamicImage` object. We will create a function named `resize_image` that will take an image and new width and height values as parameters and return the resized image.
-
-```rust
-use image::{DynamicImage, ImageResult, GenericImageView};
-
-fn resize_image(image: &DynamicImage, width: u32, height: u32) -> DynamicImage {
-    image.resize(width, height, image::imageops::FilterType::Lanczos3)
-}
-```
-
-In this function, we use the `resize` method of the `DynamicImage` object to resize the image. We specify the new width and height values and the `Lanczos3` filter type, which provides high-quality resizing.
-
-Rotating Images
-
-To rotate an image, we will use the `rotate` method of the `DynamicImage` object. We will create a function named `rotate_image` that will take an image and an angle value as parameters and return the rotated image.
-
-```rust
-use image::{DynamicImage, ImageResult, GenericImageView};
-
-fn rotate_image(image: &DynamicImage, angle: f32) -> DynamicImage {
-    image.rotate(angle, image::imageops::FilterType::Lanczos3)
-}
-```
-
-In this function, we use the `rotate` method of the `DynamicImage` object to rotate the image. We specify the rotation angle and the `Lanczos3` filter type.
-
-Adjusting Brightness and Contrast
-
-To adjust the brightness and contrast of an image, we will use the `adjust_contrast` and `brighten` methods of the `DynamicImage` object. We will create a function named `adjust_image` that will take an image, brightness value, and contrast value as parameters and return the adjusted image.
-
-```rust
-use image::{DynamicImage, ImageResult, GenericImageView};
-
-fn adjust_image(image: &DynamicImage, brightness: i32, contrast: f32) -> DynamicImage {
-    let adjusted = image.brighten(brightness);
-    adjusted.adjust_contrast(contrast)
-}
-```
-
-In this function, we first use the `brighten` method of the `DynamicImage` object to adjust the brightness of the image. We then use the `adjust_contrast` method to adjust the contrast of the image.
-
-Testing the Library
-
-Now that we have implemented the image manipulation library, we can test it by writing a simple Rust program that uses it. We will create a new Rust file named `main.rs` in the `src` directory and add the following code:
-
-```rust
-use image_manipulation_lib::{load_image, save_image, resize_image, rotate_image, adjust_image};
-
-fn main() {
-    let image_path = "path/to/image.jpg";
-
-    let image = load_image(image_path).unwrap();
-    let resized_image = resize_image(&image, 800, 600);
-    let rotated_image = rotate_image(&image, 45.0);
-    let adjusted_image = adjust_image(&image, 20, 1.5);
-
-    save_image(&resized_image, "path/to/resized_image.jpg").unwrap();
-    save_image(&rotated_image, "path/to/rotated_image.jpg").unwrap();
-    save_image(&adjusted_image, "path/to/adjusted_image.jpg").unwrap();
-}
-```
-
-In this program, we first load an image using the `load_image` function. We then create resized, rotated, and adjusted versions of the image using the `resize_image`, `rotate_image`, and `adjust_image` functions, respectively. Finally, we save the modified images to files using the `save_image` function.
-
-To run the program, open a terminal window, navigate to the project directory, and run the following command:
+## Setting up the project
 
 ```bash
-$ cargo run
+cargo new image_manipulation_lib
+cd image_manipulation_lib
+cargo add image@0.25 imageproc@0.27
 ```
 
-This will compile and run the program, which will load an image, create modified versions of it, and save them to files.
+`Cargo.toml` ends up with:
 
-Conclusion
+```toml
+[dependencies]
+image = "0.25"
+imageproc = "0.27"
+```
 
-In this article, we have explored how to create a basic image manipulation library in Rust. We have used the image crate for handling different image formats and implemented basic image operations like resizing, rotating, and adjusting brightness/contrast. With this knowledge, you can now create your own Rust image manipulation applications and explore the full potential of this powerful programming language.
+We'll put the functions in `src/lib.rs` and the program that uses them in `src/main.rs`. Cargo builds both, and the binary can import the library by the package name.
+
+## The library
+
+`src/lib.rs`:
+
+```rust
+use image::imageops::FilterType;
+use image::{DynamicImage, ImageResult, Rgba};
+use imageproc::geometric_transformations::{rotate_about_center, Border, Interpolation};
+
+/// Load an image; the format is chosen from the file extension.
+pub fn load_image(path: &str) -> ImageResult<DynamicImage> {
+    image::open(path)
+}
+
+/// Save an image; the format is chosen from the file extension.
+pub fn save_image(image: &DynamicImage, path: &str) -> ImageResult<()> {
+    image.save(path)
+}
+
+/// Resize to fit within `width` x `height`, keeping the aspect ratio.
+pub fn resize_image(image: &DynamicImage, width: u32, height: u32) -> DynamicImage {
+    image.resize(width, height, FilterType::Lanczos3)
+}
+
+/// Rotate clockwise by `degrees` around the centre. The output keeps the
+/// original size, so corners are cropped and uncovered areas are transparent.
+pub fn rotate_image(image: &DynamicImage, degrees: f32) -> DynamicImage {
+    let rgba = image.to_rgba8();
+    let rotated = rotate_about_center(
+        &rgba,
+        degrees.to_radians(),
+        Interpolation::Bilinear,
+        Border::Constant(Rgba([0, 0, 0, 0])),
+    );
+    DynamicImage::ImageRgba8(rotated)
+}
+
+/// Brighten by `brightness` (negative values darken), then change contrast
+/// by `contrast` (positive increases, negative decreases).
+pub fn adjust_image(image: &DynamicImage, brightness: i32, contrast: f32) -> DynamicImage {
+    image.brighten(brightness).adjust_contrast(contrast)
+}
+```
+
+A few notes on the API:
+
+- `image::open` picks the decoder from the file extension. If you need more control (guessing the format from the file contents, decoder limits), use `image::ImageReader` instead. It replaced `image::io::Reader`; the `io` module is deprecated in 0.25.
+- `DynamicImage::save` picks the encoder from the extension. There's no separate writer type to open first.
+- `resize` preserves the aspect ratio, so an 800x600 target on a portrait image gives something narrower than 800 pixels. Use `resize_exact` to stretch to the exact size, or `resize_to_fill` to crop.
+- `DynamicImage` only has fixed rotations (`rotate90`, `rotate180`, `rotate270`). For other angles we use `imageproc::geometric_transformations::rotate_about_center`, which takes radians and works on a concrete pixel type, so we convert to RGBA first. `Border::Constant` sets what fills the corners that end up outside the source image.
+- `brighten` takes an `i32` added to each channel; `adjust_contrast` takes an `f32` where 0 means no change.
+
+## Using the library
+
+`src/main.rs`:
+
+```rust
+use image_manipulation_lib::{adjust_image, load_image, resize_image, rotate_image, save_image};
+
+fn main() -> image::ImageResult<()> {
+    let image = load_image("input.jpg")?;
+
+    save_image(&resize_image(&image, 800, 600), "resized.jpg")?;
+    // JPEG has no alpha channel, so save the RGBA rotation as PNG.
+    save_image(&rotate_image(&image, 45.0), "rotated.png")?;
+    save_image(&adjust_image(&image, 20, 15.0), "adjusted.jpg")?;
+
+    Ok(())
+}
+```
+
+Put an `input.jpg` in the project root and run:
+
+```bash
+cargo run --release
+```
+
+Use `--release` for image work. Debug builds of the resampling and pixel loops are many times slower, which is noticeable on large photos.
+
+## Where to go next
+
+- Other `DynamicImage` methods worth knowing: `crop_imm`, `thumbnail` (fast, lower quality than `resize`), `blur`, `grayscale`, `huerotate`, `fliph`/`flipv`.
+- `imageproc` also has drawing (lines, shapes, text), filters, edge detection and morphology.
+- [`image` docs](https://docs.rs/image) and [`imageproc` docs](https://docs.rs/imageproc)

@@ -1,140 +1,153 @@
 ---
 pubDate: "2024-05-30T10:00:00.000Z"
-title: "Optimizing Web Scraping with Proxy Integration: Techniques and Tools"
-description: "Explore how proxies can transform your web scraping projects by providing anonymity, overcoming geo-restrictions, and avoiding rate limits; includes a step-by-step guide on scraping proxies using Python."
+lastUpdated: 2026-11-14
+title: "Scraping a free proxy list and rotating proxies with Python requests"
+description: "Why scrapers use proxies, how to pull IP:port pairs from a proxy list page with requests and BeautifulSoup, check which ones work, and rotate them."
 tags: ["Web Scraping", "Proxies", "Python", "Data Collection", "Backend Development", "Programming", "Software Development", "BeautifulSoup", "Requests"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark-room-Lhzabp9UrSU"
 ---
 
-## Leveraging Proxies for Enhanced Web Scraping
+A proxy forwards your requests, so the target site sees the proxy's IP address instead of yours. Scrapers use them for two main reasons:
 
-In the ever-evolving landscape of web scraping, proxies stand as a pivotal tool for data scientists, marketers, and developers aiming to gather information efficiently while mitigating the risks of IP bans and geo-restrictions. This article delves into the benefits of using proxies, outlines a method for obtaining them through web scraping, and discusses the countermeasures websites employ to thwart scraping efforts.
+- **Per-IP rate limits and blocks.** Spreading requests over several IPs keeps each one under the site's limit, and a ban on one IP doesn't stop the whole job.
+- **Location.** Some content is only served to visitors from certain countries, and a proxy in that country lets you see it.
 
-### Why Use Proxies in Web Scraping?
+This post scrapes a public proxy list, filters it down to proxies that actually respond, and rotates through them with `requests`.
 
-1. **Anonymity and Privacy**: Proxies mask your real IP address, which is crucial for maintaining anonymity and reducing the likelihood of being blocked or traced by website administrators.
-2. **Circumventing Geo-restrictions**: Certain content and services on the web are geo-restricted. Proxies, especially those from different geographical locations, can provide access to this restricted content by appearing as local users.
-3. **Rate Limit Avoidance**: Many websites have limits on how many requests can be made from a single IP in a given timeframe. Using multiple proxies allows you to distribute your requests over several IPs, effectively bypassing these limits.
-4. **Balancing Load**: Spreading requests across multiple proxies can reduce the load on any single server, thereby speeding up data collection and reducing the risk of server overload.
+## Scrape the proxy list
 
-### How to Obtain Proxies Through Web Scraping
+Most free proxy list sites show an HTML table with the IP in the first column and the port in the second. The selectors below assume that layout. Inspect the page you're targeting and adjust the table lookup and column indexes.
 
-Web scraping for proxies involves extracting proxy IP addresses and ports from various websites that list such information. Here’s a simplified explanation of how you can use Python to scrape proxies:
-
-#### Tools and Libraries Required
-
-- **Requests**: To send HTTP requests to proxy listing websites.
-- **BeautifulSoup**: For parsing HTML and XML documents.
-- **Random User Agent**: To vary user-agent strings and reduce the chance of detection.
-- **Base64**: For decoding encoded information that may contain proxy details.
-
-#### Steps to Scrape Proxies
-
-1. **Setup Requests Session**: Initialize a session and set a random user-agent to mimic a real user's browser behavior.
-
-   ```python
-   session = requests.Session()
-   session.headers.update({'User-Agent': mk_user_agent()})
-   ```
-
-2. **Send HTTP Request**: Fetch the webpage containing the proxy list.
-
-   ```python
-   response = session.get(url)
-   ```
-
-3. **Parse the Response**: Use BeautifulSoup to parse the HTML content.
-
-   ```python
-   soup = BeautifulSoup(response.text, 'html.parser')
-   ```
-
-4. **Extract Proxy Details**: Locate the HTML table or script tags where proxy details are listed and extract IPs and ports. For encoded details (e.g., Base64 encoded IPs), decode them to get the plain text.
-
-   ```python
-   pattern = re.compile(r'Base64\.decode\("([^"]+)"\)')
-   encoded_string = pattern.search(js_code).group(1)
-   ip = base64.b64decode(encoded_string).decode('utf-8')
-   ```
-
-5. **Compile Proxy List**: Assemble a list of proxies in the desired format (`http://IP:Port`).
-
-#### Example Code
-
-To effectively extract proxy details from a website using BeautifulSoup in Python, follow these practical steps to parse tables and retrieve IP addresses and ports. This guide includes examples to help you easily integrate these methods into your projects.
-
-1. **Setting Up**: Start by making an HTTP request to the target website. For this, use the `requests` library:
-
-    ```python
-    import requests
-    from bs4 import BeautifulSoup
-
-    url = 'http://example.com/proxylist'
-    response = requests.get(url)
-    ```
-
-2. **Parsing the HTML**: Once you have the response, pass it to BeautifulSoup to parse the HTML content:
-
-    ```python
-    soup = BeautifulSoup(response.text, 'html.parser')
-    ```
-
-3. **Locating the Table**: Identify the table that contains the proxy information. If the table has a specific class or ID, use it to locate the table. For instance:
-
-    ```python
-    table = soup.find('table', attrs={'class': 'proxy-list'})
-    ```
-
-4. **Skipping the Header Row**: To avoid processing the header, start iterating from the second row. This skips the often non-essential header row that contains column titles:
-
-    ```python
-    rows = table.find_all('tr')[1:]  # Skipping the first row which is the header
-    ```
-
-5. **Extracting IP and Port**: For each row in the table, extract the cells (`td`). The first cell (`td[0]`) usually contains the IP address, and the second cell (`td[1]`) contains the port:
-
-    ```python
-    for row in rows:
-        cells = row.find_all('td')
-        ip_address = cells[0].text.strip()  # Remove whitespace from the IP address
-        port = cells[1].text.strip()        # Remove whitespace from the port
-        print(f"IP: {ip_address}, Port: {port}")
-    ```
-
-This workflow allows you to efficiently gather a list of proxies by parsing table data from a webpage. The use of `.text.strip()` ensures that any leading or trailing whitespace is removed from the data, ensuring cleaner and more accurate results.
-
-By applying these steps, you can adapt BeautifulSoup to not only fetch proxies but also scrape various types of data structured in HTML tables across different websites. Whether you're gathering stock data, sports statistics, or other tabular information, these techniques will prove fundamental in your web scraping endeavors.
-
-```python
-proxies = get_proxies_world()  # Function to scrape and return proxies
+```bash
+pip install requests beautifulsoup4
 ```
 
-Generally speaking you can
-
-### Countermeasures Employed by Websites
-
-To prevent scraping, websites employ various techniques:
-
-1. **Dynamic Content Delivery**: Using JavaScript to dynamically write content, such as proxies, complicates direct HTML scraping.
-2. **Rate Limiting**: Restricting the number of requests from a single IP over a specified period.
-3. **CAPTCHAs**: Challenging users to complete tasks that are difficult for bots.
-4. **IP Blocking**: Blocking IPs that exhibit non-human behavior or exceed request thresholds.
-
-#### Navigating Around Countermeasures
-
-- **Rotating Proxies and User-Agents**: Regularly rotate between different proxies and user-agent strings to mimic genuine user interaction.
-- **Handling JavaScript**: Utilize tools like Selenium or Puppeteer that can render JavaScript if proxies are loaded dynamically through scripts.
-
-### Practical Application
-
-To employ a proxy during a scraping session, select a random proxy from your compiled list:
-
 ```python
-proxy = random.choice(proxies_list)
-response = session.get(target_url, proxies={"http": proxy, "https": proxy})
+import requests
+from bs4 import BeautifulSoup
+
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+    )
+}
+
+
+def scrape_proxy_table(url: str) -> list[str]:
+    response = requests.get(url, headers=HEADERS, timeout=10)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    table = soup.find("table")
+    if table is None:
+        raise ValueError("No table found; the list may be rendered with JavaScript")
+
+    proxies = []
+    for row in table.find_all("tr")[1:]:  # skip the header row
+        cells = row.find_all("td")
+        if len(cells) < 2:
+            continue
+        ip = cells[0].get_text(strip=True)
+        port = cells[1].get_text(strip=True)
+        if ip and port.isdigit():
+            proxies.append(f"http://{ip}:{port}")
+    return proxies
 ```
 
-This method ensures each request potentially comes from a different IP, significantly reducing the chance of being blocked and allowing continuous data collection.
+Some sites hide the IPs from simple scrapers by writing them with JavaScript, for example `document.write(Base64.decode("MTkyLjE2OC4xLjE="))`. If the encoded string is in the HTML, you can decode it yourself:
 
-In conclusion, the strategic use of proxies enhances web scraping by improving access, speed, and efficiency while maintaining the necessary discretion and compliance with legal and ethical standards. As web technologies advance, both the methods of scraping and the countermeasures against it will continue to evolve, necessitating a dynamic approach to effective data collection.
+```python
+import base64
+import re
+
+js_code = 'document.write(Base64.decode("MTkyLjE2OC4xLjE="))'
+match = re.search(r'Base64\.decode\("([^"]+)"\)', js_code)
+if match:
+    ip = base64.b64decode(match.group(1)).decode("utf-8")
+    print(ip)  # 192.168.1.1
+```
+
+If the list is built entirely in the browser, use a browser automation tool such as Playwright or Selenium to render the page first.
+
+## Keep only proxies that work
+
+Most entries on a free list are dead or very slow. Test each one against an endpoint that echoes your IP, and do it in parallel so a hundred timeouts don't take minutes:
+
+```python
+from concurrent.futures import ThreadPoolExecutor
+
+import requests
+
+
+def check_proxy(proxy: str) -> str | None:
+    try:
+        r = requests.get(
+            "https://httpbin.org/ip",
+            proxies={"http": proxy, "https": proxy},
+            timeout=5,
+        )
+        r.raise_for_status()
+        return proxy
+    except requests.RequestException:
+        return None
+
+
+def working_proxies(candidates: list[str]) -> list[str]:
+    with ThreadPoolExecutor(max_workers=20) as pool:
+        return [p for p in pool.map(check_proxy, candidates) if p]
+```
+
+The `https` key also uses an `http://` proxy URL. That's correct: `requests` connects to the proxy over plain HTTP and sends a `CONNECT` request to open a tunnel, and TLS to the target site runs through that tunnel.
+
+## Rotate through them
+
+Pick a proxy per request, and drop one from the pool when it fails:
+
+```python
+import random
+
+import requests
+
+
+def fetch(url: str, pool: list[str], attempts: int = 3) -> requests.Response:
+    last_error = None
+    for _ in range(attempts):
+        if not pool:
+            break
+        proxy = random.choice(pool)
+        try:
+            r = requests.get(
+                url,
+                headers=HEADERS,
+                proxies={"http": proxy, "https": proxy},
+                timeout=10,
+            )
+            r.raise_for_status()
+            return r
+        except requests.RequestException as e:
+            last_error = e
+            pool.remove(proxy)
+    raise RuntimeError(f"All attempts failed for {url}") from last_error
+
+
+candidates = scrape_proxy_table("https://example.com/proxy-list")  # replace with a real list page
+pool = working_proxies(candidates)
+response = fetch("https://example.com/target-page", pool)
+```
+
+## What sites do about it, and the limits of proxies
+
+Sites rate-limit by IP, block IP ranges known to belong to data centres and public proxies, show CAPTCHAs, and fingerprint the browser or TLS client. Rotating IPs only helps with the first of these. Free proxy IPs are often already on blocklists, so expect a low success rate on any site that actively defends itself.
+
+A few more cautions:
+
+- **Free proxies can read and modify your traffic.** Anything sent over plain HTTP through an unknown proxy is visible to its operator. Never send credentials or session cookies through one.
+- **Proxies don't change what you're allowed to do.** Check the site's terms and `robots.txt`, keep your request rate reasonable, and prefer an official API when there is one.
+- **For anything you rely on, pay for proxies.** Paid residential or data-centre providers are far more reliable than scraped lists.
+
+## Further reading
+
+- [Requests: Proxies](https://requests.readthedocs.io/en/latest/user/advanced/#proxies)
+- [Beautiful Soup documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)

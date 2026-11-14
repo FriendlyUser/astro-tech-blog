@@ -1,22 +1,25 @@
 ---
-title: Using Rust's Error Handling Mechanisms Effectively
+title: "Error handling in Rust: Result, the ? operator and custom error types"
 pubDate: "2023-11-14T02:27:01.000Z"
-description: "In this article , we will discuss Rust's error handling mechanisms and how to use them effectively"
-tags: []
+lastUpdated: 2026-11-14
+description: "How Rust handles errors with Result and panic!, how to propagate errors with ?, and how to define a custom error type that wraps other errors."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1678591372_a_blade_in_the_desert_under_the_sun.png
 ---
-# Using Rust's Error Handling Mechanisms Effectively
 
-Rust is a systems programming language that emphasizes safety, performance, and concurrency. One of the ways Rust achieves safety is by having a robust error handling mechanism. In this article, we will discuss Rust's error handling mechanisms and how to use them effectively.
+Rust has no exceptions. A function that can fail says so in its return type with `Result<T, E>`, and the caller has to deal with the error before it can get at the value. For bugs and states the program can't recover from, there's `panic!`. This post covers both, plus the `?` operator and writing your own error type.
 
-## The `Result` and `Option` enums
+## Recoverable vs unrecoverable errors
 
-Rust has two primary error handling types: `Result` and `Option`. Both of these types are enumerations that represent success or failure.
+- **`Result<T, E>`** is for failures the caller might reasonably handle: a missing file, a network timeout, invalid input.
+- **`panic!`** is for bugs: an index out of bounds, a broken invariant. It unwinds the current thread (or aborts, depending on the build profile). `unwrap()` and `expect()` panic when called on an error, which is fine in tests and quick scripts, but in library code it takes the decision away from the caller.
 
-### Result
+`Option<T>` is related but isn't an error type: `None` means "no value", not "something went wrong". It comes up below because `?` works with it too.
 
-`Result` is an enum with two variants:
+## Result
+
+`Result` is an ordinary enum from the standard library:
 
 ```rust
 enum Result<T, E> {
@@ -25,64 +28,48 @@ enum Result<T, E> {
 }
 ```
 
-The `Ok` variant represents a successful operation and contains a value of type `T`. The `Err` variant represents a failure and contains an error value of type `E`.
+`Ok` holds the success value of type `T`, and `Err` holds the error of type `E`. `File::open` is a typical example: it returns `Result<File, std::io::Error>`.
 
-### Option
-
-`Option` is an enum with two variants:
-
-```rust
-enum Option<T> {
-    Some(T),
-    None,
-}
-```
-
-The `Some` variant represents a successful operation and contains a value of type `T`. The `None` variant represents the absence of a value.
-
-## Using `Result` and `Option`
-
-In Rust, functions that can fail should return a `Result` type. If a function can return a value or `None` depending on the input, it should return an `Option` type.
-
-Here's an example of a function that returns a `Result`:
+### Handling a Result with match
 
 ```rust
 use std::fs::File;
 
-fn read_file(file_name: &str) -> Result<File, std::io::Error> {
-    File::open(file_name)
-}
-```
-
-In this example, the `read_file` function returns a `Result` with a `File` as the success type and an `std::io::Error` as the error type.
-
-### Handling errors with `match`
-
-One way to handle errors in Rust is by using the `match` statement. Here's an example:
-
-```rust
 fn main() {
-    let file_name = "example.txt";
-    let file = read_file(file_name);
-
-    match file {
-        Ok(f) => println!("File opened successfully: {:?}", f),
-        Err(e) => println!("Failed to open file: {}", e),
+    match File::open("example.txt") {
+        Ok(file) => println!("Opened: {file:?}"),
+        Err(e) => println!("Failed to open file: {e}"),
     }
 }
 ```
 
-In this example, we call the `read_file` function and match its result. If the result is `Ok`, we print the file. If the result is `Err`, we print the error message.
-
-### Handling errors with `?` operator
-
-Another way to handle errors in Rust is by using the `?` operator. The `?` operator can be used to propagate errors up the call stack. Here's how we can rewrite the previous example using the `?` operator:
+`match` forces you to handle both variants. You can also match on the error kind, for example to create the file if it doesn't exist:
 
 ```rust
 use std::fs::File;
-use std::io::Read;
+use std::io::ErrorKind;
 
-fn read_file_contents(file_name: &str) -> Result<String, std::io::Error> {
+fn main() {
+    let file = match File::open("example.txt") {
+        Ok(f) => f,
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            File::create("example.txt").expect("could not create file")
+        }
+        Err(e) => panic!("could not open file: {e}"),
+    };
+    println!("{file:?}");
+}
+```
+
+### Propagating errors with ?
+
+Most of the time a function can't do anything useful with an error except pass it to its caller. The `?` operator does that: on `Ok(v)` it evaluates to `v`, and on `Err(e)` it returns `Err(e)` from the current function immediately.
+
+```rust
+use std::fs::File;
+use std::io::{self, Read};
+
+fn read_file_contents(file_name: &str) -> Result<String, io::Error> {
     let mut file = File::open(file_name)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
@@ -90,70 +77,78 @@ fn read_file_contents(file_name: &str) -> Result<String, std::io::Error> {
 }
 
 fn main() {
-    let file_name = "example.txt";
-    match read_file_contents(file_name) {
-        Ok(contents) => println!("File contents: {}", contents),
-        Err(e) => println!("Failed to read file contents: {}", e),
+    match read_file_contents("example.txt") {
+        Ok(contents) => println!("File contents: {contents}"),
+        Err(e) => println!("Failed to read file: {e}"),
     }
 }
 ```
 
-In this example, we use the `?` operator to propagate errors up the call stack. If an error occurs, the function will immediately return the error, and the calling function can handle the error.
+(For this particular task, `std::fs::read_to_string` does the same thing in one call.)
 
-## Custom error types
-
-In some cases, you might want to create your own error type to represent multiple error cases. You can do this by implementing the `std::error::Error` trait and using the `std::fmt` traits for display purposes.
-
-Here's an example of a custom error type:
+`?` can only be used in a function that returns a `Result` (or `Option`, for `Option` values). That includes `main`, which can return `Result<(), E>` for any `E: Debug`:
 
 ```rust
 use std::error::Error;
-use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::fs;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string("example.txt")?;
+    let number: i32 = contents.trim().parse()?;
+    println!("{number}");
+    Ok(())
+}
+```
+
+`Box<dyn Error>` accepts any error type, so `?` works on both the I/O error and the parse error here. If `main` returns an `Err`, the program prints its `Debug` form and exits with a non-zero status.
+
+## Custom error types
+
+`Box<dyn Error>` is convenient, but callers can't easily tell which error happened. In a library you usually want an enum with one variant per failure, implementing `std::error::Error` and `Display`:
+
+```rust
+use std::error::Error;
+use std::fmt;
+use std::fs::File;
+use std::io::{self, Read};
+use std::num::ParseIntError;
 
 #[derive(Debug)]
 enum CustomError {
-    IoError(std::io::Error),
-    ParseError(std::num::ParseIntError),
+    Io(io::Error),
+    Parse(ParseIntError),
+}
+
+impl fmt::Display for CustomError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CustomError::Io(_) => write!(f, "could not read the file"),
+            CustomError::Parse(_) => write!(f, "file did not contain a valid number"),
+        }
+    }
 }
 
 impl Error for CustomError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            CustomError::IoError(err) => Some(err),
-            CustomError::ParseError(err) => Some(err),
+            CustomError::Io(err) => Some(err),
+            CustomError::Parse(err) => Some(err),
         }
     }
 }
 
-impl Display for CustomError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        match self {
-            CustomError::IoError(err) => write!(f, "I/O error: {}", err),
-            CustomError::ParseError(err) => write!(f, "Parse error: {}", err),
-        }
+// These From impls let `?` convert the underlying errors automatically
+impl From<io::Error> for CustomError {
+    fn from(err: io::Error) -> Self {
+        CustomError::Io(err)
     }
 }
 
-impl From<std::io::Error> for CustomError {
-    fn from(err: std::io::Error) -> Self {
-        CustomError::IoError(err)
+impl From<ParseIntError> for CustomError {
+    fn from(err: ParseIntError) -> Self {
+        CustomError::Parse(err)
     }
 }
-
-impl From<std::num::ParseIntError> for CustomError {
-    fn from(err: std::num::ParseIntError) -> Self {
-        CustomError::ParseError(err)
-    }
-}
-```
-
-In this example, we create a `CustomError` enum with two variants: `IoError` and `ParseError`. We then implement the `Error`, `Display`, and `From` traits for our custom error type. The `From` trait allows for easy conversion between the underlying error types and our custom error type.
-
-Now, we can use our custom error type in a function:
-
-```rust
-use std::fs::File;
-use std::io::Read;
 
 fn read_file_and_parse_number(file_name: &str) -> Result<i32, CustomError> {
     let mut file = File::open(file_name)?;
@@ -164,18 +159,30 @@ fn read_file_and_parse_number(file_name: &str) -> Result<i32, CustomError> {
 }
 
 fn main() {
-    let file_name = "example.txt";
-    match read_file_and_parse_number(file_name) {
-        Ok(number) => println!("Parsed number: {}", number),
-        Err(e) => println!("Failed to read and parse file: {}", e),
+    match read_file_and_parse_number("example.txt") {
+        Ok(number) => println!("Parsed number: {number}"),
+        Err(e) => {
+            println!("Error: {e}");
+            if let Some(cause) = e.source() {
+                println!("Caused by: {cause}");
+            }
+        }
     }
 }
 ```
 
-In this example, the `read_file_and_parse_number` function returns a `Result` with an `i32` as the success type and a `CustomError` as the error type. If an error occurs, we can handle it with a single match arm in the `main` function.
+When `?` sees an `io::Error` in a function returning `Result<_, CustomError>`, it calls `CustomError::from` to convert it. The caller can `match` on `CustomError::Io` vs `CustomError::Parse` to react differently, and `source()` exposes the original error for logging.
 
-## Conclusion
+A convention worth following: either include the inner error in your `Display` message or return it from `source()`, not both, otherwise error reporters that walk the chain print the same message twice.
 
-Rust's error handling mechanisms, such as the `Result` and `Option` enums, provide a clear and expressive way to handle errors. By using the `match` statement or the `?` operator, you can handle and propagate errors effectively. Additionally, implementing custom error types allows for better error handling in more complex scenarios.
+## Less boilerplate
 
-By understanding and utilizing Rust's error handling mechanisms, you can write safer and more robust code.
+Writing `Display`, `Error` and `From` by hand gets repetitive. Two widely used crates handle it:
+
+- [`thiserror`](https://docs.rs/thiserror) derives those impls for your own error enums. It's a good fit for libraries, where callers need to match on specific errors.
+- [`anyhow`](https://docs.rs/anyhow) gives you a single `anyhow::Error` type plus `.context("...")` for adding messages. It's a good fit for applications, where you mostly want to report the error and exit.
+
+## Further reading
+
+- [The Rust Book: Error Handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html)
+- [`std::result` module docs](https://doc.rust-lang.org/std/result/)

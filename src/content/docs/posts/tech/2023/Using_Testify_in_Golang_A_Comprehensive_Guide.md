@@ -1,158 +1,236 @@
 ---
-description: In this article, we'll explore the key features of Testify, and see how
-  to use them effectively in your Golang projects
+description: How to use Testify's assert, require, suite, and mock packages in Go tests, with runnable examples and the gotchas that trip people up.
 imgSrc: /imgs/2023/1797349317.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-29T08:21:13.000Z'
-tags: []
-title: Using Testify in Golang A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["go", "testing", "testify"]
+title: 'Testing in Go with Testify: assert, require, suites, and mocks'
 ---
 
-# Using Testify in Golang: A Comprehensive Guide
+[Testify](https://github.com/stretchr/testify) is a set of packages that sit on top of Go's standard `testing` package. It doesn't replace `go test`; it gives you assertion helpers (so you don't write `if got != want { t.Errorf(...) }` by hand), a way to group tests with shared setup, and a simple mocking library.
 
-Testify is a popular testing framework for the Go programming language. It provides a rich set of assertions and utilities that make it easier to write and maintain tests. In this article, we'll explore the key features of Testify, and see how to use them effectively in your Golang projects.
+The examples below were checked against testify v1.12.1. The maintainers keep the module at v1 with no breaking changes, and it supports Go 1.19 and later.
 
-## Table of Contents
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-- [Assertions](#assertions)
-- [Suites](#suites)
-- [Mocks](#mocks)
-- [Conclusion](#conclusion)
+## Installing
 
-## Overview
+Inside a module (a directory with a `go.mod`):
 
-Testify is a library that extends the standard Go testing package. It is designed to provide a more expressive and convenient API for writing tests. Some of the main features of Testify include:
-
-- A rich set of assertions for common testing scenarios
-- Test suites for organizing and running related tests
-- Mocking support for isolating and testing components
-
-## Getting Started
-
-To use Testify in your project, you need to install the package first. You can do this using the `go get` command:
-
-```
-go get -u github.com/stretchr/testify
+```bash
+go get github.com/stretchr/testify
 ```
 
-This will install Testify and its dependencies in your Go workspace. Now you can import the package in your test files and start using its features.
+You don't need `-u`; that also upgrades testify's own dependencies, which you rarely want.
 
-## Assertions
+## assert and require
 
-Assertions are the foundation of any test framework. They allow you to compare the actual output of your code with the expected output, and fail the test if they don't match. Testify provides a rich set of assertions that cover most common testing scenarios.
-
-You can use assertions from the `github.com/stretchr/testify/assert` package. Here's an example of a simple test function that uses Testify assertions:
+Say you have a package with one function:
 
 ```go
-package main
+// calc.go
+package calc
+
+func Add(a, b int) int {
+	return a + b
+}
+```
+
+A test using `assert`:
+
+```go
+// calc_test.go
+package calc
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAdd(t *testing.T) {
-	result := Add(2, 3)
-
-	assert.Equal(t, 5, result, "Add(2, 3) should be 5")
+	assert.Equal(t, 5, Add(2, 3), "Add(2, 3)")
+	assert.Equal(t, 0, Add(-1, 1))
 }
 ```
 
-In this example, we're testing the `Add()` function, which takes two integers as input and returns their sum. We use the `Equal` assertion from Testify to check if the result of `Add(2, 3)` is equal to 5.
+Run it with `go test ./...`. On failure, testify prints the expected and actual values and a diff for structs, slices, and maps.
 
-If the assertion fails, the test will fail, and Testify will print a helpful error message with the expected and actual values.
+The argument order is `expected, actual`. Swapping them still fails the test correctly, but the failure message labels the values the wrong way round.
+
+`assert` functions record a failure and keep going (they call `t.Errorf`). The `require` package has the same functions but stops the test immediately (`t.FailNow`). Use `require` when the rest of the test makes no sense after a failure, typically error checks and nil checks:
+
+```go
+package calc
+
+import (
+	"strconv"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestParseAndAdd(t *testing.T) {
+	n, err := strconv.Atoi("40")
+	require.NoError(t, err) // no point continuing if this fails
+
+	assert.Equal(t, 42, Add(n, 2))
+}
+```
+
+Other assertions you'll use often: `NoError`, `Error`, `ErrorIs`, `Nil`, `NotNil`, `True`, `Len`, `Contains`, `ElementsMatch` (same elements, any order), and `JSONEq`. The full list is in the [assert package docs](https://pkg.go.dev/github.com/stretchr/testify/assert).
 
 ## Suites
 
-Test suites are a way to organize and run related tests. They can be particularly useful for large projects with many tests, as they allow you to group tests by functionality, and run them in a specific order.
-
-To create a test suite, you need to define a struct that embeds the `github.com/stretchr/testify/suite.Suite` type:
+The `suite` package lets you put related tests on a struct and run setup and teardown hooks around them. Embed `suite.Suite`, write methods whose names start with `Test`, and hand the struct to `suite.Run` from a normal test function:
 
 ```go
-package main
+package calc
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/suite"
 )
 
-type AddSuite struct {
+type CalcSuite struct {
 	suite.Suite
+	pairs [][2]int
 }
 
-// Test suite setup and teardown methods, if needed
-
-func (s *AddSuite) TestAdd() {
-	result := Add(2, 3)
-
-	s.Equal(5, result, "Add(2, 3) should be 5")
+// SetupTest runs before every Test* method.
+func (s *CalcSuite) SetupTest() {
+	s.pairs = [][2]int{{2, 3}, {-1, 1}, {0, 0}}
 }
 
-func TestRunAddSuite(t *testing.T) {
-	suite.Run(t, new(AddSuite))
+func (s *CalcSuite) TestAddIsCommutative() {
+	for _, p := range s.pairs {
+		s.Equal(Add(p[0], p[1]), Add(p[1], p[0]))
+	}
+}
+
+func TestCalcSuite(t *testing.T) {
+	suite.Run(t, new(CalcSuite))
 }
 ```
 
-Notice that we've moved the `TestAdd()` function inside the `AddSuite` struct, and changed its receiver from `*testing.T` to `*AddSuite`. We can now use the `Equal()` method from the embedded `Suite` type, just like we used the `Equal()` function from the `assert` package earlier.
+The embedded `Suite` gives you the `assert` functions as methods (`s.Equal`, `s.NoError`) and `require` via `s.Require().NoError(err)`. The available hooks are `SetupSuite`/`TearDownSuite` (once per suite) and `SetupTest`/`TearDownTest` (around each test method).
 
-To run the test suite, you need to call the `suite.Run()` function in a separate test function. This function takes a `*testing.T` argument, and an instance of your test suite.
+Each method runs as a subtest, so you can run one with `go test -run 'TestCalcSuite/TestAddIsCommutative'`.
+
+Two things to know:
+
+- **Suites don't support parallel tests.** The README says so directly. If you need `t.Parallel()`, use plain test functions.
+- **Don't depend on method order.** Each test should set up its own state, which is what `SetupTest` is for.
+
+For small packages, a table-driven test with `t.Run` usually does the same job with less ceremony. Suites pay off when several tests share expensive setup, such as a database connection created in `SetupSuite`.
 
 ## Mocks
 
-Mocks are a powerful feature of Testify that allows you to isolate components and test them independently. They are particularly useful when you're dealing with external dependencies, such as databases or APIs, which can be hard or expensive to set up for tests.
+The `mock` package helps you write test doubles for interfaces. You write a struct that embeds `mock.Mock` and implements your interface by forwarding each call to `m.Called(...)`. The test then declares which calls it expects and what they return.
 
-Testify provides a `github.com/stretchr/testify/mock` package for creating and using mocks in your tests. Here's an example of a test that uses a mock object to simulate a database query:
+Here's the code under test. The service depends on a `Repository` interface rather than a concrete database:
 
 ```go
-package main
+// user.go
+package user
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"errors"
+	"fmt"
 )
 
-// UserRepository is a mock implementation of a database repository
-type UserRepositoryMock struct {
-	mock.Mock
+var ErrNotFound = errors.New("user not found")
+
+type User struct {
+	ID   int
+	Name string
 }
 
-// FindUserByID is a method that simulates a database query
-func (m *UserRepositoryMock) FindUserByID(id int) (*User, error) {
-	args := m.Called(id)
+type Repository interface {
+	FindUserByID(id int) (*User, error)
+}
 
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
+type Service struct {
+	repo Repository
+}
+
+func NewService(repo Repository) *Service {
+	return &Service{repo: repo}
+}
+
+func (s *Service) DisplayName(id int) (string, error) {
+	u, err := s.repo.FindUserByID(id)
+	if err != nil {
+		return "", fmt.Errorf("display name for %d: %w", id, err)
 	}
-
-	return args.Get(0).(*User), args.Error(1)
-}
-
-func TestFindUserByID(t *testing.T) {
-	userRepo := new(UserRepositoryMock)
-	userRepo.On("FindUserByID", 1).Return(&User{ID: 1, Name: "Alice"}, nil)
-
-userService := NewUserService(userRepo)
-user, err := userService.FindUserByID(1)
-
-assert.NoError(t, err, "FindUserByID should not return an error")
-assert.NotNil(t, user, "FindUserByID should return a user")
-assert.Equal(t, 1, user.ID, "User ID should be 1")
-assert.Equal(t, "Alice", user.Name, "User name should be Alice")
-
-userRepo.AssertExpectations(t)
+	return fmt.Sprintf("%s (#%d)", u.Name, u.ID), nil
 }
 ```
 
-In this example, we're testing a `UserService` that depends on a `UserRepository` interface for fetching users from a database. We create a `UserRepositoryMock` struct that implements the `UserRepository` interface, and use the `mock.Mock` type from Testify to handle method calls and return values.
+And the test, with a hand-written mock:
 
-The `FindUserByID()` method in our mock implementation uses the `Called()` method from `mock.Mock` to record the call and return the specified values. In our test function, we set up the mock to expect a call to `FindUserByID()` with the argument `1`, and return a user object with the same ID.
+```go
+// user_test.go
+package user
 
-Finally, we create an instance of `UserService` with our mock repository, and call the `FindUserByID()` method on it. We use Testify assertions to check the result of the method, and the `AssertExpectations()` method from `mock.Mock` to verify that the expected calls to the mock were made.
+import (
+	"testing"
 
-## Conclusion
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+)
 
-Testify is a powerful and expressive testing framework for Go that provides a rich set of features for writing and maintaining tests. With its comprehensive support for assertions, test suites, and mocks, it can help make your tests more robust, readable, and maintainable.
+type RepositoryMock struct {
+	mock.Mock
+}
 
-In this article, we covered the basics of using Testify in your Golang projects, including how to get started, use assertions, create test suites, and work with mocks. With these building blocks, you can start leveraging Testify in your own projects and improve the quality of your tests.
+func (m *RepositoryMock) FindUserByID(id int) (*User, error) {
+	args := m.Called(id)
+	// Comma-ok assertion: Return(nil, err) stores an untyped nil,
+	// and a plain args.Get(0).(*User) would panic on it.
+	u, _ := args.Get(0).(*User)
+	return u, args.Error(1)
+}
+
+func TestDisplayName(t *testing.T) {
+	repo := new(RepositoryMock)
+	repo.Test(t) // report unexpected calls as test failures instead of panics
+	repo.On("FindUserByID", 1).Return(&User{ID: 1, Name: "Alice"}, nil).Once()
+
+	name, err := NewService(repo).DisplayName(1)
+
+	require.NoError(t, err)
+	assert.Equal(t, "Alice (#1)", name)
+	repo.AssertExpectations(t)
+}
+
+func TestDisplayNameNotFound(t *testing.T) {
+	repo := new(RepositoryMock)
+	repo.Test(t)
+	repo.On("FindUserByID", 2).Return(nil, ErrNotFound)
+
+	_, err := NewService(repo).DisplayName(2)
+
+	assert.ErrorIs(t, err, ErrNotFound)
+	repo.AssertExpectations(t)
+}
+```
+
+`On` sets up an expected call and its arguments, `Return` gives the values that `Called` hands back, and `AssertExpectations` fails the test if an expected call never happened. `Once()`, `Times(n)`, and `Maybe()` control how many calls are allowed. Use `mock.Anything` or `mock.MatchedBy(func(x T) bool {...})` when you don't care about an exact argument.
+
+Writing these structs by hand gets tedious for large interfaces. [mockery](https://github.com/vektra/mockery) generates them from your interfaces.
+
+## Gotchas
+
+- **`Equal` compares types too.** `assert.Equal(t, 5, int64(5))` fails because `int` and `int64` are different types. Use `EqualValues` if you want conversion, or make the types match.
+- **Mock arguments are matched by type as well.** If a method takes an `int64`, `On("Method", 1)` won't match because the untyped `1` becomes an `int`. Write `On("Method", int64(1))`.
+- **Without `repo.Test(t)`, an unexpected mock call panics** (with "mock: Unexpected Method Call" or "I don't know what to return"). The message is useful, but a normal test failure reads better in CI output and lets the other tests run.
+- **Mocks can hide bugs in the real dependency.** A mock only checks that your code calls the interface the way you told it to. For a database repository, an integration test against a real database (for example in a container) catches the mistakes a mock can't.
+
+## Further reading
+
+- [testify on GitHub](https://github.com/stretchr/testify)
+- [assert](https://pkg.go.dev/github.com/stretchr/testify/assert), [require](https://pkg.go.dev/github.com/stretchr/testify/require), [suite](https://pkg.go.dev/github.com/stretchr/testify/suite), and [mock](https://pkg.go.dev/github.com/stretchr/testify/mock) package docs
+- [Go's testing package](https://pkg.go.dev/testing)

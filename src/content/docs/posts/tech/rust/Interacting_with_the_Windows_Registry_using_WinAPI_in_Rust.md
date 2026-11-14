@@ -1,326 +1,249 @@
 ---
-title: Interacting with the Windows Registry using WinAPI in Rust
+title: "Reading and writing the Windows Registry from Rust with the winapi crate"
 pubDate: "2023-04-22T16:25:05.167Z"
-description: "In this article, we'll delve into how to interact with the Windows Registry using the WinAPI crate in Rust."
+lastUpdated: 2026-11-14
+description: "Create, open, read, write and delete Windows Registry keys and values from Rust using raw Win32 calls through the winapi crate, with correct error handling."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Interacting with the Windows Registry using WinAPI in Rust
 
-In this article, we'll delve into how to interact with the Windows Registry using the WinAPI crate in Rust. The Windows Registry is a database that stores configuration settings and options for the operating system, hardware, and applications. We'll cover the basics of working with the Windows Registry, such as creating, reading, updating, and deleting keys and values.
+:::caution
+The `winapi` crate has not had a release since 0.3.9 in June 2020. For new code, prefer Microsoft's
+[`windows-registry`](https://crates.io/crates/windows-registry) crate (part of `windows-rs`),
+or the raw bindings in `windows-sys`. The Win32 calls below are the same either way; only the
+import paths and some pointer types differ.
+:::
 
-## Prerequisites
-
-Before starting, make sure you have the following installed:
-
-- [Rust](https://www.rust-lang.org/tools/install)
-- [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+The Windows Registry is the hierarchical database where Windows and applications store configuration.
+This post wraps the raw Win32 registry functions (`RegCreateKeyExW`, `RegQueryValueExW`, and friends) in
+small safe-ish Rust functions, working under `HKEY_CURRENT_USER` so nothing needs admin rights.
 
 ## Setting up the project
 
-First, create a new Rust project by running the following command in your terminal:
-
 ```sh
 cargo new registry_interactions
-```
-
-Change your working directory to the newly created project:
-
-```sh
 cd registry_interactions
 ```
 
-Now, let's add the required dependencies to our `Cargo.toml` file:
+`winapi` puts every Windows header behind a feature flag, so enable the ones used here:
 
 ```toml
 [dependencies]
-winapi = "0.3"
+winapi = { version = "0.3.9", features = ["minwindef", "winerror", "winnt", "winreg"] }
 ```
 
-## Creating a helper module
+## String helpers
 
-Before diving into the Windows Registry functions, let's create a helper module to simplify the process of dealing with the WinAPI. Create a new file named `winapi_helpers.rs` in your `src` directory:
+Win32 `W` functions take null-terminated UTF-16 strings. Create `src/winapi_helpers.rs`:
 
 ```rust
-use std::ffi::OsString;
-use std::os::windows::ffi::OsStringExt;
-use winapi::um::winnt::WCHAR;
-use winapi::shared::minwindef::DWORD;
+use std::ffi::{OsStr, OsString};
+use std::os::windows::ffi::{OsStrExt, OsStringExt};
 
-pub fn to_wstring(value: &str) -> Vec<WCHAR> {
-    let v: Vec<_> = OsString::from(value).encode_wide().chain(Some(0)).collect();
-    v
+/// Convert a Rust string to a null-terminated UTF-16 buffer.
+pub fn to_wstring(value: &str) -> Vec<u16> {
+    OsStr::new(value).encode_wide().chain(Some(0)).collect()
 }
 
-pub fn from_wstring(value: &[WCHAR]) -> String {
-    let len = value.iter().position(|&x| x == 0).unwrap_or(value.len());
+/// Convert a UTF-16 buffer (possibly null-terminated) back to a Rust String.
+pub fn from_wstring(value: &[u16]) -> String {
+    let len = value.iter().position(|&c| c == 0).unwrap_or(value.len());
     OsString::from_wide(&value[..len]).to_string_lossy().into_owned()
 }
+```
 
-pub fn get_last_error() -> DWORD {
-    unsafe { winapi::um::errhandlingapi::GetLastError() }
+`encode_wide` comes from `OsStrExt` and `from_wide` from `OsStringExt`; both traits need to be in scope.
+
+## Registry functions
+
+Unlike most Win32 APIs, the registry functions **return the error code directly** as an `LSTATUS`
+(`ERROR_SUCCESS`, which is 0, on success). They do not set `GetLastError`, so calling `GetLastError()` after
+a failure gives you an unrelated value. The wrappers below return the status code instead.
+
+Create `src/registry.rs` with these imports and a small helper:
+
+```rust
+use std::ptr::null_mut;
+
+use winapi::shared::minwindef::{DWORD, HKEY};
+use winapi::shared::winerror::ERROR_SUCCESS;
+use winapi::um::winnt::{KEY_ALL_ACCESS, KEY_READ, KEY_WRITE, REG_OPTION_NON_VOLATILE, REG_SZ};
+use winapi::um::winreg::{
+    RegCloseKey, RegCreateKeyExW, RegDeleteKeyW, RegDeleteValueW, RegOpenKeyExW, RegQueryValueExW,
+    RegSetValueExW, HKEY_CURRENT_USER, LSTATUS,
+};
+
+use crate::winapi_helpers::{from_wstring, to_wstring};
+
+fn check(status: LSTATUS) -> Result<(), i32> {
+    if status == ERROR_SUCCESS as i32 {
+        Ok(())
+    } else {
+        Err(status)
+    }
 }
 ```
 
-This module provides three helper functions:
-
-1. `to_wstring`: Converts a Rust `&str` to a null-terminated wide character string (`Vec<WCHAR>`).
-2. `from_wstring`: Converts a wide character slice (`&[WCHAR]`) to a Rust `String`.
-3. `get_last_error`: Gets the last error code returned by a WinAPI function.
-
-## Interacting with the Windows Registry
-
-Now that we have our helper functions, let's create a new module named `registry.rs` in your `src` directory:
-
-```rust
-use winapi::um::winreg::{
-    RegCloseKey, RegCreateKeyExW, RegDeleteKeyW, RegDeleteValueW, RegOpenKeyExW, RegQueryValueExW,
-    RegSetValueExW, HKEY_CURRENT_USER, KEY_ALL_ACCESS, KEY_READ, KEY_WRITE, REG_OPTION_NON_VOLATILE,
-    REG_SZ,
-};
-use winapi::shared::minwindef::{HKEY, LPCVOID, LPDWORD, LPVOID};
-use winapi::shared::ntdef::LPWSTR;
-use crate::winapi_helpers::{to_wstring, from_wstring, get_last_error};
-
-// ...your code here...
-
-```
+The error value is a Win32 error code, e.g. `2` (`ERROR_FILE_NOT_FOUND`) when a key or value doesn't exist.
+The following functions all go in the same file.
 
 ### Opening a key
 
-To open a key, use the `RegOpenKeyExW` function:
-
 ```rust
-pub fn open_key(path: &str, writable: bool) -> Result<HKEY, u32> {
+pub fn open_key(path: &str, writable: bool) -> Result<HKEY, i32> {
     let path_w = to_wstring(path);
-    let mut key: HKEY = std::ptr::null_mut();
-    let rights = if writable { KEY_WRITE } else { KEY_READ };
+    let mut key: HKEY = null_mut();
+    let rights = if writable { KEY_READ | KEY_WRITE } else { KEY_READ };
 
-    let result = unsafe { RegOpenKeyExW(HKEY_CURRENT_USER, path_w.as_ptr(), 0, rights, &mut key) };
-
-    if result == 0 {
-        Ok(key)
-    } else {
-        Err(get_last_error())
-    }
+    check(unsafe { RegOpenKeyExW(HKEY_CURRENT_USER, path_w.as_ptr(), 0, rights, &mut key) })?;
+    Ok(key)
 }
 ```
 
 ### Creating a key
 
-To create a key, use the `RegCreateKeyExW` function:
+`RegCreateKeyExW` creates the key, or opens it if it already exists. The disposition output tells you which
+happened (`REG_CREATED_NEW_KEY` or `REG_OPENED_EXISTING_KEY`).
 
 ```rust
-pub fn create_key(path: &str) -> Result<HKEY, u32> {
+pub fn create_key(path: &str) -> Result<HKEY, i32> {
     let path_w = to_wstring(path);
-    let mut key: HKEY = std::ptr::null_mut();
+    let mut key: HKEY = null_mut();
     let mut disposition: DWORD = 0;
 
-    let result = unsafe {
+    check(unsafe {
         RegCreateKeyExW(
             HKEY_CURRENT_USER,
             path_w.as_ptr(),
             0,
-            std::ptr::null_mut(),
+            null_mut(), // class
             REG_OPTION_NON_VOLATILE,
             KEY_ALL_ACCESS,
-            std::ptr::null_mut(),
+            null_mut(), // security attributes
             &mut key,
             &mut disposition,
         )
-    };
-
-    if result == 0 {
-        Ok(key)
-    } else {
-        Err(get_last_error())
-    }
+    })?;
+    Ok(key)
 }
 ```
 
-### Reading a value
+### Reading a string value
 
-To read a value, use the `RegQueryValueExW` function:
+Call `RegQueryValueExW` once with a null buffer to get the size in **bytes**, then again with a buffer of
+that size. Check the type too: this helper only handles `REG_SZ`.
 
 ```rust
-pub fn read_value(key: HKEY, name: &str) -> Result<String, u32> {
+pub fn read_value(key: HKEY, name: &str) -> Result<String, i32> {
     let name_w = to_wstring(name);
     let mut value_type: DWORD = 0;
     let mut buf_size: DWORD = 0;
 
-    let result = unsafe {
+    check(unsafe {
+        RegQueryValueExW(key, name_w.as_ptr(), null_mut(), &mut value_type, null_mut(), &mut buf_size)
+    })?;
+
+    if value_type != REG_SZ {
+        return Err(winapi::shared::winerror::ERROR_INVALID_DATA as i32);
+    }
+
+    let mut buf = vec![0u16; (buf_size as usize + 1) / 2];
+    check(unsafe {
         RegQueryValueExW(
             key,
             name_w.as_ptr(),
-            std::ptr::null_mut(),
+            null_mut(),
             &mut value_type,
-            std::ptr::null_mut(),
+            buf.as_mut_ptr() as *mut u8,
             &mut buf_size,
         )
-    };
+    })?;
 
-    if result != 0 {
-        return Err(get_last_error());
-    }
-
-    let mut buf = vec![0u16; (buf_size / 2) as usize];
-
-    let result = unsafe {
-        RegQueryValueExW(
-            key,
-            name_w.as_ptr(),
-            std::ptr::null_mut(),
-            &mut value_type,
-            buf.as_mut_ptr() as LPVOID,
-            &mut buf_size,
-        )
-    };
-
-    if result == 0 {
-        Ok(from_wstring(&buf))
-    } else {
-        Err(get_last_error())
-    }
+    // The stored string is not guaranteed to be null-terminated; from_wstring handles both cases.
+    Ok(from_wstring(&buf))
 }
 ```
 
-### Writing a value
+### Writing a string value
 
-To write a value, use the `RegSetValueExW` function:
+`cbData` is the size in bytes and, for `REG_SZ`, should include the terminating null.
 
 ```rust
-pub fn write_value(key: HKEY, name: &str, value: &str) -> Result<(), u32> {
+pub fn write_value(key: HKEY, name: &str, value: &str) -> Result<(), i32> {
     let name_w = to_wstring(name);
     let value_w = to_wstring(value);
 
-    let result = unsafe {
+    check(unsafe {
         RegSetValueExW(
             key,
             name_w.as_ptr(),
             0,
             REG_SZ,
-            value_w.as_ptr() as LPCVOID,
-            (value_w.len() * 2) as u32,
+            value_w.as_ptr() as *const u8,
+            (value_w.len() * std::mem::size_of::<u16>()) as DWORD,
         )
-    };
-
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_last_error())
-    }
+    })
 }
 ```
 
-### Deleting a key
-
-To delete a key, use the `RegDeleteKeyW` function:
+### Deleting a value, closing and deleting a key
 
 ```rust
-pub fn delete_key(path: &str) -> Result<(), u32> {
-    let path_w = to_wstring(path);
-    let result = unsafe { RegDeleteKeyW(HKEY_CURRENT_USER, path_w.as_ptr()) };
-
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_last_error())
-    }
-}
-```
-
-### Deleting a value
-
-To delete a value, use the `RegDeleteValueW` function:
-
-```rust
-pub fn delete_value(key: HKEY, name: &str) -> Result<(), u32> {
+pub fn delete_value(key: HKEY, name: &str) -> Result<(), i32> {
     let name_w = to_wstring(name);
-    let result = unsafe { RegDeleteValueW(key, name_w.as_ptr()) };
+    check(unsafe { RegDeleteValueW(key, name_w.as_ptr()) })
+}
 
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_last_error())
-    }
+pub fn close_key(key: HKEY) -> Result<(), i32> {
+    check(unsafe { RegCloseKey(key) })
+}
+
+/// Deletes a key under HKEY_CURRENT_USER. The key must not have subkeys.
+pub fn delete_key(path: &str) -> Result<(), i32> {
+    let path_w = to_wstring(path);
+    check(unsafe { RegDeleteKeyW(HKEY_CURRENT_USER, path_w.as_ptr()) })
 }
 ```
 
-### Closing a key
+`RegDeleteKeyW` fails if the key has subkeys; use `RegDeleteTreeW` to remove a whole subtree.
 
-To close a key, use the `RegCloseKey` function:
+## Putting it together
 
-```rust
-pub fn close_key(key: HKEY) -> Result<(), u32> {
-    let result = unsafe { RegCloseKey(key) };
-
-    if result == 0 {
-        Ok(())
-    } else {
-        Err(get_last_error())
-    }
-}
-```
-
-## Putting it all together
-
-Now that we have implemented the registry functions, let's put them to use in our `main.rs`:
+`src/main.rs` creates `HKCU\Software\MyApp`, writes and reads a value, then cleans up. Note that every
+`HKEY` returned by create/open must be closed, including the one from `create_key`.
 
 ```rust
-mod winapi_helpers;
 mod registry;
+mod winapi_helpers;
 
-use registry::{create_key, open_key, read_value, write_value, delete_key, delete_value, close_key};
+use registry::{close_key, create_key, delete_key, delete_value, read_value, write_value};
 
-fn main() {
-    let key_path = "Software\\MyApp";
+fn main() -> Result<(), i32> {
+    let key_path = r"Software\MyApp";
 
-    // Create a key
-    match create_key(key_path) {
-        Ok(key) => println!("Key created successfully."),
-        Err(error) => eprintln!("Error creating key: {}", error),
-    }
+    let key = create_key(key_path)?;
+    println!("Key created or opened.");
 
-    // Open the key
-    let key = match open_key(key_path, true) {
-        Ok(key) => key,
-        Err(error) => {
-            eprintln!("Error opening key: {}", error);
-            return;
-        }
-    };
+    write_value(key, "TestValue", "Hello, World!")?;
+    println!("Value read back: {}", read_value(key, "TestValue")?);
 
-    // Write a value
-    match write_value(key, "TestValue", "Hello, World!") {
-        Ok(_) => println!("Value written successfully."),
-        Err(error) => eprintln!("Error writing value: {}", error),
-    }
+    delete_value(key, "TestValue")?;
+    close_key(key)?;
+    delete_key(key_path)?;
+    println!("Cleaned up.");
 
-    // Read the value
-    match read_value(key, "TestValue") {
-        Ok(value) => println!("Value read: {}", value),
-        Err(error) => eprintln!("Error reading value: {}", error),
-    }
-
-    // Delete the value
-    match delete_value(key, "TestValue") {
-        Ok(_) => println!("Value deleted successfully."),
-        Err(error) => eprintln!("Error deleting value: {}", error),
-    }
-
-    // Close the key
-    match close_key(key) {
-        Ok(_) => println!("Key closed successfully."),
-        Err(error) => eprintln!("Error closing key: {}", error),
-    }
-    
-    // Delete the key
-    match delete_key(key_path) {
-        Ok(_) => println!("Key deleted successfully."),
-        Err(error) => eprintln!("Error deleting key: {}", error),
-    }
+    Ok(())
 }
 ```
 
+If any step fails, `main` returns early and Rust prints the Win32 error code as `Error: <code>`.
+In real code you'd want an RAII wrapper that calls `RegCloseKey` in `Drop` so early returns don't leak
+handles, which is what `windows-registry` and the community [`winreg`](https://crates.io/crates/winreg)
+crate give you.
 
+## Further reading
+
+- [Registry functions (Win32 docs)](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-functions)
+- [`winapi::um::winreg` on docs.rs](https://docs.rs/winapi/latest/winapi/um/winreg/index.html)
+- [`windows-registry` on docs.rs](https://docs.rs/windows-registry)

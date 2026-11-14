@@ -1,89 +1,109 @@
 ---
-description: In this article, we will explore the key features of Maven, its project
-  structure, and how to get started with this versatile build tool
+description: What Apache Maven does, the standard project layout, how the build lifecycle and dependencies work, and how to generate, build and run a project from the command line.
 imgSrc: /imgs/2023/326029388.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-08T00:40:27.000Z'
-tags: []
-title: Apache Maven Unleashing the Power of Build Automation
+lastUpdated: 2026-11-14
+tags: ["java", "maven"]
+title: 'Getting started with Apache Maven: project layout, lifecycle and dependencies'
 ---
 
-# Apache Maven: Unleashing the Power of Build Automation
+Apache Maven is a build tool for Java projects. You describe the project in a `pom.xml` file (the Project Object Model): its coordinates, its dependencies, and any plugins. Maven downloads the dependencies, compiles the code, runs the tests and packages the result. It works by convention: if your files are where Maven expects them, the `pom.xml` stays short.
 
-Apache Maven is a powerful build automation tool primarily used in Java projects. It simplifies the entire build process, from compiling source code to generating documentation to deploying artifacts to a repository. In this article, we will explore the key features of Maven, its project structure, and how to get started with this versatile build tool.
+## The standard layout
 
-## What is Apache Maven?
-
-Maven is an open-source build tool that is used to manage the build lifecycle of projects, enforce development standards, and manage dependencies. Developed by the Apache Software Foundation, Maven relies on an XML file called the `pom.xml` (Project Object Model) to define the project structure, dependencies, and build process.
-
-### Key Features
-
-1. **Convention over Configuration**: Maven follows a standardized project structure and build process, which reduces the need for extensive configuration. This allows developers to focus on writing code without worrying about complex build configurations.
-
-2. **Dependency Management**: One of Maven's most powerful features is its ability to manage project dependencies. Maven automatically downloads and manages required libraries, ensuring that your project has the correct version of each dependency.
-
-3. **Build Lifecycle**: Maven has a predefined build lifecycle that consists of a series of phases, such as compile, test, and package. This lifecycle ensures a consistent build process across projects.
-
-4. **Plugins**: Maven has a rich ecosystem of plugins that can be used to extend its functionality. These plugins can be easily added to the `pom.xml` to perform tasks such as code generation, static analysis, and deployment.
-
-5. **Repository Management**: Maven integrates with artifact repositories such as Nexus and Artifactory, allowing developers to easily share and manage project artifacts.
-
-## Maven Project Structure
-
-Maven follows a standard directory structure, which helps to maintain consistency across projects. The default project structure is as follows:
-
-```
-my-project
-|-- pom.xml
-|-- src
-    |-- main
-    |   |-- java
-    |   |   `-- com
-    |   |       `-- mycompany
-    |   |           `-- MyApp.java
-    |   `-- resources
-    |-- test
-        |-- java
-        |   `-- com
-        |       `-- mycompany
-        |           `-- MyAppTest.java
-        `-- resources
+```text
+my-app
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── com/mycompany/App.java
+    │   └── resources
+    └── test
+        ├── java
+        │   └── com/mycompany/AppTest.java
+        └── resources
 ```
 
-In this structure, the `src/main/ directory contains the main source code, while the `src/main/resources` directory holds the project's resources, such as configuration files and images. Similarly, the `src/test/ directory contains the test source code, and the `src/test/resources` directory holds the test resources.
+`src/main/java` holds application code and `src/main/resources` holds files copied onto the classpath, such as configuration. `src/test/java` and `src/test/resources` are the test equivalents. They are compiled separately and never end up in the packaged JAR. Build output goes to `target/`.
 
-The `pom.xml` file, located at the root of the project, is the heart of Maven. It defines the project dependencies, plugins, and build configuration.
+## Coordinates and dependencies
 
-## Getting Started with Maven
+Every Maven artifact is identified by `groupId`, `artifactId` and `version`. You use the same three values to declare a dependency:
 
-To get started with Maven, follow these steps:
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.22.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>6.1.3</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
 
-1. **Install Maven**: Download Maven from the [official website](https://maven.apache.org/download.cgi) and follow the installation instructions for your operating system.
+Maven downloads dependencies from Maven Central (or a repository you configure, such as a company Nexus or Artifactory) into `~/.m2/repository`, along with their own dependencies. The `scope` decides where a dependency is available. `compile` (the default) is on every classpath, `test` only when compiling and running tests, and `provided` at compile time but not packaged, for things the runtime supplies.
 
-2. **Create a New Project**: To create a new Maven project, open the terminal and run the following command:
+When two libraries pull in different versions of the same dependency, Maven picks the one "nearest" to your project in the dependency tree, not the newest. `mvn dependency:tree` shows what was chosen and why.
 
-   ````
-   mvn archetype:generate -DgroupId=com.mycompany -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-   ```
+## The build lifecycle
 
-   This command generates a new Maven project with the `com.mycompany` group ID and the `my-app` artifact ID.
+Maven's default lifecycle is a fixed sequence of phases. The ones you'll use most are:
 
-3. **Build the Project**: Navigate to the project directory (`my-app`) and run the following command:
+1. `validate`
+2. `compile`
+3. `test`
+4. `package`
+5. `verify`
+6. `install` (copy the artifact into your local `~/.m2` repository)
+7. `deploy` (upload it to a remote repository)
 
-   ````
-   mvn package
-   ```
+Running a phase runs every phase before it, so `mvn package` also compiles and tests. The work in each phase is done by plugin goals bound to it. For a JAR project, `maven-compiler-plugin` runs in `compile`, `maven-surefire-plugin` in `test` and `maven-jar-plugin` in `package`. `mvn clean` belongs to a separate lifecycle and deletes `target/`.
 
-   This command compiles the project, runs the tests, and packages the project into a JAR file. The JAR file can be found in the `target` directory.
+## Create, build and run a project
 
-4. **Run the Application**: To run the application, execute the following command:
+Install a JDK and Maven. Maven 3.10.0 is the current release and needs JDK 8 or newer to run. Maven 4 is still in release candidates and not recommended for production yet. Then generate a project from the quickstart archetype:
 
-   ````
-   java -cp target/my-app-1.0-SNAPSHOT.jar com.mycompany.App
-   ```
+```bash
+mvn archetype:generate \
+  -DgroupId=com.mycompany \
+  -DartifactId=my-app \
+  -DarchetypeArtifactId=maven-archetype-quickstart \
+  -DarchetypeVersion=1.5 \
+  -DinteractiveMode=false
+```
 
-   This command runs the `main` method of the `com.mycompany.App` class, which is the entry point of the application.
+This creates a `my-app` directory with a `pom.xml`, a `com.mycompany.App` class that prints "Hello World!", and a JUnit 5 test (archetype 1.5 defaults to JUnit 5.11.0). It also targets Java 17 by default. Pass `-DjavaCompilerVersion=21` to change it. Without `-DarchetypeVersion`, you may get an old version of the archetype.
 
-## Conclusion
+Build it:
 
-Apache Maven is a powerful and flexible build automation tool that simplifies the build process of Java projects. By following conventions and providing robust dependency management, Maven allows developers to focus on writing code and ensures a consistent build process across projects. With its rich ecosystem of plugins and support for repository management, Maven is an invaluable tool for modern software development.
+```bash
+cd my-app
+mvn package
+```
+
+This compiles the code, runs the tests and writes `target/my-app-1.0-SNAPSHOT.jar`. Run the class:
+
+```bash
+java -cp target/my-app-1.0-SNAPSHOT.jar com.mycompany.App
+```
+
+The JAR has no `Main-Class` in its manifest, so `java -jar` won't work without configuring `maven-jar-plugin`. It also doesn't include dependencies. To build a runnable "fat" JAR, use `maven-shade-plugin` or `maven-assembly-plugin`.
+
+## Gotchas
+
+- **Pin plugin versions.** If the `pom.xml` doesn't set a plugin version, Maven uses a default from its own super POM, which changes between Maven releases. The quickstart archetype pins them in `<pluginManagement>`, so keep that section.
+- **Commit the Maven Wrapper.** Running `mvn wrapper:wrapper` adds `mvnw` scripts that download a fixed Maven version, so everyone (and CI) builds with the same one.
+- **`SNAPSHOT` means "may change".** A `-SNAPSHOT` dependency can resolve to a different build tomorrow. Release builds shouldn't depend on snapshots.
+
+## Further reading
+
+- [Maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
+- [Introduction to the build lifecycle](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)
+- [Introduction to the dependency mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)

@@ -1,18 +1,18 @@
 ---
-title: Using Rust's Option and Result Types for Safer and More Expressive Code
+title: "Working with Option and Result in Rust: matching, combinators and conversions"
 pubDate: "2024-01-06T06:30:05.000Z"
-description: "In this article , we will discuss how to use these types to write safer and more expressive code in Rust"
-tags: []
+lastUpdated: 2026-11-14
+description: "Use Rust's Option and Result types with match, combinators such as map, and_then and unwrap_or, the ? operator, and conversions like ok_or and transpose."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3431403716.png
 ---
-# Using Rust's Option and Result Types for Safer and More Expressive Code
 
-Rust is a systems programming language that emphasizes safety, concurrency, and performance. One of its many features that help achieve these goals is its powerful type system, which includes the `Option` and `Result` types. In this article, we will discuss how to use these types to write safer and more expressive code in Rust.
+Rust has no null and no exceptions. Instead, a value that might be missing has type `Option<T>`, and an operation that might fail returns `Result<T, E>`. Because these are ordinary enums, the compiler makes you handle the missing or failed case before you can use the value. This post shows how to work with both without drowning in `match` statements.
 
-## Option Type
+## Option
 
-The `Option` type is an enumeration that can either represent a value of a given type, or no value at all. It is defined as:
+`Option` is defined in the standard library as:
 
 ```rust
 pub enum Option<T> {
@@ -21,62 +21,75 @@ pub enum Option<T> {
 }
 ```
 
-`Option<T>` is useful when you want to express that a value might not be available, and it helps to prevent the common problem of null pointer dereferences, which can lead to crashes, security vulnerabilities, and other issues.
+An `Option<&str>` is either `Some` with a string slice or `None`. You can't call string methods on it directly, so you can't forget to check for the missing case the way you can with a null pointer.
 
-### Usage
+### Returning an Option
 
-Let's say we have a function that searches for a user in a list of users by their ID and returns their name. If the user is found, the function should return the name; otherwise, it should return nothing. Using the `Option` type, we can define the function as follows:
+Here's a function that looks up a user's name by ID:
 
 ```rust
+struct User {
+    id: u32,
+    name: String,
+}
+
 fn find_user_name(users: &[User], id: u32) -> Option<&str> {
     for user in users {
         if user.id == id {
-            return Some(&user.name);
+            return Some(user.name.as_str());
         }
     }
     None
 }
-```
 
-The return type `Option<&str>` indicates that the function will either return a reference to a string (the user's name) or no value (`None`).
+fn main() {
+    let users = vec![
+        User { id: 1, name: "Alice".to_string() },
+        User { id: 42, name: "Bob".to_string() },
+    ];
 
-When calling this function, we can pattern match on the result to handle both cases:
-
-```rust
-let user_name = find_user_name(&users, 42);
-match user_name {
-    Some(name) => println!("Found user: {}", name),
-    None => println!("User not found"),
+    match find_user_name(&users, 42) {
+        Some(name) => println!("Found user: {name}"),
+        None => println!("User not found"),
+    }
 }
 ```
 
-### Chaining and Mapping
+With iterator methods, the lookup is one expression: `find` already returns an `Option`, and `map` transforms the value inside it:
 
-The `Option` type also provides several useful methods for working with optional values, such as `map`, `and_then`, and `unwrap_or`.
+```rust
+fn find_user_name(users: &[User], id: u32) -> Option<&str> {
+    users.iter().find(|u| u.id == id).map(|u| u.name.as_str())
+}
+```
 
-- `map`: Applies a function to the contained value if `Some`, otherwise returns `None`.
+If you only care about one case, `if let` is shorter than `match`:
 
-    ```rust
-    let doubled = Some(2).map(|x| x * 2); // Some(4)
-    ```
+```rust
+if let Some(name) = find_user_name(&users, 42) {
+    println!("Found user: {name}");
+}
+```
 
-- `and_then`: Applies a function that returns an `Option` to the contained value if `Some`, otherwise returns `None`.
+### Option combinators
 
-    ```rust
-    let result = Some(2).and_then(|x| if x > 0 { Some(x * 2) } else { None }); // Some(4)
-    ```
+These methods let you transform an `Option` without unpacking it:
 
-- `unwrap_or`: Returns the contained value if `Some`, otherwise returns the provided default value.
+```rust
+let doubled = Some(2).map(|x| x * 2);                       // Some(4)
+let checked = Some(2u32).and_then(|x| x.checked_sub(5));    // None (would underflow)
+let filtered = Some(7).filter(|x| x % 2 == 0);              // None
+let value = None.unwrap_or(0);                              // 0
+let computed = None::<i32>.unwrap_or_else(|| 40 + 2);        // 42
+```
 
-    ```rust
-    let value = Some(2).unwrap_or(0); // 2
-    ```
+- `map` applies a function to the value inside `Some` and leaves `None` alone.
+- `and_then` is for functions that themselves return an `Option`, so you don't end up with `Option<Option<T>>`.
+- `unwrap_or` supplies a default. Its argument is always evaluated, so use `unwrap_or_else` when the default is expensive to compute.
 
-These methods can be chained together to create more complex logic with optional values.
+## Result
 
-## Result Type
-
-The `Result` type is another enumeration that can represent either a successful value of a given type, or an error value of another type. It is defined as:
+`Result` represents success or failure:
 
 ```rust
 pub enum Result<T, E> {
@@ -85,11 +98,9 @@ pub enum Result<T, E> {
 }
 ```
 
-`Result<T, E>` is useful when you want to express that an operation might fail, and it helps to prevent the common problem of error handling being ignored or forgotten.
+### Returning a Result
 
-### Usage
-
-Suppose we have a function that reads a file and returns its contents as a string. The file reading operation might fail for various reasons, such as the file not existing, insufficient permissions, or other I/O errors. Using the `Result` type, we can define the function as follows:
+Reading a file can fail because it doesn't exist, because of permissions, or because of other I/O errors, so `File::open` returns a `Result`:
 
 ```rust
 use std::fs::File;
@@ -101,64 +112,82 @@ fn read_file_contents(path: &str) -> Result<String, io::Error> {
     file.read_to_string(&mut contents)?;
     Ok(contents)
 }
-```
 
-The return type `Result<String, io::Error>` indicates that the function will either return a successful string (the file contents) or an error value (`io::Error`).
-
-The `?` operator is used to propagate errors upward in the call stack. If the expression on the right-hand side of the `?` operator evaluates to an `Err`, the function will immediately return that error value.
-
-When calling this function, we can pattern match on the result to handle both cases:
-
-```rust
-match read_file_contents("file.txt") {
-    Ok(contents) => println!("File contents: {}", contents),
-    Err(error) => println!("Error reading file: {}", error),
+fn main() {
+    match read_file_contents("file.txt") {
+        Ok(contents) => println!("File contents: {contents}"),
+        Err(error) => println!("Error reading file: {error}"),
+    }
 }
 ```
 
-### Chaining and Mapping
+The `?` after an expression means: if it's `Err`, return that error from this function now; otherwise unwrap the `Ok` value and continue. `Result` is also marked `#[must_use]`, so the compiler warns if you call a function returning one and ignore the result.
 
-Similar to the `Option` type, the `Result` type provides several useful methods for working with result values, such as `map`, `and_then`, and `unwrap_or`.
+### Result combinators
 
-- `map`: Applies a functionto the successful value if `Ok`, otherwise returns the error value.
-
-    ```rust
-    let doubled = Result::Ok(2).map(|x| x * 2); // Ok(4)
-    ```
-
-- `and_then`: Applies a function that returns a `Result` to the successful value if `Ok`, otherwise returns the error value.
-
-    ```rust
-    let result = Result::Ok(2).and_then(|x| if x > 0 { Ok(x * 2) } else { Err("Negative value") }); // Ok(4)
-    ```
-
-- `unwrap_or`: Returns the successful value if `Ok`, otherwise returns the provided default value.
-
-    ```rust
-    let value = Result::Ok(2).unwrap_or(0); // 2
-    ```
-
-These methods can be chained together to create more complex logic with result values.
-
-## Combining Option and Result
-
-In some cases, you might need to work with functions that return both `Option` and `Result` types. For example, you might have a function that returns an optional result:
+`Result` has the same family of methods, plus some that act on the error side. The type annotations are needed here because a bare `Ok(2)` doesn't tell the compiler what the error type is:
 
 ```rust
-fn find_user_email(users: &[User], id: u32) -> Option<Result<&str, EmailError>> {
-    // ...
+use std::num::ParseIntError;
+
+let ok: Result<i32, String> = Ok(2);
+let doubled = ok.clone().map(|x| x * 2);                       // Ok(4)
+let positive = ok.clone().and_then(|x| {
+    if x > 0 { Ok(x) } else { Err("not positive".to_string()) }
+});                                                            // Ok(2)
+
+let err: Result<i32, String> = Err("boom".to_string());
+let value = err.clone().unwrap_or(0);                          // 0
+let message = err.map_err(|e| format!("failed: {e}"));         // Err("failed: boom")
+
+let parsed: Result<i32, ParseIntError> = "abc".parse::<i32>();
+println!("{}", parsed.is_err());                               // true
+```
+
+`map_err` is the one you'll reach for most often in practice: it converts a low-level error into the error type your function returns, so `?` can propagate it.
+
+## Converting between Option and Result
+
+These conversions come up constantly at the boundary between "might be missing" and "might fail":
+
+```rust
+let maybe_port: Option<&str> = Some("8080");
+
+// Option -> Result: turn None into a specific error
+let port_str: Result<&str, String> = maybe_port.ok_or("PORT not set".to_string());
+
+// Result -> Option: discard the error
+let port: Option<u16> = "8080".parse::<u16>().ok();   // Some(8080)
+```
+
+`ok_or_else` is the lazy version of `ok_or`, for when building the error is expensive.
+
+### transpose
+
+Sometimes you have an optional value that needs a fallible operation, such as an optional config field that has to be parsed. Mapping the parse over the `Option` gives you `Option<Result<T, E>>`, which is awkward to use with `?`. `transpose` swaps the layers into `Result<Option<T>, E>`:
+
+```rust
+use std::num::ParseIntError;
+
+fn parse_optional_port(raw: Option<&str>) -> Result<Option<u16>, ParseIntError> {
+    raw.map(|s| s.parse::<u16>()).transpose()
+}
+
+fn main() {
+    println!("{:?}", parse_optional_port(Some("8080"))); // Ok(Some(8080))
+    println!("{:?}", parse_optional_port(None));         // Ok(None)
+    println!("{}", parse_optional_port(Some("abc")).is_err()); // true
 }
 ```
 
-In this scenario, you can use the `transpose` method to convert between `Option<Result<T, E>>` and `Result<Option<T>, E>`:
+A missing value is fine (`Ok(None)`), but a present value that doesn't parse is an error the caller can propagate with `?`.
 
-```rust
-let optional_result: Option<Result<&str, EmailError>> = find_user_email(&users, 42);
-let result_of_option: Result<Option<&str>, EmailError> = optional_result.transpose();
-```
+## Gotchas
 
-This allows you to work with the `Result` type first, handling any errors, and then work with the `Option` type, handling the presence or absence of a value.
+- `unwrap()` and `expect()` panic on `None` or `Err`. They're fine in tests and prototypes; in real code prefer `?`, a default, or an explicit `match`. If you do use one, `expect("why this can't fail")` documents your reasoning.
+- `?` on an `Option` only works inside a function that returns `Option`, and `?` on a `Result` only inside one that returns `Result`. Use `ok_or` or `.ok()` to convert at the boundary.
 
-## Conclusion
+## Further reading
 
-Rust's `Option` and `Result` types provide a powerful and expressive way to handle optional values and errors in your code. By leveraging their features and methods, you can write safer and more robust code that is easier to understand and maintain.
+- [`std::option` module docs](https://doc.rust-lang.org/std/option/), including a table of all the combinators
+- [`std::result` module docs](https://doc.rust-lang.org/std/result/)

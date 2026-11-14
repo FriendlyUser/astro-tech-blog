@@ -1,66 +1,65 @@
 ---
-description: In this article, we will dive into the key features of PyCharm and explore
-  how to use them effectively
+description: Set up a PyCharm project with a virtual environment, then use its code completion, refactoring shortcuts, debugger and Git tools in daily Python work.
 imgSrc: /imgs/2023/1028024527.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-11T09:44:06.000Z'
-tags: []
-title: Mastering Python Development with PyCharm
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: "PyCharm for Python: project setup, refactoring, debugging and Git"
 ---
 
-# Mastering Python Development with PyCharm
+PyCharm is JetBrains' IDE for Python. Its main advantage over a plain editor is that it indexes your whole project and its installed packages, so completion, navigation and refactoring understand your code rather than matching text.
 
-PyCharm is a powerful integrated development environment (IDE) for Python programmers. Developed by JetBrains, PyCharm provides a wide array of features that make Python development more productive and enjoyable. In this article, we will dive into the key features of PyCharm and explore how to use them effectively.
+## Editions
 
-## Setting Up Your Environment
+PyCharm used to ship as two products: a free Community edition and a paid Professional edition. Starting with 2025.1, JetBrains merged them into a single PyCharm download, and 2025.2 was the last standalone Community release. The core Python features (editor, debugger, testing, Git) stay free; web frameworks, database tools, remote interpreters and similar features need a Pro subscription. New installs start with a 30-day Pro trial.
 
-To get started with PyCharm, download and install the latest version from the [official website](https://www.jetbrains.com/pycharm/). PyCharm comes in two editions: Professional and Community. The Professional edition has more features such as support for web development and remote interpreters, while the Community edition is free and provides a solid set of tools for Python development.
+## Setting up a project
 
-Once PyCharm is installed, you can create a new project or open an existing one. PyCharm will automatically detect your Python interpreter and create a virtual environment for your project, isolating dependencies from your system installation.
+Download PyCharm from the [JetBrains website](https://www.jetbrains.com/pycharm/download/) and create a new project. The new-project dialog asks which interpreter to use and can create a fresh environment for the project (a virtualenv, uv or conda environment) so its dependencies stay separate from your system Python. You can change it later under **Settings | Python | Interpreter**.
 
-## Navigating the Interface
+For an existing project, open the folder. If it has a `requirements.txt` or `pyproject.toml`, PyCharm offers to install the dependencies into the selected interpreter.
 
-PyCharm's interface is organized into several panels:
+## Shortcuts worth learning
 
-1. **Project panel**: This panel displays your project files and directories, allowing you to quickly navigate to any file.
+All shortcuts below are for the default Windows/Linux keymap. macOS uses different bindings; look them up under **Settings | Keymap**, or press `Shift` twice and search for the action by name, which works on every platform.
 
-2. **Editor panel**: This is the main area where you write and edit your code. PyCharm supports multiple open files in tabs, allowing you to switch between them easily.
+### Code completion and docs
 
-3. **Tool windows**: These windows provide additional information and tools, such as the terminal, version control, debugger, and more. You can toggle their visibility with the corresponding icons in the bottom left corner of the interface.
+Completion suggestions appear as you type. Press `Enter` to insert the suggestion or `Tab` to replace the word under the caret. Press `Ctrl+Q` on a function or class to see its documentation without leaving the file, and `Ctrl+B` (or `Ctrl`+click) to jump to its definition.
 
-## Intelligent Code Completion
+### Refactoring
 
-One of the most helpful features of PyCharm is its intelligent code completion. As you type your code, PyCharm analyzes it in real-time and suggests context-aware completions. To accept a suggestion, press `Enter` or `Tab`. You can also view method signatures and documentation by pressing `Ctrl+Q` (or `Cmd+J` on macOS) while the cursor is over a method or class name.
+- **Rename** (`Shift+F6`): renames a variable, function, class or module and updates every reference, including imports in other files.
+- **Extract method** (`Ctrl+Alt+M`): turns the selected code into a new function. PyCharm works out the parameters and return values from the variables the code uses.
+- **Inline** (`Ctrl+Alt+N`): the reverse. Replaces calls to a function or uses of a variable with its body or value.
 
-## Refactoring Tools
+Refactorings show a preview when they touch several files. Review it before applying, especially for dynamic code PyCharm can't analyse, such as `getattr` with a string name.
 
-PyCharm offers various refactoring tools to improve your code structure and maintainability. Some of the key refactorings include:
+### Debugging
 
-- **Rename**: Press `Shift+F6` to rename a variable, method, or class, and PyCharm will automatically update all references.
+Click in the gutter next to a line to set a breakpoint, then start the debugger with `Shift+F9` (debugs the current run configuration). When execution stops:
 
-- **Extract**: Select a piece of code and press `Ctrl+Alt+M` (or `Cmd+Alt+M` on macOS) to extract it into a new method. PyCharm will analyze the code and suggest method parameters and return values.
+| Key | Action |
+| --- | --- |
+| `F8` | Step over: run the current line |
+| `F7` | Step into the function called on this line |
+| `Shift+F8` | Step out to the caller |
+| `Alt+F9` | Run to the caret position |
+| `F9` | Resume until the next breakpoint |
+| `Alt+F8` | Evaluate an arbitrary expression in the current frame |
 
-- **Inline**: Select a method and press `Ctrl+Alt+N` (or `Cmd+Alt+N` on macOS) to inline it, replacing method calls with the method's body.
+Right-click a breakpoint to add a condition (for example `i == 500`) so it only stops when it matters. That saves a lot of `F9` presses in loops.
 
-## Debugging
+## Git
 
-PyCharm's powerful debugger allows you to set breakpoints, step through your code, and inspect variable values. To start a debugging session, click the debug icon in the toolbar or press `Shift+F9`.
+PyCharm detects a Git repository when you open the project. The **Commit** tool window (`Alt+0`) lists changed files, lets you choose which files or individual changes to include, and shows a diff for each. The **Git** tool window (`Alt+9`) shows the log and branches. Merge conflicts open in a three-pane editor with your version, the incoming version and the result side by side.
 
-When the debugger hits a breakpoint, you can use the following keys to control the execution:
+## When not to use it
 
-- `F8`: Step over (execute the current line and move to the next one)
-- `F7`: Step into (move to the first line of the called method)
-- `Shift+F8`: Step out (finish the current method and move to the caller)
-- `Alt+F9`: Run to cursor (resume execution until the cursor position)
+PyCharm is heavy: indexing a large project with many dependencies takes time and memory. For quick scripts or a slow machine, a lighter editor with a Python language server may suit you better.
 
-Additionally, you can use the debugger's "Watches" and "Evaluate Expression" windows to examine variable values and execute arbitrary Python expressions.
+## Further reading
 
-## Version Control Integration
-
-PyCharm integrates with popular version control systems such as Git, Mercurial, and Subversion. You can perform common VCS operations directly from the IDE, such as committing changes, creating branches, and resolving conflicts.
-
-To get started, open the "Version Control" tool window by clicking on the corresponding icon in the bottom left corner. You'll see a list of your project's changes, allowing you to stage, unstage, and view differences between files.
-
-## Conclusion
-
-PyCharm is a powerful and feature-rich IDE that can significantly enhance your productivity and code quality when working with Python. By utilizing its intelligent code completion, refactoring tools, debugging capabilities, and version control integration, you can streamline your development process and focus on writing high-quality code.
+- [PyCharm documentation](https://www.jetbrains.com/help/pycharm/getting-started.html)
+- [Unified PyCharm: what changed](https://www.jetbrains.com/help/pycharm/unified-pycharm.html)

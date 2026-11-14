@@ -1,68 +1,51 @@
 ---
-tags: []
-title: In this post I will compare github, gitlab, and bitbucket
-description: Looking at pros and cons of the main code hosting choices.
+tags: ["git"]
+title: "GitHub vs GitLab vs Bitbucket: choosing a Git host"
+description: How GitHub, GitLab and Bitbucket differ on CI/CD, self-hosting, licensing and integrations, and which kind of project each one suits.
 pubDate: Fri, 22 May 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2677360986.png
 ---
 
-If you're a software developer, you know the importance of version control systems (VCS) like Git for managing your source code. But with so many VCS providers available, how do you choose the right one for your project? In this post, we'll compare three popular Git-based VCS providers - GitHub, GitLab, and Bitbucket - and help you make an informed decision.
+GitHub, GitLab and Bitbucket all host Git repositories with pull/merge requests, code review, issues and built-in CI/CD, and all three offer free plans with private repositories. The basics are close enough that the choice usually comes down to three things: where the people you work with already are, whether you need to run it on your own servers, and which other tools it has to plug into.
 
-Git is a distributed version control system that's widely used by software developers for managing and tracking changes to source code. Git is useful for a number of reasons, including:
+## GitHub
 
-Version control: Git allows developers to keep track of changes to their code over time. It allows developers to see the history of changes to a file or project, and to revert to a previous version if needed.
+GitHub is owned by Microsoft and is where most open-source projects live. Public and private repositories are free, and since 2020 the free plan has allowed unlimited collaborators on private repositories.
 
-Collaboration: Git makes it easy for developers to collaborate on a project. Multiple developers can work on the same codebase simultaneously, and Git will automatically manage the merging of changes.
+- CI/CD is [GitHub Actions](https://docs.github.com/en/actions), configured with YAML files in `.github/workflows`. The Marketplace has a large catalogue of reusable actions, which is its main advantage over the other two.
+- Self-hosting is available as GitHub Enterprise Server, a paid product. You can also run Actions jobs on your own machines with self-hosted runners while keeping the code on github.com.
+- The source code of GitHub itself is not open.
 
-Branching and merging: Git makes it easy to create and manage branches of a codebase. This allows developers to experiment with new features or fixes without affecting the main codebase. Once a feature is complete, the branch can be merged back into the main codebase.
+Pick it for open-source work, or when contributors and potential hires are most likely to already have an account.
 
-Backup and recovery: Git makes it easy to back up and recover code. Because Git stores a complete history of changes, developers can recover lost code or revert to a previous version if needed.
+## GitLab
 
-Integration: Git can be easily integrated with other tools and services, such as continuous integration and deployment (CI/CD) tools, issue tracking systems, and project management tools.
+GitLab is built as one application covering the whole delivery pipeline: repositories, CI/CD, a container registry, issue boards and more.
 
-1. GitHub
+- [GitLab CI/CD](https://docs.gitlab.com/ci/) is configured in a `.gitlab-ci.yml` file and has been part of the product for longer than GitHub Actions has existed.
+- GitLab is open core. The Community Edition is open source under the MIT licence and can be self-hosted for free; paid tiers add features on top.
+- You can use the hosted service at gitlab.com or run your own instance.
 
-GitHub is a web-based Git repository hosting service that's used by millions of developers worldwide. It's free for public repositories and offers paid plans for private repositories. GitHub has a user-friendly interface and a strong community of developers, making it an ideal choice for open-source projects.
+Pick it when you want to self-host without paying, or want CI/CD and the rest of the pipeline in the same tool.
 
-Features:
+## Bitbucket
 
-* Easy to use and set up
-* Strong community and large user base
-* Integration with a variety of third-party tools and services
-* Public and private repository options
-* Continuous integration and delivery (CI/CD) features
-* Issue tracking and project management tools
+Bitbucket is Atlassian's Git host, and its main selling point is integration with Jira and Confluence: linking commits and pull requests to Jira issues works out of the box.
 
-2. GitLab
+- CI/CD is [Bitbucket Pipelines](https://support.atlassian.com/bitbucket-cloud/docs/get-started-with-bitbucket-pipelines/), configured in `bitbucket-pipelines.yml`.
+- Bitbucket no longer supports Mercurial. Atlassian removed Mercurial repositories from Bitbucket Cloud in 2020, so it's Git only.
+- Bitbucket Server reached end of support in February 2024. Bitbucket Data Center is now Atlassian's only self-managed option.
 
-GitLab is another popular web-based Git repository hosting service. Unlike GitHub, GitLab is open source and offers both self-hosted and cloud-hosted options. GitLab is known for its robust features, including built-in CI/CD, issue tracking, and project management tools.
+Pick it when your team already runs on Jira and Confluence.
 
-Features:
+## Which one?
 
-* Open-source and self-hosted options
-* Robust features, including built-in CI/CD, issue tracking, and project management tools
-* Integration with a variety of third-party tools and services
-* Public and private repository options
-* Continuous integration and delivery (CI/CD) features
-3. Bitbucket
+- Open source, or you want the biggest pool of contributors and third-party actions: GitHub.
+- Self-hosted, or one tool for the whole pipeline: GitLab.
+- Already on Jira: Bitbucket.
 
-Bitbucket is a Git-based VCS provider that's owned by Atlassian. It's designed for both individuals and teams and offers both cloud-hosted and self-hosted options. Bitbucket is known for its integration with other Atlassian tools, such as Jira and Confluence, and its strong support for Mercurial, another version control system.
+Switching later is not hard for the code itself. Git history moves with a `git clone --mirror` and `git push --mirror`, and each host has importers for repositories from the others. Issues, pull request history and CI configuration are what take real effort to move, so that is the part worth getting right up front.
 
-Features:
-
-* Integration with other Atlassian tools, such as Jira and Confluence
-* Strong support for Mercurial
-* Public and private repository options
-* Continuous integration and delivery (CI/CD) features
-* Issue tracking and project management tools
-
-So, which one should you choose?
-
-The answer depends on your specific needs. If you're a developer working on open-source projects, GitHub is a great choice. It has a large user base and is easy to use. If you're looking for robust features, GitLab is a great option. It has built-in CI/CD, issue tracking, and project management tools. If you're already using other Atlassian tools, Bitbucket is a great choice for its integration with Jira and Confluence.
-
-In conclusion, all three Git-based VCS providers have their own unique features and advantages. You should evaluate your specific needs and choose the one that best fits your project.
-
-We hope this post has helped you make an informed decision. Happy coding!
-
-
+Pricing and free-tier limits (CI minutes, storage, seats) change often, so check the current pricing pages before deciding.

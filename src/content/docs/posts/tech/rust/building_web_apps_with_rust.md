@@ -1,38 +1,37 @@
 ---
-title: Building Web Applications with Rust using Actix Web
-description: In this article, we will introduce you to building web apps with Rust and discuss topics like routing, middleware, and database access using the Actix Web framework.
+title: Building a web app in Rust with Actix Web (routing, logging, Postgres and templates)
+description: Build an Actix Web 4 app step by step, with path parameters, request logging, inserting rows into Postgres with sqlx, Tera templates and static files.
 tags: ["rust", "bash"]
 pubDate: Saturday, 29 April 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 layout: '@/templates/BasePost.astro'
 imgSrc: "/imgs/2023/nature_0.jpeg"
 ---
 
-# Building Web Applications with Rust using Actix Web
+[Actix Web](https://actix.rs/) is an async web framework for Rust. You register handler functions
+on routes; handlers take typed extractors (path segments, JSON bodies, shared state) as arguments
+and return anything that implements `Responder`. Since version 4 it runs on the Tokio-based
+`actix-rt` runtime and no longer depends on the Actix actor framework.
 
-Rust is a systems programming language that offers many benefits for web application development. Its speed, safety, and strong type system make it an excellent choice for building modern web applications. In this article, we will introduce you to building web apps with Rust and discuss topics like routing, middleware, and database access using the Actix Web framework.
+This post builds up a small app: a hello-world route, a path parameter, request logging, a
+Postgres insert with `sqlx`, and an HTML page rendered with Tera plus static files. The examples
+were checked against actix-web 4.19.0.
 
-## Introduction to Actix Web
-
-[Actix Web](https://actix.rs/) is a powerful, pragmatic, and flexible framework for Rust that makes it easy to build web applications. It is built on the [Actix actor system](https://actix.rs/actix/), which provides a high-performance and concurrent foundation. Actix Web offers features like routing, middleware, and various integrations with other libraries, making it a popular choice among Rust developers.
-
-## Getting Started
-
-To start building a web application with Rust and Actix Web, you need to have Rust installed on your system. Visit the [official Rust website](https://www.rust-lang.org/tools/install) for instructions on how to install Rust.
-
-Once you have Rust installed, create a new project using the following command:
+## Hello world
 
 ```sh
-$ cargo new my_web_app
-$ cd my_web_app
+cargo new my_web_app
+cd my_web_app
 ```
 
-Add Actix Web as a dependency by opening `Cargo.toml` and adding the following line under `[dependencies]`:
+Add to `Cargo.toml`:
 
 ```toml
-actix-web = "4.0"
+[dependencies]
+actix-web = "4"
 ```
 
-Now, you can create a basic Actix Web application. Open `src/main.rs` and replace its contents with the following code:
+Replace `src/main.rs`:
 
 ```rust
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
@@ -43,21 +42,20 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .route("/"In this article, web::get().to(index))
-    })
-    .bind("127.0.0.1:8080")?
-    .run()
-    .await
+    HttpServer::new(|| App::new().route("/", web::get().to(index)))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
 ```
 
-Run the application using `cargo run`. Visit `http://127.0.0.1:8080` in your browser, and you should see the message "Hello, Actix Web!"
+Run `cargo run` and open `http://127.0.0.1:8080`. `HttpServer::new` takes a closure because it
+builds a separate `App` for each worker thread.
 
-## Routing
+## Routing and path parameters
 
-Actix Web provides a flexible and type-safe routing system. In the example above, we defined a single route for the root path ("/") using the `route` method. You can also define more complex routes using `resource` and `scope`. Here's an example:
+Path segments in `{braces}` are extracted with `web::Path<T>`, which parses the segment into `T`
+and returns 404 if it doesn't parse:
 
 ```rust
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
@@ -67,34 +65,40 @@ async fn index() -> impl Responder {
 }
 
 async fn user_detail(user_id: web::Path<i32>) -> impl Responder {
-    HttpResponse::Ok().body(format!("User detail for user {}", user_id))
+    let user_id = user_id.into_inner();
+    HttpResponse::Ok().body(format!("User detail for user {user_id}"))
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .route("/"In this article, web::get().to(index))
-            .route("/users/{user_id}"In this article, web::get().to(user_detail))
+            .route("/", web::get().to(index))
+            .route("/users/{user_id}", web::get().to(user_detail))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
 ```
 
-Now, when you visit `http://127.0.0.1:8080/users/42`, you should see "User detail for user 42".
+`http://127.0.0.1:8080/users/42` returns "User detail for user 42". For groups of routes under a
+common prefix, use `web::scope("/api")`; for several methods on one path, use `web::resource`.
 
-## Middleware
+## Middleware: request logging
 
-Middleware is a way to process incoming requests and outgoing responses at various stages of the request-response lifecycle. Actix Web middleware can be added using the `wrap` method on the `App` or `Resource` objects.
+Middleware wraps the app (or a scope or resource) with `.wrap()`. The built-in `Logger` writes one
+line per request through the `log` crate, so you also need a logger implementation such as
+`env_logger`, otherwise nothing is printed:
 
-Here's an example of a simple logging middleware:
+```toml
+[dependencies]
+actix-web = "4"
+env_logger = "0.11"
+```
 
 ```rust
-use actix_web::{
-    web, middleware, App, HttpResponse, HttpServer, Responder
-};
+use actix_web::{middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello, Actix Web!")
@@ -102,156 +106,208 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
     HttpServer::new(|| {
         App::new()
-            .wrap(middleware::Logger::default())
-            .route("/"In this article, web::get().to(index))
+            .wrap(Logger::default())
+            .route("/", web::get().to(index))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
 ```
 
-Now, when you run the application and make requests, you will see log messages in the console.
+## Database access with sqlx
 
-## Database Access
-Actix Web can integrate with various database libraries, like Diesel, sqlx, and others. In this example, we will use [sqlx](https://github.com/launchbadge/sqlx), an async and type-safe PostgreSQL library.  
-
-First, add the following dependencies to your `Cargo.toml`:
+[sqlx](https://github.com/launchbadge/sqlx) is an async SQL toolkit. The connection pool is shared
+with handlers through `web::Data`, which wraps it in an `Arc`. The dependencies (checked against
+sqlx 0.9.0):
 
 ```toml
-sqlx = { version = "0.5", features = ["runtime-tokio", "postgres"] }
-tokio = { version = "1", features = ["full"] }
-uuid = { version = "0.8", features = ["v4"] }
+[dependencies]
+actix-web = "4"
+serde = { version = "1", features = ["derive"] }
+sqlx = { version = "0.9", features = ["runtime-tokio", "postgres", "uuid"] }
+uuid = { version = "1", features = ["v4", "serde"] }
 ```
 
-Next, we'll set up our database schema and connection pool:
-
 ```rust
-use sqlx::postgres::PgPool;
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
+use serde::Deserialize;
+use sqlx::PgPool;
+use uuid::Uuid;
 
-#[tokio::main] 
-async fn main() -> Result<(), sqlx::Error> {
-    let db_url = "postgres://username:password@localhost/db_name";
-    let pool = PgPool::connect(&db_url).await?;
-
-    // Create `users` table
-    sqlx::query!("CREATE TABLE users (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), 
-        name TEXT NOT NULL
-    )")
-        .execute(&pool)
-        .await?;
-}
-```
-
-Now we can define a handler to insert a new user into the database:
-
-```rust
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 struct NewUser {
-    name: String, 
+    name: String,
 }
 
 #[post("/users")]
-async fn create_user(
-    payload: web::Json<NewUser>, 
-    pool: web::Data<PgPool>
-) -> impl Responder {
-    let user_id = uuid::Uuid::new_v4();
-    sqlx::query!(
-        "INSERT INTO users (id, name) VALUES ($1, $2)",
-        user_id,
-        &payload.name
-    )
-    .execute(&pool)
-    .await
-    .unwrap();
+async fn create_user(payload: web::Json<NewUser>, pool: web::Data<PgPool>) -> impl Responder {
+    let user_id = Uuid::new_v4();
+    let result = sqlx::query("INSERT INTO users (id, name) VALUES ($1, $2)")
+        .bind(user_id)
+        .bind(payload.into_inner().name)
+        .execute(pool.get_ref())
+        .await;
 
-    HttpResponse::Created().json(user_id)
+    match result {
+        Ok(_) => HttpResponse::Created().json(user_id),
+        Err(e) => {
+            eprintln!("insert failed: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    // e.g. postgres://username:password@localhost/db_name
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool = PgPool::connect(&database_url)
+        .await
+        .expect("failed to connect to Postgres");
+
+    sqlx::query("CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY, name TEXT NOT NULL)")
+        .execute(&pool)
+        .await
+        .expect("failed to create users table");
+
+    let pool = web::Data::new(pool);
+    HttpServer::new(move || App::new().app_data(pool.clone()).service(create_user))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
 ```
 
-This handler accepts a JSON payload with a `name` field, generates a random `user_id`, inserts a new user into the `users` table using `sqlx`, and returns the `user_id` in the response.
+```sh
+curl -X POST http://127.0.0.1:8080/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "Ada"}'
+```
 
+The handler returns `201 Created` with the new UUID as JSON. Notes:
 
-## Serving Html Pages
-Actix Web can also serve HTML pages and other static assets. Let's add a `templates` directory with an `index.html` file:
+- `web::Data::new` is created once, outside the `HttpServer::new` closure, and cloned into each
+  worker. Creating it inside the closure would give every worker its own pool.
+- The id is generated in Rust, so the table needs no `DEFAULT`. If you want Postgres to generate
+  it, `gen_random_uuid()` is built in from Postgres 13; `uuid_generate_v4()` needs the
+  `uuid-ossp` extension.
+- The `sqlx::query!` macro checks SQL against a real database at compile time, which means
+  `DATABASE_URL` must be set (or offline data prepared with `sqlx-cli`) when you build. The
+  plain `sqlx::query` used here is checked only at runtime.
+- In a real app, create tables with migrations (`sqlx migrate`) rather than at startup.
+
+## HTML templates and static files
+
+Actix Web doesn't render templates itself. This example uses [Tera](https://keats.github.io/tera/)
+1.x for templates and [`actix-files`](https://crates.io/crates/actix-files) for static files:
+
+```toml
+[dependencies]
+actix-files = "0.7"
+actix-web = "4"
+env_logger = "0.11"
+tera = "1.20"
+```
+
+Tera 2 has since been released with a different API; the code below is for Tera 1.x.
+
+Create `templates/index.html`:
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
     <title>Actix Web App</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Hello from Actix Web!</h1>
-</body> 
+    <h1>Hello from {{ name }}!</h1>
+</body>
 </html>
 ```
 
-Then we can define a handler to serve this template:
+and a `static/style.css` next to it:
+
+```text
+my_web_app/
+├── Cargo.toml
+├── src/main.rs
+├── static/
+│   └── style.css
+└── templates/
+    └── index.html
+```
+
+Then `src/main.rs`:
 
 ```rust
-use actix_web::web;
-
-#[get("/")]
-async fn index(tmpl: web::Data<tera::Tera>) -> impl Responder {
-    let html = tmpl
-        .render("index.html", &tera::context!())
-        .expect("Template render failed");
-    HttpResponse::Ok().body(html)
-}
-```
-
-We use the [Tera](https://github.com/Keats/tera) templating engine to render the template, and return the rendered HTML in the response.
-
-To serve static files like CSS, JavaScript, and images, simply add a `static` folder to your project:
-
-```
-static/
-└── style.css
-``` 
-
-The `static` folder contents will be served at the `/static/` endpoint. So `style.css` would be available at `/static/style.css`.
-
-In your templates, you can link to these static assets like so:
-
-```html
-<link rel="stylesheet" href="/static/style.css">
-```
-
-Actix Web will handle serving these static files for you.
-
-To tie it all together, our full example would look something like this:
-
-```rust
-use actix_web::{web, App, HttpResponse, HttpServer};
-use tera::Tera;
+use actix_files::Files;
+use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
+use tera::{Context, Tera};
 
 #[get("/")]
 async fn index(tmpl: web::Data<Tera>) -> impl Responder {
-    // ...
+    let mut ctx = Context::new();
+    ctx.insert("name", "Actix Web");
+
+    match tmpl.render("index.html", &ctx) {
+        Ok(html) => HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(html),
+        Err(e) => {
+            eprintln!("template error: {e}");
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+async fn not_found() -> HttpResponse {
+    HttpResponse::NotFound().body("Not found")
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "actix_web=info");
-    env_logger::init();
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let tera = Tera::new("templates/**/*");
+    let tera = Tera::new("templates/**/*").expect("failed to parse templates");
+    let tera = web::Data::new(tera);
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
-            .data(tera)
+            .app_data(tera.clone())
+            .wrap(Logger::default())
             .service(index)
-            .default_service(web::get().to(|| HttpResponse::NotFound()))
+            .service(Files::new("/static", "static"))
+            .default_service(web::to(not_found))
     })
-    .bind("127.0.0.1:8000")?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
 ```
 
-This starts an Actix Web server with a `/` route that serves the `index.html` template, and a default 404 handler for unknown routes.
+`Files::new("/static", "static")` serves the `static` directory at `/static/`, so `style.css` is
+at `/static/style.css`. Static files are not served unless you register a `Files` service. Unknown
+routes fall through to `default_service`, which returns 404.
+
+## Gotchas
+
+- `App::data()` from older tutorials was removed in Actix Web 4; use
+  `.app_data(web::Data::new(...))`. A handler asking for `web::Data<T>` that was never registered
+  gets a 500 error at request time, not a compile error.
+- The `templates/**/*` glob and the `static` directory are relative to the working directory, so
+  run the binary from the project root (or build absolute paths with `env!("CARGO_MANIFEST_DIR")`).
+- `#[get]`, `#[post]` and friends must be imported (`use actix_web::{get, post}`) and the
+  handlers registered with `.service()`, not `.route()`.
+
+## Further reading
+
+- [Actix Web documentation](https://actix.rs/docs/)
+- [actix/examples repository](https://github.com/actix/examples)
+- [sqlx documentation](https://docs.rs/sqlx)
+- [Tera 1.x documentation](https://docs.rs/tera/1.20.1/tera/)

@@ -1,127 +1,117 @@
 ---
-title: Scrapping sec filings with python and secedgar
-description: sec filings with python and secedgar
+title: Scraping 13F filings from SEC EDGAR with Python and secedgar
+description: A small Python CLI that uses secedgar to list the institutional managers filing 13F reports for a quarter and download their filings from EDGAR.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 7 April 2023 13:00:00 GMT
-tags: ["sec", "python", "secedgar"]
+lastUpdated: 2026-11-14
+tags: ["sec", "python", "secedgar", "investing"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-10 21.55.07 - magnifying glass on stonks.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-The Securities and Exchange Commission (SEC) is a U.S. government agency that is responsible for regulating the securities industry, including the stock and bond markets. It was created in 1934 in response to the stock market crash of 1929 and the subsequent Great Depression. The SEC's main functions are to protect investors, maintain fair and orderly functioning of the markets, and facilitate capital formation. It does this by enforcing federal securities laws, regulating the securities industry, and providing transparency and disclosure to the markets. The SEC also oversees the registration and reporting of public companies, mutual funds, and other investment products, and it reviews and approves new financial products and trading strategies.
+Public companies and large investors file reports with the US Securities and Exchange Commission (SEC), and all of them end up on EDGAR, the SEC's public filing system. The ones I care about here are 13F reports. Institutional investment managers with at least $100 million in 13(f) securities must file a Form 13F within 45 days after the end of each calendar quarter, listing their holdings. It's how you see what funds owned at the end of the last quarter.
 
+[secedgar](https://github.com/sec-edgar/sec-edgar) is a Python package for downloading filings from EDGAR. Its `QuarterlyFilings` class reads EDGAR's quarterly index of every filing and lets you filter the entries before downloading anything. The examples below were written against secedgar 0.6.0.
 
-SEC filings are documents that publicly traded companies are required to file with the Securities and Exchange Commission (SEC). These documents provide information about a company's financial performance, business operations, and ownership structure. They are intended to provide transparency and disclosure to investors, analysts, and the general public.
+```bash
+pip install secedgar
+```
 
-There are several types of SEC filings, including:
+## The script
 
-1. Annual reports: Companies must file an annual report, also known as a Form 10-K, with the SEC each year. This report provides a detailed overview of the company's financial performance and business operations over the past year. It includes financial statements, a discussion of the company's business and financial condition, and other information about the company's management, compensation, and risks.
-2. Quarterly reports: Companies must also file quarterly reports, known as Form 10-Q, with the SEC each quarter. These reports provide financial information for the quarter, including financial statements and a discussion of the company's business and financial condition.
-3. Registration statements: Companies that are issuing securities, such as stocks or bonds, must file a registration statement with the SEC. This statement provides information about the company, the securities being offered, and the underwriters involved in the offering.
-4. Proxy statements: Companies that are holding shareholder meetings must file a proxy statement with the SEC. This statement provides information about the meeting, including the matters to be voted on, the nominees for the board of directors, and executive compensation.
-5. Other reports: There are many other types of reports that companies may be required to file with the SEC, depending on their circumstances. For example, companies with large insider ownership or significant changes in their financial condition may be required to file additional reports.
-
-SEC filings are available to the public on the SEC's website, EDGAR (Electronic Data Gathering, Analysis, and Retrieval system).
-
-
-To download filings from the SEC, you can use the secedgar package. It is a Python package that provides a simple interface to download filings from the SEC EDGAR database. It is built on top of the `requests` package, `beautifulsoup4` package and uses the EDGAR search API to download filings. 
+The script has two modes: `get_list` writes the names of every manager that filed a 13F in a quarter to `companies_list.txt`, and `download_companies` downloads those filings into `filings/`.
 
 ```python
-from secedgar import filings, FilingType, QuarterlyFilings
 import argparse
 import time
+from functools import wraps
+
+from secedgar import QuarterlyFilings
+
 
 def time_it(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
-        end = time.time()
-        elapsed = end - start
-        print(f"Elapsed time: {elapsed} seconds for {func.__name__}")
+        print(f"Elapsed time: {time.time() - start:.1f} seconds for {func.__name__}")
         return result
     return wrapper
 
-with open("holdings_list.txt", "r") as f:
-    holdings_list = f.read().splitlines()
-company_list = []
-def get_13F(filing_entry):
-    if "13F" in filing_entry.form_type: #
-        # and filing_entry.company_name.lower() in (name.lower() for name in holdings_list):
-        company_list.append(filing_entry.company_name)
-        return True
-    return False
-    
-def get_company_ab_10k(filing_entry):
-    if "13F" in filing_entry.form_type and filing_entry.company_name.lower() in (name.lower() for name in holdings_list):
-        company_list.append(filing_entry.company_name)
-        return True
-    return False
+
+def is_13f(entry) -> bool:
+    # Matches 13F-HR, 13F-NT and their amendments (13F-HR/A, ...)
+    return entry.form_type.startswith("13F")
+
+
+def make_quarterly(args) -> QuarterlyFilings:
+    return QuarterlyFilings(
+        year=args.year,
+        quarter=args.quarter,
+        user_agent=args.user_agent,
+        entry_filter=is_13f,
+        rate_limit=args.rate_limit,  # passed through to secedgar's NetworkClient, max 10
+    )
+
 
 @time_it
-def fetch_filings(data: dict):
-    # 13F filings for Apple (ticker "aapl")
-    # read list from holdings_list.txt
-    year, month, useragent, rate_limit = data["year"], data["month"], data["useragent"], data["rate_limit"]
-    quarterly = QuarterlyFilings(year, month, user_agent=useragent, entry_filter=get_13F, rate_limit=rate_limit)
-    # map folder to year and quarter
-    quarterly.save("filings")
+def fetch_filings(args) -> None:
+    """Download every 13F filing in the quarter into ./filings."""
+    make_quarterly(args).save("filings")
+
 
 @time_it
-def get_list(data: dict):
-    """ Get list of companies from 13F filings
-    """
-    # get year, month , useragent, rate_limit from data
-    year, month, useragent, rate_limit = data["year"], data["month"], data["useragent"], data["rate_limit"]
-    quarterly = QuarterlyFilings(year, month, user_agent=useragent, entry_filter=get_13F, rate_limit=rate_limit)
-
-    verbose = data["verbose"]
-    test_file = quarterly.get_filings_dict()
-    if verbose:
-        print("Getting list of companies from 13F filings")
-        print(test_file)
-    # remove duplicates in company_list
-    all_company_list = list(dict.fromkeys(company_list))
-    # save company_list to file
+def get_list(args) -> None:
+    """Write the unique names of 13F filers for the quarter to companies_list.txt."""
+    filings_dict = make_quarterly(args).get_filings_dict()
+    names = {entry.company_name for entries in filings_dict.values() for entry in entries}
+    if args.verbose:
+        print(f"Found {len(names)} 13F filers")
     with open("companies_list.txt", "w") as f:
-        for company in all_company_list:
-            f.write(company + "\n")
+        for name in sorted(names):
+            f.write(name + "\n")
 
-def main():
-    pass
 
-if __name__ == '__main__':
-    # cli parsing with argparse
-    # two modes of operation: get_list and download_companies
-
-    parser = argparse.ArgumentParser(description='Get list of companies from 13F filings')
-    parser.add_argument('--mode',"-m", type=str, help='get_list or download_companies', default="get_list", required=False)
-    parser.add_argument('--year', "-y", type=int, help='year of 13F filings', default=2022, required=False)
-    parser.add_argument('--quarter', "-q", type=int, help='quarter of 13F filings', default=2, required=False)
-    parser.add_argument('--user_agent', "-ua", type=str, help='user agent for secedgar', default="Your name <dlcoding20@gmail.com>", required=False)
-    parser.add_argument('--rate_limit', "-rl", type=int, help='rate limit for secedgar', default=5, required=False)
-    parser.add_argument('--verbose', "-v", type=bool, help='verbose mode', default=False)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="List or download 13F filings from EDGAR")
+    parser.add_argument("--mode", "-m", choices=["get_list", "download_companies"], default="get_list")
+    parser.add_argument("--year", "-y", type=int, default=2022)
+    parser.add_argument("--quarter", "-q", type=int, choices=[1, 2, 3, 4], default=2)
+    parser.add_argument("--user_agent", "-ua", required=True, help='e.g. "Your Name you@example.com"')
+    parser.add_argument("--rate_limit", "-rl", type=int, default=5, help="requests per second, 1-10")
+    parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
-    data = {
-        "year": args.year,
-        "month": args.quarter,
-        "useragent": args.user_agent,
-        "rate_limit": args.rate_limit,
-        "verbose": args.verbose
-    }
+
     if args.mode == "get_list":
-        get_list(data)
-    elif args.mode == "download_companies":
-        pass
-    # main()
+        get_list(args)
+    else:
+        fetch_filings(args)
 ```
-The fetch_filings function is used to download 13F filing documents from the SEC Edgar website using the secedgar library. It takes a dictionary called data as an argument and extracts the values for the year, month, user agent, and rate limit. It then creates an instance of the QuarterlyFilings class with the specified year, month, user agent, and rate limit, and sets the entry_filter parameter to the get_13F function. The entry_filter parameter allows you to specify a function that will be applied to each filing entry in the list of quarterly filings. If the function returns True for a particular filing entry, the filing will be included in the list of results.
 
-The get_13F function checks whether a filing entry's form type is "13F" and, if it is, appends the company name to the company_list global variable and returns True. This means that the fetch_filings function will only download 13F filings for companies that have their name included in the holdings_list file. The fetch_filings function then saves the resulting list of quarterly filings to the "filings" folder.
+Run it with:
 
-The get_list function is used to generate a list of companies that have 13F filings available for a given year and month. It works in a similar way to the fetch_filings function, but instead of downloading the actual filing documents, it uses the get_13F function to append the company names of the filing entries to the company_list global variable. The get_list function then removes duplicates from the company_list and saves the resulting list of unique company names to a file called "companies_list.txt".
+```bash
+python main.py --year 2022 --quarter 2 --user_agent "Your Name you@example.com"
+```
 
-The main function is currently empty and does not do anything. The if __name__ == '__main__': block at the end of the script handles command line input with the argparse library. It allows you to specify the mode of operation (either "get_list" or "download_companies"), the year and month of the 13F filings you want to retrieve, the user agent string to use when making requests to the SEC Edgar website, the rate limit for the requests, and whether you want to run the script in verbose mode. It then passes these values to the data dictionary and calls the appropriate function (get_list or fetch_filings) with the data dictionary as an argument.
+## How it works
+
+`QuarterlyFilings(year, quarter, ...)` points at EDGAR's full index for that quarter. `get_filings_dict()` downloads the index file and returns a dict keyed by CIK, where each value is a list of `FilingEntry` named tuples with `cik`, `company_name`, `form_type`, `date_filed`, `file_name`, `path` and `num_previously_valid` fields. The `entry_filter` function decides which entries are kept, so `is_13f` cuts the index down to 13F filings before anything else happens.
+
+`save("filings")` uses the same filtered index to download each filing. Expect this to take a while: a quarter has thousands of 13F filings, and each is a separate request.
+
+To track only some managers, extend the filter. For example, read a list of names from a file and return `True` only when `entry.company_name.lower()` is in it.
+
+## Gotchas
+
+- **User agent is required.** The SEC's [fair access policy](https://www.sec.gov/os/accessing-edgar-data) asks automated tools to declare a user agent with your name and email, and EDGAR blocks requests that don't. secedgar's docs say to pass `user_agent` or a client that already has one. Use your own details, not a placeholder.
+- **Rate limit.** The SEC allows at most 10 requests per second. secedgar enforces this and raises an error if `rate_limit` is above 10.
+- **`type=bool` in argparse doesn't work.** An earlier version of this script used `type=bool` for `--verbose`, which turns any non-empty string, including `"False"`, into `True`. Use `action="store_true"` instead.
+- **13F covers only 13(f) securities**, mostly US-listed stocks and some options and convertibles. It doesn't show short positions, cash, or most non-US holdings, and it's up to 45 days stale by the time it's filed.
 
 ## References
-* https://github.com/dli-invest/13F-sec
+
+- [FriendlyUser/13F-sec](https://github.com/FriendlyUser/13F-sec), the repo this script comes from
+- [secedgar documentation](https://sec-edgar.github.io/sec-edgar/)
+- [SEC: Frequently asked questions about Form 13F](https://www.sec.gov/rules-regulations/staff-guidance/division-investment-management-frequently-asked-questions/frequently-asked-questions-about-form-13f)

@@ -1,273 +1,183 @@
 ---
 tags: ['kotlin']
-title: Object-Oriented Programming in Kotlin
-description: Explain classes, objects, companion objects, properties, and fields in Kotlin
+title: "Kotlin OOP basics: classes, properties, constructors, inheritance and polymorphism"
+description: Kotlin classes and objects, companion objects, properties and backing fields, primary and secondary constructors, inheritance with open, and polymorphism.
 pubDate: Fri, 14 December 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3431403716.png
 ---
 
+This post walks through the object-oriented parts of Kotlin with small examples you can paste into a `main` function or the [Kotlin Playground](https://play.kotlinlang.org/).
 
-Classes and objects are fundamental concepts in object-oriented programming (OOP) and are essential in Kotlin as well.
+## Classes and objects
 
-In Kotlin, a class is a blueprint for creating objects, which are instances of that class. A class can contain properties (variables) and methods (functions) that define the behavior and data of the objects created from it.
-
-Here is an example of a simple class definition in Kotlin:
-
+A class bundles data (properties) and behaviour (functions). Properties declared with `val` or `var` in the class header become part of the primary constructor:
 
 ```kotlin
 class Person(val name: String, var age: Int) {
- fun speak() {
- println("$name is speaking")
- }
+    fun speak() {
+        println("$name is speaking")
+    }
+}
+
+fun main() {
+    val person = Person("Alice", 30)   // no `new` keyword in Kotlin
+    println(person.name)   // Alice
+    println(person.age)    // 30
+    person.speak()         // Alice is speaking
 }
 ```
-In this example, we define a `Person` class that has two properties: `name`, which is a `String`, and `age`, which is an `Int`. We also define a `speak` method that simply prints a message to the console.
 
-To create an object of this class, we can use the `Person` constructor like this:
+`val` makes a read-only property; `var` makes a mutable one.
 
+## Companion objects
 
-```kotlin
-java`val person = Person("Alice", 30)
-```
-In this case, we create a new `Person` object with the name `"Alice"` and age `30`.
-
-We can access the properties of the `Person` object using the dot notation like this:
-
-
-```kotlin
-println(person.name) // prints "Alice"
-println(person.age) // prints 30
-```
-We can also call the `speak` method on the `Person` object:
-
-
-```kotlin
-person.speak() // prints "Alice is speaking"
-```
-Kotlin also provides the concept of companion objects, which are objects that are tied to a class rather than an instance of the class. Companion objects can be used to define static methods or properties, which are associated with the class rather than an instance of the class.
-
-Here is an example of a companion object:
-
+Kotlin has no `static` keyword. Members that belong to the class rather than to an instance go in a `companion object`:
 
 ```kotlin
 class MyClass {
- companion object {
- fun sayHello() {
- println("Hello from companion object!")
- }
- }
+    companion object {
+        fun sayHello() {
+            println("Hello from companion object!")
+        }
+    }
+}
+
+fun main() {
+    MyClass.sayHello()   // no instance needed
 }
 ```
-In this example, we define a companion object for the `MyClass` class, which contains a `sayHello` method. We can call this method using the class name like this:
 
+On the JVM the companion is a real singleton object. If Java code needs to call `MyClass.sayHello()` as a true static method, annotate it with `@JvmStatic`; otherwise Java has to call `MyClass.Companion.sayHello()`.
 
-```kotlin
-MyClass.sayHello() // prints "Hello from companion object!"
-```
-Note that we do not need to create an instance of the `MyClass` class to call the `sayHello` method.
+## Properties and backing fields
 
-
-In Kotlin, properties and fields are closely related concepts.
-
-A property is a member variable of a class that can be accessed using the dot notation like this:
-
-
-```kotlin
-class Person(val name: String, var age: Int)
-val person = Person("Alice", 30)
-println(person.name) // prints "Alice"
-```
-In this example, `name` is a property of the `Person` class, and we can access it using the `.` operator on a `Person` object.
-
-A field, on the other hand, is the storage location for a property. When we define a property, Kotlin automatically generates a field to hold its value. We can access the field directly using the backing field syntax, which is `field`.
-
-Here is an example of a property with a custom getter and setter that uses the backing field:
-
+A Kotlin property is a getter (plus a setter for `var`) and, when needed, a backing field that stores the value. Inside a custom accessor you refer to that storage with the `field` identifier:
 
 ```kotlin
 class Counter {
- var count = 0
- get() = field
- set(value) {
- if (value >= 0) field = value
- }
+    var count = 0
+        set(value) {
+            if (value >= 0) field = value   // ignore negative values
+        }
+}
+
+fun main() {
+    val counter = Counter()
+    counter.count = 10
+    counter.count = -5
+    println(counter.count)   // 10
 }
 ```
-In this example, we define a `Counter` class with a `count` property. We also define a custom getter and setter for the `count` property. The getter simply returns the value of the backing field using the `field` keyword. The setter checks whether the new value is greater than or equal to zero, and sets the backing field to the new value using the `field` keyword.
 
-We can create a `Counter` object and set its `count` property like this:
-
+The compiler only generates a backing field when a property uses a default accessor or references `field`. A property computed entirely in its getter has no field at all:
 
 ```kotlin
-val counter = Counter()
-counter.count = 10
+class Rectangle(val width: Int, val height: Int) {
+    val area: Int
+        get() = width * height   // computed on each access, nothing stored
+}
 ```
-In this case, the setter checks that the new value of `count` is greater than or equal to zero and sets the backing field to `10`.
 
-It is important to note that properties in Kotlin are not the same as fields in Java. In Java, properties and fields are distinct concepts, and fields are typically accessed directly using the dot notation. In Kotlin, however, properties and fields are tightly integrated, and Kotlin automatically generates the fields for properties.
+This is the main difference from Java, where you write a private field and a getter/setter pair yourself. In Kotlin, `person.name` always goes through the getter, so you can add validation or computation later without changing callers.
 
+## Constructors and methods
 
-In Kotlin, methods are functions defined within a class, and constructors are special methods used to create new objects of a class.
-
-Here is an example of a class with a constructor and a method:
-
+The primary constructor lives in the class header. Secondary constructors use the `constructor` keyword and must delegate to the primary one with `this(...)`:
 
 ```kotlin
 class Person(val name: String, var age: Int) {
- fun greet() {
- println("Hello, my name is $name and I am $age years old.")
- }
+    constructor(name: String) : this(name, 0)
+
+    fun greet() {
+        println("Hello, my name is $name and I am $age years old.")
+    }
+}
+
+fun main() {
+    Person("Alice", 30).greet()  // Hello, my name is Alice and I am 30 years old.
+    Person("Bob").greet()        // Hello, my name is Bob and I am 0 years old.
 }
 ```
-In this example, we define a `Person` class with a constructor that takes two parameters, `name` and `age`. The constructor initializes the `name` and `age` properties of the class.
 
-We also define a `greet` method that prints a greeting message with the person's name and age.
-
-We can create a new `Person` object and call the `greet` method like this:
-
+In practice a default parameter value does the same job with less code, and is the more common choice:
 
 ```kotlin
-val person = Person("Alice", 30)
-person.greet() // prints "Hello, my name is Alice and I am 30 years old."
+class Person(val name: String, var age: Int = 0)
 ```
-In this case, we create a new `Person` object with the name "Alice" and age 30 using the constructor, and then we call the `greet` method on the object.
 
-Constructors in Kotlin can be defined in two ways: primary constructors and secondary constructors. The primary constructor is defined in the class header and initializes the class properties. Secondary constructors are defined using the `constructor` keyword and can be used to provide additional ways to create objects of the class.
+Use an `init { ... }` block when the primary constructor needs to run validation or setup code.
 
-Here is an example of a class with a primary constructor and a secondary constructor:
+## Inheritance
 
-
-```kotlin
-class Person(val name: String, var age: Int) {
- constructor(name: String) : this(name, 0)
- fun greet() {
- println("Hello, my name is $name and I am $age years old.")
- }
-}
-```
-In this example, we define a `Person` class with a primary constructor that takes two parameters, `name` and `age`. We also define a secondary constructor that takes only a `name` parameter and sets the `age` property to 0. The `greet` method is the same as in the previous example.
-
-We can create a new `Person` object using the primary constructor like before:
-
-
-```kotlin
-val person1 = Person("Alice", 30)
-person1.greet() // prints "Hello, my name is Alice and I am 30 years old."
-```
-We can also create a new `Person` object using the secondary constructor like this:
-
-
-```kotlin
-val person2 = Person("Bob")
-person2.greet() // prints "Hello, my name is Bob and I am 0 years old."
-```
-In this case, the `age` property is initialized to 0 because we used the secondary constructor that sets the `age` property to 0.
-
-
-Inheritance is a mechanism in object-oriented programming that allows one class to inherit properties and methods from another class. In Kotlin, inheritance is achieved using the `:` symbol followed by the name of the parent class. Here is an example:
-
+Kotlin classes and their members are **final by default**. To allow subclassing you mark the class `open`, and to allow overriding you mark each member `open` too. The subclass calls the parent constructor after `:`.
 
 ```kotlin
 open class Animal(val name: String) {
- fun speak() {
- println("$name makes a sound.")
- }
+    open fun speak() {
+        println("$name makes a sound.")
+    }
 }
 
-class Cat(name: String) : Animal(name) {
- override fun speak() {
- println("$name meows.")
- }
-}
-
-class Dog(name: String) : Animal(name) {
- override fun speak() {
- println("$name barks.")
- }
-}
-```
-In this example, we define an `Animal` class with a `name` property and a `speak` method that prints a generic message.
-
-We also define two subclasses, `Cat` and `Dog`, that inherit from the `Animal` class. The subclasses override the `speak` method with their own implementation.
-
-We can create `Cat` and `Dog` objects and call their `speak` methods like this:
-
-
-```kotlin
-val cat = Cat("Whiskers")
-cat.speak() // prints "Whiskers meows."
-
-val dog = Dog("Fido")
-dog.speak() // prints "Fido barks."
-```
-In this case, when we call the `speak` method on the `Cat` and `Dog` objects, their respective overridden implementations are called.
-
-In addition to inheriting properties and methods, subclasses can also add their own properties and methods. For example, we can add a `breed` property to the `Cat` and `Dog` classes like this:
-
-
-```kotlin
 class Cat(name: String, val breed: String) : Animal(name) {
- override fun speak() {
- println("$name meows.")
- }
+    override fun speak() {
+        println("$name meows.")
+    }
 }
 
 class Dog(name: String, val breed: String) : Animal(name) {
- override fun speak() {
- println("$name barks.")
- }
+    override fun speak() {
+        println("$name barks.")
+    }
+}
+
+fun main() {
+    Cat("Whiskers", "Siamese").speak()  // Whiskers meows.
+    Dog("Fido", "Beagle").speak()       // Fido barks.
 }
 ```
-In this case, the `Cat` and `Dog` classes now have an additional `breed` property that is specific to them.
 
+Leave out `open` on `Animal.speak()` and the `override` lines fail to compile with an error saying the function is final and cannot be overridden. `Cat` and `Dog` also add their own `breed` property on top of what they inherit.
 
-Polymorphism is a fundamental concept in object-oriented programming that allows objects of different classes to be treated as if they were of the same type. In other words, polymorphism allows us to write code that can work with objects of multiple classes without knowing the specific class of each object at compile time.
+## Polymorphism
 
-In Kotlin, polymorphism is achieved through inheritance and method overriding. When a subclass inherits from a parent class, it can override the methods of the parent class with its own implementation. When an object of the subclass is created and a method is called on it, the overridden method of the subclass is called instead of the method of the parent class.
-
-Here's an example to illustrate polymorphism in Kotlin:
-
+Because `Cat` and `Dog` are subtypes of `Animal`, you can hold them in an `Animal` variable or collection. Calling an `open` method dispatches to the runtime type's implementation:
 
 ```kotlin
 open class Animal {
- open fun speak() {
- println("Animal makes a sound.")
- }
+    open fun speak() = println("Animal makes a sound.")
 }
 
 class Cat : Animal() {
- override fun speak() {
- println("Cat meows.")
- }
+    override fun speak() = println("Cat meows.")
 }
 
 class Dog : Animal() {
- override fun speak() {
- println("Dog barks.")
- }
+    override fun speak() = println("Dog barks.")
+}
+
+fun main() {
+    val animals: List<Animal> = listOf(Animal(), Cat(), Dog())
+    for (animal in animals) {
+        animal.speak()
+    }
 }
 ```
-In this example, we define an `Animal` class with a `speak` method that prints a generic message. We also define two subclasses, `Cat` and `Dog`, that inherit from the `Animal` class and override the `speak` method with their own implementation.
 
-Now, we can create an array of `Animal` objects that contains objects of the `Animal`, `Cat`, and `Dog` classes, and call the `speak` method on each object:
+Output:
 
-
-```kotlin
-val animals = arrayOf(Animal(), Cat(), Dog())
-
-for (animal in animals) {
- animal.speak()
-}
-```
-When we run this code, we get the following output:
-
-
-```kotlin
+```text
 Animal makes a sound.
 Cat meows.
 Dog barks.
 ```
-As you can see, the `speak` method of each object is called, but the implementation that is actually called depends on the specific type of the object at runtime.
 
-Polymorphism is a powerful concept that allows us to write more flexible and reusable code. By designing classes and methods in a way that takes advantage of polymorphism, we can write code that can work with a variety of different objects, even ones that haven't been created yet.
+The loop only knows it has `Animal`s; which `speak` runs is decided at runtime from each object's actual class.
+
+## Further reading
+
+- [Kotlin docs: Classes](https://kotlinlang.org/docs/classes.html)
+- [Kotlin docs: Properties](https://kotlinlang.org/docs/properties.html)
+- [Kotlin docs: Inheritance](https://kotlinlang.org/docs/inheritance.html)
+- [Kotlin docs: Object declarations and expressions](https://kotlinlang.org/docs/object-declarations.html)

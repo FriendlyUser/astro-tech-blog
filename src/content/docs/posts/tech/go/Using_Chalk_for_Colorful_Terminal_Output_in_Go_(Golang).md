@@ -1,118 +1,97 @@
 ---
-title: Using Chalk for Colorful Terminal Output in Go (Golang)
+title: Coloring Go terminal output with the chalk package
 pubDate: "2023-05-26T15:32:49.038Z"
-description: "A technical article about Rust"
+lastUpdated: 2026-11-14
+description: "How to color and style terminal text in Go with ttacon/chalk: basic colors, text styles, reusable styles, and its limits compared with fatih/color."
 tags: ["go", "chalk"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1144941208.png
 ---
-# Using Chalk for Colorful Terminal Output in Go (Golang)
 
-In this article, we will discuss the Chalk library and how to use it to create colorful terminal output in Go (Golang). Chalk is a popular library that provides an easy way to style console output using colors and formatting.
+:::caution
+`github.com/ttacon/chalk` hasn't been updated since 2019. It still compiles, but it only supports the eight basic ANSI colors and never checks whether output is a terminal. For new code, consider [fatih/color](https://github.com/fatih/color), which disables color when output isn't a terminal and honours `NO_COLOR`, or [Lip Gloss](https://github.com/charmbracelet/lipgloss) for layouts and 256/true color.
+:::
 
-## Table of Contents
+[chalk](https://github.com/ttacon/chalk) is a tiny Go package (one source file, standard library only) that wraps strings in ANSI escape codes. It gives you the eight standard colors as foreground or background, a handful of text styles such as bold and underline, and a way to combine them into a reusable style.
 
-1. [Introduction to Chalk](#introduction-to-chalk)
-2. [Installation](#installation)
-3. [Basic Usage](#basic-usage)
-4. [Applying Styles](#applying-styles)
-5. [Creating Custom Styles](#creating-custom-styles)
-6. [Best Practices](#best-practices)
-7. [Conclusion](#conclusion)
-
-## Introduction to Chalk
-
-Chalk is a third-party package for Go that allows developers to easily style console output with colors and formatting. It supports ANSI escape codes, a standard for defining console text formatting, which means that Chalk enables compatibility across different terminal environments.
-
-The main benefits of using Chalk are:
-
-- Simple API for styling console output
-- Supports 256 and TrueColor (16 million colors) output
-- Compatible with various terminal environments
-- Customizable styles
-
-## Installation
-
-To get started with Chalk, you need to install it as a dependency in your Go project. Run the following command in your terminal:
+## Install
 
 ```bash
-go get -u github.com/ttacon/chalk
+go get github.com/ttacon/chalk
 ```
 
-This will fetch the Chalk package and make it available for use in your project.
+## Colors and text styles
 
-## Basic Usage
-
-To use Chalk in your Go code, you need to import the package first. Add the following import statement to your Go file:
+The colors are `Black`, `Red`, `Green`, `Yellow`, `Blue`, `Magenta`, `Cyan` and `White`. The text styles are `Bold`, `Dim`, `Italic`, `Underline`, `Inverse`, `Hidden` and `Strikethrough`.
 
 ```go
+package main
+
 import (
 	"fmt"
+
 	"github.com/ttacon/chalk"
 )
-```
 
-Now, you can start using Chalk to style your console output. For example, to print a green "Hello, World!" message, you can use the following code snippet:
-
-```go
 func main() {
-	green := chalk.Green.NewStyle().WithForeground(chalk.Green)
-	fmt.Println(green.Style("Hello, World!"))
+	// Color one phrase; the color is reset afterwards.
+	fmt.Println(chalk.Green.Color("Hello, World!"))
+
+	// Apply a text style to one phrase.
+	fmt.Println(chalk.Bold.TextStyle("Bold text"))
+	fmt.Println(chalk.Underline.TextStyle("Underlined text"))
+
+	// Colors are also fmt.Stringers, so you can switch color mid-line.
+	// Remember to finish with chalk.Reset.
+	fmt.Println(chalk.Red, "Red,", chalk.Cyan, "then cyan", chalk.Reset)
 }
 ```
 
-Running this code will produce the following output:
+`Color` and `TextStyle` wrap the string and reset afterwards. Printing a color value on its own (as in the last line) just switches the color, so the terminal stays that color until you print `chalk.Reset`.
 
-```
-Hello, World!
-```
+## Combining color, background and style
 
-The text will be displayed in green color.
-
-## Applying Styles
-
-Chalk provides various built-in styles, including colors, backgrounds, and text formatting, such as bold, underline, and italic. To apply a style, you can chain methods on the `chalk.Style` type.
-
-Here's an example of applying multiple styles to a single piece of text:
+`NewStyle` on a color creates a `Style` with that foreground. `WithBackground`, `WithForeground` and `WithTextStyle` set a field and return the style so you can chain them, and `Style(string)` applies it:
 
 ```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/ttacon/chalk"
+)
+
 func main() {
-	styledText := chalk.Cyan.NewStyle().
-		WithForeground(chalk.Cyan).
-		WithBackground(chalk.Magenta).
-		WithTextStyle(chalk.Bold).
-		Style("Stylish Text Example")
-	fmt.Println(styledText)
-}
-```
+	warning := chalk.Yellow.NewStyle().
+		WithBackground(chalk.Black).
+		WithTextStyle(chalk.Bold)
 
-This code will output the text "Stylish Text Example" in cyan color with a magenta background and bold formatting.
+	fmt.Println(warning.Style("Disk usage above 90%"))
 
-## Creating Custom Styles
-
-You can create custom styles by extending the built-in styles provided by Chalk. To do this, you can use the `Extend()` method. Here's an example of creating a custom style:
-
-```go
-func main() {
-	customStyle := chalk.Magenta.NewStyle().
-		WithForeground(chalk.Magenta).
-		WithBackground(chalk.White).
+	// Style is a method value, so you can keep it as a plain func.
+	errorText := chalk.White.NewStyle().
+		WithBackground(chalk.Red).
 		WithTextStyle(chalk.Underline).
-		Extend(chalk.Bold)
-	fmt.Println(customStyle.Style("Custom Style Example"))
+		Style
+
+	fmt.Println(errorText("Build failed"))
 }
 ```
 
-This code creates a custom style that combines magenta foreground, white background, underline, and bold formatting. The output text will display "Custom Style Example" with the defined custom style.
+Three things about `Style` that aren't obvious from the API:
 
-## Best Practices
+- The `With...` methods modify the style in place and return the same pointer; they don't make a copy. Build a separate style for each look rather than deriving one from another.
+- A style always sets a background. If you never call `WithBackground`, the zero value is `chalk.Black`, so text gets a black background rather than the terminal's default.
+- A style holds one text style. Calling `WithTextStyle` twice replaces the first, so you can't have bold and underline together, and there is no method to merge two styles.
 
-- Use Chalk sparingly: While colorful terminal output can be helpful for drawing attention to important information, overusing colors and styles can make your console output harder to read. Use Chalk to highlight important messages, but avoid excessive styling.
+## Gotchas
 
-- Test your output on different terminal environments: Chalk aims to be compatible with various terminal environments, but it's always a good idea to test your output on different systems to ensure it looks as intended.
+- **No terminal detection.** chalk always writes escape codes, so redirecting output to a file or another program leaves `\x1b[...m` sequences in it. If your tool's output is likely to be piped, check `term.IsTerminal(int(os.Stdout.Fd()))` from `golang.org/x/term` before styling, or use a library that does this for you.
+- **Eight colors only.** There's no 256-color or true-color (hex) support. Most terminals map the basic colors to their own theme, so "green" may not look the same everywhere.
+- **Don't rely on color alone.** Pair colors with a word or symbol (`ERROR`, `WARN`, `✓`) so the output still makes sense to colorblind users and in logs where color is stripped.
 
-- Consider accessibility: Keep in mind that some users may have difficulty distinguishing certain colors or may be using a colorblind mode. Make sure your output is still readable and meaningful without relying solely on color.
+## Further reading
 
-## Conclusion
-
-In this article, we have discussed the use of the Chalk library in Go (Golang) for creating colorful terminal output. Chalk provides an easy-to-use API for styling console output with various colors, backgrounds, and text formatting options. By using Chalk to enhance your console output, you can create more visually appealing and informative command line interfaces for your Go applications.
+- [chalk on GitHub](https://github.com/ttacon/chalk)
+- [chalk package docs](https://pkg.go.dev/github.com/ttacon/chalk)

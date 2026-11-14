@@ -1,221 +1,197 @@
 ---
-title: Using WinAPI in Rust to Manage Windows Services
+title: Querying, starting and stopping Windows services from Rust with the Windows API
 pubDate: "2023-04-24T18:13:58.133Z"
-description: "In this article, we will explore how to use the Windows API (WinAPI) in Rust to interact with Windows services"
+lastUpdated: 2026-11-14
+description: "Call the Service Control Manager (OpenSCManagerW, OpenServiceW, QueryServiceStatus, StartServiceW, ControlService) from Rust using the windows-sys crate."
 tags: ["rust", "winapi"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1089827583.png
 ---
-# Using WinAPI in Rust to Manage Windows Services
 
-In this article, we will explore how to use the Windows API (WinAPI) in Rust to interact with Windows services. Windows services are long-running background processes that can be started automatically during system boot or manually by a user with the appropriate privileges. Examples of Windows services include databases, web servers, and antivirus software.
+:::caution
+The original version of this post used the `winapi` crate. Its last release (0.3.9) was in
+June 2020 and it is no longer maintained. The examples below use Microsoft's
+[`windows-sys`](https://crates.io/crates/windows-sys) crate, which exposes the same C functions.
+:::
 
-Rust is a systems programming language that is focused on safety, performance, and concurrency. Its low-level control and zero-cost abstractions make it an ideal candidate for system-level programming, such as interacting with the Windows API.
+Windows services are long-running background processes managed by the Service Control Manager
+(SCM). To inspect or control one from your own program you open a handle to the SCM, open a
+handle to the service, and then call functions such as `QueryServiceStatus`, `StartServiceW` and
+`ControlService`. This post wraps those calls in small Rust functions and builds a command-line
+tool that prints, starts or stops a service.
 
-## Prerequisites
+You need a Rust toolchain on Windows with the MSVC target and the Visual Studio C++ build tools.
 
-Before diving into the code, ensure that you have the following prerequisites installed:
-
-- Rust (latest stable version): https://www.rust-lang.org/tools/install
-- Visual Studio Build Tools (for C++): https://visualstudio.microsoft.com/visual-cpp-build-tools/
-
-## Setting Up the Project
-
-To get started, create a new Rust project by running the following command:
+## Project setup
 
 ```bash
-cargo new winapi_service_manager
-cd winapi_service_manager
+cargo new service_ctl
+cd service_ctl
 ```
 
-Next, add the following dependencies to your `Cargo.toml` file:
+`windows-sys` puts every API area behind a Cargo feature, so enable only the ones you use:
 
 ```toml
 [dependencies]
-winapi = "0.3"
-widestring = "0.4"
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Services"] }
 ```
 
-- `winapi` provides bindings to the Windows API.
-- `widestring` is a utility crate for working with UTF-16 strings, which are used by the Windows API.
+The examples were checked against `windows-sys` 0.61.2. In this version, `SC_HANDLE` is a raw
+pointer (`*mut c_void`), strings are `PCWSTR` (`*const u16`, NUL-terminated UTF-16), and
+functions return a `BOOL` (`i32`) where `0` means failure.
 
-## Interacting with Windows Services
+## Wrapping the SCM calls
 
-To interact with Windows services, we will use the Service Control Manager (SCM), which is a part of the Windows API. The SCM provides a set of functions to create, delete, query, and manage the services.
-
-First, let's import the necessary modules:
+Put the following in `src/main.rs`. The `ScHandle` wrapper closes each handle with
+`CloseServiceHandle` when it goes out of scope, so error paths don't leak handles.
 
 ```rust
-use std::ptr::null_mut;
-use std::os::windows::ffi::OsStrExt;
-use winapi::{
-    ctypes::c_void,
-    shared::{
-        minwindef::{DWORD, LPDWORD},
-        ntdef::NULL,
-    },
-    um::{
-        errhandlingapi::GetLastError,
-        winbase::LocalFree,
-        winsvc::{
-            CloseServiceHandle, ControlService, DeleteService, OpenSCManagerW, OpenServiceW,
-            QueryServiceConfigW, QueryServiceStatus, StartServiceW, CreateServiceW,
-            SERVICE_QUERY_CONFIG, SERVICE_QUERY_STATUS, SERVICE_START, SERVICE_STOP,
-            SERVICE_CONTROL_STOP, SERVICE_DELETE, SC_MANAGER_CREATE_SERVICE,
-            SC_MANAGER_CONNECT, SC_MANAGER_ENUMERATE_SERVICE, SC_MANAGER_QUERY_LOCK_STATUS,
-        },
-    },
+use std::ptr::null;
+
+use windows_sys::Win32::Foundation::GetLastError;
+use windows_sys::Win32::System::Services::{
+    CloseServiceHandle, ControlService, OpenSCManagerW, OpenServiceW, QueryServiceStatus,
+    StartServiceW, SC_HANDLE, SC_MANAGER_CONNECT, SERVICE_CONTROL_STOP, SERVICE_QUERY_STATUS,
+    SERVICE_RUNNING, SERVICE_START, SERVICE_START_PENDING, SERVICE_STATUS, SERVICE_STOP,
+    SERVICE_STOPPED, SERVICE_STOP_PENDING,
 };
-use widestring::U16CString;
-```
 
-### Opening the Service Control Manager
+/// Owns an SCM or service handle and closes it on drop.
+struct ScHandle(SC_HANDLE);
 
-To interact with the Service Control Manager, we need to open a handle. The following function opens a handle to the SCM with the desired access rights:
+impl Drop for ScHandle {
+    fn drop(&mut self) {
+        unsafe { CloseServiceHandle(self.0) };
+    }
+}
 
-```rust
-fn open_sc_manager(desired_access: DWORD) -> Result<*mut c_void, DWORD> {
-    let sc_manager_handle = unsafe { OpenSCManagerW(null_mut(), null_mut(), desired_access) };
-    if sc_manager_handle.is_null() {
+/// Converts a Rust string to a NUL-terminated UTF-16 buffer.
+fn to_wide(s: &str) -> Vec<u16> {
+    s.encode_utf16().chain(std::iter::once(0)).collect()
+}
+
+fn open_sc_manager(access: u32) -> Result<ScHandle, u32> {
+    // null machine name = local computer, null database = SERVICES_ACTIVE_DATABASE
+    let handle = unsafe { OpenSCManagerW(null(), null(), access) };
+    if handle.is_null() {
         Err(unsafe { GetLastError() })
     } else {
-        Ok(sc_manager_handle)
+        Ok(ScHandle(handle))
+    }
+}
+
+fn open_service(scm: &ScHandle, name: &str, access: u32) -> Result<ScHandle, u32> {
+    let name = to_wide(name);
+    let handle = unsafe { OpenServiceW(scm.0, name.as_ptr(), access) };
+    if handle.is_null() {
+        Err(unsafe { GetLastError() })
+    } else {
+        Ok(ScHandle(handle))
+    }
+}
+
+fn query_state(service: &ScHandle) -> Result<u32, u32> {
+    let mut status = SERVICE_STATUS::default();
+    if unsafe { QueryServiceStatus(service.0, &mut status) } == 0 {
+        Err(unsafe { GetLastError() })
+    } else {
+        Ok(status.dwCurrentState)
+    }
+}
+
+fn start_service(service: &ScHandle) -> Result<(), u32> {
+    if unsafe { StartServiceW(service.0, 0, null()) } == 0 {
+        Err(unsafe { GetLastError() })
+    } else {
+        Ok(())
+    }
+}
+
+fn stop_service(service: &ScHandle) -> Result<(), u32> {
+    let mut status = SERVICE_STATUS::default();
+    if unsafe { ControlService(service.0, SERVICE_CONTROL_STOP, &mut status) } == 0 {
+        Err(unsafe { GetLastError() })
+    } else {
+        Ok(())
+    }
+}
+
+fn state_name(state: u32) -> &'static str {
+    match state {
+        SERVICE_STOPPED => "stopped",
+        SERVICE_START_PENDING => "start pending",
+        SERVICE_STOP_PENDING => "stop pending",
+        SERVICE_RUNNING => "running",
+        _ => "paused or pause/continue pending",
     }
 }
 ```
 
-### Opening a Service
+Each wrapper returns the Win32 error code from `GetLastError` on failure. Every handle is
+opened with only the access rights it needs: `SC_MANAGER_CONNECT` is enough to open a service,
+and `SERVICE_QUERY_STATUS` is enough to read its state.
 
-To perform operations on a specific service, we first need to open a handle to the service. The following function opens a handle to a service with the desired access rights:
+## A small service control tool
+
+Add a `main` that takes an action and a service name. The example uses the Windows Update
+service, whose service name is `wuauserv`.
 
 ```rust
-fn open_service(
-    sc_manager_handle: *mut c_void,
-    service_name: &str,
-    desired_access: DWORD,
-) -> Result<*mut c_void, DWORD> {
-    let service_name_wstr = U16CString::from_str(service_name).unwrap();
-    let service_handle = unsafe {
-        OpenServiceW(
-            sc_manager_handle,
-            service_name_wstr.as_ptr(),
-            desired_access,
-        )
+fn main() -> Result<(), String> {
+    let mut args = std::env::args().skip(1);
+    let action = args.next().unwrap_or_else(|| "status".to_string());
+    let name = args.next().unwrap_or_else(|| "wuauserv".to_string());
+
+    let scm = open_sc_manager(SC_MANAGER_CONNECT)
+        .map_err(|e| format!("OpenSCManagerW failed: error {e}"))?;
+
+    let access = match action.as_str() {
+        "start" => SERVICE_QUERY_STATUS | SERVICE_START,
+        "stop" => SERVICE_QUERY_STATUS | SERVICE_STOP,
+        _ => SERVICE_QUERY_STATUS,
     };
-    if service_handle.is_null() {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(service_handle)
+    let service = open_service(&scm, &name, access)
+        .map_err(|e| format!("OpenServiceW({name}) failed: error {e}"))?;
+
+    match action.as_str() {
+        "start" => start_service(&service).map_err(|e| format!("StartServiceW failed: error {e}"))?,
+        "stop" => stop_service(&service).map_err(|e| format!("ControlService failed: error {e}"))?,
+        _ => {}
     }
+
+    let state = query_state(&service).map_err(|e| format!("QueryServiceStatus failed: error {e}"))?;
+    println!("{name}: {}", state_name(state));
+    Ok(())
 }
 ```
 
-### Querying Service Status
-
-To query the status of a service, we can use the `QueryServiceStatus` function. The following function retrieves the status of a service using its handle:
-
-```rust
-fn query_service_status(service_handle: *mut c_void) -> Result<DWORD, DWORD> {
-    let mut service_status = unsafe { std::mem::zeroed() };
-    let result = unsafe { QueryServiceStatus(service_handle, &mut service_status) };
-    if result == 0 {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(service_status.dwCurrentState)
-    }
-}
+```bash
+cargo run -- status wuauserv
+cargo run -- stop wuauserv    # needs an elevated (Run as administrator) terminal
+cargo run -- start wuauserv
 ```
 
-### Controlling a Service
+Querying works from a normal terminal for most services. Starting and stopping system services
+usually needs an elevated terminal; without it `OpenServiceW` fails with error 5
+(`ERROR_ACCESS_DENIED`).
 
-To start, stop, or control a service, we can use the `StartServiceW`, `ControlService`, and `DeleteService` functions, respectively. The following functions demonstrate how to start, stop, and delete a service using their respective WinAPI functions:
+## Gotchas
 
-```rust
-fn start_service(service_handle: *mut c_void) -> Result<(), DWORD> {
-    let result = unsafe { StartServiceW(service_handle, 0, null_mut()) };
-    if result == 0 {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(())
-    }
-}
+- `StartServiceW` and `ControlService` return as soon as the request is accepted. Right after
+  the call the state is usually `start pending` or `stop pending`; poll `QueryServiceStatus`
+  (using `dwWaitHint` as a guide) if you need to wait for `running` or `stopped`.
+- Common error codes: 1056 (`ERROR_SERVICE_ALREADY_RUNNING`) when starting a running service, and
+  1062 (`ERROR_SERVICE_NOT_ACTIVE`) when stopping one that isn't running.
+- Deleting a service uses `DeleteService`, which needs a handle opened with the standard `DELETE`
+  access right (there is no `SERVICE_DELETE` constant). It only marks the service for deletion,
+  so don't try it on a Windows service you want to keep.
+- If you still use the `winapi` crate, the same functions live in `winapi::um::winsvc`, and you
+  must enable the `winsvc` and `errhandlingapi` features or the modules won't exist.
+- For a safe, higher-level API (including writing your own service), look at the
+  [`windows-service`](https://crates.io/crates/windows-service) crate.
 
-fn stop_service(service_handle: *mut c_void) -> Result<(), DWORD> {
-    let mut service_status = unsafe { std::mem::zeroed() };
-    let result = unsafe {
-        ControlService(
-            service_handle,
-            SERVICE_CONTROL_STOP,
-            &mut service_status,
-        )
-    };
-    if result == 0 {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(())
-    }
-}
+## Further reading
 
-fn delete_service(service_handle: *mut c_void) -> Result<(), DWORD> {
-    let result = unsafe { DeleteService(service_handle) };
-    if result == 0 {
-        Err(unsafe { GetLastError() })
-    } else {
-        Ok(())
-    }
-}
-```
-
-## Example: Managing a Windows Service
-
-Let's put everything together and create a simple program that allows us to manage a Windows service. In this example, we will manage the "Windows Update" service, which has the service name "wuauserv". The program will allow us to query the status, start, stop, and delete the service.
-
-```rust
-fn main() {
-    let sc_manager_handle = open_sc_manager(SC_MANAGER_CONNECT).unwrap();
-
-    let service_name = "wuauserv";
-    let service_handle = open_service(
-        sc_manager_handle,
-        service_name,
-        SERVICE_QUERY_STATUS | SERVICE_START | SERVICE_STOP | SERVICE_DELETE,
-    )
-    .unwrap();
-
-    // Query service status
-    let status = query_service_status(service_handle).unwrap();
-    println!("Service status: {}", status);
-
-    // Start the service
-    match start_service(service_handle) {
-        Ok(_) => println!("Service started successfully."),
-        Err(error) => println!("Failed to start service. Error: {}", error),
-    }
-
-    // Stop the service
-    match stop_service(service_handle) {
-        Ok(_) => println!("Service stopped successfully."),
-        Err(error) => println!("Failed to stop service. Error: {}", error),
-    }
-
-    // Delete the service
-    match delete_service(service_handle) {
-        Ok(_) => println!("Service deleted successfully."),
-        Err(error) => println!("Failed to delete service. Error: {}", error),
-    }
-
-    // Close the service and SCM handles
-    unsafe {
-        CloseServiceHandle(service_handle);
-        CloseServiceHandle(sc_manager_handle);
-    }
-}
-```
-
-**Note**: Before running this example, ensure that you have administrative privileges, as managing services typically requires elevated permissions. Right-click on the command prompt or terminal and select "Run as administrator" before executing the program.
-
-## Conclusion
-
-In this article, we have demonstrated how to use the Windows API in Rust to manage Windows services. We have covered opening the Service Control Manager, opening a service, querying service status, and controlling a service (start, stop, and delete).
-
-While this example is relatively simple, it provides a foundation for building more sophisticated tools and applications for managing Windows services. Rust's low-level control and safety features make it an excellent choice for systems programming, such as interacting with the Windows API.
+- [Service functions (Microsoft Learn)](https://learn.microsoft.com/en-us/windows/win32/services/service-functions)
+- [`windows-sys` on docs.rs](https://docs.rs/windows-sys)
+- [`windows-rs` repository](https://github.com/microsoft/windows-rs)

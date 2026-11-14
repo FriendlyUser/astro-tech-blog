@@ -1,75 +1,143 @@
 ---
-description: In this article, we will explore the basics of NUnit, its features, and
-  how to use it to write and run tests for your
+description: 'Set up an NUnit test project for .NET, write tests with Assert.That and [TestCase], and run them with dotnet test or Visual Studio.'
 imgSrc: /imgs/2023/3267094508_short_ruler_in_the_grass.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-23T22:59:48.000Z'
-tags: []
-title: An Introduction to NUnit Testing Framework
+lastUpdated: 2026-11-14
+tags: ["dotnet", "csharp", "testing"]
+title: 'Unit testing .NET code with NUnit: setup, assertions and test cases'
 ---
 
-# An Introduction to NUnit Testing Framework
+NUnit is an open-source unit testing framework for .NET. You mark classes and methods with attributes such as `[Test]` and `[TestCase]`, write assertions with `Assert.That`, and run the tests from `dotnet test`, Visual Studio, Rider or VS Code. It started as a port of JUnit and is one of the three common .NET test frameworks, alongside xUnit.net and MSTest.
 
-## Overview
+This post was updated for NUnit 5.0 (September 2026), which targets .NET Framework 4.6.2, .NET 8 and .NET 10. The examples also work on NUnit 4.
 
-NUnit is a widely-used, open-source unit testing framework for .NET applications. It is designed to make it easier for developers to write and execute tests for their code, ensuring that it works as expected and is of high quality. NUnit is a member of the xUnit family of testing frameworks, which also includes JUnit for Java and Pytest for Python. In this article, we will explore the basics of NUnit, its features, and how to use it to write and run tests for your .NET applications.
+## Setting up a test project
 
-## Why NUnit?
+The quickest route is the `dotnet new` template. Assuming you already have a class library called `Calculator`:
 
-Writing and maintaining quality code is a responsibility every developer should take seriously. One way to ensure the quality of your code is through unit testing, which involves testing individual components or units of your software application. NUnit provides a robust, easy-to-use framework that simplifies the process of writing and executing unit tests. Some of its key features include:
+```bash
+dotnet new nunit -o Calculator.Tests
+dotnet add Calculator.Tests reference Calculator
+dotnet test
+```
 
-1. **Ease of use**: NUnit provides a simple and intuitive syntax for writing tests, making it easy for both beginners and experienced developers to quickly start writing tests.
-2. **Cross-platform support**: NUnit works with multiple platforms, including .NET Core, .NET Framework, and Xamarin, allowing you to write tests for a wide range of applications.
-3. **Attribute-driven**: NUnit uses attributes to define test cases, test methods, and other test-related metadata, making it easy to organize and understand your tests.
-4. **Extensibility**: NUnit allows you to extend its functionality with custom attributes, test runners, and more, enabling you to customize it to your specific needs.
-5. **Integration**: NUnit integrates with popular IDEs like Visual Studio and JetBrains Rider, allowing you to write, run, and debug tests from within your development environment.
+A test project needs three packages. The template adds them, but it can lag behind the latest releases, so check the versions in the `.csproj`:
 
-## Getting Started with NUnit
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+  <PackageReference Include="NUnit" Version="5.0.0" />
+  <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
+  <PackageReference Include="NUnit.Analyzers" Version="4.15.0" />
+</ItemGroup>
+```
 
-To begin using NUnit in your .NET project, follow these steps:
+- `NUnit` is the framework: attributes, assertions and the engine that runs tests.
+- `NUnit3TestAdapter` lets `dotnet test` and the Visual Studio Test Explorer discover and run NUnit tests. Despite the "3" in the name, it is the current adapter for NUnit 4 and 5.
+- `Microsoft.NET.Test.Sdk` provides the test host that `dotnet test` uses.
+- `NUnit.Analyzers` is optional but worth having. It flags common mistakes at compile time and offers code fixes when you upgrade between major versions.
 
-1. **Install the NUnit NuGet package**: In your .NET project, open the NuGet Package Manager and search for "NUnit". Install the NUnit package to your project.
-2. **Install the NUnit Test Adapter**: To run NUnit tests in your IDE or build system, you'll need the NUnit Test Adapter. Search for "NUnit3TestAdapter" in the NuGet Package Manager and install it in your project.
-3. **Create a test class**: In your .NET project, add a new class that will contain your test methods. This class should have a `[TestFixture]` attribute applied to it, which tells NUnit that this class contains tests.
-4. **Write test methods**: Add methods to your test class that will test specific functionality in your application. Each test method should have a `[Test]` attribute applied to it.
+## Writing tests
 
-## Writing NUnit Tests
-
-An NUnit test is a method marked with the `[Test]` attribute. Test methods should be public, have a `void` return type, and take no arguments. The test method should contain assertions to verify that the code being tested behaves as expected.
-
-Here's an example of a simple NUnit test:
+Here's the code under test:
 
 ```csharp
+namespace Calculator;
+
+public static class MathOps
+{
+    public static int Add(int a, int b) => a + b;
+
+    public static int Divide(int a, int b) => a / b;
+}
+```
+
+And a test class:
+
+```csharp
+using System;
+using Calculator;
 using NUnit.Framework;
 
+namespace Calculator.Tests;
+
 [TestFixture]
-public class ExampleTests
+public class MathOpsTests
 {
     [Test]
-    public void AdditionTest()
+    public void Add_ReturnsSum()
     {
-        int a = 2;
-        int b = 3;
-        int result = a + b;
-        Assert.AreEqual(5, result);
+        Assert.That(MathOps.Add(2, 3), Is.EqualTo(5));
+    }
+
+    [TestCase(1, 1, 2)]
+    [TestCase(-4, 4, 0)]
+    [TestCase(int.MaxValue, 0, int.MaxValue)]
+    public void Add_HandlesEdgeCases(int a, int b, int expected)
+    {
+        Assert.That(MathOps.Add(a, b), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Divide_ByZero_Throws()
+    {
+        Assert.Throws<DivideByZeroException>(() => MathOps.Divide(1, 0));
     }
 }
 ```
 
-In this example, we have a test class called `ExampleTests` with a single test method called `AdditionTest`. The test verifies that the addition of two numbers produces the expected result. The `Assert.AreEqual()` method is used to compare the expected value with the actual value, and if they are not equal, the test will fail.
+A few notes on the attributes:
 
-## Running NUnit Tests
+- `[Test]` marks a test method. It must be public, and it can return `void` or `Task` (for `async` tests).
+- `[TestCase(...)]` turns one method into several tests, one per attribute, passing the values as arguments. Each case shows up separately in the test results. For data that doesn't fit in an attribute, use `[TestCaseSource]`.
+- `[TestFixture]` marks the class that holds tests. It's optional when the class contains `[Test]` methods, but you need it to pass constructor arguments or run the same fixture with different type parameters.
+- `[SetUp]` and `[TearDown]` methods run before and after each test. `[OneTimeSetUp]` and `[OneTimeTearDown]` run once per fixture.
 
-Once you have written your tests, you can run them using the test runner provided by your IDE or build system. For example, in Visual Studio, you can use the built-in Test Explorer to run and debug your NUnit tests.
+NUnit creates one instance of a fixture class and reuses it for all of its tests by default, so don't rely on fields being reset between tests unless you reset them in `[SetUp]`.
 
-To run your tests, follow these steps:
+## Assertions
 
-1. **Build your project**: Ensure that your project builds successfully before attempting to run your tests.
-2. **Open the Test Explorer**: In Visual Studio, go to the "Test" menu and select "Test Explorer". This will open the Test Explorer window.
-3. **Run your tests**: In the Test Explorer, you should see a list of the tests in your project. You can choose to run all tests, a specific set of tests, or individual tests. To run a test, right-click on it and select "Run Test".
+The examples above use the constraint model: `Assert.That(actual, constraint)`. Constraints compose and produce clear failure messages:
 
-The Test Explorer will display the results of your tests, including whether they passed or failed, and any error messages or stack traces associated with failures.
+```csharp
+Assert.That(result, Is.EqualTo(5));
+Assert.That(name, Is.Not.Null.And.Not.Empty);
+Assert.That(items, Has.Count.EqualTo(3));
+Assert.That(items, Does.Contain("apple"));
+Assert.That(price, Is.EqualTo(9.99).Within(0.001));
+```
 
-## Conclusion
+If you've seen older NUnit code, you'll find "classic" asserts such as `Assert.AreEqual(5, result)`. NUnit 4.0 moved these into `ClassicAssert` in the `NUnit.Framework.Legacy` namespace, which broke a lot of existing test suites. NUnit 4.5 brought `Assert.AreEqual` and friends back using C# 14 extension members. `Assert.That` works in every version, so prefer it in new code.
 
-NUnit is a powerful, easy-to-use unit testing framework that enables you to write and execute tests for your .NET applications. By incorporating NUnit into your development process, you can improve the quality of your code and ensure that your application behaves as expected. Start using NUnit today to build more robust, reliable, and maintainable software.
+To check several things in one test and see every failure rather than only the first, use a multiple-assert scope (NUnit 4.2 and later; older versions use `Assert.Multiple(() => { ... })`):
+
+```csharp
+using (Assert.EnterMultipleScope())
+{
+    Assert.That(order.Total, Is.EqualTo(42m));
+    Assert.That(order.Status, Is.EqualTo(OrderStatus.Paid));
+}
+```
+
+If you upgrade to NUnit 5, note that `Assert.ThrowsAsync`, `Assert.CatchAsync` and `Assert.DoesNotThrowAsync` now return a `Task` that must be awaited. An un-awaited call can let a failing test pass, and NUnit.Analyzers warns about it.
+
+## Running tests
+
+From the command line:
+
+```bash
+dotnet test
+dotnet test --filter "FullyQualifiedName~MathOpsTests"
+```
+
+The filter runs only the tests whose fully qualified name contains `MathOpsTests`. You can also filter on `Name`, `Category` (set with `[Category("Slow")]`) and `Priority`.
+
+In Visual Studio, open **Test > Test Explorer**, build the solution, and the tests appear grouped by project, namespace and class. You can run or debug all of them, a group, or a single test. Rider and VS Code (with the C# Dev Kit) have equivalent test panels.
+
+## Further reading
+
+- [NUnit documentation](https://docs.nunit.org/)
+- [Constraint model reference](https://docs.nunit.org/articles/nunit/writing-tests/constraints/Constraints.html)
+- [NUnit 5 release notes](https://docs.nunit.org/articles/nunit/release-notes/framework.html), including breaking changes
+- [Unit testing C# with NUnit and .NET](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-csharp-with-nunit) on Microsoft Learn

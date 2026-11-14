@@ -1,159 +1,37 @@
 ---
-title: Using Astrodon in Deno A Comprehensive Guide
+title: "Astrodon: a Tauri-based desktop app framework for Deno (unmaintained)"
 pubDate: "2023-05-03T14:16:45.104Z"
-description: "In this article, we'll explore how you can use Astrodon to simplify and improve your Deno development experience."
-tags: ["deno"]
+lastUpdated: 2026-11-14
+description: "What Astrodon was, how its webview windows and Deno messaging worked, why it no longer runs, and what to use for Deno desktop apps instead."
+tags: ["deno", "typescript"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2892583015.png
 ---
-# Using Astrodon in Deno: A Comprehensive Guide
 
-Astrodon is a powerful library for building web applications in Deno, a secure runtime for JavaScript and TypeScript. Deno is designed to provide a modern, secure, and productive environment for web developers. In this article, we'll explore how you can use Astrodon to simplify and improve your Deno development experience.
+:::caution
+Astrodon is unmaintained. Its README says so, and it warns that even the official demo fails. The last public release was `0.1.0-alpha.2`, and it targeted Deno 1.x. For new desktop apps, use [Tauri](https://tauri.app/) or the [webview_deno](https://github.com/webview/webview_deno) bindings.
+:::
 
-Astrodon is named after the colorful, iridescent mineral that resembles a mini universe. Just like its namesake, Astrodon is a visually appealing and highly functional library for Deno.
+[Astrodon](https://github.com/astrodon/astrodon) was a **desktop app framework** for Deno built on [Tauri](https://tauri.app/)'s webview stack. You wrote your backend in Deno, rendered your UI as HTML in a native webview window, and passed messages between the two. Its README describes it as "not there yet", and it never left alpha.
 
-## Prerequisites
+An earlier version of this post presented Astrodon as an Express-style web server with `app.get()`, `res.json()` and `app.listen()`. Astrodon never had that API, so that REST example has been removed. To build an HTTP API in Deno, use `Deno.serve` or a framework such as Hono or Oak.
 
-Before diving into Astrodon, ensure that you have the following tools installed on your system:
+## What it offered
 
-- [Deno](https://deno.land/): A secure runtime for JavaScript and TypeScript.
-- [Visual Studio Code](https://code.visualstudio.com/): A popular source code editor with Deno support.
-- [Deno extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno): Provides Deno support in Visual Studio Code.
+The README lists these features:
 
-## Getting Started
+- Webview windows with your own title and URL or inline HTML
+- Two-way messaging between the frontend page and the Deno backend
+- Compiling an app into an executable, and building installers
 
-To begin, create a new Deno project and initialize a `deps.ts` file to manage your dependencies.
+## How the API looked
 
-```sh
-$ mkdir deno-astrodon
-$ cd deno-astrodon
-$ echo "export {};" > deps.ts
-```
+In the `hello_world` demo on the main branch, you created an `AppWindow`, gave it HTML with `setHtml()` (or a URL with `setUrl()`), and started it with `run()`. The page called `window.sendToDeno(event, data)`. Deno read those messages with `for await (const msg of await win.listen(event))` and replied with `win.send(event, data)`, which the page received as a DOM event. See [the demo source](https://github.com/astrodon/astrodon/blob/main/examples/hello_world/demo.ts).
 
-Next, add Astrodon as a dependency in your `deps.ts` file.
+I haven't reproduced the code here because it no longer runs on current Deno.
 
-```ts
-// deps.ts
-export { Astrodon } from "https://deno.land/x/astrodon/mod.ts";
-```
+## Alternatives
 
-Now, create a new file named `main.ts` to start building your Astrodon-powered Deno application.
-
-```ts
-// main.ts
-import { Astrodon } from "./deps.ts";
-
-const app = new Astrodon();
-
-app.get("/", (req, res) => {
-  res.send("Hello, Astrodon!");
-});
-
-await app.listen({ port: 3000 });
-```
-
-In this example, we create an instance of the Astrodon web application and define a simple route to handle incoming GET requests to the root path ("/"). The route simply responds with the text "Hello, Astrodon!".
-
-Start the Deno server by running the following command:
-
-```sh
-$ deno run --allow-net main.ts
-```
-
-Now, open your browser and navigate to `http://localhost:3000`. You should see the "Hello, Astrodon!" message displayed.
-
-## Building a REST API with Astrodon
-
-To showcase Astrodon's capabilities, let's build a simple REST API for managing a list of tasks. We'll implement the following endpoints:
-
-- `GET /tasks`: Retrieve all tasks.
-- `POST /tasks`: Create a new task.
-- `PUT /tasks/:id`: Update an existing task.
-- `DELETE /tasks/:id`: Delete a task.
-
-First, let's create a `Task` interface and a simple in-memory storage for tasks.
-
-```ts
-// task.ts
-export interface Task {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-// tasks.ts
-import { Task } from "./task.ts";
-
-export const tasks: Task[] = [];
-```
-
-Next, import the `tasks` array and the `Task` interface into the `main.ts` file.
-
-```ts
-// main.ts
-import { Astrodon } from "./deps.ts";
-import { tasks, Task } from "./tasks.ts";
-
-// ...
-```
-
-Now, let's implement the REST API endpoints.
-
-### Retrieve All Tasks
-
-```ts
-app.get("/tasks", (req, res) => {
-  res.json(tasks);
-});
-```
-
-### Create a New Task
-
-```ts
-app.post("/tasks", async (req, res) => {
-  const newTask: Task = await req.body();
-  newTask.id = tasks.length + 1;
-  newTask.completed = false;
-  tasks.push(newTask);
-  res.status(201).json(newTask);
-});
-```
-
-### Update an Existing Task
-
-```ts
-app.put("/tasks/:id", async (req, res) => {
-  const id = Number(req.params.id);
-  const update: Partial<Task> = await req.body();
-  const task = tasks.find((t) => t.id === id);
-
-  if (task) {
-    Object.assign(task, update);
-    res.json(task);
-  } else {
-    res.status(404).send("Task not found");
-  }
-});
-```
-
-### Delete a Task
-
-```ts
-app.delete("/tasks/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const index = tasks.findIndex((t) => t.id === id);
-
-  if (index >= 0) {
-    tasks.splice(index, 1);
-    res.send("Task deleted");
-  } else {
-    res.status(404).send("Task not found");
-  }
-});
-```
-
-## Conclusion
-
-In this article, we've introduced Astrodon, a powerful library for building web applications in Deno.We've demonstrated how to set up a Deno project with Astrodon, and how to build a simple REST API for managing tasks. Astrodon makes it easy to create and manage routes, handle request data, and send responses with minimal boilerplate.
-
-By leveraging the security and simplicity of Deno, along with the elegance of Astrodon, you can build robust, maintainable web applications with ease. Give Astrodon a try in your next Deno project and experience the benefits it has to offer.
+- **[Tauri](https://tauri.app/)**: the project Astrodon was built on. It's actively maintained, but the backend is Rust rather than Deno.
+- **[webview_deno](https://github.com/webview/webview_deno)** (`jsr:@webview/webview`): Deno FFI bindings to the small `webview` C library. It's closer to what Astrodon did, but its README still says to expect breaking changes.
+- **A local web server plus the user's browser**: for internal tools, `Deno.serve` with `deno compile` is often enough, and it avoids native webview dependencies entirely.

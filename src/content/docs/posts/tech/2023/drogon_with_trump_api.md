@@ -1,17 +1,20 @@
 ---
-tags: ['drogon']
-title: What is Drogon.
-description: Simple application with drogon that talks to the Donald Trump API.
+tags: ['drogon', 'cpp']
+title: Calling a JSON API with Drogon's HTTP client in C++
+description: A small C++ program that uses Drogon's HttpClient to fetch a random quote from the Tronald Dump API, with error handling and a clean shutdown.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1900267581.png
 ---
 
-Drogon is a C++14/17-based HTTP application framework. It can be used to build various types of web applications such as APIs and backend services. One interesting use case for Drogon is to build an application that interacts with the Donald Trump API available at https://www.tronalddump.io/.
+:::caution
+The Tronald Dump API (https://www.tronalddump.io/) used in this post is no longer online, so the request below now fails with a network or handshake error. The Drogon client code is unchanged for any other HTTP API: swap the base URL and path for a service that is still running.
+:::
 
-The Donald Trump API provides access to a large collection of quotes and tweets from the former US President. Using Drogon, you can easily create an application that fetches data from this API and processes it in various ways.
+[Drogon](https://github.com/drogonframework/drogon) is an asynchronous HTTP framework for C++17/20. It's mostly used to build servers, but it also includes an `HttpClient` for calling other services. This post uses that client to fetch a random quote from the Tronald Dump API, a public API of Donald Trump quotes.
 
-Here's an example of how you might use Drogon to interact with the Donald Trump API:
+## The program
 
 ```cpp
 #include <drogon/drogon.h>
@@ -19,25 +22,57 @@ Here's an example of how you might use Drogon to interact with the Donald Trump 
 
 int main() {
     auto client = drogon::HttpClient::newHttpClient("https://api.tronalddump.io");
+
     auto req = drogon::HttpRequest::newHttpRequest();
     req->setMethod(drogon::Get);
     req->setPath("/random/quote");
 
-    client->sendRequest(req,
+    client->sendRequest(
+        req,
         [](drogon::ReqResult result, const drogon::HttpResponsePtr &resp) {
-            if (result == drogon::ReqResult::Ok) {
-                std::cout << resp->getBody() << std::endl;
+            if (result != drogon::ReqResult::Ok) {
+                // No response arrived, so resp is null here.
+                std::cerr << "Request failed: " << result << '\n';
+            } else if (resp->getStatusCode() != drogon::k200OK) {
+                std::cerr << "HTTP " << resp->getStatusCode() << '\n';
             } else {
-                std::cerr << "Error: " << resp->getStatusCode() << std::endl;
+                std::cout << resp->getBody() << '\n';
             }
+            drogon::app().quit();  // stop the event loop so the program exits
         });
 
     drogon::app().run();
 }
 ```
 
-This code creates a new `HttpClient` object that connects to the Donald Trump API. It then creates a new `HttpRequest` object and sets its method to `GET` and its path to `/random/quote`. This will fetch a random quote from the API.
+How it works:
 
-The request is then sent using the `sendRequest` method of the `HttpClient` object. The callback function passed as the second argument will be called when the response is received. In this case, we simply print out the body of the response if it was successful.
+- `HttpClient::newHttpClient` takes the scheme and host. The path goes on the request, not the client.
+- `sendRequest` is asynchronous. It queues the request and returns immediately; the callback runs once the response (or an error) arrives.
+- Nothing is sent until the event loop starts, which is what `drogon::app().run()` does. `run()` blocks until something calls `app().quit()`, so the callback calls it once it has printed the result. Without that, the program would sit there forever.
+- When `result` isn't `ReqResult::Ok` there is no response, and `resp` is a null pointer. The first version of this post called `resp->getStatusCode()` in that branch, which crashes on exactly the errors you're trying to report. `ReqResult` can be streamed directly and prints a readable message such as "Network failure" or "Handshake error".
 
-This is just one simple example of how you can use Drogon to interact with APIs like the Donald Trump API. With its powerful features and easy-to-use interface, Drogon makes it easy to build complex web applications that interact with external data sources.
+## Building
+
+Drogon installs a CMake package, so a minimal `CMakeLists.txt` looks like this:
+
+```cmake
+cmake_minimum_required(VERSION 3.15)
+project(quote_client CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+find_package(Drogon CONFIG REQUIRED)
+
+add_executable(quote_client main.cc)
+target_link_libraries(quote_client PRIVATE Drogon::Drogon)
+```
+
+HTTPS URLs only work if Drogon (and its networking library, Trantor) was built with OpenSSL or Botan. If it wasn't, requests to `https://` hosts fail.
+
+## Next steps
+
+- For JSON responses, `resp->getJsonObject()` returns a `std::shared_ptr<Json::Value>` (jsoncpp) so you can read individual fields instead of printing the raw body. The pointer is empty if the body isn't valid JSON, so check it first.
+- For several requests to the same host, create one `HttpClient` and reuse it rather than making a new client per request.
+- Drogon also supports C++20 coroutines, where `co_await client->sendRequestCoro(req)` replaces the callback.
+
+See the [Drogon wiki](https://github.com/drogonframework/drogon/wiki) for the client and coroutine documentation.

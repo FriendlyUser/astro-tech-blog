@@ -1,21 +1,22 @@
 ---
-tags: ['python', 'streamlit']
-title: Using chatgpt to write my posts instead of edge gpt.
-description: Comparing differences between chatgpt and edge gpt.
+tags: ['python', 'streamlit', 'openbb']
+title: Showing commodity and bond tables in Streamlit with OpenBB
+description: A small Streamlit app that showed commodity and bond tables from OpenBB Terminal, plus a version rewritten for the current OpenBB Platform API.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/other/output_1.png
 ---
 
-Tracking commodities is important for investing because commodities are essential raw materials used in the production of goods and services, and their prices can have a significant impact on the economy and financial markets. Investors can use commodity price movements to make investment decisions, hedge against inflation, and diversify their portfolios.
+:::caution
+The original version of this app imported from `openbb_terminal.economy.wsj_model`, part of the old OpenBB Terminal (v3). That package has been replaced by the OpenBB Platform (`pip install openbb`, used as `from openbb import obb`), and the WSJ market-overview functions no longer exist. The original code is kept below for reference, followed by a version that works with the current package.
+:::
 
-Commodities are typically classified into three categories: energy, metals, and agricultural products. Energy commodities include crude oil, natural gas, and gasoline, while metals commodities include gold, silver, copper, and platinum. Agricultural commodities include wheat, corn, soybeans, and coffee.
+Commodity prices feed into almost everything else: oil and natural gas drive energy and transport costs, metals track industrial demand, and gold is often bought as an inflation hedge. Commodities are usually grouped into energy (crude oil, natural gas, gasoline), metals (gold, silver, copper, platinum) and agriculture (wheat, corn, soybeans, coffee). Watching them alongside bond yields and currencies gives a quick read on what the wider market is doing, which is why I wanted them on a single page.
 
-Investors can use various tools to track commodity prices, including commodity price indexes, futures contracts, and exchange-traded funds (ETFs). These tools allow investors to monitor price trends and make informed decisions about buying, selling, or holding commodities.
+## The original app (OpenBB Terminal v3)
 
-For example, if an investor expects the price of crude oil to rise due to geopolitical tensions or supply disruptions, they may choose to invest in oil futures or an oil ETF. Alternatively, if an investor wants to hedge against inflation, they may invest in gold or other precious metals, which tend to hold their value during times of economic uncertainty.
-
-In summary, tracking commodities is important for investing because it provides valuable insights into the global economy and financial markets, and can help investors make informed decisions about their portfolios.
+This is the script as I first wrote it. It called six functions from OpenBB Terminal's WSJ module (top commodities, US bonds, US indices, global bonds, global currencies and a market overview) and wrote each table to a Streamlit page with a heading above it. It no longer runs against current OpenBB releases.
 
 ```python
 import streamlit as st
@@ -24,7 +25,6 @@ from openbb_terminal.economy.wsj_model import market_overview, us_indices, us_bo
 def openbb_economy():
     economy_dfs = []
     file_names = []
-    # append two entries to economy dfs from top_commodities and us_bonds
     economy_dfs.append(top_commodities())
     file_names.append("top_commodities")
     economy_dfs.append(us_bonds())
@@ -51,12 +51,66 @@ for i in range(len(economy_dfs)):
     st.write(economy_dfs[i])
 ```
 
-The code above is a Python script that uses the Streamlit library to create a web application that displays real-time financial data. Specifically, the script imports six functions from the openbb_terminal.economy.wsj_model module that retrieve data on top commodities, US bonds, US indices, global bonds, global currencies, and market overviews.
+The "Refresh Data" button didn't do what it looks like. Streamlit reruns the whole script on every interaction, so the data was already re-fetched at the top of the script when the button was clicked, and the button then fetched it all a second time. The updated version below caches the data instead.
 
-The openbb_economy() function creates a list of dataframes (economy_dfs) and a list of strings (file_names) that correspond to the names of the data sources. Each dataframe is populated by calling one of the six imported functions. The function then returns the two lists as a tuple.
+## Updated for the OpenBB Platform
 
-The economy_dfs and file_names lists are initially populated with data by calling the openbb_economy() function at the start of the script. If the "Refresh Data" button is clicked in the Streamlit app, the openbb_economy() function is called again to update the data.
+The current package exposes data through the `obb` object, grouped by asset class, with a `provider` argument that picks the data source. There is no direct replacement for the WSJ overview tables, so this version uses two free sources:
 
-The final part of the script uses a for loop to display the dataframes in the Streamlit app. For each dataframe, the code displays a header with the corresponding file_names string using the st.write() function, followed by the dataframe itself. The # symbol before the file_names string formats the header as a level 1 heading in Markdown syntax, which makes it larger and bolder than the rest of the text.
+- `obb.commodity.price.spot(provider="fred")`: daily US energy spot prices (WTI, Brent, natural gas, heating oil, gasoline and others) from FRED. FRED needs a free API key.
+- `obb.fixedincome.government.treasury_rates(provider="federal_reserve")`: US Treasury rates across maturities from the Federal Reserve, no key needed.
 
-In summary, the code creates a Streamlit app that displays real-time data on top commodities, US bonds, US indices, global bonds, global currencies, and market overviews. It allows the user to refresh the data by clicking a button, and presents the data in a clear and organized format using Markdown headers.
+Install the packages:
+
+```bash
+pip install openbb openbb-commodity openbb-fixedincome streamlit
+```
+
+Then save this as `app.py`:
+
+```python
+import os
+from datetime import date, timedelta
+
+import streamlit as st
+from openbb import obb
+
+# Free key from https://fred.stlouisfed.org/docs/api/api_key.html
+obb.user.credentials.fred_api_key = os.environ["FRED_API_KEY"]
+
+
+@st.cache_data(ttl=60 * 60)  # re-fetch at most once an hour
+def load_tables():
+    start = date.today() - timedelta(days=30)
+    return {
+        "Energy spot prices (FRED)": obb.commodity.price.spot(
+            provider="fred", start_date=start
+        ).to_df(),
+        "US Treasury rates (Federal Reserve)": obb.fixedincome.government.treasury_rates(
+            provider="federal_reserve", start_date=start
+        ).to_df(),
+    }
+
+
+st.title("Commodities and rates")
+
+if st.button("Refresh data"):
+    load_tables.clear()  # drop the cache so the next call fetches fresh data
+
+for name, df in load_tables().items():
+    st.header(name)
+    st.dataframe(df)
+```
+
+Run it with:
+
+```bash
+FRED_API_KEY=your_key streamlit run app.py
+```
+
+`st.cache_data` stores the result of `load_tables()`, so Streamlit's reruns don't hit FRED and the Federal Reserve every time you touch the page. The button clears the cache when you want fresh numbers.
+
+## Notes
+
+- These are daily series, so treat the page as a daily overview, not a live quote screen.
+- Other providers (for example for metals or agricultural futures) need their own API keys; set them on `obb.user.credentials` the same way. The [OpenBB documentation](https://docs.openbb.co/) lists which providers each endpoint supports.

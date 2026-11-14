@@ -1,133 +1,169 @@
 ---
-description: In this article, we will explore the basics of Pytest, its features,
-  and best practices for writing effective test cases.
+description: Write and run Python tests with pytest, read its assertion output, and use
+  fixtures, parametrize, pytest.raises and tmp_path with runnable examples.
 imgSrc: /imgs/2023/3614994253.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-07T12:11:18.000Z'
-tags: []
-title: A Comprehensive Guide to Pytest in Python
+lastUpdated: 2026-11-14
+tags: ["python", "testing"]
+title: 'Getting started with pytest: tests, fixtures and parametrize'
 ---
 
-# A Comprehensive Guide to Pytest in Python
+pytest is the most widely used test runner for Python. You write tests as plain functions that use the built-in `assert` statement, and pytest finds them, runs them, and shows the values involved when an assertion fails. Fixtures handle setup and teardown, and a large plugin ecosystem covers coverage, parallel runs, async code and more.
 
-Pytest is a popular testing framework in Python that makes it easy to write simple and scalable test cases. In this article, we will explore the basics of Pytest, its features, and best practices for writing effective test cases.
+The current release is pytest 9.2, which requires Python 3.10 or later. Everything below also works on pytest 8.
 
-## Introduction to Pytest
-
-Pytest is a powerful testing framework designed to help you write, organize, and execute tests in Python. It provides a rich set of features, including advanced assertion introspection, fixtures, parameterized tests, and plugins. Pytest is compatible with Python 2.7 and Python 3.5+ and can be easily integrated into any Python project.
-
-## Installing Pytest
-
-To get started, you need to install Pytest using `pip`. Open a terminal and run the following command:
+## Installing
 
 ```bash
 pip install pytest
 ```
 
-## Writing Your First Test
+## A first test
 
-Pytest uses a simple naming convention to discover and run tests. Test functions should be prefixed with `test_`, and test classes should be named `Test*`. Let's create a simple test case for a function that adds two numbers.
+pytest collects files named `test_*.py` or `*_test.py`. Inside them, it runs functions whose names start with `test`, and methods whose names start with `test` in classes named `Test*` (those classes must not define `__init__`).
 
-First, create a new file `example.py` with the following content:
+`example.py`:
 
 ```python
 def add(a, b):
     return a + b
 ```
 
-Next, create a test file named `test_example.py` with the following content:
+`test_example.py`:
 
 ```python
 from example import add
+
 
 def test_add():
     assert add(1, 2) == 3
     assert add(5, 7) == 12
 ```
 
-To run the tests, simply execute `pytest` in the terminal:
+Run `pytest` from the directory that contains both files:
 
 ```bash
 pytest
 ```
 
-You should see an output similar to this:
+The output ends with a summary line such as `1 passed in 0.01s`.
 
-```
-============================= test session starts ==============================
-platform linux -- Python 3.8.5, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
-rootdir: /path/to/your/project
-collected 1 item
+## Reading a failure
 
-test_example.py .                                                        [100%]
+pytest rewrites `assert` statements in test modules so a failure reports the values on each side. Change the second assertion to `== 13` and run again:
 
-============================== 1 passed in 0.03s ===============================
-```
+```text
+    def test_add():
+        assert add(1, 2) == 3
+>       assert add(5, 7) == 13
+E       assert 12 == 13
+E        +  where 12 = add(5, 7)
 
-## Pytest Features
-
-### Assert Statements
-
-Pytest provides an advanced assertion introspection mechanism that produces more informative error messages. You can use the built-in `assert` statement in Python to compare the expected and actual results.
-
-For example, if we change the `test_add` function to produce a failing test:
-
-```python
-def test_add():
-    assert add(1, 2) == 3
-    assert add(5, 7) == 13
-```
-
-The output would be:
-
-```
-=========================== short test summary info ============================
+test_example.py:6: AssertionError
+=========================== short test summary info ===========================
 FAILED test_example.py::test_add - assert 12 == 13
-============================== 1 failed in 0.04s ===============================
 ```
 
-### Fixtures
+You don't need `assertEqual` and its relatives. A plain `assert` on lists, dicts or strings also gets a diff of what differs.
 
-Fixtures are reusable components that can be used to set up preconditions and clean up after tests. They help to keep your tests clean and modular. To create a fixture, use the `@pytest.fixture` decorator.
+## Parametrized tests
 
-For example, let's create a fixture for a sample database connection:
+`@pytest.mark.parametrize` runs one test function with several sets of arguments. Each set shows up as a separate test, so one failing case doesn't hide the others:
 
 ```python
 import pytest
+
+from example import add
+
+
+@pytest.mark.parametrize(
+    ("a", "b", "expected"),
+    [
+        (1, 2, 3),
+        (5, 7, 12),
+        (0, 0, 0),
+        (-1, 1, 0),
+    ],
+)
+def test_add_cases(a, b, expected):
+    assert add(a, b) == expected
+```
+
+## Fixtures
+
+A fixture is a function decorated with `@pytest.fixture`. A test requests it by naming it as a parameter. If the fixture uses `yield`, the code after the `yield` runs as teardown, even when the test fails.
+
+This fixture creates an in-memory SQLite database for each test, so the example runs without any external services:
+
+```python
+import sqlite3
+
+import pytest
+
 
 @pytest.fixture
-def database_connection():
-    connection = create_database_connection()
-    yield connection
-    connection.close()
+def db():
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE users (name TEXT)")
+    conn.executemany("INSERT INTO users VALUES (?)", [("ada",), ("grace",)])
+    yield conn
+    conn.close()
+
+
+def test_user_count(db):
+    (count,) = db.execute("SELECT COUNT(*) FROM users").fetchone()
+    assert count == 2
 ```
 
-You can use this fixture in a test function by passing it as an argument:
+Fixtures are created once per test by default. Pass `scope="module"` or `scope="session"` to share an expensive resource across tests. To use a fixture from several test files, put it in a `conftest.py` file. pytest loads `conftest.py` files automatically, so you don't import them.
 
-```python
-def test_database_query(database_connection):
-    result = database_connection.query("SELECT * FROM users")
-    assert len(result) == 5
-```
+## Built-in helpers worth knowing
 
-### Parameterized Tests
-
-Parameterized tests allow you to run the same test function with different inputs and expected outputs. This can help to reduce code duplication and make your tests more readable.
-
-To create a parameterized test, use the `@pytest.mark.parametrize` decorator:
+`pytest.raises` checks that code raises an exception, and `tmp_path` is a built-in fixture that gives each test its own temporary directory as a `pathlib.Path`:
 
 ```python
 import pytest
 
-@pytest.mark.parametrize("input1, input2, expected", [
-    (1, 2, 3),
-    (5, 7, 12),
-    (0, 0, 0),
-])
-def test_add(input1, input2, expected):
-    assert add(input1, input2) == expected
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        1 / 0
+
+
+def test_writes_file(tmp_path):
+    out = tmp_path / "out.txt"
+    out.write_text("hello")
+    assert out.read_text() == "hello"
 ```
 
-## Conclusion
+Other built-in fixtures include `monkeypatch` (temporarily set attributes, environment variables or dict items), `capsys` (capture stdout and stderr) and `caplog` (capture log records).
 
-Pytest is a powerful and flexible testing framework that can help you write effective test cases for your Python projects. By utilizing its features like advanced assertion introspection, fixtures, and parameterized tests, you can create clean and maintainable test suites. Start using Pytest today to improve the quality and reliability of your Python code.
+## Useful command-line options
+
+| Option | What it does |
+| --- | --- |
+| `-v` | List each test with its result |
+| `-x` | Stop after the first failure |
+| `-k "add and not zero"` | Run only tests whose names match the expression |
+| `--lf` | Re-run only the tests that failed last time |
+| `-s` | Don't capture output, so `print` shows up immediately |
+| `path/to/test_file.py::test_name` | Run a single test |
+
+## Configuration
+
+Put settings in `pyproject.toml` so everyone runs the tests the same way. pytest 9 reads a native `[tool.pytest]` table:
+
+```toml
+[tool.pytest]
+testpaths = ["tests"]
+addopts = ["-ra"]
+```
+
+On pytest 8 and earlier, use `[tool.pytest.ini_options]` instead, with `addopts = "-ra"` as a string. pytest 9 still reads the old table, but you can't define both.
+
+## Further reading
+
+- [pytest documentation](https://docs.pytest.org/en/stable/)
+- [How to use fixtures](https://docs.pytest.org/en/stable/how-to/fixtures.html)
+- [Changelog](https://docs.pytest.org/en/stable/changelog.html)

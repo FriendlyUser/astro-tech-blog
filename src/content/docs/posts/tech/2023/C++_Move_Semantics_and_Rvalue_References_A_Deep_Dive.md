@@ -1,97 +1,79 @@
 ---
-description: In this article, we will explore C++ move semantics and rvalue references,
-  two powerful features introduced in C++11 that enable efficient resource management
-  and code optimization
+title: "C++ move semantics: rvalue references, move constructors and std::move"
+description: "How C++11 move semantics work: rvalue references, writing a move constructor and move assignment, what std::move really does, and the common gotchas."
 imgSrc: /imgs/2023/3072838870.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-04T18:30:25.000Z'
-tags: []
-title: C++ Move Semantics and Rvalue References A Deep Dive
+lastUpdated: 2026-11-14
+tags: ["cpp"]
 ---
 
-# C++ Move Semantics and Rvalue References: A Deep Dive
+Copying an object that owns a heap buffer, a file handle or a socket means duplicating that resource. When the source is about to be destroyed anyway (a temporary, or a local you're returning), the copy is wasted work. Move semantics, added in C++11, let the new object take over the source's resource instead, usually by copying a pointer and nulling out the original.
 
-In this article, we will explore C++ move semantics and rvalue references, two powerful features introduced in C++11 that enable efficient resource management and code optimization. We will discuss their significance, their usage patterns, and dive into some practical examples to understand their inner workings better.
+## Rvalues and rvalue references
 
-## 1. Introduction to Move Semantics
+Every C++ expression has a value category. The simplified version: an *lvalue* has a name or an identity you can take the address of (`x`, `v[0]`, `*p`); an *rvalue* is a temporary or a value about to expire (`42`, `a + b`, a function returning by value, `std::move(x)`). Strictly, rvalues are split into prvalues and xvalues, but you rarely need that distinction.
 
-Before C++11, the language primarily relied on copy semantics to manage resources. While copying objects is a safe way to pass them around, it can be inefficient when dealing with large amounts of data, such as dynamically allocated memory or file handles.
-
-Move semantics is C++'s answer to this inefficiency. It optimizes resource management by allowing resources to be *moved* from one object to another, instead of copying them. This is particularly beneficial when working with temporary objects that are about to be discarded, as it avoids unnecessary copies.
-
-## 2. Rvalue References
-
-Rvalue references are the backbone of move semantics. They are a new type of reference that can bind to temporary objects, or *rvalues*. An rvalue is an expression that represents a temporary object and does not have a persistent identity in memory. Common examples of rvalues include literals, arithmetic expressions, and function return values.
-
-To declare an rvalue reference, use the `&&` qualifier:
+An rvalue reference, written `T&&`, binds only to rvalues:
 
 ```cpp
-int &&rval_ref = 42; // binds to the rvalue 42
+int x = 1;
+int&& r1 = 42;            // OK: 42 is an rvalue
+int&& r2 = x + 1;         // OK: temporary
+// int&& r3 = x;          // error: x is an lvalue
+int&& r4 = std::move(x);  // OK: std::move turns x into an rvalue (needs <utility>)
 ```
 
-Rvalue references enable the creation of *move constructors* and *move assignment operators*, which are the cornerstones of move semantics.
+Overload resolution uses this: if a class has both `T(const T&)` and `T(T&&)`, passing an rvalue picks the move constructor, and passing an lvalue picks the copy constructor.
 
-## 3. Move Constructors and Move Assignment Operators
+One gotcha: a *named* rvalue reference is itself an lvalue. Inside a function taking `T&& other`, the expression `other` is an lvalue, so if you want to move one of its members you still have to write `std::move(other.member)`.
 
-Move constructors and move assignment operators are special member functions that facilitate the efficient transfer of resources from one object to another.
+## A class with copy and move operations
 
-### 3.1 Move Constructor
-
-A move constructor accepts an rvalue reference to its class type and initializes the new object by transferring the resources from the source object:
+Here is a small `String` class that owns a heap buffer. It implements the full rule of five: destructor, copy constructor, copy assignment, move constructor and move assignment.
 
 ```cpp
-class MyClass {
-public:
-    // Move constructor
-    MyClass(MyClass&& other) {
-        // Transfer resources from other to *this
-    }
-};
-```
+#include <cstddef>
+#include <cstring>
+#include <iostream>
+#include <utility>
+#include <vector>
 
-### 3.2 Move Assignment Operator
-
-The move assignment operator is similar to the move constructor but operates on an already-constructed object:
-
-```cpp
-class MyClass {
-public:
-    // Move assignment operator
-    MyClass& operator=(MyClass&& other) {
-        // Release the current object's resources
-        // Transfer resources from other to *this
-        return *this;
-    }
-};
-```
-
-## 4. Practical Examples
-
-To illustrate move semantics in action, let's consider a simple `String` class that manages a dynamically allocated character array:
-
-```cpp
 class String {
 public:
-    // Constructor
-    String(const char* str) {
-        size_ = strlen(str);
-        data_ = new char[size_ + 1];
-        strcpy(data_, str);
+    String(const char* str = "")
+        : size_(std::strlen(str)), data_(new char[size_ + 1]) {
+        std::memcpy(data_, str, size_ + 1);
     }
 
-    // Destructor
-    ~String() {
-        delete[] data_;
+    ~String() { delete[] data_; }
+
+    // Copy: allocate a new buffer and copy the characters
+    String(const String& other)
+        : size_(other.size_), data_(new char[other.size_ + 1]) {
+        std::memcpy(data_, other.data_, size_ + 1);
+        std::cout << "copy\n";
     }
 
-    // Move constructor
+    String& operator=(const String& other) {
+        if (this != &other) {
+            char* copy = new char[other.size_ + 1];
+            std::memcpy(copy, other.data_, other.size_ + 1);
+            delete[] data_;
+            data_ = copy;
+            size_ = other.size_;
+        }
+        return *this;
+    }
+
+    // Move: take the other object's buffer and leave it empty
     String(String&& other) noexcept
         : size_(other.size_), data_(other.data_) {
         other.size_ = 0;
         other.data_ = nullptr;
+        std::cout << "move\n";
     }
 
-    // Move assignment operator
     String& operator=(String&& other) noexcept {
         if (this != &other) {
             delete[] data_;
@@ -103,34 +85,52 @@ public:
         return *this;
     }
 
+    const char* c_str() const { return data_ ? data_ : ""; }
+    std::size_t size() const { return size_; }
+
 private:
-    size_t size_;
+    std::size_t size_;
     char* data_;
 };
-```
 
-In this example, the move constructor and move assignment operator efficiently transfer ownership of the dynamically allocated character array from the source object to the target object, without the need to copy the data.
+int main() {
+    String a("Hello, World!");
+    String b(a);             // prints "copy"
+    String c(std::move(a));  // prints "move"; a is now empty
+    std::cout << c.c_str() << " (a.size() = " << a.size() << ")\n";
 
-## 5. The `std::move` Function
-
-The `std::move` function, from the `<utility>` header, is a utility function that casts its argument to an rvalue reference:
-
-```cpp
-template <typename T>
-constexpr typename std::remove_reference<T>::type&& move(T&& t) noexcept {
-    return static_cast<typename std::remove_reference<T>::type&&>(t);
+    std::vector<String> v;
+    v.push_back(String("temp"));  // prints "move": the argument is a temporary
 }
 ```
 
-By using `std::move`, you can explicitly request that an object be treated as an rvalue and have its resources moved instead of copied:
+The move constructor does two pointer-sized copies and two writes, regardless of how long the string is. The copy constructor allocates and copies every character.
+
+The moved-from object must still be safe to destroy and assign to, which is why the move operations set `other.data_` to `nullptr` (`delete[] nullptr` is a no-op). For standard library types the rule is the same: a moved-from `std::string` or `std::vector` is in a "valid but unspecified" state, so only assign to it or destroy it.
+
+## What `std::move` actually does
+
+`std::move` doesn't move anything. It is a cast to an rvalue reference, defined in `<utility>` roughly like this (it has been `constexpr` since C++14):
 
 ```cpp
-String str1("Hello, World!");
-String str2(std::move(str1)); // calls the move constructor
+template <typename T>
+constexpr std::remove_reference_t<T>&& move(T&& t) noexcept {
+    return static_cast<std::remove_reference_t<T>&&>(t);
+}
 ```
 
-## 6. Conclusion
+The move happens only if the result is passed to something that has an rvalue overload, like a move constructor. If the type has no move constructor, `std::move(x)` quietly falls back to a copy.
 
-Move semantics and rvalue references are powerful additions to the C++ language that facilitate efficient resource management and code optimization. They allow resources to be transferred from one object to another without the need for costly copies, making them invaluable for performance-critical applications.
+## Gotchas
 
-By understanding and making use of these features, you can write more efficient and elegant C++ code.
+- **Mark move operations `noexcept`.** When `std::vector` grows, it moves existing elements only if the move constructor is `noexcept` (or there is no copy constructor). Otherwise it copies them to keep its strong exception guarantee.
+- **Don't write `return std::move(local);`.** Returning a local by value already moves it, or elides the copy entirely. Wrapping it in `std::move` blocks copy elision. GCC and Clang warn about this with `-Wpessimizing-move`.
+- **Declaring a destructor or copy operation suppresses the implicit move operations.** The compiler only generates a move constructor and move assignment if you haven't declared a copy constructor, copy assignment, move assignment or destructor. A class that declares only a destructor will silently copy where you expected a move.
+- **Prefer the rule of zero.** Hand-written move operations like the ones above are mainly for low-level resource-owning classes. If your members are `std::string`, `std::vector` or `std::unique_ptr`, don't declare any of the five and the compiler-generated versions will move correctly.
+- **Don't use a moved-from object** except to assign to it or destroy it, unless the type documents what state it leaves behind (as `std::unique_ptr` does: it becomes null).
+
+## Further reading
+
+- [Value categories (cppreference)](https://en.cppreference.com/w/cpp/language/value_category)
+- [Move constructors (cppreference)](https://en.cppreference.com/w/cpp/language/move_constructor)
+- [`std::move` (cppreference)](https://en.cppreference.com/w/cpp/utility/move)

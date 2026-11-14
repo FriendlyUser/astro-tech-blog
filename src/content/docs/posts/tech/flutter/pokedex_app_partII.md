@@ -1,25 +1,34 @@
 ---
-title: Implementing basic pokedex part I
-description: Pokemon app using flutter
+title: "Building a Flutter Pokédex, part II: the Pokémon details screen"
+description: "The details screen of my Flutter Pokédex: loading a Pokémon from bundled JSON and PokeAPI, then showing its description, abilities, size and a base-stat chart."
 pubDate: Monday, 7 July 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["flutter", "pokeapi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/music_album.jpg'
 ---
 
+[Part I](/posts/tech/flutter/pokedex_app_partI/) built the list view. This post covers the screen you land on after tapping a Pokémon. It combines two data sources:
 
-This is a StatefulWidget class in the Flutter framework. It appears to define a screen for displaying details about a Pokémon. The widget takes an integer pokemonId as a parameter in its constructor, which is used to look up information about the Pokémon from an API. The createState() method returns an instance of a corresponding _PokemonDetailsScreenState class, which is the State associated with this widget.
+- the bundled `clean_pokemon.json` asset (name, ID, types, image), produced by the [scraping script](/posts/tech/flutter/scrapping_data_for_pokedex/)
+- PokeAPI's REST endpoints `/pokemon/{id}` (abilities, height, weight, base stats) and `/pokemon-species/{id}` (the Pokédex description)
+
+The code below is from the [flutter_pokedex repo](https://github.com/FriendlyUser/flutter_pokedex), cleaned up while revising this post. The original version had a few bugs, which are noted where they were fixed. Helpers such as `getMargin`, `ColorConstant` and `AppDecoration` come from the DhiWise boilerplate described in part I.
+
+## The widget
+
+The screen takes the Pokémon's ID. Widget fields should be `final`, since Flutter rebuilds widgets rather than mutating them:
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:pokedex/core/api/poke_api.dart';
 
 import '../components/pokemon_description.dart';
+import '../components/pokemon_header.dart';
 import '../components/pokemon_metric.dart';
 import '../components/pokemon_stats.dart';
 import '../components/pokemon_type.dart';
 import '../components/pokemon_types.dart';
-import '../components/pokemon_header.dart';
 import '../core/utils/color_constant.dart';
 import '../core/utils/get_data.dart';
 import '../core/utils/image_constant.dart';
@@ -30,190 +39,154 @@ import '../theme/app_decoration.dart';
 import '../theme/size_utils.dart';
 
 class PokemonDetailsScreen extends StatefulWidget {
-  int pokemonId;
+  const PokemonDetailsScreen({super.key, required this.pokemonId});
 
-  PokemonDetailsScreen({Key? key, required this.pokemonId}) : super(key: key);
-  // pokemon id param
+  final int pokemonId;
+
   @override
-  _PokemonDetailsScreenState createState() => _PokemonDetailsScreenState();
+  State<PokemonDetailsScreen> createState() => _PokemonDetailsScreenState();
 }
 ```
 
+## Loading the data
+
+The state loads three things. The local Pokémon entry and the `/pokemon/{id}` details are fetched in parallel. The species request has to wait for the details, because its URL comes from the details response. Each source has its own loading flag, so each part of the screen can show a spinner until its data arrives.
 
 ```dart
-
-
 class _PokemonDetailsScreenState extends State<PokemonDetailsScreen> {
-  late Pokemon pokemon;
-  bool isLoading = false;
-  bool isLoadingDetails = false;
-  bool isLoadingSpecies = false;
+  Pokemon? pokemon;
   PokemonDetails? pokemonDetails;
   PokemonSpecies? pokemonSpecies;
-
-  void getSpecies(String url) {
-    isLoadingSpecies = true;
-    try {
-      fetchPokemonSpecies(url).then((resultat) {
-        // pokemonDetails = resultat;
-        pokemonSpecies = resultat;
-        setState(() {
-          isLoadingSpecies = false;
-        });
-      }).catchError((error) {
-        Logger.log(error);
-        setState(() {
-          isLoadingSpecies = false;
-        });
-      });
-    } catch (error) {
-      Logger.log(error);
-      setState(() {
-        isLoadingSpecies = false;
-      });
-    };
-  }
+  bool isLoading = true;
+  bool isLoadingDetails = true;
+  bool isLoadingSpecies = false;
 
   @override
   void initState() {
     super.initState();
-    // reading from json file
-    isLoading = true;
-    isLoadingDetails = true;
-    readJson().then((resultat) {
-      // use setState to update pokemon
-      pokemon = resultat[widget.pokemonId - 1];
-      setState(() {
-        isLoading = false;
-      });
-    }).catchError((error) {
+    loadPokemon();
+    loadDetails();
+  }
+
+  Future<void> loadPokemon() async {
+    try {
+      final pokemonList = await readJson();
+      // Look up by ID: the bundled list has gaps where no image was found,
+      // so pokemonList[pokemonId - 1] can return the wrong Pokémon.
+      pokemon = pokemonList.firstWhere((p) => p.id == widget.pokemonId);
+    } catch (error) {
       Logger.log(error);
+    }
+    if (!mounted) return;
+    setState(() => isLoading = false);
+  }
+
+  Future<void> loadDetails() async {
+    try {
+      final details = await fetchPokemonDetails(widget.pokemonId.toString());
+      if (!mounted) return;
       setState(() {
-        isLoading = false;
-      });
-    });
-    // LOADING SECOND DATA
-    fetchPokemonDetails(widget.pokemonId.toString()).then((resultat) {
-      // pokemonDetails = resultat;
-      pokemonDetails = resultat;
-      setState(() {
+        pokemonDetails = details;
         isLoadingDetails = false;
       });
-      // get species url
-      var speciesUrl = pokemonDetails?.species?.url;
+      final speciesUrl = details.species?.url;
       if (speciesUrl != null) {
-        getSpecies(speciesUrl);
+        await loadSpecies(speciesUrl);
       }
-    }).catchError((error) {
+    } catch (error) {
       Logger.log(error);
+      if (!mounted) return;
+      setState(() => isLoadingDetails = false);
+    }
+  }
+
+  Future<void> loadSpecies(String url) async {
+    setState(() => isLoadingSpecies = true);
+    try {
+      final species = await fetchPokemonSpecies(url);
+      if (!mounted) return;
       setState(() {
-        isLoadingDetails = false;
+        pokemonSpecies = species;
+        isLoadingSpecies = false;
       });
-    });
+    } catch (error) {
+      Logger.log(error);
+      if (!mounted) return;
+      setState(() => isLoadingSpecies = false);
+    }
   }
 ```
 
-This is the _PokemonDetailsScreenState class, which extends State and is associated with the PokemonDetailsScreen widget. It appears to be responsible for loading data about a Pokémon and its details and species from an API, and for displaying this data to the user.
+Fixes compared with the original:
 
-The _PokemonDetailsScreenState class has several variables to store data about the Pokémon, including pokemon, pokemonDetails, and pokemonSpecies, as well as variables to track the loading status of this data.
+- `pokemon` was declared `late Pokemon pokemon;` and then compared to `null`. A `late` field that was never assigned throws a `LateInitializationError` when read, so a failed JSON load crashed the screen. It's nullable now.
+- The original wrapped `fetchPokemonSpecies(url).then(...)` in a `try`/`catch`. That `catch` never sees errors from the future; only `.catchError` or `await` inside a `try` does. Using `async`/`await` throughout removes the duplication.
+- The `if (!mounted) return;` checks stop `setState` from being called after the user has left the screen, which Flutter reports as an error.
 
-The initState() method is a lifecycle method in Flutter that is called when the state associated with a StatefulWidget is first created. In this method, the _PokemonDetailsScreenState class is loading data about the Pokémon by calling the readJson() and fetchPokemonDetails() functions, which appear to read data from a JSON file and make an HTTP request to an API, respectively. When this data has been loaded, the setState() method is called to update the state of the widget and trigger a rebuild of the widget's user interface.
+## Building the sections
 
+Each section of the screen has its own builder. They return a spinner while their data loads and an empty box if there's nothing to show.
 
 ```dart
-
   Widget buildAbilities() {
-    var bgColor = getBgColor();
-    // parse metrics from pokeomnDetails
-    // get all abilities
-    var abilities = pokemonDetails?.abilities ?? [];
-    if (isLoadingDetails == true) {
+    final bgColor = getBgColor();
+    if (isLoadingDetails) {
       return CircularProgressIndicator(color: bgColor);
     }
-    // if no abilities, return empty container
-    if (abilities.isEmpty) {
-      return Container();
-    }
-    // map over abilities and make list of widgets
-    var widgets = abilities.map((e) {
-      var ability = e.ability!.name!;
-      return PokemonAbility(
-        ability: ability,
-        bgColor: bgColor,
-      );
-    }).toList();
-    return Column(children: widgets);
+    final abilities = pokemonDetails?.abilities ?? [];
+    return Column(
+      children: abilities
+          .map((e) => PokemonAbility(ability: e.ability!.name!, bgColor: bgColor))
+          .toList(),
+    );
   }
 
   Widget buildDescription() {
-    var bgColor = getBgColor();
-     if (isLoadingSpecies == true) {
+    final bgColor = getBgColor();
+    if (isLoadingSpecies) {
       return CircularProgressIndicator(color: bgColor);
     }
-    if (pokemonSpecies == null) {
-      return Container();
+    // Flavor text entries come in many languages; pick English explicitly
+    // instead of relying on the order.
+    final entries = (pokemonSpecies?.flavorTextEntries ?? [])
+        .where((e) => e.language?.name == 'en');
+    if (entries.isEmpty) {
+      return const SizedBox.shrink();
     }
-    if (pokemonSpecies?.flavorTextEntries == null) {
-      return Container();
-    }
-    if (pokemonSpecies?.flavorTextEntries?.isEmpty == true) {
-      return Container();
-    }
-    var description = pokemonSpecies?.flavorTextEntries?[0]?.flavorText;
-    // safe render, remove special characters
-    description ??= " ";
-    // return description
-    return Container(
+    // The game text contains hard line breaks and form feeds (\f).
+    final description =
+        (entries.first.flavorText ?? '').replaceAll(RegExp(r'\s+'), ' ');
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 100,
-      child: PokemonDescription(
-        description: description,
-      )
+      child: PokemonDescription(description: description),
     );
   }
 ```
 
-These are two helper functions in the _PokemonDetailsScreenState class: buildAbilities() and buildDescription().
-
-The buildAbilities() function appears to build a list of widgets representing the abilities of a Pokémon. It first gets the list of abilities from the pokemonDetails variable. If this variable is null or the list of abilities is empty, the function returns an empty Container widget. If the list of abilities is not empty, the function maps over the list of abilities and creates a list of PokemonAbility widgets, which are passed the name of the ability and a background color. This list of widgets is then returned wrapped in a Column widget.
-
-The buildDescription() function appears to build a widget displaying a description of a Pokémon. It first gets the description from the pokemonSpecies variable. If this variable is null, or if the flavorTextEntries field of the pokemonSpecies variable is null or empty, the function returns an empty Container widget. If the description is not null, the function creates and returns a PokemonDescription widget, which is passed the description.
-
+PokeAPI reports weight in hectograms and height in decimetres, so both are multiplied by 0.1. The original used `toStringAsPrecision(1)`, which keeps one *significant* digit: Bulbasaur's 6.9 kg showed as "7 kg" and Snorlax's 460 kg as "5e+2 kg". `toStringAsFixed(1)` keeps one decimal place instead.
 
 ```dart
-
   Widget buildMetrics() {
-    // if isLoadingDetails is true, return loaded
-    var bgColor = getBgColor();
-    if (pokemonDetails == null) {
+    final bgColor = getBgColor();
+    if (isLoadingDetails) {
       return CircularProgressIndicator(color: bgColor);
     }
-    // parse metrics from pokeomnDetails
-    var weight = pokemonDetails?.weight;
-    var height = pokemonDetails?.height;
-    if (isLoadingDetails == true || weight == null || height == null) {
-      return CircularProgressIndicator(color: bgColor);
-    }
-    String weightString = "";
-    String heightString = "";
-    // hectograms to kg
-    try {
-      weightString = "${(weight * 0.1).toStringAsPrecision(1)} kg";
-      heightString = "${(height * 0.1).toStringAsPrecision(1)} m";
-    } catch (e) {
-      Logger.log(e);
+    final weight = pokemonDetails?.weight;
+    final height = pokemonDetails?.height;
+    if (weight == null || height == null) {
+      return const SizedBox.shrink();
     }
     return Row(
-      // space between metrics
       children: [
         PokemonMetric(
           text: "weight",
-          label: weightString,
+          label: "${(weight * 0.1).toStringAsFixed(1)} kg",
           icon: ImageConstant.imgMusic,
         ),
         PokemonMetric(
           text: "height",
-          label: heightString,
+          label: "${(height * 0.1).toStringAsFixed(1)} m",
           icon: ImageConstant.imgFrame,
         ),
       ],
@@ -221,156 +194,95 @@ The buildDescription() function appears to build a widget displaying a descripti
   }
 
   Widget buildChart() {
-    var bgColor = getBgColor();
-    if (isLoadingDetails == true) {
+    final bgColor = getBgColor();
+    if (isLoadingDetails) {
       return CircularProgressIndicator(color: bgColor);
     }
-    if (pokemonDetails == null) {
-      return Container();
+    final stats = pokemonDetails?.stats ?? [];
+    if (stats.isEmpty) {
+      return const SizedBox.shrink();
     }
-    if (pokemonDetails?.stats == null) {
-      return Container();
-    }
-    var stats = pokemonDetails?.stats!;
-    // get all stats
-    if (stats != null && stats.isEmpty) {
-      return Container();
-    }
-    // map over stats and make seriesList
-    var seriesList = stats?.map((e) {
-      var name = e.stat!.name!;
-      var baseStat = e!.baseStat!;
-      return PokemonBaseStat(
-        name,
-        baseStat,
-      );
-    }).toList();
-
-    // make sure seriesList is not null
-    if (seriesList == null) {
-      return Container();
-    }
-
-
-    // make series from stats
+    final points =
+        stats.map((e) => PokemonBaseStat(e.stat!.name!, e.baseStat!)).toList();
     return Column(
       children: [
         const Text("Base Stats"),
-        BarChartWidget(points: seriesList, bgColor: bgColor)
-      ]
+        BarChartWidget(points: points, bgColor: bgColor),
+      ],
     );
   }
 
   Color getBgColor() {
-    var bgColor = ColorConstant.whiteA700;
-    // make sure pokemon is not null
-    // make sure pokemon type is set
-    if (isLoading == false) {
-      // esnure pokemon is not null
-      if (pokemon == null) {
-        return bgColor;
-      }
-      if (pokemon.pokemonV2Pokemontypes == null) {
-        return bgColor;
-      }
-      if (pokemon.pokemonV2Pokemontypes!.isEmpty) {
-        return bgColor;
-      }
-      var typeName = pokemon.pokemonV2Pokemontypes![0].pokemonV2Type!.name!;
-      var colors = getColorsFromType(typeName);
-      // update br color
-      bgColor = colors[1].color!;
+    final types = pokemon?.pokemonV2Pokemontypes ?? [];
+    final typeName = types.isEmpty ? null : types.first.pokemonV2Type?.name;
+    if (typeName == null) {
+      return ColorConstant.whiteA700;
     }
-    return bgColor;
+    // Use the second colour of the Pokémon's first type as the background.
+    return getColorsFromType(typeName)[1].color!;
   }
-
 ```
 
-These are several more helper functions in the _PokemonDetailsScreenState class: buildMetrics(), buildChart(), and getBgColor().
+`BarChartWidget` is a small wrapper around [fl_chart](https://pub.dev/packages/fl_chart)'s `BarChart`, with one bar per stat.
 
-The buildMetrics() function appears to build a widget displaying the weight and height of a Pokémon. It first gets the weight and height from the pokemonDetails variable. If this variable is null or the weight or height fields are null, the function returns a CircularProgressIndicator widget to indicate that data is still being loaded. If the weight and height fields are not null, the function converts the values from hectograms to kilograms and meters, respectively, and creates and returns a Row widget containing two PokemonMetric widgets, which are passed the name of the metric (e.g. "weight"), the value of the metric as a string, and an icon.
+## The build method
 
-The buildChart() function appears to build a bar chart widget displaying the base stats of a Pokémon. It first gets the list of stats from the pokemonDetails variable. If this variable is null or the stats field is null or empty, the function returns an empty Container widget. If the list of stats is not empty, the function maps over the list of stats and creates a list of PokemonBaseStat objects, which are passed the name of the stat and its base value. This list of objects is then passed to a BarChartWidget along with a background color, and the resulting widget is returned wrapped in a Column widget.
-
-The getBgColor() function appears to get the background color for the widget based on the type of the Pokémon. It first gets the list of types for the Pokémon from the pokemon variable. If this variable is null or the list of types is null or empty, the function returns a default background color. If the list of types is not empty, the function gets the name of the first type in the list and calls the getColorsFromType() function to get a list of colors associated with that type. The function then returns the second color in the list as the background color.
+The scaffold's background takes the type colour. The header (image and name) sits at the top, and a white rounded card below it holds a `ListView` with the description, types, metrics, abilities and stat chart.
 
 ```dart
-@override
-Widget build(BuildContext context) {
-  // print pokemon id
-  // get color from type
-  var bgColor = getBgColor();
-  return SafeArea(
-      child: Scaffold(
-          backgroundColor: bgColor,
-          body: isLoading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Container(
-                  width: MediaQuery.of(context).size.width * 1,
-                  height: MediaQuery.of(context).size.height * 1,
-                  child: Column(children: [
-                    PokemonHeader(
-                      pokemon: pokemon,
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = getBgColor();
+    final pokemon = this.pokemon;
+
+    Widget body;
+    if (isLoading) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (pokemon == null) {
+      body = const Center(child: Text("Could not load this Pokémon."));
+    } else {
+      body = Column(
+        children: [
+          PokemonHeader(pokemon: pokemon),
+          Flexible(
+            child: Container(
+              margin: getMargin(bottom: 4),
+              padding: getPadding(left: 20, top: 20, right: 20, bottom: 2),
+              decoration: AppDecoration.fillWhiteA700.copyWith(
+                borderRadius: BorderRadiusStyle.roundedBorder8,
+              ),
+              child: Padding(
+                padding: getPadding(left: 10, top: 8, right: 10, bottom: 8),
+                child: ListView(
+                  children: [
+                    buildDescription(),
+                    PokemonTypes(pokemon: pokemon),
+                    SizedBox(height: getVerticalSize(16)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [buildMetrics(), buildAbilities()],
                     ),
-                    Flexible(
-                        child: Container(
-                            margin: getMargin(
-                              bottom: 4,
-                            ),
-                            padding: getPadding(
-                              left: 20,
-                              top: 20,
-                              right: 20,
-                              bottom: 2,
-                            ),
-                            decoration: AppDecoration.fillWhiteA700.copyWith(
-                              borderRadius: BorderRadiusStyle.roundedBorder8,
-                            ),
-                            child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 1,
-                                width: MediaQuery.of(context).size.width * 1,
-                                padding: getPadding(
-                                  left: 10,
-                                  top: 8,
-                                  right: 10,
-                                  bottom: 8,
-                                ),
-                                child: ListView(
-                                  children: [
-                                    buildDescription(),
-                                    PokemonTypes(pokemon: pokemon),
-                                    // add padding between types and metrics
-                                    SizedBox(
-                                      height: getVerticalSize(16),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        buildMetrics(),
-                                        buildAbilities()
-                                      ],
-                                    ),
-                                    buildChart(),
-                                    SizedBox(
-                                      height: getVerticalSize(64),
-                                    ),
-                                    
-                                    // base stats, draw one chart with fl chart grab data dynamically
-                                  ],
-                                ),
-                                )))
-                  ]))));
+                    buildChart(),
+                    SizedBox(height: getVerticalSize(64)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return SafeArea(
+      child: Scaffold(backgroundColor: bgColor, body: body),
+    );
+  }
 }
 ```
 
-This is the build() method of the _PokemonDetailsScreenState class, which is responsible for building the user interface for the PokemonDetailsScreen widget.
+## Gotchas
 
-The build() method first gets the background color for the widget by calling the getBgColor() function. It then returns a Scaffold widget with a white background, which contains a Column widget as its body. The Column widget has a PokemonHeader widget as its first child, and a Flexible widget as its second child. The Flexible widget has a Container as its child, which in turn has a ListView widget as its child. The ListView widget has several children, including the buildDescription(), PokemonTypes, buildMetrics(), buildAbilities(), and buildChart() functions, which build widgets displaying the description, types, metrics, abilities, and base stats of the Pokémon, respectively.
+- In the repo, `BarChartWidget` sets `maxY: 100`. Base stats go up to 255 (Blissey's HP), so tall bars get cut off. Setting `maxY` to 255, or to the highest stat in `points`, fixes it.
+- The screen makes two PokeAPI requests every time it opens. PokeAPI's fair-use policy asks clients to cache responses, so if you build on this, cache the details and species responses locally.
 
-To view the full app visit the GitHub repository.
-
-* https://github.com/FriendlyUser/flutter_pokedex
+The full app is on GitHub: [FriendlyUser/flutter_pokedex](https://github.com/FriendlyUser/flutter_pokedex).

@@ -1,68 +1,87 @@
 ---
-description: This article aims to provide a comprehensive guide on how to use Swift
-  with Xcode for both beginners and experienced developers.
+description: Create an iOS app project in Xcode, find your way around the workspace, connect a storyboard button and label to Swift code, then run and debug it.
 imgSrc: /imgs/2023/3170249337.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-31T16:56:30.000Z'
-tags: []
-title: How to Use Swift with Xcode A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: Building a first iOS app in Xcode with Swift and storyboards
 ---
 
-# How to Use Swift with Xcode: A Comprehensive Guide
-
-Swift is a powerful and modern programming language developed by Apple for iOS, macOS, watchOS, and tvOS app development. Xcode is the integrated development environment (IDE) provided by Apple to facilitate app development using Swift. This article aims to provide a comprehensive guide on how to use Swift with Xcode for both beginners and experienced developers.
+Xcode is Apple's IDE for building Swift apps for iOS, macOS, watchOS, tvOS and visionOS. This walkthrough creates an iOS project, tours the parts of the Xcode window you will use most, wires a button and a label in a storyboard to Swift code, and runs the app in the Simulator.
 
 ## Prerequisites
 
-- An Apple Mac computer running macOS 10.15.4 or later
-- Xcode 12 or later installed from the Mac App Store
+- A Mac that meets the requirements of the current Xcode release. Each Xcode version needs a minimum macOS version; Apple lists them on the [Xcode system requirements](https://developer.apple.com/xcode/system-requirements/) page.
+- Xcode, installed from the Mac App Store or the [Apple Developer downloads](https://developer.apple.com/xcode/) page. On first launch it offers to install platform support (the iOS Simulator runtime); accept it.
 
-## Setting Up a New Project
+You don't need a paid developer account to run apps in the Simulator.
 
-1. **Launch Xcode**: Open Xcode from your Applications folder. If this is your first time opening Xcode, you may need to install additional components.
+## Creating a project
 
-2. **Create a new project**: Click on "Create a new Xcode project" or go to File > New > Project.
+1. Open Xcode and choose **File > New > Project…** (Shift-Cmd-N), or use the new-project button on the welcome window.
+2. Select the **iOS** tab and the **App** template, then click **Next**.
+3. Fill in the options:
+   - **Product Name**: the app's name, e.g. `TapCounter`.
+   - **Organization Identifier**: reverse-domain notation such as `com.example`. Xcode combines it with the product name to make the **Bundle Identifier**.
+   - **Interface**: SwiftUI is the default. This guide uses **Storyboard**, which gives you a UIKit app with an `AppDelegate`, a `SceneDelegate` and a `ViewController`.
+   - **Language**: Swift.
+   - Leave the testing and storage options at their defaults for now.
+4. Pick a folder and click **Create**.
 
-3. **Select a template**: Choose a template that best matches your intended app. For this guide, select "iOS" under the platform section, and choose the "App" template. Click "Next".
+Older guides mention a separate "Life Cycle" option. Current versions of Xcode removed it: choosing Storyboard gives you the UIKit app delegate lifecycle.
 
-4. **Configure your project**: Enter the following information:
+## The Xcode window
 
-    - Product Name: The name of your app
-    - Organization Identifier: A unique identifier, usually in reverse domain name notation (e.g., `com.example`)
-    - Bundle Identifier: This is generated automatically based on your Product Name and Organization Identifier
-    - Language: Select "Swift"
-    - Interface: Choose between "Storyboard" and "SwiftUI" (for this guide, select "Storyboard")
-    - Lifecycle: Choose "UIKit App Delegate"
-    - Include Unit Tests and UI Tests: Optional, but recommended for testing your app
+- **Navigator** (left, toggle with Cmd-0): the project file list, search, issues and breakpoints.
+- **Editor** (centre): code for Swift files, Interface Builder for storyboards.
+- **Inspectors** (right, toggle with Cmd-Option-0): attributes, size and connections for whatever is selected.
+- **Toolbar** (top): the Run and Stop buttons, plus the scheme and run destination (simulator or device).
+- **Debug area** (bottom, toggle with Cmd-Shift-Y): console output, plus variables when paused at a breakpoint.
 
-   Click "Next" when you're done.
+UI elements no longer live in a panel on the right. Open the **Library** with the **+** button in the toolbar or Cmd-Shift-L.
 
-5. **Choose a location**: Select a location on your computer to save your project and click "Create".
+## Building the UI and connecting it to code
 
-## Exploring the Xcode Interface
+1. Open `Main.storyboard`. From the Library, drag a **Label** and a **Button** onto the view controller's canvas.
+2. Open the assistant editor with **Editor > Assistant** (Ctrl-Option-Cmd-Return) so `ViewController.swift` appears next to the storyboard.
+3. Control-drag from the label into the class body and create an **Outlet** named `countLabel`.
+4. Control-drag from the button and create an **Action** named `buttonTapped`, with type `UIButton`.
 
-Xcode's interface can be intimidating at first, but it's designed to streamline the development process. Key components include:
+Then fill in the code:
 
-- **Navigator area**: Located on the left side, it contains different navigators that help you manage your project files, search, and view issues.
+```swift
+import UIKit
 
-- **Editor area**: This central area displays the content of the selected file from the Navigator area. Depending on the file type, the editor may change (e.g., a code editor for Swift files, or Interface Builder for storyboards).
+class ViewController: UIViewController {
+    @IBOutlet weak var countLabel: UILabel!
+    private var count = 0
 
-- **Utilities area**: On the right side, it displays additional information and tools related to the selected file in the editor area, such as the Attributes Inspector and the File Inspector.
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        countLabel.text = "Taps: 0"
+    }
 
-- **Toolbar**: Located at the top, it provides quick access to commonly used features, such as running your app, stopping the app, and device selection.
+    @IBAction func buttonTapped(_ sender: UIButton) {
+        count += 1
+        countLabel.text = "Taps: \(count)"
+    }
+}
+```
 
-- **Debug area**: This bottom area appears when running your app, displaying the console output and debugger.
+## Running and debugging
 
-## Building Your First App
+1. Choose a simulator (for example an iPhone) from the run destination menu in the toolbar.
+2. Press **Run** (Cmd-R). Xcode builds the app, boots the Simulator and attaches the debugger. Each tap should update the label.
+3. To debug, click a line number in `buttonTapped` to add a breakpoint, tap the button again, and use the step controls in the debug area. Type `po count` at the `(lldb)` prompt to print a value.
 
-1. **Design the user interface**: In the Navigator area, select "Main.storyboard" to open Interface Builder. Drag UI components from the Object Library (in the Utilities area) onto the canvas to design your app's interface.
+## Common problems
 
-2. **Create IBOutlet and IBAction connections**: To connect your UI components to code, use IBOutlet (for references) and IBAction (for actions). Open the Assistant Editor (by clicking the tuxedo icon in the toolbar), then control-drag from the UI component to the corresponding ViewController.swift file to create a connection.
+- **"this class is not key value coding-compliant for the key …"** at launch means the storyboard still has a connection to an outlet you renamed or deleted in code. Select the view controller, open the Connections inspector and remove the stale connection.
+- **Crash on `countLabel` being nil**: the outlet was declared in code but never connected in the storyboard. The filled circle next to `@IBOutlet` in the editor shows a connection exists; an empty circle means it does not.
+- **Storyboards vs SwiftUI**: new Xcode templates default to SwiftUI. Storyboards are still supported and common in existing UIKit apps, but for a new app it is worth trying the SwiftUI template too.
 
-3. **Write your code**: In the Navigator area, select "ViewController.swift" to open the code editor. Write your Swift code inside the class definition for `ViewController`.
+## Further reading
 
-4. **Run your app**: Choose a simulator or connected device from the toolbar's device menu, then click the "Run" button (or press Cmd+R). Xcode will compile your code, launch the app on the chosen device, and display the debug area with console output.
-
-5. **Debug your app**: If your app encounters issues or crashes, use the debug area to diagnose the problem. Add breakpoints by clicking on the line numbers in the code editor, then step through your code using the debugger's control buttons.
-
-## Conclusion
+- [Xcode documentation](https://developer.apple.com/documentation/xcode)
+- [The Swift Programming Language](https://docs.swift.org/swift-book/)

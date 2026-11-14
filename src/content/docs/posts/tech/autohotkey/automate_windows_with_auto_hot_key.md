@@ -1,47 +1,61 @@
 ---
-tags: ['autohotkey']
-title: Automate Windows with auto hot key
-description: AutoHotkey is a free, open-source scripting language for Windows that allows users to easily create small to complex scripts for all kinds of tasks such as
+tags: ['autohotkey', 'windows']
+title: "Automate Windows with AutoHotkey: hotkeys, text expansion and key remaps"
+description: What AutoHotkey is, what it's good for, and a short AutoHotkey v2 script with a hotkey, a text-expansion hotstring and a key remap.
 pubDate: Fri, 21 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1492118595.png
 ---
 
-What is AutoHotkey and why use it?
+AutoHotkey is a free, open-source (GNU GPLv2) scripting language for Windows. You use it to automate desktop tasks: keyboard and mouse shortcuts, key remapping, text expansion, form filling, auto-clicking and other macros. It's small, needs no setup beyond the installer, and a useful script can be just a few lines.
 
-AutoHotkey is a free, open-source scripting language for Windows that allows users to easily create small to complex scripts for all kinds of tasks such as: form fillers, auto-clicking, macros, etc. AutoHotkey gives you the freedom to automate any desktop task. It's small, fast and runs out-of-the-box. Best of all, it's free, open-source (GNU GPLv2), and beginner-friendly.
+## What you can do with it
 
-AutoHotkey has many benefits and features that make it a powerful and versatile tool for Windows users. Some of them are:
+- **Hotkeys.** Bind any key or mouse-button combination to an action, such as launching a program or running a function.
+- **Hotstrings.** Type an abbreviation and have it replaced with longer text, like autocorrect. Handy for email replies and boilerplate you type often.
+- **Remaps.** Make one key behave like another, for example turning Caps Lock into Ctrl.
+- **Scripting.** Beyond shortcuts, it's a full language with functions, loops, arrays, objects and classes, plus built-ins for the clipboard, window management, files, GUIs, sound and COM automation.
 
-- Define hotkeys for the mouse and keyboard, remap keys or buttons and autocorrect-like replacements. Creating simple hotkeys has never been easier; you can do it in just a few lines or less!
-- Use a simple, flexible syntax that allows you to focus more on the task at hand rather than every single little technicality. It supports not only the popular imperative-procedural paradigm, but also object-oriented and command-based programming.
-- Learn from easy to follow tutorials, examples and documentation. AutoHotkey has easy to learn built-in commands for beginners. Experienced developers will love this full-fledged scripting language for fast prototyping and small projects.
-- Join a friendly and helpful community of users and developers. You can find support, feedback and suggestions on the official forums, Reddit, Stack Overflow and other platforms.
-- Customize your scripts with user-defined functions, variables, expressions, loops, conditional statements, arrays, objects etc. You can also use built-in functions and variables for common tasks such as clipboard manipulation,
-window management,
-file operations,
-web requests,
-GUI creation,
-sound playback,
-COM automation etc.
-- Save time,keystrokes, and mouse clicks by making your own customized shortcuts ... lift the burden of repetitive tasks—like typing email replies—by doing them for you.
+## A first script
 
-AutoHotkey is widely used by millions of users around the world for various purposes such as productivity enhancement,
-gaming enhancement,
-web automation,
-data entry automation etc. Many reputable sources have praised AutoHotkey for its ease of use,
-power.
+The current version is AutoHotkey v2 (2.0.31 is the latest stable release on the download page). v2 isn't backward compatible with v1.1, so older scripts and forum examples often need changes. Save this as `my-shortcuts.ahk` and double-click it to run it:
 
-If you are looking for a tool that can make your computing life easier,
+```ahk2
+#Requires AutoHotkey v2.0
 
-more efficient,
+; Ctrl+Alt+N opens Notepad
+^!n::Run "notepad.exe"
 
-and more fun,
+; Typing "btw" followed by a space or punctuation expands it
+::btw::by the way
 
-then AutoHotkey is the answer to all of your customization needs.
+; Caps Lock acts as Ctrl
+CapsLock::Ctrl
 
-Why not give it a try?
+; Ctrl+Alt+C copies the selection and shows it in a tooltip for 2 seconds
+^!c::
+{
+    A_Clipboard := ""
+    Send "^c"
+    if ClipWait(1)
+        ToolTip A_Clipboard
+    SetTimer () => ToolTip(), -2000
+}
+```
+
+`^` is Ctrl, `!` is Alt, `+` is Shift and `#` is the Windows key. The script stays running in the system tray; right-click its icon to reload, edit or exit it.
+
+## Gotchas
+
+- Hotkeys that clash with Windows or app shortcuts override them while the script is running, so pick combinations you don't already use.
+- Scripts can't send keystrokes to programs running as administrator unless the script itself runs elevated.
+- Some games and anti-cheat software block or flag simulated input.
+
+## Further reading
 
 You can download AutoHotkey from https://www.autohotkey.com/ or http://www.autohotkey.org/ .
 
-
+- [AutoHotkey v2 documentation](https://www.autohotkey.com/docs/v2/)
+- [Hotkeys](https://www.autohotkey.com/docs/v2/Hotkeys.htm) and [Hotstrings](https://www.autohotkey.com/docs/v2/Hotstrings.htm)
+- [Changes from v1.1 to v2.0](https://www.autohotkey.com/docs/v2/v2-changes.htm)

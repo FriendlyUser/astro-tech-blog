@@ -1,62 +1,74 @@
 ---
-title: Using WebAssembly for Machine Learning A Comprehensive Guide
+title: Running machine learning models in the browser with WebAssembly
 pubDate: "2023-12-03T05:18:43.000Z"
-description: "In this article , we will explore how WebAssembly can be used for ML applications, its benefits, and the tools and frameworks available for developers"
-tags: []
+lastUpdated: 2026-11-14
+description: "How WebAssembly is used to run ML inference in the browser, with an ONNX Runtime Web example, the TensorFlow.js Wasm backend, and when WebGPU is the better fit."
+tags: ['javascript']
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1834084038_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 ---
-# Using WebAssembly for Machine Learning: A Comprehensive Guide
 
-In recent years, WebAssembly (Wasm) has emerged as a powerful and versatile technology that enables high-performance applications to run in web browsers. Its compatibility with various programming languages and platforms has made it an attractive choice for developers working on a wide range of projects. One such area where WebAssembly has gained significant traction is machine learning (ML). In this article, we will explore how WebAssembly can be used for ML applications, its benefits, and the tools and frameworks available for developers.
+Running a model in the browser means no server round trip, no inference bill, and user data that never leaves the device. The hard part is speed: the numeric kernels behind ML inference (matrix multiplies, convolutions) are slow in plain JavaScript. WebAssembly (Wasm) lets libraries compile those kernels from C++ or Rust and run them in the browser with SIMD instructions and, optionally, multiple threads.
 
-## What is WebAssembly?
+In practice you rarely write Wasm yourself for this. You use an inference library that ships a Wasm build of its runtime, and you load a model trained elsewhere (usually in Python).
 
-WebAssembly is a low-level virtual machine that runs code at near-native speeds in web browsers. It acts as a compilation target for various programming languages, including C, C++, Rust, and others. WebAssembly is designed to be a low-level virtual machine that runs code at near-native speed by taking advantage of common hardware capabilities available on a wide range of platforms.
+## What Wasm does and doesn't give you
 
-## Why WebAssembly for Machine Learning?
+- **Faster CPU inference than plain JavaScript.** Wasm runs compiled, typed code, and the 128-bit SIMD extension lets kernels process several values per instruction.
+- **Threads, with a condition.** Multithreaded Wasm needs `SharedArrayBuffer`, which browsers only enable on cross-origin isolated pages. Your server must send `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. Without those headers, libraries fall back to a single thread.
+- **Still the CPU.** For large models (vision transformers, LLMs), the GPU is much faster. In browsers that support it, WebGPU is the better backend; Wasm is the fallback that works everywhere and is often faster for small models, where GPU setup overhead dominates.
+- **Downloads.** The Wasm runtime is several megabytes and the model can be tens or hundreds more. Cache both and load them lazily.
 
-Machine learning applications often require significant computational power to process and analyze large amounts of data. Running ML models directly in the browser using JavaScript can be slow and resource-intensive. WebAssembly provides a way to run these models at a much faster speed and with better resource utilization, making it an attractive choice for ML applications.
+## Example: ONNX Runtime Web
 
-### Performance
+[ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/) runs models in the ONNX format. PyTorch, TensorFlow/Keras and scikit-learn models can all be exported to ONNX, so it's the most general option. Its Wasm backend supports every ONNX operator; the GPU backends (WebGPU, WebGL, WebNN) support a subset.
 
-WebAssembly code is executed in a low-level format that is closer to machine code, allowing it to run at near-native speeds. This performance boost is particularly beneficial for ML applications, which often require substantial processing power.
+Install it:
 
-### Language Support
+```bash
+npm install onnxruntime-web
+```
 
-WebAssembly allows developers to write ML applications in languages like C, C++, and Rust, which are more suitable for performance-critical tasks than JavaScript. This provides access to a broader range of ML libraries and frameworks that are written in these languages.
+Then load a model and run it. This assumes an MNIST-style classifier exported to `model.onnx` that takes a `[1, 784]` float32 input:
 
-### Portability
+```js
+import * as ort from 'onnxruntime-web';
 
-WebAssembly is designed to be platform-agnostic, meaning that code written for one platform can run on any other platform that supports WebAssembly, without modification. This makes it easier to deploy ML applications across various devices and platforms.
+// Create the session once and reuse it.
+const session = await ort.InferenceSession.create('./model.onnx', {
+  executionProviders: ['wasm'],
+});
 
-### Security
+// 28x28 grayscale pixels, scaled to 0..1.
+const pixels = new Float32Array(784);
+const input = new ort.Tensor('float32', pixels, [1, 784]);
 
-WebAssembly runs inside a sandboxed execution environment, providing an additional layer of security for your ML applications.
+// Feed inputs by name; the names come from the exported model.
+const results = await session.run({ [session.inputNames[0]]: input });
+const scores = results[session.outputNames[0]].data;
 
-## Tools and Frameworks for Machine Learning with WebAssembly
+const predicted = scores.indexOf(Math.max(...scores));
+console.log('Predicted digit:', predicted);
+```
 
-Several tools and frameworks can help you develop and deploy ML applications using WebAssembly. Some of the most popular ones include:
+Using `session.inputNames` and `session.outputNames` saves you from hard-coding whatever names the exporter chose. Swap `'wasm'` for `'webgpu'` in `executionProviders` to try the GPU path; check the [execution provider docs](https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html) for the import path that build needs.
 
-### TensorFlow
+## Other options
 
-TensorFlow is an open-source ML library developed by Google that supports a wide range of ML and deep learning applications. TensorFlow has a WebAssembly backend, [TensorFlow.js](https://www.tensorflow.org/js), which allows you to run TensorFlow models directly in the browser using WebAssembly.
+- **TensorFlow.js** runs TensorFlow and Keras models in JavaScript. It has several backends: WebGL, WebGPU, plain CPU, and a Wasm backend in the `@tensorflow/tfjs-backend-wasm` package. Select it with `await tf.setBackend('wasm')` after importing the package. Models trained in Python are converted with the `tensorflowjs` converter.
+- **Transformers.js** from Hugging Face runs many Hugging Face Hub models (text classification, embeddings, speech recognition, small LLMs) in the browser. It uses ONNX Runtime Web underneath, so the same Wasm and WebGPU backends apply.
+- **ML.NET in Blazor WebAssembly**: Blazor runs .NET in the browser on Wasm, and ML.NET has had partial support there since .NET 6. Some trainers that rely on native libraries aren't supported, so check your algorithm before committing to it.
+- **WebDNN** was an early research framework for in-browser inference. Its npm package hasn't been updated since 2022; prefer one of the options above for new work.
 
-### ONNX Runtime Web
+## When not to do this
 
-[ONNX Runtime Web](https://github.com/microsoft/onnxruntime/tree/master/js/web) is a JavaScript library that enables running ONNX (Open Neural Network Exchange) models in browsers using WebAssembly. ONNX Runtime Web supports a wide range of ML frameworks, including TensorFlow, PyTorch, and Scikit-learn, making it easier to deploy pre-trained models to the web.
+- The model is too big to download to every visitor, or must stay private. Serve it from a backend instead.
+- You need consistent latency across devices. In-browser speed depends entirely on the user's hardware, and a low-end phone may be many times slower than your laptop.
+- You'd be training rather than running inference. Browser runtimes are built for inference; train in Python and export.
 
-### WebDNN
+## Further reading
 
-[WebDNN](https://github.com/mil-tokyo/webdnn) is a deep learning framework that accelerates the execution of neural networks in web browsers using WebAssembly. It supports popular deep learning frameworks like TensorFlow, Keras, and PyTorch.
-
-### Blazor ML.NET
-
-[Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) is a web framework that allows developers to build web applications using .NET and C# instead of JavaScript. [ML.NET](https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet) is a cross-platform, open-source machine learning framework for .NET developers. You can use these two technologies together to build ML applications that run in the browser using WebAssembly.
-
-## Conclusion
-
-WebAssembly offers significant performance improvements and greater flexibility for developers working on machine learning applications. By leveraging WebAssembly, you can build and deploy ML models more efficiently, making it an essential tool in your toolbox.
-
-In this article, we have explored the benefits of using WebAssembly for ML applications, as well as the tools and frameworks available to developers. As the WebAssembly ecosystem continues to grow and mature, its potential for machine learning applications will become even more apparent.
-
+- [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/)
+- [TensorFlow.js platform and environment (backends)](https://www.tensorflow.org/js/guide/platform_environment)
+- [Transformers.js](https://huggingface.co/docs/transformers.js)
+- [WebAssembly features and browser support](https://webassembly.org/features/)

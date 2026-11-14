@@ -1,106 +1,126 @@
 ---
-description: In this article, we will cover the basics of Swift programming, including
-  variables, constants, data types, control flow, and functions
+description: "Swift basics for newcomers: let and var, type inference, the core value types, optionals, if, switch, loops and functions with argument labels."
 imgSrc: /imgs/2023/590655340.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-07T16:27:41.000Z'
-tags: []
-title: Swift Programming Basics A Beginner's Guide
+lastUpdated: 2026-11-14
+tags:
+  - swift
+title: "Swift basics: variables, types, control flow and functions"
 ---
 
-# Swift Programming Basics: A Beginner's Guide
+Swift is Apple's general-purpose language, announced at WWDC 2014 as a replacement for Objective-C. It's the main language for iOS and macOS apps, and it also runs on Linux and Windows for server and command-line work. This post covers the parts of the language you need before anything else: variables, types, optionals, control flow and functions.
 
-Swift is a powerful, general-purpose, and intuitive programming language developed by Apple Inc. for iOS, macOS, watchOS, tvOS, and beyond. It was introduced at Apple's 2014 Worldwide Developers Conference (WWDC) as a successor to Objective-C, offering better performance, safety, and modern features. Swift is designed to be easy to learn and use, making it an excellent choice for beginners and experienced developers alike. In this article, we will cover the basics of Swift programming, including variables, constants, data types, control flow, and functions.
+To try the examples, use an Xcode playground, or install a toolchain from [swift.org](https://www.swift.org/install/), save the code to `main.swift`, and run `swift main.swift`.
 
-## Variables and Constants
+## Variables and constants
 
-In Swift, you can store values in variables and constants. Variables can have their values changed, while constants cannot. To create a variable, use the `var` keyword, followed by the variable name and an initial value.
+`var` declares a variable you can change; `let` declares a constant. Use `let` by default and switch to `var` only when you need to mutate.
 
 ```swift
-var myVariable = 42
-myVariable = 50
+var score = 42
+score = 50
+
+let maxScore = 100
+// maxScore = 120 // compile-time error: cannot assign to value: 'maxScore' is a 'let' constant
 ```
 
-To create a constant, use the `let` keyword, followed by the constant name and an initial value.
+## Types and type inference
+
+Swift is statically typed, but it infers types from initial values, so you rarely write them out:
 
 ```swift
-let myConstant = 42
-// myConstant = 50 // This would produce a compile-time error
+let count = 42             // Int
+let ratio = 3.14           // Double (floating-point literals default to Double)
+let precise: Float = 3.14  // Float only if you ask for it
+let isReady = true         // Bool
+let name = "Swift"         // String
 ```
 
-## Data Types
+The common built-in types are:
 
-Swift has several built-in data types, including:
+- `Int` for whole numbers (also `Int8` through `Int64`, and unsigned `UInt` variants)
+- `Double` (64-bit) and `Float` (32-bit) for floating point
+- `Bool` for `true`/`false`
+- `String` and `Character` for text
 
-1. **Integers**: Signed (Int) and unsigned (UInt) integers of different sizes (8, 16, 32, or 64 bits).
-2. **Floating-point numbers**: Float (32-bit) and Double (64-bit) for representing fractional numbers.
-3. **Boolean**: A true or false value, represented by the `Bool` type.
-4. **String**: A sequence of characters, represented by the `String` type.
-
-Swift is a type-safe language, which means it enforces you to be clear about the data types you are working with. When you declare a variable or constant, Swift automatically infers the data type based on the initial value.
+Swift never converts between numeric types implicitly. Mixing them is a compile error until you convert one side:
 
 ```swift
-let integer = 42          // Int
-let float = 3.14          // Float
-let double = 3.14         // Double
-let boolean = true        // Bool
-let string = "Hello, Swift!" // String
+let items = 3
+let price = 2.5
+let total = Double(items) * price // 7.5
 ```
 
-If you want to explicitly specify the data type, you can do so by adding a colon followed by the type after the variable or constant name.
+## Optionals
+
+A value that might be missing has an optional type, written with `?`. You must unwrap it before use, which is how Swift avoids null-pointer crashes.
 
 ```swift
-let explicitDouble: Double = 3.14
+let input = "42"
+let parsed = Int(input)  // Int? because the string might not be a number
+
+if let number = parsed {
+    print("Got \(number)")
+} else {
+    print("Not a number")
+}
+
+let fallback = Int("abc") ?? 0 // 0, using the nil-coalescing operator
 ```
 
-## Control Flow
+## Control flow
 
-Swift provides several control flow statements, such as `if`, `else`, `switch`, `for-in`, and `while`.
+### if and else
 
-### If and Else
-
-The `if` statement allows you to execute code based on a condition.
+Conditions must be `Bool`; there are no "truthy" integers.
 
 ```swift
-let temperature = 70
+let temperature = 22 // Celsius
 
-if temperature < 60 {
+if temperature < 10 {
     print("It's cold outside!")
-} else if temperature > 80 {
+} else if temperature > 28 {
     print("It's hot outside!")
 } else {
     print("The weather is just right.")
 }
 ```
 
-### Switch
+### switch
 
-The `switch` statement allows you to execute code based on multiple conditions.
+`switch` must be exhaustive, and cases don't fall through, so there's no `break` to forget. A case can match several values, ranges or patterns.
 
 ```swift
 let dayOfWeek = "Tuesday"
 
 switch dayOfWeek {
 case "Monday":
-    print("It's the start of the week.")
+    print("Start of the week.")
 case "Tuesday", "Wednesday", "Thursday":
-    print("It's a weekday.")
+    print("Midweek.")
 case "Friday":
-    print("It's almost the weekend!")
+    print("Almost the weekend!")
 case "Saturday", "Sunday":
-    print("It's the weekend!")
+    print("Weekend!")
 default:
-    print("Invalid day.")
+    print("Not a day.")
+}
+
+let age = 17
+switch age {
+case 0..<13: print("Child")
+case 13..<18: print("Teen")
+default: print("Adult")
 }
 ```
 
-### For-in Loops
+### for-in
 
-The `for-in` loop allows you to iterate over a sequence, such as an array or a range.
+`for-in` iterates over arrays, dictionaries, ranges and any other sequence. `1...5` includes 5; `1..<5` stops at 4.
 
 ```swift
 let numbers = [1, 2, 3, 4, 5]
-
 for number in numbers {
     print(number)
 }
@@ -108,15 +128,16 @@ for number in numbers {
 for index in 1...5 {
     print(index)
 }
+
+for (i, n) in numbers.enumerated() {
+    print("numbers[\(i)] = \(n)")
+}
 ```
 
-### While Loops
-
-The `while` loop repeats a block of code while a condition is true.
+### while
 
 ```swift
 var counter = 5
-
 while counter > 0 {
     print(counter)
     counter -= 1
@@ -125,28 +146,30 @@ while counter > 0 {
 
 ## Functions
 
-Functions are reusable blocks of code that perform a specific task. You can declare a function using the `func` keyword, followed by the function name, a pair of parentheses (containing any input parameters), and a pair of curly braces containing the function's code.
+Functions are declared with `func`. Parameters have argument labels that callers write at the call site; use `_` to omit a label, or give a separate external name.
 
 ```swift
 func greet(name: String) {
     print("Hello, \(name)!")
 }
+greet(name: "Swift") // Hello, Swift!
 
-greet(name: "Swift") // Output: "Hello, Swift!"
-```
-
-Functions can also return values. To specify the return type, add an arrow (`->`) followed by the type after the input parameters.
-
-```swift
-func add(a: Int, b: Int) -> Int {
-    return a + b
+func add(_ a: Int, _ b: Int) -> Int {
+    a + b // single-expression bodies can omit return
 }
+let sum = add(3, 5) // 8
 
-let sum = add(a: 3, b: 5) // Output: 8
+func move(from start: Int, by offset: Int = 1) -> Int {
+    start + offset
+}
+print(move(from: 10))        // 11, using the default value
+print(move(from: 10, by: 5)) // 15
 ```
 
-## Conclusion
+## Where to go next
 
-Swift is a powerful, easy-to-learn programming language with modern features and excellent performance. This beginner's guide covered the basics of Swift programming, including variables, constants, data types, control flow, and functions. As you continue to explore Swift, you will discover more advanced features, such as optionals, error handling, classes, and protocols, that make Swift a versatile and expressive language.
+The next topics worth learning are structs and classes (and why Swift prefers structs), enums with associated values, protocols, closures, error handling with `throws`, and `async`/`await`. The official book covers all of them in order.
 
-With a strong foundation in the basics, you are well-prepared to start building your own Swift applications for iOS, macOS, watchOS, tvOS, or even server-side development. Apple's developer documentation and resources, such as [Swift.org](https://swift.org/documentation/), [Apple Developer](https://developer.apple.com/swift/), and [WWDC sessions](https://developer.apple.com/videos/), are great places to continue your learning journey and dive deeper into Swift.
+- [The Swift Programming Language (the official book)](https://docs.swift.org/swift-book/)
+- [Swift documentation on swift.org](https://www.swift.org/documentation/)
+- [Apple's Swift resources](https://developer.apple.com/swift/)

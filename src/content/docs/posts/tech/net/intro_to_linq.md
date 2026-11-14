@@ -1,194 +1,236 @@
 ---
-tags: ['linq', '.net']
-title: Introduction to LINQ
-description: LINQ is a powerful tool for querying data. In this post, we'll look at how to use LINQ to query data in C#.
+tags: ['linq', '.net', 'csharp']
+title: "LINQ in C#: filtering, sorting, grouping and joining collections"
+description: "Query syntax vs method syntax in C# LINQ, the common operators, deferred execution, and how the same queries run against a database with EF Core."
 layout: '@/templates/BasePost.astro'
 pubDate: Mon, 13 September 2023
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/359551664.png'
 ---
-LINQ (Language Integrated Query) is a set of language extensions for the Microsoft .NET Framework that allows developers to perform queries on data sources using a syntax similar to SQL. It supports querying data in a variety of formats, including arrays, lists, databases, and XML documents. LINQ was introduced in the .NET Framework version 3.5 and is available in C# and Visual Basic. LINQ makes it easier to write data access code and provides a consistent way to query and manipulate data, regardless of its source.
 
+LINQ (Language Integrated Query) lets you filter, sort, project, group and join data in C# with
+ordinary language constructs instead of hand-written loops. It shipped with C# 3.0 and .NET
+Framework 3.5, and today it is part of every .NET version. The same operators work on in-memory
+collections (`IEnumerable<T>`) and, through providers such as Entity Framework Core, on databases
+(`IQueryable<T>`).
 
-LINQ queries are composed of a series of operators that can be chained together to filter, transform, and shape data.
-
-* The "From" operator specifies the data source for the query. This can be an array, list, or any other collection that implements the IEnumerable interface.
-* The "Where" operator is used to filter the data based on a certain condition. It returns only the elements that match the specified condition.
-* The "Select" operator is used to project the data into a new form. It allows you to select only the properties or fields that you are interested in and create a new collection of the results.
-* The "OrderBy" operator is used to sort the data based on a certain property or field. It returns the data in ascending order by default, but can also be used with the "OrderByDescending" operator to sort in descending order.
-
-Here is an example of a LINQ query that uses these operators:
-
+All the in-memory examples below use this data. They run as-is in a .NET console app with
+top-level statements (`System.Linq` is an implicit using in modern SDK projects):
 
 ```csharp
-`var query = from student in students
- where student.Age > 18
- orderby student.LastName, student.FirstName
- select new {student.FirstName, student.LastName};`
-```
-This query selects all students who are older than 18, sorts them by last name, first name, and select the firstname and lastname of the students.
-
-
-LINQ can be used to query data from a List by using the "From" operator to specify the data source and chaining other operators together to filter, transform, and shape the data.
-
-Here is an example of how to use LINQ to query data from a List of integers:
-
-
-```csharp
-`List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-// Use LINQ to query the data
-var evenNumbers = from number in numbers
- where number % 2 == 0
- select number;`
-```
-In this example, the "From" operator specifies that the data source is the "numbers" List, the "Where" operator filters the data to only include even numbers and "Select" operator selects the even numbers.
-
-You can also use the method syntax
-
-
-```csharp
-`var evenNumbers = numbers.Where(n => n % 2 == 0).Select(n => n);`
-```
-This query will give you the same result as the previous one, but this is the method syntax of LINQ.
-
-You can also use other operators like OrderBy, OrderByDescending, Take, Skip, etc. to shape your data and make it more readable.
-
-
-```csharp
-`var evenNumbers = numbers.Where(n => n % 2 == 0)
- .OrderBy(n => n)
- .Take(5);`
-```
-This query will select the first 5 even numbers from the list and order them by ascending order.
-
-It is important to note that LINQ queries do not execute until they are enumerated, such as by using a foreach loop to iterate through the results.
-
-
-LINQ can be used to query data from a Dictionary by using the "From" operator to specify the data source and chaining other operators together to filter, transform, and shape the data.
-
-Here is an example of how to use LINQ to query data from a Dictionary<string, string>:
-
-
-```csharp
-`Dictionary<string, string> colors = new Dictionary<string, string>
+var students = new List<Student>
 {
- {"red", "#ff0000"},
- {"green", "#00ff00"},
- {"blue", "#0000ff"}
+    new("Ada", "Lovelace", 19, "Computer Science", 92),
+    new("Alan", "Turing", 17, "Computer Science", 88),
+    new("Grace", "Hopper", 21, "Mathematics", 95),
+    new("Edsger", "Dijkstra", 20, "Mathematics", 81),
 };
 
-// Use LINQ to query the data
-var hexColors = from color in colors
- where color.Key == "red" || color.Key == "green"
- select color.Value;`
-```
-In this example, the "From" operator specifies that the data source is the "colors" Dictionary, the "Where" operator filters the data to only include the colors which are red and green, and "Select" operator selects the hex value of the colors.
-
-You can also use the method syntax
-
-
-```csharp
-`var hexColors = colors.Where(c => c.Key == "red" || c.Key == "green")
- .Select(c => c.Value);`
-```
-This query will give you the same result as the previous one, but this is the method syntax of LINQ.
-
-You can also use other operators like OrderBy, OrderByDescending, Take, Skip, etc. to shape your data and make it more readable.
-
-It is important to note that when working with a Dictionary, the order of elements is not guaranteed, so if you need to order the elements you need to use the `ToList()` or `ToArray()` method before applying `OrderBy` or `OrderByDescending`
-
-
-```csharp
-`var hexColors = colors.Where(c => c.Key == "red" || c.Key == "green")
- .ToList()
- .OrderBy(c => c.Key)
- .Select(c => c.Value);`
-```
-This query will select the hex values of red and green colors and order them by their key.
-
-It is important to note that LINQ queries do not execute until they are enumerated, such as by using a foreach loop to iterate through the results.
-
-
-LINQ can be used to query data from a SQL database by using the LINQ to SQL or the Entity Framework, which are both built on top of LINQ and provide a way to interact with the database using LINQ syntax.
-
-To use LINQ to SQL, you need to create a mapping between the relational database and the object-oriented model. This is done by creating a DataContext class that defines the tables, columns, and relationships in the database. Once the mapping is done you can use LINQ syntax to query the data.
-
-Here is an example of how to use LINQ to SQL to query data from a SQL database:
-
-
-```csharp
-`using (var db = new DataContext())
+var departments = new List<Department>
 {
- var query = from customer in db.Customers
- where customer.Country == "USA"
- select customer;
+    new("Computer Science", "Building A"),
+    new("Mathematics", "Building B"),
+};
 
- foreach (var customer in query)
- {
- Console.WriteLine(customer.FirstName + " " + customer.LastName);
- }
-}`
+record Student(string FirstName, string LastName, int Age, string Department, int Grade);
+record Department(string Name, string Building);
 ```
-In this example, the "From" operator specifies the data source is the Customers table, the "Where" operator filters the data to only include customers from the USA, and "Select" operator selects the customer.
 
-You can also use the method syntax
+## Query syntax and method syntax
 
+LINQ has two forms. Query syntax looks a bit like SQL:
 
 ```csharp
-`using (var db = new DataContext())
+var adults = from s in students
+             where s.Age > 18
+             orderby s.LastName, s.FirstName
+             select new { s.FirstName, s.LastName };
+```
+
+`from` names the source and a range variable, `where` filters, `orderby` sorts, and `select`
+projects each element into a new shape (here an anonymous type).
+
+The compiler translates query syntax into calls to extension methods, so this is the same query
+in method syntax:
+
+```csharp
+var adults = students
+    .Where(s => s.Age > 18)
+    .OrderBy(s => s.LastName)
+    .ThenBy(s => s.FirstName)
+    .Select(s => new { s.FirstName, s.LastName });
+
+foreach (var a in adults)
+    Console.WriteLine($"{a.FirstName} {a.LastName}");
+// Edsger Dijkstra
+// Grace Hopper
+// Ada Lovelace
+```
+
+Use whichever reads better. Method syntax is more common in practice and is the only way to call
+operators that have no query keyword, such as `Take`, `Skip`, `Distinct`, `Any` or `Count`.
+Note that a secondary sort is `ThenBy`, not a second `OrderBy`; a second `OrderBy` would replace
+the first ordering.
+
+## Deferred execution
+
+Most LINQ operators don't run when you write the query. They build a pipeline that runs each time
+you enumerate it (with `foreach`, `ToList()`, `ToArray()`, `Count()`, `First()`, and so on):
+
+```csharp
+var numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+var evens = numbers.Where(n => n % 2 == 0);
+numbers.Add(12);
+Console.WriteLine(string.Join(", ", evens)); // 2, 4, 6, 8, 10, 12
+
+var snapshot = numbers.Where(n => n % 2 == 0).ToList();
+numbers.Add(14);
+Console.WriteLine(snapshot.Count); // 6
+```
+
+`evens` sees the `12` added after the query was written, because it hadn't run yet. `snapshot`
+was materialised by `ToList()`, so it doesn't see the `14`. Call `ToList()` when you want a fixed
+result or when you'd otherwise enumerate an expensive query more than once.
+
+Operators chain in the order you write them:
+
+```csharp
+var topThree = numbers
+    .Where(n => n % 2 == 0)
+    .OrderByDescending(n => n)
+    .Take(3);
+Console.WriteLine(string.Join(", ", topThree)); // 14, 12, 10
+```
+
+## Dictionaries
+
+A `Dictionary<TKey, TValue>` is an `IEnumerable<KeyValuePair<TKey, TValue>>`, so the same
+operators work on it:
+
+```csharp
+var colors = new Dictionary<string, string>
 {
- var query = db.Customers.Where(c => c.Country == "USA")
- .Select(c => new {c.FirstName, c.LastName});
+    ["red"] = "#ff0000",
+    ["green"] = "#00ff00",
+    ["blue"] = "#0000ff",
+};
 
- foreach (var customer in query)
- {
- Console.WriteLine(customer.FirstName + " " + customer.LastName);
- }
-}`
+var hex = colors
+    .Where(c => c.Key is "red" or "green")
+    .OrderBy(c => c.Key)
+    .Select(c => c.Value);
+Console.WriteLine(string.Join(", ", hex)); // #00ff00, #ff0000
 ```
-This query will give you the same result as the previous one, but this is the method syntax of LINQ.
 
-You can also use other operators like OrderBy, OrderByDescending, Take, Skip, etc. to shape your data and make it more readable.
+The enumeration order of a dictionary is not guaranteed, so add an `OrderBy` if order matters.
+You don't need to call `ToList()` first; `OrderBy` works on any `IEnumerable<T>`. For a single
+key, use `colors["red"]` or `TryGetValue` rather than a LINQ scan.
 
-With entities Framework it's similar, but you'll use the "DbContext" class instead of the "DataContext" and you'll need to create a model of the database using EF Core or EF 6.
+## Grouping, joining and aggregating
 
-It is important to note that LINQ queries against a SQL database are executed when the query is enumerated, such as by using a foreach loop to iterate through the results, or by calling the `ToList()`, `ToArray()` or `Count()` methods.
-
-Also remember that it is a good practice to use the `using` statement to dispose of the DataContext/DbContext and the opened connection to avoid any memory leaks.
-
-
-LINQ provides a number of advanced operators that can be used to perform more complex queries.
-
-* The "GroupBy" operator is used to group elements in a collection based on a certain key. It returns a collection of groups, where each group contains a key and a collection of elements that share that key.
-
+`group ... by` (or `GroupBy`) returns groups, each with a `Key` and the elements that share it:
 
 ```csharp
-`var query = from student in students
- group student by student.Department into g
- select new {Department = g.Key, Students = g};`
+var byDept = from s in students
+             group s by s.Department into g
+             select new { Department = g.Key, Count = g.Count(), Best = g.Max(s => s.Grade) };
+
+foreach (var d in byDept)
+    Console.WriteLine($"{d.Department}: {d.Count} students, best grade {d.Best}");
+// Computer Science: 2 students, best grade 92
+// Mathematics: 2 students, best grade 95
 ```
-This query groups the students by their department, and returns a collection of groups where each group contains the department name and a collection of students that belong to that department.
 
-* The "Join" operator is used to join two collections based on a common key. It returns a collection of elements that have matching keys in both collections.
-
+`join` (or `Join`) is an inner join on matching keys:
 
 ```csharp
-`var query = from student in students
- join department in departments on student.Department equals department.DepartmentName
- select new {student.FirstName, student.LastName, department.DepartmentName};`
+var withBuilding = from s in students
+                   join d in departments on s.Department equals d.Name
+                   select new { s.FirstName, s.LastName, d.Building };
 ```
-This query joins the students and departments collections by the department name, and returns a collection of elements that contains the student's first name, last name, and department name.
 
-* The "Aggregate" operator is used to apply a function to the elements of a collection and return a single value. It can be used to perform calculations such as sum, average, or count.
-
+`Sum`, `Average`, `Min`, `Max` and `Count` reduce a sequence to a single value, and unlike the
+operators above they run immediately:
 
 ```csharp
-`var query = students.Where(s => s.Department == "Computer Science")
- .Select(s => s.Grade)
- .Average();`
+double csAverage = students
+    .Where(s => s.Department == "Computer Science")
+    .Average(s => s.Grade); // 90
 ```
-This query filters the students collection to only include students from the Computer Science department, selects their grades, and calculates the average grade.
 
-It is important to note that these operators can be combined with other LINQ operators, like "Where", "Select", "OrderBy" etc. to create more complex and powerful queries. Also, these operators are executed after the query is enumerated, such as by using a foreach loop to iterate through the results, or by calling the `ToList()`, `ToArray()` or `Count()` methods.
+`Aggregate` is the general-purpose version: you supply the accumulator function yourself.
 
+```csharp
+string names = students
+    .Select(s => s.FirstName)
+    .Aggregate((acc, name) => acc + ", " + name); // Ada, Alan, Grace, Edsger
+```
 
+(For joining strings, `string.Join(", ", ...)` is simpler and faster; `Aggregate` is shown here
+to illustrate the operator.)
+
+## Querying a database with EF Core
+
+The original version of this post used LINQ to SQL (`DataContext`). LINQ to SQL is a legacy .NET
+Framework technology and isn't available in .NET Core or .NET 5+. Use Entity Framework Core
+instead. Its `DbSet<T>` implements `IQueryable<T>`, so the provider translates your LINQ
+expression into SQL rather than running it in memory.
+
+A minimal example with SQLite (`dotnet add package Microsoft.EntityFrameworkCore.Sqlite`):
+
+```csharp
+using Microsoft.EntityFrameworkCore;
+
+using var db = new ShopContext();
+db.Database.EnsureCreated();
+
+var usCustomers = db.Customers
+    .Where(c => c.Country == "USA")
+    .OrderBy(c => c.LastName)
+    .Select(c => new { c.FirstName, c.LastName });
+
+Console.WriteLine(usCustomers.ToQueryString()); // prints the generated SQL
+
+foreach (var c in usCustomers)
+    Console.WriteLine($"{c.FirstName} {c.LastName}");
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public string Country { get; set; } = "";
+}
+
+public class ShopContext : DbContext
+{
+    public DbSet<Customer> Customers => Set<Customer>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite("Data Source=shop.db");
+}
+```
+
+`ToQueryString()` shows the SQL EF Core will send: a `SELECT` of the two columns with the
+`WHERE` and `ORDER BY` applied in the database. The query runs when it is enumerated, the same
+deferred execution rule as in memory. Dispose the context (the `using` declaration above) so
+its database connection is released.
+
+## Gotchas
+
+- **Multiple enumeration.** Every `foreach` over an unmaterialised query re-runs it. Against a
+  database that means another round trip; call `ToList()` once if you need the results twice.
+- **`IEnumerable` vs `IQueryable`.** Once a database query becomes `IEnumerable<T>` (for example
+  after `AsEnumerable()` or `ToList()`), the remaining operators run in memory on every row
+  fetched. Keep filters before that point.
+- **Not every C# expression translates to SQL.** EF Core throws if it can't translate a method
+  call in a `Where`, rather than silently pulling the whole table.
+- **`First` vs `FirstOrDefault`.** `First` throws on an empty sequence; `FirstOrDefault` returns
+  `default` (null for reference types).
+
+## Further reading
+
+- [Language Integrated Query (LINQ) overview](https://learn.microsoft.com/en-us/dotnet/csharp/linq/)
+- [Standard query operators](https://learn.microsoft.com/en-us/dotnet/csharp/linq/standard-query-operators/)
+- [Querying data with EF Core](https://learn.microsoft.com/en-us/ef/core/querying/)

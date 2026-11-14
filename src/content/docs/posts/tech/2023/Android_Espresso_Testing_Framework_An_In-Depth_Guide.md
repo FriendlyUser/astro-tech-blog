@@ -1,144 +1,206 @@
 ---
-title: Android Espresso Testing Framework An In-Depth Guide
+title: "Espresso UI tests on Android: setup, matchers, idling resources and intents"
 pubDate: "2024-09-23T18:33:29.000Z"
-description: "In this article , we will explore the Espresso testing framework in depth, covering its core concepts, components, and best practices for writing and executing UI tests"
-tags: []
+lastUpdated: 2026-11-14
+description: "How to set up Espresso with AndroidX Test, write a UI test with ActivityScenarioRule, handle background work with idling resources, and verify intents."
+tags: ["android", "testing", "java", "espresso"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3558128873.png
 ---
-# Android Espresso Testing Framework: An In-Depth Guide
 
-## Introduction
+Espresso is Google's framework for UI tests that run on an Android device or emulator, inside your app's process. A test finds a view, does something to it, and checks the result. Espresso waits for the main thread to go idle between steps, so you don't sprinkle `Thread.sleep()` through your tests. It ships as part of [AndroidX Test](https://developer.android.com/training/testing/espresso), which replaced the old Android Testing Support Library.
 
-Espresso is a powerful testing framework developed by Google for Android applications. It provides a reliable and efficient way to perform UI tests on Android apps, ensuring that the app's user interface works as expected. Espresso is part of the Android Testing Support Library and is designed to work seamlessly with Android Studio, making it an essential tool for Android developers who want to create high-quality, maintainable, and reliable applications.
+## Setup
 
-In this article, we will explore the Espresso testing framework in depth, covering its core concepts, components, and best practices for writing and executing UI tests.
+In the app module's `build.gradle`, set the instrumentation runner and add the test dependencies (versions current as of this update):
 
-## Table of Contents
+```groovy
+android {
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    testOptions {
+        animationsDisabled = true
+    }
+}
 
-1. [Espresso Testing Framework Overview](#overview)
-2. [Setting Up Espresso](#setup)
-3. [Espresso Components and Core API](#components)
-4. [Writing Espresso Tests](#writing-tests)
-5. [Advanced Espresso Techniques](#advanced)
-6. [Conclusion](#conclusion)
-
-<a name="overview"></a>
-
-## 1. Espresso Testing Framework Overview
-
-Espresso provides a powerful and flexible way to test Android applications' user interfaces. It focuses on providing a simple API for writing UI tests and automatically synchronizes with the Android UI thread, ensuring that tests run reliably and without flakiness.
-
-Some of the main advantages of using Espresso for UI testing include:
-
-- **Automatic synchronization**: Espresso automatically synchronizes with the app's UI thread, ensuring that tests run smoothly and without race conditions.
-- **Ease of use**: Espresso provides a simple and easy-to-understand API for writing UI tests.
-- **Integration with Android Studio**: Espresso is fully integrated with Android Studio, making it easy to write, run, and debug tests.
-- **Support for multiple devices**: Espresso tests can be run on a wide range of Android devices, including emulators and physical devices.
-
-<a name="setup"></a>
-
-## 2. Setting Up Espresso
-
-To get started with Espresso, you need to set up your Android Studio project with the necessary dependencies. Add the following dependencies to your app's `build.gradle` file:
-
-```gradle
-androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-androidTestImplementation 'androidx.test:runner:1.4.0'
-androidTestImplementation 'androidx.test:rules:1.4.0'
-```
-
-Don't forget to sync your project with the Gradle files.
-
-<a name="components"></a>
-
-## 3. Espresso Components and Core API
-
-Espresso consists of three main components:
-
-1. **ViewMatchers**: These are used to find views in the app's view hierarchy. They are based on Hamcrest matchers and provide a variety of built-in matchers for common use cases.
-2. **ViewActions**: These are used to interact with the found views, such as clicking or typing text.
-3. **ViewAssertions**: These are used to check the state of the views and make assertions about their properties.
-
-The core Espresso API is based on the following static methods:
-
-- `onView(ViewMatcher)`: This method is used to find a view in the app's view hierarchy that matches the given ViewMatcher. It returns a `ViewInteraction` object.
-- `perform(ViewAction)`: This method is used to perform an action on the found view, such as clicking or typing text.
-- `check(ViewAssertion)`: This method is used to check the state of the view and make assertions about its properties.
-
-Here's an example of a simple Espresso test:
-
-```java
-@Test
-public void buttonClickTest() {
-    // Find the button with the text "Click me!" and perform a click action
-    onView(withText("Click me!")).perform(click());
-
-    // Check if the text "Button clicked!" is displayed in the TextView with the ID "result_text"
-    onView(withId(R.id.result_text)).check(matches(withText("Button clicked!")));
+dependencies {
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.7.0'
 }
 ```
 
-<a name="writing-tests"></a>
+`animationsDisabled` turns off system animations when tests run from Gradle. Espresso does not wait for animations, so leaving them on is a common source of flaky tests. If you run tests from a device directly, turn off the three animation scales in Developer options.
 
-## 4. Writing Espresso Tests
+Tests go in `src/androidTest/java/`.
 
-When writing Espresso tests, you should follow these best practices:
+## Matchers, actions and assertions
 
-1. **Keep tests focused and granular**: Each test should verify a single functionality or behavior of your app. This makes it easier to understand the test's purpose and fix issues when a test fails.
-2. **Use descriptive test names**: Test names should clearly describe the behavior they are testing. This makes it easier to understand the test's purpose and maintain the test suite.
-3. **Organize tests by functionality**: Group tests that verify related functionality together. This makes it easier to maintain and navigate the test suite.
-4. **Use the `@Before` and `@After` annotations**: Use these annotations to set up and clean up resources before and after each test. This ensures that tests run in isolation and do not interfere with each other.
-
-<a name="advanced"></a>
-
-## 5. Advanced Espresso Techniques
-
-Espresso also provides advanced techniques for more complex testing scenarios. Some of these techniques include:
-
-- **Data-driven testing**: Use Espresso's`@RunWith(Parameterized.class)` and `@Parameters` annotations to create data-driven tests. This allows you to run the same test with different input values, making it easier to test a wide range of scenarios.
-
-- **Idling resources**: Use Espresso's IdlingResource interface to handle asynchronous operations in your tests. This allows Espresso to wait for long-running operations to complete before executing the next action or assertion, ensuring that tests run reliably.
-
-- **Custom matchers, actions, and assertions**: Create custom ViewMatchers, ViewActions, and ViewAssertions to extend Espresso's functionality and handle specific use cases in your app.
-
-- **Testing intents**: Use Espresso-Intents, an extension of the Espresso framework, to test the interactions between your app's components (e.g., starting an Activity or sending a BroadcastReceiver). This allows you to verify that your app's components work together as expected.
-
-Here's an example of a custom ViewMatcher that checks if a view is visible and has a specific background color:
+Every Espresso statement has the same shape:
 
 ```java
+onView(ViewMatcher)        // find exactly one view
+    .perform(ViewAction)   // optional: click, type, scroll...
+    .check(ViewAssertion); // optional: assert on its state
+```
+
+- `ViewMatchers` (`withId`, `withText`, `isDisplayed`, ...) are Hamcrest matchers. If more than one view matches, Espresso throws `AmbiguousViewMatcherException`, so combine them with `allOf(...)` when needed.
+- `ViewActions` (`click()`, `typeText()`, `replaceText()`, `closeSoftKeyboard()`, `scrollTo()`) interact with the view.
+- `ViewAssertions` (`matches(...)`, `doesNotExist()`) check the result.
+
+## A complete test
+
+This test types a name, taps a button and checks the greeting. It assumes `MainActivity` has an `EditText` (`name_input`), a `Button` (`greet_button`) and a `TextView` (`result_text`).
+
+```java
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(AndroidJUnit4.class)
+public class GreetingTest {
+
+    @Rule
+    public ActivityScenarioRule<MainActivity> activityRule =
+            new ActivityScenarioRule<>(MainActivity.class);
+
+    @Test
+    public void typingNameAndTappingGreet_showsGreeting() {
+        onView(withId(R.id.name_input)).perform(typeText("Ada"), closeSoftKeyboard());
+        onView(withId(R.id.greet_button)).perform(click());
+        onView(withId(R.id.result_text)).check(matches(withText("Hello, Ada!")));
+    }
+}
+```
+
+`ActivityScenarioRule` launches the Activity before each test and closes it afterwards, so each test starts from a fresh screen. Run it with **Run** in Android Studio or `./gradlew connectedAndroidTest`.
+
+## Background work: idling resources
+
+Espresso's automatic synchronisation only covers the main thread's message queue (and the legacy `AsyncTask` executor). It knows nothing about your coroutines, RxJava schedulers, OkHttp calls or custom thread pools. If a test checks the screen before a network response arrives, it fails intermittently.
+
+An `IdlingResource` tells Espresso when your app is busy. The simplest is `CountingIdlingResource` from the `androidx.test.espresso:espresso-idling-resource:3.7.0` artifact (add it as a regular `implementation` dependency, since app code calls it):
+
+```java
+import androidx.test.espresso.idling.CountingIdlingResource;
+
+public final class NetworkIdling {
+    public static final CountingIdlingResource RESOURCE =
+            new CountingIdlingResource("network");
+}
+
+// In app code, around the async call:
+NetworkIdling.RESOURCE.increment();
+api.loadUser(id, result -> {
+    showUser(result);
+    NetworkIdling.RESOURCE.decrement();
+});
+```
+
+Register it in the test:
+
+```java
+import androidx.test.espresso.IdlingRegistry;
+import org.junit.After;
+import org.junit.Before;
+
+@Before
+public void registerIdling() {
+    IdlingRegistry.getInstance().register(NetworkIdling.RESOURCE);
+}
+
+@After
+public void unregisterIdling() {
+    IdlingRegistry.getInstance().unregister(NetworkIdling.RESOURCE);
+}
+```
+
+Espresso now waits until the counter is back to zero before each action and assertion. Make sure every `increment()` has a matching `decrement()`, including on error paths, or the test hangs until it times out.
+
+## Custom matchers
+
+When the built-in matchers aren't enough, write a Hamcrest `TypeSafeMatcher`. This one matches a view whose background is a solid colour:
+
+```java
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
 public static Matcher<View> withBackgroundColor(final int color) {
     return new TypeSafeMatcher<View>() {
         @Override
         protected boolean matchesSafely(View view) {
             Drawable background = view.getBackground();
-            if (!(background instanceof ColorDrawable)) return false;
-
-            ColorDrawable colorDrawable = (ColorDrawable) background;
-            return colorDrawable.getColor() == color && view.getVisibility() == View.VISIBLE;
+            return background instanceof ColorDrawable
+                    && ((ColorDrawable) background).getColor() == color;
         }
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("with background color: " + color);
+            description.appendText("with background color: " + Integer.toHexString(color));
         }
     };
 }
 ```
 
-To use this custom ViewMatcher in a test, you can simply call it like any other built-in matcher:
+```java
+onView(withId(R.id.status_banner)).check(matches(withBackgroundColor(Color.RED)));
+```
+
+The `color` argument is an ARGB int, not a resource ID. For a colour resource, resolve it first with `ContextCompat.getColor(context, R.color.error)`. Backgrounds defined as shape drawables or Material backgrounds are not `ColorDrawable`s, so this matcher won't match them.
+
+## Verifying intents
+
+`espresso-intents` records the intents your app sends so you can assert on them, and can stub responses so the test never leaves your app:
 
 ```java
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+
+import androidx.test.espresso.intent.Intents;
+
+@Before
+public void setUpIntents() {
+    Intents.init();
+}
+
+@After
+public void tearDownIntents() {
+    Intents.release();
+}
+
 @Test
-public void customMatcherTest() {
-    onView(withId(R.id.view_with_color)).check(matches(withBackgroundColor(Color.RED)));
+public void tappingDetails_opensDetailActivity() {
+    onView(withId(R.id.details_button)).perform(click());
+    intended(hasComponent(DetailActivity.class.getName()));
 }
 ```
 
-<a name="conclusion"></a>
+Use `intending(...).respondWith(...)` to stub an intent, for example to fake the result of a camera or contacts picker.
 
-## 6. Conclusion
+## Gotchas
 
-The Android Espresso testing framework is a powerful and flexible tool for testing your app's user interface. By following best practices and leveraging advanced techniques, you can create a robust and maintainable test suite that ensures your app's UI works as expected.
+- Parameterised tests come from JUnit 4 (`@RunWith(Parameterized.class)`), not Espresso. They work with Espresso but replace the `AndroidJUnit4` runner on that class.
+- Espresso can only touch your app's process. To tap system dialogs, notifications or another app, use [UI Automator](https://developer.android.com/training/testing/other-components/ui-automator).
+- For Jetpack Compose UI, use the Compose testing APIs (`createComposeRule`, `onNodeWithText`) instead of `onView`.
 
-By incorporating Espresso into your development process, you can catch potential issues early, reduce the risk of regressions, and ultimately deliver a higher-quality app to your users.
+## Further reading
+
+- [Espresso basics](https://developer.android.com/training/testing/espresso/basics)
+- [Espresso idling resources](https://developer.android.com/training/testing/espresso/idling-resource)
+- [Espresso-Intents](https://developer.android.com/training/testing/espresso/intents)

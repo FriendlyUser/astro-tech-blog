@@ -1,41 +1,23 @@
 ---
-description: In this article, we will discuss what generics are, why they are important,
-  and how to use them in your Swift code
+description: How to write generic functions and types in Swift, constrain them with protocols and where clauses, and what generics cost at runtime.
 imgSrc: /imgs/2023/4252050732.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-16T13:30:07.000Z'
-tags: []
-title: Swift's Generics Enhancing Code Flexibility and Reusability
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift generics: generic functions, generic types and constraints"
 ---
 
-# Swift's Generics: Enhancing Code Flexibility and Reusability
+Generics let you write one function or type that works with many types while the compiler still checks every call. Instead of writing `swapInts`, `swapStrings` and so on, you write one `swap` with a type parameter, and the compiler fills in the concrete type at each call site.
 
-Generics are a powerful feature in the Swift programming language that enables developers to write flexible and reusable code with less duplication. In this article, we will discuss what generics are, why they are important, and how to use them in your Swift code.
+The standard library uses them everywhere: `Array<Element>`, `Dictionary<Key, Value>`, `Set<Element>` and `Optional<Wrapped>` are all generic types.
 
-## What are Generics?
+## Generic functions
 
-Generics are a programming language feature that allows you to write a single function or class that can work with different types, without specifying the type in advance. The type is supplied as a parameter when the function or class is used, allowing for a more reusable and type-safe code.
-
-In Swift, generics are used extensively in the standard library, particularly for collection types such as `Array`, `Dictionary`, and `Set`. These collection types can store elements of any type, allowing for a high level of flexibility and adaptability.
-
-## Why Use Generics?
-
-Generics provide several benefits to developers, including:
-
-1. **Code reusability**: Generics allow you to write a single function or class that works with multiple types, reducing the need for writing separate implementations for each type.
-2. **Type safety**: When working with generics, the Swift compiler enforces strict type-checking, ensuring that your code remains type-safe and less prone to runtime errors.
-3. **Performance**: Generics are implemented during compilation, which means that the performance impact is minimal, and in many cases, the generated code is just as efficient as if you had written specific, non-generic implementations.
-
-## How to Use Generics in Swift
-
-To use generics in Swift, you need to define a generic function, class, or structure. Let's explore how to do this through examples.
-
-### Generic Functions
-
-To define a generic function, use angle brackets `<T>` after the function name, where `T` is a placeholder for the type that will be supplied later. Here's an example of a simple generic function that swaps the values of two variables:
+Put a type parameter in angle brackets after the function name. `T` is a placeholder that the compiler infers from the arguments:
 
 ```swift
-func swapValues<T>(a: inout T, b: inout T) {
+func swapValues<T>(_ a: inout T, _ b: inout T) {
     let temporaryA = a
     a = b
     b = temporaryA
@@ -43,15 +25,15 @@ func swapValues<T>(a: inout T, b: inout T) {
 
 var number1 = 5
 var number2 = 10
-swapValues(a: &number1, b: &number2)
-print("number1: \(number1), number2: \(number2)") // Output: number1: 10, number2: 5
+swapValues(&number1, &number2)
+print("number1: \(number1), number2: \(number2)") // number1: 10, number2: 5
 ```
 
-In this example, `T` is a type placeholder that can be replaced with any type when the function is called. The Swift compiler will infer the type based on the function call's arguments.
+Both arguments must be the same type, so `swapValues(&number1, &someString)` is a compile error. In real code, use the standard library's `swap(_:_:)`, which does the same thing.
 
-### Generic Types
+## Generic types
 
-You can also define generic classes, structures, and enumerations. Let's illustrate this with a generic `Stack` class:
+Structs, classes and enums can take type parameters too. Here is a generic stack:
 
 ```swift
 struct Stack<Element> {
@@ -62,44 +44,69 @@ struct Stack<Element> {
     }
 
     mutating func pop() -> Element? {
-        return elements.popLast()
+        elements.popLast()
     }
 
     func peek() -> Element? {
-        return elements.last
+        elements.last
     }
 }
 
 var intStack = Stack<Int>()
 intStack.push(1)
 intStack.push(2)
-print(intStack.pop()) // Output: Optional(2)
+print(intStack.pop() ?? -1) // 2
 
 var stringStack = Stack<String>()
 stringStack.push("Hello")
 stringStack.push("World")
-print(stringStack.pop()) // Output: Optional("World")
+print(stringStack.pop() ?? "empty") // World
 ```
 
-In this example, the `Stack` structure uses a type placeholder `Element` to represent the type of elements it stores. When creating a new `Stack` instance, you need to specify the type of elements it will store.
+Each specialisation is its own type: a `Stack<Int>` only accepts `Int`s. You can leave out the type argument when the compiler can infer it from context, as in `var s: Stack<Double> = Stack()`.
 
-### Type Constraints
+## Type constraints
 
-Sometimes, it's necessary to constrain the types that can be used with a generic function or type. You can use type constraints to restrict the types that can be used as a placeholder. Here's an example of a generic function that calculates the sum of two `Numeric` values:
+An unconstrained `T` can only be moved around, not added or compared, because the compiler knows nothing about it. A constraint says which protocol `T` must conform to, which unlocks that protocol's operations:
 
 ```swift
-func sum<T: Numeric>(a: T, b: T) -> T {
-    return a + b
+func sum<T: Numeric>(_ a: T, _ b: T) -> T {
+    a + b
 }
 
-print(sum(a: 5, b: 10)) // Output: 15
-print(sum(a: 3.14, b: 2.71)) // Output: 5.85
-// Error: Cannot invoke 'sum' with an argument list of type '(a: String, b: String)'
-// print(sum(a: "Hello", b: "World"))
+print(sum(5, 10))       // 15
+print(sum(3.14, 2.71))  // 5.85
+// sum("Hello", "World")
+// compile error: 'String' does not conform to 'Numeric'
 ```
 
-In this example, we use the `Numeric` protocol as a type constraint to ensure that the function only accepts numeric types. The Swift compiler will enforce this constraint and generate an error if a non-numeric type is used.
+For more than one requirement, or requirements on associated types, use a `where` clause:
 
-## Conclusion
+```swift
+func allEqual<C: Collection>(_ items: C) -> Bool where C.Element: Equatable {
+    guard let first = items.first else { return true }
+    return items.allSatisfy { $0 == first }
+}
 
-Generics are a powerful feature in Swift that enable you to write flexible, reusable, and type-safe code. They play a vital role in the standard library and can significantly improve your code's maintainability and performance. By understanding and utilizing generics in your Swift code, you can create more versatile and efficient codebases.
+print(allEqual([1, 1, 1]))    // true
+print(allEqual(["a", "b"]))   // false
+```
+
+Since Swift 5.7 you can also write a constrained parameter without naming the type parameter, using `some`:
+
+```swift
+func describe(_ value: some CustomStringConvertible) -> String {
+    "Value: \(value.description)"
+}
+```
+
+This is equivalent to `func describe<T: CustomStringConvertible>(_ value: T)`.
+
+## What generics cost at runtime
+
+Swift does not have to generate a separate copy of a generic function for every type. By default, generic code is compiled once and receives the concrete type's metadata and protocol witness tables at runtime, which is how generics work across module boundaries. When the optimizer can see the function body and the concrete types (same module, `@inlinable`, or whole-module optimization), it specialises the function for those types and removes that indirection. So generic code is often as fast as a hand-written version, but not always; if a hot generic function sits in another module, check whether it's being specialised.
+
+## Further reading
+
+- [Generics in The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/generics/)
+- [Opaque and boxed protocol types (`some` and `any`)](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/opaquetypes/)

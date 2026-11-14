@@ -1,137 +1,132 @@
 ---
-title: Removing Broken Links with the Fetch API
+title: Finding and removing broken links with the Fetch API
 pubDate: "2024-08-29T09:57:22.000Z"
-description: "This article will guide you through the process of installing and using Fabric in Python, with practical examples"
-tags: []
+lastUpdated: 2026-11-14
+description: "Use fetch() HEAD requests to find links that return 4xx or 5xx errors, remove them from a page in the browser, or check them from Node.js."
+tags: ['javascript', 'web']
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3541980154.png
 ---
 
-## Removing Broken Links with the Fetch API
+Broken links are a bad experience for readers and a signal search engines notice. The Fetch API makes it easy to check them: send a `HEAD` request, which returns only the status line and headers, and look at the status code. A 4xx or 5xx means the link is broken; anything else means it works.
 
-When building a website, it's important to regularly check for and remove any broken or dead links that may exist across your pages. Broken links create a poor user experience and can negatively impact your site's SEO. In this article, we'll look at how to use the Fetch API in JavaScript to efficiently identify and eliminate faulty links.
+This post shows the idea in the browser, the limits of doing it there, and a Node.js version that can check any URL.
 
-The Fetch API provides a modern way to make network requests directly from JavaScript. A key benefit of Fetch is the ability to make HEAD requests, which retrieve just the headers of a response without the full body. For our purposes, this allows quickly checking the status code of a link without downloading the entire resource. 
-
-Here's example code to loop through all links on a page, make HEAD requests, and remove any that return 400+ status codes:
+## The basic idea
 
 ```js
-
-const links = document.querySelectorAll('a');
-//
-// ...
-// for each link in a
-fetch(a.href, {method: 'HEAD'})
-  .then(res => {
-    if(res.status >= 400) {
-      row.remove(); 
-    }
-  })
-  .catch(e => {
-    // a.remove();
-  }); 
-```
-
-This uses document.querySelectorAll to grab all <a> elements, then makes a HEAD request to check each href. If the status is 400 or above, indicating a client or server error, we remove the link's entire row from the DOM. 
-
-document.querySelectorAll allows us to easily select elements by CSS selector syntax. This gives us flexibility to target specific links, like only ones in a table or under a certain class. Overall, combining Fetch, HEAD requests, and querySelectorAll provides a straightforward way to prune dead links on a page.
-
-
-
-## Optimizations and Considerations
-
-While the basic technique outlined above works, there are a few ways we can optimize the process and avoid potential pitfalls:
-
-- Check links asynchronously - Making a large number of sequential Fetch requests could lock up the browser. We can make use of async/await to send requests in parallel:
-
-```js
-async function checkLinks() {
-
-  const links = document.querySelectorAll('a');
-
-  const requests = Array.from(links).map(async link => {
-    const res = await fetch(link.href, {method: 'HEAD'});
-    return [link, res]; 
-  });
-
-  const results = await Promise.all(requests);
-
-  results.forEach(result => {
-   const [link, res] = result;
-   if(res.status >= 400) {
-     link.remove();
-   }
-  });
-
+const res = await fetch(url, { method: 'HEAD' });
+if (res.status >= 400) {
+  // broken
 }
 ```
 
-- Watch for redirects - Some 400+ status codes are for temporary redirects rather than permanent broken links. We may want to allow 3xx responses to avoid removing working links.
+A few details matter in practice:
 
-- Consider link types - Be thoughtful about which links you want to remove. Deleting JS/CSS assets could break functionality.
+- **Redirects are already handled.** `fetch` follows 3xx redirects by default, and `res.status` is the status of the final response. (`res.redirected` tells you a redirect happened.) So a link that redirects to a working page reports 200.
+- **Some servers don't support `HEAD`** and answer 405 or 501. Retry those with `GET`.
+- **`fetch` rejects on network errors**, such as DNS failures or refused connections, rather than returning a status. Catch those, or one bad link rejects the whole `Promise.all`.
+- **Requests can hang.** `AbortSignal.timeout(ms)` gives each request a deadline.
 
-- Re-crawl - Check links again after removing to catch any new issues exposed.
+## Removing broken links in the browser
 
-- Report issues - Logging or alerting on invalid links can help track down problems.
-
-Properly deployed, an automated Fetch-based solution can greatly reduce the occurrence of dead links. With the ability to refine selector targets and handle redirects/assets, we can keep our sites full of useful, working links.
-
-## Putting It All Together
-
-Now that we've explored the core technique and some optimizations, let's walk through an expanded script to cleanly remove dead links from a site:
+This checks every link on the page, logs the broken ones, and removes them. If a link sits in a table row, the whole row goes:
 
 ```js
-// Select links, exclude ones we don't want to check
-const links = document.querySelectorAll('a:not([data-ignore])'); 
-
-async function checkStatus(link) {
-  const res = await fetch(link.href, {method: 'HEAD'});
-  
-  if(res.status >= 400 && res.status < 500) {
-    // Log 4xx issues
-    console.log(`${link.href} returned ${res.status}`);
-    return false;
-  } else if(res.status >= 500) {
-    // Retry 5xx issues 
-    return checkStatus(link);
-  } else {
-    return true; 
+async function linkStatus(url) {
+  try {
+    let res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
+    if (res.status === 405 || res.status === 501) {
+      res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+      await res.body?.cancel();
+    }
+    return res.status;
+  } catch {
+    return null; // network error, timeout, or blocked by CORS
   }
 }
 
-async function checkLinks() {
+async function removeBrokenLinks(selector = 'a[href]:not([data-ignore])') {
+  const links = [...document.querySelectorAll(selector)]
+    .filter(a => a.origin === location.origin);
 
-  const linkPromises = Array.from(links).map(async link => {
-    const valid = await checkStatus(link);
-    return [link, valid];
-  });
-  
-  const results = await Promise.all(linkPromises);
-  
-  results.forEach(result => {
-    const [link, valid] = result;
-    if(!valid) {
-      link.remove();
+  const results = await Promise.all(
+    links.map(async a => [a, await linkStatus(a.href)])
+  );
+
+  for (const [a, status] of results) {
+    if (status !== null && status >= 400) {
+      console.warn(`${a.href} returned ${status}`);
+      (a.closest('tr') ?? a).remove();
     }
-  });
-  
+  }
 }
 
-// Initially check links 
-checkLinks();
-
-// Re-check links periodically
-setInterval(checkLinks, 60*60*1000); 
+removeBrokenLinks();
 ```
 
-This expands on our initial script by:
+`querySelectorAll` takes any CSS selector, so you can narrow the check to one table or class, and a `data-ignore` attribute lets you skip links you never want removed. `Promise.all` sends the requests concurrently; `linkStatus` never throws, so one failure can't sink the rest.
 
-- Using a `data-ignore` attribute to exclude certain links from checking, like CSS/JS assets we want to leave alone. 
+### Why it only checks same-origin links
 
-- Logging 4xx status codes to diagnose issues while still removing the links.
+The `filter` on `a.origin` is there because of CORS. A browser `fetch` to another origin only succeeds if that server sends `Access-Control-Allow-Origin`, and most sites don't. Without it the request rejects with a `TypeError`, exactly like a dead server would, so you can't tell "broken" from "not allowed to look". `mode: 'no-cors'` doesn't help either: it returns an opaque response whose status is always 0.
 
-- Retrying failed requests in case of transient 5xx errors.
+So in the browser this approach is reliable for links within your own site. For external links, check from a server or a script instead.
 
-- Running the checker on an interval to detect new broken links over time.
+## Checking any link from Node.js
 
-With these enhancements, we have a robust solution to keep our links tidy and users happy. The Fetch API provides the flexibility to implement exactly the checking logic we need.
+Node.js 18 and later ship a global `fetch`, and there's no CORS outside the browser. This script takes URLs on the command line, retries transient 5xx errors and network failures a couple of times with a growing delay, and prints the ones that are still broken:
+
+```js
+// check-links.mjs
+const TIMEOUT_MS = 10_000;
+
+async function linkStatus(url, retries = 2) {
+  let status = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      let res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(TIMEOUT_MS) });
+      if (res.status === 405 || res.status === 501) {
+        // Some servers don't support HEAD; fall back to GET and drop the body.
+        res = await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+        await res.body?.cancel();
+      }
+      status = res.status;
+      if (status < 500) return status;
+    } catch {
+      status = null; // DNS failure, refused connection or timeout
+    }
+    if (attempt < retries) {
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  return status;
+}
+
+const urls = process.argv.slice(2);
+const results = await Promise.all(urls.map(async url => [url, await linkStatus(url)]));
+const broken = results.filter(([, status]) => status === null || status >= 400);
+
+for (const [url, status] of broken) {
+  console.log(`${status ?? 'ERR'} ${url}`);
+}
+process.exitCode = broken.length > 0 ? 1 : 0;
+```
+
+```bash
+node check-links.mjs https://example.com/ https://example.com/old-page
+```
+
+It exits with code 1 when anything is broken, so you can run it in CI on a schedule and fix the links in the source, instead of making every visitor's browser re-check them on every page load.
+
+## Gotchas
+
+- **Not every 4xx means dead.** Some sites answer automated requests with 403 or 429 (rate limited) even though the page works in a browser. Log those for a human to look at rather than deleting them automatically.
+- **Limit concurrency on big pages.** Hundreds of simultaneous requests to one host can get you rate limited. Check in batches if you have a lot of links.
+- **Removing a link hides the problem.** Removing broken links client-side is a stopgap; the durable fix is updating or deleting them in the source.
+
+## Further reading
+
+- [MDN: Using the Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [MDN: Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)
+- [MDN: `AbortSignal.timeout()`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)

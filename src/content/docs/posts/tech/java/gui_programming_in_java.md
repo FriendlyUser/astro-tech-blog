@@ -1,173 +1,94 @@
 ---
 tags: ['gui', 'java']
-title: GUI programming in Java
-description: Explaining how to use GUI programming in Java
+title: Building a simple Swing GUI in Java with a button click handler
+description: Create a Java Swing window with a label and a button, start it on the event dispatch thread, and handle clicks with an ActionListener.
 pubDate: Fri, 14 December 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2785394646.png
 ---
 
+Swing is the desktop GUI toolkit that ships with the JDK (the `javax.swing` package, in the `java.desktop` module). It gives you components such as buttons, labels, text fields, tables and trees, layout managers to arrange them, and an event model for reacting to user input. You don't need any extra dependency to use it.
 
-# GUI Programming
-Swing is a GUI (Graphical User Interface) toolkit for Java that provides a set of classes for building desktop applications with a graphical user interface. It is a part of the Java Foundation Classes (JFC) and is included in the Java Development Kit (JDK) distribution.
+Swing is still supported but receives few new features. If you're starting a larger desktop app, also look at [JavaFX](https://openjfx.io/), which was unbundled from the JDK in Java 11 and is now distributed separately as OpenJFX.
 
-Swing provides a wide range of components for creating user interfaces, including buttons, labels, text fields, check boxes, radio buttons, lists, tables, and more. It also provides layout managers for arranging components on a container, event handling mechanisms for responding to user actions, and support for internationalization and accessibility.
-
-Swing is platform-independent, meaning that the same code can be run on different operating systems, as long as the Java Runtime Environment (JRE) is installed. Swing also has a consistent look and feel across different platforms, which helps to create a familiar user experience for users.
-
-To use Swing in a Java application, we need to import the appropriate classes from the `javax.swing` package. For example, to create a simple window with a label and a button, we can use the following code:
-
+## A window with a label and a button
 
 ```java
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
 
-public class MyWindow extends JFrame {
- public MyWindow() {
- JLabel label = new JLabel("Hello, Swing!");
- JButton button = new JButton("Click me!");
+public class MyGUI {
+    private static void createAndShowGui() {
+        JFrame frame = new JFrame("My GUI");
 
- JPanel panel = new JPanel();
- panel.add(label);
- panel.add(button);
+        JLabel label = new JLabel("Hello, Swing!", JLabel.CENTER);
+        JButton button = new JButton("Click me!");
+        button.addActionListener(e ->
+                JOptionPane.showMessageDialog(frame, "Button clicked!"));
 
- add(panel);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(label, BorderLayout.CENTER);
+        panel.add(button, BorderLayout.SOUTH);
 
- setTitle("My Window");
- setSize(300, 200);
- setLocationRelativeTo(null);
- setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- setVisible(true);
- }
+        frame.add(panel);
+        frame.setSize(300, 200);
+        frame.setLocationRelativeTo(null);   // centre on screen
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
 
- public static void main(String[] args) {
- new MyWindow();
- }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MyGUI::createAndShowGui);
+    }
 }
 ```
-In this code, we extend the `JFrame` class to create a window, create a `JLabel` and a `JButton` component, add them to a `JPanel` container, add the panel to the window, and set some properties for the window, such as its title and size.
 
-Swing is a powerful toolkit for creating desktop applications with a graphical user interface in Java. It provides a wide range of components and features for building complex applications, and is well-suited for cross-platform development.
+Save it as `MyGUI.java` and run it directly with `java MyGUI.java` (Java 11+), or compile with `javac MyGUI.java` and run `java MyGUI`.
 
+What's going on:
 
-To create a simple GUI (Graphical User Interface) application in Java, we can use Swing, which provides a set of classes and components for building desktop applications with a graphical user interface.
+- `JFrame` is the top-level window. `setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)` makes closing the window end the program; the default only hides it.
+- `JPanel` with a `BorderLayout` places the label in the centre and the button along the bottom. A plain `JPanel` uses `FlowLayout`, which lays components out left to right.
+- `setLocationRelativeTo(null)` centres the window. Call `setVisible(true)` last, after the components are added.
 
-Let's create a simple GUI application that displays a window with a label and a button, and responds to button clicks by showing a message dialog.
+## Handling the button click
 
-First, we need to import the appropriate classes from the `javax.swing` package:
-
+Swing reports a button click as an `ActionEvent` to every `ActionListener` registered on the button. `ActionListener` has a single method, `actionPerformed`, so a lambda is enough:
 
 ```java
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+button.addActionListener(e ->
+        JOptionPane.showMessageDialog(frame, "Button clicked!"));
 ```
-Then, we create a class that extends `JFrame` to represent our window, and implement `ActionListener` to handle button clicks:
 
+`JOptionPane.showMessageDialog` opens a modal dialog centred on `frame`.
 
-```java
-csharp`public class MyGUI extends JFrame implements ActionListener {
- // Components
- private JLabel label;
- private JButton button;
-
- public MyGUI() {
- // Create components
- label = new JLabel("Hello, GUI!");
- button = new JButton("Click me!");
- button.addActionListener(this); // Set button listener
-
- // Create panel and add components
- JPanel panel = new JPanel(new BorderLayout());
- panel.add(label, BorderLayout.CENTER);
- panel.add(button, BorderLayout.SOUTH);
-
- // Add panel to frame
- add(panel);
-
- // Set frame properties
- setTitle("My GUI");
- setSize(300, 200);
- setLocationRelativeTo(null);
- setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- setVisible(true);
- }
-
- // Button click handler
- public void actionPerformed(ActionEvent e) {
- JOptionPane.showMessageDialog(this, "Button clicked!");
- }
-
- public static void main(String[] args) {
- new MyGUI();
- }
-}
-```
-In this code, we create a window with a `JLabel` and a `JButton` component, and add them to a `JPanel` container using the `BorderLayout` layout manager. We also set the window's title, size, location, and close operation, and show it by calling `setVisible(true)`.
-
-We also implement the `ActionListener` interface and override the `actionPerformed` method to handle button clicks. In this method, we show a message dialog using the `JOptionPane.showMessageDialog` method.
-
-Finally, in the `main` method, we create an instance of our `MyGUI` class to show the window.
-
-This is a simple example of how to create a GUI application in Java using Swing. We can add more components, layout managers, and event handlers to create more complex and interactive applications.
-
-
-In a graphical user interface (GUI) application, user events such as button clicks, mouse movements, and key presses need to be handled to provide interactivity and respond to user actions.
-
-Java provides several mechanisms for handling user events in a GUI application. In this post, we will discuss how to handle button clicks using event listeners.
-
-To handle button clicks in Java, we can use an event listener that implements the `ActionListener` interface. This interface defines a single method, `actionPerformed`, which is called when the button is clicked.
-
-Here is an example code that demonstrates how to handle button clicks using an `ActionListener`:
-
+You'll also see the older style where the frame class itself implements the listener:
 
 ```java
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
 public class MyGUI extends JFrame implements ActionListener {
- // Components
- private JLabel label;
- private JButton button;
-
- public MyGUI() {
- // Create components
- label = new JLabel("Hello, GUI!");
- button = new JButton("Click me!");
- button.addActionListener(this); // Set button listener
-
- // Create panel and add components
- JPanel panel = new JPanel(new BorderLayout());
- panel.add(label, BorderLayout.CENTER);
- panel.add(button, BorderLayout.SOUTH);
-
- // Add panel to frame
- add(panel);
-
- // Set frame properties
- setTitle("My GUI");
- setSize(300, 200);
- setLocationRelativeTo(null);
- setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- setVisible(true);
- }
-
- // Button click handler
- public void actionPerformed(ActionEvent e) {
- JOptionPane.showMessageDialog(this, "Button clicked!");
- }
-
- public static void main(String[] args) {
- new MyGUI();
- }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JOptionPane.showMessageDialog(this, "Button clicked!");
+    }
 }
 ```
-In this code, we create a window with a label and a button using `JLabel` and `JButton` components, and add them to a `JPanel` container using the `BorderLayout` layout manager. We also set the window's title, size, location, and close operation, and show it by calling `setVisible(true)`.
 
-We then implement the `ActionListener` interface and override the `actionPerformed` method to handle button clicks. In this method, we show a message dialog using the `JOptionPane.showMessageDialog` method.
+That works (it needs `import java.awt.event.ActionEvent;` and `import java.awt.event.ActionListener;`), but one `actionPerformed` then has to handle every button, usually by checking `e.getSource()`. A lambda per button keeps each handler next to the component it belongs to.
 
-To register the listener with the button, we call `button.addActionListener(this)`, where `this` refers to the current instance of the `MyGUI` class, which implements the `ActionListener` interface.
+## Gotchas
 
-When the button is clicked, the `actionPerformed` method is called, and the message dialog is displayed.
+- **Use the event dispatch thread.** Swing isn't thread-safe. Create and update components on the event dispatch thread (EDT), which is why `main` calls `SwingUtilities.invokeLater` instead of building the window directly.
+- **Don't block the EDT.** Listeners run on the EDT, so a slow network call or file read inside `actionPerformed` freezes the whole window. Move long work to a `SwingWorker` and update the UI when it finishes.
+- **Look and feel.** By default Swing uses its own cross-platform "Metal" look, so it won't match native apps. Call `UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())` before creating components if you want the platform style.
 
-In summary, handling user events in a GUI application involves implementing event listeners that respond to user actions, such as button clicks. Java provides several mechanisms for event handling, including the `ActionListener` interface, which is used to handle button clicks in Swing applications.
+## Further reading
+
+- [The Swing tutorial (Oracle)](https://docs.oracle.com/javase/tutorial/uiswing/)
+- [Concurrency in Swing](https://docs.oracle.com/javase/tutorial/uiswing/concurrency/)
+- [How to write an ActionListener](https://docs.oracle.com/javase/tutorial/uiswing/events/actionlistener.html)

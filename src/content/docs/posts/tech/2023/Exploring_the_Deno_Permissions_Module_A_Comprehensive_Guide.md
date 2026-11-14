@@ -1,81 +1,94 @@
 ---
-description: This article provides an in-depth look at the Deno Permissions module,
-  explaining its purpose, usage, and best practices.
+description: How Deno's permission flags work and how to check, request, and revoke
+  permissions at runtime with the built-in Deno.permissions API.
 imgSrc: /imgs/2023/1047200128.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-05T01:45:04.000Z'
-tags: []
-title: Exploring the Deno Permissions Module A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ['deno', 'typescript']
+title: Checking, requesting, and revoking permissions in Deno
 ---
 
-# Exploring the Deno Permissions Module: A Comprehensive Guide
+:::caution
+An earlier version of this post imported a `Permissions` object from `https://deno.land/std/permissions/mod.ts`. That module never exported such an object: it exported `grant()` and `grantOrThrow()` helpers, and it has since been deprecated in favour of the built-in `Deno.permissions` API. The examples below use `Deno.permissions`, which needs no import.
+:::
 
-Deno, a secure runtime for JavaScript and TypeScript, has gained significant traction in the development community since its initial release. One of the most appealing aspects of Deno is its focus on security, which is evident in its Permissions module. This article provides an in-depth look at the Deno Permissions module, explaining its purpose, usage, and best practices.
+Deno runs code in a sandbox. By default a script can't read or write files, open network connections, read environment variables, or spawn subprocesses. You grant access with command-line flags, and you can inspect or change permissions from inside the program with `Deno.permissions`.
 
-## Why Permissions Matter in Deno
+## Granting permissions with flags
 
-Deno was designed to improve security in comparison to its predecessor, Node.js. By default, Deno scripts cannot access the file system, network, or environment variables without explicit permission. This is a major leap forward in preventing unauthorized access to sensitive data or system resources.
+Each permission has an `--allow-*` flag, and most can be scoped to specific resources:
 
-In Deno, permissions are granted through flags passed to the script runner. The Permissions module serves as an interface to query and revoke permissions during the script execution.
-
-## Getting Started with the Deno Permissions Module
-
-To use the Deno Permissions module, you'll need to import it from the Deno standard library:
-
-```typescript
-import { Permissions } from "https://deno.land/std@0.115.0/permissions/mod.ts";
+```bash
+deno run --allow-net=api.github.com --allow-read=./data --allow-env=API_KEY main.ts
 ```
 
-*Note: Make sure to replace the version number with the latest available version from the Deno standard library.*
+A bare flag such as `--allow-read` grants the whole category. `--deny-*` flags override allows, so `--allow-read --deny-read=/etc` permits reading everything except `/etc`. `-A` / `--allow-all` disables the sandbox entirely. Treat `--allow-run` and `--allow-ffi` as nearly equivalent to `-A`, because a subprocess or native library isn't bound by Deno's checks.
 
-## Querying Permissions
+If a permission is missing and Deno is running in an interactive terminal, it pauses and prompts you to allow it. Without a terminal, or with `--no-prompt`, the operation throws `Deno.errors.NotCapable`.
 
-Before using sensitive resources in your code, it's a good practice to check if the required permissions have been granted. You can query permissions using the `query()` method:
+Modules in your static import graph (local files, `npm:`, `jsr:`, and remote URLs) load without any permission flag. Only dynamic `import()` calls with non-literal specifiers are checked at runtime.
+
+## Querying permissions
+
+`Deno.permissions.query()` reports the current state of a permission without prompting. Pass a descriptor with the permission `name` and, optionally, the specific resource:
 
 ```typescript
-const netPermissionStatus = await Permissions.query({ name: "net" });
+const status = await Deno.permissions.query({ name: "net", host: "api.github.com" });
+console.log(status.state); // "granted", "denied", or "prompt"
+```
 
-if (netPermissionStatus.state === "granted") {
-  // Use the network resource
-} else {
-  console.error("Network permission is required to continue.");
+The permission names are `read`, `write`, `net`, `env`, `sys`, `run`, and `ffi`. The resource field depends on the name: `path` for `read`, `write`, and `ffi`; `host` for `net`; `variable` for `env`; `command` for `run`; and `kind` for `sys`.
+
+## Requesting permissions
+
+`Deno.permissions.request()` prompts the user if the state is `"prompt"`, and returns the existing state otherwise. A common pattern is to ask once up front and exit with a clear message if access is refused, rather than failing halfway through:
+
+```typescript
+// main.ts
+const desc: Deno.PermissionDescriptor = { name: "net", host: "api.github.com" };
+
+let status = await Deno.permissions.query(desc);
+if (status.state === "prompt") {
+  status = await Deno.permissions.request(desc);
 }
+
+if (status.state !== "granted") {
+  console.error("Network access to api.github.com is required.");
+  Deno.exit(1);
+}
+
+const res = await fetch("https://api.github.com/repos/denoland/deno");
+const repo = await res.json();
+console.log(`${repo.full_name}: ${repo.stargazers_count} stars`);
 ```
 
-The `query()` method accepts an object describing the permission you want to check. The returned object contains a `state` property, indicating the permission state as either "granted", "denied", or "prompt".
+Run it with `deno run main.ts` to see the prompt, or `deno run --allow-net=api.github.com main.ts` to skip it.
 
-## Requesting Permissions
+## Revoking permissions
 
-In some cases, you may want to request permissions from the user during runtime. You can achieve this using the `request()` method:
+`Deno.permissions.revoke()` drops a permission for the rest of the process. Use it to give up access you only needed during startup, such as reading a config file:
 
 ```typescript
-const envPermissionStatus = await Permissions.request({ name: "env" });
+const config = JSON.parse(await Deno.readTextFile("./config.json"));
 
-if (envPermissionStatus.state === "granted") {
-  // Access environment variables
-} else {
-  console.error("Environment permission is required to continue.");
-}
+const status = await Deno.permissions.revoke({ name: "read" });
+console.log(status.state); // "prompt"
+
+// From here on, reads are no longer pre-approved.
 ```
 
-The `request()` method works similarly to `query()`, but it will prompt the user for permission if the permission state is "prompt". If the permission is already granted or denied, it will return the current state without prompting the user.
+Revoking downgrades the permission to `"prompt"`, not `"denied"`. In an interactive terminal, a later read will prompt again. Run with `--no-prompt` if you want it to fail outright instead.
 
-## Revoking Permissions
+Each method also has a synchronous variant: `querySync()`, `requestSync()`, and `revokeSync()`.
 
-To further enhance security, you can revoke permissions using the `revoke()` method:
+## Gotchas
 
-```typescript
-const writePermissionStatus = await Permissions.revoke({ name: "write" });
+- `--allow-net` without a host list allows every host. Scope it in anything you run regularly.
+- Permission prompts block on stdin, so a script that works when you run it by hand can hang or fail in CI. Pass explicit flags there.
+- In Deno 2, permission failures throw `Deno.errors.NotCapable`. Code written for Deno 1 that catches `Deno.errors.PermissionDenied` won't catch them.
 
-if (writePermissionStatus.state === "granted") {
-  console.error("Write permission should have been revoked.");
-} else {
-  console.log("Write permission successfully revoked.");
-}
-```
+## Further reading
 
-Revoking permissions may be useful when you no longer need access to a resource, or when you want to restrict access after performing a sensitive operation.
-
-## Conclusion
-
-The Deno Permissions module offers an essential interface for managing permissions in your applications. By leveraging this module, you can enhance the security and user trust of your applications. Remember to always query or request permissions before accessing sensitive resources, and consider revoking them when they are no longer needed.
+- [Security and permissions](https://docs.deno.com/runtime/fundamentals/security/)
+- [`Deno.permissions` API reference](https://docs.deno.com/api/deno/~/Deno.Permissions)

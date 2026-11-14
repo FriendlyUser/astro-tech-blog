@@ -1,40 +1,41 @@
 ---
-title: Parsing JSON with Klaxon in Kotlin
+title: "Parsing JSON with Klaxon in Kotlin: data classes, arrays and the json DSL"
 pubDate: "2023-05-03T14:16:44.964Z"
-description: "In this article, we will explore how to use Klaxon in a Kotlin project, including parsing JSON data, creating JSON objects, and more."
+lastUpdated: 2026-11-14
+description: "Use the Klaxon library to parse JSON into Kotlin data classes, parse JSON arrays into lists, and build JSON with Klaxon's json DSL."
 tags: ["kotlin", "klaxon"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3185275103.png
 ---
-# Parsing JSON with Klaxon in Kotlin
+:::caution
+Klaxon's last release on Maven Central is 5.6 (March 2022), and the project hasn't shipped a release since. The examples below still work, but for new projects consider [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) (from JetBrains), Moshi, or Jackson's Kotlin module.
+:::
 
-Kotlin has become one of the most popular programming languages for developing modern applications, particularly on the Android platform. When working with APIs and data interchange, JSON is a widely-used data format. Klaxon is a popular JSON library for Kotlin, allowing developers to easily parse and work with JSON data.
+[Klaxon](https://github.com/cbeust/klaxon) is a small JSON library for Kotlin. It maps JSON onto ordinary Kotlin classes using reflection, so there's no annotation processor or code generation step. This post covers the three things you'll use most: parsing an object, parsing an array, and building JSON by hand.
 
-In this article, we will explore how to use Klaxon in a Kotlin project, including parsing JSON data, creating JSON objects, and more.
+## Adding the dependency
 
-## Adding Klaxon Dependency
+Gradle (Kotlin DSL):
 
-To get started with Klaxon in your Kotlin project, you will first need to add the Klaxon dependency to your build system. If you're using Gradle, add the following to your `build.gradle` file:
-
-```groovy
+```kotlin
 dependencies {
-    implementation 'com.beust:klaxon:5.5'
+    implementation("com.beust:klaxon:5.6")
 }
 ```
 
-For Maven users, add the following to your `pom.xml` file:
+Maven:
 
 ```xml
 <dependency>
     <groupId>com.beust</groupId>
     <artifactId>klaxon</artifactId>
-    <version>5.5</version>
+    <version>5.6</version>
 </dependency>
 ```
 
-## Parsing JSON Data
+## Parsing a JSON object into a data class
 
-Let's start by parsing a simple JSON string. Consider the following JSON data:
+Given this JSON:
 
 ```json
 {
@@ -44,9 +45,7 @@ Let's start by parsing a simple JSON string. Consider the following JSON data:
 }
 ```
 
-### Creating a Data Class
-
-To parse this JSON data, we first need to create a Kotlin data class that represents the JSON structure. Here's an example:
+Define a class whose constructor parameters match the JSON keys:
 
 ```kotlin
 data class Person(
@@ -56,12 +55,16 @@ data class Person(
 )
 ```
 
-### Parsing JSON String using Klaxon
-
-Now that we have our data class, we can use Klaxon to parse the JSON string into an instance of our `Person` class. Here's how to do that:
+Then call `Klaxon().parse<T>()`:
 
 ```kotlin
 import com.beust.klaxon.Klaxon
+
+data class Person(
+    val name: String,
+    val age: Int,
+    val isDeveloper: Boolean
+)
 
 fun main() {
     val jsonString = """
@@ -84,61 +87,19 @@ fun main() {
 }
 ```
 
-Running this code will output the following:
+Output:
 
-```
+```text
 Name: John Doe
 Age: 30
 Is Developer: true
 ```
 
-## Creating JSON Objects
+`parse` returns `Person?`, but a null check alone isn't enough: if the JSON doesn't fit the class (for example a non-nullable field is missing), Klaxon throws a `KlaxonException`. Wrap the call in `try`/`catch` when parsing input you don't control. To make a field optional, give it a nullable type or a default value in the constructor.
 
-Klaxon also allows you to create JSON objects programmatically. Here's an example of how to create a JSON object using Klaxon:
+## Parsing a JSON array
 
-```kotlin
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.json
-
-fun main() {
-    val personJson = json {
-        obj(
-            "name" to "Jane Doe",
-            "age" to 28,
-            "isDeveloper" to false
-        )
-    }
-
-    println(personJson.toJsonString())
-}
-```
-
-Running this code will output the following JSON string:
-
-```json
-{"name":"Jane Doe","age":28,"isDeveloper":false}
-```
-
-## Working with JSON Arrays
-
-Klaxon can also parse JSON arrays. Let's say we have the following JSON array:
-
-```json
-[
-  {
-    "name": "John Doe",
-    "age": 30,
-    "isDeveloper": true
-  },
-  {
-    "name": "Jane Doe",
-    "age": 28,
-    "isDeveloper": false
-  }
-]
-```
-
-We can parse this JSON array into a list of `Person` objects like this:
+`parseArray<T>()` returns a `List<T>?`:
 
 ```kotlin
 import com.beust.klaxon.Klaxon
@@ -146,16 +107,8 @@ import com.beust.klaxon.Klaxon
 fun main() {
     val jsonArrayString = """
         [
-          {
-            "name": "John Doe",
-            "age": 30,
-            "isDeveloper": true
-          },
-          {
-            "name": "Jane Doe",
-            "age": 28,
-            "isDeveloper": false
-          }
+          { "name": "John Doe", "age": 30, "isDeveloper": true },
+          { "name": "Jane Doe", "age": 28, "isDeveloper": false }
         ]
     """
 
@@ -174,9 +127,9 @@ fun main() {
 }
 ```
 
-Running this code will output the following:
+This reuses the `Person` class from the previous section. Output:
 
-```
+```text
 Name: John Doe
 Age: 30
 Is Developer: true
@@ -187,4 +140,36 @@ Is Developer: false
 ---
 ```
 
-In summary, Klaxon is a powerful and easy-to-use JSON library for Kotlin projects. With Klaxon, you can easily parse JSON data, create JSON objects programmatically, and work with JSON arrays. Give it a tryin your next Kotlin project, and you'll be sure to appreciate its simplicity and flexibility.
+## Building JSON with the DSL
+
+Klaxon's `json { }` block gives you `obj(...)` and `array(...)` builders. `obj` takes `key to value` pairs and returns a `JsonObject`, which you can turn into a string with `toJsonString()`:
+
+```kotlin
+import com.beust.klaxon.json
+
+fun main() {
+    val personJson = json {
+        obj(
+            "name" to "Jane Doe",
+            "age" to 28,
+            "isDeveloper" to false,
+            "languages" to array("Kotlin", "Java")
+        )
+    }
+
+    println(personJson.toJsonString())
+}
+```
+
+Output:
+
+```json
+{"name":"Jane Doe","age":28,"isDeveloper":false,"languages":["Kotlin","Java"]}
+```
+
+Pass `true` to `toJsonString(true)` for pretty-printed output. To serialize an existing object instead of building one by hand, use `Klaxon().toJsonString(person)`.
+
+## Further reading
+
+- [Klaxon README](https://github.com/cbeust/klaxon): field renaming with `@Json`, custom converters, and the streaming `JsonReader` API
+- [kotlinx.serialization guide](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/serialization-guide.md)

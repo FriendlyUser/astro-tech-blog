@@ -1,95 +1,87 @@
 ---
-description: In this article, we will delve into the key components of this system,
-  examine how it works, and explore various ways to implement custom authorization
-  policies
+description: How ASP.NET Core authorization works with roles, named policies, custom requirements and handlers, and resource-based checks through IAuthorizationService.
 imgSrc: /imgs/2023/1400635341.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-09-21T06:51:47.000Z'
-tags: []
-title: Demystifying Microsoft.AspNetCore.Authorization
+lastUpdated: 2026-11-14
+tags: ["aspnet", "csharp", "dotnet"]
+title: "ASP.NET Core authorization: roles, policies and custom handlers"
 ---
 
-# Demystifying Microsoft.AspNetCore.Authorization
+Authentication works out who the user is. Authorization decides what that user is allowed to do. In ASP.NET Core, authorization lives in the `Microsoft.AspNetCore.Authorization` namespace and runs on the `ClaimsPrincipal` that your authentication handler (cookies, JWT bearer, and so on) produced. This post covers role checks, named policies, custom requirements, and checks against a specific resource.
 
-## Introduction
+## The building blocks
 
-Authorization is a critical aspect of any web application, as it ensures that users can only access the resources they are allowed to. Microsoft's ASP.NET Core framework offers a powerful and flexible authorization system through the `Microsoft.AspNetCore.Authorization` namespace. In this article, we will delve into the key components of this system, examine how it works, and explore various ways to implement custom authorization policies.
+- **Requirement** (`IAuthorizationRequirement`): an empty marker interface. A requirement class holds the parameters of one rule, such as "minimum age 18".
+- **Handler** (`AuthorizationHandler<TRequirement>`): the code that decides whether the current user meets a requirement. It calls `context.Succeed(requirement)` when they do.
+- **Policy** (`AuthorizationPolicy`): a named set of requirements. All requirements in a policy must succeed.
+- **`IAuthorizationService`**: evaluates a policy or a list of requirements for a user. The `[Authorize]` attribute and the authorization middleware call it for you, and you can call it directly for resource-based checks.
 
-## Overview of Authorization in ASP.NET Core
+## Role-based authorization
 
-ASP.NET Core provides a built-in authorization system that enables developers to secure their applications easily. This system is based on three main components: policies, requirements, and handlers. Policies are a set of rules that define which users can access specific resources. Requirements are individual components of a policy, and handlers are responsible for evaluating if the requirements are met.
-
-The `Microsoft.AspNetCore.Authorization` namespace contains several classes and interfaces that developers can use to create and manage their authorization rules. Some of the primary classes include:
-
-- `IAuthorizationService`: The main service for authorization, responsible for evaluating if a user meets the requirements of a specific policy.
-- `AuthorizationPolicy`: A class representing a collection of authorization requirements.
-- `IAuthorizationRequirement`: An interface representing a single authorization requirement.
-- `AuthorizationHandler<TRequirement>`: A base class for creating custom handlers for specific authorization requirements.
-
-## Implementing Authorization Policies
-
-### Role-Based Authorization
-
-One of the simplest ways to implement authorization is by using role-based authorization. In this approach, access to resources is granted based on the roles assigned to users. For example, you might have an "Admin" role that grants access to administrative features, and a "User" role that only grants access to basic app functionality.
-
-To use role-based authorization, you need to create an authorization policy that specifies the required role(s). You can achieve this with the following code:
+If your users carry role claims, the simplest check is the `Roles` property on `[Authorize]`:
 
 ```csharp
-services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-});
+[Authorize(Roles = "Admin")]
+public IActionResult AdminDashboard() => View();
 ```
 
-You can then apply this policy to a controller or action method using the `[Authorize]` attribute:
+A comma-separated list (`Roles = "Admin,Manager"`) means the user needs *any* of those roles. Stacking two `[Authorize(Roles = ...)]` attributes means they need both.
+
+Hard-coding role names on every action gets messy, so most apps define named policies instead. `AddAuthorizationBuilder` (ASP.NET Core 7 and later) registers them in `Program.cs`:
+
+```csharp
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+```
 
 ```csharp
 [Authorize(Policy = "AdminOnly")]
-public IActionResult AdminDashboard()
+public IActionResult AdminDashboard() => View();
+```
+
+Now changing who counts as an admin is a one-line change in one place. Other built-in policy builders include `RequireClaim`, `RequireAuthenticatedUser`, `RequireUserName` and `RequireAssertion` (an inline lambda for simple rules).
+
+## Custom requirements and handlers
+
+When the rule needs real logic, write a requirement and a handler. This one checks a date-of-birth claim:
+
+```csharp
+using Microsoft.AspNetCore.Authorization;
+
+public class MinimumAgeRequirement(int minimumAge) : IAuthorizationRequirement
 {
-    return View();
+    public int MinimumAge { get; } = minimumAge;
 }
 ```
 
-Users who are not in the "Admin" role will be denied access to the `AdminDashboard` action.
-
-### Custom Authorization Requirements and Handlers
-
-In some cases, role-based authorization may not be sufficient for your application's needs. You may need to implement custom authorization logic based on specific application conditions. In this case, you can create custom requirements and handlers.
-
-First, define a custom requirement by implementing the `IAuthorizationRequirement` interface:
-
 ```csharp
-public class MinimumAgeRequirement : IAuthorizationRequirement
-{
-    public int MinimumAge { get; }
+using System.Globalization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
-    public MinimumAgeRequirement(int minimumAge)
-    {
-        MinimumAge = minimumAge;
-    }
-}
-```
-
-Next, create a handler for the custom requirement by extending the `AuthorizationHandler<TRequirement>` class:
-
-```csharp
 public class MinimumAgeHandler : AuthorizationHandler<MinimumAgeRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                   MinimumAgeRequirement requirement)
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context, MinimumAgeRequirement requirement)
     {
-        var dateOfBirthClaim = context.User.FindFirst(claim => claim.Type == "DateOfBirth");
-
-        if (dateOfBirthClaim != null)
+        var claim = context.User.FindFirst(ClaimTypes.DateOfBirth);
+        if (claim is null ||
+            !DateTime.TryParse(claim.Value, CultureInfo.InvariantCulture,
+                               DateTimeStyles.None, out var dateOfBirth))
         {
-            var dateOfBirth = DateTime.Parse(dateOfBirthClaim.Value);
-            var age = DateTime.Today.Year - dateOfBirth.Year;
+            return Task.CompletedTask; // not satisfied, but let other handlers run
+        }
 
-            if (age >= requirement.MinimumAge)
-            {
-                context.Succeed(requirement);
-            }
+        var age = DateTime.Today.Year - dateOfBirth.Year;
+        if (dateOfBirth.Date > DateTime.Today.AddYears(-age))
+        {
+            age--; // birthday hasn't happened yet this year
+        }
+
+        if (age >= requirement.MinimumAge)
+        {
+            context.Succeed(requirement);
         }
 
         return Task.CompletedTask;
@@ -97,28 +89,74 @@ public class MinimumAgeHandler : AuthorizationHandler<MinimumAgeRequirement>
 }
 ```
 
-Now, register the custom handler and create a policy that uses the custom requirement:
+Subtracting the birth year from the current year alone overstates the age of anyone whose birthday is later in the year. The `age--` line handles that.
+
+Register the handler and the policy, then make sure the middleware runs:
 
 ```csharp
-services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
+using Microsoft.AspNetCore.Authorization;
 
-services.AddAuthorization(options =>
-{
-    options.AddPolicy("AtLeast18YearsOld", policy =>
+var builder = WebApplication.CreateBuilder(args);
+
+// Authentication (cookies, JWT bearer, etc.) is configured here as usual.
+
+builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("AtLeast18", policy =>
         policy.Requirements.Add(new MinimumAgeRequirement(18)));
-});
+
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapDefaultControllerRoute();
+app.MapGet("/api/adult-only", () => "ok").RequireAuthorization("AtLeast18");
+
+app.Run();
 ```
 
-Finally, apply the custom policy to a controller or action method:
+Apply the policy to MVC actions with the attribute, or to minimal API endpoints with `RequireAuthorization` as shown above:
 
 ```csharp
-[Authorize(Policy = "AtLeast18YearsOld")]
-public IActionResult AdultContent()
+[Authorize(Policy = "AtLeast18")]
+public IActionResult AdultContent() => View();
+```
+
+A handler only proves what its claims prove. A date-of-birth claim is as trustworthy as whoever issued it, so check `claim.Issuer` if users can supply claims from more than one source.
+
+## Resource-based authorization
+
+Attributes run before your action loads any data, so they can't answer "can this user edit *this* document?". For that, inject `IAuthorizationService` and pass the resource:
+
+```csharp
+public class DocumentsController(IAuthorizationService authz, AppDbContext db) : Controller
 {
-    return View();
+    public async Task<IActionResult> Edit(int id)
+    {
+        var document = await db.Documents.FindAsync(id);
+        if (document is null) return NotFound();
+
+        var result = await authz.AuthorizeAsync(User, document, "CanEditDocument");
+        return result.Succeeded ? View(document) : Forbid();
+    }
 }
 ```
 
-## Conclusion
+The handler for that policy derives from `AuthorizationHandler<TRequirement, Document>` and receives the document as its `resource` parameter. `AppDbContext` and `Document` stand in for your own data types.
 
-The `Microsoft.AspNetCore.Authorization` namespace provides a powerful and flexible way to implement authorization in ASP.NET Core applications. By combining built-in role-based authorization with custom requirements and handlers, you can create a secure and tailored authorization system that meets your application's unique needs.
+## Gotchas
+
+- **AND vs OR.** Multiple requirements in one policy must all succeed. Multiple handlers for the *same* requirement are OR'd: any one calling `Succeed` is enough.
+- **Don't call `Fail` for "not satisfied".** Just return without calling `Succeed`. `context.Fail()` forces the whole policy to fail even if another handler succeeds, so keep it for hard denials.
+- **Handlers run even when authentication failed**, and in no guaranteed order. Don't assume `context.User` is authenticated, and don't depend on one handler running before another.
+- **Secure by default.** Set a fallback policy with `.SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())` so endpoints without any `[Authorize]` still require a signed-in user, and mark public ones with `[AllowAnonymous]`.
+
+## Further reading
+
+- [Policy-based authorization in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies)
+- [Resource-based authorization](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased)
+- [Role-based authorization](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles)

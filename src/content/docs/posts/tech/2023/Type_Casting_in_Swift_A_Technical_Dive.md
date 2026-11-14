@@ -1,107 +1,144 @@
 ---
-description: In this article, we'll dive deep into Swift's type casting, its syntax,
-  and various use cases
+description: "How Swift's is, as, as? and as! operators work: upcasting, conditional and forced downcasting, casting in switch statements, and casting from Any and to protocols."
 imgSrc: /imgs/2023/2844566079.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-06T15:34:03.000Z'
-tags: []
-title: Type Casting in Swift A Technical Dive
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Type casting in Swift: is, as, as? and as!"
 ---
 
-# Type Casting in Swift: A Technical Dive
+Type casting in Swift doesn't change what an object *is*. It changes the static type the compiler uses for a value, so you can treat a `Dog` as an `Animal` or check whether an `Animal` is really a `Dog`. Swift has four operators for this:
 
-Swift is a strongly typed language, which means that every variable and constant must have a declared type, and that type cannot be changed once it is assigned. This feature helps to prevent runtime errors due to type mismatches, as the compiler can catch type-related errors during compile time.
+| Operator | What it does | Fails how |
+| --- | --- | --- |
+| `is` | Checks whether a value is of a type (or conforms to a protocol) | Returns `false` |
+| `as` | Upcast or bridge that the compiler can prove will succeed | Compile error |
+| `as?` | Conditional downcast | Returns `nil` |
+| `as!` | Forced downcast | Crashes at runtime |
 
-However, there are times when you need to change an object's type, either to take advantage of specific features of a type or to work with APIs that expect a certain type. This is where type casting comes into play. In this article, we'll dive deep into Swift's type casting, its syntax, and various use cases.
-
-## Type Casting Syntax
-
-Swift provides two operators for type casting:
-
-1. `as`: Used for upcasting, the process of casting a derived class instance to its base class
-2. `as?` and `as!`: Used for downcasting, the process of casting a base class instance to one of its derived classes
-
-### Upcasting
-
-Upcasting is the process of casting a derived class instance to its base class. This is a safe operation, as the derived class is guaranteed to have all of the properties and methods of its base class. In Swift, the `as` operator is used for upcasting.
-
-Example:
+All the examples below use this class hierarchy:
 
 ```swift
 class Animal {
-    func speak() {
-        print("Some generic animal sound")
-    }
+    func speak() { print("...") }
 }
 
 class Dog: Animal {
-    override func speak() {
-        print("Woof!")
-    }
-}
-
-let myDog = Dog()
-let myAnimal: Animal = myDog as Animal
-myAnimal.speak() // Output: Woof!
-```
-
-### Downcasting
-
-Downcasting is the process of casting a base class instance to one of its derived classes. This operation can be unsafe, as the derived class might have properties and methods not present in the base class. To handle this, Swift provides two operators: `as?` and `as!`.
-
-- `as?`: Performs a conditional downcast that returns an optional. If the downcast is successful, it returns the object as the specified type; otherwise, it returns `nil`.
-- `as!`: Performs a forced downcast. If the downcast is successful, it returns the object as the specified type; otherwise, it causes a runtime crash.
-
-Example:
-
-```swift
-class Animal {
-    func speak() {
-        print("Some generic animal sound")
-    }
-}
-
-class Dog: Animal {
-    override func speak() {
-        print("Woof!")
-    }
+    override func speak() { print("Woof!") }
+    func fetch() { print("Fetching the ball") }
 }
 
 class Cat: Animal {
-    override func speak() {
-        print("Meow!")
-    }
+    override func speak() { print("Meow!") }
 }
+```
 
-let myAnimal: Animal = Dog()
+## Upcasting with `as`
 
-if let myDog = myAnimal as? Dog {
-    myDog.speak() // Output: Woof!
+Treating a subclass instance as its superclass always succeeds, so Swift does it implicitly. `as` just makes it explicit:
+
+```swift
+let dog = Dog()
+let animal: Animal = dog        // implicit upcast
+let sameAnimal = dog as Animal  // explicit, same result
+
+animal.speak()  // Woof!
+// animal.fetch()  // error: value of type 'Animal' has no member 'fetch'
+```
+
+The object is still a `Dog`, so `speak()` dispatches to `Dog`'s override. What changes is what the compiler lets you call: through an `Animal` reference you can only use `Animal`'s API.
+
+## Downcasting with `as?` and `as!`
+
+Going the other way can fail, because an `Animal` reference might point to a `Cat`. That's why there are two downcast operators.
+
+`as?` returns an optional, and you usually unwrap it with `if let` or `guard let`:
+
+```swift
+let pet: Animal = Dog()
+
+if let dog = pet as? Dog {
+    dog.fetch()  // Fetching the ball
 } else {
     print("Not a dog")
 }
-
-let myCat = myAnimal as! Cat // Runtime crash: Could not cast value of type 'Dog' to 'Cat'
 ```
 
-## Type Checking
-
-Swift also provides the `is` operator to check if an object is an instance of a specific class or conforms to a specific protocol. This can be useful in situations where you need to perform different actions based on the object's type, such as in a `for` loop that iterates over a heterogeneous array.
-
-Example:
+`as!` force-unwraps the result and crashes if the cast fails:
 
 ```swift
-let animals: [Animal] = [Dog(), Cat(), Dog(), Cat()]
+(pet as! Dog).fetch()  // fine, pet really is a Dog
+_ = pet as! Cat        // runtime crash: "Could not cast value of type ...Dog to ...Cat"
+```
 
+Use `as!` only when a failed cast means a programming error, such as dequeuing a table view cell you registered with a specific class. Otherwise prefer `as?`.
+
+## Checking types with `is`
+
+`is` answers yes or no without giving you a cast value:
+
+```swift
+let animals: [Animal] = [Dog(), Cat(), Dog()]
+let dogCount = animals.filter { $0 is Dog }.count
+print(dogCount)  // 2
+```
+
+If you need the cast value, as you usually do, combine the check and the cast in a `switch`:
+
+```swift
 for animal in animals {
-    if animal is Dog {
-        print("Found a dog!")
-    } else if animal is Cat {
-        print("Found a cat!")
+    switch animal {
+    case let dog as Dog:
+        dog.fetch()
+    case is Cat:
+        print("Found a cat")
+    default:
+        print("Some other animal")
     }
 }
 ```
 
-## Conclusion
+The `default` case is required because the array could also contain a plain `Animal`.
 
-Type casting is a powerful tool in Swift, enabling you to change an object's type when necessary. By understanding and using upcasting and downcasting with the `as`, `as?`, and `as!` operators, you can effectively handle situations where you need to work with different types. Additionally, the `is` operator allows you to check an object's type, further increasing the flexibility of your code.
+## Casting from `Any` and to protocols
+
+The same operators work with `Any` and with protocol types, not just class hierarchies. This comes up when dealing with heterogeneous data, such as decoded JSON or `userInfo` dictionaries:
+
+```swift
+let values: [Any] = [42, "hello", 3.14, Dog()]
+
+for value in values {
+    switch value {
+    case let n as Int:    print("Int: \(n)")
+    case let s as String: print("String: \(s)")
+    case let d as Double: print("Double: \(d)")
+    case let a as Animal: a.speak()
+    default:              print("Something else")
+    }
+}
+```
+
+To check protocol conformance at runtime, cast to the protocol type:
+
+```swift
+protocol Fetcher {
+    func fetch()
+}
+
+extension Dog: Fetcher {}  // Dog already has fetch()
+
+if let fetcher = pet as? Fetcher {
+    fetcher.fetch()
+}
+```
+
+## Gotchas
+
+- **Casting is not conversion.** `let i = 3; i as? Double` always fails (and the compiler warns about it). To convert numbers, use initialisers like `Double(i)`.
+- **Prefer polymorphism to type switches.** If you keep writing `if x is Dog … else if x is Cat`, the behaviour probably belongs in an overridden method or a protocol requirement.
+- **`as` on literals sets their type.** `let x = 3 as Double` is not a cast at runtime; it tells the compiler to type the literal as `Double`.
+
+## Further reading
+
+- [Type Casting, The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/typecasting/)

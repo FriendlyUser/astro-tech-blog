@@ -1,45 +1,51 @@
 ---
-title: Streamline Your Golang Builds with Mmake A Comprehensive Guide
+title: "Adding help output and remote includes to a Go Makefile with mmake"
 pubDate: "2023-05-26T15:32:48.993Z"
-description: "In this article, we'll explore how to use `mmake` in Golang projects to streamline your build process."
+lastUpdated: 2026-11-14
+description: "How to use mmake, a wrapper around make, to turn Makefile comments into a help command and share targets across Go projects with remote includes."
 tags: ["go", "mmake"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1115596181.png
 ---
-# Streamline Your Golang Builds with Mmake: A Comprehensive Guide
 
-Building and testing Golang projects can become cumbersome as the complexity of a project grows. Developers often find themselves using long, repetitive commands to build, test, and deploy their code. Fortunately, the `mmake` tool simplifies this process by allowing developers to define and run custom Makefile targets with ease. In this article, we'll explore how to use `mmake` in Golang projects to streamline your build process.
+:::caution
+mmake has seen little activity since its last release (v1.4.0, October 2019). It still works as a thin wrapper around GNU Make, but don't expect new features or quick fixes.
+:::
 
-## What is Mmake?
+[mmake](https://github.com/tj/mmake) ("Modern Make") by TJ Holowaychuk is a small program that wraps `make`. It adds two things Make lacks, a `help` command built from comments in your Makefile and includes that point at URLs, and passes everything else straight through to `make`. You keep writing an ordinary Makefile; there is no separate YAML or JSON task format.
 
-`Mmake` (short for "Modern Make") is a command-line tool developed by Tobias G. Müller that aims to improve the developer experience when working with Makefiles. It provides a more readable and maintainable alternative to traditional Makefiles, using a simple and expressive syntax.
+## Install
 
-Key features of `mmake` include:
-
-- Support for writing tasks in YAML or JSON
-- Easy installation through `go get`
-- Human-friendly task descriptions
-- Colored output for better readability
-- Autocompletion for shell commands
-
-## Getting Started with Mmake
-
-First, you'll need to install `mmake` on your system. You can do this by running the following `go get` command:
+From source (needs Go):
 
 ```bash
-go get -u github.com/tj/mmake/cmd/mmake
+go install github.com/tj/mmake/cmd/mmake@latest
 ```
 
-Now, let's create a simple Golang project to demonstrate `mmake` in action:
-
-1. Create a new directory for your project:
+Or with Homebrew:
 
 ```bash
-mkdir my-golang-project
-cd my-golang-project
+brew tap tj/mmake https://github.com/tj/mmake.git
+brew install tj/mmake/mmake
 ```
 
-2. Initialize the project with a `main. file:
+The README suggests aliasing it so you keep typing `make`:
+
+```bash
+alias make=mmake
+```
+
+The examples below call `mmake` explicitly.
+
+## A Go project with a commented Makefile
+
+Start with a module and a `main.go`:
+
+```bash
+mkdir my-go-project
+cd my-go-project
+go mod init example.com/my-go-project
+```
 
 ```go
 // main.go
@@ -48,74 +54,72 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, Mmake!")
+	fmt.Println("Hello, mmake!")
 }
 ```
 
-3. Create a `.mmakefile.yml` file in the project root:
+Now a `Makefile`. The comment directly above each target becomes its help text; the first sentence is the short description. Recipe lines must be indented with a tab.
 
-```yaml
-.mmakefile.yml
+```makefile
+# Build the binary.
 build:
-  description: "Build the project"
-  script: "go build -o my-golang-project"
+	go build -o bin/my-go-project .
+.PHONY: build
 
-run:
-  description: "Run the project"
-  script: "./my-golang-project"
+# Run the program.
+#
+# Builds first if needed.
+run: build
+	./bin/my-go-project
+.PHONY: run
 
+# Run the tests.
+#- Lines starting with "#-" are left out of the help output.
 test:
-  description: "Run tests"
-  script: "go test"
+	go test ./...
+.PHONY: test
 ```
 
-In this `.mmakefile.yml`, we've defined three tasks: `build`, `run`, and `test`. Each task has a `description` and a `script` to be executed when the task runs.
+## Using the help command
 
-## Using Mmake Tasks
-
-Now that we have a basic project set up, let's see how to use `mmake` to execute our tasks.
-
-1. To list all available tasks and their descriptions, run:
+List every documented target:
 
 ```bash
 mmake help
 ```
 
-You should see output similar to the following:
-
-```
-Tasks:
-
-  build  Build the project
-  run    Run the project
-  test   Run tests
+```text
+  build   Build the binary.
+  run     Run the program.
+  test    Run the tests.
 ```
 
-2. To build the project, run:
+Filter with a glob pattern, or show the full comments with `-v`:
 
 ```bash
-mmake build
+mmake help r*
+mmake help -v run
 ```
 
-This will execute the `go build -o my-golang-project` command defined in the `build` task.
+Any other target goes to `make` unchanged, so `mmake build`, `mmake run` and `mmake test` behave exactly like `make build`, `make run` and `make test`. The `test` target prints `[no test files]` until you add a `_test.go` file.
 
-3. To run the project, execute:
+## Remote includes
 
-```bash
-mmake run
+The other feature is `include` lines that point at a URL or a GitHub path:
+
+```makefile
+include github.com/apex/make/golang
+include https://github.com/apex/make/test/make.mk
 ```
 
-This will execute the `./my-golang-project` command defined in the `run` task, and you should see the output `Hello, Mmake!`.
+mmake downloads these into `/usr/local/include`, the directory GNU Make searches for includes by default, so the Makefile still works with plain `make` once the files are there. Includes are resolved recursively, and if a repository has an `index.mk` you can include the repository path on its own. Downloads are cached; run `mmake update` to fetch fresh copies.
 
-4. To run tests, use:
+Two things to watch:
 
-```bash
-mmake test
-```
+- A remote include is code that runs on your machine. The README's advice is to fork any Makefile repository you include, so you control what changes.
+- Writing to `/usr/local/include` often needs elevated permissions, and teammates who use plain `make` without having run mmake once won't have the included files.
 
-Since we don't have any tests defined yet, the output will show that no tests were executed.
+## Further reading
 
-## Conclusion
-
-In this article, we've explored how to use `mmake` to simplify building, running, and testing Golang projects. By leveraging the power of `mmake`, you can streamline your development process and improve the maintainability of your build scripts.
-
+- [mmake README](https://github.com/tj/mmake)
+- [GNU Make manual](https://www.gnu.org/software/make/manual/make.html)

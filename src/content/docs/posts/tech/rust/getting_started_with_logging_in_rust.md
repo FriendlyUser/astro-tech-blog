@@ -1,87 +1,47 @@
 ---
-title: Using the `log` Crate in Rust
-description: . In Rust, one of the most popular logging libraries is the `log` crate.
+title: "Logging in Rust with the log crate and env_logger"
+description: "Add logging to a Rust program with the log facade and env_logger, use the five log levels, and control output with the RUST_LOG variable."
 pubDate: Saturday, 2 June 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "log"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/DALL·E 2022-12-26 21.10.41 - decentralized network diagram simple bobble heads.png'
 ---
 
-# Using the `log` Crate in Rust
+The [`log`](https://docs.rs/log) crate is Rust's standard logging facade. It gives you the `trace!`, `debug!`, `info!`, `warn!` and `error!` macros, but doesn't print anything by itself. A separate logger implementation decides where messages go and which ones are shown. That split is the point: libraries depend only on `log`, and the application picks one logger for everything.
 
-Rust is a powerful systems programming language that prioritizes safety, performance, and concurrent programming. Logging is a vital aspect of any application, as it provides valuable information during development, debugging, and production. In Rust, one of the most popular logging libraries is the `log` crate.
+This post uses [`env_logger`](https://docs.rs/env_logger), the simplest logger, which writes to stderr and is configured through the `RUST_LOG` environment variable.
 
-In this article, we'll explore how to use the `log` crate in Rust to create a flexible and extensible logging system.
-
-## Prerequisites
-To follow this tutorial, you need to have Rust installed. If you don't have it already, you can follow the official installation guide [here](https://www.rust-lang.org/tools/install).
-
-## Getting Started
-To begin, create a new Rust project:
+## Setup
 
 ```bash
-$ cargo new log_example
-$ cd log_example
+cargo new log_example
+cd log_example
 ```
 
-Now, open the `Cargo.toml` file and add the following dependencies:
+Add both crates to `Cargo.toml`:
 
 ```toml
 [dependencies]
 log = "0.4"
-
-[dev-dependencies]
-env_logger = "0.9"
+env_logger = "0.11"
 ```
 
-Here, we're adding the `log` crate and the `env_logger` crate. The `log` crate provides logging macros, while the `env_logger` crate provides a simple logging implementation that outputs logs to the terminal based on environment variables.
+`env_logger` has to go under `[dependencies]`, not `[dev-dependencies]`: `main.rs` uses it, and dev-dependencies are only available to tests, examples, and benchmarks.
 
-## Setting Up the Logger
-Next, we'll set up the logger. In the `src/main.rs` file, add the following lines:
+## Initialising the logger
+
+`src/main.rs`:
 
 ```rust
-extern crate log;
-extern crate env_logger;
-
-use log::{info, trace, warn, error};
 use env_logger::Env;
+use log::{debug, error, info, trace, warn};
 
 fn main() {
-    env_logger::Builder::from_env(Env::default().default_filter_or("info"))
-        .init();
+    // Use RUST_LOG if it is set; otherwise show `info` and above.
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     info!("Logger initialized!");
-}
-```
-
-Here, we import the `log` and `env_logger` crates, along with the logging macros from the `log` crate. We then create a new `env_logger::Builder` instance, using the `from_env` function to configure the logging filter based on environment variables. The `default_filter_or` function sets a default log level if no environment variable is provided.
-
-Now, run the application:
-
-```bash
-$ cargo run
-```
-
-You should see the following output:
-
-```
-INFO [log_example] Logger initialized!
-```
-
-## Logging Messages
-With our logger initialized, we can now log messages at different levels. Let's examine the various log levels:
-
-- `trace!`: Very detailed logs, mostly used for development and debugging.
-- `debug!`: Detailed logs, used to provide context during debugging.
-- `info!`: General informational logs, used to inform users about the application's status.
-- `warn!`: Warning logs, used to indicate potential issues or problems.
-- `error!`: Error logs, used to indicate critical failures or problems in the application.
-
-Add the following lines to `src/main.rs`:
-
-```rust
-fn main() {
-    // ...
 
     trace!("This is a trace log!");
     debug!("This is a debug log!");
@@ -91,27 +51,61 @@ fn main() {
 }
 ```
 
-By default, our logger is set to the `info` level. If you run the application again, you'll see logs for `info`, `warn`, and `error`:
+Initialise the logger once, as early as possible in `main`. Any log calls before that are dropped. If you don't need a default level, `env_logger::init()` is the one-line version; without `RUST_LOG` set, it shows only `error` messages.
+
+The levels, from most to least verbose:
+
+- `trace!`: very detailed, step-by-step output.
+- `debug!`: information useful while debugging.
+- `info!`: normal progress and status messages.
+- `warn!`: something unexpected that the program can recover from.
+- `error!`: an operation failed.
+
+## Running it
 
 ```bash
-$ cargo run
+cargo run
 ```
 
-```
-INFO [log_example] Logger initialized!
-INFO [log_example] This is an info log!
-WARN [log_example] This is a warning log!
-ERROR [log_example] This is an error log!
+With the default filter of `info`, the `trace` and `debug` lines are hidden. The output looks like this (the timestamps will differ):
+
+```text
+[2023-06-02T13:00:00Z INFO  log_example] Logger initialized!
+[2023-06-02T13:00:00Z INFO  log_example] This is an info log!
+[2023-06-02T13:00:00Z WARN  log_example] This is a warning log!
+[2023-06-02T13:00:00Z ERROR log_example] This is an error log!
 ```
 
-## Changing Log Levels
-To change the log level, set the `RUST_LOG` environment variable. For example, if you want to display logs for `debug` and higher levels, run:
+Each line shows the time, the level, and the module the message came from.
+
+## Changing the level with RUST_LOG
+
+To show `debug` and above:
 
 ```bash
-$ RUST_LOG=debug cargo run
+RUST_LOG=debug cargo run
 ```
 
-You'll now see logs for `debug`, `info`, `warn`, and `error`.
+In PowerShell, set the variable first:
 
-## Conclusion
-In this article, we explored how to use the `log` crate in Rust to create a flexible and extensible logging system. By leveraging the `env_logger` crate, we can easily control the log level at runtime using environment variables. Now, you can integrate logging into your Rust applications and enhance your development, debugging, and production monitoring experiences.
+```powershell
+$env:RUST_LOG = "debug"; cargo run
+```
+
+`RUST_LOG` also accepts per-module filters, which is what makes it useful in bigger programs. Dependencies that use `log` are filtered the same way:
+
+```bash
+# trace for this crate, warnings and errors only for everything else
+RUST_LOG=warn,log_example=trace cargo run
+```
+
+## Gotchas
+
+- The macros skip formatting their arguments when the level is disabled, but code that runs *before* the macro (building a large debug string, say) still runs. Guard it with `if log::log_enabled!(log::Level::Debug) { ... }`.
+- `env_logger`'s default output format isn't guaranteed to stay the same between versions. If something parses your logs, set a format with `Builder::format`.
+- For async code or structured fields (request IDs, spans across `.await` points), look at [`tracing`](https://docs.rs/tracing) instead. It can also capture messages from crates that use `log`.
+
+## Further reading
+
+- [log crate docs](https://docs.rs/log)
+- [env_logger docs](https://docs.rs/env_logger), including the full `RUST_LOG` syntax

@@ -1,80 +1,70 @@
 ---
-title: Review of Polygot Notebooks
-description: My thoughts of polygot notebooks after writing a book with them
+title: "Polyglot Notebooks review: sharing data between C# and F# cells"
+description: My take on Polyglot Notebooks after writing a book with them, with an example that reads a CSV in C# and charts it in F# with Plotly.NET.
 alt: my first blog post
-tags: ["polygot", "csharp"]
+tags: ["polygot", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 21 December 2024
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/590655340.png'
 ---
 
-Polygot notebooks are a fanastic way to do data science. They allow you to use multiple languages in a single notebook. My personal preference is the vs code extension formerly .net interactive offered as a vs code extension.
+:::caution
+Microsoft deprecated the Polyglot Notebooks VS Code extension on March 27, 2026 and .NET Interactive on April 24, 2026; the [dotnet/interactive](https://github.com/dotnet/interactive) repository is now archived. The [announcement](https://github.com/dotnet/interactive/issues/4163) points C# users to file-based apps (`dotnet run app.cs`) and users of other languages to the VS Code Jupyter extension with a Jupyter kernel.
+:::
 
-Using the code from https://towardsdev.com/how-to-rank-software-engineers-using-bash-c8b1bd8885fb,
+Polyglot Notebooks are a great way to do data science in .NET. You can use several languages in one notebook and pass variables between them. My preference is the VS Code extension (formerly .NET Interactive Notebooks).
 
-I can grab the data from the CSV file and put it into a list of strings.
-```cs
-using System.IO;
-using System.Linq;
+## Reading a CSV in C#
+
+Using the data from [How to rank software engineers using Bash](https://towardsdev.com/how-to-rank-software-engineers-using-bash-c8b1bd8885fb), this C# cell reads a CSV of change counts per file into two lists:
+
+```csharp
+#r "nuget: CsvHelper"
+
 using System.Globalization;
+using System.IO;
 using CsvHelper;
-using System;
 
-// Read data from CSV file
-var records = new List<dynamic>();
+List<dynamic> records;
 using (var reader = new StreamReader("data/changes_by_file.csv"))
 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 {
     records = csv.GetRecords<dynamic>().ToList();
 }
 
-// Extract data for chart
-var counts = records.Select(r => r.Count);
-var file = records.Select(r => r.File);
-
-// export authors as list of string
-var countsList = counts.ToList();
-// get value from counts
-var fileList = file.ToList();
+// Each dynamic record exposes the CSV headers as properties (values are strings)
+var countsList = records.Select(r => r.Count).ToList();
+var fileList = records.Select(r => r.File).ToList();
 ```
 
-The script reads data from a CSV file located at "data/changes_by_file.csv" using CsvHelper library to parse the CSV file. It creates a list of dynamic objects where each object represents a row in the CSV file.
+CsvHelper's dynamic records turn each row into an object whose properties are the header names, so the CSV needs `Count` and `File` columns.
 
-After reading the data, it extracts two columns from the CSV file: "Count" and "File" by projecting them into separate lists using Linq.
+## Charting it in F#
 
-Finally, it exports the counts list and file list as separate variables called countsList and fileList, respectively, by converting them to a list using ToList() method.
-
+`#!share` copies a variable from another kernel into the current one. This F# cell pulls in both lists and draws a column chart with Plotly.NET:
 
 ```fsharp
+#r "nuget: Plotly.NET.Interactive"
 #!share --from csharp countsList
 #!share --from csharp fileList
+
 open Plotly.NET
-let intList = countsList |> Seq.cast<string> |> List.ofSeq |> List.map System.Double.Parse
-intList |> List.map (fun x -> double x)
-let newKeys = fileList |> Seq.cast<string> |> List.ofSeq
-let column = Chart.Column(values = intList, Keys = newKeys)
-column
+
+let counts = countsList |> Seq.cast<string> |> Seq.map System.Double.Parse |> List.ofSeq
+let files = fileList |> Seq.cast<string> |> List.ofSeq
+
+Chart.Column(values = counts, Keys = files)
 ```
 
-The script above first loads the Plotly.NET package and then performs some data manipulation and plotting.
+The lists arrive as collections of `object`, so `Seq.cast<string>` restores the type before the counts are parsed into numbers. `Plotly.NET.Interactive` makes the chart render inline as the cell output.
 
-The script uses the shared variables "countsList" and "fileList" from a C# notebook (using the #!share magic command) to create a column chart using the Plotly.NET library.
+![Column chart of change counts per file](/imgs/2023/tech/newplot.png)
 
-First, it converts the countsList from a list of strings to a list of doubles using Seq.cast<string> |> List.ofSeq |> List.map System.Double.Parse.
+## Verdict
 
-Then, it creates a new list called newKeys by casting the fileList to a list of strings.
+Polyglot Notebooks can be fairly good for data science. I don't recommend using Plotly.NET from C#; F# is the better fit for this kind of work.
 
-Next, it creates a new column chart using the Chart.Column method of the Plotly.NET package. It passes in the values from the intList and keys from the newKeys list.
+More content like this is in my book on Amazon KDP.
 
-Finally, the column object is displayed in the output.
-
-[!aspnet](imgs/2023/tech/newplot.png)
-
-
-## Conclusion
-
-Overall polyglot notebooks can be fairly good for data science, do not recommend using the C# bindings Plotly.NET for data science, and prefer using F# for data science.
-
-More content like this is available in my book on amazon kdp.
-
-[![C# Programming](https://m.media-amazon.com/images/I/414HUhz-9gL.jpg)](https://www.amazon.com/dp/B0BY18F7HB) 
+[![C# Programming](https://m.media-amazon.com/images/I/414HUhz-9gL.jpg)](https://www.amazon.com/dp/B0BY18F7HB)

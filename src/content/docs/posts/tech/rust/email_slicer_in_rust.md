@@ -1,23 +1,18 @@
 ---
-title: "Email Slicer in Rust: A Tool for Efficient Email Parsing"
-description: Email slicer is a tool that helps parse emails and extract important information such as the username and domain name. Rust is a popular systems programming language that is known for its performance, reliability, and safety. In this article, we will explore how to implement an email slicer tool in Rust.
+title: "Email slicer in Rust: splitting an address into username and domain"
+description: A small Rust exercise that splits an email address into its username and domain, first with a character loop and then with split_once.
 pubDate: Saturday, 24 November 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
 ---
 
+An "email slicer" is a classic beginner exercise: take an address like `john.doe@example.com` and split it into the username (`john.doe`) and the domain (`example.com`). It's a useful excuse to practise string handling in Rust, including how to represent input that doesn't fit the pattern.
 
+## First version: walk the characters
 
-Emails are an essential aspect of modern communication, and parsing emails can be a daunting task. Email slicer is a tool that helps parse emails and extract important information such as the username and domain name. Rust is a popular systems programming language that is known for its performance, reliability, and safety. In this article, we will explore how to implement an email slicer tool in Rust.
-
-What is Email Slicer?
-
-Email slicer is a tool that extracts the username and domain name from an email address. For example, given the email address "john.doe@example.com," the email slicer extracts the username "john.doe" and the domain name "example.com." This tool is useful for various applications such as email filtering, marketing campaigns, and data analysis.
-
-Implementing Email Slicer in Rust
-
-To implement an email slicer tool in Rust, we need to create a function that takes an email address as input and returns a tuple containing the username and domain name. The following code snippet shows the implementation of the email slicer function:
+The direct approach is to loop over the characters and switch from the username to the domain when you hit `@`:
 
 ```rust
 fn email_slicer(email: &str) -> (String, String) {
@@ -39,29 +34,63 @@ fn email_slicer(email: &str) -> (String, String) {
 
     (username, domain)
 }
-```
 
-The email slicer function takes a string reference as input and returns a tuple containing two strings. The function initializes two empty strings, `username` and `domain`, and sets a boolean flag, `is_username`, to true. The flag is used to determine whether we are parsing the username or domain name.
-
-The function then iterates over each character in the input string, checks if the character is the "@" symbol, and sets the `is_username` flag to false if it is. If the `is_username` flag is true, the character is appended to the `username` string, and if it is false, the character is appended to the `domain` string.
-
-Finally, the function returns a tuple containing the `username` and `domain` strings.
-
-Using Email Slicer
-
-To use the email slicer function, we can simply call it and pass an email address as an argument. The following code snippet shows how to use the email slicer function:
-
-```rust
 fn main() {
-    let email = "john.doe@example.com";
-    let (username, domain) = email_slicer(email);
-    println!("Username: {}", username);
-    println!("Domain: {}", domain);
+    let (username, domain) = email_slicer("john.doe@example.com");
+    println!("Username: {username}");
+    println!("Domain: {domain}");
 }
 ```
 
-The `main` function calls the `email_slicer` function with the email address "john.doe@example.com" and stores the returned values in `username` and `domain`. The function then prints the `username` and `domain` values to the console.
+Output:
 
-Conclusion
+```text
+Username: john.doe
+Domain: example.com
+```
 
-In this article, we explored how to implement an email slicer tool in Rust. We created a function that takes an email address as input and extracts the username and domain name. Rust's performance and safety features make it an excellent choice for implementing tools like email slicer. We hope this article has been helpful in understanding how to implement email slicer in Rust.
+This works for well-formed input, but it has problems:
+
+- `"not-an-email"` returns the whole string as the username and an empty domain, with no sign that anything went wrong.
+- `"a@b@c"` silently drops the second `@` and returns `("a", "bc")`.
+- It copies every character into two new `String`s, even though both parts already exist inside the input.
+
+## Better version: `split_once`
+
+`str::split_once` (or `rsplit_once`) splits at a delimiter and returns `None` if the delimiter isn't there. Returning `Option<(&str, &str)>` makes the failure case explicit and borrows slices of the input instead of allocating:
+
+```rust
+fn email_slicer(email: &str) -> Option<(&str, &str)> {
+    // The domain part can't contain '@', so split at the last one.
+    let (username, domain) = email.trim().rsplit_once('@')?;
+    if username.is_empty() || domain.is_empty() {
+        return None;
+    }
+    Some((username, domain))
+}
+
+fn main() {
+    for email in ["john.doe@example.com", "not-an-email", "@example.com"] {
+        match email_slicer(email) {
+            Some((username, domain)) => {
+                println!("{email}: username = {username}, domain = {domain}")
+            }
+            None => println!("{email}: not a valid address"),
+        }
+    }
+}
+```
+
+Output:
+
+```text
+john.doe@example.com: username = john.doe, domain = example.com
+not-an-email: not a valid address
+@example.com: not a valid address
+```
+
+The `?` after `rsplit_once` returns `None` early when there's no `@`. Because the returned slices borrow from `email`, the caller has to keep the input alive while using them; call `.to_string()` on them if you need owned values.
+
+## Limits
+
+This splits addresses; it doesn't validate them. Real address syntax ([RFC 5322](https://www.rfc-editor.org/rfc/rfc5322)) allows quoted local parts such as `"john@home"@example.com`, comments, and internationalised domains. If you need to accept or reject user input properly, use a dedicated crate such as [`email_address`](https://crates.io/crates/email_address), and remember that the only real test of an address is sending mail to it.

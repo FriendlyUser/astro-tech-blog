@@ -1,113 +1,143 @@
 ---
 tags: ['dart', 'appwrite']
-title: Getting started with dart and appwrite
-description: How to use appwrite to deploy dart functions
+title: "Dart functions on Appwrite: base64 encode, HTTPS check and email slicer"
+description: Three small Dart functions (base64 encoder, HTTPS URL check, email slicer) and how to run them as Appwrite Functions with the current context API.
 pubDate: Fri, 29 November 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/248665811.png
 ---
-What is appwrite?
-Appwrite is an open-source backend as a service (BaaS) platform that provides a set of easy-to-use APIs and SDKs for building web and mobile applications. It offers features such as authentication, database management, file storage, and serverless functions, all of which can be used to build modern web and mobile apps faster and more efficiently. Appwrite can be self-hosted or used as a cloud service, and it provides a simple and intuitive user interface for managing your app's backend.
 
+:::caution
+The functions in the [dart_fns repo](https://github.com/FriendlyUser/dart_fns) use Appwrite's old
+`start(req, res)` entrypoint with `req.payload` and `req.variables`. Appwrite 1.4 replaced it with a
+single `context` argument (`context.req`, `context.res`, `context.log`). The examples below use the
+current syntax.
+:::
 
-Why is function as a service useful?
-Function as a Service (FaaS) is a type of cloud computing service that allows developers to write and deploy code without having to manage the underlying infrastructure. With FaaS, developers can focus on writing business logic and leave the operational details, such as scaling and provisioning of resources, to the cloud provider.
+[Appwrite](https://appwrite.io/) is an open-source backend-as-a-service: auth, databases, storage and
+serverless functions, either self-hosted or on Appwrite Cloud. Its Functions product runs your code
+in a managed runtime and gives each function an HTTP endpoint, so you don't have to run a server for
+small utilities like the ones below.
 
-FaaS is useful because it provides a number of benefits:
+## The functions
 
-1. Cost efficiency: FaaS services charge based on the actual usage of the function, rather than a fixed cost for a server or VM. This makes it more cost-efficient for businesses that have unpredictable or infrequent usage.
-2. Scalability: FaaS services automatically scale the underlying infrastructure to handle changes in usage. This means that businesses don't have to worry about overprovisioning or underprovisioning their infrastructure.
-3. Reduced operational complexity: FaaS services handle the operational tasks, such as deployment, scaling, and monitoring. This reduces the complexity of managing infrastructure and frees up developers to focus on writing code.
-4. Faster time to market: With FaaS, developers can write and deploy code faster, as they don't have to worry about infrastructure setup and management. This can lead to a faster time to market for new products or features.
+These are plain Dart and run anywhere. Each one became its own Appwrite function in the repo.
 
-Overall, FaaS provides a convenient way for businesses to run their code without the need for extensive infrastructure management, allowing them to focus on their core competencies.
-
-
-Implementing a basic encode function in dart
-Sure! Here's an example of a basic encode function in Dart:
-
+### Base64 encode
 
 ```dart
-String encode(String input) {
- var bytes = utf8.encode(input);
- var base64 = base64Encode(bytes);
- return base64;
-}
+import 'dart:convert';
+
+String encode(String input) => base64Encode(utf8.encode(input));
 ```
-In this example, the function takes a string input and converts it to a byte array using the `utf8.encode()` function. Then it uses the `base64Encode()` function to convert the byte array to a base64-encoded string. Finally, it returns the base64-encoded string.
 
-Note that this is a very basic implementation of an encode function and may not be suitable for all use cases. There are many different encoding schemes that can be used depending on the requirements of your application.
+`utf8.encode` turns the string into bytes and `base64Encode` turns those bytes into a base64 string.
+Both live in `dart:convert`.
 
-
-verify https url in dart
-To verify if a URL is a valid HTTPS URL in Dart, you can use the `Uri.parse` function to create a `Uri` object from the URL and then check if its `scheme` property is `"https"`. Here is an example:
-
+### Check for an HTTPS URL
 
 ```dart
 bool isHttpsUrl(String url) {
- try {
- Uri uri = Uri.parse(url);
- return uri.scheme == "https";
- } catch (e) {
- return false;
- }
+  final uri = Uri.tryParse(url);
+  return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty;
 }
 ```
-This function returns `true` if the URL is a valid HTTPS URL, and `false` otherwise. If the input string is not a valid URL or if it cannot be parsed, the function returns `false`.
 
+`Uri.tryParse` returns `null` instead of throwing on malformed input. Checking `host` matters because
+`https:` on its own parses fine but isn't a usable URL. This only checks the format; it doesn't
+check that the host exists or that its certificate is valid.
 
-email slicer in dart
-Here's an example implementation of an email slicer function in Dart:
-
+### Email slicer
 
 ```dart
-void main() {
- String email = "example.user@example.com";
- Map<String, String> result = sliceEmail(email);
- print(result); // Output: {username: example.user, domain: example.com}
-}
-
 Map<String, String> sliceEmail(String email) {
- List<String> parts = email.split('@');
- if (parts.length != 2) {
- throw FormatException("Invalid email format");
- }
- return {'username': parts[0], 'domain': parts[1]};
+  final parts = email.split('@');
+  if (parts.length != 2 || parts[0].isEmpty || parts[1].isEmpty) {
+    throw FormatException('Invalid email format', email);
+  }
+  return {'username': parts[0], 'domain': parts[1]};
+}
+
+void main() {
+  print(sliceEmail('example.user@example.com'));
+  // {username: example.user, domain: example.com}
 }
 ```
-This implementation takes an email address as input, splits it into two parts - the username and the domain - and returns them as a map with the keys "username" and "domain". If the email address is not in a valid format (i.e. it does not contain exactly one "@" symbol), the function throws a FormatException.
 
-Note that this is a very basic implementation and does not take into account more complex email address formats.
+This splits on `@` and rejects anything without exactly one. It isn't a full email validator:
+quoted local parts such as `"a@b"@example.com` are valid addresses that this rejects.
 
+## Running one as an Appwrite function
 
-How can I use appwrite to deploy dart functions?
-To deploy Dart functions using Appwrite, you can follow these steps:
-
-1. Install the Appwrite Dart SDK by adding `dart_appwrite` as a dependency in your `pubspec.yaml` file and running `flutter pub get`.
-2. Create an account and a project on the Appwrite console.
-3. Create a new Dart function in your project on the Appwrite console.
-4. In your Dart code, initialize the Appwrite client with your project's endpoint and API key. You can also set the self-signed option to `true` if you're using a self-signed SSL certificate:
-
+An Appwrite Dart function is a package whose entrypoint (`lib/main.dart` in the starter template)
+exports `main(context)`. The handler reads the request from `context.req` and must return one of the
+`context.res` helpers (`text`, `json`, `binary`, `redirect`, `empty`). Here is the encoder:
 
 ```dart
-final client = Client()
- .setEndpoint('https://[HOSTNAME_OR_IP]/v1') // Replace with your project's endpoint
- .setProject('[PROJECT_ID]') // Replace with your project ID
- .setKey('[API_KEY]') // Replace with your API key
- .setSelfSigned(status: true); // Set to true if using a self-signed SSL certificate
-```
-5. Write your Dart function using the `start` function, which takes in `req` and `res` parameters representing the HTTP request and response, respectively. For example:
+import 'dart:convert';
 
+Future<dynamic> main(final context) async {
+  final input = context.req.bodyText as String;
+  if (input.isEmpty) {
+    return context.res.json({'error': 'Send the text to encode as the request body.'}, 400);
+  }
 
-```dart
-Future<void> start(final req, final res) async {
- final name = req.variables['name'] ?? 'World';
- res.send('Hello, $name!');
+  context.log('Encoding ${input.length} characters');
+  return context.res.json({
+    'originalPayload': input,
+    'encodedPayload': base64Encode(utf8.encode(input)),
+  });
 }
 ```
-6. Deploy your function by uploading your Dart code as a ZIP file to the Appwrite console or by using the Appwrite CLI. You can also deploy your function using the Appwrite API.
-7. Test your function by triggering it from the Appwrite console or by sending an HTTP request to its endpoint. You should receive a response with the output of your function.
 
+`context.req` also has `bodyJson`, `headers`, `query`, `path` and `method`. Use `context.log` and
+`context.error` instead of `print`; their output shows up in the execution logs in the Appwrite
+Console. `res.send` still exists but is deprecated in favour of `res.text`.
 
-## References
-- https://github.com/FriendlyUser/dart_fns/functions
+These functions don't call any Appwrite APIs, so they don't need the SDK. If yours does, add
+`dart_appwrite` (`dart pub add dart_appwrite`) and build the client from the values the runtime
+provides:
+
+```dart
+import 'dart:io';
+import 'package:dart_appwrite/dart_appwrite.dart';
+
+Future<dynamic> main(final context) async {
+  final client = Client()
+      .setEndpoint(Platform.environment['APPWRITE_FUNCTION_API_ENDPOINT'] ?? '')
+      .setProject(Platform.environment['APPWRITE_FUNCTION_PROJECT_ID'] ?? '')
+      .setKey(context.req.headers['x-appwrite-key'] ?? '');
+  final users = Users(client);
+
+  final result = await users.list();
+  return context.res.json({'totalUsers': result.total});
+}
+```
+
+The `x-appwrite-key` header carries a short-lived API key that Appwrite issues for the execution,
+scoped to the permissions you grant the function, so you don't need to paste a long-lived key into
+your code or variables.
+
+## Deploying
+
+With the [Appwrite CLI](https://appwrite.io/docs/tooling/command-line/installation):
+
+```bash
+appwrite init functions   # pick the Dart runtime; generates a starter function
+# replace lib/main.dart with your code
+appwrite push functions
+```
+
+Without the CLI, package the function folder with
+`tar --exclude code.tar.gz -czf code.tar.gz .`, then upload it in the Console under the function's
+**Create deployment > Manual** tab and set the entrypoint (`lib/main.dart`).
+
+Once deployed, you can run the function from the Console's **Execute** button or call its domain
+with an HTTP request; the request body becomes `context.req.bodyText`.
+
+## Further reading
+
+- [Appwrite Functions: develop](https://appwrite.io/docs/products/functions/develop)
+- [Appwrite Dart starter template](https://github.com/appwrite/templates/tree/main/dart/starter)
+- [dart_fns source](https://github.com/FriendlyUser/dart_fns/functions)

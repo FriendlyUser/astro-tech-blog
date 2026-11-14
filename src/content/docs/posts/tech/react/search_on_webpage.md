@@ -1,358 +1,194 @@
 ---
-tags: ['react', 'context']
-title: Options to implement search on your website
-description: Options to implement search on your website
+tags: ['react', 'context', 'javascript', 'php']
+title: "Five ways to add search to a website: Algolia, Fuse.js, Google, PHP and Pagefind"
+description: Working examples of site search with Algolia, Fuse.js in React, Google Programmable Search, a PHP and MySQL query, and Pagefind for static sites.
 pubDate: Fri, 15 December 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/481242631.png
 ---
 
-# Algolia Search
+There are roughly three ways to add search to a site: send queries to a hosted service (Algolia, Google), search on your own server (a database query), or ship an index to the browser and search there (Fuse.js, Pagefind). Which one fits depends on how much content you have, whether it changes often, and whether you run a backend at all.
 
-Algolia is a powerful and scalable search-as-a-service solution that allows you to add lightning-fast search functionality to your website or application. It provides a simple and easy-to-use API that can be integrated into your website or application using a variety of SDKs, including JavaScript, PHP, and Python.
+## Algolia
 
-To add Algolia search to your website, you first need to sign up for an Algolia account and create an index for your website's data. Once you have created an index, you can then use one of Algolia's SDKs to integrate search functionality into your website or application.
+Algolia is a hosted search service. You push records to an index, then query it from the browser or your server. It handles typo tolerance, ranking and faceting, and it is paid beyond the free tier.
 
-Here's an example of how to add Algolia search to your website using the JavaScript SDK:
+These examples use the v5 JavaScript client (`algoliasearch` 5.64.0 at the time of writing). Older tutorials that call `client.initIndex()` or `index.addObjects()` with callbacks are for v3/v4; those methods are gone in v5.
 
-Install the Algolia JavaScript SDK:
-
-```
+```bash
 npm install algoliasearch
 ```
 
-Initialize the Algolia client with your application ID and API key:
+Index your data from a server or build script, using an API key with write access. Never ship that key to the browser.
 
 ```js
-const algoliasearch = require('algoliasearch');
+import { algoliasearch } from 'algoliasearch';
 
-const client = algoliasearch('APPLICATION_ID', 'API_KEY');
-```
+const client = algoliasearch('APPLICATION_ID', 'ADMIN_API_KEY');
 
-Index your data:
-
-```js
-const index = client.initIndex('INDEX_NAME');
-
-const data = [
+const products = [
   { objectID: '1', title: 'Product 1', description: 'This is the first product' },
   { objectID: '2', title: 'Product 2', description: 'This is the second product' },
   { objectID: '3', title: 'Product 3', description: 'This is the third product' },
 ];
 
-index.addObjects(data, (err, content) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(content);
-  }
-});
+await client.saveObjects({ indexName: 'products', objects: products, waitForTasks: true });
 ```
 
-4. Implement search functionality in your website:
+In the browser, use the lite client and a search-only API key:
 
 ```js
+import { liteClient as algoliasearch } from 'algoliasearch/lite';
+
+const searchClient = algoliasearch('APPLICATION_ID', 'SEARCH_ONLY_API_KEY');
 const searchInput = document.querySelector('#search-input');
 
-searchInput.addEventListener('input', () => {
-  index.search(searchInput.value, (err, content) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(content.hits);
-    }
+searchInput.addEventListener('input', async () => {
+  const { results } = await searchClient.search({
+    requests: [{ indexName: 'products', query: searchInput.value }],
   });
+  console.log(results[0].hits);
 });
 ```
 
-This code initializes the Algolia client, indexes some data, and implements a search input that listens for user input and performs a search on the Algolia index. The search results are then logged to the console.
+For a full UI (search box, hits, facets, pagination), Algolia's InstantSearch libraries build on this client.
 
-Algolia search provides many powerful features, such as faceting, typo-tolerance, and relevance ranking, that can help you deliver a better search experience to your website's users.
+## Fuse.js in React
 
-##  Custom search with React and Fuse.js
+Fuse.js is a fuzzy-search library that runs entirely in the browser. It suits a few hundred to a few thousand items that you already have in memory, such as a product list or a JSON file of blog posts. There is no server or index to maintain.
 
-Adding a search functionality to your website can greatly improve its usability. However, implementing search can be a challenging task. In this post, we'll go through the steps to add a custom search feature to your website using React and Fuse.js.
-
-Fuse.js is a lightweight fuzzy-search library that can easily be integrated with React. It allows you to search through a collection of items with support for various options like searching for partial matches, exact matches, and more. With Fuse.js, you can also configure the search algorithm and its options to improve search results.
-
-### Installation
-
-First, you'll need to install Fuse.js as a dependency in your project. You can do this using npm:
-
-
-```jsx
+```bash
 npm install fuse.js
 ```
-### Usage
-
-Once you have installed Fuse.js, you can use it in your React components. Here's an example of how to implement a search component using Fuse.js:
-
 
 ```jsx
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 
 const Search = ({ data }) => {
- const [query, setQuery] = useState('');
- const options = {
- keys: ['title', 'author.name'],
- };
- const fuse = new Fuse(data, options);
+  const [query, setQuery] = useState('');
 
- const results = fuse.search(query);
+  // Build the Fuse index once per data set, not on every keystroke.
+  const fuse = useMemo(
+    () => new Fuse(data, { keys: ['title', 'author.name'] }),
+    [data],
+  );
 
- return (
- <div>
- <input
- type="text"
- value={query}
- onChange={(e) => setQuery(e.target.value)}
- />
- <ul>
- {results.map((item) => (
- <li key={item.id}>
- {item.title} by {item.author.name}
- </li>
- ))}
- </ul>
- </div>
- );
+  const results = query ? fuse.search(query) : [];
+
+  return (
+    <div>
+      <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <ul>
+        {results.map(({ item }) => (
+          <li key={item.id}>
+            {item.title} by {item.author.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export default Search;
 ```
-Here, we've defined a `Search` component that accepts an array of `data` as a prop. In our case, `data` is an array of objects that represent books. We use the `useState` hook to keep track of the search query.
 
-We then create a new instance of `Fuse` using the `data` array and an options object. In this case, we're searching for matches in the `title` and `author.name` keys.
+`data` here is an array of books like `{ id, title, author: { name } }`. Note that `fuse.search()` returns wrapper objects of the form `{ item, refIndex }`, not the original records, so you read the record from `result.item`. Options such as `threshold` control how fuzzy the match is.
 
-Finally, we render an input element and a list of results. The list is created by mapping over the `results` array returned by `fuse.search()`.
+## Google Programmable Search Engine
 
-That's it! With just a few lines of code, you can add a custom search feature to your React app using Fuse.js. The library is highly configurable, allowing you to fine-tune search results to match your specific needs.
+Google's Programmable Search Engine (formerly Custom Search Engine) gives you a search box and results page backed by Google's index of your site. Create an engine in the [control panel](https://programmablesearchengine.google.com/), add your domain under "Sites to search", and copy the engine ID (`cx`). Then paste the snippet Google gives you:
 
-
-Using Google Search on Your Site
-
-Adding a search bar to your website can improve its usability by allowing users to quickly find what they're looking for. One popular solution is to use Google Search, which provides accurate and relevant results based on the user's query.
-
-In this post, we'll go through the steps to add Google Search to your website.
-
-### 1. Create a Custom Search Engine
-
-First, you'll need to create a Custom Search Engine (CSE) in your Google account. Go to the [Google Custom Search Engine](https://programmablesearchengine.google.com/about/) page and click on the "Get Started" button.
-
-Follow the steps to create your CSE, including entering the website you want to search and any additional search features you want to enable. Once you've created your CSE, you'll be given a unique search engine ID that you can use to integrate Google Search on your site.
-
-### 2. Add the Search Bar
-
-Next, you'll need to add the Google Search bar to your website. You can do this by copying the code snippet provided by Google and pasting it into your HTML code.
-
-Here's an example of what the HTML code for the search bar might look like:
-
-
-```jsx
-html`<form action="https://www.google.com/search" method="get">
- <input type="hidden" name="cx" value="YOUR\_SEARCH\_ENGINE\_ID">
- <input type="hidden" name="ie" value="UTF-8">
- <input type="text" name="q" size="40" placeholder="Search...">
- <input type="submit" name="submit" value="Search">
-</form>
+```html
+<script async src="https://cse.google.com/cse.js?cx=YOUR_SEARCH_ENGINE_ID"></script>
+<div class="gcse-search"></div>
 ```
-Make sure to replace `YOUR_SEARCH_ENGINE_ID` with your actual search engine ID.
 
-### 3. Style the Search Bar
+The results only include pages Google has crawled, so new pages can take a while to appear, and the free edition shows ads.
 
-Finally, you can style the search bar to match your website's design. Here's an example of how you might style the search bar using CSS:
+As of January 2026, Google requires new engines to use "Sites to search" (no more "Search the entire web"), and existing engines must move off whole-web search by January 1, 2027. Searching your own site is still supported.
 
+## PHP and MySQL
 
-```css
-form {
- display: flex;
- justify-content: center;
- align-items: center;
-}
-
-input[type="text"] {
- font-size: 1rem;
- padding: 0.5rem;
- border: none;
- border-bottom: 2px solid #ccc;
- margin-right: 0.5rem;
- flex: 1;
-}
-
-input[type="submit"] {
- background-color: #333;
- color: #fff;
- padding: 0.5rem 1rem;
- border: none;
- cursor: pointer;
-}
-```
-This CSS code will center the search bar on the page and style the input and submit buttons.
-
-That's it! By following these simple steps, you can add Google Search to your website and provide a powerful search feature for your users. With Google's advanced search algorithms and indexing capabilities, your users will be able to find the content they're looking for quickly and easily.
-
-
-## Adding Search Using PHP
-
-Adding a search feature to your website can help your users find the content they're looking for quickly and easily. In this post, we'll go through the steps to add a search bar to your website using PHP.
-
-### 1. Create the Search Form
-
-The first step is to create a search form in HTML. Here's an example of what the HTML code might look like:
-
+If your content already lives in a database and you run PHP, a SQL query is the simplest option. The search form:
 
 ```html
 <form action="search.php" method="get">
- <input type="text" name="query" placeholder="Search...">
- <input type="submit" name="submit" value="Search">
+  <input type="text" name="query" placeholder="Search...">
+  <button type="submit">Search</button>
 </form>
 ```
-This code creates a form with an input field for the search query and a submit button. The form action is set to "search.php", which is the name of the PHP script that will handle the search.
 
-### 2. Create the PHP Script
-
-Next, you'll need to create the PHP script that will handle the search. Here's an example of what the PHP code might look like:
-
+And `search.php`, using PDO with a prepared statement so the query can't inject SQL, and `htmlspecialchars` so results can't inject HTML:
 
 ```php
 <?php
-// Check if the search form has been submitted
-if (isset($\_GET['submit'])) {
- // Get the search query
- $query = $\_GET['query'];
- 
- // Perform the search
- $results = perform\_search($query);
- 
- // Display the search results
- foreach ($results as $result) {
- echo "<div class='result'>";
- echo "<h3>{$result['title']}</h3>";
- echo "<p>{$result['description']}</p>";
- echo "<a href='{$result['url']}'>Read More</a>";
- echo "</div>";
- }
-}
+$query = trim($_GET['query'] ?? '');
 
-// Function to perform the search
-function perform\_search($query) {
- // Connect to the database
- $conn = mysqli\_connect("localhost", "username", "password", "database");
- 
- // Escape the search query
- $query = mysqli\_real\_escape\_string($conn, $query);
- 
- // Perform the search query
- $sql = "SELECT \* FROM articles WHERE title LIKE '%$query%' OR content LIKE '%$query%'";
- $result = mysqli\_query($conn, $sql);
- 
- // Fetch the search results
- $results = array();
- while ($row = mysqli\_fetch\_assoc($result)) {
- $results[] = $row;
- }
- 
- // Close the database connection
- mysqli\_close($conn);
- 
- // Return the search results
- return $results;
-}
-?>
-```
-This code checks if the search form has been submitted and gets the search query. It then calls the `perform_search` function, which connects to the database and performs a search query based on the search query. The search results are then displayed using a `foreach` loop.
+if ($query !== '') {
+    $pdo = new PDO('mysql:host=localhost;dbname=database;charset=utf8mb4', 'username', 'password', [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ]);
 
-### 3. Style the Search Results
+    $stmt = $pdo->prepare(
+        'SELECT title, description, url FROM articles WHERE title LIKE :q1 OR content LIKE :q2'
+    );
+    $like = '%' . $query . '%';
+    $stmt->execute(['q1' => $like, 'q2' => $like]);
 
-Finally, you can style the search results to match your website's design. Here's an example of how you might style the search results using CSS:
-
-
-```css
-.result {
- margin-bottom: 1rem;
-}
-
-.result h3 {
- margin-bottom: 0.5rem;
-}
-
-.result p {
- margin-bottom: 0.5rem;
-}
-
-.result a {
- color: #333;
- text-decoration: none;
- border-bottom: 1px dotted #333;
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $title = htmlspecialchars($row['title']);
+        $description = htmlspecialchars($row['description']);
+        $url = htmlspecialchars($row['url']);
+        echo "<div class='result'><h3>{$title}</h3><p>{$description}</p><a href='{$url}'>Read more</a></div>";
+    }
 }
 ```
-This CSS code will style the search results with a title, description, and link.
 
-By following these simple steps, you can add a search feature to your website using PHP. With PHP's ability to connect to databases and perform search queries, you can create a powerful search feature that will improve the usability of your website.
+`LIKE '%term%'` can't use an index, so it scans the whole table and has no relevance ranking. That is fine for a small site. For more content, add a `FULLTEXT` index and use `MATCH ... AGAINST`, or move to a dedicated search engine.
 
-## Adding Search Using PageFind
+## Pagefind for static sites
 
-PageFind is a static site search engine that allows you to add search functionality to your static website without relying on external search engines or services. It is a lightweight JavaScript library that is easy to install and use.
+[Pagefind](https://pagefind.app/) indexes the HTML your static site generator produces and serves the index as static files, so there's no server or third-party service. The browser downloads only the index chunks a query needs. Starlight, the framework this blog runs on, uses Pagefind for its built-in search.
 
-Note: PageFind requires a static site bundle to be generated and uploaded to a server. It does not work in development mode.
+Because it indexes built output, run it after your build. It won't find anything in a dev server that hasn't been built and indexed.
 
-### 1. Install PageFind
-
-To install PageFind, you can either download the library from the official website or use a package manager like npm. Here's an example of how to install PageFind using npm:
-
-
-```jsx
-npm install pagefind
+```bash
+npx pagefind --site dist
 ```
-### 2. Generate a Search Index
 
-Before you can use PageFind, you need to generate static pages for your website and then call pagefind to generate a search index. 
+Replace `dist` with your build output folder. This writes a `pagefind/` directory into it.
 
-### 3. Include PageFind in Your Website
+To add the prebuilt search UI (the Component UI, added in Pagefind 1.5.0):
 
-To use PageFind, you need to include the PageFind library in your website. Here's an example of how to do this:
+```html
+<link href="/pagefind/pagefind-component-ui.css" rel="stylesheet">
+<script src="/pagefind/pagefind-component-ui.js" type="module"></script>
 
-
-```jsx
-<script src="path/to/pagefind.js"></script>
+<pagefind-modal-trigger></pagefind-modal-trigger>
+<pagefind-modal></pagefind-modal>
 ```
-### 4. Initialize PageFind
 
-After including PageFind in your website, you need to initialize it. Here's an example of how to do this:
+On older Pagefind versions, use the Default UI instead: load `/pagefind/pagefind-ui.css` and `/pagefind/pagefind-ui.js`, then call `new PagefindUI({ element: '#search' })`.
 
+To build your own UI, use the JavaScript API. Each result loads its data separately, so you only fetch what you display:
 
-```jsx
-const pagefind = new PageFind({
- searchInput: document.querySelector('#search-input'),
- resultsContainer: document.querySelector('#search-results'),
- indexUrl: 'path/to/search.json',
-});
+```js
+const pagefind = await import('/pagefind/pagefind.js');
+
+const search = await pagefind.search('static');
+const results = await Promise.all(search.results.slice(0, 10).map((r) => r.data()));
+
+for (const result of results) {
+  console.log(result.url, result.meta.title, result.excerpt);
+}
 ```
-This code initializes PageFind with a search input field, a container for the search results, and the path to the search index.
 
-### 5. Customize PageFind
+## Which one to pick
 
-PageFind comes with a set of default options that can be customized to fit your website's design and functionality. Here's an example of how to customize PageFind:
-
-
-```jsx
-const pagefind = new PageFind({
- searchInput: document.querySelector('#search-input'),
- resultsContainer: document.querySelector('#search-results'),
- indexUrl: 'path/to/search.json',
- minQueryLength: 2,
- maxResults: 10,
- resultTemplate: (result) => 
- <div class="result">
- <h3>${result.title}</h3>
- <p>${result.description}</p>
- <a href="${result.url}">Read More</a>
- </div>
- ,
-});
-```
-This code customizes PageFind with a minimum query length of 2, a maximum of 10 search results, and a custom result template.
-
-PageFind is a powerful and lightweight static site search engine that can be easily integrated into your static website. By following these simple steps, you can add search functionality to your website and improve the user experience for your visitors. Note that PageFind requires a static site bundle to be generated and uploaded to a server and does not work in development mode.
-
+- Static site and no backend: Pagefind.
+- A small data set already loaded in a React app: Fuse.js.
+- A large or frequently changing catalogue where ranking and facets matter, and you can pay for it: Algolia.
+- An existing PHP/MySQL site: a prepared SQL query, moving to `FULLTEXT` as it grows.
+- No build step or code at all: Google Programmable Search, if you accept its ads and crawl delay.

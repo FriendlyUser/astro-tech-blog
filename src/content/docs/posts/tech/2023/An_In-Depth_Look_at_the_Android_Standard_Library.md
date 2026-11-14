@@ -1,60 +1,103 @@
 ---
-description: In this article, we will delve into the Android Standard Library, its
-  essential components, and how developers can leverage its functionalities to create
-  feature-rich Android applications
+description: A map of the Android framework's core android.* packages and the four app components (activities, services, content providers, broadcast receivers), with current caveats.
 imgSrc: /imgs/2023/1575571770.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-02-03T22:08:52.000Z'
-tags: []
-title: An In-Depth Look at the Android Standard Library
+lastUpdated: 2026-11-14
+tags: ["android", "kotlin"]
+title: "The Android framework APIs: core packages and app components"
 ---
 
-# An In-Depth Look at the Android Standard Library
+What people sometimes call the "Android standard library" is officially the **Android framework API**: the `android.*` packages your app compiles against (`android.jar` in the SDK) and that each device provides at runtime. Its public surface is Java, callable from Java or Kotlin; much of the implementation underneath is native C/C++. Because the version on a device depends on its OS release, Google ships most newer APIs separately as **AndroidX (Jetpack)** libraries that you bundle with your app.
 
-The Android Standard Library, also known as the Android Framework, is a collection of APIs, tools, and libraries that developers can use to build Android applications. It is a crucial component in the Android ecosystem, serving as a foundation for app development. In this article, we will delve into the Android Standard Library, its essential components, and how developers can leverage its functionalities to create feature-rich Android applications.
+This post maps the main packages and then covers the four app components the framework is built around.
 
-## Overview of the Android Standard Library
+## Main packages
 
-The Android Standard Library is distributed as part of the Android SDK (Software Development Kit). It is written primarily in Java and Kotlin, with some parts in C++ for performance-critical components. The library is organized into several modules, each responsible for a specific domain or functionality. Some of the key modules include:
+| Package | What's in it | Example classes |
+| --- | --- | --- |
+| `android.app` | App-level components and system services | `Activity`, `Service`, `Application`, `NotificationManager`, `AlarmManager` |
+| `android.content` | Inter-component plumbing and data access | `Context`, `Intent`, `ContentProvider`, `ContentResolver`, `BroadcastReceiver`, `SharedPreferences` |
+| `android.content.pm` | Information about installed packages | `PackageManager`, `PackageInfo` |
+| `android.os` | Threads, messaging, system info | `Looper`, `Handler`, `Bundle`, `Build`, `PowerManager`, `Vibrator` |
+| `android.graphics` | 2D drawing | `Canvas`, `Paint`, `Bitmap`, `Path` |
+| `android.hardware` | Sensors and other hardware | `SensorManager`, `Sensor`; cameras via `android.hardware.camera2` |
+| `android.location` | Location | `LocationManager`, `Location` |
+| `android.view` | The base UI system and input | `View`, `ViewGroup`, `LayoutInflater`, `MotionEvent` |
+| `android.widget` | Built-in View-based UI components | `TextView`, `Button`, `EditText`, `ImageView`, `LinearLayout` |
 
-1. **android.app**: This module contains classes for managing an application's activities, services, and content providers. Key classes include `Activity`, `Service`, `Intent`, `ContentProvider`, and `BroadcastReceiver`.
+A few things that are commonly assumed to be in the framework but aren't, or are no longer recommended:
 
-2. **android.content**: This module consists of classes for accessing and modifying app preferences, as well as managing user interfaces. Notable classes include `Context`, `SharedPreferences`, `Intent`, and `PackageManager`.
+- `DrawerLayout`, `RecyclerView`, `ViewPager2` and `AppCompatActivity` are AndroidX libraries, not `android.widget` or `android.app`.
+- `android.hardware.Camera` was deprecated in API 21 in favour of `camera2`; most apps now use the Jetpack CameraX library.
+- `ListView` and `GridView` still exist, but new View-based code uses `RecyclerView`, and new UI is increasingly written in Jetpack Compose, which doesn't use `android.widget` at all.
 
-3. **android.graphics**: This module provides classes for drawing 2D graphics, including shapes, text, and bitmaps. Key classes include `Canvas`, `Paint`, `Bitmap`, and `Path`.
+## The four app components
 
-4. **android.hardware**: This module contains classes for interacting with the device's hardware, such as cameras, sensors, and GPS. Key classes include `SensorManager`, `Camera`, `LocationManager`, and `Vibrator`.
+Android starts your app through components declared in `AndroidManifest.xml`. There are four kinds.
 
-5. **android.os**: This module includes classes for managing threads, processes, and system services. Notable classes are `Looper`, `Handler`, `Message`, `Bundle`, and `PowerManager`.
+### Activities
 
-6. **android.view**: This module contains classes for UI components, such as buttons, text views, and layouts. Key classes include `View`, `ViewGroup`, `LayoutInflater`, and `MotionEvent`.
+An `Activity` is a single screen. The system drives its lifecycle (`onCreate`, `onStart`, `onResume`, `onPause`, `onStop`, `onDestroy`) as the user navigates and as the app moves between foreground and background. In practice you extend `AppCompatActivity` or `ComponentActivity` from AndroidX rather than the framework `Activity` directly, so newer features work on older OS versions.
 
-7. **android.widget**: This module provides a variety of pre-built UI components, such as lists, grids, and drawers. Notable classes include `AdapterView`, `ListView`, `GridView`, and `DrawerLayout`.
+### Intents
 
-## Working with the Android Standard Library
+An `Intent` is a message asking the system to start a component. An **explicit** intent names the target class; an **implicit** intent describes an action (such as `Intent.ACTION_VIEW` with a URL) and lets the system find an app that can handle it. Extra data travels with the intent as key/value pairs in a `Bundle`.
 
-To leverage the Android Standard Library, developers should be familiar with some of its core concepts:
+Here is an activity that opens another one with an explicit intent and passes an ID:
 
-### 1. Activities
+```kotlin
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
-An `Activity` represents a single screen in an Android app, with a user interface and a lifecycle managed by the Android system. When creating an activity, developers should extend the `Activity` class or one of its subclasses (e.g., `AppCompatActivity`) and override specific lifecycle methods, such as `onCreate`, `onStart`, `onResume`, `onPause`, `onStop`, and `onDestroy`.
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-### 2. Intents
+        findViewById<Button>(R.id.open_details).setOnClickListener {
+            val intent = Intent(this, DetailActivity::class.java)
+                .putExtra(DetailActivity.EXTRA_ITEM_ID, 42L)
+            startActivity(intent)
+        }
+    }
+}
 
-`Intent` objects are used to communicate between components, such as activities and services, within an Android app or between different apps. Intents can carry data using the `Bundle` class and can be either explicit (specifying the target component) or implicit (describing the desired action, allowing the system to choose the appropriate component).
+class DetailActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_detail)
 
-### 3. Services
+        val itemId = intent.getLongExtra(EXTRA_ITEM_ID, -1L)
+        findViewById<TextView>(R.id.item_label).text = "Item $itemId"
+    }
 
-A `Service` is a long-running component that can perform operations in the background without a user interface. Services are useful for tasks like downloading files, playing music, or syncing data. Developers can extend the `Service` class or one of its subclasses (e.g., `IntentService`) and override specific lifecycle methods, such as `onCreate`, `onStartCommand`, and `onDestroy`.
+    companion object {
+        const val EXTRA_ITEM_ID = "item_id"
+    }
+}
+```
 
-### 4. Content Providers
+Both activities must be declared in the manifest with `<activity>` elements, or `startActivity` throws `ActivityNotFoundException`.
 
-`ContentProvider` is a component that enables data sharing between apps using a standardized interface. Content providers can expose data from various sources, such as databases, files, or network resources. Developers should extend the `ContentProvider` class and implement methods like `query`, `insert`, `update`, and `delete`.
+### Services
 
-### 5. Broadcast Receivers
+A `Service` runs work without a UI. Since Android 8.0 (API 26), apps in the background can't freely start services, and long-running work has to be a **foreground service** that shows a notification; Android 14 additionally requires each foreground service to declare a type (such as `mediaPlayback` or `dataSync`). `IntentService` was deprecated in API 30. For deferrable background work (syncing, uploads), use Jetpack **WorkManager** instead of a service.
 
-A `BroadcastReceiver` is a component that can respond to system-wide or app-specific events, such as connectivity changes, battery state changes, or custom events. Developers should extend the `BroadcastReceiver` class and override the `onReceive` method.
+### Content providers
 
-## Conclusion
+A `ContentProvider` exposes structured data to other apps (or other processes) through `content://` URIs. You implement `query`, `insert`, `update`, `delete` and `getType`; clients call the same methods through a `ContentResolver`. The system's contacts, calendar and media store are all providers. If the data is only used inside your own app, you don't need one; a Room database or DataStore is simpler.
 
-The Android Standard Library is a powerful and comprehensive framework that enables developers to create feature-rich and responsive Android applications. By understanding the core components of the library, such as activities, intents, services, content providers, and broadcast receivers, developers can leverage its functionalities to build high-quality Android apps for a wide range of devices and use cases. As the Android ecosystem continues to grow and evolve, the Android Standard Library will remain a critical resource for developers to create innovative and engaging applications.
+### Broadcast receivers
+
+A `BroadcastReceiver` responds to system or app events in `onReceive`. Since Android 8.0, most implicit system broadcasts can no longer be received by receivers declared in the manifest; register those at runtime with `Context.registerReceiver` while your app is running. Keep `onReceive` short: it runs on the main thread and the system may kill the process soon after it returns.
+
+## Further reading
+
+- [Android API reference](https://developer.android.com/reference/packages)
+- [Application fundamentals](https://developer.android.com/guide/components/fundamentals)
+- [Background work overview](https://developer.android.com/develop/background-work/background-tasks)
+- [Implicit broadcast exceptions](https://developer.android.com/develop/background-work/background-tasks/broadcasts/broadcast-exceptions)

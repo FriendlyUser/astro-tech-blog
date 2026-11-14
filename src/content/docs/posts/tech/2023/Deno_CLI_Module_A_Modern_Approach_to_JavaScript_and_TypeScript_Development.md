@@ -1,113 +1,112 @@
 ---
-description: In this article, we will explore the Deno CLI module, a powerful and
-  versatile tool for JavaScript and TypeScript developers
+description: 'A tour of the deno CLI: running TypeScript with permission flags, then formatting, linting, type-checking, bundling and compiling a small script.'
 imgSrc: /imgs/2023/1096284488.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-02-08T15:32:23.000Z'
-tags: []
-title: Deno CLI Module A Modern Approach to JavaScript and TypeScript Development
+lastUpdated: 2026-11-14
+tags: ["deno", "typescript"]
+title: 'The deno CLI: run, fmt, lint, check, bundle and compile'
 ---
 
-# Deno CLI Module: A Modern Approach to JavaScript and TypeScript Development
+:::note[Updated in November 2026]
+This post was revised for Deno 2. The commands below were run with Deno 2.9. The main changes since the first version: `deno install` now installs project dependencies (use `deno install -g` for a global script), and `deno bundle` was removed in Deno 2.0 and came back, rebuilt on esbuild, in Deno 2.4. It still prints an "experimental" warning.
+:::
 
-In this article, we will explore the Deno CLI module, a powerful and versatile tool for JavaScript and TypeScript developers. We will discuss its key features, benefits, and how to use it effectively. By the end of this article, you should have a solid understanding of the Deno CLI module and its potential to enhance your development process.
+Deno is a JavaScript and TypeScript runtime built on V8 and written in Rust, started by Ryan Dahl, who also created Node.js. Almost everything you do with it goes through one binary, `deno`: it runs code, but it also formats, lints, type-checks, tests, bundles and compiles it, so a small project needs no extra tooling.
 
-## Introduction to Deno
+## Install and check the version
 
-Deno is a secure runtime for JavaScript and TypeScript, built with Rust and leveraging the V8 JavaScript engine. Created by Ryan Dahl, the original creator of Node.js, Deno aims to address some of the shortcomings of Node.js and provide a more modern and secure platform for JavaScript and TypeScript development.
-
-Some of the key features of Deno include:
-
-- First-class TypeScript support out of the box
-- Secure by default, with fine-grained permission controls
-- Decentralized module distribution using URLs
-- Built-in utilities, such as a bundler, test runner, and linter
-
-The Deno CLI (Command Line Interface) is the primary way developers interact with the Deno runtime. It provides a rich set of commands and options to manage scripts, dependencies, and other aspects of your development workflow.
-
-## Getting Started with Deno CLI
-
-To start using the Deno CLI, you first need to install Deno on your system. You can find detailed installation instructions for various platforms in the [official Deno manual](https://deno.land/manual/getting_started/installation).
-
-Once you have Deno installed, you can test it by running the following command in your terminal:
+Follow the [installation guide](https://docs.deno.com/runtime/getting_started/installation/) for your platform, then:
 
 ```bash
 deno --version
 ```
 
-This command should display the version information for Deno, indicating that it has been installed correctly.
+## The commands you'll use most
 
-## Deno CLI Commands
+| Command | What it does |
+| --- | --- |
+| `deno run` | Run a JS or TS file (or a URL, `jsr:` or `npm:` specifier) with the permissions you grant |
+| `deno task` | Run a task defined in `deno.json` or a script in `package.json` |
+| `deno add` / `deno install` | Add dependencies from JSR or npm; `deno install` with no arguments installs everything in the config |
+| `deno fmt` | Format JS and TS, plus Markdown, JSON and Jupyter notebooks |
+| `deno lint` | Lint for likely bugs and style problems |
+| `deno check` | Type-check without running |
+| `deno test` | Run tests |
+| `deno bundle` | Bundle a program and its dependencies into one JS file (experimental) |
+| `deno compile` | Build a self-contained executable that includes the runtime |
+| `deno install -g` | Install a script as a command on your `PATH` |
 
-Deno offers a wide range of CLI commands to help developers manage their projects. Some of the most commonly used commands include:
+`deno --help` lists the rest, and `deno <command> --help` shows each command's flags. The [CLI reference](https://docs.deno.com/runtime/reference/cli/) has the same information online.
 
-- `deno run`: Execute a JavaScript or TypeScript file, specifying any necessary permissions
-- `deno fmt`: Format source code according to the default Deno style guide or custom configuration
-- `deno lint`: Check your JavaScript or TypeScript code for potential errors and inconsistencies
-- `deno test`: Run tests for your application, with built-in support for test filtering and parallel execution
-- `deno bundle`: Bundle your application's source code and dependencies into a single JavaScript file for easy deployment
-- `deno install`: Install a Deno script as an executable on your system
+## A small worked example
 
-For a complete list of commands and their options, you can refer to the [official Deno manual](https://deno.land/manual/tools/cli).
-
-## Using Deno CLI in Your Development Workflow
-
-To demonstrate how the Deno CLI can be used in a typical development workflow, let's create a simple "Hello, World!" application in TypeScript.
-
-First, create a new file named `hello.ts` and add the following code:
+Create `hello.ts`. It fetches a repository from the GitHub API and prints its star count:
 
 ```typescript
-console.log("Hello, World!");
+interface Repo {
+  full_name: string;
+  stargazers_count: number;
+}
+
+async function fetchRepo(name: string): Promise<Repo> {
+  const response = await fetch(`https://api.github.com/repos/${name}`);
+  if (!response.ok) {
+    throw new Error(`GitHub returned ${response.status}`);
+  }
+  return await response.json();
+}
+
+const repo = await fetchRepo("denoland/deno");
+console.log(`${repo.full_name} has ${repo.stargazers_count} stars`);
 ```
 
-To run this application, we can use the `deno run` command:
+### Run it with permissions
 
 ```bash
 deno run hello.ts
 ```
 
-The output should display "Hello, World!", indicating that our application has executed successfully.
-
-Now, let's assume we want to add a function that fetches some data from an API:
-
-```typescript
-async function fetchData(url: string) {
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log(data);
-}
-
-fetchData("https://api.example.com/data");
-```
-
-Since Deno is secure by default, attempting to run this modified application using `deno run` will result in a permission error. To grant the required network access, we can use the `--allow-net` flag:
+Deno doesn't give scripts network, file or environment access unless you allow it. In an interactive terminal it prompts you to allow `api.github.com`; in CI or any non-interactive shell the script fails with a `NotCapable` error saying it requires net access. Grant exactly the host it needs:
 
 ```bash
-deno run --allow-net=api.example.com hello.ts
+deno run --allow-net=api.github.com hello.ts
 ```
 
-This command will allow our application to access the specified domain, ensuring that it can fetch data as intended.
+Scoping the flag to a host (or a path, for `--allow-read`) is the point: a dependency that tries to reach somewhere else gets denied. See [Security and permissions](https://docs.deno.com/runtime/fundamentals/security/) for the full list of flags.
 
-During development, it's essential to maintain clean and consistent code. We can use the `deno fmt` command to automatically format our TypeScript file:
-
-```bash
-deno fmt hello.ts
-```
-
-If we want to check our code for potential issues, we can use the `deno lint` command:
+### Format, lint and type-check
 
 ```bash
+deno fmt hello.ts      # rewrite the file in Deno's style
+deno fmt --check       # fail instead of rewriting; useful in CI
 deno lint hello.ts
+deno check hello.ts
 ```
 
-Finally, when it's time to deploy our application, we can bundle it into a single JavaScript file using the `deno bundle` command:
+`deno run` doesn't type-check by default, so add `deno check` (or `deno test`, which does check) to CI. These commands read their settings from the `fmt`, `lint` and `compilerOptions` sections of `deno.json` if you have one.
+
+### Bundle or compile
+
+To produce a single JavaScript file:
 
 ```bash
-deno bundle hello.ts hello.bundle.js
+deno bundle hello.ts -o hello.bundle.js
 ```
 
-This command will generate a `hello.bundle.js` file containing our application's code and its dependencies, ready for deployment.
+The output is plain JavaScript with the types stripped and dependencies inlined, so it runs with `deno run --allow-net=api.github.com hello.bundle.js` or in another runtime that supports top-level `await`.
 
-## Conclusion
+If you want to ship a program to machines that don't have Deno installed, `deno compile` is usually the better fit. Permission flags are baked in at compile time:
 
-The Deno CLI module is a powerful and flexible tool for JavaScript and TypeScript developers. With its rich set of commands and options, it allows for efficient management of scripts, dependencies, and development workflows. From running applications with fine-grained permissions to bundling code for deployment, Deno CLI facilitates a modern and secure approach to JavaScript and TypeScript development.
+```bash
+deno compile --allow-net=api.github.com -o hello hello.ts
+./hello
+```
+
+The executable includes the Deno runtime, so it's large even for a script this small: about 80 MB on Windows with Deno 2.9. Use `--target` to build for another OS from the same machine.
+
+## Further reading
+
+- [Deno CLI reference](https://docs.deno.com/runtime/reference/cli/)
+- [`deno bundle`](https://docs.deno.com/runtime/reference/cli/bundle/) and [`deno compile`](https://docs.deno.com/runtime/reference/cli/compile/)
+- [Deno 2.4 release notes](https://deno.com/blog/v2.4), which cover the return of `deno bundle`

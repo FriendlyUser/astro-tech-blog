@@ -1,194 +1,143 @@
 ---
-title: Using Redis in Python A Comprehensive Guide
+title: "Using Redis from Python with redis-py: data types, expiry and pub/sub"
 pubDate: "2024-08-19T21:25:57.000Z"
-description: "This article will guide you through the process of using Redis in Python applications."
-tags: []
+lastUpdated: 2026-11-14
+description: "Connect to Redis from Python with redis-py and work with strings, hashes, lists, sets, sorted sets, key expiry and pub/sub messaging."
+tags: ["python"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3382720876.png
 ---
-# Using Redis in Python: A Comprehensive Guide
 
-Redis, short for Remote Dictionary Server, is an in-memory data structure store primarily used as a database, cache, and message broker. It supports various data structures such as strings, hashes, lists, sets, and more. This article will guide you through the process of using Redis in Python applications.
+Redis is an in-memory key-value store whose values can be strings, hashes, lists, sets, sorted sets and more. It's commonly used as a cache, a session store, a rate limiter or a lightweight message broker. This post walks through the official Python client, `redis-py`, against a local Redis server.
 
-## Table of Contents
+## Setup
 
-1. [Prerequisites](#prerequisites)
-2. [Installing Redis](#installing-redis)
-3. [Installing Python Redis Client](#installing-python-redis-client)
-4. [Connecting to Redis](#connecting-to-redis)
-5. [Basic Redis Operations](#basic-redis-operations)
-   - [Strings](#strings)
-   - [Hashes](#hashes)
-   - [Lists](#lists)
-   - [Sets](#sets)
-   - [Sorted Sets](#sorted-sets)
-6. [Redis Pub/Sub](#redis-pubsub)
-7. [Conclusion](#conclusion)
+Install a Redis server by following the [official install guide](https://redis.io/docs/latest/operate/oss_and_stack/install/) for your OS (or run it in a container), then start it:
 
-## Prerequisites <a name="prerequisites"></a>
-
-- Python 3.6 or higher
-- Redis server 5.0 or higher
-
-## Installing Redis <a name="installing-redis"></a>
-
-Before diving into using Redis in Python, you'll need to install the Redis server on your system. Follow the official [Redis installation guide](https://redis.io/download) for instructions on installing Redis for your specific operating system.
-
-Once Redis is installed, start the server by running the following command:
-
-```
+```bash
 redis-server
 ```
 
-## Installing Python Redis Client <a name="installing-python-redis-client"></a>
+Install the client. `redis-py` 8.x requires Python 3.10 or newer:
 
-To interact with Redis in Python, we will use the `redis-py` library, which is a popular Python Redis client. Install the library via pip by running the following command:
-
-```
+```bash
 pip install redis
 ```
 
-## Connecting to Redis <a name="connecting-to-redis"></a>
-
-To connect to Redis in Python, you'll first need to import the `redis` module and create a connection object:
+## Connecting
 
 ```python
 import redis
 
-## Connect to the local Redis instance
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+r.ping()  # True if the server is reachable
 ```
 
-The `host` and `port` parameters are used to specify the address and port of the Redis server. The `db` parameter is used to select a specific Redis database.
+`host` and `port` locate the server, and `db` selects one of the numbered logical databases (0 by default). By default `redis-py` returns `bytes`; `decode_responses=True` decodes replies to `str`, which is what you usually want for text data. The examples below assume it's set.
 
-## Basic Redis Operations <a name="basic-redis-operations"></a>
+## Strings and expiry
 
-In this section, we will explore basic Redis operations using the `redis-py` library.
-
-### Strings <a name="strings"></a>
-
-Strings are the most basic data type in Redis and can hold binary-safe data. Here are some basic operations you can perform on strings:
+Strings are the basic type and are binary-safe, so they can hold text, serialised JSON or raw bytes.
 
 ```python
-## Set a key-value pair
-r.set('name', 'John Doe')
+r.set("name", "John Doe")
+print(r.get("name"))  # 'John Doe'
 
-## Get the value of a key
-name = r.get('name')
-print(name)  ## b'John Doe'
+# Counters: INCR is atomic, so concurrent clients won't lose updates
+r.set("counter", 1)
+r.incr("counter")
+print(r.get("counter"))  # '2' (values come back as strings)
 
-## Increment the value of a key
-r.set('counter', 1)
-r.incr('counter')
-counter = r.get('counter')
-print(counter)  ## b'2'
+# Cache entry that expires after 60 seconds
+r.set("session:abc", "user-1", ex=60)
+print(r.ttl("session:abc"))  # 60 (seconds remaining)
 ```
 
-### Hashes <a name="hashes"></a>
+Setting an expiry with `ex=` (seconds) or `px=` (milliseconds) is how you use Redis as a cache: the key disappears on its own once it's stale.
 
-Redis hashes are maps between string fields and string values. They can be used to represent objects:
+## Hashes
+
+A hash maps string fields to string values under one key, which suits small objects:
 
 ```python
-## Set fields of a hash
-r.hset('user:1', 'name', 'Jane Doe')
-r.hset('user:1', 'email', 'jane.doe@example.com')
+r.hset("user:1", mapping={"name": "Jane Doe", "email": "jane.doe@example.com"})
 
-## Get a field value of a hash
-name = r.hget('user:1', 'name')
-print(name)  ## 'Jane Doe'
-
-## Get all fields and values of a hash
-user = r.hgetall('user:1')
-print(user)  ## {'name': 'Jane Doe', 'email': 'jane.doe@example.com'}
+print(r.hget("user:1", "name"))  # 'Jane Doe'
+print(r.hgetall("user:1"))       # {'name': 'Jane Doe', 'email': 'jane.doe@example.com'}
 ```
 
-### Lists <a name="lists"></a>
+## Lists
 
-Redis lists are collections of string elements sorted in the order they were inserted. They can be used as queues, stacks, or simple lists:
+Lists keep insertion order. Push and pop from either end to use them as a queue or a stack:
 
 ```python
-## Push elements to a list
-r.lpush('fruits', 'apple', 'banana', 'orange')
+r.lpush("fruits", "apple", "banana", "orange")
 
-## Get the length of a list
-length = r.llen('fruits')
-print(length)  ## 3
-
-## Get elements from a list
-fruits = r.lrange('fruits', 0, -1)
-print(fruits)  ## [b'orange', b'banana', b'apple']
+print(r.llen("fruits"))            # 3
+print(r.lrange("fruits", 0, -1))   # ['orange', 'banana', 'apple']
 ```
 
-### Sets <a name="sets"></a>
+`LPUSH` inserts each value at the head in turn, which is why the last value pushed comes first.
 
-Redis sets are unordered collections of unique strings. They can be used to store unique elements:
+## Sets
+
+Sets are unordered collections of unique strings:
 
 ```python
-## Add elements to a set
-r.sadd('colors', 'red', 'green', 'blue')
+r.sadd("colors", "red", "green", "blue")
 
-## Check if an element is a member of a set
-is_member = r.sismember('colors', 'red')
-print(is_member)  ## True
-
-## Get all elementsof a set
-colors = r.smembers('colors')
-print(colors)  ## {'red', 'green', 'blue'}
+print(r.sismember("colors", "red"))  # 1 (0 if not a member)
+print(r.smembers("colors"))          # {'red', 'green', 'blue'} in no particular order
 ```
 
-### Sorted Sets <a name="sorted-sets"></a>
+## Sorted sets
 
-Redis sorted sets are similar to sets, but each element is associated with a score, which is used to sort the elements:
+Each member of a sorted set has a numeric score, and members are kept ordered by score. Leaderboards are the classic use:
 
 ```python
-## Add elements with scores to a sorted set
-r.zadd('scores', {'Alice': 100, 'Bob': 200, 'Charlie': 150})
+r.zadd("scores", {"Alice": 100, "Bob": 200, "Charlie": 150})
 
-## Get the rank of an element based on its score
-rank = r.zrank('scores', 'Alice')
-print(rank)  # 0
+print(r.zrank("scores", "Alice"))  # 0 (lowest score ranks first)
 
-## Get elements within a score range
-users = r.zrangebyscore('scores', 100, 200)
-print(users)  ## [b'Alice', b'Charlie', b'Bob']
+# Members with scores between 100 and 200, inclusive
+print(r.zrange("scores", 100, 200, byscore=True))  # ['Alice', 'Charlie', 'Bob']
 ```
 
-## Redis Pub/Sub <a name="redis-pubsub"></a>
+Older code uses `zrangebyscore()`; Redis 6.2 folded that command into `ZRANGE ... BYSCORE`, which is what `byscore=True` sends.
 
-Redis provides a publish/subscribe (pub/sub) messaging system where clients can subscribe to channels and receive messages published to those channels. Here's a basic example:
+## Pub/sub
 
-**Publisher:**
+Clients can subscribe to channels and receive anything published to them. Run the subscriber first:
 
 ```python
 import redis
 
-r = redis.Redis(host='localhost', port=6379, db=0)
-
-## Publish a message to a channel
-r.publish('news', 'Breaking news: Redis is awesome!')
-```
-
-**Subscriber:**
-
-```python
-import redis
-
-r = redis.Redis(host='localhost', port=6379, db=0)
-
-## Create a pubsub object
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 pubsub = r.pubsub()
+pubsub.subscribe("news")
 
-## Subscribe to a channel
-pubsub.subscribe('news')
-
-## Listen for messages
 for message in pubsub.listen():
-    if message['type'] == 'message':
-        print(f"Received message: {message['data']}")
+    # The first message is the subscribe confirmation, so filter on type
+    if message["type"] == "message":
+        print(f"Received: {message['data']}")
 ```
 
-## Conclusion <a name="conclusion"></a>
+Then publish from another process:
 
-In this article, we've explored the basics of using Redis in Python applications. We've covered how to install Redis, connect to it using the `redis-py` library, and perform various data structure operations. Additionally, we've looked at using the Redis pub/sub feature for messaging.
+```python
+import redis
 
-Using Redis in your Python applications can greatly improve performance, provide caching functionality, and enable real-time messaging. With this guide, you are now equipped with the knowledge to start integrating Redis into your Python projects.
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+r.publish("news", "Breaking news: Redis is up")  # returns the number of subscribers that got it
+```
+
+## Gotchas
+
+- Pub/sub is fire-and-forget. A message published while no one is subscribed is lost, and a subscriber that disconnects misses everything sent in the meantime. If you need delivery guarantees or replay, use [Redis Streams](https://redis.io/docs/latest/develop/data-types/streams/) instead.
+- Everything lives in memory. Set a `maxmemory` limit and an eviction policy when using Redis as a cache, and configure persistence (RDB/AOF) if you can't afford to lose the data on restart.
+- Forgetting `decode_responses=True` is the usual reason you see `b'...'` values.
+
+## Further reading
+
+- [redis-py documentation](https://redis.readthedocs.io/en/stable/)
+- [Redis Python client guide](https://redis.io/docs/latest/develop/clients/redis-py/)

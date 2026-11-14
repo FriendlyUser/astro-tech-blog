@@ -1,102 +1,123 @@
 ---
-title: Building Decentralized Applications with WebAssembly
+title: "Writing WebAssembly smart contracts in Rust: a NEAR key-value store"
 pubDate: "2023-08-28T13:17:37.000Z"
-description: "In this article , we will explore how WebAssembly can be used to build dApps, providing an efficient and flexible platform for running code securely across various environments"
-tags: []
+lastUpdated: 2026-11-14
+description: "Which blockchains run WebAssembly smart contracts, and how to write, build and deploy a small Rust key-value contract on NEAR."
+tags: ["rust", "dapp", "web3"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2785952400.png
 ---
-# Building Decentralized Applications with WebAssembly
 
-Decentralized applications (dApps) have gained significant attention in recent years, thanks to the rise of blockchain technology and the increasing need for more secure, private, and resilient solutions. In this article, we will explore how WebAssembly can be used to build dApps, providing an efficient and flexible platform for running code securely across various environments.
+A decentralized application (dApp) is usually a normal web front end talking to a smart contract: code that runs on a blockchain's nodes and keeps its state on chain. Several chains run that contract code as WebAssembly (Wasm), so you can write it in Rust, C++ or other languages that compile to Wasm instead of a chain-specific language like Solidity.
 
-## What is WebAssembly?
+Wasm suits this job because it is almost entirely deterministic (chains restrict the few exceptions, such as NaN bit patterns from floating-point operations), sandboxed (a contract can only call the host functions the chain gives it), and compact enough to store on chain.
 
-WebAssembly (Wasm) is a binary instruction format designed as a portable target for the compilation of high-level languages like C, C++, and Rust. It is a low-level virtual machine that runs code at near-native speed by using a compact binary format and a stack-based execution model. WebAssembly was initially created to enable web browsers to run complex applications with performance close to native, but its use cases have expanded beyond the browser to other environments such as blockchain and serverless computing.
+## Which chains run Wasm contracts
 
-## Why Use WebAssembly for Decentralized Applications?
+The original version of this post listed Ethereum's eWasm, EOSIO and Substrate. That list has aged badly:
 
-There are several reasons why WebAssembly is an excellent choice for building dApps:
+- **Ethereum** never shipped eWasm. Ethereum contracts still run on the EVM.
+- **EOSIO** was forked as Antelope, and the EOS network rebranded to Vaulta in 2025. Contracts are still C++ compiled to Wasm.
+- **Polkadot**'s ink! language targeted Wasm through `pallet-contracts`, but ink! v6 moves to `pallet-revive`, which runs RISC-V code on PolkaVM instead of Wasm.
 
-1. **Performance**: WebAssembly code is executed at near-native speed, which is crucial for computationally intensive tasks often found in dApps.
-2. **Security**: WebAssembly's sandboxed execution environment provides strong isolation between the host system and the application, minimizing potential risks.
-3. **Portability**: WebAssembly is platform-agnostic, allowing developers to write code once and run it on various devices and environments.
-4. **Language Flexibility**: Developers can use their preferred programming languages, such as C, C++, Rust, and others, that can be compiled to WebAssembly.
+Chains where you can write Wasm contracts today include:
 
-## Building a Decentralized Application with WebAssembly
+- [NEAR](https://docs.near.org/smart-contracts/what-is): Rust or JavaScript, compiled to Wasm.
+- [CosmWasm](https://cosmwasm.com/): Rust contracts on Cosmos SDK chains that include the CosmWasm module.
+- [Arbitrum Stylus](https://docs.arbitrum.io/stylus/gentle-introduction): Wasm contracts (Rust, C, C++) that run alongside EVM contracts on Arbitrum chains.
+- [Antelope / Vaulta](https://docs.eosnetwork.com/): C++ contracts compiled to Wasm.
 
-Let's go through the steps involved in building a simple dApp using WebAssembly:
+Each chain exposes its own host API, so a contract is not portable between them. You write against the chain's SDK, not raw Wasm.
 
-### Step 1: Choose a Blockchain Platform
+## Example: a key-value store on NEAR
 
-First, you need to select a blockchain platform that supports WebAssembly smart contracts. Examples of such platforms include:
+This contract stores string values by string key. It uses [`near-sdk`](https://crates.io/crates/near-sdk) 5.x (5.30.2 at the time of writing).
 
-- [Ethereum](https://ethereum.org/): Ethereum 2.0 introduces support for WebAssembly-based smart contracts through its [eWasm](https://github.com/ewasm) project.
-- [EOSIO](https://eos.io/): A blockchain platform that natively supports WebAssembly smart contracts.
-- [Polkadot](https://polkadot.network/): A multi-chain platform that allows developers to build and deploy WebAssembly-based smart contracts through its [Substrate](https://substrate.dev/) framework.
+Create a library crate and add the SDK:
 
-### Step 2: Write the Smart Contract
+```bash
+cargo new --lib kv_store
+cd kv_store
+cargo add near-sdk
+```
 
-Next, write the smart contract using a programming language that can be compiled to WebAssembly, such as Rust, C, or C++. For example, let's create a simple smart contract in Rust that stores and retrieves key-value pairs:
+NEAR contracts must be built as a `cdylib`, so add this to `Cargo.toml`:
+
+```toml
+[lib]
+crate-type = ["cdylib", "rlib"]
+```
+
+Then replace `src/lib.rs`:
 
 ```rust
-#![no_std]
+use near_sdk::{near, store::LookupMap};
 
-use core::str::from_utf8;
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
+#[near(contract_state)]
 pub struct KeyValueStore {
-    store: Vec<(String, String)>,
+    entries: LookupMap<String, String>,
 }
 
-#[wasm_bindgen]
+impl Default for KeyValueStore {
+    fn default() -> Self {
+        Self {
+            // b"e" is the storage prefix for this map's keys.
+            entries: LookupMap::new(b"e"),
+        }
+    }
+}
+
+#[near]
 impl KeyValueStore {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self { store: Vec::new() }
+    pub fn set(&mut self, key: String, value: String) {
+        self.entries.insert(key, value);
     }
 
-    pub fn set(&mut self, key: &str, value: &str) {
-        for (k, v) in self.store.iter_mut() {
-            if k == key {
-                *v = value.to_string();
-                return;
-            }
-        }
-        self.store.push((key.to_string(), value.to_string()));
-    }
-
-    pub fn get(&self, key: &str) -> Option<String> {
-        for (k, v) in self.store.iter() {
-            if k == key {
-                return Some(v.clone());
-            }
-        }
-        None
+    pub fn get(&self, key: String) -> Option<String> {
+        self.entries.get(&key).cloned()
     }
 }
 ```
 
-### Step 3: Compile the Smart Contract to WebAssembly
+`#[near(contract_state)]` makes the struct the contract's persisted state, and `#[near]` on the `impl` block exports each public method. Arguments and return values are passed as JSON. `LookupMap` stores each entry under its own storage key, so a call only reads the entry it needs instead of loading the whole map.
 
-Compile the smart contract to a WebAssembly binary using a compiler like `car for Rust:
+The earlier version of this example used `wasm_bindgen` and `#![no_std]`. That does not work: `wasm_bindgen` generates bindings for a JavaScript host, not a blockchain, and `String` and `Vec` are not available under `no_std` without the `alloc` crate.
 
-```sh
-$ cargo build --target wasm32-unknown-unknown --release
+## Build and deploy
+
+Build with [`cargo-near`](https://github.com/near/cargo-near), which runs `cargo build` for the `wasm32-unknown-unknown` target and adds the ABI and size optimizations NEAR expects:
+
+```bash
+cargo near build
 ```
 
-### Step 4: Deploy the Smart Contract
+Deploy to testnet with [NEAR CLI](https://docs.near.org/tools/near-cli). Use a testnet account you created, and the `.wasm` path that `cargo near build` prints:
 
-Deploy the compiled smart contract to the chosen blockchain platform. The process may vary depending on the platform, but usually involves submitting a transaction that includes the WebAssembly binary and any necessary metadata.
+```bash
+near create-account <your-account>.testnet --useFaucet
+near deploy <your-account>.testnet <path-to-wasm>
+```
 
-### Step 5: Interact with the Decentralized Application
+Then call the contract. `set` changes state, so it must be signed by an account; `get` is a free view call:
 
-Finally, build a user interface (UI) to interact with the deployed smart contract. You can use web technologies like HTML, CSS, and JavaScript, along with libraries and frameworks such as [React](https://reactjs.org/) or [Vue.js](https://vuejs.org/), to create a user-friendly UI.
+```bash
+near call <your-account>.testnet set '{"key": "greeting", "value": "hello"}' --useAccount <your-account>.testnet
+near view <your-account>.testnet get '{"key": "greeting"}'
+```
 
-To interact with the smart contract, you will need to use the platform's SDK or API to send transactions and query the blockchain. These transactions will include calls to the WebAssembly functions exposed by your smart contract, such as `set` and `get` in our example.
+## Connecting a front end
 
-## Conclusion
+The dApp part is a web page that calls the same methods through a JavaScript library, such as [`near-api-js`](https://github.com/near/near-api-js) plus a wallet selector so the user can sign `set` calls. View calls like `get` need no wallet.
 
-WebAssembly offers an efficient, secure, and flexible platform for building decentralized applications. By leveraging its performance, security, and portability features,developers can create powerful dApps that run on various blockchain platforms and devices. As more platforms continue to adopt WebAssembly as a supported execution environment, it is poised to become a key technology in the future of decentralized applications and blockchain ecosystems. So, whether you're a seasoned blockchain developer or just starting to explore dApps, consider using WebAssembly to bring your next decentralized application to life.
+## Gotchas
 
+- Storage costs money. On NEAR, the contract account must hold enough tokens to cover the bytes it stores, so an unbounded key-value store needs a deposit or size limit per caller.
+- Anyone can call `set`. A real contract checks `env::predecessor_account_id()` before writing.
+- Changing the state struct after deployment needs a migration, because existing state was serialized with the old layout.
+
+## Further reading
+
+- [NEAR smart contract docs](https://docs.near.org/smart-contracts/what-is)
+- [CosmWasm docs](https://cosmwasm.com/)
+- [Arbitrum Stylus docs](https://docs.arbitrum.io/stylus/gentle-introduction)
+- [WebAssembly specification](https://webassembly.github.io/spec/)

@@ -1,119 +1,143 @@
 ---
-title: Understanding and Implementing Microsoft.AspNetCore.Cors
+title: Configuring CORS in ASP.NET Core with Microsoft.AspNetCore.Cors
 pubDate: "2023-11-13T15:57:56.000Z"
-description: "Microsoft.AspNetCore.Cors is a middleware component provided by the ASP.NET Core framework to help developers implement and manage CORS policies in their web applications."
-tags: []
+lastUpdated: 2026-11-14
+description: "How CORS and preflight requests work, and how to set up CORS policies in ASP.NET Core with middleware, endpoint routing, and the [EnableCors] attribute."
+tags: ["aspnet", "csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3752564139.png
 ---
-# Understanding and Implementing Microsoft.AspNetCore.Cors
 
-## Introduction
+Browsers apply the *same-origin policy*: JavaScript on `https://app.example.com` can't read responses from `https://api.example.com` unless that server says it's allowed. Cross-Origin Resource Sharing (CORS) is how the server says so, using `Access-Control-*` response headers. `Microsoft.AspNetCore.Cors` is the ASP.NET Core middleware that sends those headers based on policies you define.
 
-Cross-Origin Resource Sharing (CORS) is a security feature implemented by web browsers to prevent unauthorized access to resources from different origins. By default, web browsers restrict web pages from making requests to a different domain than the one that served the web page. This is called the same-origin policy. CORS is a W3C specification that defines a way for a server to allow specific origins to access resources on its domain.
+CORS relaxes the same-origin policy; it doesn't add protection. The server still runs every request it receives, and non-browser clients like `curl` ignore CORS entirely. Don't treat it as authentication or authorization.
 
-Microsoft.AspNetCore.Cors is a middleware component provided by the ASP.NET Core framework to help developers implement and manage CORS policies in their web applications.
+## How CORS works
 
-In this article, we will cover the following topics:
+Two origins are the same only if scheme, host, and port all match. For a cross-origin request, the browser adds an `Origin` header, and only exposes the response to your script if the server answers with a matching `Access-Control-Allow-Origin`.
 
-1. Understanding CORS
-2. Basic configuration of Microsoft.AspNetCore.Cors
-3. Advanced configuration and usage
-4. Troubleshooting common issues
+Some requests also need a **preflight**: an `OPTIONS` request the browser sends first, with `Access-Control-Request-Method` and `Access-Control-Request-Headers`, to ask whether the real request is allowed. The browser skips the preflight only for "simple" requests:
 
-## 1. Understanding CORS
+- the method is `GET`, `HEAD`, or `POST`;
+- the script only sets CORS-safelisted headers such as `Accept`, `Accept-Language`, `Content-Language`, and `Content-Type`;
+- `Content-Type`, if set, is `application/x-www-form-urlencoded`, `multipart/form-data`, or `text/plain`.
 
-CORS is a mechanism that allows web applications to request resources from a different domain. This is done by adding specific HTTP headers to the response, allowing the browser to determine if the request should be allowed or blocked.
+So a `POST` with `Content-Type: application/json`, a `PUT`, or any request with an `Authorization` header gets a preflight.
 
-CORS policies are defined on the server-side and can be configured per action, per controller, or globally for the entire application. The browser sends a preflight request to the server to check if CORS is enabled and if the request is allowed. The server responds with the appropriate CORS headers, and the browser decides whether to proceed with the actual request or block it based on the response headers.
+## Basic setup
 
-## 2. Basic Configuration of Microsoft.AspNetCore.Cors
-
-To enable CORS in your ASP.NET Core application, follow these steps:
-
-1. Install the `Microsoft.AspNetCore.Cors` NuGet package, if it's not already included in your project.
-
-2. In the `ConfigureServices` method of the `Startup` class, call the `AddCors` method, which adds the CORS services to the dependency injection container. You can also define a named CORS policy by using the `AddPolicy` method:
+The CORS middleware is part of the ASP.NET Core shared framework, so there's no NuGet package to install. Register a named policy and add the middleware in `Program.cs`:
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
+const string FrontendPolicy = "Frontend";
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
 {
-    services.AddCors(options =>
+    options.AddPolicy(FrontendPolicy, policy =>
     {
-        options.AddPolicy("MyCorsPolicy", builder =>
-        {
-            builder.WithOrigins("http://example.com")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+        policy.WithOrigins("https://app.example.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
-}
+});
+
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseCors(FrontendPolicy);
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
 ```
 
-3. In the `Configure` method of the `Startup` class, call the `UseCors` method to add the CORS middleware to the request pipeline. Make sure to put it before any other middleware that needs to handle CORS:
+Order matters: `UseCors` goes after `UseRouting` and before `UseAuthorization`. If you use response caching, `UseCors` must also come before `UseResponseCaching`. Origins must match exactly and must not have a trailing slash: `"https://app.example.com/"` never matches.
+
+Use `options.AddDefaultPolicy(...)` with a bare `app.UseCors()` if you only need one policy.
+
+## Applying a policy to specific endpoints
+
+Instead of applying a policy to the whole app, call `app.UseCors()` without a name and opt in per endpoint.
+
+For minimal APIs or other endpoints, use `RequireCors`:
 
 ```csharp
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+app.MapGet("/api/status", () => Results.Ok("ok"))
+   .RequireCors(FrontendPolicy);
+```
+
+For controllers, use `[EnableCors]` on the controller or on an action, and `[DisableCors]` to opt an action out:
+
+```csharp
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("api/[controller]")]
+[EnableCors("Frontend")]
+public class WidgetsController : ControllerBase
 {
-    app.UseCors("MyCorsPolicy");
-    // ...
+    [HttpGet]
+    public IActionResult Get() => Ok(new[] { "green widget", "red widget" });
+
+    [DisableCors]
+    [HttpGet("internal")]
+    public IActionResult Internal() => Ok("same-origin only");
 }
 ```
 
-That's it! Now your application has CORS enabled with a basic policy allowing requests from `http://example.com`.
+If you combine a policy in `UseCors(...)` with `[EnableCors]`, both apply, which is confusing. Microsoft's docs recommend picking one approach per app. `[DisableCors]` also doesn't override CORS enabled with `RequireCors`.
 
-## 3. Advanced Configuration and Usage
+## Policy options
 
-### 3.1. Apply CORS policy to specific controllers or actions
+### Credentials
 
-You can also apply CORS policies to specific controllers or actions by using the `[EnableCors]` attribute:
-
-```csharp
-[EnableCors("MyCorsPolicy")]
-public class MyController : ControllerBase
-{
-    // ...
-}
-
-[EnableCors("AnotherCorsPolicy")]
-[HttpGet]
-public IActionResult Get()
-{
-    // ...
-}
-```
-
-### 3.2. Allow credentials
-
-By default, credentials are not allowed in CORS requests. To allow credentials, use the `AllowCredentials` method:
+By default the browser doesn't send cookies or HTTP auth on cross-origin requests. The client has to opt in (`fetch(url, { credentials: "include" })`) and the server has to allow it:
 
 ```csharp
-builder.WithOrigins("http://example.com")
-       .AllowAnyHeader()
-       .AllowAnyMethod()
-       .AllowCredentials();
+policy.WithOrigins("https://app.example.com")
+      .AllowAnyHeader()
+      .AllowAnyMethod()
+      .AllowCredentials();
 ```
 
-### 3.3. Configure exposed headers
+`AllowCredentials` can't be combined with `AllowAnyOrigin`: the CORS specification forbids `Access-Control-Allow-Origin: *` with credentials, and ASP.NET Core returns an invalid CORS response for that combination. Don't work around it with `SetIsOriginAllowed(_ => true)`; that lets any site make authenticated requests as your users.
 
-To expose specific response headers to the client, you can use the `WithExposedHeaders` method:
+### Exposed response headers
+
+Scripts can only read a small set of response headers by default (`Cache-Control`, `Content-Language`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`). To expose others, such as a pagination header:
 
 ```csharp
-builder.WithOrigins("http://example.com")
-       .AllowAnyHeader()
-       .AllowAnyMethod()
-       .WithExposedHeaders("Custom-Header");
+policy.WithOrigins("https://app.example.com")
+      .WithExposedHeaders("X-Total-Count");
 ```
 
-## 4. Troubleshooting Common Issues
+### Wildcard subdomains and preflight caching
 
-If you encounter issues with CORS in your application, consider the following tips:
+```csharp
+policy.WithOrigins("https://*.example.com")
+      .SetIsOriginAllowedToAllowWildcardSubdomains()
+      .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+```
 
-- Ensure that the CORS middleware is registered before any other middleware that needs to handle CORS.
-- Check that you have applied the correct CORS policy to your controllers or actions.
-- Verify that the allowed origins, methods, and headers in your CORS policy match your client's requirements.
-- Use browser developer tools to inspect the CORS headers in the server's response.
+`SetPreflightMaxAge` sets `Access-Control-Max-Age`, so the browser can reuse a preflight result instead of sending `OPTIONS` before every request. Browsers cap this value.
 
-## Conclusion
+## Troubleshooting
 
-CORS is an essential security feature for modern web applications, and Microsoft.AspNetCore.Cors makes it easy to implement and manage CORS policies in your ASP.NET Core applications. This article has provided an overview of CORS, its basic configuration, advanced usage, and common troubleshooting tips. With this knowledge, you can confidently develop secure and scalable web applications that support cross-origin resource sharing.
+- **Look at the preflight.** In the browser's network tab, find the `OPTIONS` request. If it returns `204` with no `Access-Control-Allow-Origin` header, the policy rejected it: usually the origin, a method, or a header isn't allowed.
+- **Check middleware order.** `[EnableCors]` and `RequireCors` only work if `UseCors` runs after `UseRouting`, because the middleware needs to know which endpoint matched. Put it before `UseAuthorization` so preflights aren't rejected by an auth policy.
+- **HTTP to HTTPS redirects break preflights.** A preflight that gets redirected by `UseHttpsRedirection` fails. Call the API over HTTPS directly.
+- **IIS with Windows authentication.** Preflights don't carry credentials, so IIS rejects them before they reach your app unless anonymous access is allowed or the IIS CORS module is installed.
+
+## Further reading
+
+- [Enable Cross-Origin Requests (CORS) in ASP.NET Core](https://learn.microsoft.com/aspnet/core/security/cors)
+- [CORS on MDN](https://developer.mozilla.org/docs/Web/HTTP/CORS)

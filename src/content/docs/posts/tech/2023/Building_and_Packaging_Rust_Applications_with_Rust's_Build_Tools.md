@@ -1,105 +1,109 @@
 ---
-title: Building and Packaging Rust Applications with Rust's Build Tools
+title: "Cargo basics: building, testing, packaging and cross-compiling Rust apps"
 pubDate: "2024-08-05T13:07:48.000Z"
-description: "In this article , we will explore Rust's build tools, specifically `car, and how they can be utilized to build and package Rust applications effectively"
-tags: []
+lastUpdated: 2026-11-14
+description: "The Cargo commands you use day to day: create a project, add dependencies, build debug and release binaries, run tests, publish to crates.io and cross-compile."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2773787557.png
 ---
-# Building and Packaging Rust Applications with Rust's Build Tools
 
-Rust, a systems programming language with a focus on safety, concurrency, and performance, has grown in popularity over the past few years. One of Rust's key features is its powerful build tools that make it easy to build, test, and package Rust applications. In this article, we will explore Rust's build tools, specifically `car, and how they can be utilized to build and package Rust applications effectively.
+Cargo is Rust's build tool and package manager. It ships with the toolchain when you install Rust through `rustup`, reads project settings and dependencies from `Cargo.toml`, downloads crates from [crates.io](https://crates.io/), and drives `rustc` for you. Most Rust projects never call `rustc` directly.
 
-## Introduction to Cargo
-
-`car is the default package manager and build tool for Rust. It handles various tasks such as downloading dependencies, compiling code, running tests, and packaging your application for distribution. Cargo uses a configuration file called `Cargo.toml` to manage project metadata, dependencies, and build configurations.
-
-Let's dive into using `car to build and package a Rust application.
-
-### 1. Creating a new Rust project
-
-Start by creating a new Rust project using `car:
+## Create a project
 
 ```bash
 cargo new my_rust_app
 cd my_rust_app
 ```
 
-This command creates a new directory called `my_rust_app`, which contains the following files:
+This creates `Cargo.toml`, a hello-world `src/main.rs`, and initializes a Git repository with a `.gitignore` for `target/`. Use `cargo new --lib` for a library crate (`src/lib.rs`) instead.
 
-- `Cargo.toml`: The configuration file for your project
-- `src/main.rs`: The main entry point for your application
-
-### 2. Building the Rust application
-
-To build your Rust application, run the following command in the project directory:
+## Build and run
 
 ```bash
-cargo build
+cargo build            # debug build: target/debug/my_rust_app
+cargo build --release  # optimized build: target/release/my_rust_app
+cargo run              # build if needed, then run the debug binary
+cargo run --release -- --some-arg   # args after -- go to your program
 ```
 
-This command will compile your Rust code and generate an executable binary in the `target/debug` directory. To build the application with optimizations for release, use the `--release` flag:
+Debug builds compile faster and include debug assertions and overflow checks; release builds are optimized. Benchmark or ship the release build, not the debug one.
+
+`cargo check` type-checks without producing a binary, and is much faster than `cargo build` while you're editing.
+
+## Add dependencies
+
+Use `cargo add` rather than editing `Cargo.toml` by hand:
 
 ```bash
-cargo build --release
+cargo add serde --features derive
+cargo add serde_json
 ```
 
-The optimized binary will be generated in the `target/release` directory.
-
-### 3. Running the Rust application
-
-To run your Rust application, use the `cargo run` command:
-
-```bash
-cargo run
-```
-
-This command will build your application (if necessary) and execute the generated binary.
-
-### 4. Adding dependencies
-
-To add a dependency to your Rust project, update the `[dependencies]` section in the `Cargo.toml` file:
+That adds entries to `[dependencies]` with the newest version number written out. At the time of writing that was:
 
 ```toml
 [dependencies]
-serde = "1.0"
-serde_json = "1.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
 ```
 
-Run `cargo build` to download and compile the dependencies.
+A requirement such as `"1.0.229"` is a caret requirement: it allows any later `1.x.y` release, but not `2.0`. The exact versions Cargo picked are recorded in `Cargo.lock`. Commit `Cargo.lock` for applications so every build uses the same versions. `cargo update` moves to newer compatible versions.
 
-### 5. Packaging the Rust application
+## Test
 
-To package your Rust application for distribution, you can use the `cargo package` command:
+```bash
+cargo test
+```
+
+This runs unit tests (functions marked `#[test]`, usually in a `#[cfg(test)] mod tests` block next to the code), integration tests in `tests/`, and the code examples in your doc comments. `cargo test some_name` runs only tests whose names contain `some_name`.
+
+## Install the binary locally
+
+```bash
+cargo install --path .
+```
+
+This builds in release mode and copies the binary into `~/.cargo/bin`, which `rustup` puts on your `PATH`.
+
+## Package and publish to crates.io
 
 ```bash
 cargo package
 ```
 
-This command will create a `.crate` file in the `target/package` directory, which can be distributed and installed by others. You can also publish your package to [crates.io](https://crates.io/), Rust's package registry, by running:
+`cargo package` builds the `.crate` archive that would be uploaded (in `target/package/`) and verifies that it compiles on its own. It's a dry run for publishing; people don't install `.crate` files directly. They install from a registry with `cargo install <name>` or add your crate as a dependency.
+
+Before publishing, `Cargo.toml` needs at least `license` (or `license-file`) and `description`. Then:
+
+1. Log in to crates.io with your GitHub account, verify your email address, and create an API token in your account settings.
+2. Run `cargo login` and paste the token.
+3. Run `cargo publish`.
+
+A published version can't be deleted or overwritten, only yanked (`cargo yank --version x.y.z`), which stops new projects from depending on it. See [Publishing on crates.io](https://doc.rust-lang.org/cargo/reference/publishing.html).
+
+## Cross-compile
+
+`rustup target add` installs the standard library for another target:
 
 ```bash
-cargo publish
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl
 ```
 
-Please note that you need to [sign up for an account](https://crates.io/login) and [configure your API token](https://doc.rust-lang.org/cargo/reference/publishing.html#before-your-first-publish) before you can publish packages to crates.io.
+The output goes to `target/x86_64-unknown-linux-musl/release/`. The musl target above, built on Linux, gives a statically linked binary that runs on most Linux distributions.
 
-### 6. Cross-compiling Rust applications
+Adding the target is often not enough. Rust still needs a linker (and for some targets a C toolchain) for the target platform. Building a Linux binary on Windows or macOS, or an ARM binary on x86, will usually fail at the link step until you install a cross linker and point Cargo at it in `.cargo/config.toml`:
 
-Rust's build tools also make it easy to cross-compile your application for different platforms. To cross-compile, you first need to install the target platform's standard library:
-
-```bash
-rustup target add x86_64-unknown-linux-gnu
+```toml
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
 ```
 
-Then, build your application with the `--target` flag:
+The [`cross`](https://github.com/cross-rs/cross) tool avoids that setup by running the build in a container that already has the right toolchain: `cross build --release --target aarch64-unknown-linux-gnu`.
 
-```bash
-cargo build --release --target=x86_64-unknown-linux-gnu
-```
+## Further reading
 
-The cross-compiled binary will be generated in the `target/x86_64-unknown-linux-gnu/release` directory.
-
-## Conclusion
-
-In this article, we explored Rust's build tools, specifically `car, and demonstrated how to use them to build, test, and package Rust applications. The ease of use and powerful features of Rust's build tools have contributed significantly to the language's popularity and adoption, making it an excellent choice for systems programming and beyond.
+- [The Cargo Book](https://doc.rust-lang.org/cargo/)
+- [Platform support](https://doc.rust-lang.org/rustc/platform-support.html) for the list of targets

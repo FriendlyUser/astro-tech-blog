@@ -1,372 +1,318 @@
 ---
-tags: ['react', 'bootstrap', 'material']
-title: Using UI Frameworks with React
-description: How to use UI frameworks with react
+tags: ['react', 'bootstrap', 'material', 'testing']
+title: "React UI libraries and app basics: MUI, React-Bootstrap, routing, Redux and tests"
+description: Add MUI or React-Bootstrap to a Vite React app, then wire up controlled forms, React Router, Redux Toolkit, Vitest tests and a Vercel deploy.
 pubDate: Fri, 29 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2955132952.png
 ---
-When building complex applications with React, one of the most common tasks you'll encounter is working with forms. In React, form inputs are usually implemented as controlled components, which means that their value is controlled by React, rather than the DOM. This approach allows for a more declarative programming style and enables better control over the behavior of form elements.
+A UI component library gives you buttons, inputs, dialogs and layout primitives that already look consistent and handle accessibility details, so you can spend your time on the app instead of on CSS. This post shows how to add the two most common ones, MUI (Material UI) and React-Bootstrap, and then covers the other pieces most React apps need: forms, routing, shared state, tests and deployment.
 
-To create a controlled component, you'll need to keep the value of the input in the component's state and update it in response to user input. This can be achieved by adding an `onChange` event handler to the input, which updates the state with the new value:
+:::caution
+The original version of this post used Create React App-era tooling (webpack config by hand, Enzyme, `createStore`, React Router v5). Create React App was [deprecated in February 2025](https://react.dev/blog/2025/02/14/sunsetting-create-react-app), Enzyme has no official adapter for React 17 or later, Redux now recommends Redux Toolkit, and React Router replaced `component={...}` with `element={...}` in v6. The examples below use the current equivalents.
+:::
 
+## Create the project
 
-```tsx
-import { useState } from 'react';
-
-function Form() {
- const [name, setName] = useState('');
-
- function handleNameChange(event) {
- setName(event.target.value);
- }
-
- return (
- <form>
- <label>
- Name:
- <input type="text" value={name} onChange={handleNameChange} />
- </label>
- </form>
- );
-}
-```
-
-In the example above, we're using the `useState` hook to keep track of the value of the `name` input. We've also added an `onChange` event handler to the input that calls the `handleNameChange` function, which updates the `name` state with the new value of the input.
-
-By using a controlled component approach, we can easily validate and manipulate the form data before it is submitted to the server. We can also easily implement complex forms with multiple input fields and validation rules.
-
-Overall, working with forms and controlled components in React can seem overwhelming at first, but once you understand the basic concepts, it becomes much easier to implement complex forms with ease.
-
-
-In a single-page application built with React, navigation is typically handled using React Router. React Router is a powerful library that allows you to define routes and associate them with different components in your application.
-
-To get started with React Router, you'll need to install it using npm:
-
+Start from a Vite template instead of writing a webpack config:
 
 ```bash
-npm install react-router-dom
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install
+npm run dev
 ```
 
-Once installed, you can import the components you need from the `react-router-dom` package. The `BrowserRouter` component is used to wrap your entire application and define the routes, while the `Route` component is used to define a specific route and the component that should be rendered when that route is matched.
+## Add a UI library
 
-Here's an example of how you might define a simple route in your application:
+### MUI (Material UI)
 
+MUI implements Google's Material Design. Install it with its default styling engine, Emotion:
+
+```bash
+npm install @mui/material @emotion/react @emotion/styled
+```
+
+MUI uses the Roboto font by default; add it with `@fontsource/roboto` or a Google Fonts `<link>` if you want the stock look. Components are imported one per path:
 
 ```tsx
-import { BrowserRouter, Route } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
-function App() {
- return (
- <BrowserRouter>
- <Route path="/" component={HomePage} />
- </BrowserRouter>
- );
-}
-
-function HomePage() {
- return <h1>Welcome to the homepage!</h1>;
+export default function Toolbar() {
+  return (
+    <Stack direction="row" spacing={2}>
+      <Button variant="contained">Save</Button>
+      <Button variant="outlined">Cancel</Button>
+    </Stack>
+  );
 }
 ```
 
-In this example, we're using the `BrowserRouter` component to wrap our entire application, and the `Route` component to define a route that matches the root URL (`/`) and renders the `HomePage` component.
+### React-Bootstrap
 
-React Router also provides several other components, such as `Link` and `NavLink`, that allow you to create links to different routes in your application. Here's an example:
+React-Bootstrap reimplements Bootstrap 5's components as React components, without jQuery. You install Bootstrap itself for the CSS:
 
+```bash
+npm install react-bootstrap bootstrap
+```
+
+Import the stylesheet once, in `src/main.tsx`:
 
 ```tsx
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+```
 
-function App() {
- return (
- <BrowserRouter>
- <nav>
- <ul>
- <li>
- <Link to="/">Home</Link>
- </li>
- <li>
- <Link to="/about">About</Link>
- </li>
- </ul>
- </nav>
+Then import components individually:
 
- <Route path="/" exact component={HomePage} />
- <Route path="/about" component={AboutPage} />
- </BrowserRouter>
- );
+```tsx
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+
+export default function Notice() {
+  return (
+    <Alert variant="info">
+      New version available. <Button size="sm">Reload</Button>
+    </Alert>
+  );
 }
+```
+
+Pick one library per app. Mixing them means two design systems and two sets of global styles fighting each other.
+
+## Controlled form inputs
+
+In React, form inputs are usually *controlled*: the value lives in component state and every keystroke goes through an `onChange` handler. That makes it easy to validate or transform input before submitting. Library inputs work the same way as plain `<input>` elements. Here is the MUI version:
+
+```tsx
+import { useState, type ChangeEvent, type FormEvent } from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
+export default function NameForm() {
+  const [name, setName] = useState('');
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setName(event.target.value);
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    alert(`Hello, ${name}`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <TextField
+        label="Name"
+        value={name}
+        onChange={handleChange}
+        error={name.length > 0 && name.trim().length < 2}
+        helperText="At least two characters"
+      />
+      <Button type="submit" variant="contained" disabled={name.trim().length < 2}>
+        Submit
+      </Button>
+    </form>
+  );
+}
+```
+
+## Routing with React Router
+
+React Router maps URLs to components in a single-page app. In current releases the package is `react-router` (the separate `react-router-dom` package is no longer needed):
+
+```bash
+npm install react-router
+```
+
+Wrap the app in a `BrowserRouter`, declare routes with `<Routes>` and `<Route element={...}>`, and navigate with `<Link>`:
+
+```tsx
+import { BrowserRouter, Link, Route, Routes } from 'react-router';
 
 function HomePage() {
- return <h1>Welcome to the homepage!</h1>;
+  return <h1>Welcome to the homepage!</h1>;
 }
 
 function AboutPage() {
- return <h1>About Us</h1>;
+  return <h1>About us</h1>;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <nav>
+        <Link to="/">Home</Link> | <Link to="/about">About</Link>
+      </nav>
+      <Routes>
+        <Route index element={<HomePage />} />
+        <Route path="about" element={<AboutPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 ```
-In this example, we've added a navigation menu to our application using the `Link` component. We've also defined two routes (`/` and `/about`) and associated them with the `HomePage` and `AboutPage` components, respectively.
 
-React Router provides many more features, such as nested routes, route parameters, and route guards, that allow you to build complex navigation systems for your applications. Overall, React Router is an essential tool for building single-page applications with React, and it's worth taking the time to learn how to use it effectively.
+The latest major version requires React 19.2.7 or newer. If you are on an older React, `react-router-dom` v6 or v7 uses the same `Routes`/`element` API. Routes match exactly by default since v6, so the old `exact` prop is gone. For links that should show an active state, use `NavLink`.
 
+## Shared state with Redux Toolkit
 
-As your React application grows in complexity, managing application state can become a challenging task. Redux is a powerful library that provides a solution to this problem by centralizing the state of your application in a single store.
-
-To get started with Redux, you'll need to install it using npm:
-
+Redux keeps app-wide state in one store. Plain `createStore` from the `redux` package is deprecated; the Redux team recommends Redux Toolkit, which removes most of the boilerplate:
 
 ```bash
-npm install redux react-redux
+npm install @reduxjs/toolkit react-redux
 ```
 
-Once installed, you can define a Redux store and use it in your application. The store is created using the `createStore` function, which takes a reducer function as an argument. The reducer function is responsible for updating the state of the store in response to actions dispatched by your application.
+Define a slice and a store (`src/store.ts`):
 
-Here's an example of how you might define a simple store in your application:
+```ts
+import { configureStore, createSlice } from '@reduxjs/toolkit';
 
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    // Immer lets you write "mutating" code; it produces a new state object.
+    increment: (state) => {
+      state.value += 1;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+  },
+});
 
-```tsx
-import { createStore } from 'redux';
+export const { increment, decrement } = counterSlice.actions;
 
-const initialState = {
- count: 0,
-};
+export const store = configureStore({
+  reducer: { counter: counterSlice.reducer },
+});
 
-function reducer(state = initialState, action) {
- switch (action.type) {
- case 'INCREMENT':
- return { ...state, count: state.count + 1 };
- case 'DECREMENT':
- return { ...state, count: state.count - 1 };
- default:
- return state;
- }
-}
-
-const store = createStore(reducer);
+export type RootState = ReturnType<typeof store.getState>;
 ```
-In this example, we're defining a simple store with a `count` property that is initialized to zero. We've also defined a reducer function that updates the count property in response to two actions: `INCREMENT` and `DECREMENT`.
 
-Once you've created your store, you can use it in your React application using the `Provider` component from the `react-redux` package. The `Provider` component takes your store as a prop and wraps your entire application.
-
+Provide the store and read from it with hooks:
 
 ```tsx
-import { Provider } from 'react-redux';
-
-function App() {
- return (
- <Provider store={store}>
- <Counter />
- </Provider>
- );
-}
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { decrement, increment, store, type RootState } from './store';
 
 function Counter() {
- const count = useSelector((state) => state.count);
- const dispatch = useDispatch();
+  const count = useSelector((state: RootState) => state.counter.value);
+  const dispatch = useDispatch();
 
- function handleIncrement() {
- dispatch({ type: 'INCREMENT' });
- }
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+      <button onClick={() => dispatch(increment())}>Increment</button>
+      <button onClick={() => dispatch(decrement())}>Decrement</button>
+    </div>
+  );
+}
 
- function handleDecrement() {
- dispatch({ type: 'DECREMENT' });
- }
-
- return (
- <div>
- <h1>Count: {count}</h1>
- <button onClick={handleIncrement}>Increment</button>
- <button onClick={handleDecrement}>Decrement</button>
- </div>
- );
+export default function App() {
+  return (
+    <Provider store={store}>
+      <Counter />
+    </Provider>
+  );
 }
 ```
-In this example, we're using the `useSelector` and `useDispatch` hooks from the `react-redux` package to access the state of the store and dispatch actions, respectively. We're also defining a `Counter` component that renders the current count and two buttons that dispatch `INCREMENT` and `DECREMENT` actions when clicked.
 
-Overall, Redux is a powerful tool for managing application state in your React applications, and it can help simplify the process of working with complex state. However, it can also add complexity to your application, so it's important to evaluate whether it's the right solution for your specific use case.
+Redux adds indirection. If the state is only used by one subtree, `useState` plus props or a React context is often enough.
 
+## Testing with Vitest and React Testing Library
 
-As your React application grows in complexity, writing and running tests becomes more important to ensure that your code is functioning as expected. Jest and Enzyme are two popular tools for testing React applications.
-
-To get started with Jest and Enzyme, you'll need to install them using npm:
-
+Enzyme's shallow rendering tested component internals and never got official support past React 16. React Testing Library renders real DOM and queries it the way a user would. With a Vite project, Vitest is the natural runner:
 
 ```bash
-npm install jest enzyme enzyme-adapter-react-16
+npm install --save-dev vitest jsdom @testing-library/react @testing-library/dom
 ```
-Once installed, you can define tests for your components. Here's an example of a simple test for a `Button` component:
 
+Enable a browser-like environment in `vite.config.ts`:
+
+```ts
+/// <reference types="vitest/config" />
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true, // lets Testing Library clean up the DOM after each test
+  },
+});
+```
+
+A component and its test:
 
 ```tsx
-import React from 'react';
-import { shallow } from 'enzyme';
+// src/Button.tsx
+type Props = { text: string; onClick?: () => void };
+
+export default function Button({ text, onClick }: Props) {
+  return <button onClick={onClick}>{text}</button>;
+}
+```
+
+```tsx
+// src/Button.test.tsx
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import Button from './Button';
 
 describe('<Button />', () => {
- it('renders the button text', () => {
- const wrapper = shallow(<Button text="Click me" />);
- expect(wrapper.text()).toEqual('Click me');
- });
+  it('renders the button text', () => {
+    render(<Button text="Click me" />);
+    expect(screen.getByRole('button').textContent).toBe('Click me');
+  });
 
- it('calls the onClick function when clicked', () => {
- const onClick = jest.fn();
- const wrapper = shallow(<Button text="Click me" onClick={onClick} />);
- wrapper.simulate('click');
- expect(onClick).toHaveBeenCalled();
- });
+  it('calls onClick when clicked', () => {
+    const onClick = vi.fn();
+    render(<Button text="Click me" onClick={onClick} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Click me' }));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
 });
 ```
-In this example, we're using the `shallow` function from Enzyme to create a shallow render of our `Button` component. We're then defining two tests: one that ensures that the button text is rendered correctly, and another that ensures that the `onClick` function is called when the button is clicked.
 
-To run your tests, you can use the Jest CLI by adding the following script to your `package.json` file:
+Add `"test": "vitest"` to the `scripts` in `package.json` and run `npm test`.
 
+## Building and deploying to Vercel
 
-```tsx
-"scripts": {
- "test": "jest"
+`npm run build` writes a static bundle to `dist/`. Any static host can serve it (Vercel, Netlify, Cloudflare Pages, GitHub Pages, Firebase Hosting, AWS Amplify). On Vercel:
+
+1. Push the project to GitHub, GitLab or Bitbucket.
+2. In the Vercel dashboard, import the repository. Vercel detects Vite and fills in `npm run build` and `dist` as the build command and output directory.
+3. Each push to the main branch deploys to production; pull requests get preview URLs.
+
+You can also deploy from the terminal with the Vercel CLI by running `vercel` in the project root.
+
+One gotcha with client-side routing: opening `/about` directly returns a 404, because there is no `about.html` on the server. Tell Vercel to serve `index.html` for every path with a `vercel.json` in the project root:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
-You can then run your tests using the following command:
 
+To use your own domain, add it under the project's Domains settings and create the DNS records Vercel shows you at your registrar.
 
-```bash
-npm test
-```
-Jest will automatically find and run all of the test files in your project.
+## A few performance notes
 
-Overall, Jest and Enzyme are powerful tools for testing React applications, and they can help ensure that your code is functioning as expected. However, writing and maintaining tests can be time-consuming, so it's important to evaluate whether it's worth the investment for your specific use case.
+- Always deploy the production build; the dev build includes extra checks and warnings.
+- Split rarely visited routes into separate chunks with `React.lazy` and `<Suspense>`.
+- Import library components by path (`@mui/material/Button`, `react-bootstrap/Button`) as shown above, which keeps development builds fast.
+- Profile before optimising: the React Developer Tools Profiler shows which components re-render and why.
 
+## Further reading
 
-Building and deploying a React application involves several steps, including configuring your build process, selecting a hosting provider, and deploying your application. In this post, we'll walk through the steps involved in building and deploying a React application.
-
-Configuring your build process
-
-Before you can deploy your React application, you'll need to configure your build process. The build process converts your source code into a format that can be served by a web server. To configure your build process, you'll need to install the necessary tools and configure your build settings.
-
-To get started, you'll need to install Node.js and npm. Once you have Node.js and npm installed, you can install the necessary dependencies for your build process by running the following command:
-
-
-```bash
-npm install --save-dev webpack webpack-cli webpack-dev-server
-```
-Once you have installed the necessary dependencies, you can configure your build settings in a `webpack.config.js` file. Here's an example configuration file:
-
-
-```tsx
-const path = require('path');
-
-module.exports = {
- entry: './src/index.js',
- output: {
- path: path.resolve(__dirname, 'dist'),
- filename: 'bundle.js',
- },
- devServer: {
- contentBase: './dist',
- },
- module: {
- rules: [
- {
- test: /\.js$/,
- exclude: /node\_modules/,
- use: {
- loader: 'babel-loader',
- },
- },
- ],
- },
-};
-```
-
-In this configuration file, we're specifying that our entry point is `src/index.js` and our output file is `dist/bundle.js`. We're also configuring the `devServer` to serve our files from the `dist` directory. Finally, we're specifying that we want to use the `babel-loader` to transpile our JavaScript code.
-
-Selecting a hosting provider
-
-Once you have configured your build process, you'll need to select a hosting provider for your application. There are several hosting providers that are well-suited for hosting React applications, including:
-
-* AWS Amplify
-* Firebase
-* Netlify
-* Heroku
-
-Each of these hosting providers has its own set of features and pricing plans, so it's important to evaluate your specific needs and budget before selecting a provider.
-
-Deploying your application
-
-Once you have selected a hosting provider, you can deploy your application. The exact deployment process will depend on your hosting provider, but typically involves the following steps:
-
-1. Build your application using the `webpack` command.
-2. Push your build files to your hosting provider.
-3. Configure any necessary settings for your hosting provider, such as setting environment variables or configuring a custom domain.
-
-Overall, building and deploying a React application involves several steps, but the process can be streamlined using tools like webpack and hosting providers like AWS Amplify or Netlify. By following best practices and carefully evaluating your options, you can deploy your application with confidence.
-
-
-Maintaining and scaling a React application can be challenging as your codebase grows in complexity and your user base expands. In this post, we'll cover some best practices for maintaining and scaling your React application.
-
-Organizing your codebase
-
-As your codebase grows, it's important to organize your code in a way that is easy to maintain and understand. One common approach is to use a modular architecture, where each component is contained in its own file and organized into logical groups. This can make it easier to navigate your codebase and make changes as needed.
-
-Another useful technique is to use a state management library like Redux to manage your application state. This can help ensure that your state is consistent across your application and make it easier to manage complex state interactions.
-
-Optimizing performance
-
-Optimizing the performance of your React application is critical for maintaining a good user experience, particularly as your user base grows. Some tips for optimizing performance include:
-
-* Use a production build of your application, which is optimized for performance.
-* Use code splitting to load only the parts of your application that are needed for a particular route or feature.
-* Minimize the number of HTTP requests by using tools like webpack to bundle your files.
-* Use lazy loading to defer the loading of non-critical resources until they are needed.
-* Use a CDN to cache static assets like images and fonts.
-
-Testing and debugging
-
-Testing and debugging are critical for maintaining the quality of your codebase, particularly as your application grows. Some best practices for testing and debugging include:
-
-* Write tests for each component and feature to ensure that they are functioning correctly.
-* Use a debugging tool like React Developer Tools to inspect the state and props of your components.
-* Use error tracking tools like Sentry or Rollbar to track and resolve errors in your application.
-* Use performance profiling tools like Chrome DevTools to identify performance bottlenecks in your application.
-
-Scaling your infrastructure
-
-Finally, as your user base grows, you may need to scale your infrastructure to handle increased traffic and load. Some tips for scaling your infrastructure include:
-
-* Use a cloud hosting provider like AWS or Google Cloud that can automatically scale your resources as needed.
-* Use load balancers to distribute traffic across multiple instances of your application.
-* Use caching tools like Redis or Memcached to cache frequently accessed data and reduce the load on your database.
-* Use a content delivery network (CDN) to cache static assets and improve load times for users in different geographic regions.
-
-Overall, maintaining and scaling a React application requires careful planning and attention to detail. By following best practices and using tools and techniques like modular code organization, performance optimization, testing and debugging, and infrastructure scaling, you can ensure that your application is robust, scalable, and maintainable over the long term.
-
-
-Deploying a React application can be challenging, but using Vercel can make the process much easier. Vercel is a cloud platform for static sites and serverless functions, which can help you easily deploy and manage your React application. In this post, we'll walk through the steps to deploy a React application to Vercel.
-
-Step 1: Create a Vercel account
-
-The first step is to create a Vercel account. You can sign up for a free account on the Vercel website. Once you have created an account, you can create a new project.
-
-Step 2: Connect your Git repository
-
-The next step is to connect your Git repository to Vercel. This will allow Vercel to automatically deploy changes to your application when you push them to your Git repository. To connect your Git repository, navigate to the "Import Project" page in Vercel, select your Git repository, and follow the prompts to authorize Vercel to access your repository.
-
-Step 3: Configure your build settings
-
-Once your Git repository is connected, you will need to configure your build settings. This will tell Vercel how to build and deploy your application. To configure your build settings, navigate to the "Build & Development Settings" page in Vercel, and configure your settings as follows:
-
-* Set the "Framework Preset" to "React"
-* Set the "Build Command" to "npm run build"
-* Set the "Output Directory" to "build/"
-
-Step 4: Deploy your application
-
-Once your build settings are configured, you can deploy your application. To deploy your application, navigate to the "Deployments" page in Vercel, and click the "Deploy" button. Vercel will build and deploy your application, and provide you with a URL where you can access your deployed application.
-
-Step 5: Update your DNS settings (optional)
-
-If you want to use your own domain name for your deployed application, you will need to update your DNS settings to point to your Vercel deployment. To do this, navigate to your domain registrar's website and configure your DNS settings to point to the Vercel deployment URL.
-
-Overall, deploying a React application to Vercel is a straightforward process that can be completed in just a few steps. By following these steps, you can easily deploy and manage your React application on Vercel.
-
-
+- [MUI installation](https://mui.com/material-ui/getting-started/installation/)
+- [React-Bootstrap introduction](https://react-bootstrap.netlify.app/docs/getting-started/introduction)
+- [React Router declarative mode](https://reactrouter.com/start/declarative/installation)
+- [Redux Toolkit quick start](https://redux.js.org/tutorials/quick-start)
+- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- [Vite on Vercel](https://vercel.com/docs/frameworks/frontend/vite)

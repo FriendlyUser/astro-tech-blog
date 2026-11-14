@@ -1,93 +1,84 @@
 ---
 tags: ['python']
-title: Introduction to python
-description: Explaining the history of csharp and how it is used
+title: "Introduction to Python: where it came from, what it's used for, lists and argparse"
+description: A short introduction to Python's origins and common uses, followed by two first examples, working with lists and parsing command-line arguments with argparse.
 pubDate: Fri, 30 January 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1666734888.png"
 ---
-Python is a high-level, interpreted programming language that was first released in 1991 by Guido van Rossum. It was named after the Monty Python comedy group, and its design philosophy emphasizes code readability and ease of use.
 
-Python was created as an alternative to other, more complex programming languages such as C++ and Java. It was intended to be simple and easy to learn, with a syntax that is close to English and uses fewer lines of code to accomplish tasks compared to other programming languages.
+Python is a high-level, interpreted, dynamically typed language. Guido van Rossum first released it in February 1991 (version 0.9.0). The name comes from the comedy series *Monty Python's Flying Circus*, not the snake. Its design favours readability: indentation marks code blocks, and the standard library covers a lot without extra installs.
 
-In the years following its release, Python grew in popularity among developers for its versatility and ease of use. It was quickly adopted by the scientific community for its ability to handle complex data and perform numerical operations, and it remains popular in this field to this day.
+Van Rossum based Python on ABC, a teaching language he had worked on at CWI in the Netherlands. He kept ABC's readability and added things ABC lacked, such as exceptions, modules and access to the operating system. Python 2 reached end of life on 1 January 2020, so anything new should use Python 3.
 
-In recent years, Python has become increasingly popular in the software development industry, particularly for web development and machine learning. Its large and active user community has contributed to the development of a vast ecosystem of libraries and tools, making it a popular choice for a wide range of applications.
+## What Python is used for
 
-Today, Python is one of the most widely-used programming languages in the world and is used by businesses, government organizations, and individual developers alike.
+- **Web back ends**: Django and Flask, plus FastAPI for APIs.
+- **Data analysis and scientific computing**: NumPy, pandas, SciPy and Matplotlib.
+- **Machine learning**: PyTorch, TensorFlow and scikit-learn. The heavy computation runs in C/C++/CUDA underneath, and Python is the interface.
+- **Automation and scripting**: system administration, DevOps tooling, and glue code between other programs.
+- **Finance**: data analysis with pandas, and quantitative libraries such as QuantLib, a C++ library with Python bindings.
+- **Simple games**: 2D games with Pygame.
 
+The common thread is a large ecosystem of packages on [PyPI](https://pypi.org/) and a low barrier to getting something working.
 
-Python is a versatile programming language that can be used for a wide range of applications, including:
+## Lists
 
-1. Web Development: Python can be used to develop server-side web applications. Popular web frameworks such as Django and Flask provide a full-stack solution for web development using Python.
-2. Scientific Computing: Python is widely used in scientific computing, data analysis, and visualization, thanks to its support for numerical computing and data science libraries such as NumPy, SciPy, and Pandas.
-3. Machine Learning: Python is a popular choice for machine learning and artificial intelligence due to its ease of use and the availability of powerful libraries such as TensorFlow, PyTorch, and scikit-learn.
-4. Automation: Python can be used to automate repetitive tasks and automate workflows, making it a popular choice for system administrators and DevOps engineers.
-5. Game Development: Python can be used to develop simple 2D games, and there are libraries such as Pygame that provide a set of tools for game development.
-6. Network Programming: Python provides libraries for network programming, making it a popular choice for building network-based applications.
-7. Financial Analysis: Python is widely used in finance and trading, with libraries such as Quantlib providing tools for financial analysis and modeling.
-8. General Purpose Programming: Python can be used for a wide range of tasks, from simple scripts to complex software development, due to its ease of use and large standard library.
-
-These are just a few examples of the many uses of Python. With its versatility, ease of use, and strong community, Python has become one of the most popular programming languages in the world.
-
-
-In Python, a list is a collection of ordered items, which can be of different data types such as integers, strings, and other objects. Lists are a built-in data type in Python and are represented by square brackets []. Lists are mutable, which means that you can change their contents by adding, removing, or modifying elements.
-
-Here's an example of how to create a list in Python:
-
+A list is an ordered, mutable collection written with square brackets. Items can be of any type, including other lists.
 
 ```python
-scss`fruits = ['apple', 'banana', 'cherry']
-print(fruits)
+fruits = ["apple", "banana", "cherry"]
+print(fruits)        # ['apple', 'banana', 'cherry']
+
+print(fruits[0])     # 'apple', since indexes start at 0
+print(fruits[-1])    # 'cherry', since negative indexes count from the end
+print(fruits[0:2])   # ['apple', 'banana'], a slice that excludes the end index
+
+fruits.append("date")       # add to the end
+fruits.remove("banana")     # remove the first matching value
+fruits.sort(reverse=True)   # sort in place
+print(fruits, len(fruits))  # ['date', 'cherry', 'apple'] 3
+
+more = fruits + ["elderberry"]  # concatenation creates a new list
 ```
-Output:
 
+`list.sort()` changes the list in place and returns `None`. `sorted(fruits)` returns a new sorted list and leaves the original alone. Mixing the two up is a common beginner bug.
 
-```python
-css`['apple', 'banana', 'cherry']
-```
-Lists are very versatile and are commonly used in Python programs to store and manipulate data. You can access individual elements in a list using their index, which starts from 0. For example, `fruits[0]` would return the first element of the `fruits` list, which is `'apple'`.
+## Command-line arguments with argparse
 
-In addition to accessing individual elements, you can also perform operations on lists such as concatenating lists, slicing lists, and sorting lists. You can also use the built-in functions and methods provided by Python to manipulate lists and perform common tasks, such as finding the length of a list, adding elements to a list, and removing elements from a list.
-
-Lists are an essential data structure in Python and are widely used in many different types of applications.
-
-
-The `argparse` module in Python is a powerful way to handle command-line arguments in your scripts and programs. It provides a convenient and easy-to-use interface for parsing arguments and generating helpful error messages.
-
-Here's a simple example that demonstrates how to use `argparse` in Python:
-
+The standard-library `argparse` module parses command-line options and validates their types. It also generates `--help` output for you.
 
 ```python
-python`import argparse
+import argparse
 
-parser = argparse.ArgumentParser(description='Example argparse script.')
-
-parser.add_argument('-n', '--name', help='Your name')
-parser.add_argument('-a', '--age', help='Your age', type=int)
+parser = argparse.ArgumentParser(description="Example argparse script.")
+parser.add_argument("-n", "--name", required=True, help="your name")
+parser.add_argument("-a", "--age", type=int, help="your age")
 
 args = parser.parse_args()
 
-print('Hello,', args.name)
-print('Your age is', args.age)
+print("Hello,", args.name)
+if args.age is not None:
+    print("Your age is", args.age)
 ```
-You can run the script from the command line and provide values for the `name` and `age` arguments:
 
+Save it as `example.py` and run it:
 
-```python
-python`$ python example.py -n Alice -a 30
+```bash
+$ python example.py -n Alice -a 30
 Hello, Alice
 Your age is 30
 ```
-In this example, `argparse.ArgumentParser` is used to create an argument parser object, and the `add_argument` method is used to specify the command-line arguments that the script accepts. The `description` argument is used to provide a description of the script that will be displayed in the help message.
 
-The `type` argument is used to specify the data type of the argument. In this case, `int` is used to specify that the `age` argument should be an integer.
+How it works:
 
-Once the arguments are defined, the `parse_args` method is used to parse the command-line arguments and the resulting values are stored in the `args` object. The values of the arguments can then be accessed using the dot notation, such as `args.name` and `args.age`.
+- `ArgumentParser(description=...)` creates the parser. The description appears in `python example.py --help`.
+- `add_argument` declares each option. Options are optional unless you pass `required=True`. An option that isn't given is `None`, unless you set `default=`.
+- `type=int` converts the value. Passing `-a thirty` makes argparse exit with an error message instead of crashing later.
+- `parse_args()` reads `sys.argv` and returns a namespace. The long option name becomes the attribute name, so `--age` becomes `args.age`.
 
-This is just a simple example of how to use `argparse` in Python. The `argparse` module provides many more options and features, such as allowing you to specify default values for arguments, adding optional arguments, and generating a help message for your script.
-
-
+The [argparse tutorial](https://docs.python.org/3/howto/argparse.html) covers positional arguments, flags (`action="store_true"`), choices and subcommands.
 
 ## References
 - https://github.com/FriendlyUser/bookapi

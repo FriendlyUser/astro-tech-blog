@@ -1,102 +1,132 @@
 ---
-title: Using UIProgress in GoLang A Step-by-Step Guide
+title: Progress bars in Go terminal apps with uiprogress
 pubDate: "2023-05-26T15:32:49.062Z"
-description: " In this article, we will walk you through the process of using UIProgress in your GoLang projects."
+lastUpdated: 2026-11-14
+description: "How to render one or several progress bars in a Go command-line program with gosuri/uiprogress, including custom decorators and bar characters."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1411559119.png
 ---
-# Using UIProgress in GoLang: A Step-by-Step Guide
 
-UIProgress is a popular Go package that provides functionality for creating progress bars in console applications. This library allows developers to create visually appealing progress bars with ease, making it an excellent choice for displaying progress in command-line programs. In this article, we will walk you through the process of using UIProgress in your GoLang projects.
+[`uiprogress`](https://github.com/gosuri/uiprogress) is a small Go package that draws progress bars in the terminal. It redraws the bars on a timer (every 10 ms by default) using [`uilive`](https://github.com/gosuri/uilive), so you only call `Incr()` or `Set()` and the package handles the rendering. It is a good fit for CLI tools that download files, process batches, or run several jobs at once.
 
-## Prerequisites
+The package is small and stable rather than actively developed: the only tagged release is v0.0.1 (2017).
 
-Before diving into the implementation, ensure you have the following tools installed on your system:
+## Install
 
-1. GoLang: [Download and install](https://golang.org/dl/) the latest version of Go for your platform.
-2. Git: Install [Git](https://git-scm.com/downloads) to manage your project's version control.
-
-## Installing UIProgress
-
-To begin, you will need to install the `uiprogress` library in your GoLang project. You can do this using the `go get` command as follows:
+Inside a Go module:
 
 ```sh
-go get -u github.com/gosuri/uiprogress
+go get github.com/gosuri/uiprogress
 ```
 
-This will download the library and add it to your `GOPATH`. Now, you're ready to start using UIProgress in your Go programs.
-
-## Creating a Basic Progress Bar
-
-Let's start by creating a simple progress bar that increments over time. First, create a new Go file called `main.. Then, import the `uiprogress` library and create a new progress bar as shown below:
+## A basic progress bar
 
 ```go
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gosuri/uiprogress"
 )
 
 func main() {
-	// Create a new progress bar
-	uiprogress.Start() // initialize progress bars
+	uiprogress.Start()       // start the render loop
+	defer uiprogress.Stop()  // draw the final state and stop rendering
+
 	bar := uiprogress.AddBar(100)
-
-	// Set the bar width and format
 	bar.Width = 50
-	bar.Format("Progress: " + uiprogress.Prefix("%d", "%%"))
+	bar.AppendCompleted() // show "NN%" after the bar
+	bar.PrependElapsed()  // show elapsed time before the bar
 
-	// Increment the progress bar over time
-	go func() {
-		for bar.Incr() {
-			time.Sleep(time.Millisecond * 20)
-		}
-	}()
+	for bar.Incr() {
+		time.Sleep(20 * time.Millisecond)
+	}
+}
+```
 
-	// Wait for the progress bar to complete
+`Incr()` returns `false` once the bar reaches its total, so the loop ends on its own. Do the work in the main goroutine (or wait for it); if `main` returns straight after `Start()`, the program exits before anything is drawn.
+
+If you know the absolute position rather than incrementing by one, use `bar.Set(n)`. It returns `uiprogress.ErrMaxCurrentReached` if `n` is above the total.
+
+## Customizing the bar
+
+### Characters
+
+`Fill`, `Head`, `Empty`, `LeftEnd` and `RightEnd` are `byte` fields on the bar (defaults `=`, `>`, `-`, `[`, `]`):
+
+```go
+bar.Fill = '#'
+bar.Head = '#'
+bar.Empty = '.'
+```
+
+Because they are bytes, you can't use multi-byte characters such as `█`.
+
+### Decorators
+
+Text before and after the bar comes from decorator functions of type `uiprogress.DecoratorFunc`, which is `func(b *uiprogress.Bar) string`. Add them with `PrependFunc` and `AppendFunc` (this snippet also needs `fmt` imported):
+
+```go
+steps := []string{"downloading", "unpacking", "compiling", "installing"}
+bar := uiprogress.AddBar(len(steps))
+
+bar.PrependFunc(func(b *uiprogress.Bar) string {
+	if b.Current() == 0 {
+		return "starting"
+	}
+	return steps[b.Current()-1]
+})
+bar.AppendFunc(func(b *uiprogress.Bar) string {
+	return fmt.Sprintf("%d/%d", b.Current(), b.Total)
+})
+```
+
+Other helpers on `Bar`: `CompletedPercent()`, `CompletedPercentString()` and `TimeElapsedString()`.
+
+## Multiple bars
+
+Each call to `AddBar` adds another line. Run the work for each bar in its own goroutine and wait for all of them before stopping:
+
+```go
+package main
+
+import (
+	"sync"
+	"time"
+
+	"github.com/gosuri/uiprogress"
+)
+
+func main() {
+	uiprogress.Start()
+
+	var wg sync.WaitGroup
+	for _, total := range []int{20, 40, 60} {
+		bar := uiprogress.AddBar(total).AppendCompleted().PrependElapsed()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for bar.Incr() {
+				time.Sleep(50 * time.Millisecond)
+			}
+		}()
+	}
+
+	wg.Wait()
 	uiprogress.Stop()
 }
 ```
 
-When you run this program, you should see a progress bar that starts at 0% and increments until it reaches 100%.
+`AppendCompleted` and `PrependElapsed` return the bar, so they chain.
 
-## Customizing the Progress Bar
+## Gotchas
 
-UIProgress offers various options to customize the appearance and behavior of your progress bars. Here are some examples:
+- The package-level functions (`Start`, `AddBar`, `Stop`) use a single default `Progress`. If you need separate groups of bars or a different output, create one with `uiprogress.New()` and call `SetOut` or `SetRefreshInterval` on it.
+- Anything else you print to stdout while bars are rendering will be overwritten or garbled. Use `Progress.Bypass()` to get a writer that prints above the bars.
 
-### Changing the Progress Bar Characters
+## Further reading
 
-You can change the characters used to represent the progress bar by modifying the `Fill` and `Empty` properties:
-
-```go
-bar.Fill = '+'
-bar.Empty = '-'
-```
-
-### Adding a Custom Progress Bar Formatter
-
-You can create a custom progress bar formatter by implementing the `uiprogress.FormatterFunc` interface. For example, this formatter adds a custom prefix and suffix to the progress bar:
-
-```go
-bar.Formatter = func(b *uiprogress.Bar) string {
-	return fmt.Sprintf("[My Progress] %s [%d%%] [Complete]", b.String(), b.Percent())
-}
-```
-
-### Creating Multiple Progress Bars
-
-UIProgress supports creating multiple progress bars simultaneously. To create additional progress bars, simply call the `uiprogress.AddBar()` function again:
-
-```go
-bar2 := uiprogress.AddBar(100)
-```
-
-## Conclusion
-
-UIProgress is a powerful and easy-to-use library for adding progress bars to your GoLang console applications. With its flexible customization options and support for multiple progress bars, UIProgress is a valuable addition to any Go developer's toolkit.
-
-In this article, we covered the basics of using UIProgress in your Go projects, from installation to customizing the appearance and behavior of progress bars. With this knowledge, you can now create visually appealing progress bars that enhance the user experience of your command-line programs.
+- [uiprogress on GitHub](https://github.com/gosuri/uiprogress)
+- [API reference on pkg.go.dev](https://pkg.go.dev/github.com/gosuri/uiprogress)

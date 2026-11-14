@@ -1,28 +1,30 @@
 ---
-title: Building Interactive Terminal Applications with Golang and Gocui
+title: Building a terminal UI in Go with gocui
 pubDate: "2023-05-30T19:37:46.109Z"
-description: "In this article, we will explore how to build an interactive terminal application using Gocui."
+lastUpdated: 2026-11-14
+description: Set up a gocui application in Go that draws a centred view, then add key bindings to quit. Includes notes on the maintained awesome-gocui fork.
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
+[gocui](https://github.com/jroimartin/gocui) is a small Go library for console user interfaces. You describe the screen as a set of named, possibly overlapping views (rectangles you can write text into), and gocui redraws them and dispatches key and mouse events to handlers you register. It sits on top of termbox-go and doesn't provide ready-made widgets, so it suits tools where you want control over the layout rather than a form library.
 
-Golang, also known as Go, has become a popular programming language for building high-performance applications. One of the strong points of Go is its simplicity and ease of use, which makes it an excellent choice for creating command-line tools and terminal applications. In this article, we will explore how to build an interactive terminal application using Gocui, a minimalistic and flexible library for building intuitive console user interfaces in Go.
+The original repository changes rarely these days. [awesome-gocui/gocui](https://github.com/awesome-gocui/gocui) is a community-maintained fork with a slightly different API; see the note at the end if you use that one.
 
-## Introduction to Gocui
+## Setup
 
-[Gocui](https://github.com/jroimartin/gocui) is an open-source library designed specifically for building terminal-based applications that require a user interface. It provides a simple and efficient way to manage console UI components, such as windows, input fields, and menus. It also provides several features like mouse support, flexible layout management, and custom keybindings.
+You need Go installed ([download](https://go.dev/dl/)). Create a module and add the dependency:
 
-To get started with Gocui, you'll need to have Go installed on your system. You can download and install it from the [official website](https://golang.org/dl/). Once you have Go installed, you can install Gocui by running the following command:
-
+```bash
+mkdir hello-gocui && cd hello-gocui
+go mod init hello-gocui
+go get github.com/jroimartin/gocui
 ```
-go get -u github.com/jroimartin/gocui
-```
 
-## Building a Basic Gocui Application
+## A minimal application
 
-Let's start by building a simple Gocui application that displays "Hello, Gocui!" in a terminal window. Create a new Go file, `main., and add the following code:
+Create `main.go`:
 
 ```go
 package main
@@ -60,29 +62,33 @@ func layout(g *gocui.Gui) error {
 }
 ```
 
-This code sets up a basic Gocui application with a single "hello" view that displays "Hello, Gocui!" at the center of the terminal window. The `layout` function is responsible for creating and positioning UI elements within the terminal.
+`layout` is the manager function. gocui calls it on every redraw, including when the terminal is resized, which is why the view's coordinates are computed from `g.Size()` each time. `SetView` creates the view the first time and returns `gocui.ErrUnknownView` to signal that it's new; that is the place to write the initial content. On later calls it just moves and resizes the existing view, so the text isn't written twice.
 
-To run the application, execute the following command:
+Run it with:
 
 ```bash
-go run main.go
+go run .
 ```
 
-You should see the "Hello, Gocui!" message displayed at the center of your terminal window.
+"Hello, Gocui!" appears in a box in the middle of the terminal. There is no way to exit yet; that's next.
 
-## Adding Interactivity
+## Adding key bindings
 
-Let's extend our example to make it more interactive. We will add the ability to quit the application by pressing the `q` key. Update the `main` function to include the following keybinding:
+Register bindings after `SetManagerFunc` and before `MainLoop`. An empty view name makes a binding global. Returning `gocui.ErrQuit` from a handler ends `MainLoop`.
 
 ```go
 func main() {
-	// ...
+	g, err := gocui.NewGui(gocui.OutputNormal)
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer g.Close()
+
 	g.SetManagerFunc(layout)
 
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
-
 	if err := g.SetKeybinding("", 'q', gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
@@ -97,8 +103,22 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 }
 ```
 
-Now, when you run the application and press either `q` or `Ctrl+C`, the application will exit gracefully.
+Pressing `q` or `Ctrl+C` now exits and restores the terminal (that's what `defer g.Close()` is for).
 
-## Conclusion
+A global binding on a plain rune like `q` gets in the way once you add an editable view (`v.Editable = true`), because typing a `q` into it would quit the app. In that case, bind `q` to the specific non-editable view names instead, and keep `Ctrl+C` global.
 
-Gocui is a powerful library for building interactive terminal applications in Go. It provides a simple and efficient way to manage console UI components and supports a variety of features, including custom keybindings, mouse support, and flexible layout management. In this article, we covered the basics of creating a Gocui application, but there are many more features and possibilities to explore. 
+## Using the awesome-gocui fork
+
+The fork changes a few signatures:
+
+- `gocui.NewGui(gocui.OutputNormal, supportOverlaps)` takes a second `bool` argument.
+- `g.SetView(name, x0, y0, x1, y1, overlaps)` takes an extra `byte` for overlap handling; pass `0` if you don't need it.
+- Its README checks the new-view error with `errors.Is(err, gocui.ErrUnknownView)` rather than `==`.
+
+Install it with `go get github.com/awesome-gocui/gocui` and change the import path; the rest of the example carries over.
+
+## Further reading
+
+- [gocui API reference](https://pkg.go.dev/github.com/jroimartin/gocui)
+- [awesome-gocui API reference](https://pkg.go.dev/github.com/awesome-gocui/gocui)
+- The `_examples` directory in the gocui repository has examples for mouse support, multiple views and editable input.

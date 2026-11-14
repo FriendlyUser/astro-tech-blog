@@ -1,101 +1,109 @@
 ---
-title: Using Oxipng in Rust A Guide to Optimizing PNG Images
+title: "Optimizing PNG files from Rust with the oxipng crate"
 pubDate: "2023-04-20T14:45:32.788Z"
-description: "In this article, we will explore how to use Oxipng, a Rust-based PNG optimizer, to optimize PNG images in your Rust applications for better performance."
+lastUpdated: 2026-11-14
+description: "Use oxipng as a Rust library to losslessly shrink PNG files on disk or in memory, and tune its presets, filters, metadata stripping and Zopfli."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/549017699.png
 ---
-# Using Oxipng in Rust: A Guide to Optimizing PNG Images
 
-## Introduction
+[oxipng](https://github.com/shssoichiro/oxipng) is a lossless PNG optimizer written in Rust. It tries different color type and bit depth reductions, row filters and DEFLATE settings, then keeps whichever encoding is smallest. The pixels don't change, only the file size. Most people use it as a CLI, but it's also a library, which is handy when your app generates or receives PNGs and you want to shrink them before storing or serving them.
 
-PNG (Portable Network Graphics) is a popular lossless image format commonly used for web images, icons, and other graphics. However, the size of PNG files can sometimes be quite large, leading to slower loading times and increased bandwidth usage. In this article, we will explore how to use Oxipng, a Rust-based PNG optimizer, to optimize PNG images in your Rust applications for better performance.
+The examples below are written against oxipng 10.2.1. The API changed a lot between the 0.x/2.x releases and now, so older snippets you find online (including the original version of this post) won't compile.
 
-Oxipng is an open-source project written in Rust, which aims to provide a fast and efficient way to optimize PNG files. It achieves this by compressing the images without affecting their quality, resulting in smaller file sizes. Oxipng is also highly configurable, allowing you to tailor its optimization process to your specific needs.
-
-## Prerequisites
-
-Before we dive into using Oxipng in Rust, ensure you have the following:
-
-1. Rust installed on your system. You can follow the [official Rust installation guide](https://www.rust-lang.org/tools/install) if you haven't installed it yet.
-2. A basic understanding of Rust programming concepts.
-
-## Adding Oxipng as a Dependency
-
-To start using Oxipng in your Rust project, you need to add it as a dependency. Open your `Cargo.toml` file and add the following line under the `[dependencies]` section:
+## Adding the dependency
 
 ```toml
-oxipng = "0.26.0"
+[dependencies]
+oxipng = "10.2.1"
 ```
 
-This will include the latest version of Oxipng (at the time of writing) in your project. Now, you can use Oxipng's API in your Rust code.
+The default features are `binary`, `parallel` and `zopfli`. `binary` pulls in the CLI's dependencies (clap, env_logger, glob, parse-size), which a library user doesn't need. You can turn it off and keep the rest:
 
-## Basic Usage
+```toml
+[dependencies]
+oxipng = { version = "10.2.1", default-features = false, features = ["parallel", "zopfli"] }
+```
 
-The following example demonstrates how to optimize a PNG file using Oxipng's default settings.
+## Optimizing a file on disk
+
+`optimize` takes an `InFile`, an `OutFile` and `Options`. It returns a `Result` whose `Ok` value is a tuple of the original and optimized sizes in bytes.
 
 ```rust
-use oxipng::{optimize, Options};
-use std::path::Path;
+use oxipng::{optimize, InFile, Options, OutFile};
+use std::path::PathBuf;
 
 fn main() {
-    let input_path = Path::new("input.png");
-    let output_path = Path::new("optimized.png");
-
-    // Create default options for Oxipng
+    let input = InFile::Path(PathBuf::from("input.png"));
+    let output = OutFile::from_path(PathBuf::from("optimized.png"));
     let options = Options::default();
 
-    // Optimize the image
-    match optimize(&input_path, &output_path, &options) {
-        Ok(_) => println!("Optimization successful!"),
-        Err(err) => eprintln!("Optimization failed: {}", err),
+    match optimize(&input, &output, &options) {
+        Ok((before, after)) => println!("{before} -> {after} bytes"),
+        Err(err) => eprintln!("Optimization failed: {err}"),
     }
 }
 ```
 
-In this example, we first import the necessary modules and define the input and output file paths. We then create a default `Options` struct, which determines how Oxipng optimizes the image. Finally, we call the `optimize` function, passing the input and output paths along with the options.
+`OutFile::Path { path: None, .. }` overwrites the input in place, and `OutFile::None` runs the optimization without writing anything, which is useful if you only want to know how much you'd save.
 
-## Customizing the Optimization Process
+## Optimizing bytes in memory
 
-Oxipng provides many options for customizing the optimization process. You can modify the `Options` struct to suit your specific requirements. Here's an example of how to set custom optimization options:
+If the PNG is already in a `Vec<u8>` (an upload, or something you just encoded with the `image` or `png` crate), use `optimize_from_memory` and skip the temporary file:
 
 ```rust
-use oxipng::{optimize, Options, Deflate, FilterType};
-use std::path::Path;
+use oxipng::{optimize_from_memory, Options};
+
+fn shrink(png: &[u8]) -> Result<Vec<u8>, oxipng::PngError> {
+    optimize_from_memory(png, &Options::default())
+}
+```
+
+## Customizing the options
+
+`Options::from_preset(level)` gives you the same presets as the CLI's `-o` flag (0 to 6; the default is 2). Higher presets try more filter combinations and are slower. `Options::max_compression()` is the most thorough setting. Start from a preset and override individual fields:
+
+```rust
+use oxipng::{indexset, optimize, Deflater, FilterStrategy, InFile, Options, OutFile, RowFilter, StripChunks};
+use std::path::PathBuf;
 
 fn main() {
-    let input_path = Path::new("input.png");
-    let output_path = Path::new("optimized.png");
-
-    // Create custom options for Oxipng
-    let options = Options {
-        strip: Some(oxipng::Metadata::All),
-        interlace: Some(1),
-        compression: Deflate::new(9),
-        filter: vec![FilterType::Paeth],
-        ..Options::default()
+    let mut options = Options::from_preset(4);
+    // Drop every non-critical chunk (text, EXIF, color profiles, etc.)
+    options.strip = StripChunks::All;
+    // Write a non-interlaced image (Some(true) would force Adam7 interlacing)
+    options.interlace = Some(false);
+    // Highest libdeflate compression level (0-12)
+    options.deflater = Deflater::Libdeflater { compression: 12 };
+    // Only try the Paeth filter and the entropy heuristic
+    options.filters = indexset! {
+        FilterStrategy::Basic(RowFilter::Paeth),
+        FilterStrategy::Entropy,
     };
 
-    // Optimize the image
-    match optimize(&input_path, &output_path, &options) {
-        Ok(_) => println!("Optimization successful!"),
-        Err(err) => eprintln!("Optimization failed: {}", err),
+    let input = InFile::Path(PathBuf::from("input.png"));
+    let output = OutFile::from_path(PathBuf::from("optimized.png"));
+
+    match optimize(&input, &output, &options) {
+        Ok((before, after)) => println!("{before} -> {after} bytes"),
+        Err(err) => eprintln!("Optimization failed: {err}"),
     }
 }
 ```
 
-In this example, we set the following custom options:
+Some notes on these fields:
 
-- Strip all metadata from the PNG file.
-- Enable interlacing with the Adam7 algorithm.
-- Set the highest compression level (9).
-- Use only the Paeth filter type.
+- `strip`: `StripChunks::None` (the default) keeps metadata, `Safe` removes chunks that don't affect how the image is displayed, and `All` removes every non-critical chunk. `All` also removes color profile chunks, which can change how colors render, so `Safe` is the better choice if you aren't sure.
+- `interlace`: interlaced PNGs are usually *larger*. Only turn it on if you need progressive loading.
+- `deflater`: `Deflater::Zopfli(...)` (behind the `zopfli` feature) compresses better than libdeflate but is much slower. It's fine for a build step that optimizes static assets once, and a bad idea on a request path.
+- `timeout`: an `Option<Duration>` that caps how long oxipng spends trying alternatives. Set it if you run oxipng on user uploads.
 
-These options can significantly reduce the file size of the resulting image, depending on the input image's characteristics.
+## When not to bother
 
-## Conclusion
+oxipng is lossless, so the gains depend on how badly the input was encoded. PNGs exported from image editors or screenshot tools often shrink a lot. PNGs that have already been through oxipng, pngcrush or similar tools barely shrink at all. If you need a much smaller file and can accept some loss, a lossy step (palette quantization with something like pngquant, or switching to WebP/AVIF) will do more than any lossless optimizer.
 
-In this article, we explored how to use Oxipng in Rust to optimize PNG images. We demonstrated basic usage with default settings and how to customize the optimization process to meet specific requirements. By using Oxipng in your Rust applications, you can improve the performance of your applications by reducing the size of PNG images without sacrificing quality.
+## Further reading
 
-For more information on Oxipng's features and options, consult the [official Oxipng documentation](https://docs.rs/oxipng/0.26.0/oxipng/).
+- [oxipng API docs on docs.rs](https://docs.rs/oxipng/latest/oxipng/)
+- [oxipng on GitHub](https://github.com/shssoichiro/oxipng)

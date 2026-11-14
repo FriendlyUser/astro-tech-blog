@@ -1,177 +1,169 @@
 ---
-description: In this article, we will explore how to use Celery to improve the performance
-  and reliability of your Python applications
+description: "Set up Celery with Redis, define and call tasks, add retries, route tasks to queues and set priorities, and monitor workers with the CLI and Flower."
 imgSrc: /imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in
   a library.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T00:20:26.000Z'
-tags: []
-title: Using Celery in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: "Celery in Python: background tasks, retries, routing and monitoring"
 ---
 
-# Using Celery in Python: A Comprehensive Guide
+Celery is a distributed task queue for Python. Your application sends a message describing a function call to a broker (usually Redis or RabbitMQ), and one or more worker processes pick it up and run it. Use it for work that shouldn't block a web request: sending email, resizing images, calling slow third-party APIs, or periodic jobs.
 
-Celery is a powerful task queue implementation in Python that enables the execution of asynchronous, distributed tasks. It is highly configurable and extensible, making it suitable for a wide range of applications, including web development, data processing, and machine learning. In this article, we will explore how to use Celery to improve the performance and reliability of your Python applications.
+The examples were checked against Celery 5.7, which requires Python 3.10 or later.
 
-## Table of Contents
+## Setup
 
-1. [Introduction to Celery](#introduction-to-celery)
-2. [Setting up Celery](#setting-up-celery)
-3. [Creating and Running Tasks](#creating-and-running-tasks)
-4. [Task Retries and Error Handling](#task-retries-and-error-handling)
-5. [Task Prioritization and Routing](#task-prioritization-and-routing)
-6. [Monitoring and Managing Tasks](#monitoring-and-managing-tasks)
-7. [Conclusion](#conclusion)
-
-## Introduction to Celery
-
-Celery is an asynchronous task queue that allows you to distribute tasks across multiple worker processes or even across multiple machines. It is built on top of the RabbitMQ, Redis, or Amazon SQS message broker, which enables efficient, reliable communication between the different components of your application.
-
-Some common use cases for Celery include:
-
-- Offloading time-consuming tasks from your main application thread to improve responsiveness
-- Distributing tasks evenly among multiple worker processes to increase throughput
-- Ensuring the reliable execution of tasks by handling errors and retries
-
-## Setting up Celery
-
-To get started with Celery, you'll first need to install it using pip:
+Install Celery with the Redis extras (plus `requests`, which the retry examples use). The extras install the `redis` Python client, but you still need a Redis server running:
 
 ```bash
-pip install celery
+pip install "celery[redis]" requests
+docker run -d -p 6379:6379 redis
 ```
 
-Next, you'll need to choose a message broker. In this guide, we'll use Redis, but you can also use RabbitMQ or Amazon SQS if you prefer. To install Redis, simply run:
-
-```bash
-pip install redis
-```
-
-Now, you can create a new Python file (e.g., `celery_app.py`) and configure your Celery instance:
+Create `tasks.py`:
 
 ```python
+import requests
 from celery import Celery
 
-app = Celery('myapp', broker='redis://localhost:6379/0')
+app = Celery(
+    "tasks",
+    broker="redis://localhost:6379/0",
+    backend="redis://localhost:6379/1",
+)
 
-if __name__ == '__main__':
-    app.start()
-```
-
-Replace `'redis://localhost:6379/0'` with the connection URL for your chosen message broker. If you're using RabbitMQ, the URL would look like `'amqp://guest:guest@localhost:5672//'`.
-
-## Creating and Running Tasks
-
-A Celery task is simply a Python function decorated with the `@app.task` decorator. Here's a simple example:
-
-```python
-from celery import Celery
-
-app = Celery('myapp', broker='redis://localhost:6379/0')
 
 @app.task
 def add(x, y):
     return x + y
 ```
 
-To call this task asynchronously, you can use the `delay()` method:
+The `broker` carries task messages. The `backend` stores return values. Without a backend you can still send tasks, but you can't read their results.
+
+Start a worker from the same directory:
+
+```bash
+celery -A tasks worker --loglevel=INFO
+```
+
+Celery doesn't officially support Windows. If you're testing locally on Windows, add `--pool=solo`, because the default prefork pool doesn't work there.
+
+For RabbitMQ, the broker URL looks like `amqp://guest:guest@localhost:5672//`.
+
+## Calling tasks
+
+`delay()` sends the task and returns an `AsyncResult` immediately:
 
 ```python
+from tasks import add
+
 result = add.delay(4, 4)
+print(result.id)
+print(result.get(timeout=10))  # blocks until the worker finishes: 8
 ```
 
-This method returns an `AsyncResult` object that you can use to check the status of the task or retrieve its result:
+`result.ready()` checks without blocking. `apply_async()` is the full form of `delay()` and takes options like `countdown`, `eta`, `queue` and `priority`:
 
 ```python
-if result.ready():
-    print('The result is:', result.result)
-else:
-    print('The task is still running')
+add.apply_async((4, 4), countdown=30)  # run no earlier than 30 seconds from now
 ```
 
-## Task Retries and Error Handling
+## Retries
 
-Celery provides built-in support for task retries and error handling. To enable retries for a task, you can use the `autoretry_for` and `retry_kwargs` options:
+For transient errors, let Celery retry automatically:
 
 ```python
-from requests.exceptions import RequestException
-
-@app.task(autoretry_for=(RequestException,), retry_kwargs={'max_retries': 5, 'countdown': 60})
+@app.task(
+    autoretry_for=(requests.RequestException,),
+    retry_backoff=True,
+    retry_kwargs={"max_retries": 5},
+)
 def fetch_url(url):
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     response.raise_for_status()
     return response.text
 ```
 
-In this example, the `fetch_url` task will automatically retry up to 5 times if a `RequestException` occurs, with a 60-second delay between retries.
+`retry_backoff=True` waits 1s, 2s, 4s and so on between attempts (with jitter), up to `retry_backoff_max` (600 seconds by default).
 
-You can also handle errors manually by catching exceptions and calling the `retry()` method:
+For more control, bind the task and call `self.retry()` yourself. `retry()` raises an exception to tell the worker to reschedule the task, so `raise` it:
 
 ```python
-from requests.exceptions import RequestException
-
 @app.task(bind=True, max_retries=5)
-def fetch_url(self, url):
+def fetch_url_manual(self, url):
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
         return response.text
-    except RequestException as e:
-        self.retry(exc=e, countdown=60)
+    except requests.RequestException as exc:
+        raise self.retry(exc=exc, countdown=60)
 ```
 
-## Task Prioritization and Routing
+Tasks that may be retried, or redelivered after a worker crash, should be idempotent: running them twice must not do the work twice.
 
-Celery allows you to prioritize tasks and route them to specific worker processes or queues. You can assign a priority to a task using the `priority` option:
+## Routing to queues
+
+Send slow tasks to their own queue so they don't hold up quick ones. Configure the routing on the app:
 
 ```python
-@app.task(priority=10)
-def important_task():
-    pass
+app.conf.task_routes = {
+    "tasks.generate_report": {"queue": "reports"},
+}
+
+
+@app.task
+def generate_report(report_id):
+    ...
 ```
 
-You can also route tasks to specific queues using the `queue` option:
-
-```python
-@app.task(queue='myqueue')
-def myqueue_task():
-    ## ...
-```
-
-To start a worker process that listens to a specific queue, use the `-Q` option:
+You can also choose a queue per call with `generate_report.apply_async((42,), queue="reports")`. Then start a worker that consumes that queue:
 
 ```bash
-celery -A celery_app worker --loglevel=info -Q myqueue
+celery -A tasks worker --loglevel=INFO -Q reports
 ```
 
-## Monitoring and Managing Tasks
+A worker started without `-Q` only consumes the default `celery` queue, so tasks routed to `reports` sit in Redis until a worker listens there.
 
-Celery provides several tools for monitoring and managing tasks, including the following:
+## Priorities
 
-### Flower
+Priorities exist, but they behave differently per broker:
 
-Flower is a web-based tool for monitoring and administering Celery tasks. To install and run Flower, simply run:
+- **RabbitMQ:** higher numbers run first. The queue must be declared with `x-max-priority`, for example via `app.conf.task_queue_max_priority = 10`.
+- **Redis:** 0 is the highest priority and 9 the lowest. By default, the 10 levels collapse into 4 internal lists. Redis has no native priorities, so the ordering is approximate.
+
+```python
+add.apply_async((2, 2), priority=0)
+```
+
+In practice, separate queues with dedicated workers are usually more predictable than priorities.
+
+## Monitoring
+
+The `inspect` and `control` commands talk to running workers:
+
+```bash
+celery -A tasks inspect active       # tasks being executed now
+celery -A tasks inspect reserved     # prefetched, waiting to run
+celery -A tasks inspect scheduled    # tasks with an ETA/countdown
+celery -A tasks call tasks.add -a '[2, 3]'
+celery -A tasks control revoke <task_id>
+celery -A tasks control pool_grow 2
+```
+
+[Flower](https://flower.readthedocs.io/) is a web dashboard for workers and tasks:
 
 ```bash
 pip install flower
-celery -A celery_app flower
+celery -A tasks flower
 ```
 
-By default, Flower will be available at `http://localhost:5555`.
+It listens on `http://localhost:5555` by default. Don't expose it publicly without authentication, because it can revoke tasks and shut down workers.
 
-### Celery CLI
+## Further reading
 
-The Celery command line interface (CLI) can be used to inspect and manage tasks, workers, and queues. Some common commands include:
-
-- `celery -A celery_app call`: Call a task by name
-- `celery -A celery_app inspect active`: List active tasks
-- `celery -A celery_app inspect reserved`: List reserved tasks
-- `celery -A celery_app inspect scheduled`: List scheduled tasks
-- `celery -A celery_app control cancel`: Cancel a task by ID
-- `celery -A celery_app control pool`: Manage worker processes
-
-For a full list of commands, consult the [Celery documentation](https://docs.celeryproject.org/en/stable/userguide/celeryctl.html).
-
-## Conclusion
-
-In this article, we have explored the basics of using Celery in Python, including setting up Celery, creating and running tasks, handling errors and retries, prioritizing and routing tasks, and monitoring and managing tasks. By integrating Celery into your Python applications, you can improve their performance, reliability, and scalability.
+- [Celery: First steps](https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html)
+- [Tasks (retries, options)](https://docs.celeryq.dev/en/stable/userguide/tasks.html)
+- [Routing tasks and priorities](https://docs.celeryq.dev/en/stable/userguide/routing.html)
+- [Monitoring and management guide](https://docs.celeryq.dev/en/stable/userguide/monitoring.html)

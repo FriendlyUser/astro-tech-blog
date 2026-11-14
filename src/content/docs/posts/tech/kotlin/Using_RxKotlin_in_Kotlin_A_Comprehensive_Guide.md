@@ -1,182 +1,181 @@
 ---
-title: Using RxKotlin in Kotlin A Comprehensive Guide
+title: "RxKotlin basics: creating, transforming and combining Observables"
 pubDate: "2023-05-03T14:16:44.927Z"
-description: " In this article, we will explore the basics of RxKotlin, the advantages it provides, and how to use it effectively in your Kotlin projects."
+lastUpdated: 2026-11-14
+description: "Set up RxKotlin 3 with RxJava 3, create Observables, use map, filter, merge and zip, handle errors, and move work between threads with schedulers."
 tags: ["kotlin"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3200675184.png
 ---
-# Using RxKotlin in Kotlin: A Comprehensive Guide
+:::caution
+The original version of this post used RxJava 2 (`io.reactivex.rxjava2`), which reached end-of-life on February 28, 2021. The examples below use RxJava 3 and RxKotlin 3. RxKotlin itself hasn't had a release since 3.0.1 (September 2020). For new Kotlin and Android code, [Kotlin coroutines and Flow](https://kotlinlang.org/docs/flow.html) are the more common choice; Rx is still worth knowing if you maintain a codebase that uses it.
+:::
 
-RxKotlin is a library that brings the power of Reactive Extensions (Rx) to the Kotlin programming language. Rx is a popular and powerful framework for composing asynchronous and event-based programs by using observable sequences. In this article, we will explore the basics of RxKotlin, the advantages it provides, and how to use it effectively in your Kotlin projects.
+[RxKotlin](https://github.com/ReactiveX/RxKotlin) is a thin layer of Kotlin extension functions on top of [RxJava](https://github.com/ReactiveX/RxJava). RxJava does the real work: it models asynchronous events as `Observable` streams that you transform with operators. RxKotlin adds Kotlin conveniences such as `subscribeBy` (named callbacks) and `toObservable()` on collections.
 
-## Table of Contents
+## Setup
 
-1. [Introduction to Reactive Programming](#introduction-to-reactive-programming)
-2. [Setting up RxKotlin](#setting-up-rxkotlin)
-3. [Core Components of RxKotlin](#core-components-of-rxkotlin)
-4. [Creating Observables](#creating-observables)
-5. [Transforming and Filtering Observables](#transforming-and-filtering-observables)
-6. [Combining Observables](#combining-observables)
-7. [Error Handling](#error-handling)
-8. [Schedulers](#schedulers)
-9. [Conclusion](#conclusion)
-
-## Introduction to Reactive Programming
-
-Reactive programming is a programming paradigm that deals with data streams and the propagation of change. This means that it emphasizes the idea of data flow, and how the data changes over time. Reactive programming allows developers to express complex data flows and transformations with a concise and expressive syntax.
-
-RxKotlin is an implementation of Rx for Kotlin, which is a statically-typed programming language that runs on the Java Virtual Machine (JVM) and can be used to develop Android applications. Kotlin offers many modern language features, such as extension functions, higher-order functions, and null safety, which make it an excellent choice for working with Rx.
-
-## Setting up RxKotlin
-
-To get started with RxKotlin, you need to add the following dependencies to your project's `build.gradle` file:
-
-```groovy
+```kotlin
 dependencies {
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation("io.reactivex.rxjava3:rxjava:3.1.12")
+    implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+
+    // Android only: provides AndroidSchedulers.mainThread()
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
 }
 ```
 
-The first dependency is for RxKotlin, and the second one is for RxAndroid, which provides Android-specific bindings for RxJava.
+RxKotlin 3.0.1 depends on RxJava 3.0.6, so declaring `rxjava` explicitly pulls in the current 3.1 release with its bug fixes. Every class lives under `io.reactivex.rxjava3`, so RxJava 2 and 3 can sit side by side during a migration.
 
-## Core Components of RxKotlin
+## The pieces
 
-There are three core components in the RxKotlin library:
+- **Observable**: a source that emits zero or more items, then either completes or errors.
+- **Observer**: receives `onNext`, `onError` and `onComplete` calls. In Kotlin you usually pass lambdas to `subscribe` or `subscribeBy` instead of implementing the interface.
+- **Operators**: methods like `map`, `filter` and `zip` that return a new `Observable`.
 
-1. **Observable**: Represents a stream of data or events. Observables emit items over time, which can be consumed by observers.
-2. **Observer**: Receives and processes the items emitted by an observable. An observer can react to events like onNext, onError, and onComplete.
-3. **Operator**: A function that can be used to transform, filter, or combine observables.
+Nothing runs until something subscribes. Here's a complete program:
+
+```kotlin
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+
+fun main() {
+    Observable.just("Hello", "RxKotlin")
+        .map { it.uppercase() }
+        .subscribeBy(
+            onNext = { println(it) },
+            onError = { it.printStackTrace() },
+            onComplete = { println("Done") }
+        )
+}
+```
+
+```text
+HELLO
+RXKOTLIN
+Done
+```
 
 ## Creating Observables
 
-There are several ways to create observables in RxKotlin. Here are some common methods:
-
-### `just`
-
-The `just` operator creates an observable that emits a single item and then completes.
+`just` emits the values you pass it (one to ten items), then completes:
 
 ```kotlin
-val observable = Observable.just("Hello, RxKotlin!")
+val greeting = Observable.just("Hello, RxKotlin!")
 ```
 
-### `fromIterable`
-
-The `fromIterable` operator creates an observable that emits the items from an iterable, such as a list or a set.
+`fromIterable`, or RxKotlin's `toObservable()` extension, emits each element of a collection:
 
 ```kotlin
-val numbers = listOf(1, 2, 3, 4, 5)
-val observable = Observable.fromIterable(numbers)
+import io.reactivex.rxjava3.kotlin.toObservable
+
+val numbers = listOf(1, 2, 3, 4, 5).toObservable()
+// same as Observable.fromIterable(listOf(1, 2, 3, 4, 5))
 ```
 
-### `create`
-
-The `create` operator allows you to create a custom observable by providing an emitter.
+`create` gives you an emitter so you can wrap callback-based APIs:
 
 ```kotlin
-val observable = Observable.create<String> { emitter ->
+val words = Observable.create<String> { emitter ->
     emitter.onNext("Hello")
     emitter.onNext("RxKotlin")
     emitter.onComplete()
 }
 ```
 
-## Transforming and Filtering Observables
-
-RxKotlin provides a rich set of operators for transforming and filtering observables. Here are some common ones:
-
-### `map`
-
-The `map` operator applies a function to each item emitted by an observable and emits the result.
+## Transforming and filtering
 
 ```kotlin
 val numbers = Observable.fromIterable(listOf(1, 2, 3, 4, 5))
-val squares = numbers.map { it * it }
+
+val squares = numbers.map { it * it }              // 1, 4, 9, 16, 25
+val evenNumbers = numbers.filter { it % 2 == 0 }   // 2, 4
 ```
 
-### `filter`
-
-The `filter` operator filters the items emitted by an observable based on a predicate function.
-
-```kotlin
-val evenNumbers = numbers.filter { it % 2 == 0 }
-```
+Each operator returns a new `Observable`; `numbers` is unchanged and can be subscribed to again.
 
 ## Combining Observables
 
-RxKotlin also provides operators for combining observables, such as `merge`, `concat`, and `zip`.
-
-### `merge`
-
-The `merge` operator combines multiple observables into a single observable that emits the items from all the input observables.
+`merge` interleaves items from several sources as they arrive. With synchronous sources like these, the output is simply 1 through 6:
 
 ```kotlin
-val observable1 = Observable.just(1, 2, 3)
-val observable2 = Observable.just(4, 5, 6)
-val mergedObservable = Observable.merge(observable1, observable2)
+val first = Observable.just(1, 2, 3)
+val second = Observable.just(4, 5, 6)
+val merged = Observable.merge(first, second)
 ```
 
-### `zip`
-
-The `zip` operator combines the emissions of multiple observables based on an aggregation function.
+`zip` pairs items by position and stops when the shorter source completes. Since Kotlin 1.4, a plain lambda works where RxJava expects a `BiFunction`, so you no longer need the explicit `BiFunction<String, Int, String> { ... }` wrapper (RxKotlin's README marks its old SAM helpers as obsolete):
 
 ```kotlin
 val names = Observable.just("Alice", "Bob", "Charlie")
 val ages = Observable.just(30, 25, 35)
 
-val zippedObservable = Observable.zip(names, ages, BiFunction<String, Int, String> { name, age ->
-    "$name is $age years old"
-})
+val described = Observable.zip(names, ages) { name, age -> "$name is $age years old" }
+// Alice is 30 years old, Bob is 25 years old, Charlie is 35 years old
 ```
 
-## Error Handling
+## Error handling
 
-RxKotlin provides a set of operators for handling errors in observables, such as `onErrorReturn`, `onErrorResumeNext`, and `retry`.
-
-### `onErrorReturn`
-
-The `onErrorReturn` operator allows you to emit a default item when an error occurs.
+An error terminates the stream: after `onError`, nothing else is delivered. `onErrorReturn` swaps the error for a final fallback value:
 
 ```kotlin
 val numbers = Observable.create<Int> { emitter ->
     emitter.onNext(1)
     emitter.onNext(2)
     emitter.onError(RuntimeException("Something went wrong!"))
-    emitter.onNext(3)
 }
 
-val errorHandledObservable = numbers.onErrorReturn { -1 }
+numbers
+    .onErrorReturn { -1 }
+    .subscribe { println(it) }   // 1, 2, -1
 ```
 
-### `retry`
-
-The `retry` operator allows you to automatically resubscribe to an observable when an error occurs, effectively retrying the operation.
+`retry(n)` resubscribes to the source up to `n` times when it errors. Because resubscribing runs the `create` block again, the source below prints "Hello" four times (the first attempt plus three retries) before the error reaches the subscriber:
 
 ```kotlin
-val errorProneObservable = Observable.create<String> { emitter ->
+val flaky = Observable.create<String> { emitter ->
     emitter.onNext("Hello")
     emitter.onError(RuntimeException("Something went wrong!"))
-    emitter.onNext("World")
 }
 
-val retriedObservable = errorProneObservable.retry(3)
+flaky
+    .retry(3)
+    .subscribeBy(
+        onNext = { println(it) },
+        onError = { println("Gave up: ${it.message}") }
+    )
 ```
+
+Always provide an error callback. If an error reaches a `subscribe` call without one, RxJava wraps it in an `OnErrorNotImplementedException` and sends it to `RxJavaPlugins.onError`, which by default hands it to the thread's uncaught exception handler. On Android, that crashes the app.
 
 ## Schedulers
 
-Schedulers in RxKotlin allow you to control the threading of your observables and observers. By default, RxKotlin uses the `Schedulers.computation()` scheduler, which is backed by a fixed pool of worker threads. You can change the scheduler used by an observable or observer by using the `subscribeOn` and `observeOn` operators, respectively.
+By default an `Observable` does its work on the thread that subscribes; there is no implicit background thread. (A few time-based operators such as `interval` and `delay` default to `Schedulers.computation()`.) You move work with two operators:
+
+- `subscribeOn` picks the scheduler the source runs on. Only the first one in a chain has an effect.
+- `observeOn` switches the thread for every operator and observer below it.
+
+On Android, a typical chain does I/O in the background and delivers results on the main thread:
 
 ```kotlin
-val backgroundObservable = Observable.just("Hello")
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+
+val disposable = Observable.fromCallable { loadFromNetwork() }
     .subscribeOn(Schedulers.io())
     .observeOn(AndroidSchedulers.mainThread())
+    .subscribeBy(
+        onNext = { result -> showResult(result) },
+        onError = { error -> showError(error) }
+    )
 ```
 
-In the example above, the observable will emit items on the I/O scheduler and the observer will consume the items on the main Android thread.
+`loadFromNetwork`, `showResult` and `showError` stand in for your own functions. Keep the returned `Disposable` (or add it to a `CompositeDisposable`) and dispose it when the screen goes away, otherwise the subscription can outlive the view and leak it.
 
-## Conclusion
+## Further reading
 
-In this article, we have introduced the basics of RxKotlin, a powerful library for reactive programming in Kotlin. We have covered the core components of the library, including observables, observers, and operators, as well as some common use cases such as transforming, filtering, and combining observables.
-
-By using RxKotlin in your Kotlin projects, you can take advantage of the expressive and concise syntax of the language to create complex and efficient asynchronous data flows. To learn more about RxKotlin, you can refer to the [official documentation](https://github.com/ReactiveX/RxKotlin) and [RxJava](https://github.com/ReactiveX/RxJava) repositories on GitHub.
+- [RxKotlin README](https://github.com/ReactiveX/RxKotlin) for the full list of Kotlin extensions
+- [RxJava wiki: What's different in 3.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-3.0) if you're migrating from RxJava 2
+- [ReactiveX operator reference](https://reactivex.io/documentation/operators.html), with marble diagrams for each operator

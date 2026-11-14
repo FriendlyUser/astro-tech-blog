@@ -1,65 +1,90 @@
 ---
-description: In this article, we will explore the core components of Apache Spark,
-  its architecture, and its key features
+description: How Apache Spark runs jobs across a cluster (driver, executors, stages, lazy evaluation), what its libraries do, and a PySpark word count you can run locally.
 imgSrc: /imgs/2023/1856526150.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-15T05:31:42.000Z'
-tags: []
-title: Apache Spark A High-Performance Cluster-Computing Framework
+lastUpdated: 2026-11-14
+tags: ["python", "spark"]
+title: 'Apache Spark basics: how it runs jobs, its libraries, and a PySpark example'
 ---
 
-# Apache Spark: A High-Performance Cluster-Computing Framework
+Apache Spark is an open-source engine for processing large datasets in parallel across a cluster of machines. You write transformations against a DataFrame (or the lower-level RDD API) in Python, Scala, Java, R or SQL, and Spark splits the work into tasks and runs them on many machines. It is mostly used for batch ETL, SQL analytics over data lakes, stream processing and distributed machine learning.
 
-Apache Spark is an open-source, distributed computing system designed to process large volumes of data quickly and efficiently. Developed by the Apache Software Foundation, Spark has rapidly become one of the most widely used big data processing frameworks, thanks to its ability to handle complex data processing tasks with ease and its compatibility with various data sources and programming languages.
+## The libraries
 
-In this article, we will explore the core components of Apache Spark, its architecture, and its key features. We will also touch upon how Spark can be used to tackle various data processing challenges.
+Spark ships as a core engine plus several libraries built on it:
 
-## Core Components of Apache Spark
+- **Spark Core** schedules tasks, manages memory and recovers from failures. It provides the RDD API.
+- **Spark SQL** runs SQL queries and powers the DataFrame and Dataset APIs. Its Catalyst optimizer rewrites queries before running them. It reads and writes Parquet, ORC, JSON, CSV, text and JDBC sources out of the box, and Avro through the separate `spark-avro` module.
+- **Structured Streaming** runs streaming jobs with the same DataFrame API, treating a stream as a table that keeps growing. By default it processes data in micro-batches. The older DStream-based **Spark Streaming** API is marked legacy and gets no more updates, so use Structured Streaming for new code.
+- **MLlib** provides distributed machine learning algorithms (classification, regression, clustering, collaborative filtering) and pipeline tools for feature preparation and model evaluation. It is not a wrapper around deep learning frameworks such as TensorFlow.
+- **GraphX** is a graph processing API with algorithms such as PageRank and connected components. Its API is written for Scala and it has no Python API. Python users usually reach for the separate GraphFrames package.
 
-Apache Spark is built upon four main components:
+## How Spark runs a job
 
-1. **Spark Core**: This is the foundation of the Apache Spark framework, providing essential functionalities such as task scheduling, memory management, and fault recovery.
+A Spark application has one **driver** process and many **executor** processes. The driver runs your `main` program, turns it into a plan and schedules tasks. Executors run the tasks and hold cached data. A **cluster manager** (Spark's standalone manager, YARN or Kubernetes) starts the executors on worker machines and gives them resources. In local mode, as in the example below, everything runs in one process.
 
-2. **Spark SQL**: This component allows users to query structured data using SQL, as well as the Dataset and DataFrame APIs. Spark SQL provides support for various data formats, such as Parquet, Avro, JSON, and JDBC.
+### Lazy evaluation
 
-3. **Spark Streaming**: Spark Streaming enables users to process real-time data streams, such as log files or social media feeds, by dividing the data into micro-batches and processing them using the Spark Core engine.
+Transformations such as `filter`, `select` and `groupBy` don't run anything. They add steps to a plan. Work starts only when you call an **action** that needs a result, such as `count`, `show`, `collect` or writing to storage. Waiting lets Spark optimize the whole plan first, for example by pushing filters down into the file scan so less data is read.
 
-4. **Spark MLlib**: This is a library for machine learning algorithms, including classification, regression, clustering, and collaborative filtering, as well as tools for model evaluation and data preparation.
+### Stages and shuffles
 
-5. **Spark GraphX**: GraphX is a library for graph computation, supporting various graph algorithms like PageRank and connected components, as well as a flexible graph computation API.
+When an action runs, the DAG scheduler splits the plan into **stages**. A stage boundary falls wherever data has to be redistributed between machines, which is called a **shuffle**. Grouping, joins and repartitioning need a shuffle. Narrow transformations such as `map` and `filter`, where each output partition depends on one input partition, are chained together inside a stage. Each stage runs as one task per partition. Shuffles write data to disk and send it over the network, so they are usually the most expensive part of a job.
 
-## Apache Spark Architecture
+### Fault tolerance and caching
 
-Apache Spark operates on a master/worker architecture, where the master node (also known as the driver program) coordinates the distribution of tasks to the worker nodes (also known as executors). Each executor runs on a separate node in the cluster and is responsible for executing tasks in parallel. The executors communicate with the driver program to report the progress of tasks and receive new instructions.
+Spark records the **lineage** of each dataset: the transformations that produced it from its source. If an executor dies and its partitions are lost, Spark recomputes just those partitions from the lineage instead of restarting the job.
 
-### Resilient Distributed Datasets (RDDs)
+You can `cache()` or `persist()` a dataset that is reused, for example in an iterative algorithm, so later actions read it from executor memory (or disk) instead of recomputing it. Spark doesn't cache anything unless you ask it to.
 
-At the heart of Spark's data processing capabilities are Resilient Distributed Datasets (RDDs). RDDs are immutable, fault-tolerant collections of objects that can be processed in parallel across the nodes in a Spark cluster. RDDs can be created by loading data from external storage systems, such as Hadoop Distributed File System (HDFS), Amazon S3, or Cassandra, or by transforming existing RDDs using operations like `map`, `filter`, or `reduce`.
+## Example: word count with PySpark
 
-### Directed Acyclic Graph (DAG) Scheduler
+Spark 4.x needs Java 17 or newer, and PySpark 4.3 needs Python 3.11 or newer. Install PySpark from PyPI. The package bundles Spark itself, so you don't need a separate download for local mode:
 
-Apache Spark uses a Directed Acyclic Graph (DAG) scheduler to determine the optimal execution plan for a given set of transformations and actions on RDDs. The DAG scheduler divides the computation into stages, where each stage contains a sequence of narrow transformations that can be executed in parallel. The scheduler then submits the tasks for each stage to the cluster manager, which assigns the tasks to the available executors.
+```bash
+pip install pyspark==4.3.0
+```
 
-## Key Features of Apache Spark
+This script counts the most common words in a text file:
 
-- **Fault Tolerance**: Spark achieves fault tolerance through RDDs, which are automatically partitioned across the nodes in the cluster. If a node fails, Spark can recover the lost data by re-computing the missing partitions, using the lineage information stored with each RDD.
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
-- **In-Memory Processing**: Spark can cache intermediate data in memory, significantly reducing the time spent on I/O operations and improving the performance of iterative algorithms.
+spark = (
+    SparkSession.builder
+    .appName("word-count")
+    .master("local[*]")  # run locally, one worker thread per CPU core
+    .getOrCreate()
+)
 
-- **Lazy Evaluation**: Spark evaluates transformations on RDDs lazily, meaning that the actual computation is only triggered when an action is called. This allows Spark to optimize the execution plan and minimize data movement across the cluster.
+lines = spark.read.text("README.md")  # one row per line, in a column named "value"
 
-- **Ease of Use**: Spark provides APIs in popular programming languages such as Scala, Python, Java, and R, making it accessible to a wide range of developers and data scientists. Additionally, Spark offers built-in support for popular machine learning libraries, such as TensorFlow and Hadoop ecosystem tools like Hive and HBase.
+counts = (
+    lines
+    .select(F.explode(F.split(F.lower(F.col("value")), r"\W+")).alias("word"))
+    .where(F.col("word") != "")
+    .groupBy("word")
+    .count()
+    .orderBy(F.desc("count"))
+)
 
-## Use Cases
+counts.show(10)  # the action: nothing runs until here
+spark.stop()
+```
 
-Apache Spark can be used in various data processing scenarios, such as:
+`groupBy` causes a shuffle, so this job runs in more than one stage. While it runs, the Spark UI at `http://localhost:4040` shows the stages and tasks.
 
-- **Data Processing**: Spark can process large volumes of structured or unstructured data, making it suitable for ETL (Extract, Transform, Load) operations or data preprocessing for machine learning applications.
+To run the same code on a cluster, remove the `.master(...)` line and launch it with `spark-submit`, which sets the master from its command-line options.
 
-- **Real-Time Data Processing**: With Spark Streaming, users can process real-time data streams and perform complex analytics, such as clickstream analysis or sentiment analysis of social media feeds.
+## When Spark is the wrong tool
 
-- **Machine Learning**: Spark MLlib provides a wide range of machine learning algorithms and tools, allowing data scientists to build, train, and deploy machine learning models at scale.
+Spark has real overhead: starting a JVM, scheduling tasks and shuffling between machines. If your data fits on one machine, pandas, Polars or DuckDB will often finish sooner and are simpler to run. Spark pays off when the data or the computation is too big for one machine, or when you already run it on a shared cluster.
 
-- **Graph Processing**: Spark GraphX enables the processing of graph data and the execution of graph algorithms, such as community detection or shortest path calculations.
+## Further reading
 
-In conclusion, Apache Spark is a powerful and versatile framework for big data processing, capable of handling various data processing tasks at scale. With its rich ecosystem and extensive support for popular data sources and programming languages, Spark has become an essential tool for organizations looking to harness the powerof big data analytics.
+- [Spark documentation](https://spark.apache.org/docs/latest/)
+- [Spark SQL, DataFrames and Datasets guide](https://spark.apache.org/docs/latest/sql-programming-guide.html)
+- [Structured Streaming programming guide](https://spark.apache.org/docs/latest/streaming/index.html)
+- [Cluster mode overview](https://spark.apache.org/docs/latest/cluster-overview.html)

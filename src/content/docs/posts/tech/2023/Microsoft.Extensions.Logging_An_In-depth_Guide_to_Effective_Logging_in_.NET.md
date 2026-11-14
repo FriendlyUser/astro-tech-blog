@@ -1,72 +1,62 @@
 ---
-title: Microsoft.Extensions.Logging An In-depth Guide to Effective Logging in .NET
+title: "Microsoft.Extensions.Logging: configuring providers, filters and structured logs in .NET"
 pubDate: "2023-12-22T01:55:57.000Z"
-description: "Logging is a powerful, flexible, and extendable logging framework for .NET developers."
-tags: []
+lastUpdated: 2026-11-14
+description: "How Microsoft.Extensions.Logging works: ILogger, providers, category filters, appsettings config, message templates and the LoggerMessage generator."
+tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/4161054296.png
 ---
-# Microsoft.Extensions.Logging: An In-depth Guide to Effective Logging in .NET
 
-Effective logging is crucial for debugging and monitoring applications, and Microsoft.Extensions.Logging is a powerful, flexible, and extendable logging framework for .NET developers. This article will provide a comprehensive overview of the framework, covering key concepts, configurations, and best practices for leveraging its full potential.
+`Microsoft.Extensions.Logging` is the standard logging API in .NET. Your code writes to `ILogger`, and one or more *providers* decide where the messages go (console, debug output, Event Log, or a third-party sink like Serilog or Application Insights). ASP.NET Core and the Generic Host set it up for you; console apps can use it with a couple of lines.
 
-## Overview of Microsoft.Extensions.Logging
+## The pieces
 
-Microsoft.Extensions.Logging is a logging framework introduced in .NET Core and is now part of the .NET ecosystem. It provides a generic interface for logging messages across various output targets, known as "providers," such as console, file, or external logging systems like Elasticsearch or Application Insights.
+- **`ILogger` / `ILogger<T>`** – what you call: `LogTrace`, `LogDebug`, `LogInformation`, `LogWarning`, `LogError`, `LogCritical`. `ILogger<T>` uses the full type name of `T` as the log *category*.
+- **`ILoggerFactory`** – creates loggers for a category and fans each message out to every registered provider.
+- **`ILoggerProvider`** – a destination. The built-in ones are Console, Debug, EventSource and EventLog (Windows only). There's no built-in file provider; use a third-party one such as Serilog or NLog for files.
+- **Filter rules** – not an interface but configuration: minimum levels per category prefix and optionally per provider, set in code with `AddFilter` or in `appsettings.json`.
 
-### Key Concepts
+## In ASP.NET Core and hosted apps
 
-The main components of Microsoft.Extensions.Logging are:
-
-1. **ILogger**: The primary interface used by developers to log messages. It supports different log levels, such as Debug, Information, Warning, Error, and Critical.
-2. **ILoggerFactory**: A factory to create instances of ILogger.
-3. **ILoggingProvider**: A provider that receives log messages and sends them to the appropriate output target.
-4. **ILoggingFilter**: An optional component that filters log messages based on pre-defined criteria.
-
-These components work together to create a logging pipeline, where log messages flow from the ILogger to ILoggingProvider through the ILoggerFactory and any ILoggingFilters in between.
-
-## Configuring Microsoft.Extensions.Logging
-
-To get started with Microsoft.Extensions.Logging, you'll need to configure it in your application.
-
-### 1. Add NuGet Packages
-
-First, add the required NuGet packages to your project. The base package is `Microsoft.Extensions.Logging`, and you'll also need packages for your desired logging providers, such as `Microsoft.Extensions.Logging.Console` for console logging.
-
-### 2. Configure Logging in Startup
-
-In your `Startup` class, add the following using statements:
+`WebApplication.CreateBuilder` (and `Host.CreateApplicationBuilder`) already register the Console, Debug, EventSource and, on Windows, EventLog providers, and read filter rules from the `Logging` section of configuration. Adjust it through `builder.Logging`:
 
 ```csharp
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();                 // drop the defaults
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);  // global minimum
+builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.Warning);
+
+var app = builder.Build();
 ```
 
-Next, in the `ConfigureServices` method, configure the logging services using the `AddLogging` extension method:
+The same rules usually live in `appsettings.json`, which is easier to change per environment:
 
-```csharp
-public void ConfigureServices(IServiceCollection services)
+```json
 {
-    services.AddLogging(config =>
-    {
-        config.AddConsole(); // Add console logging provider
-        // Add other logging providers as needed
-
-        // Set minimum log levels for different providers
-        config.SetMinimumLevel(LogLevel.Debug); // Global minimum log level
-        config.AddFilter("System", LogLevel.Information); // Filter for specific namespace
-        config.AddFilter("Microsoft", LogLevel.Warning); // Filter for specific namespace
-    });
-
-    // Other service configurations
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Debug"
+      }
+    }
+  }
 }
 ```
 
-### 3. Inject ILogger and Log Messages
+When several rules match, the most specific category prefix wins, and a provider-specific section (here `Console`) overrides the general one for that provider.
 
-Finally, you can inject an ILogger instance into your classes using dependency injection and log messages:
+Inject `ILogger<T>` wherever you need it:
 
 ```csharp
+using Microsoft.AspNetCore.Mvc;
+
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -84,24 +74,77 @@ public class HomeController : Controller
 }
 ```
 
-## Best Practices
+## In a console app
 
-To make the most of Microsoft.Extensions.Logging, consider the following best practices:
-
-1. **Use structured logging**: Instead of concatenating strings, use structured logging to provide more context and enable better querying and filtering. For example:
+Add the `Microsoft.Extensions.Logging.Console` package (use the version that matches your .NET version) and create a factory yourself:
 
 ```csharp
-_logger.LogInformation("User {UserId} logged in at {LoginTime}", userId, DateTime.UtcNow);
+using Microsoft.Extensions.Logging;
+
+using ILoggerFactory factory = LoggerFactory.Create(builder => builder
+    .AddConsole()
+    .SetMinimumLevel(LogLevel.Debug));
+
+ILogger logger = factory.CreateLogger("Program");
+
+logger.LogInformation("Processing order {OrderId} for {Customer}", 42, "alice");
 ```
 
-2. **Use appropriate log levels**: Choose log levels carefully to avoid information overload and make it easier to filter logs. For example, use Information for regular application events, Warning for recoverable issues, and Error for unexpected failures.
+Dispose the factory before the process exits (the `using` does that here). The console provider writes on a background thread, and disposing flushes it.
 
-3. **Leverage external logging systems**: While console and file logging can be useful during development, consider using more powerful external logging systems like Application Insights, Seq, or Elasticsearch in production environments for better log management, querying, and alerting capabilities.
+## Practices worth following
 
-4. **Use filters**: Configure log filters to fine-tune logging output and reduce noise, either by setting global minimum log levels or filtering specific namespaces.
+### Use message templates, not string interpolation
 
-5. **Avoid logging sensitive data**: Ensure that you don't log sensitive data, such as passwords, credit card numbers, or personally identifiable information (PII), to protect user privacy and comply with data protection regulations.
+```csharp
+// Good: OrderId and Customer are kept as named properties
+logger.LogInformation("Processing order {OrderId} for {Customer}", orderId, customer);
 
-## Conclusion
+// Avoid: the values are baked into a string, and it's formatted even if Information is disabled
+logger.LogInformation($"Processing order {orderId} for {customer}");
+```
 
-Microsoft.Extensions.Logging is a powerful, extensible logging framework for .NET developers. By following the configuration steps and best practices outlined in this article, you can set up a robust logging pipeline that will help you debug, monitor, and maintain your applications more effectively.
+Placeholders are matched to arguments by position, not by name. Providers that support structured logging (Application Insights, Serilog sinks, OpenTelemetry exporters) store `OrderId` and `Customer` as fields you can query.
+
+### Use the `LoggerMessage` source generator on hot paths
+
+Since .NET 6, `[LoggerMessage]` generates a strongly typed logging method that checks the level before doing any work and avoids boxing the arguments:
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+public static partial class Log
+{
+    [LoggerMessage(EventId = 1001, Level = LogLevel.Information,
+        Message = "Order {OrderId} shipped")]
+    public static partial void OrderShipped(ILogger logger, int orderId);
+}
+
+// usage
+Log.OrderShipped(logger, 42);
+```
+
+### Add context with scopes
+
+```csharp
+using (logger.BeginScope("Batch {BatchId}", batchId))
+{
+    logger.LogInformation("Starting batch");
+}
+```
+
+Every message logged inside the block carries `BatchId`. The console provider only prints scopes if you enable `IncludeScopes` in its formatter options; structured providers usually record them automatically.
+
+### Pick levels deliberately
+
+Use `Information` for normal application events, `Warning` for things that went wrong but were handled, and `Error` for failures that need attention. Keep `Debug` and `Trace` off in production unless you're investigating something, and turn them on for a single category rather than globally.
+
+### Don't log secrets or personal data
+
+Passwords, tokens, card numbers and personal information shouldn't end up in logs, which tend to be retained longer and accessed more widely than the database.
+
+## Further reading
+
+- [Logging in .NET](https://learn.microsoft.com/dotnet/core/extensions/logging)
+- [Logging in ASP.NET Core](https://learn.microsoft.com/aspnet/core/fundamentals/logging/)
+- [Compile-time logging source generation](https://learn.microsoft.com/dotnet/core/extensions/logger-message-generator)

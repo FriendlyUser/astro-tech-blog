@@ -1,113 +1,139 @@
 ---
-description: In this article, we will cover the features, advantages, and basic usage
-  of the Jackson library
+description: Convert Java objects to and from JSON with Jackson's ObjectMapper, covering
+  records, field renaming, generic lists, the tree model and Jackson 2 vs 3 differences.
 imgSrc: /imgs/2023/pokemon_by_first_letter.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-06T06:00:24.000Z'
-tags: []
-title: Jackson JSON Library An Overview and Usage Guide
+lastUpdated: 2026-11-14
+tags:
+  - java
+title: "Jackson basics: reading and writing JSON in Java"
 ---
 
-# Jackson JSON Library: An Overview and Usage Guide
+Jackson is one of the most widely used JSON libraries for Java and the default JSON library in Spring Boot. Its `ObjectMapper` converts between JSON and Java objects (data binding), and it also offers a tree model and a low-level streaming parser for cases where you don't have a class to bind to.
 
-In the world of Java development, handling JSON data is a common task. Whether you're working with web services, RESTful APIs, or data storage, processing JSON data efficiently is essential. One of the most popular and widely used Java libraries for processing JSON data is the Jackson JSON library. In this article, we will cover the features, advantages, and basic usage of the Jackson library.
+Jackson 3.0 was released in October 2025 with a new Maven group ID and package names. The main example below uses Jackson 3; the differences for code still on Jackson 2.x are listed after it.
 
-## 1. Introduction to Jackson JSON Library
+## Modules
 
-Jackson is a high-performance, feature-rich Java library for processing JSON data. It provides an easy-to-use API for parsing, generating, and manipulating JSON data. The Jackson library has a modular architecture, which allows developers to pick and choose the components they need for their specific use case. The core components of the Jackson library include:
+Jackson is split into a few artifacts:
 
-- **Jackson Core**: The fundamental building blocks for processing JSON data, including the streaming API.
-- **Jackson Annotations**: A set of Java annotations for configuring data binding and other Jackson features.
-- **Jackson Databind**: A high-level API for data binding, which allows conversion between Java objects and JSON data.
+- **jackson-core**: the streaming parser and generator (`JsonParser`, `JsonGenerator`).
+- **jackson-annotations**: annotations such as `@JsonProperty` and `@JsonIgnore`.
+- **jackson-databind**: `ObjectMapper`, data binding and the tree model. It depends on the other two.
 
-## 2. Key Features and Advantages
+Extra modules add support for other formats (YAML, CSV, XML, Smile, CBOR) and third-party types such as Guava collections.
 
-### 2.1 High Performance
+## Dependency
 
-Jackson is known for its high performance and is often considered the fastest Java JSON library. Its streaming API allows processing large JSON documents with minimal memory overhead.
-
-### 2.2 Flexible Data Binding
-
-Jackson provides a flexible and powerful data binding API that supports a wide range of Java data structures, including POJOs (Plain Old Java Objects), maps, and collections. This allows developers to easily convert JSON data to and from Java objects.
-
-### 2.3 Extensive Customization
-
-Jackson offers a wealth of configuration options and annotations, which allows developers to customize the library's behavior to suit their specific needs. This includes customizing serialization and deserialization, handling date formats, and more.
-
-### 2.4 Modular Architecture
-
-The modular architecture of Jackson allows developers to choose only the components they need, reducing the library's footprint and improving performance.
-
-## 3. Basic Usage
-
-To get started with Jackson, add the required dependencies to your project. For a Maven project, add the following dependencies to your `pom.xml` file:
+For most projects, `jackson-databind` is the only dependency you need to declare; Maven pulls in core and annotations:
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>2.13.0</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>2.13.0</version>
-    </dependency>
-    <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>2.13.0</version>
-    </dependency>
-</dependencies>
+<dependency>
+  <groupId>tools.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>3.3.0</version>
+</dependency>
 ```
 
-### 3.1 Serializing Java Objects to JSON
+3.3.0 was the latest 3.x release on Maven Central when this post was updated. Jackson 3 requires Java 17.
 
-To serialize a Java object to JSON, use the `ObjectMapper` class:
+## Serializing and deserializing
 
 ```java
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-public class JacksonSerializationExample {
+public class JacksonExample {
+
+    public record Person(String name, int age,
+                         @JsonProperty("email_address") String email) {}
+
     public static void main(String[] args) {
-        Person person = new Person("John Doe", 30);
+        ObjectMapper mapper = JsonMapper.builder().build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String jsonString = objectMapper.writeValueAsString(person);
-            System.out.println(jsonString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Java object -> JSON
+        Person person = new Person("John Doe", 30, "john@example.com");
+        String json = mapper.writeValueAsString(person);
+        System.out.println(json);
+
+        // JSON -> Java object
+        Person parsed = mapper.readValue(json, Person.class);
+        System.out.println(parsed);
+
+        // JSON -> tree, when you don't have a class for it
+        JsonNode node = mapper.readTree("{\"name\":\"Jane\",\"tags\":[\"a\",\"b\"]}");
+        System.out.println(node.get("tags").get(1).asString());
     }
 }
 ```
 
-### 3.2 Deserializing JSON to Java Objects
+Output:
 
-To deserialize JSON data to a Java object, use the `ObjectMapper` class:
+```text
+{"name":"John Doe","age":30,"email_address":"john@example.com"}
+Person[name=John Doe, age=30, email=john@example.com]
+b
+```
+
+A few things to notice:
+
+- Records work without extra annotations. For a regular class, Jackson needs either a no-argument constructor plus setters (or public fields), or a constructor annotated with `@JsonCreator`. The most common deserialization error is a class with only an all-arguments constructor.
+- `@JsonProperty("email_address")` renames a field in the JSON without renaming it in Java.
+- `ObjectMapper` is thread-safe once configured. Create one and reuse it rather than building a new one per call.
+
+### Generic types
+
+Because of type erasure, `mapper.readValue(json, List.class)` gives you a list of `LinkedHashMap`s, not `Person` objects. Use a `TypeReference` to keep the element type:
 
 ```java
+import java.util.List;
+import tools.jackson.core.type.TypeReference;
+
+List<Person> people = mapper.readValue(
+        "[{\"name\":\"A\",\"age\":1}]",
+        new TypeReference<List<Person>>() {});
+```
+
+## Jackson 2.x
+
+Jackson 2.x is still maintained and still very common. If you're on it:
+
+- The group ID is `com.fasterxml.jackson.core` (latest at the time of writing: `jackson-databind` 2.23.0) and packages are `com.fasterxml.jackson.*`. Jackson 3 keeps `jackson-annotations` under the old group ID, so `com.fasterxml.jackson.annotation` imports don't change.
+- `readValue` and `writeValueAsString` throw the checked `JsonProcessingException`, so you need a `try`/`catch` or `throws`. In Jackson 3 the base `JacksonException` is unchecked.
+- You typically write `new ObjectMapper()` and configure it with `mapper.configure(...)`. In Jackson 3, mappers are immutable and configured through `JsonMapper.builder()`.
+- Unknown JSON properties fail deserialization by default with `UnrecognizedPropertyException`. Jackson 3 ignores them by default. In 2.x, set `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES` to `false` or annotate the class with `@JsonIgnoreProperties(ignoreUnknown = true)` if you want that behaviour.
+- `JsonNode.asText()` is the 2.x name for what Jackson 3 calls `asString()`.
+- Java records are supported from Jackson 2.12.
+
+The same example on 2.x:
+
+```java
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 
-public class JacksonDeserializationExample {
-    public static void main(String[] args) {
-        String jsonString = "{\"name\":\"John Doe\",\"age\":30}";
+public class JacksonExample {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Person person = objectMapper.readValue(jsonString, Person.class);
-            System.out.println(person);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public record Person(String name, int age,
+                         @JsonProperty("email_address") String email) {}
+
+    public static void main(String[] args) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String json = mapper.writeValueAsString(new Person("John Doe", 30, "john@example.com"));
+        System.out.println(json);
+
+        Person parsed = mapper.readValue(json, Person.class);
+        System.out.println(parsed);
     }
 }
 ```
 
-## 4. Conclusion
+## Further reading
 
-In this article, we introduced the Jackson JSON library, a high-performance and feature-rich library for processing JSON data in Java. We covered its key features, advantages, and demonstrated basic usage for serializing and deserializing JSON data. The Jackson library is an invaluable tool for any Java developer working with JSON data and offers a powerful and flexible solution for a wide range of use cases.
+- [Jackson project home](https://github.com/FasterXML/jackson)
+- [Jackson 3.0 release notes](https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.0)
+- [jackson-databind README](https://github.com/FasterXML/jackson-databind)

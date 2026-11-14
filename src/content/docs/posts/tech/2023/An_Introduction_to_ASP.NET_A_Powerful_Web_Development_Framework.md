@@ -1,66 +1,93 @@
 ---
-description: In this article, we will explore the fundamentals of ASP
+description: "What ASP.NET is, how classic ASP.NET on .NET Framework differs from ASP.NET Core, which programming models each offers, and a first minimal API to run."
 imgSrc: /imgs/2023/4067359065.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-04T12:12:58.000Z'
-tags: []
-title: An Introduction to ASP.NET A Powerful Web Development Framework
+lastUpdated: 2026-11-14
+tags: ["aspnet", "csharp", "dotnet"]
+title: "Introduction to ASP.NET: classic ASP.NET vs ASP.NET Core"
 ---
 
-# An Introduction to ASP.NET: A Powerful Web Development Framework
+ASP.NET is Microsoft's framework for building web apps and HTTP APIs on .NET. The name covers two different products: the original **ASP.NET**, which runs on the Windows-only .NET Framework, and **ASP.NET Core**, a cross-platform rewrite that ships with modern .NET. If you start a project today, you want ASP.NET Core. This post explains the split, the programming models in each, and ends with a minimal API you can run.
 
-ASP.NET is a powerful, open-source web development framework developed by Microsoft. It enables developers to create modern, high-performing web applications and services using .NET technologies. In this article, we will explore the fundamentals of ASP.NET, its core components, and how it can be used to create dynamic, interactive web applications.
+## Two frameworks with one name
 
-## What is ASP.NET?
+**ASP.NET** shipped with .NET Framework 1.0 in 2002 as the successor to classic Active Server Pages. It runs on Windows, is hosted in IIS, and is built on the `System.Web` assembly. The .NET Framework is now in maintenance: 4.8.1 is the last version, it still gets security fixes as part of Windows, and it gets no new features.
 
-ASP.NET is a framework that provides a robust, flexible, and scalable platform for building web applications and services. It is part of the larger .NET ecosystem, which includes various libraries, tools, and programming languages that developers can use to create applications across different platforms, including desktop, mobile, and web.
+**ASP.NET Core** was released in 2016 as a redesign. It runs on Windows, Linux and macOS, is open source under the MIT licence ([dotnet/aspnetcore](https://github.com/dotnet/aspnetcore)), and ships with each .NET release. As of November 2026 the current release is .NET 11 (released November 10, 2026, Standard Term Support); .NET 10 is the Long Term Support release, supported until November 2028.
 
-ASP.NET was first released in 2002 as a successor to Microsoft's Active Server Pages (ASP) technology. Over the years, it has evolved to include various sub-frameworks and extensions, such as ASP.NET Web Forms, ASP.NET MVC, and ASP.NET Core, which cater to different development styles and application requirements.
+The two aren't source-compatible. Porting from ASP.NET to ASP.NET Core means rewriting anything that touches `System.Web`, such as `HttpContext.Current`, `Global.asax` and `web.config` modules.
 
-## Core Components of ASP.NET
+## Programming models
 
-ASP.NET consists of several key components that work together to provide a comprehensive web development framework:
+### Classic ASP.NET (.NET Framework)
 
-### 1. Runtime Environment
+- **Web Forms**: pages (`.aspx`) built from server controls with an event model (`Button_Click`) and view state that tracks control state across postbacks. Designed to feel like Windows Forms. It was not ported to ASP.NET Core.
+- **ASP.NET MVC**: controllers, actions and Razor views, with routing and model binding. Easier to unit-test than Web Forms.
+- **ASP.NET Web API**: controllers that return data (JSON or XML) instead of views, for HTTP services.
 
-ASP.NET applications run on the .NET runtime, which is responsible for managing application execution, memory management, and garbage collection. The runtime ensures that applications are secure, stable, and performant.
+### ASP.NET Core
 
-### 2. Web Server
+- **MVC controllers**: MVC and Web API were merged into one framework; API controllers derive from `ControllerBase` and views are optional.
+- **Razor Pages**: a page-centric model where each `.cshtml` page has its own handler class. Simpler than MVC for form-heavy sites.
+- **Minimal APIs**: route handlers mapped directly to lambdas in `Program.cs`, with no controller classes. A good default for small services and JSON APIs.
+- **Blazor**: components written in C# and Razor that run on the server (over a SignalR connection) or in the browser via WebAssembly.
+- **SignalR** for real-time messaging over WebSockets, and **gRPC** for service-to-service calls.
 
-ASP.NET applications are hosted on a web server, which is responsible for processing incoming requests and returning appropriate responses. The most common web server for ASP.NET applications is Microsoft's Internet Information Services (IIS), but other options, such as Kestrel, are also available.
+## Hosting
 
-### 3. Language Support
+ASP.NET Core apps contain their own web server, **Kestrel**, and run as an ordinary process (`dotnet MyApp.dll`). In production you can expose Kestrel directly, or put it behind a reverse proxy such as Nginx or YARP. On Windows, IIS can host the app in-process through the ASP.NET Core Module. Classic ASP.NET, by contrast, only runs inside IIS (or IIS Express during development).
 
-ASP.NET supports multiple programming languages, such as C#, VB.NET, and F#. Developers can choose their preferred language to build web applications and services.
+## Languages
 
-### 4. Libraries and APIs
+Classic ASP.NET supports C# and Visual Basic. ASP.NET Core is used almost entirely from C#, which every template and doc sample uses. F# works too (the Giraffe and Falco libraries are popular), but Visual Basic is not supported for ASP.NET Core web projects.
 
-ASP.NET provides extensive libraries and APIs that developers can use to build feature-rich web applications, including support for authentication, data access, caching, and more.
+## A first minimal API
 
-### 5. Tooling
+Install the [.NET SDK](https://dotnet.microsoft.com/download), then create an empty web project:
 
-Microsoft provides a range of tools and IDEs (Integrated Development Environments), such as Visual Studio and Visual Studio Code, to help developers create, debug, and deploy ASP.NET applications.
+```bash
+dotnet new web -o HelloApi
+cd HelloApi
+```
 
-## Popular Sub-Frameworks of ASP.NET
+Replace `Program.cs` with:
 
-ASP.NET has evolved to include several sub-frameworks, each catering to different development styles and requirements:
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-### 1. ASP.NET Web Forms
+var todos = new List<Todo>
+{
+    new(1, "Write the post"),
+    new(2, "Run the sample"),
+};
 
-Web Forms is a traditional, event-driven model for building web applications using a design surface and server-side controls. It is ideal for developers who are familiar with desktop application development and prefer a drag-and-drop, event-driven approach to web development.
+app.MapGet("/", () => "Hello World!");
 
-### 2. ASP.NET MVC (Model-View-Controller)
+app.MapGet("/todos", () => todos);
 
-ASP.NET MVC is a modern, pattern-based approach to building web applications that separates the application's logic into three interconnected components: the Model, the View, and the Controller. This separation of concerns results in a more maintainable and testable codebase, making it a popular choice for large-scale and enterprise-level applications.
+app.MapGet("/todos/{id:int}", (int id) =>
+    todos.FirstOrDefault(t => t.Id == id) is { } todo
+        ? Results.Ok(todo)
+        : Results.NotFound());
 
-### 3. ASP.NET Web API
+app.Run();
 
-ASP.NET Web API is a framework for building HTTP-based services that can be consumed by a wide range of clients, including browsers, mobile devices, and other web applications. It supports the creation of RESTful services, enabling developers to build web APIs that adhere to modern architectural principles.
+record Todo(int Id, string Title);
+```
 
-### 4. ASP.NET Core
+Run it with `dotnet run`. The console prints the URL it's listening on (the port comes from `Properties/launchSettings.json`), and `/todos/1` returns `{"id":1,"title":"Write the post"}`. The web SDK's implicit `using` directives cover `WebApplication`, `Results` and LINQ, so no `using` lines are needed. Route parameters such as `{id:int}` bind to the lambda's parameters by name, and returned objects are serialised to camel-cased JSON.
 
-ASP.NET Core is a cross-platform, high-performance, open-source framework for building modern, cloud-based, and internet-connected applications. It is a redesign of the original ASP.NET framework, offering improved performance, modularity, and support for modern web development practices.
+## When to pick what
 
-## Conclusion
+- **New projects**: ASP.NET Core, on the current LTS release if you want the longest support window.
+- **Existing Web Forms or MVC 5 apps**: they keep running on .NET Framework 4.8.x. Migrating is a rewrite of the web layer, so it's usually done incrementally; Microsoft's guidance uses the YARP proxy to move routes one at a time.
+- **Static content sites**: a full server framework is more than you need; a static site generator is simpler.
 
-ASP.NET is a powerful and versatile web development framework that enables developers to create modern, high-performing web applications and services. With its support for multiple programming languages, extensive libraries and APIs, and a range of sub-frameworks catering to different development styles, ASP.NET is an excellent choice for web developers looking to create robust, scalable applications.
+## Further reading
+
+- [ASP.NET Core documentation](https://learn.microsoft.com/aspnet/core/)
+- [Choose between ASP.NET and ASP.NET Core](https://learn.microsoft.com/aspnet/core/fundamentals/choose-aspnet-framework)
+- [Minimal APIs overview](https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis/overview)
+- [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)

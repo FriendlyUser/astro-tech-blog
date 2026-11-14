@@ -1,42 +1,21 @@
 ---
-description: This article will provide an overview of the key features and benefits
-  of Protobuf, and explain its usage in practical applications.
+description: "How Protocol Buffers work: define a .proto schema, generate Python code with protoc, serialize and parse messages, and evolve the schema safely."
 imgSrc: /imgs/2023/1879869613.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-02T13:08:12.000Z'
-tags: []
-title: Google Protocol Buffers An Introduction to Efficient Serialization
+lastUpdated: 2026-11-14
+tags:
+  - python
+title: 'Protocol Buffers in Python: schemas, code generation and schema evolution'
 ---
 
-# Google Protocol Buffers: An Introduction to Efficient Serialization
+Protocol Buffers (protobuf) is Google's language-neutral format for serializing structured data. You describe your messages in a `.proto` file, run the `protoc` compiler to generate classes for your language, and those classes read and write a compact binary encoding. Google started it internally in 2001 and later open-sourced it. It is the default message format for gRPC, and official code generators exist for C++, Java, Kotlin, Python, Go, C#, Objective-C, Dart, Ruby and PHP, among others.
 
-## Introduction
+Use it when you control both ends of a channel (services, queues, storage) and want a typed contract that can change over time. Plain JSON is still easier when humans need to read the payload or when the consumer is a browser you don't control.
 
-Google Protocol Buffers, often referred to as Protobuf, is a method for efficient serialization of structured data. It is a language- and platform-neutral format developed by Google in 2001 for use in their internal systems. It has since then gained popularity as an open-source project, with support for various programming languages such as C++, Java, Python, Go, and more. This article will provide an overview of the key features and benefits of Protobuf, and explain its usage in practical applications.
+## Define a schema
 
-## Key Features
-
-### Compact Binary Format
-
-One of the most important aspects of Protobuf is its compact binary format, which allows for efficient storage and transmission of serialized data. The binary format is both smaller and faster to parse than alternative formats like JSON or XML. This makes Protobuf ideal for use in high-performance systems or resource-constrained environments, such as mobile devices or embedded systems.
-
-### Strongly-Typed Schema
-
-Protobuf requires the definition of a schema, or a `.proto` file, to specify the structure of the data to be serialized. This schema serves as a contract between the sender and receiver of the data, ensuring that both parties have a clear understanding of the data format. The schema is strongly typed, meaning that each field has a specific data type, such as `int32`, `string`, or a custom message type.
-
-### Backward and Forward Compatibility
-
-Protobuf is designed to handle changes in the schema gracefully, allowing for both backward and forward compatibility. Fields can be added or removed without breaking the compatibility of the serialized data. This is achieved by assigning unique field numbers to each field in the schema, which are used to identify the fields in the binary format. As long as these field numbers are not changed, the serialized data will remain compatible.
-
-### Language and Platform Neutrality
-
-Protobuf is supported by a wide range of programming languages and platforms, making it an ideal choice for cross-language and cross-platform serialization. The Protobuf compiler, `protoc`, generates code in the target language based on the `.proto` schema file. This generated code handles the encoding and decoding of the Protobuf binary format, allowing developers to focus on their application logic.
-
-## Using Protobuf in Practice
-
-### Defining a `.proto` Schema
-
-A `.proto` schema file defines the structure and data types of the messages to be serialized. Here's a simple example of a schema for a `Person` message:
+`person.proto`:
 
 ```protobuf
 syntax = "proto3";
@@ -48,39 +27,75 @@ message Person {
 }
 ```
 
-### Generating Code
+The numbers are **field numbers**, not default values. They identify each field in the binary encoding, so the field *names* never go over the wire. Numbers 1–15 take one byte to encode, so give those to your most frequently set fields.
 
-The `protoc` compiler can be used to generate code in the target language based on the `.proto` schema file. For example, to generate Python code for the `Person` schema, run the following command:
+## Generate Python code
 
+Install the runtime and a compiler. You can download `protoc` from the [protobuf releases page](https://github.com/protocolbuffers/protobuf/releases), or use the copy bundled with `grpcio-tools`:
+
+```bash
+pip install protobuf grpcio-tools
+python -m grpc_tools.protoc -I. --python_out=. person.proto
 ```
-protoc --python_out=. person.proto
-```
 
-This will produce a `person_pb2.py` file containing the generated Python code for the `Person` message.
+(With a standalone `protoc` on your `PATH`, the equivalent is `protoc -I. --python_out=. person.proto`.)
 
-### Serializing and Deserializing Data
+This writes `person_pb2.py`. Add `--pyi_out=.` if you want type stubs for your editor. Generated Python code checks the installed `protobuf` runtime version at import time, so keep the runtime at least as new as the compiler that generated the code.
 
-Using the generated code, you can now serialize and deserialize data in the specified format. Here's an example in Python:
+## Serialize and parse
 
 ```python
 import person_pb2
 
-## Create a new Person instance
-person = person_pb2.Person()
-person.name = "John Doe"
-person.age = 30
-person.email = "john.doe@example.com"
+person = person_pb2.Person(name="John Doe", age=30, email="john.doe@example.com")
 
-## Serialize the Person instance to a binary format
-binary_data = person.SerializeToString()
+data = person.SerializeToString()  # bytes, despite the name
+print(len(data))  # 34
 
-## Deserialize the binary data back into a Person instance
 person2 = person_pb2.Person()
-person2.ParseFromString(binary_data)
-
-print(person2.name)  ## Output: John Doe
+person2.ParseFromString(data)
+print(person2.name)  # John Doe
 ```
 
-## Conclusion
+The same message as compact JSON is 59 bytes. Most of the saving comes from not repeating field names and from varint-encoding small integers. Strings still cost their full length, so don't expect large savings for text-heavy messages.
 
-Google Protocol Buffers is a powerful serialization framework with a compact binary format, strongly-typed schema, and support for backward and forward compatibility. Its language and platform neutrality make it an ideal choice for a wide range of applications, from high-performance systems to resource-constrained environments. By leveraging Protobuf, developers can ensure efficient and reliable serialization of their structured data, while maintaining compatibility across different versions of their data schema.
+When you need JSON (for logs, debugging, or a REST API), `google.protobuf.json_format` converts both ways:
+
+```python
+from google.protobuf import json_format
+
+print(json_format.MessageToJson(person))
+same = json_format.Parse('{"name": "Jane", "age": 41}', person_pb2.Person())
+```
+
+## Changing the schema without breaking readers
+
+Protobuf is designed so old and new code can read each other's messages, as long as you follow a few rules:
+
+- **Adding a field is safe.** Old readers skip field numbers they don't know (Python keeps them as unknown fields and writes them back out if the message is re-serialized). New readers see the default value (`""`, `0`, `false`, empty list) when an old message lacks the field.
+- **Never change a field's number**, and never reuse a number. The number *is* the field on the wire. Reusing one means old data is decoded as the wrong field.
+- **When you delete a field, reserve its number and name** so nobody reuses them later:
+
+```protobuf
+syntax = "proto3";
+
+message Person {
+  reserved 3;
+  reserved "email";
+
+  string name = 1;
+  int32 age = 2;
+  repeated string emails = 4;
+}
+```
+
+- Renaming a field is safe for the binary format, but it breaks the JSON format, which uses names.
+
+One proto3 gotcha: scalar fields have no "unset" state by default. An `age` of `0` and a missing `age` look the same. Mark the field `optional int32 age = 2;` if you need to tell them apart, and then check `person.HasField("age")`.
+
+## Further reading
+
+- [Protocol Buffers documentation](https://protobuf.dev/)
+- [Language guide (proto3)](https://protobuf.dev/programming-guides/proto3/)
+- [Python tutorial](https://protobuf.dev/getting-started/pythontutorial/)
+- [Encoding details](https://protobuf.dev/programming-guides/encoding/)

@@ -1,146 +1,137 @@
 ---
-description: ' By the end of this tutorial, you''ll have a basic understanding of
-  how to create, retrieve, update, and delete (CRUD) resources using this library.'
+description: 'Build a small CRUD API for tasks with Flask-RESTful: Resource classes, URL routing, status codes, and testing each endpoint with curl.'
 imgSrc: /imgs/2023/1144941208.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-01T14:01:55.000Z'
-tags: []
-title: Building RESTful APIs with Flask-RESTful in Python
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: 'Flask-RESTful: a CRUD API with Resource classes'
 ---
 
-# Building RESTful APIs with Flask-RESTful in Python
+Flask-RESTful is a Flask extension where each URL maps to a `Resource` class, and the class's `get`, `post`, `put` and `delete` methods handle the matching HTTP verbs. Return a dict (and optionally a status code) and it is serialized to JSON for you.
 
-Flask-RESTful is an extension for the Flask web framework that simplifies the process of building RESTful APIs. In this tutorial, we'll explore how to build a simple RESTful API using Flask-RESTful in Python. By the end of this tutorial, you'll have a basic understanding of how to create, retrieve, update, and delete (CRUD) resources using this library.
-
-## Prerequisites
-
-Before we begin, you'll need the following installed on your system:
-
-1. Python 3.6 or later
-2. Flask web framework
-3. Flask-RESTful extension
+:::note
+Flask-RESTful's latest release is 0.3.10, from May 2023, and its docs mark the `reqparse` request parser as deprecated. It still works for small APIs, but for new projects also look at Flask's built-in [`MethodView`](https://flask.palletsprojects.com/en/stable/views/), which gives you the same class-per-resource pattern without the extension.
+:::
 
 ## Installation
 
-First, let's create a virtual environment and install the necessary packages:
-
 ```bash
-$ python3 -m venv env
-$ source env/bin/activate
-(env) $ pip install Flask Flask-RESTful
+python3 -m venv env
+source env/bin/activate
+pip install Flask Flask-RESTful
 ```
 
-With the packages installed, we can now start building our API.
+## The API
 
-## Creating a Simple RESTful API
+The API manages an in-memory list of tasks. It needs two resources, because the URLs differ:
 
-Let's build a simple API for managing a list of tasks. We'll create endpoints for adding, retrieving, updating, and deleting tasks.
+- `/tasks`: list all tasks (`GET`) and create one (`POST`). The client doesn't know the ID yet.
+- `/tasks/<id>`: read (`GET`), update (`PUT`) and delete (`DELETE`) one task.
 
-### 1. Setting up the project
-
-Create a new file called `app.py` and import the necessary libraries:
+Put this in `app.py`:
 
 ```python
+from itertools import count
+
 from flask import Flask, request
-from flask_restful import Resource, Api
+from flask_restful import Api, Resource
 
 app = Flask(__name__)
 api = Api(app)
-```
 
-Here, we've imported `Flask` and `request` from the Flask library and `Resource` and `Api` from the Flask-RESTful extension. We've also initialized a new Flask app and a new API instance.
+tasks = {}
+next_id = count(1)
 
-### 2. Defining the Task resource
 
-Now, let's create a `Task` resource by subclassing `Resource` and implementing the necessary HTTP methods:
+def read_title():
+    data = request.get_json(silent=True) or {}
+    title = data.get("title")
+    if not isinstance(title, str) or not title.strip():
+        return None
+    return title.strip()
 
-```python
+
+class TaskList(Resource):
+    def get(self):
+        return list(tasks.values())
+
+    def post(self):
+        title = read_title()
+        if title is None:
+            return {"error": "title is required"}, 400
+        task = {"id": next(next_id), "title": title}
+        tasks[task["id"]] = task
+        return task, 201
+
+
 class Task(Resource):
-    tasks = []
-
     def get(self, task_id):
-        task = next((task for task in Task.tasks if task['id'] == task_id), None)
+        task = tasks.get(task_id)
         if task is None:
             return {"error": "Task not found"}, 404
         return task
 
-    def post(self):
-        data = request.get_json()
-        task = {"id": len(Task.tasks) + 1, "title": data["title"]}
-        Task.tasks.append(task)
-        return task, 201
-
     def put(self, task_id):
-        data = request.get_json()
-        task = next((task for task in Task.tasks if task['id'] == task_id), None)
+        task = tasks.get(task_id)
         if task is None:
             return {"error": "Task not found"}, 404
-        task.update({"title": data["title"]})
+        title = read_title()
+        if title is None:
+            return {"error": "title is required"}, 400
+        task["title"] = title
         return task
 
     def delete(self, task_id):
-        task = next((task for task in Task.tasks if task['id'] == task_id), None)
-        if task is None:
+        if tasks.pop(task_id, None) is None:
             return {"error": "Task not found"}, 404
-        Task.tasks.remove(task)
-        return {"result": "Task deleted"}
-```
+        return "", 204
 
-In this class, we've implemented the `get`, `post`, `put`, and `delete` methods to handle the respective HTTP methods for our `Task` resource. We're also using a simple in-memory list called `tasks` to store our tasks.
 
-### 3. Adding the Task resource to the API
-
-Now that we have a `Task` resource, let's add it to our API:
-
-```python
+api.add_resource(TaskList, "/tasks")
 api.add_resource(Task, "/tasks/<int:task_id>")
-```
 
-This line maps the `Task` resource to the `/tasks/<int:task_id>` endpoint, where `<int:task_id>` is a dynamic URL parameter representing the task ID.
-
-### 4. Running the API
-
-Finally, let's add the entry point for our application:
-
-```python
 if __name__ == "__main__":
     app.run(debug=True)
 ```
 
-This will start the Flask development server when we run the script.
+A few details worth noting:
 
-## Testing the API
+- Flask passes URL variables to the method as keyword arguments, so every method on `Task` must accept `task_id`. The original version of this post registered `post(self)` on `/tasks/<int:task_id>`, which fails with a `TypeError` because Flask passes `task_id` to it.
+- `<int:task_id>` converts the ID to an `int` and returns 404 for non-numeric IDs before your code runs.
+- IDs come from a counter rather than `len(tasks) + 1`, which would hand out a duplicate ID after a delete.
+- `get_json(silent=True)` returns `None` instead of raising on a missing or invalid JSON body, so the resource can return its own 400.
+- The data lives in a module-level dict, so it's lost on restart and isn't shared between worker processes. Swap in a database for anything real.
 
-With our API implemented, let's test the endpoints using `curl`:
+## Testing with curl
 
-1. **POST**: Create a new task
+Start the server with `python app.py`, then:
 
-   ````bash
-   $ curl -X POST -H "Content-Type: application/json" -d '{"title": "First task"}' http://localhost:5000/tasks/1
-   ```
+```bash
+# Create
+curl -X POST -H "Content-Type: application/json" -d '{"title": "First task"}' http://localhost:5000/tasks
+# {"id": 1, "title": "First task"}
 
-2. **GET**: Retrieve a task by its ID
+# List
+curl http://localhost:5000/tasks
 
-   ````bash
-   $ curl -X GET http://localhost:5000/tasks/1
-   ```
+# Read one
+curl http://localhost:5000/tasks/1
 
-3. **PUT**: Update a task
+# Update
+curl -X PUT -H "Content-Type: application/json" -d '{"title": "Updated task"}' http://localhost:5000/tasks/1
 
-   ````bash
-   $ curl -X PUT -H "Content-Type: application/json" -d '{"title": "Updated task"}' http://localhost:5000/tasks/1
-   ```
+# Delete (204, empty body)
+curl -i -X DELETE http://localhost:5000/tasks/1
+```
 
-4. **DELETE**: Delete a task
+## Next steps
 
-   ````bash
-   $ curl -X DELETE http://localhost:5000/tasks/1
-   ```
+- Use `flask_restful.fields` and `marshal_with` to control which fields are returned.
+- For input validation, the Flask-RESTful docs suggest a library such as [marshmallow](https://marshmallow.readthedocs.io/) instead of the deprecated `reqparse`.
+- `app.run(debug=True)` is the development server. Run a WSGI server such as Gunicorn in production.
 
-## Conclusion
+## Further reading
 
-In this tutorial, we've built a simple RESTful API using Flask-RESTful in Python. Flask-RESTful makesit easy to create, retrieve, update, and delete resources by providing a convenient `Resource` class and allowing you to define HTTP methods as class methods.
-
-While our example used an in-memory list to store tasks, you can easily replace it with a persistent data store, such as a database, to build a more robust RESTful API.
-
-Flask-RESTful also provides additional features, such as request parsing, input validation, and custom error messages, which can be used to further improve your API. To learn more about these features and how to use them, check out the [official Flask-RESTful documentation](https://flask-restful.readthedocs.io/).
+- [Flask-RESTful documentation](https://flask-restful.readthedocs.io/)
+- [Flask documentation](https://flask.palletsprojects.com/)

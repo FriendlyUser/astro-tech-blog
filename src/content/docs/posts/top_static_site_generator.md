@@ -1,113 +1,72 @@
 ---
 tags: ['vuepress', 'gridsome', 'astro']
-title: Introduction to static site generations
-description: A comparison between static site generations including vuepress, gridsome and astro
+title: "Static site generators compared: Jekyll, Hugo, Gatsby, Next.js, Eleventy, VuePress, Astro and Gridsome"
+description: What a static site generator does, and the trade-offs between Jekyll, Hugo, Gatsby, Next.js, Eleventy, VuePress/VitePress, Astro and Gridsome.
 pubDate: Fri, 14 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2022/dall-e/CorgiUpInATree.jpeg"
 ---
-A static site generator is a software tool that generates HTML files for a website and saves them as plain HTML files on a web server. Unlike dynamic websites, which are generated on the fly every time a user requests a page, a static website is pre-generated and the HTML files are already available on the server. The main advantage of a static website is that it can be served quickly and efficiently, without the need for server-side processing, making it an ideal choice for sites that don't require frequent updates or user interaction. Static site generators are often used for blogs, portfolios, documentation sites, and other types of sites that don't require dynamic behavior. They can be built using a variety of programming languages and frameworks, such as Jekyll, Hugo, Gatsby, and many others.
 
+:::caution
+Two of the tools covered here are no longer a good choice for new sites. Gridsome's last release was 0.7.23 in November 2020. VuePress 1 is deprecated, and the Vue team now recommends [VitePress](https://vitepress.dev/) instead.
+:::
 
-There are many popular static site generators available, some of the most well-known ones include:
+A static site generator (SSG) turns content (usually Markdown) and templates into plain HTML, CSS and JavaScript files at build time. Because every page already exists before anyone requests it, you can host the output on any static file host or CDN (GitHub Pages, Netlify, Cloudflare Pages, S3) with no server-side code to run or patch. That suits blogs, portfolios and documentation. The trade-off is that changing content means rebuilding, and anything per-user (logins, search over private data, comments) needs client-side JavaScript or an external service.
 
-1. Jekyll: A popular, open-source static site generator that is written in Ruby and is well-suited for blogs and other types of content-focused websites.
-2. Hugo: A fast and flexible static site generator written in Go that is well-suited for large websites with complex requirements.
-3. Gatsby: A React-based static site generator that is well-suited for modern web development, particularly for websites that require dynamic behavior and interactivity.
-4. Next.js: A React-based static site generator that allows developers to easily create fast and optimized websites with server-side rendering and automatic code splitting.
-5. Eleventy: A simple and flexible static site generator that is written in JavaScript and supports a variety of templating languages, making it a great choice for web developers of all skill levels.
+## The tools
 
-These are just a few examples of the many static site generators available. The choice of generator will depend on the specific requirements and preferences of the developer.
+| Tool | Language / templates | Good fit |
+| --- | --- | --- |
+| Jekyll | Ruby, Liquid | Simple blogs, especially on GitHub Pages |
+| Hugo | Go binary, Go templates | Large content sites where build speed matters |
+| Eleventy | Node.js, many template languages | Content sites that want little or no client-side JS |
+| Gatsby | React, GraphQL data layer | React sites pulling content from several sources |
+| Next.js | React | Apps that mix static pages with server rendering |
+| VuePress / VitePress | Vue | Documentation sites |
+| Astro | Node.js, `.astro` components plus React/Vue/Svelte etc. | Content sites with a few interactive parts |
+| Gridsome | Vue 2, GraphQL data layer | Unmaintained; avoid for new projects |
 
+### Jekyll
 
-VuePress is a static site generator for Vue.js. It is designed for creating documentation sites, blogs, and other types of websites that require a simple and straightforward way of generating and deploying content. VuePress provides a minimalistic and elegant setup for building websites and it is optimized for performance and accessibility.
+Written in Ruby and uses the Liquid template language. GitHub Pages can build Jekyll sites for you, which makes it the lowest-effort way to get a blog online from a repository. It has built-in blog conventions (posts with dates, categories, tags) and a long-established ecosystem of themes and plugins.
 
-One of the key features of VuePress is its Vue-based architecture, which allows developers to leverage the power of Vue.js components when building their websites. This makes it possible to add dynamic elements, such as interactive components and animations, to a static site. VuePress also provides a rich set of default components and features, including a responsive layout, a customizable header and footer, automatic table of contents, and support for Markdown and other formats.
+Downsides: you need a Ruby toolchain locally, builds slow down noticeably on large sites, and GitHub Pages' built-in build only allows a fixed list of plugins (you can work around this by building in GitHub Actions).
 
-VuePress is easy to set up and use, and it provides a flexible and scalable platform for building and deploying static websites. Whether you are building a simple blog or a complex documentation site, VuePress is a powerful and flexible tool that can help you get the job done.
+### Hugo
 
+A single Go binary with no runtime dependencies to install. It's known for build speed: sites with thousands of pages typically build in seconds. Templates use Go's `html/template`/`text/template` syntax, so you don't need to write Go, but the template syntax and Hugo's lookup rules for which template renders which page take some learning. Hugo has no plugin system; you extend it with themes, shortcodes and Hugo Modules.
 
-Astro is a static site generator that allows users to quickly and easily create websites. It offers an intuitive, user-friendly interface with powerful features that make web development easier than ever before. Astro provides a wide range of templates and themes to choose from, as well as the ability to customize each page with HTML or CSS code. Additionally, it has built-in support for popular content management systems such as WordPress and Drupal so you can integrate your website into existing frameworks without any extra effort. 
+### Eleventy (11ty)
 
-One of the biggest advantages of using Astro is its speed; pages are generated in seconds rather than minutes or hours when compared to other static site generators like Jekyll or Hugo. This makes it ideal for those who need quick results without sacrificing quality - perfect for small businesses looking for an efficient way to get their website up and running fast! Furthermore, due its lightweight nature (it only requires minimal resources), it's also great if you're looking at hosting your own website on low cost shared servers instead of more expensive dedicated ones – making Astro one of the most cost effective solutions available today! 
+A Node.js generator that ships no client-side JavaScript unless you add it. It supports several template languages (Markdown, Liquid, Nunjucks, plain JavaScript and others) and can mix them in one project. It's deliberately unopinionated: there's no default theme or required project layout, which is flexible but means more decisions up front.
 
-Finally, another key benefit provided by this platform is its security; all files are stored securely offline which means they can't be accessed by hackers even if they manage to break into your server environment - something many larger sites struggle with these days! With all these features combined together in one package – plus plenty more besides – there's no doubt why Asto has become such a popular choice amongst developers everywhere when creating professional yet affordable websites quickly & efficiently!
+### Gatsby
 
+A React framework with a GraphQL data layer: source plugins pull content from Markdown, CMSs or APIs into one GraphQL schema that your pages query. Besides static generation it also supports deferred static generation and server-side rendering. The cost is complexity: you need to be comfortable with React and GraphQL, and builds and dependency trees are heavy for a small blog.
 
-Gridsome is a free and open-source static site generator built with Vue.js. It allows developers to create fast and modern websites and applications by leveraging the power of GraphQL and Vue.js. Gridsome is designed to make it easy to build high-performance and scalable websites, and it provides a number of features and plugins that simplify the development process.
+### Next.js
 
-Some key features of Gridsome include:
+A React framework rather than an SSG first. Pages can be statically generated, server-rendered or rendered on the client, and it has API routes for backend code. For a fully static site, set `output: 'export'` in `next.config.js` and deploy the generated `out` folder, but server-only features such as API routes and default image optimisation aren't available in that mode. It's a good choice when a mostly static site will grow app-like features; it's more machinery than a plain blog needs.
 
-1. GraphQL data layer: Gridsome provides a built-in GraphQL data layer that makes it easy to query and manipulate data from a variety of sources, including APIs, markdown files, and databases.
-2. Vue.js components: Gridsome is built with Vue.js, which allows developers to use Vue components to create dynamic and interactive elements in their website.
-3. Automatic code splitting: Gridsome automatically splits code into smaller chunks, allowing for faster loading times and improved performance.
-4. Progressive Web App (PWA) support: Gridsome provides built-in support for creating Progressive Web Apps, which can be installed on a user's device and provide an app-like experience.
-5. Static file generation: Gridsome generates static HTML, CSS, and JavaScript files that can be served from a CDN or traditional web server, making it easy to deploy and scale websites.
+### VuePress and VitePress
 
-Gridsome is a versatile tool that is well-suited for a variety of use cases, including blogs, portfolios, documentation sites, e-commerce sites, and more. Whether you are a seasoned web developer or just starting out, Gridsome is a powerful and flexible platform for building modern websites and applications.
+VuePress uses Vue components inside Markdown and was built for documentation: the default theme gives you a sidebar, navbar, search and per-page table of contents out of the box. VuePress 1 (Vue 2, webpack) is deprecated; VuePress 2 is maintained by a community team. The Vue team's recommended replacement is VitePress, which is built on Vite and Vue 3 and covers the same documentation use case.
 
+### Astro
 
-The pros and cons of different static site generators will depend on the specific requirements and preferences of the user. However, here are some general pros and cons of some popular static site generators:
+Astro renders pages to static HTML and ships no JavaScript by default. Interactive parts are "islands": you write them in React, Vue, Svelte, Solid or other supported frameworks and opt in to hydrating them with directives like `client:load` or `client:visible`. Content collections give you type-checked frontmatter for Markdown/MDX. With an adapter (Node, Netlify, Vercel, Cloudflare and others) individual routes can be server-rendered on demand, so a site isn't locked into being fully static. [Starlight](https://starlight.astro.build/) is Astro's official documentation theme.
 
-Jekyll:
-Pros:
+### Gridsome
 
-* Widely used and well-established, with a large community and many plugins and themes available.
-* Built-in support for blog-style content, with support for categories, tags, and RSS feeds.
-* Simple and straightforward setup and configuration process.
+A Vue 2 framework inspired by Gatsby: a GraphQL data layer fed by source plugins, with Vue components for pages. Development has stopped (last release November 2020) and Vue 2 itself reached end of life at the end of 2023, so existing Gridsome sites are best migrated, for example to Astro, Nuxt or VitePress.
 
-Cons:
+## Choosing
 
-* Can be slow to build and deploy, especially for large sites with many pages and posts.
-* Can be challenging to customize, particularly for users who are not familiar with the Liquid template language.
+- Want the least setup for a blog in a GitHub repo: Jekyll on GitHub Pages.
+- Thousands of pages, or no wish to manage a Node.js toolchain: Hugo.
+- Documentation for a Vue or JavaScript project: VitePress, or Astro with Starlight.
+- Mostly content with a few interactive widgets, using components you already have: Astro.
+- A site that will become an app with auth and APIs: Next.js.
 
-Hugo:
-Pros:
-
-* Fast and efficient, with the ability to build large sites with thousands of pages in seconds.
-* Highly customizable, with a large number of themes and plugins available.
-* Supports multiple content formats, including Markdown, HTML, and more.
-
-Cons:
-
-* Steep learning curve for users who are not familiar with Go programming language.
-* Less established and with a smaller community than some other static site generators, so support and resources may be more limited.
-
-Gatsby:
-Pros:
-
-* Based on React, making it a good choice for developers who are already familiar with the React ecosystem.
-* Features a rich set of built-in components and plugins, including support for Progressive Web Apps (PWAs) and server-side rendering.
-* Fast and efficient, with automatic code splitting and lazy loading for optimal performance.
-
-Cons:
-
-* Steep learning curve for developers who are not familiar with React, GraphQL, and other modern web development technologies.
-* Can be overkill for simple sites, as the complex setup and architecture may be unnecessary.
-
-Next.js:
-Pros:
-
-* Based on React, making it a good choice for developers who are already familiar with the React ecosystem.
-* Features server-side rendering and automatic code splitting for improved performance and user experience.
-* Good for building complex and interactive sites, with support for API routes and dynamic pages.
-
-Cons:
-
-* Steep learning curve for developers who are not familiar with React, Node.js, and other modern web development technologies.
-* Can be more complex to set up and configure than other static site generators.
-
-Eleventy:
-Pros:
-
-* Simple and flexible, making it a good choice for users of all skill levels.
-* Supports multiple templating languages, including Liquid, Nunjucks, Handlebars, and more.
-* Fast and efficient, with a lightweight codebase and easy setup process.
-
-Cons:
-
-* Less established and with a smaller community than some other static site generators, so support and resources may be more limited.
-* Can be challenging to customize for users who are not familiar with JavaScript or modern web development technologies.
-
-These are just a few examples of the pros and cons of different static site generators, and your specific needs and preferences will ultimately determine which one is the best choice for you. It may be helpful to try out a few different generators to get a feel for each one and see which one fits your workflow and requirements the best.
-
+Whatever you pick, try building a few real pages with it first. Templating syntax and how content is organised affect day-to-day work more than benchmark numbers.

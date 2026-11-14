@@ -1,114 +1,164 @@
 ---
-title: Android Dagger Dependency Injection Framework An In-Depth Overview
+title: "Dagger 2 on Android: components, modules, scopes and a working setup"
 pubDate: "2024-07-15T03:43:38.000Z"
-description: "In this article , we will delve into the Dagger framework, covering its core concepts, benefits, and how to use it in your Android projects"
-tags: []
+lastUpdated: 2026-11-14
+description: "How Dagger's components, modules, @Inject constructors and scopes fit together, with a working Java example for an Android app and when to use Hilt instead."
+tags: ["android", "java", "dagger"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/4067359065.png
 ---
-# Android Dagger Dependency Injection Framework: An In-Depth Overview
 
-## Introduction
+:::note[Use Hilt for new Android apps]
+Dagger's docs recommend [Hilt](https://dagger.dev/hilt/) for Android apps. Hilt is built on Dagger and generates the components for Activities, Fragments and ViewModels for you. The older `dagger.android` artifacts are in maintenance mode and get no new features. Plain Dagger, as shown below, is still what Hilt runs on, so the concepts carry over.
+:::
 
-Dependency Injection (DI) is a software design pattern that allows objects to receive their dependencies from an external source rather than creating them internally. In Android development, managing dependencies can be a challenging task, especially as an application grows in complexity. To simplify this process, the Dagger Dependency Injection Framework was created. It is a fast, compile-time DI framework for both Java and Android applications.
+Dagger is a compile-time dependency injection framework for Java, Kotlin and Android, maintained by Google. You describe how objects are built using annotations, and Dagger's annotation processor generates plain Java code that constructs them. There's no reflection at runtime, and a missing or duplicate binding is a build error rather than a crash.
 
-In this article, we will delve into the Dagger framework, covering its core concepts, benefits, and how to use it in your Android projects.
+## The pieces
 
-## Why Dagger?
+- **`@Inject` constructor**: the simplest way to tell Dagger how to build a class you own. Dagger calls the constructor and supplies its parameters.
+- **`@Module` with `@Provides` (or `@Binds`)**: for types you can't annotate, such as interfaces or classes from third-party libraries.
+- **`@Component`**: an interface that ties modules together and exposes the objects (or `inject` methods) the rest of your app needs. Dagger generates an implementation called `Dagger<ComponentName>`.
+- **Scopes**: unscoped bindings produce a new instance on every request. Annotating a binding and its component with the same scope (for example `@Singleton`) makes Dagger reuse one instance for the life of that component. Out of the box you get `javax.inject.Singleton` and Dagger's `@Reusable`. Scopes like `@ActivityScoped` and `@FragmentScoped` come from Hilt; with plain Dagger you define your own with `@Scope`.
 
-Dagger stands out amongst other DI frameworks because it is:
+## Setup
 
-1. **Compile-time:** It validates dependencies during the compilation process, ensuring that all dependencies are satisfied before runtime. This reduces the risk of runtime errors related to missing or improperly configured dependencies.
-2. **Fast:** Dagger generates efficient code that minimizes performance overheads associated with DI, making it well-suited for resource-constrained environments like Android.
-3. **Scalable:** Dagger is designed for modularity, making it easy to manage dependencies in large-scale projects.
-
-## Key Concepts
-
-To understand Dagger, it's essential to grasp some core concepts:
-
-### Dependency Injection
-
-Dependency Injection is the process of providing an object's dependencies from an external source, decoupling the object from the responsibility of creating and managing its dependencies. This promotes modularity, testability, and maintainability in applications.
-
-### Components
-
-In Dagger, a Component is an interface that defines the object graph for a specific part of your application. It declares the dependencies you want to inject and the modules that provide these dependencies. Dagger generates an implementation of this interface at compile-time.
-
-### Modules
-
-A Module is a class annotated with `@Module` that contains methods annotated with `@Provides`. These methods define how to create and satisfy the dependencies declared in a Component.
-
-### Scopes
-
-Scopes are used to define the lifecycle and visibility of dependencies. By default, Dagger creates a new instance of a dependency each time it is requested. To ensure that only a single instance of a dependency is used, you can use a scope. Common scopes in Android include `@Singleton`, `@ActivityScoped`, and `@FragmentScoped`.
-
-## Setting Up Dagger in Your Android Project
-
-To start using Dagger in your Android project, follow these steps:
-
-1. Add the required dependencies to your `build.gradle` file:
+Dagger 2.60.1 is the current release. In a Java module use `annotationProcessor`. In a Kotlin module use KSP (stable since Dagger 2.60), or `kapt` on older setups.
 
 ```groovy
 dependencies {
-    implementation 'com.google.dagger:dagger:2.x'
-    kapt 'com.google.dagger:dagger-compiler:2.x'
-
-    // For Android support
-    implementation 'com.google.dagger:dagger-android:2.x'
-    implementation 'com.google.dagger:dagger-android-support:2.x'
-    kapt 'com.google.dagger:dagger-android-processor:2.x'
+    implementation 'com.google.dagger:dagger:2.60.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.60.1'
+    // Kotlin modules: ksp 'com.google.dagger:dagger-compiler:2.60.1'
 }
 ```
 
-Replace `2.x` with the latest version of Dagger.
+You don't need `dagger-android` or `dagger-android-support` for anything in this post.
 
-2. Create a Component interface that defines the object graph for your application:
+## A working example
+
+A repository that depends on an HTTP client. We own `UserRepository`, so it gets an `@Inject` constructor. `OkHttpClient` is a library class, so a module provides it.
 
 ```java
-import dagger.Component;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import okhttp3.OkHttpClient;
 
-@Component(modules = {AppModule.class})
-public interface AppComponent {
-    void inject(MyApplication application);
+@Singleton
+public class UserRepository {
+    private final OkHttpClient client;
+
+    @Inject
+    public UserRepository(OkHttpClient client) {
+        this.client = client;
+    }
 }
 ```
-
-3. Define an AppModule class to provide the required dependencies:
 
 ```java
 import dagger.Module;
 import dagger.Provides;
+import javax.inject.Singleton;
+import okhttp3.OkHttpClient;
 
 @Module
-public class AppModule {
+public final class NetworkModule {
     @Provides
-    MyDependency provideMyDependency() {
-        return new MyDependency();
+    @Singleton
+    static OkHttpClient provideOkHttpClient() {
+        return new OkHttpClient.Builder().build();
     }
 }
 ```
 
-4. Generate the Dagger implementation of your component by building your project. The generated class will be named `DaggerAppComponent`.
-
-5. Use the generated `DaggerAppComponent` to inject your dependencies:
+The component declares which modules it uses and what it can inject. Because it contains `@Singleton` bindings, the component must carry the same scope.
 
 ```java
+import dagger.Component;
+import javax.inject.Singleton;
+
+@Singleton
+@Component(modules = NetworkModule.class)
+public interface AppComponent {
+    void inject(MainActivity activity);
+}
+```
+
+Build the project once so Dagger generates `DaggerAppComponent`. Create it in your `Application` so there is one instance for the whole process:
+
+```java
+import android.app.Application;
+
 public class MyApplication extends Application {
-    @Inject
-    MyDependency myDependency;
+    private AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        appComponent = DaggerAppComponent.create();
+    }
 
-        DaggerAppComponent.builder()
-            .appModule(new AppModule())
-            .build()
-            .inject(this);
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }
 ```
 
-## Conclusion
+Register `MyApplication` with `android:name=".MyApplication"` on the `<application>` element in the manifest. Android creates Activities itself, so you can't constructor-inject them. Use field injection instead, before `super.onCreate()`:
 
-Dagger is a powerful and efficient DI framework for Android development. By understanding its core concepts and integrating it into your projects, you can simplify dependency management, improve maintainability, and reduce runtime errors. Get started with Dagger today to unlock the full benefits of Dependency Injection in your Android applications.
+```java
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import javax.inject.Inject;
+
+public class MainActivity extends AppCompatActivity {
+    @Inject UserRepository userRepository;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ((MyApplication) getApplication()).getAppComponent().inject(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+}
+```
+
+`DaggerAppComponent.create()` is available because none of the modules need constructor arguments. If a module needs state (for example a `Context`), use a `@Component.Factory` with a `@BindsInstance` parameter instead.
+
+## Gotchas
+
+- **Scope mismatch is a build error.** A `@Singleton` binding used by a component that isn't annotated `@Singleton` won't compile. Add the scope to the component, or remove it from the binding.
+- **`@Singleton` means one per component instance,** not one per process. If you create two `AppComponent`s you get two "singletons". Keep the component in `Application`.
+- **Inject fields must not be `private`.** Dagger's generated code assigns them directly.
+- **Interfaces need `@Binds`.** If `UserRepository` were an interface, add an abstract module method `@Binds abstract UserRepository bind(UserRepositoryImpl impl);`.
+
+## The same thing in Hilt
+
+With Hilt, the `AppComponent`, the `inject` method and the cast to `MyApplication` go away. You annotate the `Application` with `@HiltAndroidApp`, the Activity with `@AndroidEntryPoint`, and install the module into `SingletonComponent`:
+
+```java
+import dagger.Module;
+import dagger.Provides;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
+import javax.inject.Singleton;
+import okhttp3.OkHttpClient;
+
+@Module
+@InstallIn(SingletonComponent.class)
+public final class NetworkModule {
+    @Provides
+    @Singleton
+    static OkHttpClient provideOkHttpClient() {
+        return new OkHttpClient.Builder().build();
+    }
+}
+```
+
+Hilt also needs its Gradle plugin and `hilt-android` / `hilt-compiler` dependencies; see the [Hilt setup guide](https://developer.android.com/training/dependency-injection/hilt-android).
+
+## Further reading
+
+- [Dagger user guide](https://dagger.dev/dev-guide/)
+- [Dependency injection on Android](https://developer.android.com/training/dependency-injection)
+- [Dagger KSP support](https://dagger.dev/dev-guide/ksp.html)

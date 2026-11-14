@@ -1,50 +1,26 @@
 ---
-description: In this article, we will discuss the core concepts of Serilog, its advantages,
-  and how to configure and use it in your
+description: How to set up Serilog for structured logging in .NET, covering message templates, enrichers, sinks, filters, and keeping logging cheap.
 imgSrc: /imgs/2023/2126341537_forest.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-24T00:59:46.000Z'
-tags: []
-title: Serilog Logging Framework A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["dotnet", "csharp"]
+title: "Serilog in .NET: structured logging with sinks, enrichers and filters"
 ---
 
-# Serilog Logging Framework: A Comprehensive Guide
+Serilog is a structured logging library for .NET. Instead of writing a flat string, each log event keeps its values as named properties, so a sink like Seq or Elasticsearch can query `UserId = 42` directly instead of you grepping text.
 
-Serilog is a modern, structured logging framework for .NET applications. It offers a flexible and powerful way to capture and store log data, allowing developers to easily troubleshoot, monitor, and analyze application behavior. In this article, we will discuss the core concepts of Serilog, its advantages, and how to configure and use it in your .NET projects.
+## Install and configure
 
-## Table of Contents
+Install the core package plus a sink for each destination you want:
 
-- [Introduction to Serilog](#introduction-to-serilog)
-- [Advantages of Serilog](#advantages-of-serilog)
-- [Installing and Configuring Serilog](#installing-and-configuring-serilog)
-- [Writing Logs with Serilog](#writing-logs-with-serilog)
-- [Enriching Log Events](#enriching-log-events)
-- [Sinks - Outputting Logs to Different Destinations](#sinks-outputting-logs-to-different-destinations)
-- [Filtering Logs](#filtering-logs)
-- [Performance Considerations](#performance-considerations)
-- [Conclusion](#conclusion)
+```bash
+dotnet add package Serilog
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
+```
 
-## Introduction to Serilog
-
-Traditional text-based logging solutions, while useful, have their limitations. Parsing and analyzing log data can be a time-consuming and error-prone process, especially when logs are large and unstructured. Serilog addresses these challenges by introducing structured logging, allowing developers to capture log data in a more meaningful and easily digestible format.
-
-Structured logging treats log events as first-class data, enabling you to attach structured data (properties) to each log event. This data can then be stored, queried, and analyzed more efficiently than traditional log formats.
-
-## Advantages of Serilog
-
-There are several benefits to using Serilog in your .NET applications, including:
-
-1. **Structured logging**: Capture richer log data using structured data (properties) attached to log events.
-2. **Flexible output**: Use a variety of "sinks" to write log data to different destinations, such as files, databases, or external services.
-3. **Log event enrichment**: Enhance log events with additional contextual information, such as machine name or environment variables.
-4. **Powerful filtering**: Define log level-based or property-based filters to fine-tune log output.
-5. **High performance**: Designed for efficiency, Serilog minimizes the performance impact of logging on your application.
-
-## Installing and Configuring Serilog
-
-To get started with Serilog, you'll need to install the `Serilog` NuGet package and a sink package for your desired output destination. For example, to write logs to a file, you will need the `Serilog.Sinks.File` package.
-
-Once installed, you can configure Serilog using the `LoggerConfiguration` class. The following example demonstrates a basic Serilog configuration that writes logs to a file:
+Configure the static `Log.Logger` once at startup and flush it on exit:
 
 ```csharp
 using Serilog;
@@ -56,130 +32,153 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console()
-            .WriteTo.File("logs/myapp.log", rollingInterval: RollingInterval.Day)
+            .WriteTo.File("logs/myapp-.log", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-        // Your application code here
-
-        Log.CloseAndFlush();
+        try
+        {
+            Log.Information("Starting up");
+            // Your application code here
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 }
 ```
 
-## Writing Logs with Serilog
+With `RollingInterval.Day`, the File sink inserts the date before the extension, so this writes files like `logs/myapp-20261114.log`.
 
-To write log events using Serilog, you can use the static `Log` class and its various logging methods (`Verbose`, `Debug`, `Information`, `Warning`, `Error`, and `Fatal`). These methods correspond to different log levels, allowing you to categorize logs based on their severity.
+`Log.CloseAndFlush()` matters: sinks that buffer (files, network sinks) can lose the last events if the process exits without it.
 
-To create a structured log event, use message templates with named properties:
+## Writing structured events
+
+The levels, from lowest to highest, are `Verbose`, `Debug`, `Information`, `Warning`, `Error` and `Fatal`. Pass values as arguments to a message template rather than building the string yourself:
 
 ```csharp
 Log.Information("User {UserId} logged in at {LoginTime}", userId, DateTime.UtcNow);
+
+// @ destructures an object into its properties instead of calling ToString()
+Log.Information("Processed order {@Order}", order);
 ```
 
-## Enriching Log Events
+`UserId` and `LoginTime` are stored as properties on the event. If you write `Log.Information($"User {userId} logged in")` instead, the property names are lost and every distinct string becomes its own template, which defeats the point of using Serilog.
 
-You can enrich log events with additional contextual information by using the `Enrich` configuration method. The following example demonstrates how to add the machine name to all log events:
+Pass exceptions as the first argument (`Log.Error(ex, "Payment failed for {OrderId}", orderId)`) so sinks get the full exception and stack trace as a separate field.
+
+## Enriching events
+
+Enrichers add properties to every event. `FromLogContext` is built in and lets you attach properties for a block of code; others, like `WithMachineName`, come from extra packages (`Serilog.Enrichers.Environment` in this case).
 
 ```csharp
 using Serilog;
-using Serilog.Enrichers;
+using Serilog.Context;
 
-public class Program
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName() // from Serilog.Enrichers.Environment
+    .Enrich.WithProperty("Application", "MyApp")
+    .WriteTo.Console()
+    .CreateLogger();
+
+using (LogContext.PushProperty("RequestId", requestId))
 {
-    public static void Main(string[] args)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .Enrich.WithMachineName()
-            .WriteTo.Console()
-            .WriteTo.File("logs/myapp.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
-
-        // Your application code here
-
-        Log.CloseAndFlush();
-    }
+    // Every event logged here carries RequestId
+    Log.Information("Handling request");
 }
 ```
 
-## Sinks - Outputting Logs to Different Destinations
+## Sinks
 
-Serilog supports a variety of sinks for outputting log data to different destinations. Some popular sinks include:
+Each destination is a separate NuGet package. Common ones:
 
-- `Serilog.Sinks.Console`: Write log events to the console.
-- `Serilog.Sinks.File`: Write log events to a file.
-- `Serilog.Sinks.Seq`: Write log events to a Seq log server.
-- `Serilog.Sinks.Elasticsearch`: Write log events to an Elasticsearch cluster.
+- `Serilog.Sinks.Console`: console output.
+- `Serilog.Sinks.File`: plain-text or JSON files, with rolling by time or size.
+- `Serilog.Sinks.Seq`: sends events to a [Seq](https://datalust.co/seq) server.
+- `Elastic.Serilog.Sinks`: Elastic's own sink for Elasticsearch 8.x and later. The older community package, `Serilog.Sinks.Elasticsearch`, is archived and deprecated on NuGet, so don't start new projects with it.
 
-To use a sink, simply install the corresponding NuGet package and add the `WriteTo`method to your `LoggerConfiguration`. The following example demonstrates how to configure Serilog to write logs to an Elasticsearch cluster:
-
-```csharp
-using Serilog;
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-            {
-                AutoRegisterTemplate = true,
-            })
-            .CreateLogger();
-
-        // Your application code here
-
-        Log.CloseAndFlush();
-    }
-}
-```
-
-## Filtering Logs
-
-Serilog provides powerful filtering capabilities that allow you to fine-tune which log events are captured and output. You can apply filters based on log level, properties, or custom logic.
-
-For example, to exclude all log events below the `Warning` level, you can use the `MinimumLevel` configuration method:
+Adding a sink is one more `WriteTo` call. For example, sending events to a local Seq instance:
 
 ```csharp
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Warning()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341")
+    .CreateLogger();
+```
+
+If you're shipping files to another system, write JSON rather than text so the properties survive. `Serilog.Formatting.Compact` provides a compact JSON format:
+
+```csharp
+using Serilog.Formatting.Compact;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(new CompactJsonFormatter(), "logs/myapp.clef")
+    .CreateLogger();
+```
+
+## Filtering
+
+`MinimumLevel` sets the floor for everything, and `MinimumLevel.Override` lets noisy namespaces log less:
+
+```csharp
+using Serilog;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .WriteTo.Console()
     .CreateLogger();
 ```
 
-To apply more complex filters, you can use the `Filter` configuration method. The following example demonstrates how to output only log events with a specific property value:
+For filters based on property values, use `Filter` with the helpers in `Serilog.Filters.Matching`. This drops events from health-check requests:
 
 ```csharp
 using Serilog;
 using Serilog.Filters;
 
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .Filter.ByIncludingOnly(Matching.WithProperty("Environment", "Production"))
-            .WriteTo.Console()
-            .CreateLogger();
-
-        // Your application code here
-
-        Log.CloseAndFlush();
-    }
-}
+Log.Logger = new LoggerConfiguration()
+    .Filter.ByExcluding(Matching.WithProperty("RequestPath", "/health"))
+    .WriteTo.Console()
+    .CreateLogger();
 ```
 
-## Performance Considerations
+For anything more involved, the `Serilog.Expressions` package lets you write filters as text, for example `Filter.ByExcluding("RequestPath like '/health%'")`.
 
-Serilog is designed for high performance; however, there are some best practices to consider when using it in your applications:
+## ASP.NET Core
 
-1. **Use asynchronous logging**: When using sinks that can perform I/O operations (e.g., writing to a file), consider using the `Async` configuration method to offload logging tasks to a separate thread.
-2. **Use message templates**: Instead of using string interpolation or concatenation, use message templates with named properties to minimize allocations and improve performance.
-3. **Limit log event size**: Optimize log event size by including only necessary information, limiting the length of string properties, and avoiding including large objects.
+In ASP.NET Core, install `Serilog.AspNetCore` and register Serilog as the logging provider. It can read its configuration from `appsettings.json`, so you don't have to recompile to change levels:
 
-## Conclusion
+```csharp
+using Serilog;
 
-Serilog provides a powerful and flexible logging framework for .NET applications, offering a modern approach to structured logging. By leveraging its rich feature set, you can easily capture, store, and analyze log data, helping you to monitor and troubleshoot your applications more effectively. With its extensible and modular design, Serilog is an essential tool for any .NET developer seeking a better logging solution.
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSerilog(lc => lc
+    .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console());
+
+var app = builder.Build();
+app.UseSerilogRequestLogging(); // one summary event per HTTP request
+app.Run();
+```
+
+Code that uses `ILogger<T>` from `Microsoft.Extensions.Logging` then logs through Serilog, and its message templates are kept as structured properties too.
+
+## Keeping logging cheap
+
+- Disabled levels cost very little, because Serilog checks the level before it renders anything. If computing an argument is expensive, guard it with `Log.IsEnabled(LogEventLevel.Debug)`.
+- Slow sinks block the calling thread. Wrap them with `Serilog.Sinks.Async`, e.g. `.WriteTo.Async(a => a.File("logs/myapp-.log", rollingInterval: RollingInterval.Day))`, or pass `buffered: true` to the File sink. Both mean events still in memory are lost if the process crashes before `CloseAndFlush`.
+- Use `{@Object}` on small DTOs only. Destructuring a large object graph on every request is slow and fills your log store.
+
+## Further reading
+
+- [Serilog wiki: Getting started](https://github.com/serilog/serilog/wiki/Getting-Started)
+- [Message template syntax](https://messagetemplates.org/)
+- [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore)
+- [Elastic.Serilog.Sinks documentation](https://www.elastic.co/guide/en/ecs-logging/dotnet/current/serilog-data-shipper.html)

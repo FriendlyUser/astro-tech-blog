@@ -1,128 +1,143 @@
 ---
-title: Using Dear ImGui in C++ A Guide to Immediate Mode GUIs
+title: "Dear ImGui in C++: a minimal GLFW and OpenGL 3 setup"
 pubDate: "2023-05-03T14:16:44.820Z"
-description: "By the end of this article, you will have a clear understanding of how to use ImGui to create simple, functional GUIs in your applications."
+lastUpdated: 2026-11-14
+description: "What immediate mode GUIs are, which Dear ImGui files to add to your project, and a complete GLFW + OpenGL 3 program with a window, button and slider."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1992331816.png
 ---
-# Using Dear ImGui in C++: A Guide to Immediate Mode GUIs
 
-Dear ImGui is a powerful, lightweight, and easy-to-use library for creating immediate mode graphical user interfaces (GUIs) in C++ applications. In this article, we'll explore the fundamental concepts behind ImGui, its benefits, and provide a step-by-step guide for integrating ImGui into a C++ project. By the end of this article, you will have a clear understanding of how to use ImGui to create simple, functional GUIs in your applications.
+[Dear ImGui](https://github.com/ocornut/imgui) is an MIT-licensed C++ library for building
+immediate mode GUIs. It's aimed at tools, editors and debug overlays inside games and other
+real-time 3D/2D applications rather than at end-user desktop apps.
 
-## What is Dear ImGui?
+## What "immediate mode" means
 
-Dear ImGui, often referred to simply as ImGui, is an open-source, bloat-free graphical user interface library for C++. It is designed to be embedded into 3D and 2D applications and provides a fast and straightforward way to create tools, debug utilities, and other user interfaces. ImGui operates on an immediate mode basis, meaning that GUI elements are created and handled in real-time within your application's main loop.
-
-Some key features of ImGui include:
-
-- Easy, minimalistic API with a small learning curve
-- Support for a wide range of rendering backends, including OpenGL, DirectX, Vulkan, and more
-- Highly customizable and themable
-- No external dependencies, making it easy to integrate into existing projects
-- Efficient and optimized for performance
-
-## Setting up Dear ImGui in a C++ Project
-
-To get started with ImGui, you need to download the source files from the [Dear ImGui GitHub repository](https://github.com/ocornut/imgui). The repository contains the core ImGui source files, as well as examples showcasing different rendering backends and integrations.
-
-For this guide, we'll assume that you have a working C++ project with a graphics library such as OpenGL, DirectX, or Vulkan already set up. If you don't have a project ready, consider using one of the provided examples as a starting point.
-
-### Integrating ImGui into Your Project
-
-1. Copy the following files from the ImGui repository into your project's source directory:
-
-   - `imgui.
-   - `imgui.h`
-   - `imgui_draw.
-   - `imgui_widgets.
-   - `imgui_tables.
-   - `imgui_internal.h`
-   - `imconfig.h`
-   - `imstb_rectpack.h`
-   - `imstb_textedit.h`
-   - `imstb_truetype.h`
-
-2. Choose a rendering backend based on your graphics library (e.g., `imgui_impl_opengl3. and `imgui_impl_opengl3.h` for OpenGL) and copy the relevant files into your project's source directory.
-
-3. Include the ImGui header files in your source code:
-
-   ````cpp
-   #include "imgui.h"
-   #include "imgui_impl_opengl3.h" // Replace with the appropriate backend
-   ```
-
-4. Initialize ImGui and the rendering backend in your application:
-
-   ````cpp
-   // Inside your setup function
-   IMGUI_CHECKVERSION();
-   ImGui::CreateContext();
-   ImGuiIO &io = ImGui::GetIO(); (void)io;
-   ImGui::StyleColorsDark(); // Choose a default theme
-
-   // Initialize the backend (e.g., OpenGL)
-   ImGui_ImplOpenGL3_Init("#version 150"); // Set the appropriate version for your graphics library
-   ```
-
-5. Integrate ImGui into your main loop:
-
-   ````cpp
-   while (!glfwWindowShouldClose(window)) // Replace with your window loop condition
-   {
-       glfwPollEvents(); // Poll events for your windowing system
-
-       ImGui_ImplOpenGL3_NewFrame(); // New frame for the backend
-       ImGui::NewFrame();
-
-       // ImGui code goes here
-
-       ImGui::Render();
-       int display_w, display_h;
-       glfwGetFramebufferSize(window, &display_w, &display_h);
-       glViewport(0, 0, display_w, display_h);
-       glClear(GL_COLOR_BUFFER_BIT);
-       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-       glfwSwapBuffers(window); // Swap buffers for your windowing system
-   }
-   ```
-
-6. Clean up ImGui and the rendering backend when your application exits:
-
-   ````cpp
-   // Inside your cleanup function
-   ImGui_ImplOpenGL3_Shutdown(); // Shutdown the backend
-   ImGui::DestroyContext();
-   ```
-
-## Creating GUI Elements with ImGui
-
-With ImGui integrated into your project, you can now create various GUI elements such as windows, buttons, sliders, and more. ImGui offers an extensive list of widgets to create rich and interactive user interfaces.
-
-Here's an example of creating a simple window with a button and a slider:
+In a retained mode toolkit (Qt, WinForms) you create widget objects once and wire up
+callbacks. In Dear ImGui you call widget functions every frame, and they return whether they
+were interacted with:
 
 ```cpp
-// Inside your main loop, after ImGui::NewFrame()
-
-ImGui::Begin("My First ImGui Window");
-
-if (ImGui::Button("Click me!"))
-{
-    // Respond to button click
-    std::cout << "Button clicked!" << std::endl;
-}
-
-static float slider_value = 0.0f;
-ImGui::SliderFloat("Slider", &slider_value, 0.0f, 100.0f);
-
-ImGui::End();
+if (ImGui::Button("Save"))
+    save();
 ```
 
-In this example, we start by creating a new window using `ImGui::Begin()`, passing in the window title. Next, we create a button using `ImGui::Button()`, which returns true when the button is clicked. We then create a slider using `ImGui::SliderFloat()`, providing a label, a reference to a float variable, and the minimum and maximum values for the slider.
+There's no widget object to keep in sync with your data: the UI is just code that runs each
+frame and reads and writes your variables directly. The library builds vertex buffers that
+your renderer draws, and the core has no dependencies beyond the C++ standard library.
 
-To explore more widgets and customize your GUI further, refer to the [ImGui documentation](https://github.com/ocornut/imgui/blob/master/docs/README.md) and the [ImGui demo code](https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp) for comprehensive examples and explanations.
+## Adding Dear ImGui to a project
 
-## Conclusion
+Dear ImGui isn't a precompiled library; you compile its sources with your project. From the
+repository, copy these into your source tree:
 
-Dear ImGui is a powerful and versatile library for creating immediate mode GUIs in C++ applications. Its ease of use, performance, and flexibility make it an excellent choice for developers looking to build user interfaces for tools, debug utilities, and other applications. With this guide, you should now have a solid foundation for integrating ImGui into your projects and creating functional, interactive GUIs.
+- `imgui.cpp`, `imgui_draw.cpp`, `imgui_widgets.cpp`, `imgui_tables.cpp`
+- `imgui_demo.cpp` (optional, but `ImGui::ShowDemoWindow()` is the best reference there is)
+- `imgui.h`, `imgui_internal.h`, `imconfig.h`
+- `imstb_rectpack.h`, `imstb_textedit.h`, `imstb_truetype.h`
+
+Then pick backends from the `backends/` folder. You need two: a **platform** backend for
+windowing and input (e.g. `imgui_impl_glfw.cpp`, `imgui_impl_sdl2.cpp`,
+`imgui_impl_win32.cpp`) and a **renderer** backend (e.g. `imgui_impl_opengl3.cpp`,
+`imgui_impl_dx11.cpp`, `imgui_impl_vulkan.cpp`). The OpenGL 3 backend includes its own
+function loader, so you don't need GLAD or GLEW for it.
+
+## A complete GLFW + OpenGL 3 program
+
+This is a trimmed version of the repository's `examples/example_glfw_opengl3/main.cpp`:
+
+```cpp
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <GLFW/glfw3.h> // also pulls in the system OpenGL header
+#include <cstdio>
+
+int main() {
+    if (!glfwInit())
+        return 1;
+
+    // GL 3.0 + GLSL 130. On macOS use GL 3.2 core with forward compat and "#version 150".
+    const char* glsl_version = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui example", nullptr, nullptr);
+    if (!window) {
+        glfwTerminate();
+        return 1;
+    }
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // vsync
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true); // true = install GLFW input callbacks
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    float slider_value = 0.0f;
+
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("My First ImGui Window");
+        if (ImGui::Button("Click me!"))
+            std::puts("Button clicked!");
+        ImGui::SliderFloat("Slider", &slider_value, 0.0f, 100.0f);
+        ImGui::Text("Value: %.1f", slider_value);
+        ImGui::End();
+
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
+    }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
+}
+```
+
+On Linux, with the ImGui repository cloned into `imgui/` and GLFW installed, this builds with:
+
+```bash
+g++ -std=c++17 main.cpp imgui/imgui*.cpp \
+    imgui/backends/imgui_impl_glfw.cpp imgui/backends/imgui_impl_opengl3.cpp \
+    -Iimgui -Iimgui/backends $(pkg-config --cflags --libs glfw3) -lGL -o imgui_demo
+```
+
+On Windows, link `glfw3` and `opengl32` instead.
+
+## Common mistakes
+
+- Both backends need initializing, a new frame each loop, and shutting down. Forgetting the
+  platform backend (`ImGui_ImplGlfw_*`) gives you a window that draws but ignores input.
+- `ImGui::Begin()` must always be paired with `ImGui::End()`, even when `Begin()` returns
+  false because the window is collapsed.
+- Widgets are identified by their label, so two buttons both labelled `"OK"` in the same
+  window clash. Use `"OK##first"` / `"OK##second"`, or `ImGui::PushID()`/`PopID()` in loops.
+- `slider_value` must outlive the frame, because ImGui reads and writes it every frame.
+  Here it lives outside the loop; a `static` local also works.
+
+## Further reading
+
+- [Getting Started wiki page](https://github.com/ocornut/imgui/wiki/Getting-Started)
+- [`imgui_demo.cpp`](https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp): every
+  widget with source; run `ImGui::ShowDemoWindow()` to browse it
+- [FAQ](https://github.com/ocornut/imgui/blob/master/docs/FAQ.md), especially the section on
+  widget IDs

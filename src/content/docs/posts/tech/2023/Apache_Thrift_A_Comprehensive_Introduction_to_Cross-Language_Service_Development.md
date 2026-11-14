@@ -1,43 +1,30 @@
 ---
-description: In this article, we'll explore the core components of Apache Thrift,
-  how it achieves cross-language communication, and walk through a simple example
-  of implementing and consuming a service
+description: "Define a service in Thrift IDL, generate Java and Python code, and call a Java Thrift server from a Python client, with notes on protocols and versions."
 imgSrc: /imgs/2023/other
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-09T05:19:51.000Z'
-tags: []
-title: Apache Thrift A Comprehensive Introduction to Cross-Language Service Development
+lastUpdated: 2026-11-14
+tags:
+  - java
+  - python
+title: "Apache Thrift: a Java server and Python client from one IDL file"
 ---
 
-# Apache Thrift: A Comprehensive Introduction to Cross-Language Service Development
+Apache Thrift is an RPC framework and serialization format. You describe data types and service methods once in an interface definition language (IDL), and the `thrift` compiler generates client and server code for each language you need. Facebook open-sourced it in 2007, and it is now an Apache top-level project. This post builds a small calculator service with a Java server and a Python client.
 
-Apache Thrift is an open-source software framework that allows developers to build cross-language services. It was originally developed by Facebook and later donated to the Apache Software Foundation in 2007. Thrift enables developers to define data types and service interfaces in a simple language-agnostic Interface Definition Language (IDL). It then generates code for various programming languages, making it easier to implement and consume services across different platforms.
+The examples target Thrift 0.25.0, the current release. The compiler and the runtime libraries should be the same version, because generated code depends on the matching runtime.
 
-In this article, we'll explore the core components of Apache Thrift, how it achieves cross-language communication, and walk through a simple example of implementing and consuming a service.
+## The pieces
 
-## Core Components of Apache Thrift
+- **IDL file (`.thrift`)**: structs, enums, exceptions and services, with numbered fields so the wire format can evolve without breaking older clients.
+- **Compiler (`thrift`)**: turns the IDL into types, a client stub and a server-side `Processor` for each target language.
+- **Runtime library**: per language (`libthrift` for Java, the `thrift` package for Python). It provides transports, protocols and servers.
 
-Thrift is composed of several components that work together to enable cross-language communication:
+A transport moves bytes (sockets, HTTP, memory buffers, with framing or buffering on top). A protocol encodes values: `TBinaryProtocol`, `TCompactProtocol` (smaller on the wire), and `TJSONProtocol`. Both ends must use the same transport and protocol, or calls fail with confusing errors.
 
-1. **Interface Definition Language (IDL):** Thrift uses its own IDL to define data types and service interfaces. The IDL is language-agnostic, allowing developers to define services without being tied to a specific programming language.
+## Step 1: define the service
 
-2. **Code Generator:** Thrift provides a code generator that takes the IDL file as input and generates code in various programming languages. The generated code includes data type definitions, client and server stubs, and serialization logic.
-
-3. **Runtime Libraries:** Thrift includes runtime libraries for each supported programming language. These libraries provide the necessary functionality to encode and decode messages, as well as manage client and server communication.
-
-## Cross-Language Communication
-
-Thrift achieves cross-language communication by using a serialization and deserialization process that supports multiple languages. When a client sends a message to a server, the message is serialized into a binary format, transmitted across the network, and deserialized back into the original data structure by the server. This process is reversed when the server sends a response back to the client.
-
-Thrift supports multiple serialization protocols, such as Binary, Compact, and JSON. Developers can choose the most appropriate protocol based on their needs (e.g., performance, readability).
-
-## Example: Implementing and Consuming a Thrift Service
-
-Let's walk through a simple example of implementing and consuming a Thrift service. We'll create a basic calculator service that supports addition and subtraction.
-
-### Step 1: Define the Service Interface
-
-First, we need to define the service interface using the Thrift IDL. Create a file named `calculator.thrift` with the following content:
+Create `calculator.thrift`:
 
 ```thrift
 namespace java com.example.calculator
@@ -49,27 +36,27 @@ service Calculator {
 }
 ```
 
-This IDL file defines a `Calculator` service with two methods: `add` and `subtract`. The `namespace` directive specifies the package name for the generated code in different languages.
+`namespace` sets the Java package and the Python module for the generated code.
 
-### Step 2: Generate the Code
-
-Next, use the Thrift code generator to generate code for your target languages. For this example, we'll generate code for Java and Python:
+## Step 2: generate code
 
 ```sh
 thrift --gen java calculator.thrift
 thrift --gen py calculator.thrift
 ```
 
-This will generate the necessary code for both languages in their respective directories (e.g., `gen- and `gen-py`).
+This produces `gen-java/com/example/calculator/Calculator.java` and a `gen-py/calculator/` package.
 
-### Step 3: Implement the Server
+## Step 3: the Java server
 
-Now, we'll implement the server using the generated code. For this example, we'll create a Java server:
+Add the runtime to your build (`org.apache.thrift:libthrift:0.25.0` on Maven Central) and compile the generated sources with your code:
 
 ```java
-import com.example.calculator.*;
-import org.apache.thrift.server.*;
-import org.apache.thrift.transport.*;
+import com.example.calculator.Calculator;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
 
 public class CalculatorServer {
     public static class CalculatorHandler implements Calculator.Iface {
@@ -84,59 +71,60 @@ public class CalculatorServer {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            TServerTransport serverTransport = new TServerSocket(9090);
-            Calculator.Processor processor = new Calculator.Processor(new CalculatorHandler());
-            TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+    public static void main(String[] args) throws Exception {
+        TServerTransport serverTransport = new TServerSocket(9090);
+        Calculator.Processor<CalculatorHandler> processor =
+                new Calculator.Processor<>(new CalculatorHandler());
+        TServer server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
 
-            System.out.println("Starting the calculator server...");
-            server.serve();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("Starting the calculator server on port 9090...");
+        server.serve();
     }
 }
 ```
 
-### Step 4: Implement the Client
+`TSimpleServer` handles one connection at a time, which is fine for a demo. Use `TThreadPoolServer` or `TThreadedSelectorServer` for real traffic. The defaults here are a plain socket transport and `TBinaryProtocol`.
 
-Finally, we'll create a Python client to consume the `Calculator` service:
+## Step 4: the Python client
+
+Install the runtime with `pip install thrift==0.25.0`. The generated `gen-py` directory is not installed, so add it to the import path:
 
 ```python
-from thrift import Thrift
-from thrift.transport import TSocket
-from thrift.transport import TTransport
+import sys
+
+sys.path.append("gen-py")
+
+from thrift.Thrift import TException
+from thrift.transport import TSocket, TTransport
 from thrift.protocol import TBinaryProtocol
 
 from calculator import Calculator
 
+transport = TTransport.TBufferedTransport(TSocket.TSocket("localhost", 9090))
+protocol = TBinaryProtocol.TBinaryProtocol(transport)
+client = Calculator.Client(protocol)
+
 try:
-    transport = TSocket.TSocket("localhost", 9090)
-    transport = TTransport.TBufferedTransport(transport)
-    protocol = TBinaryProtocol.TBinaryProtocol(transport)
-
-    client = Calculator.Client(protocol)
-
     transport.open()
-
-    result = client.add(10, 20)
-    print(f"10 + 20 = {result}")
-
-    result = client.subtract(10, 5)
-    print(f"10 - 5 = {result}")
-
+    print(f"10 + 20 = {client.add(10, 20)}")
+    print(f"10 - 5 = {client.subtract(10, 5)}")
+except TException as tx:
+    print(f"Thrift error: {tx}")
+finally:
     transport.close()
-
-except Thrift.TException as tx:
-    print(f"Thrift exception: {tx.message}")
-
 ```
 
-Now you can run the Java server and Python client to see the cross-language communication in action.
+The client matches the server's defaults: buffered socket transport and binary protocol. Start the Java server, then run the script.
 
-## Conclusion
+## Gotchas
 
-Apache Thrift is a powerful framework for developing cross-language services. By using a language-agnostic IDL, it allows developers to define services without being tied to a specific programming language. Thrift's code generator and runtime libraries make it easy to implement and consume services across various platforms.
+- **Never reuse or renumber field IDs.** The numbers in the IDL (`1: i32 num1`) are what goes on the wire. Add new fields with new IDs and mark them `optional` so old clients keep working.
+- **Transports must match.** A server built with `TFramedTransport` (needed by the non-blocking Java servers) will not talk to a client using `TBufferedTransport`.
+- **Version drift.** Regenerate code when you upgrade the runtime library.
+- **Thrift or gRPC?** Thrift is a good fit if your systems already use it, or if you want a compact format without HTTP/2. gRPC with Protocol Buffers is the more common choice for new services and has more tooling around it (streaming, deadlines, load balancing, gateways).
 
-In this article, we explored the core components of Apache Thrift, how it achieves cross-language communication, and walked through a simple example of implementing and consuming a service. With this knowledge, you can start using Thrift to build cross-language services in your own projects.
+## Further reading
+
+- [Apache Thrift tutorial](https://thrift.apache.org/tutorial/)
+- [Thrift IDL reference](https://thrift.apache.org/docs/idl)
+- [Downloads and release notes](https://thrift.apache.org/download)

@@ -1,121 +1,143 @@
 ---
-title: Image manipulation in Rust
-description: In this article, we will explore how to create a command-line utility to batch rename files in a directory based on user-defined patterns or rules. We will use Rust's standard library and the regex crate to handle complex renaming patterns.
+title: Batch renaming files with regex in Rust
+description: Build a small Rust CLI with clap and the regex crate that renames every file in a directory using a regex pattern and replacement, with a dry-run mode.
 pubDate: Saturday, 24 November 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/424066448.png'
 ---
 
+Renaming a folder of files by hand (`IMG_0001.jpg` to `holiday_0001.jpg`, stripping a prefix, swapping date formats) is tedious. This post builds a small command-line tool that does it with a regular expression: it matches each file name against a pattern and replaces the match with a replacement string that can reuse capture groups.
 
-Introduction
+It uses Rust's standard library for file operations, the [`regex`](https://crates.io/crates/regex) crate for matching, and [`clap`](https://crates.io/crates/clap) for argument parsing.
 
-In this article, we will explore how to create a command-line utility to batch rename files in a directory based on user-defined patterns or rules. We will use Rust's standard library and the regex crate to handle complex renaming patterns.
+## Setting up the project
 
-Setting up the Project
-
-To get started, we need to set up a new Rust project. To create a new Rust project, open a terminal window and run the following command:
-
+```sh
+cargo new file_renamer
+cd file_renamer
+cargo add clap --features derive
+cargo add regex
 ```
-$ cargo new file_renamer
-```
 
-This command will create a new Rust project named `file_renamer`. The project will contain a `Cargo.toml` file that describes the project's dependencies and a `src` directory that contains the project's source code.
-
-The `Cargo.toml` file will look like this:
+`Cargo.toml` ends up roughly like this (versions current as of November 2026; edition 2024 needs Rust 1.85 or later):
 
 ```toml
 [package]
 name = "file_renamer"
 version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
-edition = "2018"
+edition = "2024"
 
 [dependencies]
+clap = { version = "4.6", features = ["derive"] }
+regex = "1.13"
 ```
 
-We will add dependencies to the `Cargo.toml` file as we need them.
+## The code
 
-Renaming Files
-
-To rename files, we will use Rust's standard library to handle basic file I/O and the regex crate to handle complex renaming patterns.
-
-We will create a function named `rename_files` that will take a directory path and a pattern string as parameters. The function will read all files in the directory, apply the pattern to each file, and rename the file accordingly.
+Everything fits in `src/main.rs`:
 
 ```rust
+use clap::Parser;
 use regex::Regex;
+use std::error::Error;
 use std::fs;
-use std::path::Path;
+use std::io;
+use std::path::{Path, PathBuf};
 
-fn rename_files(dir_path: &str, pattern: &str) {
-    let dir = Path::new(dir_path);
+/// Batch rename files in a directory using a regex
+#[derive(Parser)]
+#[command(version, about)]
+struct Args {
+    /// Directory containing the files to rename
+    directory: PathBuf,
 
-    let re = Regex::new(pattern).unwrap();
+    /// Regex matched against each file name
+    pattern: String,
 
-    for entry in fs::read_dir(dir).unwrap() {
-        let entry = entry.unwrap();
-        let path = entry.path();
+    /// Replacement text; can use capture groups like $1 or ${name}
+    #[arg(default_value = "")]
+    replacement: String,
 
-        if path.is_file() {
-            let file_name = path.file_name().unwrap().to_str().unwrap();
+    /// Print the planned renames without changing anything
+    #[arg(long)]
+    dry_run: bool,
+}
 
-            let new_file_name = re.replace_all(file_name, "");
+fn rename_files(dir: &Path, re: &Regex, replacement: &str, dry_run: bool) -> io::Result<()> {
+    for entry in fs::read_dir(dir)? {
+        let path = entry?.path();
+        if !path.is_file() {
+            continue;
+        }
 
-            let new_path = path.with_file_name(new_file_name);
+        // Skip names that aren't valid UTF-8 instead of panicking.
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
 
-            fs::rename(path, new_path).unwrap();
+        let new_name = re.replace_all(name, replacement);
+        if new_name == name || new_name.is_empty() {
+            continue;
+        }
+
+        let new_path = path.with_file_name(&*new_name);
+        if new_path.exists() {
+            eprintln!("skipping {name}: {} already exists", new_path.display());
+            continue;
+        }
+
+        println!("{name} -> {new_name}");
+        if !dry_run {
+            fs::rename(&path, &new_path)?;
         }
     }
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let args = Args::parse();
+    let re = Regex::new(&args.pattern)?;
+    rename_files(&args.directory, &re, &args.replacement, args.dry_run)?;
+    Ok(())
 }
 ```
 
-In this function, we use the `Path` struct to represent the directory path and the `Regex` struct from the regex crate to represent the renaming pattern.
+How it works:
 
-We use a `for` loop to iterate over all entries in the directory and check if each entry represents a file. If the entry is a file, we extract the file name from the `Path` object and apply the pattern to it using the `replace_all` method of the `Regex` object. We then use the `with_file_name` method of the `Path` object to create a new `Path` object with the new file name.
+- `#[derive(Parser)]` generates the argument parser from the `Args` struct. Doc comments become the `--help` text, and `#[command(version, about)]` pulls the version from `Cargo.toml` and the description from the struct's doc comment.
+- `Regex::new` compiles the pattern once. An invalid pattern returns an error from `main` instead of panicking.
+- `replace_all` returns a `Cow<str>`: it only allocates when something matched, so unchanged names are cheap to skip.
+- The tool refuses to overwrite an existing file and skips names that end up empty. `fs::rename` would otherwise silently replace an existing file with the same name.
+- `--dry-run` prints the plan without touching the disk. Run it first.
 
-Finally, we use the `rename` method of the `fs` module to rename the file.
+The replacement defaults to an empty string, so with only a pattern the tool deletes whatever matches.
 
-Command-Line Interface
+## Using it
 
-To create a command-line interface for our utility, we will use the clap crate. We will create a subcommand named `rename` that takes two arguments: the directory path and the renaming pattern.
+Preview renaming `IMG_0001.jpg` to `holiday_0001.jpg`:
 
-```rust
-use clap::{App, Arg};
-
-fn main() {
-    let matches = App::new("File Renamer")
-        .version("0.1.0")
-        .author("Your Name <your.email@example.com>")
-        .about("Batch rename files in a directory based on user-defined patterns or rules")
-        .subcommand(
-            App::new("rename")
-                .about("Rename files in a directory")
-                .arg(
-                    Arg::new("directory")
-                        .about("The directory containing the files to rename")
-                        .required(true)
-                        .index(1),
-                )
-                .arg(
-                    Arg::new("pattern")
-                        .about("The renaming pattern")
-                        .required(true)
-                        .index(2),
-                ),
-        )
-        .get_matches();
-
-    if let Some(matches) = matches.subcommand_matches("rename") {
-        let dir_path = matches.value_of("directory").unwrap();
-        let pattern = matches.value_of("pattern").unwrap();
-
-        rename_files(dir_path, pattern);
-    }
-}
+```sh
+cargo run -- ./photos 'IMG_(\d+)' 'holiday_$1' --dry-run
 ```
 
-In this code, we use the `App` struct from the clap crate to create a new command-line interface. We create a subcommand named `rename` that takes two arguments: `directory` and `pattern`. We use the `value_of` method of the `ArgMatches` object to extract the values of these arguments and pass them to the `rename_files` function.
+Drop `--dry-run` to apply it. Strip a ` (copy)` suffix from every file:
 
-Conclusion
+```sh
+cargo run -- ./docs ' \(copy\)'
+```
 
-In this article, we have explored how to create a command-line utility to batch rename files in a directory based on user-defined patterns or rules. We have used Rust's standard library to handle basic file I/O and the regex crate to handle complex renaming patterns. We have also used the clap crate to create a command-line interface for our utility. With this knowledge, you can now create your own Rust command-line utilities and automate tedious tasks.
+Use single quotes so your shell doesn't expand `$1` itself.
+
+## Gotchas
+
+- **`$1` followed by letters, digits or `_`.** The `regex` crate reads `$1_old` as a group named `1_old`, which doesn't exist, so it expands to nothing. Write `${1}_old` instead.
+- **Case-only renames.** On case-insensitive filesystems (the Windows and macOS defaults), `Report.txt` to `report.txt` looks like the target already exists, so the tool skips it.
+- **Not recursive.** `fs::read_dir` only lists the top level. For subdirectories, use the [`walkdir`](https://crates.io/crates/walkdir) crate.
+- **Anchor your patterns.** `\d+` matches anywhere in the name, including the extension. Use `^` and `$` (for example `^IMG_(\d+)\.jpg$`) when you mean the whole name.
+
+## Further reading
+
+- [`regex` replacement syntax](https://docs.rs/regex/latest/regex/struct.Regex.html#method.replace)
+- [clap derive tutorial](https://docs.rs/clap/latest/clap/_derive/_tutorial/index.html)

@@ -1,53 +1,39 @@
 ---
-title: Simplify Your Golang Build Process with 1build
+title: Running Go build, test and fmt commands from one file with 1build
 pubDate: "2023-05-26T15:32:48.932Z"
-description: "A technical article about Rust"
+lastUpdated: 2026-11-14
+description: "How to use 1build to keep a Go project's build, test, fmt and run commands in a single 1build.yaml and run them by name, with before/after hooks."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1091373203.png
 ---
-# Simplify Your Golang Build Process with 1build
 
-Building software projects often requires the execution of multiple commands in the correct order. For Golang developers, this might include running tests, formatting code, building binaries, and deploying the application. In this article, we'll explore how to simplify the Go build process using 1build, a command-line tool that enables the creation of a unified configuration file to manage all your build commands.
+[1build](https://github.com/gopinath-langote/1build) is a small command-line tool that stores a project's commands in a `1build.yaml` file and runs them by name. Instead of remembering `go build -o bin/app .` or `go test -race ./...`, everyone on the team runs `1build build` or `1build test`. It is language-agnostic; this post uses a Go project as the example.
 
-## Introduction to 1build
+## Install
 
-1build is an open-source command-line tool designed to help developers manage and maintain build automation processes with a single configuration file. The aim is to simplify the build process, eliminate the need to remember multiple commands, and encourage a consistent build process across the team.
-
-## Prerequisites
-
-To follow this tutorial, you will need:
-
-1. Go installed on your local machine (version 1.16 or higher).
-2. Familiarity with basic Golang concepts and project structure.
-
-## Installing 1build
-
-To install 1build, open your terminal and run the following command:
+With Homebrew:
 
 ```sh
-curl -sfL https://get.1build.app | sh
+brew tap gopinath-langote/one-build
+brew install one-build
 ```
 
-This command downloads and installs 1build on your system. Once the installation is complete, verify that it works by running:
+Otherwise, download a binary from the [latest release](https://github.com/gopinath-langote/1build/releases/latest) and put it on your `PATH`. Check it works:
 
 ```sh
 1build --version
 ```
 
-You should see the installed version number displayed in the output.
-
-## Setting Up a Golang Project
-
-Before we dive into using 1build, let's set up a simple Golang project. Create a new directory for your project and initialize it as a Go module:
+## A minimal Go project
 
 ```sh
-mkdir my-golang-project
-cd my-golang-project
-go mod init github.com/your-username/my-golang-project
+mkdir my-go-project
+cd my-go-project
+go mod init example.com/my-go-project
 ```
 
-Next, create a basic `main. file:
+Add a `main.go`:
 
 ```go
 package main
@@ -55,54 +41,70 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, 1build!")
+	fmt.Println("Hello, 1build!")
 }
 ```
 
-Now, we're ready to configure our build process with 1build.
+## The 1build.yaml file
 
-## Creating a 1build Configuration File
+Generate a starter file with `1build init`:
 
-1build uses a YAML file called `1build.yaml` to store the build configuration. In the root directory of your project, create a new file named `1build.yaml` and add the following content:
-
-```yaml
-commands:
-  - name: build
-    command: go build -o my-app
-  - name: test
-    command: go test ./...
-  - name: fmt
-    command: go fmt ./...
-  - name: run
-    command: ./my-app
+```sh
+1build init --name "my-go-project"
 ```
 
-This configuration defines four build commands:
+Then edit `1build.yaml`. Each entry under `commands` maps a name to the shell command it runs:
 
-1. `build`: Compiles the Go code and generates the binary `my-app`.
-2. `test`: Runs the tests in the project.
-3. `fmt`: Formats the Go code according to the standard Go conventions.
-4. `run`: Executes the compiled binary.
+```yaml
+project: my-go-project
+commands:
+  - build: go build -o my-app .
+  - test: go test ./...
+  - fmt: go fmt ./...
+  - run: ./my-app
+```
 
-## Using 1build Commands
+You can also add or remove commands from the CLI instead of editing the file by hand:
 
-With the `1build.yaml` file in place, you can now execute the defined commands using the 1build CLI. For example, to build your project, run:
+```sh
+1build set vet "go vet ./..."
+1build unset vet
+```
+
+## Running commands
+
+Run a command by its name:
 
 ```sh
 1build build
 ```
 
-This command compiles your Go code and creates the binary `my-app`. Similarly, you can run the other commands like this:
+You can pass several names in one call:
 
 ```sh
-1build test
-1build fmt
-1build run
+1build fmt build run
 ```
 
-Each command executes the corresponding action defined in the `1build.yaml` file.
+Add `--quiet` (or `-q`) to print only SUCCESS or FAILURE instead of the command output, which is handy in CI logs.
 
-## Conclusion
+## Before and after hooks
 
-In this article, we explored how to use 1build to simplify the build process for Golang projects. By creating a single configuration file, you can manage and maintain your build commands more efficiently, eliminate the need to remember multiple commands, and ensure a consistent build process across your team.
+The optional `before` and `after` keys run around your commands, for example to set and clear an environment variable or start and stop a local database:
 
+```yaml
+project: my-go-project
+before: export CGO_ENABLED=0
+after: unset CGO_ENABLED
+commands:
+  - build: go build -o my-app .
+```
+
+They can also be set with `1build set before '...'` and removed with `1build unset before after`.
+
+## When a Makefile is the better choice
+
+1build only maps names to commands. It has no dependencies between targets and no "only rebuild if inputs changed" logic, and every contributor has to install it. If your project already has a `Makefile` or `Taskfile`, or you need targets that depend on each other, stick with those. 1build fits best when you want a short, readable list of commands with nothing else to learn.
+
+## Further reading
+
+- [1build on GitHub](https://github.com/gopinath-langote/1build)

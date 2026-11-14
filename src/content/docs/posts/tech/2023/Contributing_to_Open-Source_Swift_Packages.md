@@ -1,91 +1,78 @@
 ---
-description: In this article, we'll outline the steps you need to take to contribute
-  to open-source Swift packages
+description: "Find a Swift package to work on, fork and clone it, build and test with SwiftPM or Xcode, and open a pull request that maintainers can review quickly."
 imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-23T23:13:25.000Z'
-tags: []
-title: Contributing to Open-Source Swift Packages
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Contributing to an open-source Swift package: fork, test and open a pull request"
 ---
 
-# Contributing to Open-Source Swift Packages
+Most Swift libraries are distributed as Swift Package Manager (SwiftPM) packages hosted on GitHub, and most accept outside contributions. The workflow is the standard GitHub fork-and-pull-request flow, plus building and testing the package with SwiftPM.
 
-Open-source Swift packages are essential building blocks for the Swift community, helping developers create efficient and scalable applications. Contributing to these packages can be a rewarding experience, allowing you to improve your programming skills and contribute to the growth of the Swift ecosystem. In this article, we'll outline the steps you need to take to contribute to open-source Swift packages.
+## Find a package
 
-## Table of Contents
+Good places to look:
 
-1. [Find a Swift Package to Contribute To](#find-a-swift-package-to-contribute-to)
-2. [Understand the Package's Contribution Guidelines](#understand-the-packages-contribution-guidelines)
-3. [Setup Your Development Environment](#setup-your-development-environment)
-4. [Fork the Repository and Create a Branch](#fork-the-repository-and-create-a-branch)
-5. [Implement Your Changes](#implement-your-changes)
-6. [Testing Your Changes](#testing-your-changes)
-7. [Submitting a Pull Request](#submitting-a-pull-request)
-8. [Responding to Feedback](#responding-to-feedback)
-
-### Find a Swift Package to Contribute To
-
-To begin, you'll need to find a Swift package that interests you and accepts contributions. Some resources for finding open-source Swift packages include:
-
+- [Swift Package Index](https://swiftpackageindex.com/), which lists packages along with the platforms and Swift versions they build on
 - [GitHub's Swift topic](https://github.com/topics/swift)
 - [Awesome Swift](https://github.com/matteocrippa/awesome-swift), a curated list of Swift libraries
-- [Swift Package Index](https://swiftpackageindex.com/)
 
-When choosing a package, consider your own interests and skill level. Some packages may require a deeper understanding of specific technologies or frameworks, while others may be more beginner-friendly.
+A package you already use is the easiest start, since you know where it falls short. Many projects label beginner-friendly issues `good first issue`. For anything bigger than a small fix, comment on the issue first so you don't build something the maintainers won't merge.
 
-### Understand the Package's Contribution Guidelines
+## Read the contribution guidelines
 
-Before diving into the code, it's important to familiarize yourself with the package's contribution guidelines. Many projects will have a `CONTRIBUTING.md` file in their repository, which outlines the steps to follow when contributing. Be sure to read this document thoroughly, as it may contain important information about the development process, code style, and testing requirements.
+Look for `CONTRIBUTING.md` in the repository root or `.github/` folder. It usually covers code style, how to run the tests, commit message format, and whether you need to sign a contributor licence agreement. Check for a code of conduct too.
 
-### Setup Your Development Environment
+## Fork, clone and branch
 
-To contribute to a Swift package, you'll need to have the following tools installed on your system:
-
-- [Xcode](https://developer.apple.com/xcode/), the official IDE for Swift development
-- [Git](https://git-scm.com/), a version control system used by most Swift packages
-
-Once you have these tools installed, clone the package's repository to your local machine using the `git clone` command. If the package uses the Swift Package Manager (SPM), you can open the `Package.swift` file in Xcode to start working on the project.
-
-### Fork the Repository and Create a Branch
-
-Before making any changes to the code, create a fork of the repository on GitHub. This will create a copy of the project under your GitHub account, allowing you to make changes without affecting the original repository.
-
-Next, navigate to your forked repository on your local machine and create a new branch to work on. Name the branch something descriptive, like `fix-issue-123` or `add-new-feature`. You can create a new branch using the following command:
+Fork the repository on GitHub, then clone **your fork** and add the original as a remote called `upstream` so you can pull in new changes:
 
 ```bash
-git checkout -b <branch-name>
+git clone https://github.com/<your-username>/<package>.git
+cd <package>
+git remote add upstream https://github.com/<owner>/<package>.git
+git checkout -b fix-issue-123
 ```
 
-### Implement Your Changes
+Use a descriptive branch name, like `fix-issue-123` or `add-async-api`.
 
-Now that you have a branch to work on, it's time to make changes to the code. As you implement your changes, keep the following best practices in mind:
+## Build and run the tests
 
-- Stick to the established coding style of the project, which may be documented in the `CONTRIBUTING.md` file or evident from the existing code.
-- Keep your commits small and focused, making it easier for others to review your changes.
-- Write descriptive commit messages that explain your changes and their purpose.
-
-### Testing Your Changes
-
-Before submitting a pull request, it's important to test your changes to ensure they work correctly and don't introduce new bugs. Many Swift packages use XCTest for testing, and you can run these tests in Xcode by selecting the 'Product' menu and then 'Test' or by pressing `Cmd+U`.
-
-If the package you're contributing to doesn't have tests, you may want to consider writing your own. This not only helps validate your changes but also improves the overall quality of the package.
-
-### Submitting a Pull Request
-
-Once you've made your changes and tested them, it's time to submit a pull request (PR). To do this, first push your changes to your forked repository:
+You need a Swift toolchain: Xcode on macOS, or the toolchain from [swift.org](https://www.swift.org/install/) on Linux and Windows. From the package root:
 
 ```bash
-git push origin <branch-name>
+swift build
+swift test
 ```
 
-Next, navigate to the original repository on GitHub and click the 'Pull Requests' tab. Click the 'New Pull Request' button, and then select your fork and branch as the 'head repository' and 'compare' options, respectively.
+To use Xcode, open the package folder (or run `xed .` in it). Xcode reads `Package.swift` directly, with no `.xcodeproj` needed, and you can run tests with **Product > Test** (`Cmd+U`).
 
-Fill out the PR description with a summary of your changes, any relevant issue numbers, and a description of the testing you've done. Be sure to mention any maintainers or contributors who may need to review your changes.
+Run the tests before you change anything so you know what passes on a clean checkout. Packages may use XCTest, the newer Swift Testing framework (`import Testing`), or both, and `swift test` runs either. If the package supports Linux, check the project's CI configuration to see what it runs there, since Foundation APIs differ slightly between platforms.
 
-###Responding to Feedback
+## Make the change
 
-After submitting your pull request, the package maintainers or other contributors may provide feedback on your changes. Be prepared to respond to their comments and make any necessary updates to your code.
+- Follow the existing code style. Many projects enforce one with SwiftLint or swift-format; if there's a config file for either in the repo, run it.
+- Add or update tests for the behaviour you changed. A bug fix with a test that fails without it is much easier to review.
+- Keep commits focused and write messages that say why the change was made, not only what changed.
 
-To make changes to your PR, simply push new commits to the same branch on your fork. These will automatically be added to the existing PR. Once your changes have been approved, the maintainers will merge your PR into the main branch.
+## Open the pull request
 
-## Conclusion
+Before pushing, bring your branch up to date with the upstream default branch (often `main`):
+
+```bash
+git fetch upstream
+git rebase upstream/main
+git push origin fix-issue-123
+```
+
+GitHub then shows a **Compare & pull request** button on your fork. Check that the base repository is the original project and the head is your branch. In the description, say what the change does, how you tested it, and which issue it addresses. Writing `Fixes #123` closes that issue automatically when the PR is merged into the default branch.
+
+## Respond to review
+
+Maintainers will often ask for changes. Push new commits to the same branch and they appear on the existing PR. If the project prefers a clean history, they may ask you to squash commits or rebase again. Reviews on volunteer-run projects can take days or weeks, so a polite ping after a week or two is fine, but repeated pings aren't.
+
+## Further reading
+
+- [Swift Package Manager documentation](https://www.swift.org/documentation/package-manager/)
+- [GitHub: Creating a pull request from a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)

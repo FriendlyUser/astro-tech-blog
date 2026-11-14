@@ -1,186 +1,214 @@
 ---
-title: Interacting with Windows File System using WinAPI in Rust
+title: "Reading and writing files with the Windows API in Rust (CreateFileW, ReadFile, WriteFile)"
 pubDate: "2023-04-24T18:13:58.024Z"
-description: "In this article, we'll explore how to use WinAPI in Rust to interact with the Windows file system."
-tags: ["rust", "winapi"]
+lastUpdated: 2026-11-14
+description: "Create, write, and read a file in Rust by calling CreateFileW, WriteFile, and ReadFile through windows-sys, with correct error handling."
+tags: ["rust", "winapi", "windows"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1020242283.png
 ---
-# Interacting with Windows File System using WinAPI in Rust
 
-Rust is a systems programming language designed for safety, concurrency, and performance. It's an excellent choice for interacting with low-level APIs like the Windows API (WinAPI). In this article, we'll explore how to use WinAPI in Rust to interact with the Windows file system.
+This post calls the Win32 file functions `CreateFileW`, `WriteFile`, `ReadFile`, and `CloseHandle` directly from Rust. You rarely need to do this for plain file I/O, but it is the way in when you need a flag or function that the standard library doesn't expose, and it shows what `std::fs` does for you on Windows.
 
-## Prerequisites
+:::note[Updated in November 2026]
+The first version of this post used the `winapi` crate. `winapi` still works, but it hasn't had a release since 0.3.9 in June 2020. Microsoft publishes and maintains [`windows-sys`](https://crates.io/crates/windows-sys) (raw bindings) and [`windows`](https://crates.io/crates/windows) (safer wrappers), so the examples now use `windows-sys` 0.61. The original code also had bugs: it checked for a null handle instead of `INVALID_HANDLE_VALUE`, read from a handle opened write-only, decoded a byte buffer as UTF-16, and wrote a UTF-16 NUL terminator into the file. Those are fixed below.
+:::
 
-To follow along, ensure that you have the following installed on your system:
+## When to use std::fs instead
 
-1. Rust and Cargo: Follow the [official installation guide](https://www.rust-lang.org/tools/install) to install Rust.
-2. Visual Studio Build Tools: Download and install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) with the "Desktop development with C++" workload.
+On Windows, `std::fs::File` is itself built on `CreateFileW`, `ReadFile`, and `WriteFile`. If all you want is to write and read a file, this is the whole program:
 
-## Setting up the Project
+```rust
+use std::fs;
 
-First, create a new Rust project:
-
-```sh
-$ cargo new winapi_file_system
-$ cd winapi_file_system
+fn main() -> std::io::Result<()> {
+    fs::write("example.txt", "Hello, world!\n")?;
+    let contents = fs::read_to_string("example.txt")?;
+    print!("{contents}");
+    Ok(())
+}
 ```
 
-Next, add the following dependencies to your `Cargo.toml` file:
+If you only need a Windows-specific open flag, such as a sharing mode or `FILE_FLAG_*` value, `std::os::windows::fs::OpenOptionsExt` adds `share_mode`, `access_mode`, `custom_flags`, and `attributes` to `OpenOptions`. Reach for the raw API when you need something beyond that.
+
+## Setting up the project
+
+You need Rust installed with [rustup](https://www.rust-lang.org/tools/install) and the MSVC linker from the Visual Studio Build Tools ("Desktop development with C++" workload). The rustup installer on Windows offers to install the Build Tools if they're missing. The code below only builds for Windows targets.
+
+```sh
+cargo new winapi_file_system
+cd winapi_file_system
+```
+
+Add `windows-sys` to `Cargo.toml`. Each Win32 namespace is behind a Cargo feature, and a function needs the features for every type in its signature: `CreateFileW` takes a `SECURITY_ATTRIBUTES` pointer (`Win32_Security`), and `ReadFile`/`WriteFile` take an `OVERLAPPED` pointer (`Win32_System_IO`).
 
 ```toml
 [dependencies]
-winapi = { version = "0.3", features = ["fileapi", "handleapi", "winbase", "winnt"] }
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_IO",
+] }
 ```
 
-This will include the `winapi` crate and enable the necessary features for file system interaction.
+The snippets in the next sections all go in `src/main.rs`, in order. Run the result with `cargo run`.
 
-## Interacting with the File System
-
-Now that your project is set up, let's dive into some examples of interacting with the Windows file system using WinAPI.
-
-### Creating a File
-
-To create a new file, we'll use the `CreateFileW` function from `winapi::um::fileapi`. This function takes several arguments, including the file name, desired access, sharing mode, security attributes, creation disposition, flags, and an optional template file.
-
-Here's an example of creating a new file called `example.txt`:
+## Imports and a handle wrapper
 
 ```rust
 use std::ffi::OsStr;
-use std::os::windows::ffi::OsStrExt;
+use std::io;
 use std::iter::once;
-use std::ptr::null_mut;
-use winapi::um::fileapi::CreateFileW;
-use winapi::um::winnt::{FILE_SHARE_READ, FILE_SHARE_WRITE, GENERIC_WRITE};
-use winapi::um::winbase::{CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL};
+use std::os::windows::ffi::OsStrExt;
+use std::ptr::{null, null_mut};
 
-fn main() {
-    let file_name: Vec<u16> = OsStr::new("example.txt")
-        .encode_wide()
-        .chain(once(0))
-        .collect();
+use windows_sys::Win32::Foundation::{
+    CloseHandle, GENERIC_READ, GENERIC_WRITE, HANDLE, INVALID_HANDLE_VALUE,
+};
+use windows_sys::Win32::Storage::FileSystem::{
+    CreateFileW, ReadFile, WriteFile, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ,
+    OPEN_EXISTING,
+};
 
+/// Owns a Win32 file handle and closes it when dropped.
+struct FileHandle(HANDLE);
+
+impl Drop for FileHandle {
+    fn drop(&mut self) {
+        unsafe {
+            CloseHandle(self.0);
+        }
+    }
+}
+
+/// Encode a string as NUL-terminated UTF-16, which the `W` functions expect.
+fn to_wide(s: &str) -> Vec<u16> {
+    OsStr::new(s).encode_wide().chain(once(0)).collect()
+}
+```
+
+Wrapping the handle in a type with `Drop` means it's closed exactly once, including on early returns through `?`. In `windows-sys` 0.61, `HANDLE` is `*mut c_void`, the same type as std's `RawHandle`.
+
+## Opening or creating a file
+
+`CreateFileW` both creates and opens files. The creation disposition decides which: `CREATE_ALWAYS` creates the file or truncates an existing one, and `OPEN_EXISTING` fails if the file isn't there.
+
+```rust
+fn open(path: &str, access: u32, disposition: u32) -> io::Result<FileHandle> {
+    let name = to_wide(path);
     let handle = unsafe {
         CreateFileW(
-            file_name.as_ptr(),
-            GENERIC_WRITE,
-            FILE_SHARE_READ | FILE_SHARE_WRITE,
-            null_mut(),
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            null_mut(),
+            name.as_ptr(),         // lpFileName
+            access,                // dwDesiredAccess
+            FILE_SHARE_READ,       // dwShareMode: others may read while it's open
+            null(),                // lpSecurityAttributes: default
+            disposition,           // dwCreationDisposition
+            FILE_ATTRIBUTE_NORMAL, // dwFlagsAndAttributes
+            null_mut(),            // hTemplateFile: none
         )
     };
 
-    if handle.is_null() {
-        println!("Failed to create the file.");
-    } else {
-        println!("File created successfully.");
+    // CreateFileW signals failure with INVALID_HANDLE_VALUE (-1), not a null handle.
+    if handle == INVALID_HANDLE_VALUE {
+        return Err(io::Error::last_os_error());
     }
+    Ok(FileHandle(handle))
 }
 ```
 
-In this example, we convert the file name to a wide string and create the file with write access, allowing it to be read and written by other processes. If the file already exists, it will be overwritten.
+Checking `handle.is_null()` here is a common bug. A failed call returns `INVALID_HANDLE_VALUE`, which is not null, so the error goes unnoticed and later calls fail with a confusing "invalid handle" error. `io::Error::last_os_error()` reads `GetLastError()` and turns it into an error with the system message.
 
-### Reading from a File
+## Writing
 
-To read the contents of a file, we can use the `ReadFile` function from `winapi::um::fileapi`. This function takes a file handle, a buffer to store the data, the number of bytes to read, the number of bytes actually read, and an optional overlapped structure.
-
-Here's an example of reading the contents of `example.txt`:
+`WriteFile` takes a byte pointer and a length. Writing `&[u8]` (for example, a UTF-8 string's bytes) avoids the original version's mistake of writing UTF-16 code units plus a trailing NUL into the file.
 
 ```rust
-use std::ffi::OsString;
-use std::os::windows::ffi::OsStringExt;
-use winapi::um::fileapi::{ReadFile, SetFilePointer};
-use winapi::um::winnt::FILE_BEGIN;
-use winapi::um::handleapi::CloseHandle;
+fn write_all(file: &FileHandle, data: &[u8]) -> io::Result<()> {
+    let len = u32::try_from(data.len()).map_err(|_| io::Error::other("buffer too large"))?;
+    let mut written: u32 = 0;
+    let ok = unsafe { WriteFile(file.0, data.as_ptr(), len, &mut written, null_mut()) };
 
-fn main() {
-    // ... (Create the file as shown in the previous example)
-
-    let mut buffer = [0u8; 1024];
-    let mut bytes_read = 0;
-
-    let success = unsafe {
-        SetFilePointer(handle, 0, null_mut(), FILE_BEGIN);
-        ReadFile(
-            handle,
-            buffer.as_mut_ptr() as _,
-            buffer.len() as u32,
-            &mut bytes_read,
-            null_mut(),
-        )
-    };
-
-    if success == 0 {
-        println!("Failed to read the file.");
-    } else {
-        let content = OsString::from_wide(&buffer[..bytes_read as usize])
-            .to_string_lossy()
-            .to_owned();
-        println!("File content: {}", content);
+    if ok == 0 {
+        return Err(io::Error::last_os_error());
     }
-
-    unsafe {
-        CloseHandle(handle);
+    if written != len {
+        return Err(io::Error::other("short write"));
     }
+    Ok(())
 }
 ```
 
-In this example, we set the file pointer to the beginning of the file and read up to 1024 bytes into a buffer. If the read operation is successful, we convert the data to an `OsString` and display the file contents.
+Win32 `BOOL` is an `i32`; zero means failure.
 
-Don't forget to close the file handle using `CloseHandle` after you're done using the file.
+## Reading
 
-### Writing to a File
-
-Finally, let's lookat how to write data to a file using the `WriteFile` function from `winapi::um::fileapi`. This function takes a file handle, a buffer containing the data to write, the number of bytes to write, the number of bytes actually written, and an optional overlapped structure.
-
-Here's an example of writing a string to `example.txt`:
+On a synchronous handle, `ReadFile` returns success with zero bytes read at end of file, so read in a loop until that happens:
 
 ```rust
-use std::ffi::OsStr;
-use std::os::windows::ffi::OsStrExt;
-use std::iter::once;
-use winapi::um::fileapi::{SetFilePointer, WriteFile};
-use winapi::um::winnt::FILE_BEGIN;
-use winapi::um::handleapi::CloseHandle;
+fn read_to_end(file: &FileHandle) -> io::Result<Vec<u8>> {
+    let mut contents = Vec::new();
+    let mut buf = [0u8; 4096];
 
-fn main() {
-    // ... (Create and read the file as shown in the previous examples)
-
-    let data = "Hello, world!";
-    let wide_data: Vec<u16> = OsStr::new(data).encode_wide().chain(once(0)).collect();
-    let mut bytes_written = 0;
-
-    let success = unsafe {
-        SetFilePointer(handle, 0, null_mut(), FILE_BEGIN);
-        WriteFile(
-            handle,
-            wide_data.as_ptr() as _,
-            (wide_data.len() * 2) as u32,
-            &mut bytes_written,
-            null_mut(),
-        )
-    };
-
-    if success == 0 {
-        println!("Failed to write to the file.");
-    } else {
-        println!("Successfully wrote to the file.");
+    loop {
+        let mut read: u32 = 0;
+        let ok = unsafe {
+            ReadFile(file.0, buf.as_mut_ptr(), buf.len() as u32, &mut read, null_mut())
+        };
+        if ok == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        if read == 0 {
+            break; // end of file
+        }
+        contents.extend_from_slice(&buf[..read as usize]);
     }
-
-    unsafe {
-        CloseHandle(handle);
-    }
+    Ok(contents)
 }
 ```
 
-In this example, we set the file pointer to the beginning of the file and write the wide string data to the file. If the write operation is successful, we print a success message.
+## Putting it together
 
-Remember to close the file handle using `CloseHandle` after you're done using the file.
+The handle you read from must be opened with `GENERIC_READ`. Reading through a handle opened only with `GENERIC_WRITE` fails with "Access is denied".
 
-## Conclusion
+```rust
+fn main() -> io::Result<()> {
+    let path = "example.txt";
 
-In this article, we explored how to use WinAPI in Rust to interact with the Windows file system. By leveraging the available functions for file creation, reading, and writing, we demonstrated basic file system operations in Rust using the WinAPI.
+    {
+        let file = open(path, GENERIC_WRITE, CREATE_ALWAYS)?;
+        write_all(&file, b"Hello, world!\n")?;
+    } // `file` is dropped here, which closes the handle
 
-While these examples provide a starting point, there is a wide range of file system operations that can be performed using the WinAPI. Be sure to consult the [official WinAPI documentation](https://docs.microsoft.com/en-us/windows/win32/apiindex/windows-api-list) for more information on the available functions and their usage.
+    let file = open(path, GENERIC_READ, OPEN_EXISTING)?;
+    let contents = read_to_end(&file)?;
+    print!("{}", String::from_utf8_lossy(&contents));
+
+    match open("missing.txt", GENERIC_READ, OPEN_EXISTING) {
+        Err(e) => println!("open failed as expected: {e}"),
+        Ok(_) => println!("missing.txt exists"),
+    }
+    Ok(())
+}
+```
+
+Expected output:
+
+```text
+Hello, world!
+open failed as expected: The system cannot find the file specified. (os error 2)
+```
+
+## Gotchas
+
+- Use the `W` (UTF-16) functions. The `A` variants interpret strings in the system's ANSI code page and mangle non-ASCII paths.
+- The share mode controls what *other* handles may do while yours is open. With `FILE_SHARE_READ` only, another process that tries to open the file for writing gets a sharing violation.
+- Paths longer than `MAX_PATH` (260 characters) need the `\\?\` prefix unless long paths are enabled on the machine and in the application manifest. `std::fs` adds the prefix for you when needed.
+- To hand a raw handle to code that expects std types, wrap it with `std::os::windows::io::OwnedHandle::from_raw_handle` (an `unsafe` call) and convert it with `std::fs::File::from`. Then std closes it, so don't also call `CloseHandle`.
+- The [`windows`](https://crates.io/crates/windows) crate (0.62 at the time of writing) generates the same bindings with safer signatures: functions such as `CreateFileW` return `windows::core::Result`, so you can't forget the error check. Use it if you'd rather not write the checks yourself.
+
+## Further reading
+
+- [`CreateFileW`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew), [`ReadFile`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile), and [`WriteFile`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile) on Microsoft Learn
+- [`windows-sys` documentation](https://docs.rs/windows-sys)
+- [windows-rs repository](https://github.com/microsoft/windows-rs)

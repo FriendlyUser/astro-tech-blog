@@ -1,51 +1,191 @@
 ---
-title: "C++ I/O: Reading and Manipulating CSV Data ."
-description: In this article, we'll explore how to build a program in C++ that reads in a CSV file, performs operations on the file.
+title: "Reading and writing CSV files in C++ with ifstream and ofstream"
+description: Read a CSV file line by line in C++, split fields correctly (including quoted commas), add a computed column and write the result to a new file.
 pubDate: Saturday, 26 December 2024 13:00:00 GMT
-tags: ["rust"]
+lastUpdated: 2026-11-14
+tags: ["rust", "cpp"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/2886495853.png'
 ---
 
+The C++ standard library has no CSV parser, but `std::ifstream`, `std::getline` and `std::ofstream` are enough for simple files. This post reads a small CSV of scores, adds a "passed" column, and writes the result to a new file.
 
-C++ I/O: Reading and Manipulating CSV Data 
+## The naive split, and where it breaks
 
-CSV or Comma-Separated Values is a widely used format for storing tabular data. In this article, we will delve into how to read and manipulate CSV data in a C++ program using simple I/O operations.
-
-Reading CSV Data
-To read a CSV file, we can use std::ifstream to open the file and read rows one by one. A single row can be read into a string using std::getline(). We can then parse the string to extract individual columns. Here is an example:
+The usual first attempt reads each line, then splits it on commas with a second `std::getline`:
 
 ```cpp
-std::ifstream csvFile {"data.csv"}; // open the file
-std::string row;
-while (std::getline(csvFile, row)) { // read rows one by one
-    std::stringstream rowStream(row); // create a stringstream from the row string
-    std::string col;
-    std::vector<std::string> cols; // a vector to store the columns
-    while (std::getline(rowStream, col, ',')) { // parse the row string and extract columns
-        cols.push_back(col);
-    } 
-    // Access columns using cols 
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+std::vector<std::vector<std::string>> readNaive(const std::string &path) {
+    std::vector<std::vector<std::string>> rows;
+    std::ifstream csvFile{path};
+    std::string row;
+    while (std::getline(csvFile, row)) {
+        std::stringstream rowStream(row);
+        std::string col;
+        std::vector<std::string> cols;
+        while (std::getline(rowStream, col, ',')) {
+            cols.push_back(col);
+        }
+        rows.push_back(cols);
+    }
+    return rows;
 }
 ```
 
-In the above example, we opened the CSV file "data.csv" using std::ifstream. We then read each row of the file using std::getline() and stored it in the string variable "row". We created a stringstream from the "row" string and extracted individual columns using std::getline() with delimiter ',' (comma) in a while loop. The extracted columns were then stored in a vector called "cols" for further processing.
+This works for plain data, but it gets two common cases wrong:
 
-Manipulating CSV Data
-We can also write CSV data from our program using std::ofstream. We can open a file for writing and write rows and columns separated by commas. Here is an example:
+- **Quoted commas.** In `2,"Smith, Bob",75` the comma inside the quotes is part of the name, but the split produces four fields: `2`, `"Smith`, ` Bob"` and `75`.
+- **Empty last field.** For `a,b,` the inner loop yields only `a` and `b`, because `std::getline` stops at end of input without returning a final empty string.
 
-```cpp
-std::ofstream csvFile {"data.csv"}; // open the file
-csvFile << "Column1,Column2,Column3\n"; // write header row
-csvFile << "1,Hello,World\n"; // write data rows
-csvFile << "2,Goodbye,Moon\n";
-```
+Files saved from Excel on Windows also end each line with `\r\n`, which leaves a stray `\r` on the last field.
 
-In the above example, we opened the CSV file "data.csv" using std::ofstream. We then wrote a header row and two data rows separated by commas. If we want to append to an existing CSV file, we can use std::ofstream with the std::ios::app flag like this:
+## A small field parser
+
+The function below walks the line one character at a time and tracks whether it's inside quotes. It handles quoted commas, `""` as an escaped quote, empty trailing fields and `\r`. It does not handle a quoted field that contains a line break; for that, use a library such as [rapidcsv](https://github.com/d99kris/rapidcsv) or [csv-parser](https://github.com/vincentlaucsb/csv-parser).
 
 ```cpp
-std::ofstream csvFile {"data.csv", std::ios::app}; // open the file in append mode
-csvFile << "3,Greetings,Earth\n"; // append a new row
+std::vector<std::string> parseCsvLine(const std::string &line) {
+    std::vector<std::string> fields;
+    std::string field;
+    bool inQuotes = false;
+
+    for (std::size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+        if (inQuotes) {
+            if (c == '"' && i + 1 < line.size() && line[i + 1] == '"') {
+                field += '"';
+                ++i;
+            } else if (c == '"') {
+                inQuotes = false;
+            } else {
+                field += c;
+            }
+        } else if (c == '"') {
+            inQuotes = true;
+        } else if (c == ',') {
+            fields.push_back(field);
+            field.clear();
+        } else if (c != '\r') {  // tolerate Windows line endings
+            field += c;
+        }
+    }
+    fields.push_back(field);
+    return fields;
+}
 ```
 
-In conclusion, CSV files can be easily read and written in C++ using basic I/O operations and string parsing techniques. CSV is a simple yet powerful format for data exchange between programs. With the above examples, you should be able to read and manipulate CSV data in your C++ programs.
+## Writing CSV
+
+Writing is the reverse: join fields with commas, and wrap any field that contains a comma, quote or newline in quotes, doubling the quotes inside it.
+
+```cpp
+std::string toCsvField(const std::string &value) {
+    if (value.find_first_of(",\"\n") == std::string::npos) {
+        return value;
+    }
+    std::string quoted = "\"";
+    for (char c : value) {
+        if (c == '"') quoted += '"';
+        quoted += c;
+    }
+    return quoted + "\"";
+}
+
+void writeRow(std::ofstream &out, const std::vector<std::string> &row) {
+    for (std::size_t i = 0; i < row.size(); ++i) {
+        if (i > 0) out << ',';
+        out << toCsvField(row[i]);
+    }
+    out << '\n';
+}
+```
+
+Opening an `std::ofstream` truncates the file. To add rows to an existing file instead, open it in append mode: `std::ofstream out{"results.csv", std::ios::app};`.
+
+## Putting it together
+
+Given `scores.csv`:
+
+```text
+id,name,score
+1,Alice,90
+2,"Smith, Bob",75
+3,Carol,82
+```
+
+this `main` (placed after the three functions above, with `<fstream>`, `<iostream>`, `<string>` and `<vector>` included) copies each row to `results.csv` with a `passed` column and prints the average:
+
+```cpp
+int main() {
+    std::ifstream in{"scores.csv"};
+    if (!in) {
+        std::cerr << "Could not open scores.csv\n";
+        return 1;
+    }
+
+    std::ofstream out{"results.csv"};
+    if (!out) {
+        std::cerr << "Could not open results.csv for writing\n";
+        return 1;
+    }
+
+    std::string line;
+    if (!std::getline(in, line)) {
+        std::cerr << "scores.csv is empty\n";
+        return 1;
+    }
+    std::vector<std::string> header = parseCsvLine(line);
+    header.push_back("passed");
+    writeRow(out, header);
+
+    int rows = 0;
+    double total = 0;
+    while (std::getline(in, line)) {
+        if (line.empty()) continue;
+        std::vector<std::string> cols = parseCsvLine(line);
+        if (cols.size() < 3) {
+            std::cerr << "Skipping malformed row: " << line << '\n';
+            continue;
+        }
+        int score = 0;
+        try {
+            score = std::stoi(cols[2]);
+        } catch (const std::exception &) {
+            std::cerr << "Skipping row with a bad score: " << line << '\n';
+            continue;
+        }
+        total += score;
+        ++rows;
+        cols.push_back(score >= 80 ? "yes" : "no");
+        writeRow(out, cols);
+    }
+
+    if (rows > 0) {
+        std::cout << "Rows: " << rows << ", average score: " << total / rows << '\n';
+    }
+}
+```
+
+Compile with `g++ -std=c++17 -Wall -o csv csv.cpp` and run it:
+
+```text
+Rows: 3, average score: 82.3333
+```
+
+`results.csv` keeps the quotes around the name that contains a comma:
+
+```text
+id,name,score,passed
+1,Alice,90,yes
+2,"Smith, Bob",75,no
+3,Carol,82,yes
+```
+
+## When to use a library instead
+
+Hand-rolled parsing is fine for files you control. Reach for a library when the input comes from elsewhere and may contain quoted line breaks, different delimiters, a byte-order mark or a mix of encodings, or when files are large enough that per-character string building becomes a bottleneck.

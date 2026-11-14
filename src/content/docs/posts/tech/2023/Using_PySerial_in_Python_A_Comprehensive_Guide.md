@@ -1,211 +1,157 @@
 ---
-description: In this article, we will explore the PySerial library and its various
-  functions, as well as how to use it effectively in Python
+description: Open a serial port with PySerial, read and write bytes, set timeouts and line settings, handle incoming lines on a background thread, and read sensor data from an Arduino.
 imgSrc: /imgs/2023/818001379.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T22:56:56.000Z'
-tags: []
-title: Using PySerial in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: Talking to serial devices from Python with PySerial
 ---
 
-# Using PySerial in Python: A Comprehensive Guide
+PySerial gives Python access to serial ports (COM ports on Windows, `/dev/tty*` devices on Linux and macOS) through one API. It's the usual way to talk to an Arduino, a GPS module, a USB-to-UART adapter or lab equipment from a Python script. The examples below were checked against PySerial 3.5, which is still the current release on PyPI (November 2020).
 
-PySerial is a Python library that provides access to the serial ports on a variety of operating systems. It is widely used for communication between microcontrollers and computers, enabling the exchange of data over serial communication protocols. In this article, we will explore the PySerial library and its various functions, as well as how to use it effectively in Python.
+PySerial handles UART-style serial ports only. SPI and I2C are also "serial" buses, but a PC doesn't expose them as serial ports, so you need different hardware and libraries for those.
 
-## Table of Contents
-
-1. [Introduction to Serial Communication](#introduction-to-serial-communication)
-2. [Installing PySerial](#installing-pyserial)
-3. [Opening and Closing a Serial Port](#opening-and-closing-a-serial-port)
-4. [Reading and Writing Data](#reading-and-writing-data)
-5. [Setting Timeout and Buffer Sizes](#setting-timeout-and-buffer-sizes)
-6. [Working with Serial Events](#working-with-serial-events)
-7. [Example: Reading Sensor Data from Arduino](#example-reading-sensor-data-from-arduino)
-8. [Conclusion](#conclusion)
-
-### Introduction to Serial Communication
-
-Serial communication is a way of transmitting data between two devices using a serial interface. It involves sending data one bit at a time, sequentially, over a single communication channel. Some popular serial communication protocols include UART (Universal Asynchronous Receiver/Transmitter), SPI (Serial Peripheral Interface), and I2C (Inter-Integrated Circuit).
-
-PySerial makes it easy to work with serial devices in Python, abstracting away the underlying hardware and providing a consistent, easy-to-use interface regardless of the platform you are using.
-
-### Installing PySerial
-
-To install PySerial, use the following pip command:
+## Installing PySerial
 
 ```bash
 pip install pyserial
 ```
 
-This will download and install the latest version of PySerial from the Python Package Index (PyPI).
+The package is installed as `pyserial` but imported as `serial`. Don't install the unrelated `serial` package from PyPI by mistake; it shadows the import and gives confusing errors.
 
-### Opening and Closing a Serial Port
+To see which ports exist on your machine:
 
-To start using PySerial, you'll need to open a serial port. This is usually done by specifying the port name and the baud rate. The baud rate is the speed at which the data is transmitted over the serial connection, measured in bits per second (bps).
+```bash
+python -m serial.tools.list_ports
+```
 
-Here's an example of opening a serial port:
+## Opening and closing a port
+
+Passing a port name to `serial.Serial` opens it immediately:
 
 ```python
 import serial
 
-ser = serial.Serial('COM3', 9600)  ## Open serial port with the name 'COM3' and baud rate of 9600
-```
-
-Make sure to replace `'COM3'` with the appropriate port name for your system. On Windows, port names are usually in the format `'COMx'`, while on Linux and macOS, they are in the format `'/dev/ttyUSBx'` or `'/dev/ttyACMx'`.
-
-Once you've finished using the serial port, it's important to close it to free up system resources:
-
-```python
+ser = serial.Serial("COM3", 9600)  # port name, baud rate
+# ... use the port ...
 ser.close()
 ```
 
-### Reading and Writing Data
+On Windows, ports are named `COM1`, `COM3` and so on. On Linux, USB adapters usually appear as `/dev/ttyUSB0` or `/dev/ttyACM0`; on macOS, as `/dev/cu.usbserial-*` or `/dev/cu.usbmodem*`. On Linux your user typically needs to be in the `dialout` group (or your distro's equivalent) to open them.
 
-To read data from the serial port, you can use the `read()` or `readline()` methods. The `read()` method reads a specified number of bytes from the serial port, while the `readline()` method reads a line of data terminated by a newline character (`\n`).
-
-Here's an example of reading a line of data:
+`Serial` also works as a context manager, which closes the port even if your code raises:
 
 ```python
-data = ser.readline().decode('ascii')  ## Read a line of data and decode it as an ASCII string
-print(data)
+import serial
+
+with serial.Serial("COM3", 9600, timeout=1) as ser:
+    ser.write(b"ping\n")
 ```
 
-To write data to the serial port, use the `write()` method:
+## Reading and writing
+
+PySerial reads and writes `bytes`, not `str`, so encode on the way out and decode on the way in:
 
 ```python
-data = "Hello, world!\n"
-ser.write(data.encode('ascii'))  ## Encode the string as ASCII and write it to the serial port
+ser.write("Hello, world!\n".encode("ascii"))
+
+line = ser.readline().decode("ascii", errors="replace")
+print(line)
 ```
 
-### Setting Timeout and Buffer Sizes
+- `read(n)` reads up to `n` bytes.
+- `readline()` reads until `\n`.
+- `in_waiting` tells you how many bytes are already buffered.
 
-PySerial allows you to set a timeout for read operations, which is useful when you don't want your program to block indefinitely while waiting for data. To set a timeout, simply pass the `timeout` parameter when opening the serial port:
+`errors="replace"` stops a single corrupted byte, which is common right after a device resets, from raising `UnicodeDecodeError`.
+
+## Timeouts and line settings
+
+Without a timeout, `read()` and `readline()` block until they get what they asked for, which can be forever. Set `timeout` (in seconds) when you open the port:
 
 ```python
-ser = serial.Serial('COM3', 9600, timeout=1)  ## Set a timeout of 1 second
+ser = serial.Serial("COM3", 9600, timeout=1)
 ```
 
-In addition to setting a timeout, you can also control the size of the input and output buffers:
+With a timeout, `readline()` returns whatever arrived before the timeout, which may be a partial line or `b""`. Check for that before parsing.
+
+The defaults are 8 data bits, no parity and 1 stop bit ("8N1"), which most devices use. If yours needs something else, set it explicitly:
 
 ```python
-ser = serial.Serial('COM3', 9600, timeout=1, bytesize=8, parity='N', stopbits=1)
+import serial
+
+ser = serial.Serial(
+    "COM3",
+    9600,
+    timeout=1,
+    bytesize=serial.EIGHTBITS,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+)
 ```
 
-This example sets the byte size to 8 bits, no parity, and one stop bit. These parameters are common for most serial devices, but you may need to adjust them based on the device you are communicating with.
+These are line settings, not buffer sizes. PySerial only lets you change the OS buffer sizes on Windows, through `ser.set_buffer_size(rx_size=..., tx_size=...)`.
 
-### Working with Serial Events
+## Handling incoming lines on a background thread
 
-In some cases, you may want to perform specific actions when certain events occur, such as when new data is received. PySerial provides support for event-driven programming through the `serial.threaded` sub-module.
-
-Here's an example of using a `serial.threaded.ReaderThread` to handle incoming data:
+If your program has other work to do, the `serial.threaded` module can read on a background thread and call you back. `LineReader` buffers the input and calls `handle_line()` once per line. It splits on `\r\n` by default, which matches Arduino's `Serial.println()`, and decodes as UTF-8:
 
 ```python
+import time
+
 import serial
 import serial.threaded
 
-class SerialReader(serial.threaded.Protocol):
-    def __init__(self):
-        self.buffer = bytearray()
 
-    def data_received(self, data):
-       self.buffer.extend(data)
-        if b'\n' in self.buffer:
-            lines = self.buffer.split(b'\n')
-            self.buffer = bytearray()
-            for line in lines[:-1]:
-                print(line.decode('ascii'))
+class PrintLines(serial.threaded.LineReader):
+    def handle_line(self, line):
+        print(f"received: {line}")
 
-ser = serial.Serial('COM3', 9600, timeout=1)
-with serial.threaded.ReaderThread(ser, SerialReader) as protocol:
-    ## The ReaderThread will automatically call the data_received method when data is received
-    ## You can perform other tasks here while the ReaderThread handles incoming data
-    time.sleep(10)  ## Example: wait for 10 seconds before exiting
+    def connection_lost(self, exc):
+        super().connection_lost(exc)
+        print("port closed")
+
+
+ser = serial.Serial("COM3", 9600, timeout=1)
+with serial.threaded.ReaderThread(ser, PrintLines) as protocol:
+    protocol.write_line("hello")  # sends "hello\r\n"
+    time.sleep(10)  # do other work here; lines are handled in the background
 ```
 
-This example defines a `SerialReader` class that inherits from `serial.threaded.Protocol`. The `data_received()` method is automatically called whenever new data is received, making it easy to handle incoming data in an event-driven manner.
+`ReaderThread` takes the class (a protocol factory), not an instance. Leaving the `with` block stops the thread and closes the port. If your device ends lines with a bare `\n`, subclass `LineReader` and set `TERMINATOR = b"\n"`.
 
-### Example: Reading Sensor Data from Arduino
+## Example: reading sensor data from an Arduino
 
-In this example, we'll use PySerial to read sensor data from an Arduino. Assume that the Arduino is programmed to send sensor data as a string in the format `"<sensor_name>:<value>\n"` over the serial port.
+Suppose the Arduino sends one reading per line in the form `name:value`, using `Serial.println()`:
 
 ```python
+import time
+
 import serial
 
-## Open the serial port
-ser = serial.Serial('COM3', 9600, timeout=1)
+with serial.Serial("COM3", 9600, timeout=1) as ser:
+    time.sleep(2)  # most Arduino boards reset when the port opens
+    ser.reset_input_buffer()
 
-def read_sensor_data():
-    data = ser.readline().decode('ascii').strip()
-    if data:
-        sensor_name, value = data.split(':')
-        print(f"{sensor_name}: {value}")
-
-## Read sensor data in a loop
-while True:
-    read_sensor_data()
+    while True:
+        line = ser.readline().decode("ascii", errors="replace").strip()
+        if not line:
+            continue  # timed out with nothing to read
+        name, sep, value = line.partition(":")
+        if not sep:
+            print(f"skipping malformed line: {line!r}")
+            continue
+        print(f"{name}: {value}")
 ```
 
-This simple script continuously reads and prints sensor data from the Arduino. Make sure to adapt the port name (`'COM3'` in this example) to match your system.
+Stop it with Ctrl+C. A few things this handles that a naive loop doesn't:
 
-### Conclusion
+- Opening the port toggles DTR, which resets boards such as the Uno. The sketch then spends a moment in the bootloader, so wait before reading and throw away anything already buffered.
+- An empty or partial line after a timeout is skipped instead of crashing on unpacking.
+- The baud rate must match the `Serial.begin()` call in the sketch. A mismatch shows up as garbage characters rather than as an error.
 
-PySerial is a powerful and easy-to-use Python library for working with serial communication. It provides a consistent interface across various platforms and simplifies the process of opening, closing, reading from, and writing to serial ports. By leveraging PySerial's capabilities and following best practices, you can create robust applications that communicate with a wide range of serial devices, such as microcontrollers and sensors.
+## Further reading
 
-In this article, we've covered the basics of PySerial, including installation, opening and closing serial ports, reading and writing data, setting timeouts and buffer sizes, working with serial events, and an example of reading sensor data from an Arduino. With this knowledge, you're well-equipped to start using PySerial in your own Python projects.
-To get started with Pascal, you'll need to set up the development environment. One of the most popular Pascal compilers is Free Pascal, and an IDE (Integrated Development Environment) that works well with it is Lazarus. This tutorial will guide you through the process of setting up the Free Pascal Compiler (FPC) and Lazarus IDE on Windows, macOS, and Linux.
-
-### Windows
-
-1. **Download the installer:**
-   Visit the [Free Pascal official download page](https://www.freepascal.org/download.var) and download the latest version of the installer for Windows.
-
-2. **Install Free Pascal:**
-   Run the installer and follow the instructions to install Free Pascal on your system.
-
-3. **Download Lazarus:**
-   Visit the [Lazarus official download page](https://www.lazarus-ide.org/index.php?page=downloads) and download the latest version of the installer for Windows.
-
-4. **Install Lazarus:**
-   Run the installer and follow the instructions to install Lazarus on your system. During the installation process, it may ask you for the path to the Free Pascal Compiler. Provide the path where you installed the FPC.
-
-### macOS
-
-1. **Download the installer:**
-   Visit the [Free Pascal official download page](https://www.freepascal.org/download.var) and download the latest version of the installer for macOS.
-
-2. **Install Free Pascal:**
-   Open the downloaded disk image file and run the installer package. Follow the instructions to install Free Pascal on your system.
-
-3. **Download Lazarus:**
-   Visit the [Lazarus official download page](https://www.lazarus-ide.org/index.php?page=downloads) and download the latest version of the installer for macOS.
-
-4. **Install Lazarus:**
-   Open the downloaded disk image file and run the installer package. Follow the instructions to install Lazarus on your system.
-
-### Linux
-
-1. **Install Free Pascal:**
-   Most Linux distributions have the Free Pascal Compiler available in their package repositories. Open a terminal and enter the following command to install FPC:
-
-   - On Debian-based systems (including Ubuntu and Linux Mint):
-     ```
-     sudo apt-get install fpc
-     ```
-   - On Red Hat-based systems (including Fedora and CentOS):
-     ```
-     sudo dnf install fpc
-     ```
-
-2. **Install Lazarus:**
-   Likewise, Lazarus is available in the package repositories of most Linux distributions. Enter the following command in the terminal to install Lazarus:
-
-   - On Debian-based systems:
-     ```
-     sudo apt-get install lazarus
-     ```
-   - On Red Hat-based systems:
-     ```
-     sudo dnf install lazarus
-     ```
-
-After completing the installation process, you can start Lazarus and begin writing Pascal programs. To create a new project, select "File" > "New" > "Project" > "Application" from the main menu, and then save the project. You'll see a default form and a source code editor. You can add components to the form, write code, and compile your program by selecting "Run" > "Build" or by pressing the F9 key.
+- [PySerial short introduction](https://pyserial.readthedocs.io/en/latest/shortintro.html)
+- [PySerial API reference](https://pyserial.readthedocs.io/en/latest/pyserial_api.html)

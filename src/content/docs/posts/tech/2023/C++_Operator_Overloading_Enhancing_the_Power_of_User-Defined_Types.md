@@ -1,105 +1,118 @@
 ---
-description: 'In this article, we''ll explore the basics of operator overloading in
-  C++, including:'
+title: "C++ operator overloading: member vs non-member operators and C++20 comparisons"
+description: "How to overload operators for your own C++ types: a complete Vector2 example, which operators must be members, defaulted == in C++20, and pitfalls."
 imgSrc: /imgs/2023/1031426508.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-30T11:49:17.000Z'
-tags: []
-title: C++ Operator Overloading Enhancing the Power of User-Defined Types
+lastUpdated: 2026-11-14
+tags: ["cpp"]
 ---
 
-# C++ Operator Overloading: Enhancing the Power of User-Defined Types
+Operator overloading lets your own types work with C++'s operators, so a 2D vector type can be written `a + b` instead of `addVectors(a, b)`. An overloaded operator is just a function named `operator+`, `operator==`, `operator<<` and so on, declared either as a member function or as a free (non-member) function.
 
-C++ is a powerful and versatile programming language that offers a range of features to help programmers develop efficient and expressive code. One such feature is **operator overloading**, which allows you to redefine the behavior of built-in operators for user-defined types. This can make your code more intuitive and easier to read, as it allows you to use familiar syntax when working with custom objects.
+## A complete example
 
-In this article, we'll explore the basics of operator overloading in C++, including:
-
-- What operator overloading is and why it's useful
-- How to overload operators for your custom types
-- Some best practices and guidelines for overloading operators
-
-## What is Operator Overloading?
-
-Operator overloading is the ability to redefine the behavior of an existing operator for user-defined types. In C++, this can be achieved by creating a member function or a friend function that has the same name as the operator, prefixed with the keyword `operator`.
-
-For example, let's say you have a custom `Vector` class that represents a mathematical vector, and you want to add two vectors using the `+` operator. Without operator overloading, you would have to create a separate function, such as `addVectors`, and call it with two `Vector` objects as arguments:
+Here is a small `Vector2` class with the operators you'd typically want. It needs C++20 for the defaulted `==`:
 
 ```cpp
-Vector result = addVectors(vector1, vector2);
-```
+#include <iostream>
 
-However, with operator overloading, you can redefine the `+` operator to work with `Vector` objects, allowing you to write more natural and intuitive code like this:
-
-```cpp
-Vector result = vector1 + vector2;
-```
-
-## How to Overload Operators in C++
-
-To overload an operator for your custom class, you need to define a member function or a friend function with the same name as the operator, prefixed with the `operator` keyword. The function should take the appropriate number of arguments for the operator (one for unary operators, two for binary operators) and return the result of the operation.
-
-Here's an example of how to overload the `+` operator for our `Vector` class:
-
-```cpp
-class Vector {
+class Vector2 {
 public:
-    // Constructor, destructor, and other member functions ...
+    Vector2() = default;
+    Vector2(float x, float y) : x_(x), y_(y) {}
 
-    // Overload the + operator
-    Vector operator+(const Vector& rhs) const {
-        Vector result;
-        result.x = this->x + rhs.x;
-        result.y = this->y + rhs.y;
-        return result;
+    float x() const { return x_; }
+    float y() const { return y_; }
+
+    // Compound assignment changes *this: make it a member and return a reference
+    Vector2& operator+=(const Vector2& rhs) {
+        x_ += rhs.x_;
+        y_ += rhs.y_;
+        return *this;
     }
 
+    // Unary minus: returns a new value
+    Vector2 operator-() const { return {-x_, -y_}; }
+
+    // C++20: compiler-generated memberwise comparison.
+    // a != b is automatically rewritten as !(a == b).
+    bool operator==(const Vector2&) const = default;
+
 private:
-    float x, y;
-};
-```
-
-Now you can use the `+` operator with `Vector` objects, just like you would with built-in types:
-
-```cpp
-Vector vector1(1, 2);
-Vector vector2(3, 4);
-Vector result = vector1 + vector2; // result.x = 4, result.y = 6
-```
-
-Some operators, like the assignment operator (`=`), cannot be overloaded as member functions. In such cases, you can use friend functions:
-
-```cpp
-class MyClass {
-    friend MyClass& operator=(MyClass& lhs, const MyClass& rhs);
+    float x_ = 0;
+    float y_ = 0;
 };
 
-MyClass& operator=(MyClass& lhs, const MyClass& rhs) {
-    // Perform the assignment
+// Binary + as a free function, implemented with +=
+Vector2 operator+(Vector2 lhs, const Vector2& rhs) {
+    lhs += rhs;
+    return lhs;
+}
+
+// Stream output must be a free function: the left operand is std::ostream
+std::ostream& operator<<(std::ostream& os, const Vector2& v) {
+    return os << '(' << v.x() << ", " << v.y() << ')';
+}
+
+int main() {
+    Vector2 a(1, 2);
+    Vector2 b(3, 4);
+    Vector2 c = a + b;
+
+    std::cout << c << '\n';         // (4, 6)
+    std::cout << -c << '\n';        // (-4, -6)
+    std::cout << (c != a) << '\n';  // 1
 }
 ```
 
-## Best Practices and Guidelines for Overloading Operators
+A few things worth noticing:
 
-While operator overloading can make your code more expressive and intuitive, it's crucial to use it judiciously and follow some best practices to ensure your code remains readable and maintainable:
+- `+=` modifies the left operand, so it's a member returning `Vector2&`. `+` produces a new value, so it returns `Vector2` by value.
+- `+` takes its left operand by value. That copy is the result we modify and return, so we don't need a separate local.
+- Implementing `+` in terms of `+=` keeps the arithmetic in one place.
+- `operator<<` can't be a member of `Vector2`, because a member operator's left operand is always `*this`, and here the left operand is the stream. It doesn't need to be a `friend` either, since it only uses the public getters.
 
-1. **Only overload operators when it makes sense**: Overload operators only when their intended behavior is clear and matches the established semantics of the operator. Avoid overloading operators for purposes that are not related to their standard meaning.
+Before C++20, write `operator==` by hand and define `operator!=` as `!(a == b)`.
 
-2. **Be consistent**: When overloading operators, ensure that their behavior is consistent with other operators and functions in your class. For example, if you overload the `==` operator, it's a good idea to also overload the `!=` operator.
+## Member or non-member?
 
-3. **Use member functions for operators that modify `this`**: If an operator modifies the internal state of the object it's called on, it should be implemented as a member function. For example, the `+=` operator would typically be implemented as a member function.
+- **Must be members:** `=`, `()`, `[]` and `->`. Conversion operators (`operator bool()` and so on) are also always members. These can't be written as free functions, `friend` or not.
+- **Usually members:** compound assignment (`+=`, `-=`, ...), increment and decrement, and unary operators, since they act on one object and often change it.
+- **Usually free functions:** symmetric binary operators such as `+`, `-`, `*`, `==` and `<`. If the class has an implicit converting constructor, a free function allows conversions on both sides, while a member only allows them on the right (`v + 1` would compile, but `1 + v` wouldn't).
+- **Use `friend` only when needed:** a free operator needs to be a friend only if it must reach private members that aren't exposed some other way.
 
-4. **Use friend functions for non-member operators**: If an operator doesn't modify the internal state of the object it's called on, or if it needs to access private members of the class, consider implementing it as a friend function.
+## Comparisons in C++20
 
-5. **Ensure correct return types**: When overloading an operator, make sure the return type is appropriate. For example, the `+` operator should return a new object, while the `+=` operator should return a reference to the modified object.
+C++20 added the three-way comparison operator `<=>`. Defaulting it gives you `<`, `<=`, `>` and `>=` in one line, comparing members in declaration order:
 
-6. **Follow the rule of three/five**: If you overload the assignment operator (`=`), the copy constructor, or the destructor, it's a good idea to follow the rule of three/five and implement all of them to ensure proper handling of resources.
+```cpp
+#include <compare>
+#include <string>
 
-By following these guidelines, you can leverage the power of operator overloading to create more expressive and intuitivecode while still maintaining readability and maintainability.
+struct Version {
+    int major;
+    int minor;
+    std::string tag;
 
-## Conclusion
+    auto operator<=>(const Version&) const = default;  // also implies a defaulted ==
+};
 
-Operator overloading is a powerful feature in C++ that allows you to redefine the behavior of built-in operators for your custom types. By overloading operators, you can write more natural and expressive code that is easier to read and understand.
+// Version{1, 2, ""} < Version{1, 10, ""} is true
+```
 
-To overload operators in C++, you need to create member functions or friend functions with the same name as the operator, prefixed with the `operator` keyword. When overloading operators, it's essential to follow best practices and guidelines to ensure your code remains readable and maintainable.
+A defaulted `<=>` also declares a defaulted `==`, so this struct gets all six comparison operators.
 
-By using operator overloading judiciously and responsibly, you can unlock the full potential of C++ and create elegant, expressive code for your applications.
+## Rules and pitfalls
+
+- **You can't change the basics.** You can't invent new operators, change an operator's precedence or how many operands it takes, or overload operators for built-in types only: at least one operand must be a class or enumeration type.
+- **Some operators can't be overloaded:** `::`, `.`, `.*`, `?:`, `sizeof`, `alignof` and `typeid`.
+- **Overloaded `&&` and `||` don't short-circuit.** Both operands are always evaluated, which surprises readers. Avoid overloading them, and the comma operator.
+- **Keep the usual meaning.** `+` should add, `==` should be an equivalence. If you have to explain what an operator does, a named function is clearer.
+- **Keep related operators consistent.** If `a + b` works, `a += b` should too, and give the same result.
+- **Rule of three/five.** If your class needs a custom copy assignment operator because it manages a resource, it almost certainly needs a custom copy constructor and destructor too, plus the move constructor and move assignment. If it doesn't manage a resource directly, define none of them and let the compiler generate them.
+
+## Further reading
+
+- [Operator overloading (cppreference)](https://en.cppreference.com/w/cpp/language/operators)
+- [Default comparisons (cppreference)](https://en.cppreference.com/w/cpp/language/default_comparisons)

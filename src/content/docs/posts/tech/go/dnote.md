@@ -1,105 +1,97 @@
 ---
-title: Using Dnote in Golang A Lightweight Note-Taking Tool for Developers
+title: "Dnote: keeping Go notes from the command line"
 pubDate: "2023-05-30T19:37:46.129Z"
-description: "Dnote is a lightweight note-taking tool designed specifically for developers"
+lastUpdated: 2026-11-14
+description: "How to install the Dnote CLI and use books, add, view, find and edit to keep short notes about Go (or anything else) from your terminal."
 tags: ["dnote", "go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
-# Using Dnote in Golang
+[Dnote](https://github.com/dnote/dnote) is a small command-line notebook written in Go. You
+add one-line (or longer) notes to named "books" from the terminal, then list or full-text
+search them later. It's handy for the snippets you keep re-learning: a `go test` flag, a
+`go mod` command, how a channel pattern works. Notes live in a local SQLite database
+(`~/.local/share/dnote/dnote.db` by default); syncing between machines is optional and goes
+through a Dnote server you host yourself.
 
-Dnote is a lightweight note-taking tool designed specifically for developers. It allows you to capture, organize, and review your programming knowledge in an efficient way. In this article, we will discuss how to use Dnote in Golang projects, covering installation, usage, and some best practices.
+## Installation
 
+On macOS:
 
-## 1. Introduction
-
-As developers, we are constantly learning new concepts, techniques, and tools. It can be challenging to retain all this information, especially when working with multiple programming languages and technologies. Dnote aims to solve this problem by providing a simple, command-line-based tool for creating and organizing notes.
-
-Dnote is available for various platforms, including macOS, Linux, and Windows, and can be easily integrated with your development workflow. In this article, we will focus on using Dnote in Golang projects.
-
-## 2. Installation
-
-To get started with Dnote, you need to install the command-line tool. You can download the latest release from the [official GitHub repository](https://github.com/dnote/dnote/releases). Here are the installation steps for different platforms:
-
-### macOS
-
-You can install Dnote on macOS using Homebrew:
-
-```
-brew tap dnote/dnote
+```bash
 brew install dnote
 ```
 
-### Linux
+On Linux (the install script also lists Windows support):
 
-For Linux, download the latest release, extract it, and move the binary to your `PATH`:
-
-```
-wget https://github.com/dnote/dnote/releases/download/vX.Y.Z/dnote_X.Y.Z_linux_amd64.tar.gz
-tar -xzf dnote_X.Y.Z_linux_amd64.tar.gz
-sudo mv dnote /usr/local/bin
+```bash
+curl -s https://www.getdnote.com/install | sh
 ```
 
-Replace `X.Y.Z` with the latest version number.
+You can also download a binary for your platform from the
+[CLI releases page](https://github.com/dnote/cli/releases) and put it on your `PATH`.
+Check it worked with `dnote version`.
 
-### Windows
+## Adding notes
 
-For Windows, download the latest release and extract the binary to a folder in your `PATH`.
+A book is just a named group of notes, and it's created the first time you add a note to it.
+Pass the content with `-c`; without it, Dnote opens your editor.
 
-## 3. Using Dnote in Golang
-
-After installing Dnote, you can start using it in your Golang projects. The following sections cover the basics of creating, organizing, and reviewing notes.
-
-### 3.1. Creating Notes
-
-To create a note, simply use the `dnote add` command, followed by the book name (which represents a category) and the note content. For example:
-
-```
-dnote add golang "Use the fmt package for formatted I/O"
+```bash
+dnote add go -c "Use the fmt package for formatted I/O"
+dnote add go-concurrency -c "Use channels to pass data between goroutines"
 ```
 
-This command creates a new note under the "golang" book with the content "Use the fmt package for formatted I/O".
+Stdin works too, which is useful for saving command output:
 
-### 3.2. Organizing Notes
-
-Dnote organizes notes using "books," which are simply collections of related notes. You can create a book by adding a note to it. For example:
-
-```
-dnote add golang-concurrency "Use channels for communication between goroutines"
+```bash
+go env GOPATH GOMODCACHE | dnote add go
 ```
 
-This command creates a new book called "golang-concurrency" and adds a note to it.
+## Viewing notes
 
-To view all your books, use the `dnote ls-books` command.
+`dnote view` does three things depending on how many arguments you give it:
 
-### 3.3. Reviewing Notes
-
-To review the notes in a specific book, use the `dnote ls` command followed by the book name:
-
-```
-dnote ls golang
+```bash
+dnote view               # list all books
+dnote view go            # list the notes in the "go" book, with their ids
+dnote view go 1          # show a single note
 ```
 
-This command lists all the notes in the "golang" book.
+## Searching
 
-To search for notes containing specific keywords, use the `dnote search` command:
+`dnote find` runs a full-text search across every book, or one book with `-b`:
 
+```bash
+dnote find "channels"
+dnote find "goroutines" -b go-concurrency
 ```
-dnote search "channels"
+
+## Editing and removing
+
+Notes are edited or removed by the id shown in `dnote view <book>`. Books are addressed by
+name.
+
+```bash
+dnote edit 3 -c "Use buffered channels when the producer shouldn't block"
+dnote edit 3 -b go-concurrency   # move note 3 to another book
+dnote edit go-concurrency -n go-conc   # rename a book
+dnote remove 5
 ```
 
-This command returns all notes containing the word "channels".
+`remove` asks for confirmation unless you pass `-y`.
 
-## 4. Best Practices
+## Tips
 
-When using Dnote in Golang projects, consider the following best practices:
+- Pick a naming scheme for books early (`go`, `go-concurrency`, `go-testing`) so `dnote view`
+  stays readable.
+- Keep each note to one idea. Short notes are easier to find with `dnote find`.
+- If you want notes on more than one machine, set up the self-hosted server, then run
+  `dnote login --apiEndpoint <your server>/api` and `dnote sync`. Without a server, everything
+  stays local.
 
-1. **Consistency**: Use consistent naming conventions for books, such as "golang-{topic}" or "go-{topic}".
-2. **Brevity**: Keep notes concise and focused on a single concept or technique.
-3. **Regular review**: Review your notes regularly to reinforce your learning.
-4. **Collaboration**: Share your notes with teammates or make them public to help others learn from your experience.
+## Further reading
 
-## 5. Conclusion
-
-Dnote is an invaluable tool for Golang developers looking to improve their knowledge retention and stay organized. By following the installation and usage guidelines presented in this article, you can easily integrate Dnote into your development workflow and start capturing, organizing, and reviewing programming knowledge more efficiently.
+- [Dnote CLI command reference](https://www.getdnote.com/docs/cli/commands/)
+- [Dnote on GitHub](https://github.com/dnote/dnote)

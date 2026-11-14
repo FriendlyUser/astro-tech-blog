@@ -1,80 +1,82 @@
 ---
-title: Speeding Up JavaScript Applications with WebAssembly
+title: "Calling WebAssembly from JavaScript: exports, imports and when it is faster"
 pubDate: "2024-12-31T00:03:37.000Z"
-description: "In this article , we will explore how WebAssembly can be used to speed up JavaScript applications, by offloading performance-critical tasks to WebAssembly modules"
-tags: []
+lastUpdated: 2026-11-14
+description: "How to load a .wasm module in the browser, call its exports, pass JavaScript functions in as imports, and decide whether moving code to WebAssembly will help."
+tags: ["javascript", "rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2734189697_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 ---
-# Speeding Up JavaScript Applications with WebAssembly
 
-## Introduction
+WebAssembly (Wasm) is a binary instruction format that browsers (and runtimes like Node.js) can run alongside JavaScript. You compile C, C++, Rust or another language to a `.wasm` module and call its functions from JS. The usual reason to do this is CPU-heavy work, such as image or audio processing, compression, parsing or simulation, or reusing an existing native library on the web.
 
-JavaScript has been the de facto language for building web applications for many years. It has evolved significantly, offering better performance and capabilities. However, as web applications become more complex and demanding, JavaScript's performance limitations can become a bottleneck.
+This post covers loading a module, calling its exports, passing JavaScript functions in as imports, and how to tell whether Wasm will actually make your code faster.
 
-WebAssembly (Wasm) is a binary instruction format designed to provide a low-level virtual machine that can run code at near-native speed. It has been designed as a portable compilation target for high-level languages like C, C++, and Rust, enabling deployment on the web for both client and server applications.
+## A minimal module in C
 
-In this article, we will explore how WebAssembly can be used to speed up JavaScript applications, by offloading performance-critical tasks to WebAssembly modules. We will cover:
-
-1. Integrating WebAssembly into a JavaScript application
-2. Communication between JavaScript and WebAssembly
-3. Performance considerations and best practices
-
-## 1. Integrating WebAssembly into a JavaScript application
-
-To use WebAssembly in a JavaScript application, you need to compile your performance-critical code into a `.wasm` binary module. This can be done using various tools like Emscripten for C/C++ or Rust's `wasm-pack` for Rust.
-
-Once you have the `.wasm` binary module, you can load it in your JavaScript application. Loading a WebAssembly module is an asynchronous operation, and you can use the `WebAssembly.instantiateStreaming` function, which takes a `Response` object or a `Promise` that resolves to a `Response` object. Here's an example:
-
-```javascript
-async function init() {
-  const response = await fetch('path/to/your/module.wasm');
-  const { instance } = await WebAssembly.instantiateStreaming(response);
-
-  // Access exported functions from the WebAssembly module
-  const result = instance.exports.yourFunction();
-  console.log(result);
-}
-
-init();
-```
-
-Alternatively, you can use the `WebAssembly.instantiate` function, which takes a `BufferSource` containing the `.wasm` binary code:
-
-```javascript
-async function init() {
-  const response = await fetch('path/to/your/module.wasm');
-  const bytes = await response.arrayBuffer();
-  const { instance } = await WebAssembly.instantiate(bytes);
-
-  // Access exported functions from the WebAssembly module
-  const result = instance.exports.yourFunction();
-  console.log(result);
-}
-
-init();
-```
-
-## 2. Communication between JavaScript and WebAssembly
-
-JavaScript and WebAssembly can communicate through the use of exported functions and imported functions. Exported functions are defined in the WebAssembly module and can be called from JavaScript. Imported functions are defined in JavaScript and can be called from the WebAssembly module.
-
-### 2.1 Exported functions
-
-When you compile your code to WebAssembly, you can define functions that will be accessible from JavaScript. In C/C++, you can use the `EMSCRIPTEN_KEEPALIVE` macro, while in Rust, you can use the `#[wasm_bindgen]` attribute.
-
-Here's an example of an exported function in C:
+The simplest way to see the JS/Wasm boundary is a C file compiled with plain Clang, without any generated glue code:
 
 ```c
-#include <emscripten.h>
+// module.c
+__attribute__((import_module("env"), import_name("jsLog")))
+void jsLog(int value);
 
-EMSCRIPTEN_KEEPALIVE
+__attribute__((export_name("add")))
 int add(int a, int b) {
   return a + b;
 }
+
+__attribute__((export_name("log_message")))
+void log_message(void) {
+  jsLog(42);
+}
 ```
 
-And in Rust:
+```bash
+clang --target=wasm32 -O2 -nostdlib -Wl,--no-entry -Wl,--allow-undefined \
+  -o module.wasm module.c
+```
+
+`export_name` makes a function callable from JavaScript. `import_module`/`import_name` declares a function the module expects the host to provide (`env.jsLog`). `-nostdlib` means there is no C standard library, so this only works for code that doesn't need `printf`, `malloc` and friends. For real C/C++ projects, use [Emscripten](https://emscripten.org/), which provides libc and generates a JS loader for you.
+
+## Loading the module
+
+`WebAssembly.instantiateStreaming` compiles the module while it downloads. It takes a `Response` (or a promise of one) and an import object:
+
+```javascript
+const importObject = {
+  env: {
+    jsLog: (value) => console.log(`WebAssembly says: ${value}`),
+  },
+};
+
+const { instance } = await WebAssembly.instantiateStreaming(
+  fetch('/module.wasm'),
+  importObject,
+);
+
+console.log(instance.exports.add(2, 3)); // 5
+instance.exports.log_message();          // "WebAssembly says: 42"
+```
+
+`instantiateStreaming` requires the server to send the file with `Content-Type: application/wasm`. If your server doesn't, it throws a `TypeError`. You can fall back to downloading the bytes first and using `WebAssembly.instantiate`:
+
+```javascript
+const response = await fetch('/module.wasm');
+const bytes = await response.arrayBuffer();
+const { instance } = await WebAssembly.instantiate(bytes, importObject);
+```
+
+Every import the module declares must be present in `importObject`, or instantiation fails with a `LinkError`.
+
+## Passing data across the boundary
+
+Exports and imports can only pass numbers directly (`i32`, `i64` as `BigInt`, `f32`, `f64`). Strings, arrays and objects have to be written into the module's linear memory, a single `ArrayBuffer`, and passed as a pointer and length. In practice, a toolchain generates that code for you:
+
+- **Emscripten** (C/C++): mark functions with `EMSCRIPTEN_KEEPALIVE` or list them in `-sEXPORTED_FUNCTIONS`, then load the generated `.js` file. Helpers like `ccall` and `cwrap` convert strings and arrays.
+- **wasm-bindgen** (Rust): annotate functions with `#[wasm_bindgen]` and it generates JS bindings that handle strings, `Vec`s and JS objects.
+
+The Rust version of `add` looks like this:
 
 ```rust
 use wasm_bindgen::prelude::*;
@@ -85,53 +87,42 @@ pub fn add(a: i32, b: i32) -> i32 {
 }
 ```
 
-### 2.2 Imported functions
+Set `crate-type = ["cdylib"]` in `Cargo.toml`, build for `wasm32-unknown-unknown`, and run the `wasm-bindgen` CLI to produce an ES module:
 
-You can also define functions in JavaScript that can be called from your WebAssembly module. To do this, you need to pass an object with the imported functions when instantiating the WebAssembly module.
-
-Here's an example of importing a function in JavaScript and using it in a C module:
+```bash
+cargo build --release --target wasm32-unknown-unknown
+wasm-bindgen target/wasm32-unknown-unknown/release/my_crate.wasm \
+  --out-dir pkg --target web
+```
 
 ```javascript
-async function init() {
-  const response = await fetch('path/to/your/module.wasm');
-  const bytes = await response.arrayBuffer();
-  const importObject = {
-    env: {
-      jsLog: (message) => {
-        console.log(`WebAssembly says: ${message}`);
-      },
-    },
-  };
-  const { instance } = await WebAssembly.instantiate(bytes, importObject);
-}
+import init, { add } from './pkg/my_crate.js';
 
-init();
+await init(); // fetches and instantiates my_crate_bg.wasm
+console.log(add(2, 3));
 ```
 
-And the corresponding C code:
+`wasm-pack` wraps these steps into one command and is what most Rust tutorials use. It lived in the `rustwasm` GitHub organization, which the Rust project sunset in 2025, so check its current maintenance status before relying on it. `wasm-bindgen` itself moved to a new `wasm-bindgen` organization and is still maintained.
 
-```c
-#include <emscripten.h>
+## Will it be faster?
 
-extern void jsLog(int message);
+Often not by as much as people expect. Modern JS engines JIT-compile hot code, so a simple numeric loop in JavaScript can run about as fast as the same loop in Wasm. Wasm tends to win when:
 
-EMSCRIPTEN_KEEPALIVE
-void log_message() {
-  jsLog(42);
-}
-```
+- The work is long-running and CPU-bound, so startup and copying costs are small in comparison.
+- You need predictable performance without JIT warm-up or garbage collection pauses.
+- The code uses 64-bit integer math, SIMD, or tight memory layouts that are awkward in JavaScript.
+- You're porting an existing C/C++/Rust library (codecs, SQLite, physics engines) rather than rewriting it.
 
-## 3. Performance considerations and best practices
+Some things to keep in mind:
 
-WebAssembly can offer significant performance improvements for certain tasks, but it's important to choose the right tasks to offload to WebAssembly. Here are some best practices to keep in mind:
+- **The cost is in copying data, not in the calls.** Calling an exported function is cheap, but converting strings or copying large arrays into linear memory on every call adds up. Keep large data in Wasm memory and pass pointers, or batch work into fewer, larger calls.
+- **Wasm can't touch the DOM.** Every DOM update goes through JavaScript, so UI-heavy code rarely benefits.
+- **Threads need cross-origin isolation.** You can run Wasm in Web Workers for parallelism, but sharing memory between them requires `SharedArrayBuffer`, which browsers only enable on pages served with the `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers.
+- **Measure first.** Profile with the browser's performance tools, find the hot function, and benchmark a Wasm version of just that function before porting anything else.
 
-1. **Choose compute-bound tasks**: Tasks that are computationally heavy, like image processing, physics simulation, or complex calculations, can benefit the most from WebAssembly's performance.
-2. **Minimize data transfer**: Communication between JavaScript and WebAssembly can be slow, so it's important to minimize data transfer between the two. Use WebAssembly's linear memory for large data structures and only pass pointers or simple data types between the two.
-3. **Parallelize computation**: WebAssembly can be used in combination with Web Workers to parallelize computationally intensive tasks and further improve performance.
-4. **Profile your code**: Always profile your code to understand where the performance bottlenecks are and to determine if offloading tasks to WebAssembly will yield the desired performance improvements. Use browser tools like Chrome DevTools or Firefox Developer Tools to analyze your application's performance.
+## Further reading
 
-## Conclusion
-
-WebAssembly can be a powerful tool to speed up JavaScript applications by offloading performance-critical tasks to a low-level virtual machine that runs code at near-native speed. By integrating WebAssembly modules into your JavaScript application, you can harness the performance benefits of languages like C, C++, and Rust, and improve the overall performance of your web application.
-
-Remember to carefully choose the tasks to offload to WebAssembly, minimize data transfer between JavaScript and WebAssembly, and always profile your code to ensure that you're getting the maximum performance improvement for your efforts.
+- [MDN: WebAssembly concepts](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts)
+- [MDN: `WebAssembly.instantiateStreaming()`](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/instantiateStreaming_static)
+- [Emscripten: Interacting with code](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html)
+- [The wasm-bindgen guide](https://wasm-bindgen.github.io/wasm-bindgen/)

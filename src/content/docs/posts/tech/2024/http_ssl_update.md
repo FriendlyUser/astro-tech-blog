@@ -1,162 +1,182 @@
 ---
 pubDate: "2024-06-10T10:00:00.000Z"
-title: "Configuing a Subdomain for Google Compute Engine and Setting Up FastAPI with Apache"
-description: "A comprehensive guide on how to point a subdomain to a Google Compute Engine instance and set up a FastAPI application using Apache as a reverse proxy. This tutorial includes steps from assigning a static IP to your instance, configuring DNS, and setting up SSL with Apache to serve FastAPI applications securely."
-tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL Certificates", "Web Development", "Proxy Configuration"]
+lastUpdated: 2026-11-14
+title: "Serve FastAPI over HTTPS on a Google Compute Engine subdomain with Apache"
+description: "Point a subdomain at a Compute Engine VM, run FastAPI behind an Apache reverse proxy, and add a free Let's Encrypt certificate with Certbot."
+tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL Certificates", "Web Development", "Proxy Configuration", "python"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark-room-Lhzabp9UrSU"
 ---
 
-## Introduction to Google Cloud
+This walks through putting a FastAPI app on a Google Compute Engine (GCE) VM at a subdomain such as `api.example.com`, with Apache in front handling HTTPS. The steps assume a Debian or Ubuntu VM; replace `api.example.com` with your own subdomain throughout.
 
-Google Cloud is a suite of cloud computing services offered by Google, designed to provide businesses with a range of solutions for computing, data storage, data analytics, and machine learning. It includes a variety of tools and services such as virtual machines, managed Kubernetes, serverless computing, and comprehensive data analytics platforms. Google Cloud also offers robust security features and seamless integration with other Google services, enabling companies to leverage powerful infrastructure and advanced technologies to innovate, scale, and improve operational efficiency. This platform supports a diverse array of industries, providing the flexibility and performance needed for modern digital operations.
+## Part 1: Point the subdomain at the VM
 
-### 1. Ensure the Compute Engine Instance Has a Static IP Address
+### Reserve a static external IP
 
-By default, Google Compute Engine instances are assigned ephemeral IP addresses, which can change upon reboot. You will want a static IP to ensure your subdomain continues to point to the instance even after restarts.
+New GCE VMs get an ephemeral external IP, which is released when the VM is stopped or deleted. A DNS record pointing at it will break the next time you stop the machine, so promote it to a static address:
 
-- **Assign a static IP**: Go to the Google Cloud Console, navigate to the "VPC network" section, then to "External IP addresses". Find your instance’s IP, change it from "Ephemeral" to "Static", and confirm the reservation.
-
-### 2. Configure DNS Records
-
-Next, you'll need to configure your DNS settings. This involves adding an A record that points your subdomain to the static IP address of your Compute Engine instance.
-
-- **Access your DNS provider**: Log in to the administrative console for your domain (wherever your domain's DNS is managed, such as GoDaddy, Namecheap, Cloudflare, etc.).
-  
-- **Add an A record**:
-  - **Record Type**: A
-  - **Host**: The subdomain you want to use (for example, `subdomain` if you want `subdomain.yourdomain.com`).
-  - **Value**: The static IP address of your Compute Engine instance.
-  - **TTL (Time to Live)**: This is optional and determines how long the DNS servers should cache the information. The default is typically fine.
-
-### 3. Wait for DNS Propagation
-
-DNS changes can take some time to propagate, typically anywhere from a few minutes to up to 48 hours, though usually much faster (often within an hour). During this time, not all users might be directed to your new IP address when accessing the subdomain.
-
-### 4. Verify DNS Configuration
-
-You can verify that the DNS record is set up correctly by using tools like `nslookup`, `dig`, or online services to check DNS records. Here’s how you can use `nslookup`:
-
-- Open a command prompt or terminal.
-- Type `nslookup subdomain.yourdomain.com` and press Enter.
-- Check that the response shows the correct IP address of your Compute Engine instance.
-
-### 5. Configure Your Server (Optional)
-
-If your Compute Engine instance is running a web server or similar service, make sure it's configured to respond to requests on the subdomain:
-
-- **For web servers** (like Apache or Nginx), you might need to set up a virtual host or server block to specifically handle requests for the subdomain.
-- **Security settings** like firewall rules in Google Cloud should also allow traffic (usually on ports 80 and 443) to the instance.
-
-Once the DNS update has fully propagated and your server is configured to handle the subdomain, visiting `subdomain.yourdomain.com` should take you to your Google Compute Engine instance. This setup allows you to manage traffic and host different applications on subdomains effectively.
-
-### Step 1: Install Required Software
-
-First, ensure that you have Python and FastAPI installed on your system, along with Apache.
-
-- **Install Apache**:
+- In the Cloud console, go to **VPC network → IP addresses**, find the VM's ephemeral address, open the **More actions** menu and choose **Promote to static IP address**.
+- Or with `gcloud`:
 
   ```bash
-  sudo apt update
-  sudo apt install apache2
+  gcloud compute addresses create my-api-ip --addresses=203.0.113.10 --region=us-central1
   ```
 
-- **Install FastAPI and Uvicorn** (FastAPI's preferred ASGI server):
+### Add an A record
 
-  ```bash
-  sudo apt install python3-pip
-  pip3 install fastapi uvicorn
-  ```
+At your DNS provider (Cloudflare, Namecheap, Google Cloud DNS, etc.), add:
 
-### Step 2: Configure Your FastAPI Application
+| Field | Value |
+| ----- | ----- |
+| Type  | `A` |
+| Host / name | `api` (for `api.example.com`) |
+| Value | the static IP |
+| TTL   | the default is fine |
 
-Prepare your FastAPI application. If you don't have one, you can create a simple example:
+New records usually resolve within minutes. Changes to an existing record can take up to the old record's TTL to reach everyone.
 
-- **Create a new file** (`main.py`):
+Check it with:
 
-  ```python
-  from fastapi import FastAPI
+```bash
+dig +short api.example.com
+# or
+nslookup api.example.com
+```
 
-  app = FastAPI()
+The answer should be your static IP.
 
-  @app.get("/")
-  def read_root():
-      return {"Hello": "World"}
-  ```
+### Open ports 80 and 443
 
-- **Run it locally** (for testing):
+In the VM's settings, tick **Allow HTTP traffic** and **Allow HTTPS traffic**. On the default network this adds the `http-server` and `https-server` network tags, which the default firewall rules allow. On a custom network, create a firewall rule allowing TCP 80 and 443 to the VM. Port 80 must stay open for Certbot's HTTP challenge and the HTTP-to-HTTPS redirect.
 
-  ```bash
-  uvicorn main:app --host 0.0.0.0 --port 8000
-  ```
+## Part 2: Run FastAPI behind Apache
 
-### Step 3: Set Up Apache as a Reverse Proxy
+### Install Apache and the app
 
-- **Enable necessary Apache modules**:
+```bash
+sudo apt update
+sudo apt install apache2 python3-venv
+```
 
-  ```bash
-  sudo a2enmod proxy proxy_http ssl
-  ```
+Recent Debian and Ubuntu releases refuse system-wide `pip install` (PEP 668, "externally-managed-environment"), so install FastAPI into a virtual environment:
 
-- **Create a new Apache configuration** for your site or edit an existing one:
+```bash
+mkdir -p ~/app && cd ~/app
+python3 -m venv .venv
+.venv/bin/pip install fastapi uvicorn
+```
 
-  ```bash
-  sudo nano /etc/apache2/sites-available/yourdomain.com.conf
-  ```
+Create `~/app/main.py`:
 
-- **Insert the following configuration**, adjusting ServerName, SSLCertificateFile, and SSLCertificateKeyFile as needed:
+```python
+from fastapi import FastAPI
 
-  ```apache
-  <VirtualHost *:443>
-      ServerName yourdomain.com
-      SSLEngine on
-      SSLCertificateFile /path/to/your/certificate.crt
-      SSLCertificateKeyFile /path/to/your/private.key
+app = FastAPI()
 
-      ProxyPass / http://127.0.0.1:8000/
-      ProxyPassReverse / http://127.0.0.1:8000/
 
-      <Directory /path/to/app>
-          Require all granted
-      </Directory>
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+```
 
-      ErrorLog ${APACHE_LOG_DIR}/error.log
-      CustomLog ${APACHE_LOG_DIR}/access.log combined
-  </VirtualHost>
+Test it:
 
-  # Redirect HTTP to HTTPS
-  <VirtualHost *:80>
-      ServerName yourdomain.com
-      Redirect permanent / https://yourdomain.com/
-  </VirtualHost>
-  ```
+```bash
+.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+curl http://127.0.0.1:8000/
+```
 
-- **Enable the site and restart Apache**:
+Bind to `127.0.0.1`, not `0.0.0.0`: Apache is the only thing that should reach Uvicorn.
 
-  ```bash
-  sudo a2ensite yourdomain.com.conf
-  sudo systemctl restart apache2
-  ```
+### Keep Uvicorn running with systemd
 
-### Step 4: Obtain and Configure SSL/TLS Certificates
+A process started from your SSH session dies when you log out. Create `/etc/systemd/system/fastapi.service` (replace `youruser`):
 
-- **Use Certbot (from Let's Encrypt) for a free SSL certificate**:
+```ini
+[Unit]
+Description=FastAPI app
+After=network.target
 
-  ```bash
-  sudo apt-get install certbot python3-certbot-apache
-  sudo certbot --apache -d yourdomain.com
-  ```
+[Service]
+User=youruser
+WorkingDirectory=/home/youruser/app
+ExecStart=/home/youruser/app/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+Restart=always
 
-- **Follow the prompts** to configure HTTPS. Certbot will adjust the Apache configuration to use the obtained SSL certificates automatically.
+[Install]
+WantedBy=multi-user.target
+```
 
-### Step 5: Test Your Configuration
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now fastapi
+```
 
-After setting up everything, access `https://yourdomain.com` in your browser to see if your FastAPI application is served over HTTPS via Apache. You can check the Apache and FastAPI logs for any errors or debugging information.
+### Configure Apache as a reverse proxy
 
-### Notes
+Enable the proxy modules:
 
-- **Firewall Settings**: Ensure your firewall settings allow traffic on both ports 80 and 443.
-- **DNS Settings**: Make sure your DNS records are pointing to the server where Apache is installed.
-- **Security Practices**: Keep your system and applications up to date to avoid security vulnerabilities.
+```bash
+sudo a2enmod proxy proxy_http headers
+```
 
-This configuration leverages Apache as a reverse proxy, providing a robust front end to handle HTTPS, while FastAPI handles the application logic in the background.
+Create `/etc/apache2/sites-available/api.example.com.conf` with a plain HTTP virtual host. Don't write the HTTPS block by hand yet: the certificate files don't exist, and Apache won't start if they're missing.
+
+```apache
+<VirtualHost *:80>
+    ServerName api.example.com
+
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:8000/
+    ProxyPassReverse / http://127.0.0.1:8000/
+
+    ErrorLog ${APACHE_LOG_DIR}/api-error.log
+    CustomLog ${APACHE_LOG_DIR}/api-access.log combined
+</VirtualHost>
+```
+
+Enable it and reload:
+
+```bash
+sudo a2ensite api.example.com.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
+```
+
+`http://api.example.com` should now return the JSON response.
+
+### Add HTTPS with Certbot
+
+Certbot's own instructions install it as a snap:
+
+```bash
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/local/bin/certbot
+sudo certbot --apache -d api.example.com
+```
+
+(`sudo apt install certbot python3-certbot-apache` also works, but the distro package can lag behind.)
+
+Certbot gets the certificate, writes a `*-le-ssl.conf` virtual host on port 443 that copies your proxy settings, and sets up the HTTP-to-HTTPS redirect. It also installs a timer for renewal; check it with `sudo certbot renew --dry-run`.
+
+So FastAPI knows the original request was HTTPS (for redirects and generated URLs), add this inside the new `<VirtualHost *:443>` block in `/etc/apache2/sites-available/api.example.com-le-ssl.conf`, then reload Apache:
+
+```apache
+RequestHeader set X-Forwarded-Proto "https"
+```
+
+Uvicorn trusts proxy headers from `127.0.0.1` by default, so no extra flags are needed.
+
+## Troubleshooting
+
+- **502/503 from Apache**: Uvicorn isn't running. Check `sudo systemctl status fastapi` and `journalctl -u fastapi`.
+- **Certbot fails the challenge**: DNS isn't pointing at the VM yet, or port 80 is blocked by the GCE firewall.
+- **Works on IP but not on the name**: check `ServerName` matches the subdomain exactly, and that `dig` returns the static IP.
+
+## Further reading
+
+- [Reserve a static external IP address (Google Cloud)](https://docs.cloud.google.com/vpc/docs/reserve-static-external-ip-address)
+- [Certbot instructions for Apache](https://certbot.eff.org/instructions?ws=apache&os=snap)
+- [Apache mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html)
+- [FastAPI deployment concepts](https://fastapi.tiangolo.com/deployment/concepts/)

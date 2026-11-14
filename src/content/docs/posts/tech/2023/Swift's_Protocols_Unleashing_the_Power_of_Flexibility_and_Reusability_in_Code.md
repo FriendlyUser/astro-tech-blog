@@ -1,116 +1,132 @@
 ---
-description: In this article, we will delve into the world of protocols in Swift,
-  exploring their purpose, syntax, and practical applications
+description: How to define and adopt Swift protocols, add default implementations with extensions, use associated types, inheritance and composition, and choose between some and any.
 imgSrc: /imgs/2023/1666734888.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-14T00:11:20.000Z'
-tags: []
-title: Swift's Protocols Unleashing the Power of Flexibility and Reusability in Code
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift protocols: requirements, extensions, associated types and composition"
 ---
 
-# Swift's Protocols: Unleashing the Power of Flexibility and Reusability in Code
+A protocol lists the methods and properties a type must provide. Classes, structs and enums can all conform, which is the main difference from Java or TypeScript interfaces: in Swift, value types use protocols as much as classes do. Protocols plus extensions are also how Swift shares behaviour between types without inheritance.
 
-Swift, the powerful and modern programming language introduced by Apple, has a strong emphasis on safety, performance, and expressiveness. One of the features that has made Swift a popular choice among developers is its support for protocols. In this article, we will delve into the world of protocols in Swift, exploring their purpose, syntax, and practical applications.
+## Defining a protocol
 
-## What are Protocols?
-
-Protocols are a fundamental building block in Swift, providing a blueprint for methods, properties, and other requirements that a particular task or functionality requires. Protocols allow developers to define a set of rules that a class, structure, or enumeration must adhere to in order to become conformant. This promotes flexibility, reusability, and modularity in code.
-
-In other programming languages, similar concepts exist, such as interfaces in Java or TypeScript.
-
-## Defining Protocols
-
-To define a protocol in Swift, you use the `protocol` keyword, followed by the protocol's name, which should start with a capital letter. The protocol body is then enclosed within curly braces `{}`.
+A protocol declares requirements without implementing them:
 
 ```swift
-protocol SomeProtocol {
-    // protocol requirements go here
+protocol Describable {
+    func describe() -> String
 }
-```
 
-Within the body of the protocol, you can define requirements such as methods, properties, and associated types.
-
-### Protocol Methods
-
-Methods in a protocol are defined similarly to regular methods, but without the method body. You only provide the method signature.
-
-```swift
-protocol Printable {
-    func printDescription()
-}
-```
-
-### Protocol Properties
-
-Properties in a protocol are defined with a `var` keyword, followed by the property name, type, and an access level specifier (`{ get }` or `{ get set }`). You cannot provide a default value for a property in a protocol.
-
-```swift
 protocol Vehicle {
     var numberOfWheels: Int { get }
+    var name: String { get set }
 }
 ```
 
-### Associated Types
+Property requirements are always declared with `var` and say whether they need to be readable (`{ get }`) or readable and writable (`{ get set }`). A `{ get }` requirement can be satisfied by a `let`, a `var` or a computed property; `{ get set }` needs something settable. Methods that change a struct's state must be marked `mutating` in the protocol.
 
-Protocols can also define associated types using the `associatedtype` keyword. Associated types provide a way to work with generic types within the protocol.
+## Conforming to a protocol
+
+List protocols after the type name, separated by commas:
+
+```swift
+struct Bicycle: Vehicle {
+    let numberOfWheels = 2
+    var name = "Bicycle"
+}
+
+struct Airplane: Vehicle, Describable {
+    let numberOfWheels = 3
+    var name = "Airplane"
+
+    func describe() -> String {
+        "\(name) with \(numberOfWheels) wheels"
+    }
+}
+```
+
+The compiler rejects the conformance if any requirement is missing. A common style is to add each conformance in its own extension, e.g. `extension Bicycle: Describable { ... }`, which also lets you make types you don't own conform.
+
+## Default implementations
+
+A protocol extension can implement requirements, so conforming types only write what differs:
+
+```swift
+extension Describable {
+    func describe() -> String {
+        "An instance of \(type(of: self))"
+    }
+}
+
+extension Bicycle: Describable {}
+
+print(Bicycle().describe())   // An instance of Bicycle
+print(Airplane().describe())  // Airplane with 3 wheels
+```
+
+One gotcha: a method that's only in the extension, and not declared in the protocol, is dispatched statically. If a type "overrides" it, the type's version is ignored when the value is used through the protocol. Declare the method in the protocol if conforming types should be able to customise it.
+
+## Associated types
+
+An associated type is a placeholder that each conforming type fills in, like a generic parameter for the protocol:
 
 ```swift
 protocol Container {
     associatedtype Item
     mutating func add(_ item: Item)
-    func count() -> Int
+    var count: Int { get }
+}
+
+struct IntBag: Container {
+    private var items: [Int] = []
+
+    mutating func add(_ item: Int) {   // Item is inferred as Int
+        items.append(item)
+    }
+
+    var count: Int { items.count }
 }
 ```
 
-## Adopting and Conforming to Protocols
+`Sequence` (with `Element`) and `Collection` in the standard library work this way.
 
-To make a class, structure, or enumeration conform to a protocol, you include the protocol name after the type name, separated by a colon `:`.
+## Inheritance and composition
 
-```swift
-struct Bicycle: Vehicle {
-    var numberOfWheels: Int {
-        return 2
-    }
-}
-```
-
-If a type conforms to multiple protocols, you can list them separated by commas.
-
-```swift
-struct Airplane: Vehicle, Printable {
-    var numberOfWheels: Int {
-        return 3
-    }
-    
-    func printDescription() {
-        print("An airplane with \(numberOfWheels) wheels.")
-    }
-}
-```
-
-## Protocol Inheritance
-
-Protocols can inherit from other protocols, meaning that the inheriting protocol requires the conforming type to satisfy the requirements of both the inherited and inheriting protocols.
+A protocol can inherit from others and add its own requirements:
 
 ```swift
 protocol ElectricVehicle: Vehicle {
-    var batteryCapacity: Int { get }
+    var batteryCapacityKWh: Int { get }
 }
 ```
 
-## Protocol Composition
-
-Swift allows you to combine multiple protocols into a single requirement using protocol composition. This is useful when a function or method expects a parameter that conforms to multiple protocols.
+Use `&` to require several protocols at once without declaring a new one:
 
 ```swift
-func travel(vehicle: Vehicle & Printable) {
-    vehicle.printDescription()
+func travel(in vehicle: some Vehicle & Describable) {
+    print("Travelling in: \(vehicle.describe())")
 }
 
-let myAirplane = Airplane()
-travel(vehicle: myAirplane) // Output: An airplane with 3 wheels.
+travel(in: Airplane())   // Travelling in: Airplane with 3 wheels
 ```
 
-## Conclusion
+## `some` versus `any`
 
-Swift's protocols are a powerful feature that promotes flexibility, reusability, and modularity in your code. By understanding the concepts and syntax of protocols, you can build more robust and scalable applications. Whether you are defining your own protocols or leveraging existing ones, protocols are an essential tool in the Swift developer's toolbox.
+When a protocol is used as a type, Swift (5.6 and later) lets you say which kind you mean:
+
+- `some Vehicle` is one specific concrete type that the compiler knows. It's the same as a generic parameter, with no extra cost.
+- `any Vehicle` is a box that can hold a value of any conforming type, and the type can differ from value to value. Use it for heterogeneous collections:
+
+```swift
+let fleet: [any Vehicle] = [Bicycle(), Airplane()]
+let totalWheels = fleet.reduce(0) { $0 + $1.numberOfWheels }   // 5
+```
+
+Prefer `some` (or a generic) unless you need to mix types. Since Swift 5.7, protocols with associated types such as `Container` can also be used as `any Container`; before that they could only be used as generic constraints.
+
+## Further reading
+
+- [Protocols in The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/)
+- [Opaque and boxed protocol types](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/opaquetypes/)

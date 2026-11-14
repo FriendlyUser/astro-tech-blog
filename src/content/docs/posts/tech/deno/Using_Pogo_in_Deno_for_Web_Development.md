@@ -1,118 +1,99 @@
 ---
-title: Using Pogo in Deno for Web Development
+title: "Building a small web server in Deno with Pogo: routes, static files and JSX"
 pubDate: "2023-05-03T14:16:45.081Z"
-description: "In this article, we will explore the core features of Pogo and demonstrate how to build a simple web application using this framework."
-tags: ["pogo"]
+lastUpdated: 2026-11-14
+description: "Use Pogo, a hapi-style Deno web framework, to define routes, serve static files with h.directory() and render HTML from JSX."
+tags: ["pogo", "deno", "typescript"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/30672838870.png
 ---
-# Using Pogo in Deno for Web Development
 
-Deno is a modern, secure runtime for JavaScript and TypeScript that aims to provide a better developer experience than its predecessor, Node.js. One of the powerful tools available for Deno is Pogo, a minimalist web framework inspired by Hapi.js. In this article, we will explore the core features of Pogo and demonstrate how to build a simple web application using this framework.
+:::caution
+Pogo's latest release, v0.6.0, is several years old. It is built on `deno.land/std@0.154.0`'s HTTP server, which uses `Deno.serveHttp()`. Deno 2 soft-removed that API: its types are gone, but the runtime implementation remains. Expect type errors under `deno check` and possible breakage on future Deno releases. For new projects, use `Deno.serve` directly or a maintained framework such as Hono or Oak.
+:::
 
-## Prerequisites
+[Pogo](https://github.com/sholladay/pogo) is a small Deno web framework modelled on [hapi](https://hapi.dev/). Route handlers return a value, such as a string, an object, a `Response` or a JSX element, and Pogo turns it into an HTTP response. It has a response toolkit (`h`) for files and redirects, and it renders React elements on the server without extra setup.
 
-Before we begin, make sure you have the following installed:
-
-1. [Deno](https://deno.land/#installation): Follow the official installation guide to install Deno on your system.
-2. A code editor: We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the [Deno extension](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno) for a better development experience.
-
-## Getting Started with Pogo
-
-To begin, create a new directory for your project and navigate to it in your terminal:
-
-```bash
-$ mkdir deno-pogo-example
-$ cd deno-pogo-example
-```
-
-Create a new file called `app.ts` inside the project directory. This file will serve as the entry point for our web application. Now, let's import the Pogo library and create a basic web server:
+## Hello world
 
 ```typescript
 // app.ts
-import { Pogo } from 'https://deno.land/x/pogo/main.ts';
+import pogo from "https://deno.land/x/pogo@v0.6.0/main.ts";
 
-const server = new Pogo({ port: 3000 });
+const server = pogo.server({ port: 3000 });
 
-server.router.get('/', () => {
-    return 'Hello, Pogo!';
+server.router.get("/", () => {
+  return "Hello, Pogo!";
 });
 
-server.start();
+await server.start();
 ```
-
-In this example, we're importing the `Po class from the Deno package registry and creating a new instance with a specified port. We then define a route for the root path `/` using the `server.router.get()` method, which returns a simple "Hello, Pogo!" message. Finally, we start the server using the `server.start()` method.
-
-To run the application, execute the following command in your terminal:
 
 ```bash
-$ deno run --allow-net app.ts
+deno run --allow-net app.ts
 ```
 
-This command tells Deno to run the `app.ts` file with network access permissions. Open your browser and navigate to `http://localhost:3000` to see the "Hello, Pogo!" message.
+Open `http://localhost:3000`. Create servers with the default export's `pogo.server()` factory. The module has no `Pogo` export.
 
-## Serving Static Files
+## Serving static files
 
-Pogo makes it easy to serve static files, such as images or stylesheets, using the `server.static()` method. First, create a new directory called `public` in your project folder, and add an example file named `style.:
+Pogo has no `server.static()`. Static files go through a route with a wildcard path parameter and the `h.directory()` toolkit method:
 
-```css
-/* public/style.css */
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f0f0f0;
-}
+```text
+public/
+  style.css
 ```
-
-Next, update your `app.ts` file to serve static files from the `public` directory:
 
 ```typescript
-// app.ts
-// ...
-server.static('/', 'public');
-// ...
-```
-
-Now, any file inside the `public` directory will be accessible via the root path `/`. For example, you can access the `style. file at `http://localhost:3000/style..
-
-## Templating and Rendering
-
-Pogo supports a variety of templating engines, but for this example, we'll use the built-in `EJS` (Embedded JavaScript) engine. First, let's create a new directory called `views` in your project folder and add an example template named `index.ejs`:
-
-```ejs
-<!-- views/index.ejs -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pogo Example</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-    <h1><%= message %></h1>
-</body>
-</html>
-```
-
-In this template, we use the `<%= %>` syntax to output the value of a variable named `message`.
-
-Next, update your `app.ts` file to use the EJS engine and render the `index.ejs` template:
-
-```typescript
-// app.ts
-import { Pogo, renderFile } from 'https://deno.land/x/pogo/main.ts';
-// ...
-
-server.router.get('/', async () => {
-    const message = 'Hello, Pogo!';
-    const content = await renderFile('views/index.ejs', { message });
-    return content;
+server.router.get("/static/{file*}", (request, h) => {
+  return h.directory("public");
 });
 ```
 
-Here, we import the `renderFile` function from Pogo and use it to render the `index.ejs` template with the `message` variable. Restart your server and visit `http://localhost:3000` to see the rendered template.
+Pogo joins the directory with the last path parameter, so `/static/style.css` serves `public/style.css`. Directory listings are off by default. For a single file, use `h.file("path/to/file")`, which by default refuses paths outside the current working directory. Both read from disk, so add `--allow-read`.
 
-## Conclusion
+## Rendering HTML with JSX
 
-POCO is a powerful and versatile C++ library that provides a comprehensive set of features for developing portable, network-centric applications. By leveraging POCO's intuitive API, you can easily implement advanced functionality such as network communication, multithreading, and file system access in your C++ projects. The examples provided in this article offer a starting point for using POCO in your own applications, but the library's extensive documentation and vibrant community can provide further guidance and support as you explore its full potential.
+Pogo doesn't ship a template engine such as EJS. Instead, it renders React elements to static markup, so a handler can return JSX. Save this as `app.tsx`; the extension tells Deno to compile JSX:
+
+```tsx
+// app.tsx
+import React from "https://esm.sh/react@18.2.0";
+import pogo from "https://deno.land/x/pogo@v0.6.0/main.ts";
+
+const server = pogo.server({ port: 3000 });
+
+server.router.get("/static/{file*}", (request, h) => {
+  return h.directory("public");
+});
+
+server.router.get("/", () => {
+  const message = "Hello, Pogo!";
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <title>Pogo Example</title>
+        <link rel="stylesheet" href="/static/style.css" />
+      </head>
+      <body>
+        <h1>{message}</h1>
+      </body>
+    </html>
+  );
+});
+
+await server.start();
+```
+
+```bash
+deno run --allow-net --allow-read app.tsx
+```
+
+Import React from the same version Pogo uses internally (`react@18.2.0` from esm.sh). Under Deno's default classic JSX transform, `<h1>` compiles to `React.createElement`, so `React` has to be in scope. With React 19 you'd get elements that Pogo's bundled React 18 renderer doesn't recognise.
+
+## Further reading
+
+- [Pogo README and API docs](https://github.com/sholladay/pogo)
+- [Pogo on deno.land/x](https://deno.land/x/pogo)
+- [`Deno.serve` docs](https://docs.deno.com/runtime/fundamentals/http_server/), the built-in alternative

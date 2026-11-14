@@ -1,120 +1,146 @@
 ---
-description: In this article, we will explore the key concepts of Entity Framework,
-  its architecture, and how to use it in a typical .NET application.
+description: How Entity Framework Core maps C# classes to tables, with a runnable SQLite
+  example of a DbContext, saving and querying data, and a note on migrations.
 imgSrc: /imgs/2023/3194903180.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-08T08:09:42.000Z'
-tags: []
-title: A Deep Dive into Entity Framework
+lastUpdated: 2026-11-14
+tags: ["csharp", "dotnet", "sql"]
+title: 'Entity Framework Core basics: models, DbContext and LINQ queries'
 ---
 
-# A Deep Dive into Entity Framework
+Entity Framework (EF) is Microsoft's object-relational mapper for .NET. You define plain C# classes, EF maps them to tables, and you query with LINQ, which EF translates into SQL. It also tracks changes to the objects it loaded and writes them back when you call `SaveChanges`.
 
-## Introduction
+There are two products with the name:
 
-Entity Framework (EF) is an Object-Relational Mapper (ORM) developed by Microsoft. It simplifies data access in applications by allowing developers to interact with databases using objects and LINQ queries instead of writing raw SQL queries. Entity Framework is a part of the larger .NET Framework, and it has evolved through various versions, the latest being Entity Framework Core (EF Core).
+- **Entity Framework 6 (EF6)** is the original, built for .NET Framework. It still gets fixes, but new development happens in EF Core.
+- **Entity Framework Core (EF Core)** is a cross-platform rewrite that runs on modern .NET. EF Core 10 (November 2025) runs on .NET 10, which is a long-term support release. EF Core 11 (November 2026) requires .NET 11.
 
-In this article, we will explore the key concepts of Entity Framework, its architecture, and how to use it in a typical .NET application.
+EF isn't part of the .NET runtime or the base class library. You install it from NuGet. This post covers EF Core.
 
-## Components of Entity Framework
+## How EF Core is put together
 
-Entity Framework can be broken down into three main components:
+- **Entity classes** are ordinary C# classes. EF uses conventions to map them: a property named `Id` or `<Type>Id` becomes the primary key, and a property like `BlogId` alongside a `Blog` navigation becomes a foreign key.
+- **`DbContext`** is a unit of work. It holds the connection configuration, exposes a `DbSet<T>` per table, tracks the entities it loaded, and saves changes in a transaction. Contexts are cheap to create and aren't thread-safe, so use one per request or operation and dispose it afterwards.
+- **The model** is built at runtime from your classes, conventions, and anything you configure in `OnModelCreating` or with attributes. EF Core has no visual designer or `.edmx` file, unlike EF6.
+- **Database providers** translate queries for a specific database. Microsoft ships providers for SQL Server, SQLite, Azure Cosmos DB and an in-memory store. Third-party providers cover PostgreSQL (Npgsql), MySQL and others.
+- **Tooling** (`dotnet ef`) creates and applies migrations and can scaffold entity classes from an existing database.
 
-1. **DbContext**: Represents a session with the database and is used to query and save instances of the entity classes to the database. It provides a high-level API to perform CRUD operations on the database.
+## A runnable example
 
-2. **Entity Data Model (EDM)**: Represents the structure of your domain model, including entities, their properties, and relationships between entities. It is a conceptual model that maps the object-oriented domain model to the relational database schema.
+This example uses SQLite so it runs anywhere without a database server. For SQL Server, install `Microsoft.EntityFrameworkCore.SqlServer` and call `UseSqlServer(connectionString)` instead of `UseSqlite`.
 
-3. **LINQ Provider**: Translates LINQ queries written in C# or VB.NET to SQL queries that can be executed against the database.
-
-## Entity Framework Architecture
-
-The architecture of Entity Framework can be divided into two layers:
-
-1. **Runtime Components**: This layer deals with the actual interaction between your application and the database. It includes the DbContext, EDM, and LINQ Provider.
-
-2. **Design-time Components**: This layer deals with the creation and maintenance of the EDM. It includes tools to create and update the EDM from an existing database, generate the database schema from the EDM, and validate the EDM.
-
-The two layers work together to provide a seamless experience for developers working with data in .NET applications.
-
-## Using Entity Framework in a .NET Application
-
-To demonstrate how to use Entity Framework in a .NET application, let's create a simple console application.
-
-### Step 1: Install Entity Framework
-
-First, we need to install the Entity Framework NuGet package. To do this, open the Package Manager Console in Visual Studio and run the following command:
-
-```
-Install-Package Microsoft.EntityFrameworkCore.SqlServer
+```bash
+dotnet new console -n EfDemo
+cd EfDemo
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 ```
 
-### Step 2: Create the Entity Classes
-
-Next, we will create our domain model classes. In this example, we will create a simple model for a blog that has a collection of posts:
+`Program.cs`:
 
 ```csharp
+using Microsoft.EntityFrameworkCore;
+
+using var db = new BloggingContext();
+db.Database.EnsureCreated(); // creates the database and tables if missing (see the note on migrations below)
+
+var blog = new Blog { Url = "https://example.com" };
+blog.Posts.Add(new Post { Title = "Hello EF Core", Content = "First post" });
+blog.Posts.Add(new Post { Title = "Migrations", Content = "Second post" });
+db.Blogs.Add(blog);
+db.SaveChanges(); // one transaction: inserts the blog, then both posts with the new BlogId
+
+// Load blogs together with their posts
+var blogs = db.Blogs
+    .Include(b => b.Posts)
+    .OrderBy(b => b.BlogId)
+    .ToList();
+
+foreach (var b in blogs)
+{
+    Console.WriteLine($"Blog {b.BlogId}: {b.Url} ({b.Posts.Count} posts)");
+    foreach (var p in b.Posts)
+        Console.WriteLine($"  - {p.Title}");
+}
+
+// LINQ is translated to SQL; only the Title column is fetched
+var query = db.Posts
+    .Where(p => p.Title.Contains("EF"))
+    .Select(p => p.Title);
+Console.WriteLine(query.ToQueryString());
+Console.WriteLine(string.Join(", ", query.ToList()));
+
+// Change tracking: modify a loaded entity, then save
+var first = db.Posts.First();
+first.Title = "Hello again";
+db.SaveChanges(); // issues an UPDATE for the Title column only
+
+public class BloggingContext : DbContext
+{
+    public DbSet<Blog> Blogs => Set<Blog>();
+    public DbSet<Post> Posts => Set<Post>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite("Data Source=blogging.db");
+}
+
 public class Blog
 {
     public int BlogId { get; set; }
-    public string Url { get; set; }
-
-    public ICollection<Post> Posts { get; set; }
+    public required string Url { get; set; }
+    public List<Post> Posts { get; } = new();
 }
 
 public class Post
 {
     public int PostId { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
+    public required string Title { get; set; }
+    public required string Content { get; set; }
 
     public int BlogId { get; set; }
-    public Blog Blog { get; set; }
+    public Blog Blog { get; set; } = null!;
 }
 ```
 
-### Step 3: Create the DbContext
+On the first run, the query part prints:
 
-Now, we need to create a class that inherits from `DbContext`. This class will be used to interact with the database:
-
-```csharp
-public class BloggingContext : DbContext
-{
-    public DbSet<Blog> Blogs { get; set; }
-    public DbSet<Post> Posts { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Blogging;Trusted_Connection=True;");
-    }
-}
+```text
+Blog 1: https://example.com (2 posts)
+  - Hello EF Core
+  - Migrations
+SELECT "p"."Title"
+FROM "Posts" AS "p"
+WHERE instr("p"."Title", 'EF') > 0
+Hello EF Core
 ```
 
-### Step 4: Query and Save Data
+`ToQueryString()` is a handy way to check what SQL a LINQ query produces. It's provider-specific: SQLite uses `instr` for `Contains`, and SQL Server uses `LIKE` or `CHARINDEX`.
 
-Finally, we can use the `BloggingContext` class to query and save data:
+The `required` keyword and `= null!` keep the code free of nullable-reference warnings. EF Core reads nullability too: `string` columns become `NOT NULL`, and `string?` columns become nullable.
 
-```csharp
-static void Main(string[] args)
-{
-    using (var context = new BloggingContext())
-    {
-        // Create a new blog and save it to the database
-        var blog = new Blog { Url = "https://example.com" };
-        context.Blogs.Add(blog);
-        context.SaveChanges();
+## Migrations instead of `EnsureCreated`
 
-        // Query the database for all blogs and display them
-        var blogs = context.Blogs.ToList();
-        foreach (var b in blogs)
-        {
-            Console.WriteLine($"Blog ID: {b.BlogId}, URL: {b.Url}");
-        }
-    }
+`EnsureCreated` is fine for demos and tests, but it can't change an existing schema. For a real application, use migrations so each model change becomes a versioned script:
 
-    Console.ReadKey();
-}
+```bash
+dotnet tool install --global dotnet-ef
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet ef migrations add InitialCreate
+dotnet ef database update
 ```
 
-## Conclusion
+Remove the `EnsureCreated` call when you switch, because a database created by `EnsureCreated` can't be updated by migrations later.
 
-Entity Framework is a powerful ORM that simplifies data access in .NET applications. By using it, developers can focus on writing clean, maintainable code without worrying about the intricacies of raw SQL queries. With Entity Framework, you can interact with databases using familiar C# objects and LINQ queries, making it a popular choice for many developers in the .NET ecosystem.
+## Gotchas
+
+- **Related data isn't loaded automatically.** Without `Include`, `blog.Posts` is empty unless those posts are already tracked by the context. Lazy loading exists, but it's opt-in (the `Microsoft.EntityFrameworkCore.Proxies` package) and can cause one query per row (the N+1 problem).
+- **Read-only queries don't need tracking.** Add `.AsNoTracking()` when you won't modify the results. It's faster and uses less memory.
+- **Filter in the query, not after `ToList()`.** Everything before `ToList()` runs in the database. Calling `.ToList().Where(...)` downloads the whole table first.
+- **Configure through dependency injection in web apps.** In ASP.NET Core, register the context with `builder.Services.AddDbContext<BloggingContext>(...)` and inject it, rather than overriding `OnConfiguring`.
+
+## Further reading
+
+- [EF Core getting started](https://learn.microsoft.com/ef/core/get-started/overview/first-app)
+- [Migrations overview](https://learn.microsoft.com/ef/core/managing-schemas/migrations/)
+- [Comparing EF Core and EF6](https://learn.microsoft.com/ef/efcore-and-ef6/)
+- [What's new in EF Core](https://learn.microsoft.com/ef/core/what-is-new/)

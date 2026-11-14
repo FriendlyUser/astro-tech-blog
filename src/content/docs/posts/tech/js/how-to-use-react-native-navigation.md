@@ -1,214 +1,199 @@
 ---
-title: How to use Navigation API in react native
-description: The Navigation API is a powerful new tool for managing navigation in React Native apps.
+title: "React Navigation basics: stacks, params, tabs, deep links and transitions"
+description: Set up React Navigation 7 in a React Native app, pass params between screens, nest a stack in tabs, handle deep links and change screen transitions.
 alt: my first blog post
-tags: ["dotnet","git"]
+tags: ["dotnet","git","react-native","js"]
 layout: '@/templates/BasePost.astro'
 pubDate: Saturday, 14 June 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/bear_book_2.png'
 ---
 
-# Understanding the Navigation API
+React Native doesn't ship a navigation system. [React Navigation](https://reactnavigation.org/) is the most common library for it: you describe screens inside *navigators* (stack, tabs, drawer), and it handles history, the back button, headers, and deep links.
 
-The Navigation API is a powerful new tool for managing navigation in React Native apps. It allows you to navigate between routes in your app, handle deep linking, share state between routes, and more - all with a straightforward API. 
+The examples below use React Navigation 7 with the dynamic (component-based) API. Version 7 also has a static, object-based API that the docs recommend for its automatic TypeScript types; both produce the same result.
 
-Some of the main benefits of the Navigation API are:
+## Installing
 
-- Simple routing - You define routes, and the API handles transitioning between them, maintaining history, etc.
+React Navigation 7 needs React Native 0.72 or later. In an Expo project:
 
-- Shared state - You can pass data between routes, maintaining a shared state for your whole navigation "tree". 
-
-- Custom screen transitions - You have full control over the transition between routes with custom animations and gestures.
-
-- Nested child routes - Routes can contain child routes, allowing you to create nested navigation hierarchies in your app.
-
-- Deep linking support - Easily handle links that open into specific routes in your app.
-
-- And more - The Navigation API also provides features like modals, tab navigation, drawer navigation, and more.
-
-To get started with the Navigation API, you first need to install the react-navigation library:
-
-```
-npm install @react-navigation/native
+```bash
+npm install @react-navigation/native @react-navigation/native-stack
+npx expo install react-native-screens react-native-safe-area-context
 ```
 
-The Navigation API is made up of "navigators" - components like StackNavigator, TabNavigator, and DrawerNavigator that manage navigation for a section of your app. You nest navigators within one another to create the navigation structure for your whole app.
+In a bare React Native project, install the same four packages with `npm install`, then run `npx pod-install ios` on a Mac.
 
-For example, here's a basic app with some routes defined using the StackNavigator:
+## A two-screen stack
+
+A stack navigator keeps a history of screens: navigating pushes a screen on top, going back pops it.
 
 ```jsx
-import { NavigationContainer, StackNavigator } from '@react-navigation/native';
+// App.js
+import * as React from 'react';
+import { Button, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const Stack = StackNavigator({
-  Home: {
-    screen: HomeScreen
-  },
-  Details: {
-    screen: DetailsScreen
-  }
-});
+const Stack = createNativeStackNavigator();
+
+function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button
+        title="Go to Details"
+        onPress={() =>
+          navigation.navigate('Details', { item: { name: 'React Native' } })
+        }
+      />
+    </View>
+  );
+}
+
+function DetailsScreen({ route, navigation }) {
+  const item = route.params?.item;
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>{item ? item.name : 'No item'}</Text>
+      <Button title="Go back" onPress={() => navigation.goBack()} />
+    </View>
+  );
+}
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack />
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
-  ); 
-}
-```
-
-This defines two routes, Home and Details, wrapped in a StackNavigator. The NavigationContainer component is required to manage state for the navigation tree.
-
-
-## Navigating Between Routes and Passing Data
-
-In part 1, we set up a basic StackNavigator with two routes. Now let's look at how to navigate between those routes and share data between them.
-
-To navigate from one route to another, you call the navigation prop on the screen component. For example:
-
-```jsx
-// HomeScreen.js
-
-export default function HomeScreen({ navigation }) {
-  return (
-    <Button 
-      title="Go to Details"
-      onPress={() => navigation.navigate('Details')} 
-    />
   );
 }
 ```
 
-The navigate method takes the name of the route to navigate to. So this will navigate from HomeScreen to DetailsScreen.
+`NavigationContainer` holds the navigation state and must wrap the whole tree, once per app.
 
-You can also pass data between routes using the navigation prop. For example:
+Every screen rendered by a navigator receives two props:
+
+- `navigation`: methods such as `navigate(name, params)`, `goBack()`, `push()`, `popToTop()`, `setParams()` and `reset()`.
+- `route`: the current route, including `route.params` from whoever navigated here.
+
+Use optional chaining on `route.params`, because a screen can be opened without params (for example, as the initial route or from a deep link). Keep params small and serialisable, such as IDs and flags. Pass an ID and load the full object on the screen, rather than passing large objects or functions.
+
+## Nesting a stack inside tabs
+
+To give each tab its own history, render a stack navigator as the component of a tab screen. Install the tabs package first:
+
+```bash
+npm install @react-navigation/bottom-tabs
+```
 
 ```jsx
-// HomeScreen.js
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default function HomeScreen({ navigation }) {
+const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
   return (
-    <Button 
-      title="Go to Details"
-      onPress={() => navigation.navigate('Details', { item: { name: 'React Native' } })} 
-    />
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen name="Details" component={DetailsScreen} />
+    </HomeStack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="HomeTab"
+          component={HomeStackScreen}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 ```
 
-This passes an item object with some data to the Details route.
+`headerShown: false` on the tab avoids two headers stacked on top of each other, because the inner stack already draws one. `SettingsScreen` is any other screen component.
 
-In the DetailsScreen, you can access this data through the route prop:
+## Deep linking
 
-```jsx 
-// DetailsScreen.js
-
-export default function DetailsScreen({ route }) {
-  const item = route.params.item;
-  return <Text>{item.name}</Text>; 
-}
-```
-
-The route.params contains the parameters passed from the navigating route.
-
-To go back from the Details route to the Home route, you can call `navigation.goBack()`. For example:
+Deep links are configured on `NavigationContainer` through the `linking` prop, not on the navigator. For the two-screen stack above:
 
 ```jsx
-// DetailsScreen.js
-
-export default function DetailsScreen({ navigation }) {
-  return (
-    <Button 
-      title="Go back"
-      onPress={() => navigation.goBack()} 
-    />
-  );
-}
-```
-
-This will pop the DetailsScreen off the stack and return to the HomeScreen.
-
-The `navigation` prop contains various other useful methods for controlling navigation like setParams, push, popToTop, reset, etc. You can build very flexible navigation flows using all the features of the Navigation API.
-
-Next, we'll look at nesting navigators to create a tabbed view, handling deep linking, and implementing custom transitions between routes.
-
-
-# Nested Navigators, Deep Linking, and Custom Transitions 
-
-We covered the basics of navigating between routes and passing data with the Navigation API.
-
-Nested Navigators
-To create complex navigation hierarchies in your app, you nest navigators within one another. For example, to have tab navigation where each tab contains a stack of routes, you'd do:
-
-```jsx
-<TabNavigator>
-  <StackNavigator>
-    {/* Routes for tab 1 */}
-  </StackNavigator>
-  <StackNavigator>
-    {/* Routes for tab 2 */}
-  </StackNavigator>
-</TabNavigator> 
-```
-
-You can nest navigators as deeply as you like to create really complex navigation structures.
-
-## Deep Linking
-Deep linking allows you to link directly into routes in your app. To handle deep linking with the Navigation API, you define a linking config when creating your StackNavigator. For example:
-
-```js  
-const Stack = StackNavigator({
-  Home: {
-    screen: HomeScreen
+const linking = {
+  prefixes: ['myapp://', 'https://example.com'],
+  config: {
+    screens: {
+      Home: '',
+      Details: 'details/:itemId',
+    },
   },
-  Details: {
-    screen: DetailsScreen
-  } 
-}, {
-  initialRouteName: 'Home',
-  linking: {
-    prefixes: ['https://example.com'],
-    config: {
-      Details: {
-        path: 'details/:itemId'
-      }
-    }
-  } 
-}); 
+};
+
+export default function App() {
+  return (
+    <NavigationContainer linking={linking}>
+      {/* Stack.Navigator as before */}
+    </NavigationContainer>
+  );
+}
 ```
 
-This will match incoming URLs that start with `https://example.com`. The config then looks for the route name (Details here) in the path after the prefix, and any parameters after than (`:itemId`) will be passed as params to the route.
+Opening `myapp://details/abc123` or `https://example.com/details/abc123` navigates to `Details` with `route.params.itemId === 'abc123'`.
 
-So if your app is opened with the URL `https://example.com/details/abc123`, it will navigate directly to the DetailsScreen route with route.params.itemId = 'abc123'.
+The JavaScript config is only half of it. The OS also has to route the URL to your app. In Expo, set `scheme` in `app.json`. In a bare app, add an intent filter in `AndroidManifest.xml` and a URL type plus the `RCTLinkingManager` handlers in the iOS `AppDelegate`. `https://` links additionally need Android App Links or iOS Universal Links set up for your domain. See the [deep linking guide](https://reactnavigation.org/docs/deep-linking) for the exact steps.
 
-Custom Screen Transitions
-You have full control over the transition between screens with the Navigation API. You can create custom animations and gestures for navigating between routes.
+## Screen transitions
 
-For example, to have a slide up transition between routes, you'd do:
+The native stack uses the platform's own transitions, and you pick one with the `animation` option:
+
 ```jsx
-<Stack.Navigator initialRouteName="Home" screenOptions={{
-  headerShown: false,
-  cardStyle: { backgroundColor: 'transparent' }
-}}>
-  <Stack.Screen name="Home" component={HomeScreen}/>
-  <Stack.Screen 
-    name="Details" 
-    component={DetailsScreen}
-    options={{
-      cardStyleInterpolator: ({ current, next, closing }) => {
-        return {
-          cardStyle: {
-            opacity: current.progress,
-          }
-        };
-      }
-    }} 
-  />
-</Stack.Navigator> 
+<Stack.Screen
+  name="Details"
+  component={DetailsScreen}
+  options={{ animation: 'slide_from_bottom' }}
+/>
 ```
 
-This sets some options to hide the default header and use a transparent background for the Stack. It then passes a custom `cardStyleInterpolator` to the DetailsScreen which handles the animation/transition. This will cause the DetailsScreen to slide up and fade in.
+Supported values include `default`, `fade`, `fade_from_bottom`, `flip`, `simple_push`, `slide_from_bottom`, `slide_from_right`, `slide_from_left` and `none`.
 
-You can create transitions triggered by gestures, react to drag gestures, and completely customize the navigation experience in your app using the Navigation API.
+For fully custom, JavaScript-driven animations, use the JS-based stack from `@react-navigation/stack` instead. It also needs `react-native-gesture-handler` (and `@react-native-masked-view/masked-view` for UIKit-style header animations). It exposes `cardStyleInterpolator`, which maps the transition progress to styles. A fade looks like this:
 
-That covers the basics of the Navigation API in React Native! Let me know if you have any other questions.
+```jsx
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
+const forFade = ({ current }) => ({
+  cardStyle: {
+    opacity: current.progress,
+  },
+});
+
+<Stack.Navigator>
+  <Stack.Screen name="Home" component={HomeScreen} />
+  <Stack.Screen
+    name="Details"
+    component={DetailsScreen}
+    options={{ cardStyleInterpolator: forFade }}
+  />
+</Stack.Navigator>;
+```
+
+`cardStyleInterpolator` is not available on the native stack. Prefer the native stack unless you need this level of control, because it runs transitions on the platform's own navigation primitives.
+
+## Further reading
+
+- [Getting started](https://reactnavigation.org/docs/getting-started)
+- [Passing parameters to routes](https://reactnavigation.org/docs/params)
+- [Nesting navigators](https://reactnavigation.org/docs/nesting-navigators)
+- [Configuring links](https://reactnavigation.org/docs/configuring-links)
+- [Stack navigator (JS) and card interpolators](https://reactnavigation.org/docs/stack-navigator)

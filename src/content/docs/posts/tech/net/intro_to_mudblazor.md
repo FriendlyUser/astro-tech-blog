@@ -1,77 +1,188 @@
 ---
-tags: ['blazor', 'dotnet']
-title: Introduction to MudBlazor
-description: MudBlazor is a Blazor component library based on Material Design principles.
+tags: ['blazor', 'dotnet', 'csharp']
+title: "Getting started with MudBlazor: Material Design components for Blazor"
+description: "Add the MudBlazor component library to a Blazor app: install the package, register services and providers, and build an app bar with a toggleable drawer."
 pubDate: Tues, 21 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/4067359065.png'
 ---
 
+MudBlazor is an open-source (MIT-licensed) component library for Blazor based on Google's Material
+Design. It gives you layout, navigation, form, data-grid, dialog and snackbar components written
+in C# and Razor, so you can build a Blazor UI without writing your own CSS or JavaScript
+components.
 
-MudBlazor is a Blazor component library based on Material Design principles. It provides a rich set of UI components that can help you create beautiful and responsive web applications using Blazor and C#. In this article, I will introduce you to some of the features and benefits of using MudBlazor, and show you how to get started with it.
+Blazor itself lets you write interactive web UIs in C#. Components either run in the browser on
+WebAssembly, or on the server with UI updates sent to the browser over a SignalR connection
+(Interactive Server). Since .NET 8, the **Blazor Web App** template lets you pick the render mode
+per app or per component. MudBlazor works with both, but its components need an interactive render
+mode; they don't respond to clicks under static server rendering.
 
-## What is Blazor?
+The steps below were checked against MudBlazor 9.13.0 in a .NET 9 Blazor Web App with global
+Interactive Server rendering. MudBlazor 9.x supports .NET 8 and later.
 
-Blazor is a framework for building interactive web UIs using C# instead of JavaScript. Blazor can run your client-side C# code directly in the browser, using WebAssembly. Because it's real .NET running on WebAssembly, you can re-use code and libraries from server-side parts of your application.
+## Starting from a template
 
-Blazor also supports a server-side model, where the UI runs on the server and communicates with the browser using SignalR. This way, you can take advantage of full .NET Core capabilities on the server, while still enjoying a rich and interactive UI.
+The quickest route is MudBlazor's own project templates, which are the Microsoft Blazor Web App
+template with MudBlazor already wired up:
 
-## What is MudBlazor?
+```bash
+dotnet new install MudBlazor.Templates
+dotnet new mudblazor --interactivity Server --name MyApplication --all-interactive
+```
 
-MudBlazor is an open-source component library for Blazor that aims to make web development easier and more enjoyable. MudBlazor follows the Material Design guidelines and offers over 50 components that cover various aspects of web UI development, such as layout, navigation, data display, inputs, feedback, utilities and more.
+Run `dotnet new mudblazor --help` to see the other options (`WebAssembly` and `Auto`
+interactivity). If you'd rather add MudBlazor to an existing project, do it by hand as follows.
 
-MudBlazor also provides a comprehensive theming system that allows you to customize the look and feel of your application with ease. You can choose from predefined themes or create your own theme with colors, typography, shadows and icons.
+## Adding MudBlazor to an existing app
 
-MudBlazor has a friendly and active community that contributes to its development and improvement. You can find documentation, demos, examples and online code editor on its website¹, as well as source code³, issues³and discussions³ on GitHub.
+Install the package:
 
-## How to get started with MudBlazor?
+```bash
+dotnet add package MudBlazor
+```
 
-To use MudBlazor in your Blazor project, you need to install its NuGet package³and add some references in your _Imports.razor_ file:
+Add the namespace to `_Imports.razor` (in `Components/_Imports.razor` for a Blazor Web App):
 
-```csharp
+```razor
 @using MudBlazor
-@using MudBlazor.Components
-@using MudBlazor.Services
 ```
 
-You also need to add some CSS and JS files in your _wwwroot/index.html_ file (for Blazor WebAssembly) or _Pages/_Host.cshtml_ file (for Blazor Server):
-
-```html
-<link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-<script src="_content/MudBlazor/MudBlazor.min.js"></script>
-```
-
-Optionally, you can also add a reference to Google Fonts if you want to use Roboto font:
-
-```html
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
-```
-
-Now you are ready to use MudBlazor components in your Razor pages or components. For example, here is how you can create a simple app bar with a title and an icon button:
+Register MudBlazor's services in `Program.cs`:
 
 ```csharp
-<MudAppBar>
-    <MudText Typo="Typo.h6">My App</MudText>
-    <Spacer />
-    <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="@ToggleDrawer" />
-</MudAppBar>
+using MudBlazor.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMudServices();
+// ... AddRazorComponents() etc. from the template
 ```
 
-Here is how it looks like:
+Add the font and stylesheet to the `<head>`, and the MudBlazor script after the Blazor script at
+the end of `<body>`. In a .NET 8+ Blazor Web App these go in `Components/App.razor`; older Blazor
+Server apps used `Pages/_Host.cshtml` or `_Layout.cshtml`, and standalone WebAssembly apps use
+`wwwroot/index.html`.
 
-![app bar](https://www.mudblazordocs.com/images/appbar.png)
+```razor
+<head>
+    ...
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+    <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
+</head>
+<body>
+    ...
+    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+</body>
+```
 
-You can find more examples of how to use different components on the documentation²and demo pages¹.
+`@Assets[...]` (new in .NET 9) adds a content hash to the URL so browsers pick up new MudBlazor
+files after an upgrade. It needs `app.MapStaticAssets()` in `Program.cs`, which new .NET 9
+templates include. On .NET 8, or in `index.html`, use the plain paths
+`_content/MudBlazor/MudBlazor.min.css` and `_content/MudBlazor/MudBlazor.min.js`.
+The template's Bootstrap stylesheet isn't needed alongside MudBlazor and can be removed.
 
-## Conclusion
+Finally, add the providers to `MainLayout.razor`. `MudThemeProvider` and `MudPopoverProvider` are
+required (menus, selects and tooltips render through the popover provider);
+`MudDialogProvider` and `MudSnackbarProvider` are only needed if you use dialogs or snackbars.
 
-MudBlazer is an excellent choice for building modern web applications with Blazer. It offers a wide range of components that follow Material Design principles and are easy to use and customize. It also has a vibrant community that supports its development and improvement. If you are looking for a Blazer component library that can save you time and effort while delivering stunning results,
-you should definitely give MudBlaor a try!
+```razor
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+```
 
+The providers must render in the same interactive mode as the components that use them. With
+global interactivity (a render mode on `<Routes />` in `App.razor`), `MainLayout.razor` is the
+right place. With per-page interactivity the layout renders statically, so the providers have to
+go on each interactive page instead. A "Missing `<MudPopoverProvider />`" error or components
+that ignore clicks usually means this is set up wrong.
 
-This article was generated with Ai using bing.
+## Example: app bar with a drawer
 
-Source: Conversation with Bing, 3/16/2023(1) MudBlazor - Blazor Component Library. https://www.mudblazor.com/ Accessed 3/16/2023.
-(2) GitHub - MudBlazor/MudBlazor: Blazor Component Library based on .... https://github.com/MudBlazor/MudBlazor Accessed 3/16/2023.
-(3) MudBlazor - Blazor Component Library. https://www.mudblazor.com/docs/overview Accessed 3/16/2023.
-(4) Starting With Blazor + MudBlazor. https://www.c-sharpcorner.com/blogs/starting-with-blazor-mudblazor Accessed 3/16/2023.
+Here is a complete `MainLayout.razor` with an app bar, a menu button that toggles a navigation
+drawer, and the page content below:
+
+```razor
+@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit"
+                       Edge="Edge.Start" OnClick="ToggleDrawer" />
+        <MudText Typo="Typo.h6">My App</MudText>
+        <MudSpacer />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Href="/counter">Counter</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+}
+```
+
+`MudLayout`, `MudAppBar`, `MudDrawer` and `MudMainContent` work together: the main content is
+offset so it isn't hidden under the app bar or the open drawer. `MudSpacer` fills the remaining
+space, so anything you add after it (a theme toggle, a user menu) sits at the right-hand end of
+the bar. If you replace the template's layout like this, delete its `MainLayout.razor.css` too.
+
+A page that uses a button and a snackbar:
+
+```razor
+@page "/counter"
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-4">
+    <MudText Typo="Typo.h4">Counter</MudText>
+    <MudText>Current count: @_count</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Increment">
+        Click me
+    </MudButton>
+</MudContainer>
+
+@code {
+    private int _count;
+
+    private void Increment()
+    {
+        _count++;
+        Snackbar.Add($"Count is now {_count}", Severity.Info);
+    }
+}
+```
+
+`ISnackbar` is registered by `AddMudServices()`, and the message appears through the
+`MudSnackbarProvider` in the layout.
+
+## Theming
+
+`MudThemeProvider` takes a `Theme` parameter. Create a `MudTheme`, set its palette and typography,
+and pass it in to change colours across every component; it also has an `IsDarkMode` parameter
+for a dark palette. The customization docs linked below list the full set of options.
+
+## Further reading
+
+- [MudBlazor installation guide](https://mudblazor.com/getting-started/installation)
+- [MudBlazor layouts](https://mudblazor.com/getting-started/layouts)
+- [MudBlazor theming and customization](https://mudblazor.com/customization/overview)
+- [Try MudBlazor in the browser](https://try.mudblazor.com/)
+- [MudBlazor on GitHub](https://github.com/MudBlazor/MudBlazor)
+- [Blazor render modes](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/render-modes)

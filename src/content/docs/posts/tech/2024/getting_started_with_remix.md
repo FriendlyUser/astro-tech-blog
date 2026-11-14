@@ -1,99 +1,188 @@
 ---
-title: "Getting Started with Remix: A Deep Dive into the React Ecosystem"
+title: "Getting started with Remix: loaders, actions, and the move to React Router"
 pubDate: "2024-02-16T19:17:25.000Z"
-description: "This article provides a comprehensive guide on getting started with Remix, its core features, and how it fits into the React ecosystem."
-tags: ["Remix", "React", "Web Development", "JavaScript", "Frontend Development", "Performance Optimization", "SEO", "Authentication", "State Management", "Styling"]
+lastUpdated: 2026-11-14
+description: "How Remix's loaders, actions, and nested routes work, how it compares to Next.js, and how to start the same app today with React Router framework mode."
+tags: ["Remix", "React", "Web Development", "JavaScript", "Frontend Development", "Performance Optimization", "SEO", "Authentication", "State Management", "Styling", "React Router"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2024/2443221186.png"
 ---
 
-### Getting Started with Remix: A Deep Dive into the React Ecosystem
+:::caution[Remix v2 is end of life]
+Remix v2 was merged into React Router v7. What would have been Remix v3 shipped as React Router v7's "framework mode" in November 2024. When React Router v8 came out on 17 June 2026, the team marked Remix v2 (and React Router v6) as end of life, so they no longer receive security updates. React Router v7 still gets security fixes.
 
-#### Introduction to Remix
+For a new project, use React Router (`npx create-react-router@latest`). For an existing Remix v2 app, follow the [upgrade guide](https://reactrouter.com/upgrading/remix). The name "Remix 3" now refers to a separate, new framework that is currently in beta. It is not an upgrade path for Remix v2 apps.
+:::
 
-Remix is a modern framework for building web applications, designed to enhance the capabilities of React, a popular JavaScript library for building user interfaces. Launched as an answer to the evolving demands of web development, Remix aims to offer a more efficient, robust, and developer-friendly approach. It leverages React's component-based architecture while introducing optimizations for performance, scalability, and developer experience.
+Remix is a full-stack React framework built around web standards. Each route can export a `loader` that runs on the server and returns data for that route, an `action` that handles form submissions, and a component that renders the result. Server code uses the Fetch API's `Request` and `Response` objects, and forms work as plain HTML `<form>` posts before any JavaScript loads.
 
-#### Core Features of Remix
+The ideas below apply to both Remix v2 and React Router framework mode, because the APIs are nearly identical. The examples were checked against `@remix-run/react` 2.17.5 and `react-router` 8.5.1.
 
-1. **Enhanced Data Loading**: Remix provides a unique mechanism for loading data on both the server and client sides. This approach simplifies data fetching and state management, reducing the need for additional libraries like Redux or Context API for data handling.
-2. **Built-in Form Support**: It includes out-of-the-box support for handling forms, making it easier to manage form state and validation, which are often cumbersome in traditional React applications.
-3. **Optimized for Performance**: Remix is designed with performance in mind, ensuring applications are fast by default. It automatically optimizes resource loading, code splitting, and prefetching.
-4. **Seamless Transition from Server to Client**: It offers a smooth transition for rendering pages from the server side to the client side, enhancing the user experience and improving SEO.
-5. **Enhanced Developer Experience**: With features like hot module replacement, efficient error handling, and comprehensive documentation, Remix aims to provide a superior developer experience.
+## The core model: nested routes, loaders, and actions
 
-#### How Remix Fits into the React Ecosystem
+Routes nest. A URL like `/projects/42/settings` can match a layout route for `/projects`, a child route for `/projects/:id`, and a grandchild for `settings`. Each level renders inside its parent's `<Outlet />` and can have its own loader. Remix calls the loaders for all matched routes in parallel, so a page doesn't wait on a chain of sequential fetches.
 
-Remix is not just another framework but a thoughtful extension to the React ecosystem. It builds upon React's foundation, offering a full-stack framework that addresses common challenges in web development. By focusing on performance, developer experience, and embracing the web platform's fundamentals, Remix complements existing tools and libraries in the React ecosystem. It encourages best practices for web development, such as server-side rendering and static site generation, which are crucial for building modern, efficient web applications.
+After an action runs, Remix revalidates the page by calling the loaders again. The UI then shows the updated data without you writing any client-side cache invalidation. Before JavaScript loads, the form does a normal POST and full page reload. After hydration, the same form submits with `fetch`.
 
-#### Comparison with Next.js
+### A route in Remix v2
 
-Next.js is another prominent framework in the React ecosystem, known for its server-side rendering capabilities, static site generation, and intuitive file-based routing system. Both Remix and Next.js aim to enhance the React development experience but differ in their approaches and focus areas.
+In Remix v2, a file in `app/routes/` becomes a route (`app/routes/todos.tsx` serves `/todos`):
 
-| Feature           | Remix                                   | Next.js                                |
-|-------------------|-----------------------------------------|----------------------------------------|
-| Data Fetching     | Enhanced, with server and client support| Flexible, with server-side rendering   |
-| Routing           | Nested routing with dynamic segments    | File-based routing with dynamic routes |
-| Performance       | Automatic optimizations, prefetching    | Manual optimizations, image optimization |
-| Form Handling     | Built-in support                        | Requires third-party libraries         |
-| Developer Experience | Hot module replacement, error handling | Fast refresh, plugin ecosystem         |
-| SEO               | Optimized by default                    | Optimized with SSR and SSG             |
-| Deployment        | Adaptable to various hosting options    | Vercel optimized, adaptable            |
+```tsx
+// app/routes/todos.tsx
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
+import { addTodo, getTodos } from "~/todos.server";
 
-#### Getting Started with Remix
+export async function loader() {
+  return { todos: await getTodos() };
+}
 
-1. **Installation**: To start with Remix, you need Node.js installed on your machine. Create a new Remix app using the following command:
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  await addTodo(String(formData.get("title") ?? ""));
+  return { ok: true };
+}
 
-```bash
-npx create-remix@latest
+export default function Todos() {
+  const { todos } = useLoaderData<typeof loader>();
+  return (
+    <main>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
+      <Form method="post">
+        <input type="text" name="title" required />
+        <button type="submit">Add</button>
+      </Form>
+    </main>
+  );
+}
 ```
 
-2. **Development**: After installation, you can run your Remix application in development mode. Remix offers a built-in development server, allowing you to see changes in real-time.
+```ts
+// app/todos.server.ts (in-memory stand-in for a database)
+type Todo = { id: number; title: string };
+const todos: Todo[] = [];
+
+export async function getTodos() {
+  return todos;
+}
+
+export async function addTodo(title: string) {
+  todos.push({ id: todos.length + 1, title });
+}
+```
+
+The `.server.ts` suffix marks the module as server-only. Imports used only by `loader` and `action` are stripped from the browser bundle. If client code still references it, the Vite build fails instead of leaking server code.
+
+### The same route in React Router framework mode
+
+The route module has the same shape, but imports come from `react-router` and the generated `Route` types give you typed `loaderData` as a prop:
+
+```tsx
+// app/routes/todos.tsx
+import { Form } from "react-router";
+import type { Route } from "./+types/todos";
+import { addTodo, getTodos } from "~/todos.server";
+
+export async function loader() {
+  return { todos: await getTodos() };
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  await addTodo(String(formData.get("title") ?? ""));
+  return { ok: true };
+}
+
+export default function Todos({ loaderData }: Route.ComponentProps) {
+  return (
+    <main>
+      <ul>
+        {loaderData.todos.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
+      <Form method="post">
+        <input type="text" name="title" required />
+        <button type="submit">Add</button>
+      </Form>
+    </main>
+  );
+}
+```
+
+Routes are declared in `app/routes.ts` by default:
+
+```ts
+// app/routes.ts
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+
+export default [
+  index("routes/home.tsx"),
+  route("todos", "routes/todos.tsx"),
+] satisfies RouteConfig;
+```
+
+If you prefer Remix-style file-based routing, `flatRoutes()` from `@react-router/fs-routes` keeps it.
+
+## Creating a project
+
+New project (React Router framework mode):
 
 ```bash
+npx create-react-router@latest my-app
+cd my-app
 npm run dev
 ```
 
-3. **Routing**: Define your routes in the `app/routes` directory. Remix uses file-based routing but with enhanced capabilities, such as nested routes and dynamic parameters.
+The dev server runs on `http://localhost:5173`. React Router v8 requires Node 22.22+, React 19.2.7+, and Vite 7+. If you're stuck on older versions, v7 needs Node 20 and React 18.
 
-4. **Data Loading**: Utilize Remix's data loading functions to fetch data for your components. These functions allow you to load data on the server side, client side, or both, optimizing performance and user experience.
+`npx create-remix@latest` still scaffolds a Remix v2 app, but don't start anything new on an end-of-life release.
 
-5. **Deployment**: Remix applications can be deployed on various platforms, including Vercel, Netlify, and traditional server environments. The framework's flexibility in deployment options ensures that it can fit into any workflow or infrastructure.
+To migrate an existing Remix v2 app, first enable all the v2 future flags. Then run the codemod, which renames the `@remix-run/*` packages to their `react-router` / `@react-router/*` equivalents and updates imports:
 
-### Supporting Packages and Ecosystem in Remix
+```bash
+npx codemod remix/2/react-router/upgrade
+```
 
-Beyond the core features of Remix, its ecosystem is rich with supporting packages and integrations that enhance its capabilities and streamline the development process. These packages address various aspects of web development, from styling and state management to authentication and database interactions. Here's an overview of some common supporting packages and how they fit into the Remix ecosystem.
+## Remix and Next.js
 
-#### Styling and UI Frameworks
+Both are full-stack React frameworks with server rendering, nested layouts, and file- or config-based routing. The real differences:
 
-- **Tailwind CSS**: A utility-first CSS framework that can be seamlessly integrated with Remix for rapid UI development. Its focus on utility classes makes it a popular choice for developers looking to implement custom designs without leaving the HTML.
-- **Chakra UI**: A component library that offers a set of reusable and accessible UI components. Chakra UI can be easily used within Remix applications to build responsive and visually appealing interfaces.
-- **Emotion**: A library for writing CSS-in-JS, Emotion is compatible with Remix and allows developers to style their applications using JavaScript, facilitating dynamic styling based on props or state.
+| | Remix v2 / React Router framework mode | Next.js (App Router) |
+|---|---|---|
+| Data loading | Per-route `loader` functions run on the server. Optional `clientLoader` runs in the browser. | React Server Components fetch data directly in components. |
+| Mutations | Route `action` + `<Form>`, with automatic revalidation of loaders | Server Actions (stable since Next.js 14) called from `<form action={...}>`. No third-party library needed. |
+| Routing | Nested routes with `<Outlet />`. React Router configures routes in `app/routes.ts` or the file system. | File-system routes with nested `layout.tsx` files |
+| Static output | Remix v2 had SPA mode but no built-in pre-rendering. React Router adds `prerender` and `ssr: false` config. | Static generation and incremental static regeneration are built in. |
+| Images | No built-in image optimization | `next/image` |
+| Hosting | Adapters for Node/Express, Cloudflare, Netlify, Vercel, and others | `next start` or standalone output on any Node host. Vercel (which maintains Next.js) has the deepest integration. |
 
-#### State Management
+Neither framework makes an app fast "by default." Remix's advantages are structural: parallel loaders, `<Link prefetch="intent">` to fetch a route's code and data on hover, and forms that work without JavaScript. Next.js's advantages are React Server Components, which keep server-only component code out of the client bundle, and mature static generation.
 
-- **React Query**: For managing server state, React Query is a powerful tool that simplifies data fetching, caching, and synchronization. In Remix, React Query can be used to handle server-side data fetching and client-side state management, bridging the gap between data retrieval and UI rendering.
-- **Zustand**: A minimalist state management solution, Zustand offers a straightforward way to create global state in React applications. It's particularly useful in Remix for managing application state that needs to be accessed across multiple routes or components.
+## Libraries that work well with it
 
-#### Authentication and Security
+These are general React or Node libraries, not Remix-specific packages, except where noted.
 
-- **Remix Auth**: A library designed specifically for Remix, providing a set of hooks and utilities to implement authentication flows. It supports various strategies, including local authentication, OAuth, and JWT tokens, making it versatile for different authentication requirements.
-- **Passport**: While not specifically designed for Remix, Passport is a widely used middleware for Node.js that can be integrated into Remix applications for handling authentication. It supports a wide range of strategies, including social login and local authentication.
+- **Styling:** Tailwind CSS is set up in the default React Router template. Runtime CSS-in-JS libraries (Emotion, and component kits built on it such as Chakra UI) work but need extra server-rendering setup to extract styles. Plain CSS files and CSS Modules work without extra setup through Vite.
+- **Server and client state:** Loaders plus revalidation cover most server data, so you often don't need TanStack Query (formerly React Query). It's still useful for polling, infinite scroll, or data that isn't tied to a route. For purely client-side UI state, a small store like Zustand works fine.
+- **Authentication:** [Remix Auth](https://github.com/sergiodxa/remix-auth) (v4.2) is a server-side library, not a set of hooks. You create an `Authenticator` and register strategies (form login, OAuth2, and others as separate packages), then call `authenticate()` inside an action or loader. Its design is borrowed from Passport.js, but it's written for the Fetch API. It doesn't manage sessions itself: you store the user with React Router's session helpers or your own cookie. Passport itself is Express middleware built around Node's `req`/`res`. It only fits if you run Remix behind an Express server and handle auth there, outside your route modules.
+- **Database:** Prisma or Drizzle, called from loaders and actions. Keep the client in a `.server.ts` module. Supabase works through its `@supabase/ssr` package, which handles cookie-based sessions in server-rendered apps.
+- **Testing:** Vitest for unit tests, since the project already uses Vite. `createRoutesStub` from `react-router` renders route components with stubbed loaders and actions (`createRemixStub` from `@remix-run/testing` in Remix v2). Playwright is a good choice for end-to-end tests.
 
-#### Data Access and Database Integration
+## Gotchas
 
-- **Prisma**: An ORM (Object-Relational Mapping) that facilitates database access and management in Node.js applications. Prisma can be integrated with Remix to handle database operations, providing a type-safe way to interact with your database.
-- **Supabase**: A popular open-source Firebase alternative, Supabase offers database storage, real-time subscriptions, authentication, and more. It can be easily integrated with Remix to build full-stack applications with real-time capabilities.
+- **Loaders run on every navigation to that route,** and after every action on the page. Keep them fast, or return cache headers from the route's `headers` export.
+- **Everything a loader returns is sent to the browser.** Don't return whole database rows that contain fields the user shouldn't see.
+- **Validate in the action, not just in the browser.** The `required` attribute is a convenience, while the action is the actual boundary. Return validation errors from the action and read them with `useActionData` (or the `actionData` prop).
 
-#### Testing and Quality Assurance
+## Further reading
 
-- **Vitest**: A test runner and assertion library that can be used for unit and integration testing in Remix applications. It's optimized for the Vite ecosystem, which Remix can leverage for fast, efficient testing.
-- **Playwright**: For end-to-end testing, Playwright offers a powerful platform to test web applications across different browsers. It can be used with Remix to ensure that applications work as expected in real-world scenarios.
-
-#### Deployment and Hosting
-
-- **Vercel**: Offers first-class support for Remix, providing an optimized platform for deploying and hosting Remix applications with features like global CDN, edge functions, and automatic SSL.
-- **Netlify**: Another popular option for deploying Remix applications, Netlify supports serverless functions and offers continuous deployment from Git across all of its plans, including the free tier.
-
-#### Conclusion
-
-Remix represents a significant evolution in the React ecosystem, offering developers a powerful, performance-oriented framework for building modern web applications. By focusing on the fundamentals of web development and enhancing the capabilities of React, Remix provides a compelling alternative to existing frameworks like Next.js. Whether you're building a complex enterprise application or a simple static site, Remix offers the tools and features necessary to deliver a superior web experience.
+- [React Router framework mode docs](https://reactrouter.com/start/framework/installation)
+- [Upgrading from Remix v2](https://reactrouter.com/upgrading/remix)
+- [Remix v2 docs (archived)](https://v2.remix.run/docs)
+- [React Router v8 release post](https://remix.run/blog/react-router-v8)

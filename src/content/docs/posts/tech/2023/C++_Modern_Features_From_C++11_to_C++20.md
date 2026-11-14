@@ -1,154 +1,159 @@
 ---
-description: This article provides an overview of the modern features introduced in
-  C++11, C++14, C++17, and C++20.
+description: The C++11, C++14, C++17 and C++20 features you'll use most, from auto, lambdas and move semantics to concepts, ranges and coroutines, each with a compilable example.
 imgSrc: /imgs/2023/986397498.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-18T05:09:30.000Z'
-tags: []
-title: C++ Modern Features From C++11 to C++20
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: Modern C++ features from C++11 to C++20, with examples
 ---
 
-# C++ Modern Features: From C++11 to C++20
-
-C++ is a widely-used, high-performance programming language known for its flexibility and support for object-oriented, procedural, and generic programming paradigms. Since its creation in the early 1980s, C++ has undergone significant evolution with the release of new language standards, introducing new features and improving existing ones. This article provides an overview of the modern features introduced in C++11, C++14, C++17, and C++20.
+C++11 changed the language more than any revision before it, and C++14, C++17 and C++20 built on it. This post covers the features from each standard that show up most in everyday code. Every example is a complete program; compile with `-std=c++20` (or `/std:c++20` on MSVC) and a recent compiler. Later standards (C++23 and C++26) aren't covered here.
 
 ## C++11
 
-The C++11 standard introduced a plethora of new features aimed at improving code readability, performance, and developer productivity. Some of the most notable features include:
+### `auto`, range-based `for` and lambdas
 
-### 1. Auto Type Deduction
-
-The `auto` keyword allows the compiler to deduce the type of a variable at compile-time based on its initializer. This feature significantly reduces the verbosity of code and makes it more readable.
+`auto` deduces a variable's type from its initializer. Range-based `for` iterates over any container or array. Lambdas define an unnamed function object inline.
 
 ```cpp
-auto i = 42; // int
-auto d = 3.14; // double
-auto s = "hello"; // const char*
-```
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
-### 2. Range-based for Loop
+int main() {
+    auto i = 42;      // int
+    auto d = 3.14;    // double
+    auto s = "hello"; // const char*
 
-C++11 introduced a new range-based `for` loop, simplifying iteration over containers and arrays.
+    std::vector<int> v = {3, 1, 4, 1, 5, 9, 2, 6};
+    std::sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
 
-```cpp
-std::vector<int> v = {1, 2, 3, 4, 5};
-
-for (auto const &elem : v) {
-    std::cout << elem << std::endl;
+    for (const auto& elem : v) {
+        std::cout << elem << ' '; // 9 6 5 4 3 2 1 1
+    }
+    std::cout << '\n';
 }
 ```
 
-### 3. Lambda Expressions
+### Move semantics
 
-Lambda expressions enable the creation of anonymous functions, allowing developers to write more expressive and concise code.
+Rvalue references (`T&&`) let a type steal another object's resources instead of copying them. Standard containers use this when they grow, and you can request it explicitly with `std::move`:
 
 ```cpp
-std::vector<int> v = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
-std::sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
+#include <string>
+#include <utility>
+#include <vector>
+
+int main() {
+    std::string big(1000000, 'x');
+    std::vector<std::string> names;
+    names.push_back(std::move(big)); // no 1 MB copy; big is left valid but unspecified
+}
 ```
 
-### 4. Smart Pointers
+### Smart pointers
 
-C++11 added the `shared_ptr`, `unique_ptr`, and `weak_ptr` smart pointers, which simplify memory management and help prevent memory leaks and dangling pointers.
+C++11 added `std::unique_ptr`, `std::shared_ptr` and `std::weak_ptr`, which delete their object automatically. `std::make_shared` is C++11; `std::make_unique` only arrived in C++14.
 
 ```cpp
-std::shared_ptr<int> p1 = std::make_shared<int>(42);
-std::unique_ptr<int> p2 = std::make_unique<int>(42);
+#include <memory>
+
+int main() {
+    std::shared_ptr<int> p1 = std::make_shared<int>(42);
+    std::unique_ptr<int> p2 = std::make_unique<int>(42); // C++14
+}
 ```
 
-### 5. Variadic Templates
+### Variadic templates
 
-Variadic templates enable the creation of functions and classes that accept a varying number of template arguments.
+Templates can take any number of arguments:
 
 ```cpp
-template<typename T>
+#include <iostream>
+
+template <typename T>
 T sum(T t) {
     return t;
 }
 
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 T sum(T t, Args... args) {
     return t + sum(args...);
 }
 
-int total = sum(1, 2, 3, 4, 5); // 15
+int main() {
+    std::cout << sum(1, 2, 3, 4, 5) << '\n'; // 15
+}
 ```
+
+The result type is the type of the first argument. In C++17, a fold expression replaces the recursion: `template <typename... Args> auto sum(Args... args) { return (args + ...); }`.
 
 ## C++14
 
-C++14 was a minor release that focused on refining and improving features introduced in C++11. Some of the key features include:
-
-### 1. Binary Literals
-
-C++14 introduced support for binary literals, allowing developers to define integer constants in binary notation.
+C++14 was a smaller release that filled gaps in C++11.
 
 ```cpp
-int x = 0b101010; // 42 in binary
-```
+#include <iostream>
 
-### 2. Generic Lambdas
-
-C++14 extended lambda expressions to support auto type deduction for parameters, enabling more generic code.
-
-```cpp
-auto add = [](auto a, auto b) { return a + b; };
-int sum = add(1, 2); // 3
-double result = add(3.14, 2.73); // 5.87
-```
-
-### 3. Return Type Deduction
-
-In C++14, the compiler is able to deduce the return type of a function based on the return statement.
-
-```cpp
-auto multiply(int a, int b) {
+auto multiply(int a, int b) { // return type deduced as int
     return a * b;
-} // return type is int
+}
+
+int main() {
+    int flags = 0b101010; // binary literal: 42
+
+    auto add = [](auto a, auto b) { return a + b; }; // generic lambda
+    std::cout << add(1, 2) << ' ' << add(3.14, 2.73) << '\n'; // 3 5.87
+
+    std::cout << multiply(6, 7) << ' ' << flags << '\n'; // 42 42
+}
 ```
 
 ## C++17
 
-C++17 introduced several new features and library additions, including:
+### Structured bindings and `if` with initializer
 
-### 1. Structured Bindings
-
-Structured bindings simplify the process of decomposing objects into their constituent parts.
+Structured bindings unpack pairs, tuples and simple structs into named variables. `if` and `switch` can declare a variable scoped to the statement.
 
 ```cpp
-std::map<std::string, int> m = {{"Alice", 25}, {"Bob", 30}};
+#include <iostream>
+#include <map>
+#include <string>
 
-for (const auto &[name, age] : m) {
-    std::cout << name << ": " << age << std::endl;
+int main() {
+    std::map<std::string, int> ages = {{"Alice", 25}, {"Bob", 30}};
+
+    for (const auto& [name, age] : ages) {
+        std::cout << name << ": " << age << '\n';
+    }
+
+    if (auto it = ages.find("Alice"); it != ages.end()) {
+        std::cout << "Found: " << it->second << '\n';
+    } else {
+        std::cout << "Not found.\n";
+    }
 }
 ```
 
-### 2. If and Switch with Initializer
+### Inline variables
 
-C++17 allows an optional initializer to be included in both `if` and `switch` statements.
-
-```cpp
-if (auto it = m.find("Alice"); it != m.end()) {
-    std::cout << "Found: " << it->second << std::endl;
-} else {
-    std::cout << "Not found." << std::endl;
-}
-```
-
-### 3. Inline Variables
-
-C++17 allows the `inline` specifier to be used with variables, providing a mechanism to define a single instance of a variable across multiple translationunits.
+An `inline` variable can be defined in a header and included in many translation units; the linker keeps one copy. Before C++17 you needed an `extern` declaration in the header and a definition in one `.cpp` file.
 
 ```cpp
-// header.h
+// config.h
 #pragma once
-inline int globalVar = 42;
+inline int global_counter = 0;
 ```
 
-### 4. std::optional
+### `std::optional`
 
-`std::optional` is a new utility that represents a value that may or may not be present. It can be used to indicate the absence of a value without resorting to special values or pointers.
+`std::optional<T>` holds either a `T` or nothing, replacing sentinel values like `-1` or a null pointer.
 
 ```cpp
+#include <iostream>
+#include <optional>
+
 std::optional<int> find_even(int start, int end) {
     for (int i = start; i <= end; ++i) {
         if (i % 2 == 0) {
@@ -158,24 +163,26 @@ std::optional<int> find_even(int start, int end) {
     return std::nullopt;
 }
 
-auto result = find_even(1, 10);
-if (result.has_value()) {
-    std::cout << "Found: " << result.value() << std::endl;
-} else {
-    std::cout << "Not found." << std::endl;
+int main() {
+    if (auto result = find_even(1, 10)) {
+        std::cout << "Found: " << *result << '\n'; // Found: 2
+    } else {
+        std::cout << "Not found.\n";
+    }
 }
 ```
 
+C++17 also added `std::variant`, `std::string_view` and `std::filesystem`.
+
 ## C++20
 
-C++20 brought some of the most significant changes in recent years, introducing new features and concepts that greatly impact the way C++ is written and used. Some of the key additions include:
+### Concepts
 
-### 1. Concepts
-
-Concepts are a way to specify constraints on template parameters, making it easier to write generic code that is more readable and produces better error messages.
+Concepts name the requirements a template argument must meet. A call with the wrong type fails with a short error naming the unmet concept instead of pages of template instantiation errors.
 
 ```cpp
 #include <concepts>
+#include <iostream>
 
 template <typename T>
 concept Addable = requires(T a, T b) {
@@ -186,65 +193,130 @@ template <Addable T>
 T add(T a, T b) {
     return a + b;
 }
+
+int main() {
+    std::cout << add(2, 3) << '\n'; // 5
+    // add(nullptr, nullptr);       // error: constraints not satisfied
+}
 ```
 
-### 2. Ranges
+### Ranges
 
-Ranges provide a new way of working with sequences of values, introducing a more composable and expressive API for dealing with iterators.
+Range adaptors compose lazily with `|`; nothing is computed until you iterate.
 
 ```cpp
+#include <iostream>
 #include <ranges>
+#include <vector>
 
-std::vector<int> v = {1, 2, 3, 4, 5};
+int main() {
+    std::vector<int> v = {1, 2, 3, 4, 5};
 
-auto even = [](int x) { return x % 2 == 0; };
-auto square = [](int x) { return x * x; };
+    auto even = [](int x) { return x % 2 == 0; };
+    auto square = [](int x) { return x * x; };
 
-auto result = v | std::views::filter(even) | std::views::transform(square);
+    for (int x : v | std::views::filter(even) | std::views::transform(square)) {
+        std::cout << x << ' '; // 4 16
+    }
+    std::cout << '\n';
+}
 ```
 
-### 3. Coroutines
+### Coroutines
 
-Coroutines are a new way of writing asynchronous and concurrent code that is more efficient and easier to reason about than traditional callback-based approaches.
+A coroutine is a function that can suspend (`co_await`, `co_yield`) and resume later. C++20 provides only the language mechanism and low-level types in `<coroutine>`. There is no ready-made task or generator type, and `std::future` can't be used as a coroutine return type. You either write a small return type yourself, use a library (cppcoro, Boost.Asio, folly), or use C++23's `std::generator`. A minimal generator looks like this:
 
 ```cpp
 #include <coroutine>
-#include <future>
+#include <exception>
+#include <iostream>
+#include <utility>
 
-std::future<int> async_add(int a, int b) {
-    co_return a + b;
+struct IntGenerator {
+    struct promise_type {
+        int current = 0;
+
+        IntGenerator get_return_object() {
+            return IntGenerator{std::coroutine_handle<promise_type>::from_promise(*this)};
+        }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int value) noexcept {
+            current = value;
+            return {};
+        }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+
+    explicit IntGenerator(std::coroutine_handle<promise_type> h) : handle(h) {}
+    IntGenerator(IntGenerator&& other) noexcept : handle(std::exchange(other.handle, {})) {}
+    ~IntGenerator() {
+        if (handle) handle.destroy();
+    }
+
+    bool next() {
+        handle.resume();
+        return !handle.done();
+    }
+    int value() const { return handle.promise().current; }
+
+    std::coroutine_handle<promise_type> handle;
+};
+
+IntGenerator count_to(int n) {
+    for (int i = 1; i <= n; ++i) {
+        co_yield i;
+    }
 }
 
 int main() {
-    auto result = async_add(1, 2).get();
-    std::cout << "Result: " << result << std::endl;
+    auto gen = count_to(3);
+    while (gen.next()) {
+        std::cout << gen.value() << '\n'; // 1, 2, 3
+    }
 }
 ```
 
-### 4. constexpr Improvements
+### `constexpr` with allocation, and `consteval`
 
-C++20 expands the usage of `constexpr`, allowing more functionality at compile-time, such as dynamic memory allocation and virtual functions.
+`constexpr` functions have been around since C++11, but C++20 allows much more inside them, including virtual calls, `try` blocks and `new`/`delete` as long as the memory is freed before the evaluation ends. That makes `std::vector` and `std::string` usable at compile time. `consteval` forces a function to run at compile time.
 
 ```cpp
-constexpr int factorial(int n) {
-    if (n <= 1) {
-        return 1;
-    }
-    return n * factorial(n - 1);
+#include <numeric>
+#include <vector>
+
+constexpr int sum_first(int n) {
+    std::vector<int> v(n);
+    std::iota(v.begin(), v.end(), 1);
+    return std::accumulate(v.begin(), v.end(), 0);
 }
 
-constexpr int result = factorial(5); // 120
+static_assert(sum_first(10) == 55); // evaluated by the compiler
+
+int main() {}
 ```
 
-### 5. std::format
+Compile-time `std::vector` needs GCC 12, Clang 15 with libc++, or MSVC 2019 16.10 or later.
 
-C++20 introduces `std::format`, a type-safe and extensible alternative to `printf` and `iostreams` for text formatting.
+### `std::format`
+
+`std::format` gives Python-style, type-safe formatting:
 
 ```cpp
 #include <format>
+#include <iostream>
+#include <string>
 
-std::string message = std::format("Hello, {}! Your age is {}.", "Alice", 30);
-std::cout << message << std::endl;
+int main() {
+    std::string message = std::format("Hello, {}! Your age is {}.", "Alice", 30);
+    std::cout << message << '\n';
+}
 ```
 
-In conclusion, modern C++ standards have significantly evolved the language, introducing new features that improve code readability, safety, and performance. By leveraging these modern features, developers can write more expressive, efficient, and maintainable C++ code.
+Library support arrived later than the language features: GCC's libstdc++ only shipped `<format>` in GCC 13. On older toolchains, the [{fmt}](https://fmt.dev/) library provides the same API. C++23 adds `std::print`, which formats and prints in one call.
+
+## Further reading
+
+- [cppreference: compiler support tables](https://en.cppreference.com/w/cpp/compiler_support) show which compiler versions implement each feature.
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines) for advice on using these features well.

@@ -1,32 +1,28 @@
 ---
 tags: ['latex', 'github actions', 'circleci', "ci"]
-title: How I converted circleCi to github actions
-description: For my latex diagrams project I converted the ci from circle to github actions.
+title: Moving my LaTeX diagrams build from CircleCI to GitHub Actions
+description: "How I replaced two chained CircleCI pipelines that compiled LaTeX diagrams and deployed a Saber docs site with a single GitHub Actions workflow."
 pubDate: Sun, 19 Feb 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 projects: ['LatexDiagrams']
 imgSrc: "/imgs/2023/1924742632.png"
 ---
-Continuous Integration (CI) is a software development practice that involves continuously integrating code changes into a single codebase repository, typically multiple times a day. The main goal of Continuous Integration is to catch and fix integration problems as early as possible in the development process, which helps to ensure that the code remains stable and that the software is always in a releasable state.
 
-In practice, Continuous Integration is typically achieved through automated build and testing processes. Whenever code changes are committed to the repository, an automated build process is triggered which compiles the code, runs automated tests and checks the code for any syntax errors or other problems. If the build and tests are successful, the code changes are considered to be integrated and can be safely merged into the main branch of the codebase. If the build or tests fail, the development team is notified, and the code can be corrected before it's merged into the main branch.
+:::caution
+Some tools in this post are no longer maintained. [Saber](https://github.com/saberland/saber), the static site generator the docs site used, has been archived, and CircleCI's legacy `circleci/node` images were replaced by `cimg/node`. The GitHub Actions workflow below has been updated to current action versions: GitHub retired v1–v3 of `actions/upload-artifact` and `actions/download-artifact`, so the original `@v1` steps no longer run.
+:::
 
-Continuous Integration is an important aspect of Agile software development and is often used in combination with Continuous Deployment and Continuous Delivery to provide a fast, reliable, and efficient software delivery pipeline.
+For my [LatexDiagrams](https://github.com/FriendlyUser/LatexDiagrams) project I moved continuous integration from CircleCI to GitHub Actions. The build compiles a set of TeX diagrams to PDF and PNG, regenerates the README, and publishes the results to a docs site built with Saber in a second repository, [dli-vue-docs](https://github.com/FriendlyUser/dli-vue-docs).
 
+On CircleCI this took two pipelines in two repositories, with one triggering the other. GitHub Actions let me do it in a single workflow in the LatexDiagrams repository.
 
-CircleCI is a cloud-based Continuous Integration and Continuous Deployment (CI/CD) platform that provides an automated process for building, testing, and deploying software applications. It helps teams to detect and fix integration problems as early as possible in the development process, allowing them to reduce the time-to-market and improve the overall quality of their applications.
+## The CircleCI setup
 
-CircleCI offers features such as parallel testing, custom environment variables, and a large library of pre-built integrations with popular tools and services like GitHub, AWS, and Google Cloud. CircleCI is also known for its easy-to-use interface and customizable workflows.
+### LatexDiagrams: compile the TeX and trigger the docs build
 
-GitHub Actions is a similar service that is integrated with GitHub. It provides a platform for automating software workflows, including Continuous Integration, Continuous Deployment, and Continuous Delivery. GitHub Actions can be triggered by events like code commits or pull requests, and it provides a wide range of pre-built actions for tasks like building, testing, and deploying applications.
-
-In comparison, both CircleCI and GitHub Actions offer similar functionality, but there are some differences. For example, CircleCI has a more robust and flexible environment, while GitHub Actions is tightly integrated with the GitHub ecosystem and provides native integration with other GitHub services like pull requests and issue tracking. Another difference is that CircleCI offers more resources for parallelism and concurrency, making it better suited for complex build and test processes.
-
-Ultimately, the choice between CircleCI and GitHub Actions will depend on the specific needs of your team and the characteristics of your projects. Both are powerful tools for Continuous Integration and Continuous Deployment and can help teams to deliver high-quality software applications quickly and reliably.
-
-
-```yaml 
- version: 2
+```yaml
+version: 2
 jobs:
   latex:
     docker:
@@ -39,7 +35,7 @@ jobs:
       - run: chmod +x ./compile_tex.sh && ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md
       - persist_to_workspace:
           root: .
-          paths: 
+          paths:
             - BlogDiagrams/*.pdf
             - ControlSystems/*.pdf
             - DSP/*.pdf
@@ -49,7 +45,6 @@ jobs:
             - PCC/*.pdf
             - ReportDiagrams/*.pdf
       - store_artifacts:
-          root: .
           path: .
 
   # think about restricting to master, but whatever, I don't update that much
@@ -60,7 +55,7 @@ jobs:
     steps:
       - run:
           name: "Trigger saber npx build"
-          command: | 
+          command: |
             curl -X POST https://circleci.com/api/v2/project/gh/FriendlyUser/dli-vue-docs/pipeline?circle_token=${CIRCLE_API_TOKEN} \
             -H 'Circle-Token: ${CIRCLE_API_TOKEN}' \
             -H 'Content-Type: application/json' \
@@ -80,61 +75,16 @@ workflows:
             branches:
               only:
                 - master
- 
- ```
+```
 
-This is a YAML configuration file for CircleCI, a Continuous Integration (CI) platform. The configuration file defines a workflow that consists of two jobs: "latex" and "trigger".
+The `latex` job runs in the `grandfleet/dolwarp` Docker image, which has a TeX distribution installed, and runs `compile_tex.sh` to build the PDFs and regenerate `ReadMe.md`. On `master`, the `trigger` job then calls the CircleCI API to start a pipeline in `dli-vue-docs`.
 
-The "latex" job uses a Docker image "grandfleet/dolwarp:v0.70" as the environment for building, testing, and deploying code. The job performs several steps, including updating the system, installing necessary packages, checking out the code from the repository, and running the script "compile\_tex.sh". The script is used to compile TeX files into PDF documents. After the script execution, the artifacts (PDF documents) are persisted in the workspace and stored as artifacts.
+If you copy the `curl` call, note that the `Circle-Token` header is in single quotes, so the shell sends the literal text `${CIRCLE_API_TOKEN}` rather than the token. Use double quotes so the variable expands.
 
-The "trigger" job uses a Node.js environment and triggers another pipeline to run. It makes an HTTP POST request to CircleCI's API, passing an API token as an environment variable and several headers, to trigger the pipeline.
-
-The workflow defined in this configuration file is called "build\_and\_test", which runs both "latex" and "trigger" jobs. The "trigger" job requires the successful completion of the "latex" job and is only triggered for the "master" branch.
-
-In conclusion, this YAML configuration file defines a CircleCI workflow for building, testing, and deploying code changes, as well as triggering another pipeline for additional steps in the software development process.
-
-
-Yes, triggering another workflow from a workflow in CircleCI is possible. To do this, you can make use of the CircleCI API and the "curl" command in your job steps to send an HTTP request to the API endpoint that triggers another workflow.
-
-Here is an example of triggering another workflow from a workflow in CircleCI:
-
+### dli-vue-docs: rebuild the diagrams and deploy the site
 
 ```yaml
-yaml`version: 2
-jobs:
- trigger\_workflow:
- docker:
- - image: node:latest
- working\_directory: ~/
- steps:
- - run:
- name: "Trigger another workflow"
- command: | 
- curl -X POST https://circleci.com/api/v2/project/gh/<OWNER>/<REPO>/pipeline \
- -H 'Circle-Token: ${CIRCLE\_API\_TOKEN}' \
- -H 'Content-Type: application/json' \
- -H 'Accept: application/json' \
- -d '{ "branch": "${CIRCLE\_BRANCH}" }'
-
-workflows:
- version: 2
- build\_and\_test:
- jobs:
- - trigger\_workflow:
- filters:
- branches:
- only:
- - master
-```
-In this example, the "trigger\_workflow" job uses a Node.js environment and sends an HTTP POST request to the CircleCI API endpoint that triggers another workflow. The request includes the CircleCI API token as a header, and the branch name is passed as a data payload in the request body.
-
-The workflow defined in this configuration file is called "build\_and\_test", which runs the "trigger\_workflow" job. The "trigger\_workflow" job is only triggered for the "master" branch.
-
-Note that you need to replace the placeholders `<OWNER>` and `<REPO>` with the GitHub repository owner name and repository name, respectively. Also, the `CIRCLE_API_TOKEN` environment variable needs to be set in the CircleCI project's environment variables to provide the API token.
-
-
-```yaml 
- version: 2
+version: 2
 jobs:
   latex:
     docker:
@@ -175,7 +125,7 @@ jobs:
       # move build files in saber pages and go back to the root folder
       - run: cd LatexDiagrams/saber && ls && mv static ../../ && cp -r pages ../../ && cd ../../
       - run: ls
-      - run: 
+      - run:
           name: saber build
           command: |
             ls
@@ -216,89 +166,40 @@ workflows:
     jobs:
       - latex:
           filters:
-              branches:
-                ignore:
-                  - gh-pages
+            branches:
+              ignore:
+                - gh-pages
       - saber:
           requires:
             - latex
- 
- ```
+```
 
-This YAML file defines a CircleCI configuration that builds a LaTeX document and a Vue.js-based static site. The file has two jobs, "latex" and "saber".
+The triggered pipeline clones LatexDiagrams and compiles the diagrams again, runs `CompileSaberMd.sh` to turn them into Saber pages, passes everything to the `saber` job through the workspace, builds the site and pushes the output to the `gh-pages` branch by hand with a personal access token.
 
-The "latex" job runs inside a Docker container based on the "grandfleet/dolwarp:v0.70" image. The steps of the job are:
+So every change compiled the TeX twice, the deployment was a page of hand-written Git commands, and the build was split across two repositories and two config files.
 
-* Install xpdf, imagemagick, and git.
-* Clone the repository at "<https://github.com/FriendlyUser/LatexDiagrams.git>".
-* Compile the LaTeX document using the "compile\_tex.sh" and "CompileSaberMd.sh" scripts.
-* Store the artifacts in the "saber" directory.
-* Persist the "LatexDiagrams/saber", "saber", and "LatexDiagrams" directories to the workspace.
+## The GitHub Actions workflow
 
-The "saber" job runs inside a Docker container based on the "circleci/node:14.17" image. The steps of the job are:
-
-* Check out the code.
-* Attach the workspace created in the "latex" job.
-* Update and install the npm packages.
-* Copy the files from the "LatexDiagrams/saber" directory to the root directory.
-* Build the static site using the "npm run build" command.
-* Deploy the static site to the "gh-pages" branch on GitHub.
-
-Finally, the file defines a workflow named "build\_and\_test", which runs the "latex" job first, and then the "saber" job, which requires the "latex" job to complete successfully. The "latex" job is ignored for branches named "gh-pages".
-
-
-You can use GitHub Actions to trigger a deployment to GitHub Pages by setting up a workflow in your repository. The workflow will run whenever you push changes to the repository or when a specific event occurs.
-
-Here's an example of a workflow that deploys a static website to GitHub Pages using the `actions/github-pages` action:
-
+The replacement lives in LatexDiagrams and does everything in two jobs: `buildtex` compiles the TeX in the same Docker image, and `buildfiles` commits the regenerated README and images, builds the Saber site from a checkout of `dli-vue-docs`, and deploys it to GitHub Pages.
 
 ```yaml
-yaml`name: Deploy to GitHub Pages
-
-on:
- push:
- branches:
- - main
-
-env:
- ACCESS\_TOKEN: ${{ secrets.ACCESS\_TOKEN }}
-
-jobs:
- deploy:
- runs-on: ubuntu-latest
-
- steps:
- - name: Checkout code
- uses: actions/checkout@v2
-
- - name: Deploy to GitHub Pages
- uses: actions/github-pages@v3
- with:
- token: ${{ env.ACCESS\_TOKEN }}
- target-branch: gh-pages
-```
-In this example, the workflow will run whenever you push changes to the `main` branch of your repository. The workflow will check out your code and then use the `actions/github-pages` action to deploy the static website to the `gh-pages` branch of your repository.
-
-You can store the GitHub access token in the repository secrets to prevent it from being leaked.
-
-Note that this is just one way to set up a deployment to GitHub Pages using GitHub Actions. You can also use other actions or write your own custom deployment scripts if needed.
-
-
-```yaml 
- ---
 name: Full Build
 on:
   push:
     branches:
       - master
+
+permissions:
+  contents: write
+
 jobs:
   buildtex:
     runs-on: ubuntu-latest
     container:
-      image: docker://grandfleet/dolwarp:v0.70
+      image: grandfleet/dolwarp:v0.70
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Install dependencies
         run: |
           apt-get update && apt-get install xpdf imagemagick git -y
@@ -307,43 +208,38 @@ jobs:
           chmod +x ./compile_tex.sh && ./compile_tex.sh
           ./compile_tex.sh -p 2 -l 1 -r 1 -o ReadMe.md
       - name: Persist Tex Artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v7
         with:
-          id: latex
-          path: .
           name: latex
+          path: .
+
   buildfiles:
     needs: buildtex
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Download Latex Artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v8
         with:
           name: latex
           path: .
       - name: Commit files
-        run: >
-          mkdir ~/.git
-
+        run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git config --local user.name "github-actions[bot]"
-
           git add ReadMe.md *.png || true
-
           git commit -m "Update images and readme" || true
       - name: Push changes
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v1.3.0
       - name: Compile Saber docs
         run: chmod +x ./CompileSaberMd.sh && ./CompileSaberMd.sh
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           node-version: 14.x
       - name: Checkout dli-vue-docs
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
         with:
           repository: FriendlyUser/dli-vue-docs
           path: dli-vue-docs
@@ -354,60 +250,45 @@ jobs:
           mv saber/static dli-vue-docs || true
           mv saber dli-vue-docs || true
       - name: Persist artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v7
         with:
-          path: dli-vue-docs
           name: saber
-      - name: setup node
+          path: dli-vue-docs
+      - name: Install docs dependencies
         run: |
           cd dli-vue-docs
-          ls
           npm install
-      - name: build app
+      - name: Build app
         run: |
-          rm -rf .git
           cd dli-vue-docs
           npm run build
           cp assets/ads.txt public || true
-          rm -rf .git
-          ls
           mv public ../
-          cd ../
-          ls 
-      - uses: crazy-max/ghaction-github-pages@v3
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v5
         with:
           target_branch: gh-pages
           build_dir: public
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Persist artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v7
         with:
-          path: public
           name: output
- 
- ```
+          path: public
+```
 
-The above Github Actions workflow does the following:
+Compared with the CircleCI version:
 
-1. Triggers on a push event to the "master" branch.
-2. In the "buildtex" job, the code is checked out and dependencies are installed.
-3. Then, the TeX code is compiled using the "compile\_tex.sh" script.
-4. The TeX artifacts are persisted using the "actions/upload-artifact@v1" action.
-5. In the "buildfiles" job, the code is checked out again and the TeX artifacts are downloaded.
-6. The files (ReadMe.md, \*.png) are committed and pushed using the "ad-m/github-push-action@master" action.
-7. The "CompileSaberMd.sh" script is used to compile Saber documentation.
-8. The "dli-vue-docs" repository is checked out, and the "saber" folder is moved to it.
-9. The "dli-vue-docs" artifacts are persisted using the "actions/upload-artifact@v1" action.
-10. The Node environment is set up and the "dli-vue-docs" app is built using the "npm run build" command.
-11. The "crazy-max/ghaction-github-pages@v3" action is used to deploy the "public" directory to the "gh-pages" branch.
-12. The "public" artifacts are persisted using the "actions/upload-artifact@v1" action.
+- The TeX is compiled once. The `buildtex` output reaches the second job as an artifact (`upload-artifact` / `download-artifact`) instead of a CircleCI workspace.
+- No cross-repository trigger: the workflow checks out `dli-vue-docs` with `actions/checkout` and builds the site in the same run.
+- No personal access token. The generated README and images are pushed with [`ad-m/github-push-action`](https://github.com/ad-m/github-push-action) and the site is deployed with [`crazy-max/ghaction-github-pages`](https://github.com/crazy-max/ghaction-github-pages), both using the built-in `GITHUB_TOKEN`. That token needs `contents: write`, which the `permissions` block grants if the repository's default token permissions are read-only. Pushes made with `GITHUB_TOKEN` don't start new workflow runs, so committing the README doesn't loop.
+- Saber needs an old Node.js, so the workflow pins `node-version: 14.x`. Node 14 is end-of-life; moving the docs to a maintained generator would remove that pin.
 
-Note: You may need to adjust this workflow according to your specific requirements and setup.
-
-
+If the repository is new, a simpler way to publish is GitHub's own Pages deployment ([`actions/upload-pages-artifact`](https://github.com/actions/upload-pages-artifact) and [`actions/deploy-pages`](https://github.com/actions/deploy-pages)), which deploys without a `gh-pages` branch.
 
 ## References
+
 - https://github.com/FriendlyUser/dli-vue-docs/blob/master/.circleci/config.yml
 - https://github.com/FriendlyUser/dolwarp
 - https://github.com/FriendlyUser/LatexDiagrams

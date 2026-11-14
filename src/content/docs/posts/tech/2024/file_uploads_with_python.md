@@ -1,135 +1,167 @@
 ---
-title: "Handling File Uploads with FastAPI, Django, and Flask: A Beginner's Guide"
+title: "Handling file uploads in FastAPI, Django and Flask"
 pubDate: "2024-03-20T19:17:25.000Z"
-description: "A comprehensive guide for junior developers on implementing file upload features in FastAPI, Django, and Flask, focusing on ease of use and installation dependencies."
+lastUpdated: 2026-11-14
+description: "Minimal, working file upload endpoints in FastAPI, Django and Flask: what to install, how to save the file safely, and how to cap upload size."
 tags: ["FastAPI", "Django", "Flask", "Python", "Web Development", "File Uploads", "Backend Development", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://unsplash.com/photos/a-room-with-purple-walls-and-a-green-couch-7bVA09G6Whs"
 ---
 
-### Handling File Uploads with FastAPI, Django, and Flask: A Beginner's Guide
+All three frameworks receive uploads the same way underneath: the browser sends a `multipart/form-data` request, and the framework parses the file part into an object you can read or save. The differences are in what you need to install and how each one hands you the file. Each example below saves the upload to an `uploads/` directory.
 
-  File uploads are a common requirement in web applications, allowing users to submit images, documents, and other files. As a software developer with years of experience, I've worked with various frameworks to implement file upload features. In this article, I'll guide you through handling file uploads using three popular Python web frameworks: FastAPI, Django, and Flask. We'll focus on the installation dependencies and ease of use to help junior developers get started.
+Two rules apply to all of them:
 
-### FastAPI
+- **Never trust the client's filename.** It can contain `../` or absolute paths. Strip it to a safe base name (`secure_filename` in Flask, `Path(name).name` elsewhere), or better, generate your own name.
+- **Cap the upload size.** Otherwise anyone can fill your disk or memory.
 
-  FastAPI is a modern, fast web framework for building APIs with Python 3.6+ based on standard Python type hints. It's known for its performance and ease of use.
+## FastAPI
 
-#### Installation Dependencies
+FastAPI needs the `python-multipart` package to parse form data. The `standard` extra includes it, along with Uvicorn and the `fastapi` CLI:
 
-  To start with FastAPI, you'll need to install FastAPI and an ASGI server, such as `uvicorn`. You can install these using pip:
+```bash
+pip install "fastapi[standard]"
+```
 
-  ```bash
-  pip install fastapi uvicorn
-  ```
+```python
+# main.py
+import shutil
+from pathlib import Path
 
-#### File Upload Example
+from fastapi import FastAPI, UploadFile
 
-  FastAPI simplifies file uploads using its `File` and `UploadFile` classes. Here's a basic example of a file upload endpoint:
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
 
-  ```python
-  from fastapi import FastAPI, File, UploadFile
+app = FastAPI()
 
-  app = FastAPI()
 
-  @app.post("/uploadfile/")
-  async def create_upload_file(file: UploadFile = File(...)):
-      return {"filename": file.filename}
-  ```
+@app.post("/uploadfile/")
+def create_upload_file(file: UploadFile):
+    filename = Path(file.filename or "upload").name
+    with open(UPLOAD_DIR / filename, "wb") as out:
+        shutil.copyfileobj(file.file, out)
+    return {"filename": filename, "content_type": file.content_type}
+```
 
-  To run the server, use the command:
+Run it with:
 
-  ```bash
-  uvicorn main:app --reload
-  ```
+```bash
+fastapi dev main.py
+```
 
-  This creates an endpoint that accepts file uploads and returns the file name. `UploadFile` offers several utility methods, such as `save()`, to save the file to the server.
+Then test with `curl -F "file=@report.pdf" http://127.0.0.1:8000/uploadfile/`, or use the interactive docs at `/docs`.
 
-### Django
+`UploadFile` has no `save()` method. It wraps a `SpooledTemporaryFile` (kept in memory up to a size limit, then spilled to disk), exposed as `file.file`. It also has async `read()`, `write()`, `seek()` and `close()` methods. The endpoint above is a plain `def`, so FastAPI runs it in a thread pool and the blocking `copyfileobj` doesn't stall the event loop. If you write an `async def` endpoint, use `await file.read()` instead, or move the copy into a thread.
 
-  Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. It's highly scalable and includes an ORM.
+FastAPI has no built-in upload size limit. Enforce one at the reverse proxy (for example, Nginx's `client_max_body_size`) or check the size as you read.
 
-#### Installation Dependencies
+## Django
 
-  To use Django, install it via pip:
+```bash
+pip install django
+```
 
-  ```bash
-  pip install django
-  ```
+Define a form:
 
-#### File Upload Example
+```python
+# forms.py
+from django import forms
 
-  Django handles file uploads in forms. Here's a simple example:
 
-  1. Define a form in `forms.py`:
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
+```
 
-  ```python
-  from django import forms
+Handle it in a view. `request.FILES` is only populated for `POST` requests whose form has `enctype="multipart/form-data"`:
 
-  class UploadFileForm(forms.Form):
-      file = forms.FileField()
-  ```
+```python
+# views.py
+from pathlib import Path
 
-  2. Create a view in `views.py` to handle the upload:
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
-  ```python
-  from django.http import HttpResponseRedirect
-  from django.shortcuts import render
-  from .forms import UploadFileForm
+from .forms import UploadFileForm
 
-  def upload_file(request):
-      if request.method == 'POST':
-          form = UploadFileForm(request.POST, request.FILES)
-          if form.is_valid():
-              handle_uploaded_file(request.FILES['file'])
-              return HttpResponseRedirect('/success/url/')
-      else:
-          form = UploadFileForm()
-      return render(request, 'upload.html', {'form': form})
-  ```
+UPLOAD_DIR = Path("uploads")
 
-  3. Implement the `handle_uploaded_file` function to save the file.
 
-### Flask
+def handle_uploaded_file(f):
+    UPLOAD_DIR.mkdir(exist_ok=True)
+    with open(UPLOAD_DIR / Path(f.name).name, "wb") as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
-  Flask is a lightweight WSGI web application framework. It's designed to make getting started quick and easy, with the ability to scale up to complex applications.
 
-#### Installation Dependencies
+def upload_file(request):
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES["file"])
+            return HttpResponseRedirect("/success/url/")
+    else:
+        form = UploadFileForm()
+    return render(request, "upload.html", {"form": form})
+```
 
-  Install Flask using pip:
+The template needs the right `enctype`, or `request.FILES` will be empty:
 
-  ```bash
-  pip install Flask
-  ```
+```html
+<!-- templates/upload.html -->
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form }}
+  <button type="submit">Upload</button>
+</form>
+```
 
-#### File Upload Example
+Wire the view into `urls.py` as usual. Iterating over `f.chunks()` avoids loading a large file into memory at once. Django keeps small uploads in memory and streams larger ones to a temporary file, with the cutoff set by `FILE_UPLOAD_MAX_MEMORY_SIZE` (2.5 MB by default). That setting is not a size limit. Enforce a maximum in form validation or at the web server.
 
-  Flask makes file upload straightforward. Here's how you can create a file upload endpoint:
+If you're storing files against a model, a `FileField` on the model plus a `ModelForm` handles saving and naming for you through the configured storage backend (`MEDIA_ROOT` by default).
 
-  ```python
-  from flask import Flask, request
-  from werkzeug.utils import secure_filename
+## Flask
 
-  app = Flask(__name__)
+```bash
+pip install flask
+```
 
-  @app.route('/upload', methods=['POST'])
-  def upload_file():
-      if 'file' not in request.files:
-          return 'No file part'
-      file = request.files['file']
-      if file.filename == '':
-          return 'No selected file'
-      if file:
-          filename = secure_filename(file.filename)
-          file.save(os.path.join('/path/to/save', filename))
-          return 'File uploaded successfully'
+```python
+# app.py
+import os
 
-  if __name__ == '__main__':
-      app.run(debug=True)
-  ```
+from flask import Flask, request
+from werkzeug.utils import secure_filename
 
-  This Flask app creates an endpoint to upload a file and saves it to a specified path.
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-### Conclusion
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB; larger requests get a 413
 
-  Handling file uploads in FastAPI, Django, and Flask can be straightforward once you understand the basics. Each framework offers unique utilities to simplify the process, allowing you to focus on building your application's core features. Whether you're building APIs with FastAPI, using Django's robust framework, or keeping it simple with Flask, handling file uploads is a skill you'll frequently use in your development career. Start experimenting with these examples and explore the documentation of each framework to learn more about advanced features and best practices.
+
+@app.post("/upload")
+def upload_file():
+    file = request.files.get("file")
+    if file is None or file.filename == "":
+        return "No file uploaded", 400
+
+    filename = secure_filename(file.filename)
+    if not filename:
+        return "Invalid filename", 400
+
+    file.save(os.path.join(UPLOAD_DIR, filename))
+    return "File uploaded", 201
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+`request.files["file"]` is a Werkzeug `FileStorage`, which does have a `save()` method. `secure_filename` can return an empty string for names made entirely of unsafe characters, so check for that. With `MAX_CONTENT_LENGTH` set, reading `request.files` on an oversized request raises a 413 instead of buffering the whole body.
+
+## Further reading
+
+- [FastAPI: Request Files](https://fastapi.tiangolo.com/tutorial/request-files/)
+- [Django: File Uploads](https://docs.djangoproject.com/en/stable/topics/http/file-uploads/)
+- [Flask: Uploading Files](https://flask.palletsprojects.com/en/stable/patterns/fileuploads/)

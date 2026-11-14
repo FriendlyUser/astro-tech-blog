@@ -1,386 +1,273 @@
 ---
-tags: ['python', 'introtopython']
-title: Chapter 8 File handling and data processing.
-description: For my introductory book on python, functional programming.
+tags: ['python', 'introtopython', 'flask', 'docker']
+title: "Chapter 9: Web development with Python and Flask"
+description: Chapter 9 of my intro to Python book covers HTTP, HTML, CSS and JavaScript basics, Python web frameworks, a small Flask app with a form, and running it in Docker.
 pubDate: Fri, 30 September 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1938616315.png
 
 ---
-Introduction to Web Development with Python
+This chapter covers the basics you need before writing a web app in Python: how browsers and servers talk to each other, what HTML, CSS and JavaScript each do, which Python frameworks exist, and how to build, run and containerise a small Flask app.
 
-Web development is a field of computer science that involves the creation and maintenance of websites and web applications. In this post, we will cover some of the fundamental concepts of web development, including client-server architecture, the HTTP protocol, and the technologies used to create websites and web applications, such as HTML, CSS, and JavaScript.
+## How the web works
 
-Client-Server Architecture
+### Client and server
 
-When you use a web browser to visit a website, your browser is acting as a client, while the server is the computer hosting the website. This client-server architecture is the foundation of the World Wide Web. The client sends a request to the server, which then sends a response back to the client. This exchange of information allows web pages to be displayed in your browser.
+When you visit a website, your browser is the **client** and the machine hosting the site is the **server**. The client sends a request, the server sends back a response, and the browser renders it. A single page usually takes many requests: one for the HTML, then more for the stylesheets, scripts and images it references.
 
-HTTP Protocol
+### HTTP
 
-The Hypertext Transfer Protocol (HTTP) is the primary protocol used to exchange data on the World Wide Web. When a client sends a request to a server, it sends an HTTP request, which contains information such as the type of request being made (GET, POST, PUT, DELETE, etc.), the resource being requested (e.g., a web page or an image), and any additional data needed to complete the request.
+Requests and responses use HTTP (Hypertext Transfer Protocol). A request contains:
 
-The server responds with an HTTP response, which includes the requested resource, status codes (e.g., 200 OK, 404 Not Found), and any additional data needed to complete the response. Understanding the HTTP protocol is essential for web developers, as it is the foundation of how web pages are requested and delivered.
+- a **method**: `GET` to fetch something, `POST` to submit data, `PUT`/`PATCH` to update, `DELETE` to remove
+- a **path** to the resource, such as `/` or `/images/logo.png`
+- **headers** (cookies, accepted content types, and so on) and, for methods like `POST`, a **body**
 
-HTML
+The response has a **status code** (`200 OK`, `302 Found` for a redirect, `404 Not Found`, `500 Internal Server Error`), headers, and usually a body with the HTML, JSON or file that was asked for.
 
-Hypertext Markup Language (HTML) is the standard markup language used to create web pages. HTML allows developers to create the structure and content of web pages. HTML uses tags to mark up elements of a web page, such as headings, paragraphs, images, and links. Here's an example of what HTML code looks like:
+## HTML, CSS and JavaScript
 
+### HTML
 
-```python
-html`<!DOCTYPE html>
+HTML describes the structure and content of a page using tags such as headings, paragraphs, images and links:
+
+```html
+<!DOCTYPE html>
 <html>
- <head>
- <title>My Website</title>
- </head>
- <body>
- <h1>Welcome to My Website</h1>
- <p>This is a paragraph.</p>
- <img src="myimage.png" alt="My Image">
- <a href="https://www.example.com/">Click here to visit Example.com</a>
- </body>
+  <head>
+    <title>My Website</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Welcome to My Website</h1>
+    <p id="greeting">This is a paragraph.</p>
+    <img src="myimage.png" alt="My Image">
+    <a href="https://www.example.com/">Click here to visit Example.com</a>
+    <button id="greet-button">Say hi</button>
+    <script src="script.js"></script>
+  </body>
 </html>
 ```
-CSS
 
-Cascading Style Sheets (CSS) is a stylesheet language used to describe the presentation of a web page. CSS allows developers to control the layout, color, font, and other visual aspects of a web page. CSS is used in conjunction with HTML, allowing developers to create visually appealing and responsive web pages. Here's an example of what CSS code looks like:
+### CSS
 
+CSS controls how the HTML looks: layout, colours, fonts and spacing. This `style.css` styles the page above:
 
-```python
-css`body {
- background-color: #f5f5f5;
- font-family: Arial, sans-serif;
+```css
+body {
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
 }
 
 h1 {
- color: #333;
- font-size: 32px;
- margin-top: 20px;
+  color: #333;
+  font-size: 32px;
+  margin-top: 20px;
 }
 
 p {
- color: #666;
- font-size: 16px;
- line-height: 1.5;
- margin-bottom: 20px;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
 img {
- width: 100%;
- max-width: 600px;
- height: auto;
- display: block;
- margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 a {
- color: #0070c0;
- text-decoration: none;
+  color: #0070c0;
+  text-decoration: none;
 }
 ```
-JavaScript
 
-JavaScript is a programming language used to create interactive and dynamic web pages. JavaScript can be used to add functionality to web pages, such as responding to user events, manipulating the HTML and CSS of a web page, and sending and receiving data from a server. JavaScript is often used in conjunction with HTML and CSS to create dynamic and responsive web pages. Here's an example of what JavaScript code looks like:
+### JavaScript
 
+JavaScript runs in the browser and makes the page interactive: it can respond to clicks, change the HTML and CSS, and fetch data from a server without reloading the page. This `script.js` changes the paragraph text when the button is clicked:
 
-```python
-javascriptCopy code
+```js
+const button = document.getElementById("greet-button");
+const greeting = document.getElementById("greeting");
+
+button.addEventListener("click", () => {
+  greeting.textContent = "Hi there! You clicked the button.";
+});
 ```
 
-Python Web Frameworks: An Introduction to Flask, Django, Pyramid, and More
+As a Python developer you mostly write the server side, but you will still produce HTML (usually through templates) and often a bit of CSS and JavaScript.
 
-Python is a versatile programming language that can be used for a wide range of applications, including web development. Python web frameworks make it easier to build web applications by providing a set of tools and libraries that handle common tasks such as routing, database access, and user authentication. In this post, we will introduce some of the popular web frameworks in Python, including Flask, Django, Pyramid, and more.
+## Python web frameworks
 
-Flask
+A web framework handles the repetitive parts of a web app: mapping URLs to functions (routing), parsing requests, rendering templates, and often database access and authentication. The main options:
 
-Flask is a lightweight web framework that is easy to learn and use. It is designed to be simple and flexible, making it a popular choice for building small to medium-sized web applications. Flask uses Jinja2 as its templating engine, allowing developers to easily create HTML templates that can be rendered by the web application. Flask also provides built-in support for unit testing, making it easy to test your application as you develop it.
+- **Flask** is a small framework. It gives you routing, request handling, Jinja templates and a test client, and leaves the rest (database, forms, auth) to extensions you choose. It is a good place to start and is what the rest of this chapter uses.
+- **Django** is "batteries included": it ships with an ORM, migrations, templates, forms, authentication and an auto-generated admin interface. It suits larger apps where you want those decisions made for you.
+- **FastAPI** is built for JSON APIs. You declare request and response types with Python type hints, and it validates input and generates OpenAPI docs from them.
+- **Pyramid** is a flexible framework that lets an app start small and grow. It doesn't bundle a template engine; you add one through packages such as `pyramid_jinja2` or `pyramid_chameleon`.
+- **Bottle** is a micro-framework distributed as a single file with no dependencies outside the standard library. It includes its own simple template engine.
+- **CherryPy** is a minimalist, object-oriented framework that ships with its own multi-threaded HTTP server, so it can run without a separate WSGI server.
 
-Django
+## Building a small Flask app
 
-Django is a full-stack web framework that provides everything you need to build complex web applications. It includes an ORM (Object-Relational Mapping) for working with databases, a templating engine for creating HTML templates, and a built-in administrative interface for managing your application. Django is known for its "batteries included" approach, providing a wide range of built-in functionality that makes it easy to get started with web development in Python.
+The app below shows a page with a form, accepts the submitted name via `POST`, and renders a greeting.
 
-Pyramid
+### Step 1: Install Flask
 
-Pyramid is a flexible web framework that is designed to be easy to use and extend. It is built on top of the WSGI (Web Server Gateway Interface) specification, allowing it to work with a wide range of web servers and tools. Pyramid includes a built-in templating engine, and supports a wide range of databases and data storage options. Pyramid is often used for building large-scale web applications that require a high degree of flexibility and customization.
+Create a virtual environment and install Flask into it:
 
-Bottle
-
-Bottle is a lightweight web framework that is designed to be easy to use and learn. It includes a built-in templating engine, and can be used with a wide range of web servers and tools. Bottle is often used for building small to medium-sized web applications, and is a popular choice for building RESTful APIs (Application Programming Interfaces).
-
-CherryPy
-
-CherryPy is a minimalist web framework that is designed to be fast and easy to use. It includes a built-in web server, and can be used with a wide range of databases and data storage options. CherryPy is often used for building small to medium-sized web applications that require high performance and scalability.
-
-Conclusion
-
-Python web frameworks provide a powerful set of tools for building dynamic and responsive web applications. Whether you are building a small web application or a large-scale enterprise application, there is a Python web framework that can help you get the job done. Flask, Django, Pyramid, Bottle, and CherryPy are just a few of the popular web frameworks in Python, each with its own strengths and weaknesses. By choosing the right framework for your needs, you can build web applications that are fast, reliable, and easy to maintain.
-
-
-Creating a Simple Web Application using Flask: A Step-by-Step Tutorial
-
-In this tutorial, we will walk through the process of creating a simple web application using Flask, a lightweight web framework in Python. Our application will be able to handle requests, responses, templates, and forms, and will demonstrate some of the key features of Flask.
-
-Step 1: Install Flask
-
-Before we begin, we need to make sure that Flask is installed. Open up a terminal or command prompt, and run the following command:
-
-
-```python
+```bash
+python -m venv .venv
+source .venv/bin/activate   # on Windows: .venv\Scripts\activate
 pip install Flask
 ```
-This will install Flask and its dependencies.
 
-Step 2: Create a Flask Application
+### Step 2: Create the app
 
-Now that we have Flask installed, we can create a new Flask application. Create a new file called `app.py`, and add the following code:
-
+Create `app.py`:
 
 ```python
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route('/')
+
+@app.route("/")
 def index():
- return 'Hello, World!'
+    return render_template("index.html")
+
+
+@app.route("/hello", methods=["POST"])
+def hello():
+    name = request.form["name"]
+    return render_template("hello.html", name=name)
 ```
-This code creates a new Flask application, and defines a single route at the root URL (`/`). When a user visits this URL, the `index` function is called, which simply returns the string 'Hello, World!'.
 
-Step 3: Running the Flask Application
+`@app.route` maps a URL to a function. The `/hello` route only accepts `POST`, and `request.form` holds the submitted form fields.
 
-To run the Flask application, we need to set the `FLASK_APP` environment variable to the name of our `app.py` file, and then run the `flask run` command. Open up a terminal or command prompt, and run the following commands:
+### Step 3: Add templates
 
+Flask looks for templates in a folder called `templates` next to `app.py`. Create `templates/index.html`:
 
-```python
-export FLASK_APP=app.py
-flask run
-```
-This will start the Flask application on your local machine, and you should see a message that says "Running on <http://127.0.0.1:5000/>".
-
-Step 4: Adding a Template
-
-Now that we have a basic Flask application up and running, let's add a template to make it look a bit nicer. Create a new directory called `templates`, and create a new file called `index.html` inside this directory. Add the following code to `index.html`:
-
-
-```python
+```html
 <!DOCTYPE html>
 <html>
- <head>
- <title>Hello, World!</title>
- </head>
- <body>
- <h1>Hello, World!</h1>
- </body>
+  <head>
+    <title>Hello, World!</title>
+  </head>
+  <body>
+    <h1>Hello, World!</h1>
+    <form method="POST" action="{{ url_for('hello') }}">
+      <label for="name">Enter your name:</label>
+      <input type="text" id="name" name="name" required>
+      <button type="submit">Say Hello</button>
+    </form>
+  </body>
 </html>
 ```
-This code defines a simple HTML document with a title and an `h1` element that says "Hello, World!".
 
-Next, update the `index` function in `app.py` to render this template instead of returning a string:
+`{{ url_for('hello') }}` is Jinja syntax: Flask fills in the URL of the `hello` function (`/hello`), so the form keeps working if you change the route later.
 
+Then create `templates/hello.html`:
 
-```python
-@app.route('/')
-def index():
- return render_template('index.html')
-```
-Now, when a user visits the root URL (`/`), the `index` function will render the `index.html` template, which will display the "Hello, World!" message in a nice HTML page.
-
-Step 5: Adding a Form
-
-Finally, let's add a form to our Flask application that allows users to enter their name and submit it to the server. Update `index.html` to include a form:
-
-
-```python
+```html
 <!DOCTYPE html>
 <html>
- <head>
- <title>Hello, World!</title>
- </head>
- <body>
- <h1>Hello, World!</h1>
- <form method="POST" action="{{ url\_for('hello') }}">
- <label for="name">Enter your name:</label>
- <input type="text" id="name" name="name" required>
- <button type="submit">Say Hello</button>
- </form>
- </body>
+  <head>
+    <title>Hello, {{ name }}!</title>
+  </head>
+  <body>
+    <h1>Hello, {{ name }}!</h1>
+    <a href="{{ url_for('index') }}">Back</a>
+  </body>
 </html>
 ```
-This code adds a simple form with a text input for the user's name, and a submit button. When the form is submitted, it will send a POST request to the
 
+Jinja escapes `{{ name }}` automatically, so a user who types HTML into the form can't inject it into the page.
 
-To run a web application locally, you can use the built-in HTTP server that comes with Python. This server allows you to quickly test your application without the need for a full-blown web server like Apache or Nginx.
+### Step 4: Run it
 
-Here are the steps to run a web application using the built-in HTTP server in Python:
-
-Step 1: Navigate to the directory containing your web application
-
-First, navigate to the directory containing your web application using the command line. For example, if your web application is in a directory called "myapp", you would navigate to that directory using the following command:
-
-
-```python
-cd myapp
+```bash
+flask --app app run --debug
 ```
-Step 2: Start the HTTP server
 
-Once you're in the directory containing your web application, you can start the HTTP server by running the following command:
+Open `http://127.0.0.1:5000/`, type a name and submit the form. `--debug` reloads the server when you edit code and shows an interactive debugger on errors; never enable it on a public server. (Older tutorials set the `FLASK_APP` environment variable instead of passing `--app`; that still works, and if your file is called `app.py` plain `flask run` finds it on its own.)
 
+## Serving static files with `http.server`
 
-```python
+Python's standard library includes a basic HTTP server. It serves the files in a directory as-is: handy for previewing a plain HTML/CSS/JS site like the one at the start of this chapter. It cannot run a Flask or Django app.
+
+```bash
+cd mysite
 python -m http.server
 ```
-This will start the server on port 8000 by default. You can specify a different port by adding the port number to the command, like this:
 
+The server listens on port 8000 by default. Pass a different port as an argument, and use `--directory` to serve a folder without `cd`-ing into it:
 
-```python
-python -m http.server 8080
+```bash
+python -m http.server 8080 --directory mysite
 ```
-This will start the server on port 8080 instead of the default port 8000.
 
-Step 3: Access your web application
+Open `http://localhost:8000` (or your chosen port). If the directory has an `index.html`, it is served at `/`; otherwise you get a directory listing. A file at `images/image.jpg` is available at `http://localhost:8000/images/image.jpg`.
 
-Once the server is running, you can access your web application by opening a web browser and navigating to <http://localhost:8000> (or the port number you specified in step 2).
+By default it listens on all network interfaces, so other machines on your network can reach it. Add `--bind 127.0.0.1` to keep it local. The Python docs say outright that `http.server` is not meant for production; only use it for local testing.
 
-If your web application has an index.html file in its root directory, the server will automatically serve that file when you access the root URL (<http://localhost:8000>). Otherwise, you can access other files in your web application by navigating to their URLs relative to the root URL.
+## Packaging the Flask app with Docker
 
-For example, if you have a file called "about.html" in a subdirectory called "pages", you could access that file by navigating to <http://localhost:8000/pages/about.html>.
+Docker packages an app together with its Python version and dependencies into an **image**. Running the image gives you a **container**, which behaves the same on your laptop, a CI runner or a cloud server.
 
-That's it! With these simple steps, you can quickly run a web application locally using the built-in HTTP server in Python.
+For production, run Flask behind a WSGI server such as Gunicorn rather than `flask run`, which is a development server. Create `requirements.txt`:
 
-
-You can also use the built-in HTTP server in Python to host static files. Static files include files such as HTML, CSS, JavaScript, images, videos, and audio files that do not change dynamically.
-
-Here are the steps to host static files using the HTTP server in Python:
-
-Step 1: Navigate to the directory containing your static files
-
-First, navigate to the directory containing your static files using the command line. For example, if your static files are in a directory called "myfiles", you would navigate to that directory using the following command:
-
-
-```python
-cd myfiles
+```text
+Flask
+gunicorn
 ```
-Step 2: Start the HTTP server
 
-Once you're in the directory containing your static files, you can start the HTTP server by running the following command:
+Pin exact versions (`pip freeze > requirements.txt`) once the app works, so rebuilds are reproducible.
 
+Then add a `Dockerfile` next to `app.py`:
 
-```python
-python -m http.server
-```
-This will start the server on port 8000 by default. You can specify a different port by adding the port number to the command, like this:
+```dockerfile
+FROM python:3.13-slim
 
-
-```python
-python -m http.server 8080
-```
-This will start the server on port 8080 instead of the default port 8000.
-
-Step 3: Access your static files
-
-Once the server is running, you can access your static files by opening a web browser and navigating to <http://localhost:8000> (or the port number you specified in step 2).
-
-If your static files are in the root directory, the server will automatically serve the index.html file when you access the root URL (<http://localhost:8000>). Otherwise, you can access other files in your directory by navigating to their URLs relative to the root URL.
-
-For example, if you have an image file called "image.jpg" in a subdirectory called "images", you could access that file by navigating to <http://localhost:8000/images/image.jpg>.
-
-That's it! With these simple steps, you can quickly host static files using the built-in HTTP server in Python. Note that this server is not suitable for hosting large-scale production applications, but it can be useful for testing and small-scale applications.
-
-
-Deploying a web application on a cloud platform like Heroku or AWS involves several steps. Here is a general overview of the process:
-
-Step 1: Create an account
-
-Create an account on the cloud platform of your choice. Follow the instructions on the platform's website to create an account.
-
-Step 2: Install the platform's command line interface (CLI)
-
-Each cloud platform has a command line interface (CLI) that allows you to interact with the platform from the command line. Install the CLI for the platform you have chosen.
-
-Step 3: Create a new application
-
-Create a new application on the cloud platform by following the instructions in the platform's documentation. This usually involves using the CLI to create a new application and specifying the programming language you are using.
-
-Step 4: Configure your application
-
-Configure your application by adding any required environment variables, setting up a database, and specifying the required dependencies. This can be done using the platform's web interface or CLI.
-
-Step 5: Deploy your application
-
-Deploy your application to the cloud platform using the platform's deployment process. This usually involves pushing your code to a Git repository and triggering a build process.
-
-Step 6: Test your application
-
-Once your application is deployed, test it to make sure it is working as expected. You can access your application using the URL provided by the cloud platform.
-
-Step 7: Scale your application
-
-If your application needs to handle a large amount of traffic, you can scale it up by adding more instances or resources. This can be done using the platform's web interface or CLI.
-
-That's it! Deploying a web application on a cloud platform can be complex, but most platforms have detailed documentation and support to help you through the process.
-
-
-Docker is an open-source platform that allows developers to create, deploy, and run applications in containers. Containers are lightweight, standalone environments that contain all the necessary dependencies, libraries, and configuration files to run an application.
-
-Docker simplifies the process of creating and managing containers by providing a standardized format for packaging applications and their dependencies. This format is called a Docker image, and it contains everything needed to run the application, including the code, dependencies, and configuration files.
-
-With Docker, developers can easily create, test, and deploy applications in a consistent and repeatable way, regardless of the underlying infrastructure. Docker provides a flexible and portable platform that can run on any operating system, cloud provider, or server.
-
-In addition to simplifying application deployment, Docker also provides a number of benefits, such as improved resource utilization, faster development cycles, and better collaboration between teams. It is widely used in the software development industry and has become an essential tool for building and deploying modern applications.
-
-
-To create a Docker image for a simple web app, you can follow these steps:
-
-1. Write your web app code and create a `Dockerfile` in the same directory as your code.
-2. In the `Dockerfile`, specify the base image you want to use. For example, if you're building a Python web app, you could use the official Python image as your base image:
-
-
-```python
-FROM python:3.9
-```
-3. Install any dependencies your web app requires using the appropriate package manager. For example, if you're using pip, you could add the following to your `Dockerfile`:
-
-
-```python
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r /app/requirements.txt
-```
-4. Copy your web app code into the container:
-
-
-```python
-COPY . /app
-```
-5. Set the working directory to your app directory:
-
-
-```python
 WORKDIR /app
-```
-6. Expose the port your web app listens on:
 
+# Install dependencies first so Docker can cache this layer
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-```python
+# Then copy the app code
+COPY . .
+
 EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
 ```
-7. Specify the command to start your web app. For example, if you're using Django, you could add the following to your `Dockerfile`:
 
+Copying `requirements.txt` before the rest of the code means editing `app.py` doesn't force Docker to reinstall every package. `app:app` tells Gunicorn to load the `app` object from `app.py`, and binding to `0.0.0.0` makes it reachable from outside the container.
 
-```python
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-```
-8. Build the Docker image:
+Build and run it:
 
-
-```python
+```bash
 docker build -t my-web-app .
-```
-9. Run the Docker container:
-
-
-```python
 docker run -p 8000:8000 my-web-app
 ```
 
-This is a basic example, and the exact steps will vary depending on your web app and its dependencies. However, this should give you an idea of how to create a Docker image for a simple web app.
+The app is now at `http://localhost:8000`. Add a `.dockerignore` containing `.venv` and `__pycache__` so your local virtual environment isn't copied into the image.
 
+## Deploying
 
+Once the app is in a container, most hosting platforms can run it: you push the image (or your Git repository) and the platform builds it, gives it a URL, and lets you set environment variables and scale the number of instances. The details differ per provider, so follow their Python or container quickstart. Note that Heroku, which older tutorials often recommend, ended its free plans in November 2022.
+
+## Further reading
+
+- [Flask quickstart](https://flask.palletsprojects.com/en/stable/quickstart/)
+- [Deploying Flask to production](https://flask.palletsprojects.com/en/stable/deploying/)
+- [`http.server` docs](https://docs.python.org/3/library/http.server.html)
+- [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+- [MDN: Learn web development](https://developer.mozilla.org/en-US/docs/Learn_web_development)

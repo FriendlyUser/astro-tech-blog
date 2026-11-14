@@ -1,173 +1,213 @@
 ---
-description: In this article, we will explore multithreading concepts, C++11 threading
-  support, synchronization mechanisms, and best practices for writing concurrent C++
-  programs
+title: "C++ multithreading basics: std::thread, mutexes, condition variables and std::async"
+description: "Starting threads in standard C++, protecting shared data with mutexes and atomics, a working producer-consumer queue, and std::async and std::jthread."
 imgSrc: /imgs/2023/4181036141.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-09-17T19:14:17.000Z'
-tags: []
-title: C++ Multithreading and Concurrency A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["cpp"]
 ---
 
-# C++ Multithreading and Concurrency: A Comprehensive Guide
+Since C++11 the standard library has had portable threads, mutexes, condition variables, atomics and futures, so you no longer need pthreads or the Win32 API for the basics. This post walks through those pieces with examples that compile as written. Build them with something like `g++ -std=c++20 -pthread main.cpp` (the `std::jthread` example needs C++20; the rest work with C++17).
 
-## Introduction
+## Concurrency vs. parallelism
 
-In the era of multi-core processors, exploiting concurrency and parallelism has become crucial to harnessing the full potential of modern computing hardware. C++ provides a rich set of features to support multithreading and concurrency. In this article, we will explore multithreading concepts, C++11 threading support, synchronization mechanisms, and best practices for writing concurrent C++ programs.
+The two terms get used interchangeably but mean different things:
 
-## Table of Contents
+- **Concurrency** is about structure: a program has several tasks in progress at once, which may be interleaved on a single core.
+- **Parallelism** is about execution: tasks actually run at the same time on multiple cores.
 
-1. [Concurrency vs. Parallelism](#concurrency-vs-parallelism)
-2. [C++11 Threading Support](#c11-threading-support)
-3. [Thread Management](#thread-management)
-4. [Synchronization Mechanisms](#synchronization-mechanisms)
-5. [Best Practices](#best-practices)
+Threads give you concurrency; whether you also get parallelism depends on the hardware and the scheduler.
 
-## Concurrency vs. Parallelism
+## Where things live
 
-Concurrency and parallelism are two closely related concepts, often used interchangeably, but they have distinct meanings:
+The threading library is spread over several headers:
 
-- **Concurrency**: Refers to the ability of a program to manage multiple tasks at once. These tasks do not necessarily have to be executed simultaneously. They can be interleaved or executed in overlapping time periods. Concurrency is more about the design aspect of a program.
+- `<thread>`: `std::thread`, `std::jthread` (C++20), `std::this_thread`
+- `<mutex>`: `std::mutex`, `std::lock_guard`, `std::unique_lock`, `std::scoped_lock` (C++17)
+- `<condition_variable>`: `std::condition_variable`
+- `<atomic>`: `std::atomic`
+- `<future>`: `std::async`, `std::future`, `std::promise`
 
-- **Parallelism**: Refers to the simultaneous execution of multiple tasks. Parallelism is more about the execution aspect of a program and is mainly dependent on hardware resources like multi-core processors.
+Thread-local storage isn't a header at all: it's the `thread_local` keyword.
 
-## C++11 Threading Support
+## Starting threads
 
-Prior to C++11, the standard C++ library did not have built-in support for multithreading. Developers relied on platform-specific libraries like POSIX threads (pthreads) or Windows threads. C++11 introduced a new threading library that abstracts these platform-specific details, providing a consistent and portable interface for multithreading.
-
-The C++ threading support is part of the `<thread>` header, which includes classes and functions for managing threads, synchronization primitives, and thread-local storage.
-
-## Thread Management
-
-### Creating Threads
-
-To create a new thread, you can use the `std::thread` class. The constructor of `std::thread` accepts a function (or a callable object) to be executed in the new thread. Here's an example:
+`std::thread` takes a callable plus its arguments and starts running it immediately:
 
 ```cpp
 #include <iostream>
 #include <thread>
 
-void print_hello() {
-    std::cout << "Hello from thread!" << std::endl;
-}
-
-int main() {
-    std::thread t(print_hello);
-    t.join();
-    std::cout << "Hello from main!" << std::endl;
-    return 0;
-}
-```
-
-### Detaching Threads
-
-When a thread object goes out of scope, its destructor is called. If the thread is still joinable (i.e., it has not been joined or detached), the program will terminate. To avoid this, you can either join the thread using `join()` or detach it using `detach()`. Once a thread is detached, it becomes independent and its resources will be automatically reclaimed when it finishes execution.
-
-```cpp
-std::thread t(print_hello);
-t.detach();
-```
-
-### Passing Arguments to Threads
-
-You can pass arguments to the thread function by providing them as additional arguments to the `std::thread` constructor:
-
-```cpp
 void print_number(int number) {
-    std::cout << "Number: " << number << std::endl;
+    std::cout << "Number: " << number << '\n';
 }
 
 int main() {
-    int number = 42;
-    std::thread t(print_number, number);
-    t.join();
-    return 0;
+    std::thread t(print_number, 42);
+    t.join();  // wait for the thread to finish
+    std::cout << "Hello from main\n";
 }
 ```
 
-## Synchronization Mechanisms
+Arguments are copied into the thread. To pass a reference, wrap it in `std::ref` (from `<functional>`), and make sure the referenced object outlives the thread.
 
-When multiple threads access shared data, there's a risk of race conditions, which can lead to unpredictable behavior. To prevent this, C++ provides various synchronization mechanisms:
+Before a `std::thread` object is destroyed you must call either `join()` or `detach()`. Destroying a thread that is still joinable calls `std::terminate`. A detached thread keeps running on its own and you can no longer wait for it, so it must not touch anything that might be destroyed first, including `main`'s locals and, at program exit, globals.
 
-### Mutex
-
-A mutex (short for "mutual exclusion") is a synchronization primitive that ensures that only one thread can access a shared resource at a time. The `<mutex>` header provides the `std::mutex` class, which has member functions `lock()` and `unlock()` for acquiring and releasing the lock.
+C++20's `std::jthread` removes the most common mistake: its destructor joins automatically. It also supports cooperative cancellation through a `std::stop_token`:
 
 ```cpp
+#include <chrono>
+#include <iostream>
+#include <stop_token>
+#include <thread>
+
+int main() {
+    std::jthread worker([](std::stop_token st) {
+        while (!st.stop_requested()) {
+            std::cout << "working\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(350));
+}   // ~jthread calls request_stop() and then join()
+```
+
+## Protecting shared data
+
+Two threads writing the same variable without synchronization is a data race, which is undefined behaviour, not just a wrong answer.
+
+### Mutexes and lock guards
+
+A `std::mutex` lets one thread at a time into a critical section. Don't call `lock()` and `unlock()` by hand: if the code in between throws or returns early, the mutex stays locked. Use an RAII wrapper instead:
+
+```cpp
+#include <iostream>
 #include <mutex>
-std::mutex mtx;
+#include <thread>
+#include <vector>
 
-void print_with_lock(int number) {
-    mtx.lock();
-    std::cout << "Number: " << number << std::endl;
-    mtx.unlock();
+std::mutex mtx;
+long counter = 0;
+
+void increment(int times) {
+    for (int i = 0; i < times; ++i) {
+        std::lock_guard<std::mutex> lock(mtx);  // unlocked at end of scope
+        ++counter;
+    }
+}
+
+int main() {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i)
+        threads.emplace_back(increment, 100000);
+    for (auto& t : threads)
+        t.join();
+    std::cout << counter << '\n';  // always 400000
 }
 ```
 
-### Lock Guard
+If you need to lock two mutexes at once, use `std::scoped_lock lock(m1, m2);` (C++17). It acquires both without deadlocking even if another thread locks them in the opposite order.
 
-`std::lock_guard` is a convenient RAII wrapper for mutexes. It automatically locks the mutex when instantiated and unlocks it when destroyed. This ensures that the mutex is always released, even if an exception is thrown.
+### Atomics
+
+For a single counter or flag, a mutex is overkill. `std::atomic` makes individual reads, writes and read-modify-write operations indivisible:
 
 ```cpp
-void print_with_lock_guard(int number) {
-    std::lock_guard<std::mutex> lock(mtx);
-    std::cout << "Number: " << number << std::endl;
-    // mtx is automatically unlocked when lock goes out of scope
+#include <atomic>
+
+std::atomic<long> counter{0};
+
+void increment(int times) {
+    for (int i = 0; i < times; ++i)
+        ++counter;  // atomic fetch_add
 }
 ```
 
-### Condition Variables
+Atomics only protect one variable at a time. If an invariant spans several variables, use a mutex.
 
-`std::condition_variable` is another synchronization primitive that allows threads to wait for a specific condition to become true. Condition variables work in conjunction with std::unique_lock, providing `wait()`, `notify_one()`, and `notify_all()` member functions.
+### Condition variables: a producer-consumer queue
+
+`std::condition_variable` lets a thread sleep until another thread signals that something changed. It always works with a `std::unique_lock` and a predicate, because wake-ups can be spurious. The consumer below stops when it sees the sentinel value `-1`:
 
 ```cpp
 #include <condition_variable>
+#include <iostream>
+#include <mutex>
 #include <queue>
+#include <thread>
 
 std::mutex mtx;
 std::condition_variable cv;
 std::queue<int> data_queue;
 
-void data_producer() {
-    for (int i = 0; i < 10; ++i) {
-        std::unique_lock<std::mutex> lock(mtx);
-        data_queue.push(i);
-        lock.unlock();
-        cv.notify_one();
+void push(int value) {
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        data_queue.push(value);
     }
+    cv.notify_one();  // notify after unlocking so the consumer can grab the lock
 }
 
-void data_consumer() {
+void producer() {
+    for (int i = 0; i < 10; ++i)
+        push(i);
+    push(-1);  // sentinel: tells the consumer to stop
+}
+
+void consumer() {
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
         cv.wait(lock, [] { return !data_queue.empty(); });
 
         int data = data_queue.front();
         data_queue.pop();
+        lock.unlock();  // don't hold the lock while doing the work
 
-        lock.unlock();
-
-        if (data == -1) {
-            break; // exit condition
-        }
-
-        std::cout << "Consumed: " << data << std::endl;
+        if (data == -1)
+            break;
+        std::cout << "Consumed: " << data << '\n';
     }
+}
+
+int main() {
+    std::thread c(consumer);
+    std::thread p(producer);
+    p.join();
+    c.join();
 }
 ```
 
-## Best Practices
+## Tasks with `std::async`
 
-1. **Avoid using raw `std::thread` for resource management**: Use higher-level abstractions like `std::async` and `std::future` to handle resource management automatically.
+When you just want a result computed on another thread, `std::async` returns a `std::future` and handles the thread for you. Exceptions thrown in the task are rethrown from `get()`:
 
-2. **Minimize data sharing between threads**: Use message-passing, thread-local storage, or other techniques to minimize the need for synchronization and reduce the risk of race conditions.
+```cpp
+#include <future>
+#include <iostream>
 
-3. **Prefer `std::lock_guard` and `std::unique_lock` over manual `lock()` and `unlock()`**: These RAII wrappers ensure that mutexes are always properly released, even in the presence of exceptions.
+int slow_square(int x) { return x * x; }
 
-4. **Avoid long-running threads with shared data**: Long-running threads that access shared data may cause contention and limit parallelism. Break down tasks into smaller, independent units that can be executed concurrently.
+int main() {
+    std::future<int> f = std::async(std::launch::async, slow_square, 7);
+    // ... do other work ...
+    std::cout << f.get() << '\n';  // 49
+}
+```
 
-5. **Test and measure**: Thoroughly test your concurrent code for correctness, performance, and scalability. Use tools like static analyzers, dynamic analysis tools, and profilers to help identify issues and optimize your code.
+Pass `std::launch::async` explicitly. With the default policy the implementation may defer the call and run it lazily on the thread that calls `get()`. Also note that the destructor of a future returned by `std::async` blocks until the task finishes, so a discarded `std::async(...)` call runs synchronously.
 
-## Conclusion
+## Practical advice
 
-C++ provides a powerful set of tools and abstractions for multithreading and concurrency. By understanding the core concepts and utilizing the provided library features, you can write efficient, portable, and maintainable concurrent code in C++. However, keep in mind that multithreading can introduce complexity and potential pitfalls, so it's essential to follow best practices and thoroughly test your code to ensure correctness and performance.
+- **Share as little as possible.** Pass data into threads by value, return results through futures, and use queues to hand work between threads. Every piece of shared mutable state needs a lock or an atomic.
+- **Keep critical sections short.** Copy what you need under the lock, then release it before doing slow work like I/O.
+- **Lock in a consistent order**, or use `std::scoped_lock` for multiple mutexes, to avoid deadlocks.
+- **Use ThreadSanitizer.** Build tests with `-fsanitize=thread` (GCC and Clang) to catch data races that rarely show up in normal runs.
+- **Don't create a thread per tiny task.** Starting a thread costs far more than a function call. For many small tasks, use a thread pool or a library such as oneTBB.
+
+## Further reading
+
+- [Concurrency support library (cppreference)](https://en.cppreference.com/w/cpp/thread)
+- [`std::condition_variable` (cppreference)](https://en.cppreference.com/w/cpp/thread/condition_variable)
+- [ThreadSanitizer (Clang docs)](https://clang.llvm.org/docs/ThreadSanitizer.html)

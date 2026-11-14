@@ -1,24 +1,31 @@
 ---
-title: How to upload apks to google drive in bitrise
-description: Uploading apks to google drive in golang from bitrise
+title: Uploading APKs to Google Drive from a Bitrise build with a Go step
+description: A custom Bitrise step written in Go that finds the APKs a build produced and uploads them to a Google Drive folder with a service account.
 alt: git commits with golang
-tags: ["go","git"]
+tags: ["go","git","flutter"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 7 April 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/dall-e/upload_icon_cloud.png'
 ---
 
-Bitrise is a continuous integration and delivery platform that allows you to automate your build, test, and deployment processes. You can define these processes using a combination of pre-built steps and custom scripts written in Bash or Go.
+Bitrise is a hosted CI/CD service where a build is a list of steps: prebuilt ones from the step library plus your own steps written in Bash or Go. I wanted every Android build of a Flutter app to drop its APKs into a Google Drive folder, so I wrote a small Go step that does that with the Google Drive API and a service account.
 
+## How access works
 
-Using the google drive api we can upload apks to a specified google drive folder using a service account and sharing the folder to that service account.
+Create a service account in Google Cloud, enable the Drive API, download its JSON key, and share the target folder with the service account's email address (it ends in `iam.gserviceaccount.com`). The folder ID is the last part of the folder URL:
 
-```
+```text
 https://drive.google.com/drive/u/4/folders/{folderId}
 ```
 
-Note once the folder is shared to that service account we can upload files to google drive using the folder id. Depending on demand its possible to extend this to upload to a specific folder under the parent folder.
+:::caution
+A file uploaded by a service account is owned by the service account, so it counts against the service account's quota even when it sits in your shared My Drive folder, and recently created service accounts have no Drive quota at all. If uploads fail with `storageQuotaExceeded` ("Service Accounts do not have storage quota"), put the target folder in a **shared drive**, add the service account as a Content manager, and send `SupportsAllDrives(true)` on the request (as in the code below). Domain-wide delegation or a user OAuth token are the other options.
+:::
 
+## The step's entry point
+
+The step reads two inputs, `service_key_path` and `folder_id`, which Bitrise exposes as environment variables. It collects every `.apk` under the working directory, adds `BITRISE_APK_PATH` (set by the Flutter and Gradle build steps) if present, and uploads each file once.
 
 ```go
 package main
@@ -31,224 +38,141 @@ import (
 )
 
 func main() {
-	fmt.Println("This is the value specified for the input 'service_key_path':", os.Getenv("service_key_path"))
-	// and print folder_id
-	fmt.Println("This is the value specified for the input 'folder_id':", os.Getenv("folder_id"))
-
 	serviceAccount := os.Getenv("service_key_path")
-	folderId := os.Getenv("folder_id")
+	folderID := os.Getenv("folder_id")
+	fmt.Println("service_key_path:", serviceAccount)
+	fmt.Println("folder_id:", folderID)
 
-	// find all files with the extension ending with *.apk
-	files, err := utils.FindFiles("**/*.apk")
-	// check if BITRISE_APK_PATH is set
-	if os.Getenv("BITRISE_APK_PATH") != "" {
-		// if it is set, add it to the files slice
-		files = append(files, os.Getenv("BITRISE_APK_PATH"))
-	}
-
+	files, err := utils.FindFiles(".", ".apk")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	// upload all apk files
-	for _, file := range files {
-		utils.UploadFile(serviceAccount, file, folderId)
+	if apk := os.Getenv("BITRISE_APK_PATH"); apk != "" {
+		files = append(files, apk)
 	}
 
-	os.Exit(0)
+	seen := map[string]bool{}
+	for _, file := range files {
+		if seen[file] {
+			continue
+		}
+		seen[file] = true
+		if err := utils.UploadFile(serviceAccount, file, folderID); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
 }
 ```
 
-This is a modified version of the Go program that is designed to be used as a build step in the Bitrise CI/CD platform. The program reads in two input environment variables: service_key_path and folder_id. It then uses the utils package to search for all files with the .apk extension in the current directory and its subdirectories, and adds the BITRISE_APK_PATH environment variable (if it is set) to the list of files. Finally, the program iterates over the list of files and uses the utils.UploadFile function to upload each file to Google Drive using the serviceAccount and folderId variables.
+A non-zero exit code is what tells Bitrise the step failed; returning from `main` normally already exits with 0.
 
-The program then exits with a status code of 0, indicating success. It is good practice to always specify an exit code at the end of a build step, as it helps the CI/CD platform determine whether the step was successful or not.
-
+## The upload package
 
 ```go
 package utils
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
-	drive "google.golang.org/api/drive/v3"
-
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"golang.org/x/oauth2/jwt"
+	"google.golang.org/api/drive/v3"
+	"google.golang.org/api/option"
 )
 
-// ServiceAccount : Use Service account
-func serviceAccount(credentialFile string) *http.Client {
-	b, err := ioutil.ReadFile(credentialFile)
+// UploadFile uploads one file to the Drive folder folderID using the
+// service account key at credentialFile.
+func UploadFile(credentialFile, fileName, folderID string) error {
+	ctx := context.Background()
+	srv, err := drive.NewService(ctx,
+		option.WithAuthCredentialsFile(option.ServiceAccount, credentialFile),
+		option.WithScopes(drive.DriveScope),
+	)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("create drive service: %w", err)
 	}
-	var c = struct {
-		Email      string `json:"client_email"`
-		PrivateKey string `json:"private_key"`
-	}{}
-	json.Unmarshal(b, &c)
-	config := &jwt.Config{
-		Email:      c.Email,
-		PrivateKey: []byte(c.PrivateKey),
-		Scopes: []string{
-			drive.DriveScope,
-		},
-		TokenURL: google.JWTTokenURL,
-	}
-	client := config.Client(oauth2.NoContext)
-	return client
-}
 
-func UploadFile(serviceFile string, fileName string, folderId string) {
-	filename := fileName                       // Filename
-	baseMimeType := "application/octet-stream" // MimeType
-	client := serviceAccount(serviceFile)      // Please set the json file of Service account.
-
-	srv, err := drive.New(client)
+	file, err := os.Open(fileName)
 	if err != nil {
-		log.Fatalln(err)
-	}
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fileInf, err := file.Stat()
-	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 	defer file.Close()
-	// get base name from filename
-	baseName := filepath.Base(filename)
-	f := &drive.File{Name: baseName}
-	if folderId != "" {
-		f.Parents = []string{folderId}
+
+	f := &drive.File{Name: filepath.Base(fileName)}
+	if folderID != "" {
+		f.Parents = []string{folderID}
 	}
-	res, err := srv.Files.
-		Create(f).
-		ResumableMedia(context.Background(), file, fileInf.Size(), baseMimeType).
-		ProgressUpdater(func(now, size int64) { fmt.Printf("%d, %d\r", now, size) }).
+
+	res, err := srv.Files.Create(f).
+		Media(file).
+		SupportsAllDrives(true).
+		ProgressUpdater(func(now, size int64) { fmt.Printf("%d bytes uploaded\r", now) }).
+		Context(ctx).
 		Do()
 	if err != nil {
-		log.Fatalln(err)
+		return fmt.Errorf("upload %s: %w", fileName, err)
 	}
-	fmt.Printf("Uploaded file %s with id %s\n", filename, res.Id)
+	fmt.Printf("Uploaded %s with id %s\n", fileName, res.Id)
+	return nil
 }
 
-// find files with the extension ending with *.apk
-func FindFiles(extension string) ([]string, error) {
-	files, err := filepath.Glob(extension)
-	if err != nil {
-		return nil, err
-	}
-	return files, nil
+// FindFiles walks root and returns every file whose name ends in ext.
+func FindFiles(root, ext string) ([]string, error) {
+	var files []string
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() && strings.HasSuffix(d.Name(), ext) {
+			files = append(files, path)
+		}
+		return nil
+	})
+	return files, err
 }
 ```
 
-This is a Go package called utils that contains several functions for interacting with Google Drive. The package defines the following functions:
+A few things changed from the first version of this step:
 
-* serviceAccount: This function takes a file path as input and returns an HTTP client that can be used to authenticate requests to the Google Drive API using a service account. The function reads the contents of the file, which should be a JSON file containing the service account's email address and private key, and creates a jwt.Config object with this information. The function then uses the config to create an HTTP client and returns it.
-* UploadFile: This function takes three strings as input: a file path to a service account JSON file, a file path to the file to be uploaded, and the ID of a Google Drive folder. The function uses the serviceAccount function to create an HTTP client, then opens the file to be uploaded and creates a new file object in Google Drive with the contents of the uploaded file. The function also sets the parent folder of the new file to the folder specified by the folderId input.
-* FindFiles: This function takes a string as input and returns a slice of strings containing the file paths of all files in the current directory and its subdirectories that have the specified extension. The input string should contain a glob pattern, such as "**/*.apk". The function uses the filepath.Glob function to search for files that match the pattern and returns the list of file paths.
+- **Recursive search.** The original used `filepath.Glob("**/*.apk")`. Go's `filepath.Glob` has no `**` wildcard; it treats `**` like `*`, so that pattern only matches APKs exactly one directory deep. `filepath.WalkDir` actually walks the tree.
+- **Authentication.** The original parsed the key JSON by hand into a `jwt.Config` and called the deprecated `drive.New(client)`. `drive.NewService` with `option.WithAuthCredentialsFile(option.ServiceAccount, path)` does the same in one call. (`option.WithCredentialsFile` also works but is deprecated because it accepts any credential type without validation.)
+- **Uploads.** `Media` replaces the deprecated `ResumableMedia`; the client switches to a resumable, chunked upload on its own for large files.
+- **Errors.** `UploadFile` returns errors instead of calling `log.Fatal`, and `ioutil.ReadFile` is gone (it's deprecated in favour of `os.ReadFile`, and no longer needed here).
 
-An example `bitrise.yml` file that uses apk uploading to google drive is
+## Using the step in bitrise.yml
 
-```
----
+Steps can be referenced straight from a Git repository with `git::<url>@<branch>`. This is the `deploy` workflow from my Flutter app, trimmed to the parts that matter for Android. The `file-downloader` step pulls the service account key from Bitrise's generic file storage so the key never lives in the repository.
+
+```yaml
 format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: flutter
 workflows:
   deploy:
-    description: |
-      Builds and deploys app using [Deploy to bitrise.io Step](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html#deploying-a-flutter-app).
-
-      If you build for iOS, make sure to set up code signing secrets on Bitrise for a successful build.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html) for signing and deployment options.
-      - Check out the [Code signing guide](https://devcenter.bitrise.io/en/code-signing.html) for iOS and Android
     steps:
     - git-clone@6: {}
-    - certificate-and-profile-installer@1: {}
     - flutter-installer@0:
         inputs:
         - is_update: 'false'
-    - cache-pull@2: {}
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
-            set -o pipefail
-            # debug log
-            set -x
-            flutter upgrade
     - flutter-build@0:
         inputs:
         - project_location: "$BITRISE_FLUTTER_PROJECT_LOCATION"
         - platform: android
-        - ios_output_type: archive
-    - cache-push@2: {}
     - file-downloader@1:
         inputs:
         - destination: key.json
         - source: "$BITRISEIO_BITRISE_GOOGLE_SERVICE_JSON_URL"
     - git::https://github.com/FriendlyUser/bitrise-step-google-drive-uploader@main:
-        title: Upload to google play
+        title: Upload APKs to Google Drive
         inputs:
         - service_key_path: key.json
         - folder_id: 1MvS-z5JuIaMbAwsqMITeqnDNdtncEL7d
     - deploy-to-bitrise-io@2: {}
-  primary:
-    description: |
-      Builds project and runs tests.
-
-      Next steps:
-      - Check out [Getting started with Flutter apps](https://devcenter.bitrise.io/en/getting-started/getting-started-with-flutter-apps.html).
-    steps:
-    - git-clone@6: {}
-    - flutter-installer@0:
-        inputs:
-        - version: beta
-    - cache-pull@2: {}
-    - cache-push@2: {}
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
-            set -o pipefail
-            # debug log
-            set -x
-
-            # write your script here
-            echo "Hello World!"
-
-            # or run a script from your repository, like:
-            # bash ./path/to/script.sh
-            # not just bash, e.g.:
-            # ruby ./path/to/script.rb
-
-
-            flutter upgrade
-    - flutter-build@0: {}
-    - deploy-to-bitrise-io@2: {}
-meta:
-  bitrise.io:
-    stack: osx-xcode-14.1.x-ventura
 app:
   envs:
   - opts:
@@ -256,23 +180,13 @@ app:
     BITRISE_FLUTTER_PROJECT_LOCATION: "."
 ```
 
-This is a Bitrise configuration file written in YAML syntax. It defines two workflows: deploy and primary.
+The order matters: the upload step has to run after `flutter-build` (so the APKs and `BITRISE_APK_PATH` exist) and after `file-downloader` (so `key.json` exists).
 
-The deploy workflow includes several steps:
-
-1. git-clone@6: Clones the repository specified in the source input.
-certificate-and-profile-installer@1: Installs the necessary code signing certificates and profiles for the specified iOS development team.
-2. flutter-installer@0: Installs Flutter, the mobile app development framework.
-3. cache-pull@2: Pulls the specified cache from the Bitrise cache storage.
-4. script@1: Executes a custom script, in this case a Bash script that updates Flutter.
-5. flutter-build@0: Builds a Flutter app for the specified platform (Android in this case) and outputs an archive file.
-6. cache-push@2: Pushes the specified cache to the Bitrise cache storage.
-7. file-downloader@1: Downloads a file from the specified URL and saves it to the specified destination.
-git::https://github.com/FriendlyUser/bitrise-step-google-drive-uploader@main: Executes a step from a custom step library hosted on GitHub.
-8. deploy-to-bitrise-io@2: Deploys the built app to the Bitrise hosting platform.
+The original config also had `cache-pull@2` and `cache-push@2`. Bitrise has deprecated those branch-based cache steps in favour of key-based caching, so if you want caching, use the key-based restore/save cache steps from the [migration guide](https://docs.bitrise.io/en/bitrise-ci/dependencies-and-caching/migrating-from-branch-based-caching-to-key-based-caching.html).
 
 ## References
 
 * https://github.com/FriendlyUser/supabase_flutter_todo
 * https://friendlyuser.github.io/posts/tech/flutter_todo_list_with_supabase/
 * https://github.com/FriendlyUser/bitrise-step-google-drive-uploader
+* [Google Drive API: shared drives](https://developers.google.com/workspace/drive/api/guides/about-shareddrives)

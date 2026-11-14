@@ -1,26 +1,24 @@
 ---
 tags: ['python', 'introtopython']
-title: Calculate Income Tax with IPython 
-description: How to calculate your income tax using IPytohn
+title: Using IPython as a calculator to work out progressive income tax
+description: Use the IPython shell for quick arithmetic, then write a small function that calculates tax across progressive brackets and check the result.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/4039349639.png
 ---
-Introduction to Python: Installing Python and Setting up the Development Environment
+IPython is an interactive Python shell with tab completion, syntax highlighting, command history and numbered input/output prompts. That makes it a handy calculator: type an expression, press Enter, and the result appears straight away. This post uses it for basic arithmetic and then for a slightly more realistic job, calculating income tax across progressive brackets.
 
+Install it with pip and start it from your terminal:
 
-Running Python scripts and using the interactive shell are essential skills for anyone who wants to learn Python. By following the steps outlined in this post, you can easily run Python scripts and experiment with Python code using the interactive shell. Remember to save your Python scripts with a .py extension and use the Python interpreter to execute them. Happy coding!
+```bash
+pip install ipython
+ipython
+```
 
-## Using IPython as a Calculator and to Calculate Tax Rates
+## IPython as a calculator
 
-IPython is an interactive shell for Python that provides enhanced functionality compared to the standard Python interpreter. One of the features that makes IPython so useful is its ability to be used as a calculator. In this post, we'll cover how to use IPython as a calculator and also use it to calculate tax rates.
-
-## Using IPython as a Calculator
-
-To use IPython as a calculator, simply type mathematical expressions into the IPython prompt and press enter. IPython supports all the basic mathematical operations, including addition, subtraction, multiplication, and division.
-
-Here's an example of using IPython as a calculator:
-
+Type an expression at the `In [n]:` prompt and IPython prints the result as `Out[n]`:
 
 ```python
 In [1]: 2 + 2
@@ -28,58 +26,71 @@ Out[1]: 4
 
 In [2]: 10 / 2
 Out[2]: 5.0
+
+In [3]: 2 ** 10
+Out[3]: 1024
 ```
-As you can see, IPython returns the results of the mathematical expressions you enter. You can use IPython to perform more complex calculations as well, such as exponentiation and trigonometric functions.
 
-Using IPython to Calculate Tax Rates
-
-Now let's see how to use IPython to calculate tax rates. Suppose you have a salary of $50,000 and you want to calculate your federal income tax. The federal income tax rate is based on your income and is calculated using a series of brackets.
-
-Here's how you can use IPython to calculate your federal income tax:
-
-1. Open IPython by typing `ipython` into your terminal.
-2. Enter your salary as a variable:
-
+`/` always returns a float in Python 3; use `//` for integer division. For square roots, trigonometry and similar, import the `math` module:
 
 ```python
-In [1]: salary = 50000
-```
-3. Define the tax brackets and rates using lists:
+In [4]: import math
 
+In [5]: math.sqrt(2)
+Out[5]: 1.4142135623730951
+
+In [6]: math.sin(math.pi / 2)
+Out[6]: 1.0
+```
+
+The previous result is available as `_`, and any earlier one as `_n` (for example `_3`), so you can chain calculations without retyping numbers.
+
+## Calculating income tax with brackets
+
+Income tax in the US (and Canada) is progressive: each rate applies only to the slice of income inside its bracket, not to your whole income. That is easy to get wrong by hand, so it is a good fit for a small function.
+
+The numbers below are the 2020 US federal brackets for a single filer, applied to taxable income (after deductions). Swap in the current year's brackets from the IRS, or your own country's, to use it for real.
 
 ```python
-In [2]: brackets = [9875, 40125, 85525, 163300, 207350, 518400]
- rates = [0.1, 0.12, 0.22, 0.24, 0.32, 0.35, 0.37]
+In [7]: brackets = [9875, 40125, 85525, 163300, 207350, 518400]
+
+In [8]: rates = [0.10, 0.12, 0.22, 0.24, 0.32, 0.35, 0.37]
 ```
-The `brackets` list contains the upper limit of each tax bracket, and the `rates` list contains the tax rate for each bracket.
 
-4. Write a function to calculate the tax based on the salary and tax brackets:
+`brackets` holds the upper limit of each bracket. There is one more rate than there are limits, because the last rate (37%) applies to everything above the final limit.
 
+Now define the function. IPython handles multi-line input: after the `def` line it keeps indenting until you press Enter on a blank line.
 
 ```python
-def calculate\_tax(salary):
- tax = 0
- for i in range(len(brackets)):
-  if salary > brackets[i]:
-    tax += (brackets[i] - (brackets[i-1] if i>0 else 0)) * rates[i]
-  else:
-    tax += (salary - (brackets[i-1] if i>0 else 0)) * rates[i]
-  break
- return tax
+def calculate_tax(income):
+    tax = 0.0
+    lower = 0
+    # the top bracket has no upper limit
+    for upper, rate in zip(brackets + [float("inf")], rates):
+        if income <= lower:
+            break
+        tax += (min(income, upper) - lower) * rate
+        lower = upper
+    return tax
 ```
-The `calculate_tax()` function uses a loop to calculate the tax based on the salary and tax brackets. It first checks if the salary is greater than the upper limit of each tax bracket. If it is, it calculates the tax for that bracket by multiplying the difference between the upper limit and the previous upper limit (or zero for the first bracket) by the tax rate. If the salary is less than the upper limit of a bracket, it calculates the tax by multiplying the difference between the salary and the previous upper limit (or zero for the first bracket) by the tax rate.
 
-5. Call the `calculate_tax()` function with your salary as an argument:
-
+For each bracket, the function taxes the part of the income between the bracket's lower and upper limit, then moves on. It stops as soon as the income is used up.
 
 ```python
-In [4]: calculate\_tax(salary)
-Out[4]: 7160.0
+In [10]: calculate_tax(50000)
+Out[10]: 6790.0
 ```
-According to this calculation, your federal income tax would be $7,160 based on a salary of $50,000.
 
-Conclusion
+You can check that by hand:
 
-In this post, we covered how to use IPython as a calculator and also how to use it to calculate tax rates. IPython provides lots of good functionality. If you want to learn more about IPython, check out the official documentation.
+- 10% of the first $9,875 = $987.50
+- 12% of the next $30,250 ($9,875 to $40,125) = $3,630.00
+- 22% of the remaining $9,875 ($40,125 to $50,000) = $2,172.50
 
+The total is $6,790, an effective rate of about 13.6%, even though the top marginal rate on this income is 22%.
 
+## Next steps
+
+- Try `calculate_tax(60000) - _10` to see how much extra tax a $10,000 raise costs ($2,200, all at 22%), using IPython's `_n` output history.
+- Use `%history` to print the commands you've typed, then paste them into a `.py` file once the calculation works.
+- The [IPython documentation](https://ipython.readthedocs.io/en/stable/) covers magics like `%timeit` and `%run`.

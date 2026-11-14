@@ -1,461 +1,474 @@
 ---
-description: This article will introduce you to some of the most common design patterns
-  used in C++ OOP, and provide code examples to illustrate their usage.
+title: "Classic design patterns in modern C++: Singleton, factories, Builder, Adapter, Composite and Decorator"
+description: "Compilable C++17 examples of nine Gang of Four creational and structural patterns, using std::unique_ptr for ownership instead of raw new and delete."
 imgSrc: /imgs/2023/other
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-17T16:45:07.000Z'
-tags: []
-title: C++ Object-Oriented Design Patterns A Practical Guide
+lastUpdated: 2026-11-14
+tags: ["cpp"]
 ---
 
-# C++ Object-Oriented Design Patterns: A Practical Guide
+Design patterns are named, reusable solutions to recurring design problems. The classic catalogue is the 1994 "Gang of Four" book, *Design Patterns: Elements of Reusable Object-Oriented Software*, which sorts them into three groups:
 
-Design patterns are reusable solutions to common problems that occur in software design. In the realm of object-oriented programming (OOP), these patterns provide proven solutions and techniques to help developers create flexible and maintainable software. This article will introduce you to some of the most common design patterns used in C++ OOP, and provide code examples to illustrate their usage.
+- **Creational** patterns control how objects are created.
+- **Structural** patterns control how classes and objects are composed.
+- **Behavioral** patterns control how objects communicate.
 
-## Table of Contents
+This post covers the creational patterns and the most common structural ones, with small C++17 examples that compile as written. They use `std::unique_ptr` and `std::make_unique` so ownership is explicit; the textbook versions that return raw `new`-ed pointers leave the caller to remember `delete`.
 
-1. Introduction to Design Patterns
-2. Creational Patterns
-   - Singleton
-   - Factory Method
-   - Abstract Factory
-   - Builder
-   - Prototype
-3. Structural Patterns
-   - Adapter
-   - Bridge
-   - Composite
-   - Decorator
-   - Facade
-   - Flyweight
-   - Proxy
-4. Behavioral Patterns
-   - Chain of Responsibility
-   - Command
-   - Interpreter
-   - Iterator
-   - Mediator
-   - Memento
-   - Observer
-   - State
-   - Strategy
-   - Template Method
-   - Visitor
+## Creational patterns
 
-## 1. Introduction to Design Patterns
+### Singleton
 
-Design patterns can be classified into three main categories: creational, structural, and behavioral. Creational patterns deal with the process of object creation, structural patterns deal with the composition of classes and objects, and behavioral patterns define the ways in which objects interact and communicate.
-
-## 2. Creational Patterns
-
-### 2.1 Singleton
-
-**Intent**: Ensure a class has only one instance and provide a global point of access to it.
-
-**Code Example**:
+**Intent:** ensure a class has exactly one instance and provide a global access point to it.
 
 ```cpp
-class Singleton {
+class Config {
 public:
-    static Singleton& getInstance() {
-        static Singleton instance;
-        return instance;
+    static Config& instance() {
+        static Config inst;  // created on first call
+        return inst;
     }
 
-    // Delete copy and assignment constructors
-    Singleton(const Singleton&) = delete;
-    Singleton& operator=(const Singleton&) = delete;
+    Config(const Config&) = delete;
+    Config& operator=(const Config&) = delete;
 
 private:
-    Singleton() {}
+    Config() = default;
 };
 ```
 
-### 2.2 Factory Method
+Since C++11, initialization of a function-local `static` is thread-safe, so this "Meyers singleton" needs no locks. The downside is that a singleton is global state: it hides dependencies and makes tests share state. Passing the object in as a parameter is often the better design.
 
-**Intent**: Define an interface for creating an object, but let subclasses decide which class to instantiate.
+### Factory Method
 
-**Code Example**:
-
-```cpp
-class Product {
-public:
-    virtual ~Product() {}
-    virtual void doSomething() = 0;
-};
-
-class ConcreteProductA : public Product {
-public:
-    void doSomething() override {
-        // ...
-    }
-};
-
-class ConcreteProductB : public Product {
-public:
-    void doSomething() override {
-        // ...
-    }
-};
-
-class Creator {
-public:
-    virtual ~Creator() {}
-    virtual Product* createProduct() = 0;
-};
-
-class ConcreteCreatorA : public Creator {
-public:
-    Product* createProduct() override {
-        return new ConcreteProductA();
-    }
-};
-
-class ConcreteCreatorB : public Creator {
-public:
-    Product* createProduct() override {
-        return new ConcreteProductB();
-    }
-};
-```
-
-### 2.3 Abstract Factory
-
-**Intent**: Provide an interface for creating families of related or dependent objects without specifying their concrete classes.
-
-**Code Example**:
+**Intent:** define an interface for creating an object, but let subclasses decide which class to instantiate.
 
 ```cpp
-class AbstractProductA {
+#include <iostream>
+#include <memory>
+
+class Document {
 public:
-    virtual ~AbstractProductA() {}
+    virtual ~Document() = default;
+    virtual void open() = 0;
 };
 
-class AbstractProductB {
+class TextDocument : public Document {
 public:
-    virtual ~AbstractProductB() {}
+    void open() override { std::cout << "Opening text document\n"; }
 };
 
-class ConcreteProductA1 : public AbstractProductA {
-};
-
-class ConcreteProductA2 : public AbstractProductA {
-};
-
-class ConcreteProductB1 : public AbstractProductB {
-};
-
-class ConcreteProductB2 : public AbstractProductB {
-};
-
-class AbstractFactory {
+class Spreadsheet : public Document {
 public:
-    virtual ~AbstractFactory() {}
-    virtual AbstractProductA* createProductA() = 0;
-    virtual AbstractProductB* createProductB() = 0;
+    void open() override { std::cout << "Opening spreadsheet\n"; }
 };
 
-class ConcreteFactory1 : public AbstractFactory {
+class Application {
 public:
-    AbstractProductA* createProductA() override {
-        return new ConcreteProductA1();
-    }
+    virtual ~Application() = default;
 
-    AbstractProductB* createProductB() override {
-        return new ConcreteProductB1();
-    }
-};
-
-class ConcreteFactory2 : public AbstractFactory {
-public:
-    AbstractProductA* createProductA() override {
-        return new ConcreteProductA2();
-    }
-
-    AbstractProductB* createProductB() override {
-        return new ConcreteProductB2();
-    }
-};
-```
-
-### 2.4 Builder
-
-**Intent**: Separate the construction of a complex object from its representation so that the same construction process can create different representations.
-
-**Code Example**:
-
-```cpp
-class Product {
-public:
-    void setPartA(int value) { partA = value; }
-    void setPartB(double value) { partB = value; }
-    void setPartC(const std::string& value) { partC = value; }
-
-private:
-    int partA;
-    double partB;
-    std::string partC;
-};
-
-class Builder {
-public:
-    virtual ~Builder() {}
-    virtual void buildPartA() = 0;
-    virtual void buildPartB() = 0;
-    virtual void buildPartC() = 0;
-
-    Product* getProduct() {
-        return product;
+    void newDocument() {
+        std::unique_ptr<Document> doc = createDocument();  // subclass decides
+        doc->open();
     }
 
 protected:
-    Product* product;
+    virtual std::unique_ptr<Document> createDocument() = 0;
 };
 
-class ConcreteBuilderA : public Builder {
-public:
-    void buildPartA() override {
-        product->setPartA(1);
-    }
-
-    void buildPartB() override {
-        product->setPartB(1.1);
-    }
-
-    void buildPartC() override {
-        product->setPartC("A");
+class TextEditor : public Application {
+protected:
+    std::unique_ptr<Document> createDocument() override {
+        return std::make_unique<TextDocument>();
     }
 };
 
-class ConcreteBuilderB : public Builder {
-public:
-    void buildPartA() override {
-        product->setPartA(2);
-    }
-
-    void buildPartB() override {
-        product->setPartB(2.2);
-    }
-
-    void buildPartC() override {
-        product->setPartC("B");
+class SpreadsheetApp : public Application {
+protected:
+    std::unique_ptr<Document> createDocument() override {
+        return std::make_unique<Spreadsheet>();
     }
 };
 
-class Director {
-public:
-    void setBuilder(Builder* builder) {
-        this->builder = builder;
-    }
+int main() {
+    TextEditor editor;
+    editor.newDocument();  // Opening text document
+}
+```
 
-    void construct() {
-        builder->buildPartA();
-        builder->buildPartB();
-        builder->buildPartC();
-    }
+`Application::newDocument` contains the shared logic; only the "which class" decision is deferred to subclasses.
+
+### Abstract Factory
+
+**Intent:** create families of related objects without naming their concrete classes. A typical use is UI themes, where every widget must come from the same theme.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+class Button {
+public:
+    virtual ~Button() = default;
+    virtual void draw() const = 0;
+};
+
+class Checkbox {
+public:
+    virtual ~Checkbox() = default;
+    virtual void draw() const = 0;
+};
+
+class DarkButton : public Button {
+public:
+    void draw() const override { std::cout << "dark button\n"; }
+};
+class DarkCheckbox : public Checkbox {
+public:
+    void draw() const override { std::cout << "dark checkbox\n"; }
+};
+class LightButton : public Button {
+public:
+    void draw() const override { std::cout << "light button\n"; }
+};
+class LightCheckbox : public Checkbox {
+public:
+    void draw() const override { std::cout << "light checkbox\n"; }
+};
+
+class WidgetFactory {
+public:
+    virtual ~WidgetFactory() = default;
+    virtual std::unique_ptr<Button> makeButton() const = 0;
+    virtual std::unique_ptr<Checkbox> makeCheckbox() const = 0;
+};
+
+class DarkTheme : public WidgetFactory {
+public:
+    std::unique_ptr<Button> makeButton() const override { return std::make_unique<DarkButton>(); }
+    std::unique_ptr<Checkbox> makeCheckbox() const override { return std::make_unique<DarkCheckbox>(); }
+};
+
+class LightTheme : public WidgetFactory {
+public:
+    std::unique_ptr<Button> makeButton() const override { return std::make_unique<LightButton>(); }
+    std::unique_ptr<Checkbox> makeCheckbox() const override { return std::make_unique<LightCheckbox>(); }
+};
+
+// Client code only sees the abstract types
+void drawForm(const WidgetFactory& factory) {
+    factory.makeButton()->draw();
+    factory.makeCheckbox()->draw();
+}
+
+int main() {
+    drawForm(DarkTheme{});  // dark button, dark checkbox
+}
+```
+
+### Builder
+
+**Intent:** separate the step-by-step construction of a complex object from its final representation.
+
+The Gang of Four version has a `Director` that calls abstract build steps on a `Builder`. In C++ the more common form is a fluent builder whose setters return `*this`:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <utility>
+
+struct HttpRequest {
+    std::string method = "GET";
+    std::string url;
+    std::string body;
+    int timeoutSeconds = 30;
+};
+
+class HttpRequestBuilder {
+public:
+    explicit HttpRequestBuilder(std::string url) { req_.url = std::move(url); }
+
+    HttpRequestBuilder& method(std::string m) { req_.method = std::move(m); return *this; }
+    HttpRequestBuilder& body(std::string b) { req_.body = std::move(b); return *this; }
+    HttpRequestBuilder& timeout(int seconds) { req_.timeoutSeconds = seconds; return *this; }
+
+    HttpRequest build() const { return req_; }
 
 private:
-    Builder* builder;
+    HttpRequest req_;
 };
+
+int main() {
+    HttpRequest req = HttpRequestBuilder("https://example.com/api")
+                          .method("POST")
+                          .body(R"({"name": "test"})")
+                          .timeout(10)
+                          .build();
+    std::cout << req.method << ' ' << req.url << '\n';  // POST https://example.com/api
+}
 ```
 
-### 2.5 Prototype
+A builder earns its keep when construction needs validation or has many optional parts. For a plain struct like this one, C++20 designated initializers (`HttpRequest{.method = "POST", .url = "..."}`) may be enough.
 
-**Intent**: Specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
+### Prototype
 
-**Code Example**:
+**Intent:** create new objects by copying an existing instance, without knowing its concrete type.
 
 ```cpp
-class Prototype {
+#include <memory>
+#include <vector>
+
+class Shape {
 public:
-    virtual ~Prototype() {}
-    virtual Prototype* clone() const = 0;
+    virtual ~Shape() = default;
+    virtual std::unique_ptr<Shape> clone() const = 0;
 };
 
-class ConcretePrototypeA : public Prototype {
+class Circle : public Shape {
 public:
-    Prototype* clone() const override {
-        return new ConcretePrototypeA(*this);
-    }
+    explicit Circle(double r) : radius(r) {}
+    std::unique_ptr<Shape> clone() const override { return std::make_unique<Circle>(*this); }
+    double radius;
 };
 
-class ConcretePrototypeB : public Prototype {
+class Square : public Shape {
 public:
-    Prototype* clone() const override {
-        return new ConcretePrototypeB(*this);
-    }
+    explicit Square(double s) : side(s) {}
+    std::unique_ptr<Shape> clone() const override { return std::make_unique<Square>(*this); }
+    double side;
 };
+
+// Deep-copy a collection of shapes without knowing their concrete types
+std::vector<std::unique_ptr<Shape>> copyAll(const std::vector<std::unique_ptr<Shape>>& shapes) {
+    std::vector<std::unique_ptr<Shape>> out;
+    out.reserve(shapes.size());
+    for (const auto& s : shapes)
+        out.push_back(s->clone());
+    return out;
+}
 ```
 
-## 3. Structural Patterns
+This is the standard fix for the fact that you can't copy a polymorphic object through a base-class pointer. With raw pointers you can use covariant return types (`Circle* clone() const override`); with `std::unique_ptr` you can't, so every override returns `std::unique_ptr<Shape>`.
 
-### 3.1 Adapter
+## Structural patterns
 
-**Intent**: Convert the interface of a class into another interface clients expect. Adapter lets classes work together that couldn't otherwise because of incompatible interfaces.
+### Adapter
 
-**Code Example**:
+**Intent:** make an existing class usable through an interface it doesn't implement.
 
 ```cpp
-class Target {
+#include <iostream>
+#include <string>
+
+// The interface the rest of the code expects
+class Logger {
 public:
-    virtual ~Target() {}
-    virtual void request() = 0;
+    virtual ~Logger() = default;
+    virtual void log(const std::string& msg) = 0;
 };
 
-class Adaptee {
+// A class you can't change, e.g. from a third-party library
+class LegacyLogger {
 public:
-    void specificRequest() {
-        // ...
+    void writeLine(const char* level, const char* text) {
+        std::cout << '[' << level << "] " << text << '\n';
     }
 };
 
-class Adapter : public Target {
+class LegacyLoggerAdapter : public Logger {
 public:
-    Adapter(Adaptee* adaptee) : adaptee(adaptee) {}
-
-    void request() override {
-        adaptee->specificRequest();
-    }
+    explicit LegacyLoggerAdapter(LegacyLogger& legacy) : legacy_(legacy) {}
+    void log(const std::string& msg) override { legacy_.writeLine("INFO", msg.c_str()); }
 
 private:
-    Adaptee* adaptee;
+    LegacyLogger& legacy_;
 };
+
+int main() {
+    LegacyLogger legacy;
+    LegacyLoggerAdapter logger(legacy);
+    logger.log("started");  // [INFO] started
+}
 ```
 
-### 3.2 Bridge
+### Bridge
 
-**Intent**: Decouple an abstraction from its implementation so that the two can vary independently.
-
-**Code Example**:
+**Intent:** split an abstraction from its implementation so the two can vary independently. Without it, *n* shapes times *m* rendering back ends means *n × m* subclasses; with it you write *n + m*.
 
 ```cpp
-class Implementor {
+#include <iostream>
+#include <memory>
+#include <utility>
+
+// Implementation side
+class Renderer {
 public:
-    virtual ~Implementor() {}
-    virtual void operationImpl() = 0;
+    virtual ~Renderer() = default;
+    virtual void drawCircle(double x, double y, double r) = 0;
 };
 
-class ConcreteImplementorA : public Implementor {
+class SvgRenderer : public Renderer {
 public:
-    void operationImpl() override {
-        // ...
+    void drawCircle(double x, double y, double r) override {
+        std::cout << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\"/>\n";
     }
 };
 
-class ConcreteImplementorB : public Implementor {
+class TextRenderer : public Renderer {
 public:
-    void operationImpl() override {
-        // ...
+    void drawCircle(double x, double y, double r) override {
+        std::cout << "circle at (" << x << ", " << y << ") radius " << r << '\n';
     }
 };
 
-class Abstraction {
+// Abstraction side
+class Shape {
 public:
-    Abstraction(Implementor* implementor) : implementor(implementor) {}
-    virtual ~Abstraction() {}
-
-    virtual void operation() {
-        implementor->operationImpl();
-    }
+    explicit Shape(std::shared_ptr<Renderer> renderer) : renderer_(std::move(renderer)) {}
+    virtual ~Shape() = default;
+    virtual void draw() = 0;
 
 protected:
-    Implementor* implementor;
+    std::shared_ptr<Renderer> renderer_;
 };
 
-class RefinedAbstraction : public Abstraction {
+class Circle : public Shape {
 public:
-    RefinedAbstraction(Implementor* implementor) : Abstraction(implementor) {}
+    Circle(std::shared_ptr<Renderer> renderer, double x, double y, double r)
+        : Shape(std::move(renderer)), x_(x), y_(y), r_(r) {}
+    void draw() override { renderer_->drawCircle(x_, y_, r_); }
 
-    void operation() override {
-        // ...
-        Abstraction::operation();
-        // ...
-    }
+private:
+    double x_, y_, r_;
 };
+
+int main() {
+    Circle a(std::make_shared<SvgRenderer>(), 1, 2, 3);
+    Circle b(std::make_shared<TextRenderer>(), 1, 2, 3);
+    a.draw();
+    b.draw();
+}
 ```
 
-### 3.3 Composite
+### Composite
 
-**Intent**: Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly.
-
-**Code Example**:
+**Intent:** build tree structures where clients treat single objects and groups of objects the same way. A file system is the usual example: a directory's size is the sum of its children's sizes, whether they're files or more directories.
 
 ```cpp
-class Component {
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <vector>
+
+class Node {
 public:
-    virtual ~Component() {}
-    virtual void operation() = 0;
+    virtual ~Node() = default;
+    virtual long size() const = 0;
 };
 
-class Leaf : public Component {
+class File : public Node {
 public:
-    void operation() override {
-        // ...
-    }
+    explicit File(long bytes) : bytes_(bytes) {}
+    long size() const override { return bytes_; }
+
+private:
+    long bytes_;
 };
 
-class Composite : public Component {
+class Directory : public Node {
 public:
-    void add(Component* component) {
-        children.push_back(component);
-    }
+    void add(std::unique_ptr<Node> child) { children_.push_back(std::move(child)); }
 
-    void remove(Component* component) {
-        children.erase(std::remove(children.begin(), children.end(), component), children.end());
-    }
-
-    void operation() override {
-        for (Component* child : children) {
-            child->operation();
-        }
+    long size() const override {
+        long total = 0;
+        for (const auto& child : children_)
+            total += child->size();
+        return total;
     }
 
 private:
-    std::vector<Component*> children;
+    std::vector<std::unique_ptr<Node>> children_;
 };
+
+int main() {
+    auto sub = std::make_unique<Directory>();
+    sub->add(std::make_unique<File>(200));
+
+    Directory root;
+    root.add(std::make_unique<File>(100));
+    root.add(std::move(sub));
+
+    std::cout << root.size() << '\n';  // 300
+}
 ```
 
-### 3.4 Decorator
+Because `Directory` owns its children through `std::unique_ptr`, destroying the root frees the whole tree.
 
-**Intent**: Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
+### Decorator
 
-**Code Example**:
+**Intent:** add behaviour to an object at run time by wrapping it in another object with the same interface, instead of creating a subclass for every combination.
 
 ```cpp
-class Component {
+#include <cctype>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Writer {
 public:
-    virtual ~Component() {}
-    virtual void operation() = 0;
+    virtual ~Writer() = default;
+    virtual void write(const std::string& text) = 0;
 };
 
-class ConcreteComponent : public Component {
+class ConsoleWriter : public Writer {
 public:
-    void operation() override {
-        // ...
+    void write(const std::string& text) override { std::cout << text << '\n'; }
+};
+
+// Base decorator: forwards to the wrapped writer
+class WriterDecorator : public Writer {
+public:
+    explicit WriterDecorator(std::unique_ptr<Writer> inner) : inner_(std::move(inner)) {}
+    void write(const std::string& text) override { inner_->write(text); }
+
+private:
+    std::unique_ptr<Writer> inner_;
+};
+
+class UppercaseWriter : public WriterDecorator {
+public:
+    using WriterDecorator::WriterDecorator;
+    void write(const std::string& text) override {
+        std::string upper = text;
+        for (char& c : upper)
+            c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+        WriterDecorator::write(upper);
     }
 };
 
-class Decorator : public Component {
+class PrefixWriter : public WriterDecorator {
 public:
-    Decorator(Component* component) : component(component) {}
-
-    void operation() override {
-        component->operation();
-    }
-
-protected:
-    Component* component;
+    using WriterDecorator::WriterDecorator;
+    void write(const std::string& text) override { WriterDecorator::write("> " + text); }
 };
 
-class ConcreteDecoratorA : public Decorator {
-public:
-    ConcreteDecoratorA(Component* component) : Decorator(component) {}
+int main() {
+    std::unique_ptr<Writer> w = std::make_unique<PrefixWriter>(
+        std::make_unique<UppercaseWriter>(std::make_unique<ConsoleWriter>()));
+    w->write("hello");  // > HELLO
+}
+```
 
-    void operation() override {
-        // ...
-        Decorator::operation();
-        // ...
-    }
-};
+Each decorator only knows about the `Writer` interface, so they can be stacked in any order.
 
-class ConcreteDecoratorB
+## What's not covered
+
+The remaining structural patterns (Facade, Flyweight, Proxy) and the behavioural ones (Observer, Strategy, Command, State, Visitor and others) are left for another post. Several of them look different in modern C++ than in the 1994 book: Strategy is often just a `std::function` or a template parameter, Iterator is built into the standard library's iterator and range concepts, and Visitor over a closed set of types is often replaced by `std::variant` with `std::visit`.
+
+A pattern is a vocabulary for a design, not a goal. If a plain function or a struct solves the problem, adding a factory or a builder only adds indirection.
+
+## Further reading
+
+- [`std::unique_ptr` (cppreference)](https://en.cppreference.com/w/cpp/memory/unique_ptr)
+- [`std::variant` and `std::visit` (cppreference)](https://en.cppreference.com/w/cpp/utility/variant/visit)

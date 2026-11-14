@@ -1,102 +1,145 @@
 ---
 tags: ['rust']
-title: Building a Text Diff Tool in Rust
-description: In this tutorial, we will build a system tool in Rust that performs text diffing between two text files and outputs them nicely to the console. This tool will be similar to the `diff` command in Linux.
+title: "Building a colored line diff CLI in Rust with clap and similar"
+description: "Build a small diff-like command-line tool in Rust that compares two text files line by line and prints insertions and deletions in color."
 pubDate: Fri, 21 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1340975325.png"
 ---
 
-Building a Text Diff Tool in Rust
+:::caution
+An earlier version of this post used `structopt` and `text_diff`. `structopt` is in maintenance mode (its derive API was merged into `clap`), and `text_diff` hasn't had a release since 2015. The code also didn't compile. This version uses `clap`'s derive API and the `similar` crate instead.
+:::
 
-In this tutorial, we will build a system tool in Rust that performs text diffing between two text files and outputs them nicely to the console. This tool will be similar to the `diff` command in Linux.
+This post builds a small command-line tool that compares two text files line by line and prints the result with `-` for removed lines (red) and `+` for added lines (green), similar to `diff -u` without the hunk headers.
 
-Step 1: Setup
+Two crates do the work:
 
-The first step is to set up a new Rust project. We will be using the `structopt` and `text_diff` libraries for parsing command-line arguments and performing text diffing, respectively. Add the following lines to your `Cargo.toml` file:
+- [`clap`](https://docs.rs/clap) parses the command-line arguments from a struct definition.
+- [`similar`](https://docs.rs/similar) computes the diff. It uses the Myers algorithm by default, the same family of algorithm as `diff` and `git diff`.
 
-```toml
-[dependencies]
-structopt = "0.3.21"
-text_diff = "0.2.2"
+## Setup
+
+```sh
+cargo new difftool
+cd difftool
+cargo add clap --features derive
+cargo add similar
 ```
 
-The `structopt` library provides a convenient way to define and parse command-line arguments. The `text_diff` library provides a convenient way to perform text diffing.
+The code below was written against `clap` 4.6 and `similar` 3.2.
 
-Step 2: Define the Command-Line Arguments
+## Defining the arguments
 
-Next, we need to define the command-line arguments for our tool. We will define two arguments, which are the paths to the two text files that we want to compare. Here is the code to define the arguments using the `structopt` library:
+With `clap`'s derive API, each struct field is a positional argument, and the doc comments become the `--help` text:
 
 ```rust
 use std::path::PathBuf;
-use structopt::StructOpt;
 
-#[derive(StructOpt)]
+use clap::Parser;
+
+/// Compare two text files line by line.
+#[derive(Parser)]
+#[command(version)]
 struct Cli {
-    #[structopt(parse(from_os_str))]
-    file1: PathBuf,
-
-    #[structopt(parse(from_os_str))]
-    file2: PathBuf,
+    /// The original file
+    old: PathBuf,
+    /// The changed file
+    new: PathBuf,
 }
 ```
 
-Step 3: Read the Files and Perform Text Diffing
+`Cli::parse()` reads `std::env::args()`, prints usage and exits if the arguments are wrong, and handles `--help` and `--version` for you.
 
-Next, we need to read the two text files and perform text diffing. We will use the `text_diff` library for this. Here is the code to read the files and perform text diffing:
+## Diffing and printing
+
+The complete `src/main.rs`:
 
 ```rust
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-use text_diff::diff;
+use std::fs;
+use std::io;
+use std::path::PathBuf;
+use std::process::ExitCode;
 
-fn read_file(path: &std::path::PathBuf) -> Vec<String> {
-    let file = File::open(path).expect("failed to open file");
-    let reader = BufReader::new(file);
-    reader.lines().map(|l| l.unwrap()).collect()
+use clap::Parser;
+use similar::{ChangeTag, TextDiff};
+
+/// Compare two text files line by line.
+#[derive(Parser)]
+#[command(version)]
+struct Cli {
+    /// The original file
+    old: PathBuf,
+    /// The changed file
+    new: PathBuf,
 }
 
-fn main() {
-    let args = Cli::from_args();
-    let file1_lines = read_file(&args.file1);
-    let file2_lines = read_file(&args.file2);
-    let comparison = diff(&file1_lines, &file2_lines, "\n");
+const RED: &str = "\x1b[31m";
+const GREEN: &str = "\x1b[32m";
+const RESET: &str = "\x1b[0m";
 
-    println!("{}", comparison);
+fn main() -> io::Result<ExitCode> {
+    let cli = Cli::parse();
+    let old = fs::read_to_string(&cli.old)?;
+    let new = fs::read_to_string(&cli.new)?;
+
+    let diff = TextDiff::from_lines(old.as_str(), new.as_str());
+    let mut changed = false;
+
+    for change in diff.iter_all_changes() {
+        let (sign, color) = match change.tag() {
+            ChangeTag::Delete => ("-", RED),
+            ChangeTag::Insert => ("+", GREEN),
+            ChangeTag::Equal => (" ", ""),
+        };
+        if change.tag() != ChangeTag::Equal {
+            changed = true;
+        }
+
+        // Each change includes its line ending; strip it so the
+        // reset code goes before the newline.
+        let line = change.to_string_lossy();
+        println!("{color}{sign}{}{RESET}", line.trim_end_matches(['\r', '\n']));
+    }
+
+    // Like `diff`: exit 0 if the files match, 1 if they differ.
+    Ok(if changed { ExitCode::from(1) } else { ExitCode::SUCCESS })
 }
 ```
 
-The `read_file` function reads a file and returns its contents as a vector of lines. The `main` function uses `Cli::from_args()` to parse the command-line arguments. We then call `read_file` to read the contents of the two files. Finally, we use `diff` from the `text_diff` library to perform text diffing between the two files.
+What's going on:
 
-Step 4: Output the Results
+- `fs::read_to_string` reads each file in one go. If a file is missing or isn't valid UTF-8, the `?` returns the error from `main`, which prints it and exits with a non-zero status.
+- `TextDiff::from_lines` splits both inputs into lines and diffs them. `iter_all_changes` yields every line, tagged as `Delete`, `Insert`, or `Equal`.
+- The colors are plain ANSI escape codes. They work in Linux and macOS terminals and in Windows Terminal; if you need to turn them off when output is piped, check `std::io::IsTerminal` or use a crate such as `anstream`.
+- Returning an `ExitCode` makes the tool usable in scripts, e.g. `difftool a.txt b.txt > /dev/null || echo "files differ"`.
 
-Finally, we need to output the results of our text diffing to the console. Here is the code to output the results to the console:
+## Running it
 
-```rust
-use std::fmt;
-
-impl fmt::Display for Change {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Change::Insert(s) => write!(f, "\x1b[32m{}\x1b[0m", s),
-            Change::Delete(s) => write!(f, "\x1b[31m{}\x1b[0m", s),
-            Change::Equal(s) => write!(f, "{}", s),
-        }
-    }
-}
-
-impl fmt::Display for TextDiff<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for change in self.iter_all_changes() {
-            writeln!(f, "{}", change)?;
-        }
-        Ok(())
-    }
-}
+```sh
+printf 'apple\nbanana\ncherry\n' > a.txt
+printf 'apple\nblueberry\ncherry\ndate\n' > b.txt
+cargo run -- a.txt b.txt
 ```
 
-We use `impl fmt::Display` to define how to display the changes between the two files. We use ANSI color codes to highlight insertions in green and deletions in red. We then use `impl fmt::Display` to define how to display the entire text diff.
+Output (without the colors):
 
-Conclusion
+```text
+ apple
+-banana
++blueberry
+ cherry
++date
+```
 
-In this tutorial, we have built a system tool in Rust that performs text diffing between two text files and outputs them nicely to the console. We have used the `structopt` and `text_diff` libraries to define and parse command-line arguments and perform text diffing. With this knowledge, you can build powerful system tools in Rust for a variety of tasks.
+## Where to go from here
+
+- Printing every unchanged line gets noisy on large files. `TextDiff` has a `unified_diff()` method that produces standard unified-diff output with context lines and `@@` hunk headers.
+- `similar` can also diff by words or characters (`TextDiff::from_words`, `TextDiff::from_chars`), which is useful for highlighting the changed part of a modified line.
+- `read_to_string` loads both files into memory, which is fine for source files and config, but not for multi-gigabyte logs.
+
+## Further reading
+
+- [`similar` documentation](https://docs.rs/similar)
+- [`clap` derive tutorial](https://docs.rs/clap/latest/clap/_derive/_tutorial/index.html)

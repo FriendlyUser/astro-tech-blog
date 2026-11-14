@@ -1,140 +1,170 @@
 ---
-title: Using OpenCV in Python A Comprehensive Guide
+title: "OpenCV in Python: reading images, basic transforms, edges and face detection"
 pubDate: "2023-11-24T14:04:38.000Z"
-description: "This article will provide a comprehensive guide on how to use OpenCV in Python, covering installation, basic operations, image processing techniques, and more."
-tags: []
+lastUpdated: 2026-11-14
+description: "Load, display and save images with OpenCV in Python, then resize, rotate, threshold, blur, find edges and detect faces with a Haar cascade."
+tags:
+  - python
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3437532028.png
 ---
-# Using OpenCV in Python: A Comprehensive Guide
 
-OpenCV (Open Source Computer Vision Library) is a powerful and widely-used library for computer vision, image processing, and machine learning applications. It is designed to work with various programming languages, including Python. This article will provide a comprehensive guide on how to use OpenCV in Python, covering installation, basic operations, image processing techniques, and more.
+OpenCV is a C++ computer vision library with official Python bindings (`cv2`). In Python, images are plain NumPy arrays, so you can mix OpenCV calls with NumPy slicing and arithmetic. This post walks through the basics: I/O, simple transforms, thresholding, blurring, edge detection, and face detection with a Haar cascade.
 
-## Table of Contents
+## Installation
 
-1. [Installation](#installation)
-2. [Reading, Displaying, and Saving Images](#reading-displaying-and-saving-images)
-3. [Basic Image Operations](#basic-image-operations)
-4. [Image Processing Techniques](#image-processing-techniques)
-5. [Face Detection Using Haar Cascades](#face-detection-using-haar-cascades)
-6. [Conclusion](#conclusion)
-
-## Installation <a name="installation"></a>
-
-To get started with OpenCV in Python, you need to install the `opencv- package. You can do this using the following command:
+The official wheels on PyPI come in four variants. Install **only one** of them in a given environment; they all provide the same `cv2` module and conflict with each other.
 
 ```bash
-pip install opencv-python
+pip install opencv-python            # main modules, with GUI support (imshow)
+pip install opencv-contrib-python    # main + extra "contrib" modules
+pip install opencv-python-headless   # no GUI; for servers and Docker
+pip install opencv-contrib-python-headless
 ```
 
-If you need the additional modules that are not included in the main package, you can install the `opencv-contrib- package:
+The examples below were checked against OpenCV 4.x. OpenCV 5 moved the Haar cascade classifier into the contrib modules; see the note in the face detection section.
 
-```bash
-pip install opencv-contrib-python
-```
-
-## Reading, Displaying, and Saving Images <a name="reading-displaying-and-saving-images"></a>
-
-To read an image using OpenCV, you can use the `imread()` function. This function takes the image file path as an argument and returns the image in a NumPy array format.
+## Reading, displaying and saving images
 
 ```python
+import sys
 import cv2
 
 image = cv2.imread("image.jpg")
+if image is None:
+    sys.exit("could not read image.jpg")
+
+print(image.shape)  # (height, width, 3)
 ```
 
-To display the image, you can use the `imshow()` function. This function takes two arguments: the name of the window and the image itself.
+Two things trip people up here:
+
+- `imread` does **not** raise an exception when the file is missing or unreadable; it returns `None`. Check for it, or the error surfaces later as a confusing failure in another function.
+- Colour images are loaded in **BGR** channel order, not RGB. Convert with `cv2.cvtColor(image, cv2.COLOR_BGR2RGB)` before passing the array to Matplotlib or Pillow.
+
+To show the image in a window:
 
 ```python
 cv2.imshow("Image", image)
-cv2.waitKey(0)
+cv2.waitKey(0)           # wait for any key press
 cv2.destroyAllWindows()
 ```
 
-The `waitKey()` function waits for a keyboard event, and the `destroyAllWindows()` function closes all the open windows.
+`imshow` needs a desktop session and a non-headless build. In Jupyter or on a server, convert to RGB and display with Matplotlib instead.
 
-To save an image, you can use the `imwrite()` function. This function takes the file path and the image as arguments.
+`imwrite` picks the format from the file extension and returns `True` on success:
 
 ```python
-cv2.imwrite("output.jpg", image)
+cv2.imwrite("output.png", image)
 ```
 
-## Basic Image Operations <a name="basic-image-operations"></a>
+## Basic operations
 
-### Grayscale Conversion
-
-To convert an image to grayscale, you can use the `cvtColor()` function with the `COLOR_BGR2GRAY` flag.
+### Grayscale
 
 ```python
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 ```
 
-### Resizing Images
+Many algorithms (thresholding, Canny, Haar cascades) work on a single-channel image, so this is usually the first step.
 
-To resize an image, you can use the `resize()` function. This function takes the image and the desired dimensions as arguments.
+### Resizing
+
+`resize` takes the target size as `(width, height)`, the opposite order to `image.shape`:
 
 ```python
-resized_image = cv2.resize(image, (width, height))
+small = cv2.resize(image, (200, 150), interpolation=cv2.INTER_AREA)
+
+# or scale by a factor and keep the aspect ratio
+half = cv2.resize(image, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
 ```
 
-### Rotating Images
+`INTER_AREA` gives better results when shrinking; `INTER_LINEAR` (the default) or `INTER_CUBIC` are better when enlarging.
 
-To rotate an image, you can use the `getRotationMatrix2D()` and `warpAffine()` functions. The first function computes the rotation matrix, and the second applies the matrix to the image.
+### Rotating
+
+`getRotationMatrix2D` builds a 2×3 affine matrix from a centre, an angle in degrees (positive is counter-clockwise), and a scale. `warpAffine` applies it:
 
 ```python
-(height, width) = image.shape[:2]
+height, width = image.shape[:2]
 center = (width // 2, height // 2)
 
-matrix = cv2.getRotationMatrix2D(center, angle, scale)
-rotated_image = cv2.warpAffine(image, matrix, (width, height))
+matrix = cv2.getRotationMatrix2D(center, 30, 1.0)
+rotated = cv2.warpAffine(image, matrix, (width, height))
 ```
 
-## Image Processing Techniques <a name="image-processing-techniques"></a>
+The output keeps the original size, so the corners get cut off. For exact 90° turns, `cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)` is simpler and loses nothing.
 
-### Image Thresholding
+## Image processing
 
-To apply a binary threshold to an image, you can use the `threshold()` function. This function takes the image, the threshold value, the maximum value, and the threshold type as arguments.
+### Thresholding
+
+`threshold` returns a tuple of the threshold used and the result image. Pixels above the threshold become `maxval`, the rest become 0:
 
 ```python
-_, thresholded_image = cv2.threshold(gray_image, threshold_value, max_value, cv2.THRESH_BINARY)
+_, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+# let Otsu's method pick the threshold from the histogram
+otsu_value, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 ```
 
-### Edge Detection
+For uneven lighting, `cv2.adaptiveThreshold` computes a threshold per neighbourhood instead of one for the whole image.
 
-To detect edges in an image, you can use the `Canny()` function. This function takes the image and the lower and upper thresholds for the edges as arguments.
+### Blurring
 
 ```python
-edges = cv2.Canny(image, lower_threshold, upper_threshold)
+gaussian = cv2.GaussianBlur(image, (5, 5), 0)   # kernel size must be odd; sigma 0 = derive from size
+median = cv2.medianBlur(image, 5)               # good for salt-and-pepper noise
+bilateral = cv2.bilateralFilter(image, 9, 75, 75)  # smooths while keeping edges sharp
 ```
 
-### Blurring Images
+### Edge detection
 
-To blur an image, you can use various techniques, such as Gaussian blur, median blur, or bilateral blur. For example, to apply a Gaussian blur, you can use the `GaussianBlur()` function.
+`Canny` takes a low and a high threshold for the hysteresis step. Blurring first reduces edges from noise:
 
 ```python
-blurred_image = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
+edges = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 150)
 ```
 
-## Face Detection Using Haar Cascades <a name="face-detection-using-haar-cascades"></a>
+A high-to-low ratio of about 2:1 to 3:1 is a common starting point; tune from there.
 
-To detect faces in an image, you can use the pre-trained Haar Cascade classifiers. First, you need to load the classifier using the `CascadeClassifier()` function.
+## Face detection with a Haar cascade
+
+:::caution
+In OpenCV 5, `CascadeClassifier` moved from the main `objdetect` module to `xobjdetect` in opencv_contrib, so with 5.x you need `opencv-contrib-python`. For new projects the OpenCV maintainers suggest the DNN-based `cv2.FaceDetectorYN` (YuNet), which is more accurate but needs a separately downloaded ONNX model.
+:::
+
+Haar cascades are an older, fast but fairly inaccurate detector. The pip wheels ship the pre-trained XML files, and `cv2.data.haarcascades` gives you their directory:
 
 ```python
-face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+import sys
+import cv2
+
+image = cv2.imread("people.jpg")
+if image is None:
+    sys.exit("could not read people.jpg")
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
+if face_cascade.empty():
+    sys.exit("could not load cascade")
+
+faces = face_cascade.detectMultiScale(
+    gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
+)
+
+for x, y, w, h in faces:
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # green in BGR
+
+cv2.imwrite("faces.jpg", image)
+print(f"found {len(faces)} face(s)")
 ```
 
-Next, you can use the `detectMultiScale()` function to detect faces in the image. This function takes the image, the scale factor, and the minimum number of neighbors as arguments.
+`scaleFactor` controls how much the image shrinks between detection passes (smaller is slower but finds more sizes), and `minNeighbors` is how many overlapping detections a candidate needs before it counts; raise it if you get false positives. Like `imread`, a bad path doesn't raise: the classifier just loads empty, which is why the `empty()` check is there.
 
-```python
-faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5)
+## Further reading
 
-## Draw rectangles around the detected faces
-for (x, y, w, h) in faces:
-    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-```
-
-## Conclusion <a name="conclusion"></a>
-
-This article provided an overview of using OpenCV in Python, covering installation, basic operations, image processing techniques, and face detection using Haar Cascades. OpenCV is a powerful library that can be used for various computer vision and image processing tasks. By mastering its functions, you can build sophisticated applications, such as object tracking, image segmentation, and even deep learning-based object recognition.
-
-For more information on OpenCV and its functions, visit the [official documentation](https://docs.opencv.org/master/d6/d00/tutorial_py_root.html).
+- [OpenCV-Python tutorials](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)
+- [opencv-python on PyPI](https://pypi.org/project/opencv-python/), which explains the four package variants

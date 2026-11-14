@@ -1,180 +1,148 @@
 ---
-title: Custom image component in react
-description: Created a custom image component with a loading spinner and fallback image
+title: A React image component with a loading skeleton and fallback image
+description: Build a React image component that shows a shimmer skeleton while the image loads and swaps to a fallback image if it fails, without error loops.
 alt: my first blog post
-tags: ["react","js"]
+tags: ["react","js", "css"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 April 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/342028959_blank_card_on_brown_table.png'
 ---
 
+A plain `<img>` shows nothing while it loads and a broken-image icon if the URL fails. This post builds a small React component that shows a placeholder skeleton while loading and swaps to a fallback image on error.
 
-he HTML `<img>` tag is used to embed an image in a web page. It allows you to display an image that is hosted on a server or included in the webpage's source code. The `<img>` tag has two required attributes:
+## The `<img>` basics
 
-* src: This specifies the URL or path to the image that you want to display.
-* alt: This provides alternative text for the image, which is displayed if the image cannot be 
-loaded or if the user is using a screen reader.
-
-Here's an example of how to use the `<img>` tag to display an image:
+`src` is the only attribute the browser needs to load an image. `alt` should always be present too: screen readers read it, and browsers show it when the image can't be displayed. Use `alt=""` for purely decorative images.
 
 ```html
-<img src="image.jpg" alt="A beautiful sunset over the ocean">
+<img src="image.jpg" alt="A sunset over the ocean">
 ```
 
+Other useful attributes are `width` and `height` (which let the browser reserve space before the image loads, avoiding layout shift) and `loading="lazy"` (which defers off-screen images until the user scrolls near them).
 
-In this example, the src attribute points to an image file called image.jpg, and the alt attribute provides a description of the image for users who cannot see it.
+## A fallback in plain HTML
 
-The `<img>` tag also supports several optional attributes that can be used to modify the image's appearance and behavior, such as width, height, title, and loading.
-
-Overall, the `<img>` tag is a simple and widely used element that makes it easy to add images to your web pages.  
-
-A fallback image is a backup image that is displayed in the event that the primary image fails to load. This can happen for various reasons, such as slow internet connection or incorrect file path. The fallback image is usually a simpler version of the primary image and is designed to provide a reasonable substitute for the missing image.
-
-To specify a fallback image in HTML, you can use the "onerror" attribute of the "img" tag. Here's an example:
+The `error` event fires when an image fails to load, so you can swap the source:
 
 ```html
-<img src="primary-image.jpg" onerror="this.src='fallback-image.jpg';">
+<img src="primary-image.jpg" alt="Product photo"
+     onerror="this.onerror = null; this.src = 'fallback-image.jpg';">
 ```
 
-In this example, if the "primary-image.jpg" fails to load, the "onerror" attribute triggers and sets the "src" attribute to "fallback-image.jpg". This will display the fallback image instead of the missing primary image.
+Clearing `onerror` first matters. Without it, a missing fallback image fires `error` again and the handler keeps resetting `src` in a loop.
 
-It's a good practice to use fallback images, as they can improve the user experience by ensuring that something is displayed even if the primary image is unavailable.
+## The same thing in React
 
+React exposes the event as `onError`:
 
-```js
-import React from 'react';
-
-function MyImageComponent() {
-  return (
-    <img src="primary-image.jpg" onError={(e) => {
-      e.target.src = 'fallback-image.jpg';
-    }} />
-  );
-}
-```
-
-In this example, the MyImageComponent renders an img tag with a src attribute set to the primary image source. If the primary image fails to load, the onError event handler will trigger and set the src attribute to the fallback image source.
-
-Note that we're using an arrow function as the event handler for the onError event. The event object is passed as an argument to the function, and we're using the target property of the event object to access the img tag and set its src attribute to the fallback image source.
-
-This is just one example of how to implement a fallback image in React. The specific implementation may vary depending on your needs and the structure of your application.
-
-In addition to the src and onError properties, there are several other properties that you can use with the img tag in React. Here are some common ones:
-
-* alt: The alternative text that is displayed if the image fails to load or if the user is using a screen reader. It's also used for SEO purposes.
-width and height: The dimensions of the image. You can specify these as numbers or strings, such as "100px".
-* loading: The lazy-loading behavior of the image. This can be set to "lazy" to defer loading the image until it's in the user's viewport, or "eager" to load it immediately.
-* style: An object containing CSS styles to apply to the image element. For example, you can set the borderRadius property to round the corners of the image.
-
-Here's an example that uses some of these properties:
-
-```js
-import React from 'react';
-
-function MyImageComponent() {
+```jsx
+function MyImage() {
   return (
     <img
       src="primary-image.jpg"
-      onError={(e) => {
-        e.target.src = 'fallback-image.jpg';
-      }}
-      alt="A beautiful landscape"
-      width="400"
-      height="300"
+      alt="A landscape"
+      width={400}
+      height={300}
       loading="lazy"
       style={{ borderRadius: '10px' }}
+      onError={(e) => {
+        const img = e.currentTarget;
+        if (!img.src.endsWith('fallback-image.jpg')) {
+          img.src = 'fallback-image.jpg';
+        }
+      }}
     />
   );
 }
 ```
 
-In this example, we're setting the alt text, dimensions, lazy-loading behavior, and border radius of the image using the corresponding properties.
+The check on the current `src` plays the same role as clearing `onerror` above: if the fallback also fails, the handler does nothing instead of looping. Changing `src` directly on the DOM node works, but React doesn't know about it. If you want React to own the state (and add a loading placeholder), keep it in state instead.
 
-These are just a few examples of the properties that you can use with the img tag in React. There are many others, so it's worth consulting the React documentation or the HTML specification if you need to use a specific property.
+## Component with a skeleton and fallback
 
-An example of a React component that wraps an img tag with a skeleton loader and a fallback image:
+```jsx
+import { useState } from 'react';
 
-```js
-import React, { useState } from 'react';
+export default function ImageWithFallback({ src, fallbackSrc, alt, ...rest }) {
+  // 'loading' | 'loaded' | 'error'
+  const [status, setStatus] = useState('loading');
 
-function ImageWithFallbackAndLoader(props) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
-  const handleImageError = () => {
-    setIsLoading(false);
-    setHasError(true);
-  };
+  if (status === 'error') {
+    return <img src={fallbackSrc} alt={alt} {...rest} />;
+  }
 
   return (
-    <>
-      {isLoading && (
-        <div className="skeleton-loader">
-          {/* Placeholder content while image is loading */}
-        </div>
-      )}
-      {!hasError ? (
-        <img
-          src={props.src}
-          alt={props.alt}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-      ) : (
-        <img src={props.fallbackSrc} alt={props.alt} />
-      )}
-    </>
+    <span className="image-wrapper">
+      {status === 'loading' && <span className="skeleton-loader" aria-hidden="true" />}
+      <img
+        {...rest}
+        src={src}
+        alt={alt}
+        onLoad={() => setStatus('loaded')}
+        onError={() => setStatus('error')}
+        style={{ ...rest.style, opacity: status === 'loaded' ? 1 : 0 }}
+      />
+    </span>
   );
 }
 ```
 
-In this example, we define a function component called ImageWithFallbackAndLoader that takes two props: src (the primary image source) and fallbackSrc (the fallback image source). We also pass down the alt attribute from the parent component.
+Usage:
 
-The component uses React's useState hook to manage the loading and error states of the image. Initially, isLoading is set to true, and hasError is set to false.
+```jsx
+<ImageWithFallback
+  key={photoUrl}
+  src={photoUrl}
+  fallbackSrc="/images/placeholder.png"
+  alt="Product photo"
+  width={400}
+  height={300}
+/>
+```
 
-When the img tag successfully loads the image, the onLoad event handler is called, which sets isLoading to false. If there's an error loading the image, the onError event handler is called, which sets both isLoading and hasError to false and true, respectively.
+How it works:
 
-In the return statement, we use conditional rendering to display either a skeleton loader or the img tag. If isLoading is true, we show the placeholder content while the image is loading. If hasError is false, we show the img tag with the src and alt attributes set to the primary image source and the event handlers set to handleImageLoad and handleImageError, respectively.
+- A single `status` value replaces separate `isLoading` and `hasError` flags, so the component can't end up in an impossible combination.
+- While loading, the real `<img>` is rendered (so the browser actually fetches it) but kept invisible with `opacity: 0`, and the skeleton is positioned on top of it. Hiding the image with `display: none` instead can stop `loading="lazy"` images from ever loading.
+- On `error`, the component renders the fallback image. The fallback has no `onError` handler, so a broken fallback can't cause a loop.
+- `key={photoUrl}` resets the state when the URL changes. Without it, a component that already reached `loaded` or `error` would keep that status for the new image.
+- Pass `width` and `height`. The wrapper takes its size from the image, and an image that hasn't loaded has no intrinsic size, so without them the skeleton collapses to nothing.
 
-If hasError is true, we show the img tag with the src attribute set to the fallback image source and the alt attribute set to the alt prop passed down from the parent component.
-
-This is just one example of how to create a wrapper component for an img tag with a skeleton loader and fallback image. You can customize this component to fit your specific needs and styling.
-
-Defining the .skeleton-loader class in CSS:
+## The skeleton CSS
 
 ```css
-.skeleton-loader {
-  display: inline-block;
+.image-wrapper {
   position: relative;
-  width: 100%;
-  padding-bottom: 100%;
-  background-color: #e3e3e3;
-  animation: skeleton-loading 1s ease-in-out infinite;
+  display: inline-block;
 }
 
-@keyframes skeleton-loading {
-  0% {
-    transform: translateX(-100%);
+.skeleton-loader {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e3e3e3 25%, #f2f2f2 50%, #e3e3e3 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
   }
-  100% {
-    transform: translateX(100%);
+  to {
+    background-position: -100% 0;
   }
 }
 ```
 
-In this example, we define the .skeleton-loader class with the following properties:
+The wrapper is `position: relative` so the skeleton can cover the image exactly with `position: absolute; inset: 0`. The skeleton's background is a grey gradient twice as wide as the box, and the animation slides it across to produce a shimmer. Animating `background-position` keeps the skeleton itself in place; animating `transform` on the skeleton would move the whole grey box instead.
 
-* display: inline-block: This ensures that the skeleton loader takes up only the space that it needs, and doesn't push other elements out of the way.
-position: relative: This allows us to position child elements (such as the placeholder content) inside the skeleton loader using absolute positioning.
-* width: 100%: This ensures that the skeleton loader is as wide as its parent element.
-* padding-bottom: 100%: This sets the height of the skeleton loader to be the same as its width, creating a square aspect ratio. You can adjust this value if you want the skeleton loader to have a different aspect ratio.
-* background-color: #e3e3e3: This sets the background color of the skeleton loader to a light gray color. You can change this to any color you want.
-* animation: skeleton-loading 1s ease-in-out infinite: This applies an animation to the skeleton loader using the skeleton-loading keyframe animation. The animation lasts for 1 second, uses an ease-in-out timing function, and repeats infinitely.
+## Gotchas
 
-The @keyframes rule defines the skeleton-loading animation with two keyframes: one at 0% and one at 100%. The animation uses the translateX transform function to move the element horizontally from -100% to 100% of its width, creating a sliding animation effect.
+- With server-side rendering (Next.js, Remix and similar), the image can finish loading before React hydrates and attaches `onLoad`, leaving the skeleton up forever. Fix it by putting a ref on the `<img>` and, in a `useEffect`, setting the status to `loaded` if `img.complete && img.naturalWidth > 0`.
+- If you use Next.js, its `next/image` component already has a `placeholder` prop for blur placeholders; you may only need the `onError` part.
 
-You can adjust these properties to fit your specific design needs. This is just one example of how to define a skeleton loader in CSS.
+## Further reading
+
+- [`<img>` on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img)
+- [Common components (including `<img>` events) in the React docs](https://react.dev/reference/react-dom/components/common)

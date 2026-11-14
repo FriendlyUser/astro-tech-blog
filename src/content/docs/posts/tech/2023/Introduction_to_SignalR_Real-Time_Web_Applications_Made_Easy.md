@@ -1,64 +1,46 @@
 ---
-description: In this article, we'll explore the basics of SignalR, its key features,
-  and how it works under the hood
+description: What ASP.NET Core SignalR does, how it picks a transport, and how to build
+  a minimal chat hub with Program.cs and the @microsoft/signalr JavaScript client.
 imgSrc: /imgs/2023/2966567085.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-04T05:19:15.000Z'
-tags: []
-title: Introduction to SignalR Real-Time Web Applications Made Easy
+lastUpdated: 2026-11-14
+tags:
+  - dotnet
+  - csharp
+title: "ASP.NET Core SignalR: pushing real-time updates from server to browser"
 ---
 
-# Introduction to SignalR: Real-Time Web Applications Made Easy
+SignalR is the ASP.NET Core library for pushing messages from the server to connected clients as soon as something happens, instead of having clients poll for changes. You write a *hub* class on the server, clients call its methods, and the hub can call methods on one client, a group, or every client. Typical uses are chat, live dashboards, notifications and collaborative editing.
 
-In today's ever-evolving world of web development, real-time communication has become essential for providing a seamless and interactive user experience. SignalR is a robust open-source library built on the .NET platform that simplifies the process of implementing real-time communication capabilities into web applications. In this article, we'll explore the basics of SignalR, its key features, and how it works under the hood.
+This post covers ASP.NET Core SignalR. The older ASP.NET SignalR for .NET Framework is a separate, incompatible library.
 
-## What is SignalR?
+## How it works
 
-SignalR is a library for ASP.NET developers that simplifies the process of adding real-time web functionality to applications. Real-time web functionality is the ability to have server code push content to connected clients instantly as it becomes available, rather than having the server wait for a client to request new data.
+When a client connects, it first sends a negotiate request to the server, and the two agree on a transport. SignalR tries these in order and uses the first one both sides support:
 
-SignalR can be used to build applications such as chat applications, real-time dashboards, online gaming platforms, and more. It provides an abstraction over various real-time communication techniques, allowing developers to focus on creating rich, interactive user experiences instead of worrying about the underlying communication protocols.
+1. WebSockets
+2. Server-Sent Events
+3. Long polling
 
-## Key Features of SignalR
+Once connected, messages are serialized with the hub protocol (JSON by default, MessagePack optionally) and sent over that transport. Your code doesn't change based on which transport was picked.
 
-SignalR offers a variety of features that make it an attractive choice for creating real-time web applications:
+What SignalR handles for you:
 
-1. **Automatic transport selection**: SignalR automatically chooses the best transport mechanism (WebSockets, Server-Sent Events, or long polling) for communication between the server and client based on their capabilities.
+- **Connections and groups.** `Clients.All`, `Clients.Caller`, `Clients.Client(id)` and `Clients.Group(name)` target messages; `Groups.AddToGroupAsync` manages group membership.
+- **Reconnection.** The JavaScript client can reconnect automatically if you call `withAutomaticReconnect()`.
+- **Clients.** Microsoft ships client libraries for JavaScript/TypeScript, .NET and Java.
+- **Scale-out.** With more than one server, a message sent on one server has to reach clients connected to the others. Use Azure SignalR Service or a Redis backplane for that. Without Azure SignalR Service, you also need sticky sessions in most setups.
 
-2. **Connection management**: SignalR handles connection management, providing an API for managing connections and groups of connections. This allows developers to broadcast messages to specific clients or groups easily.
+## A minimal chat hub
 
-3. **Works with popular front-end frameworks**: SignalR provides client libraries for popular JavaScript frameworks such as jQuery, Angular, and React, making it easy to integrate with existing front-end code.
+The SignalR server is part of the ASP.NET Core shared framework, so a web project needs no extra NuGet package.
 
-4. **Fallback options for older browsers**: SignalR gracefully degrades to use long polling if WebSockets are not supported by the client's browser.
-
-5. **Scale-out support**: SignalR supports scaling out across multiple servers, allowing your application to handle a large number of concurrent connections.
-
-## How SignalR Works
-
-SignalR uses a combination of techniques to establish a connection between the server and the client. The primary mechanism used is WebSockets, which enables full-duplex communication between the server and client over a single, long-lived connection. If WebSockets are not available, SignalR will attempt to use Server-Sent Events or long polling as fallback options.
-
-Once a connection is established, SignalR provides a simple API for sending messages between the server and client. On the server-side, messages can be sent to specific clients, groups of clients, or broadcasted to all connected clients. On the client-side, JavaScript code can be written to handle incoming messages and update the UI accordingly.
-
-Here's a high-level overview of how SignalR works:
-
-1. The client requests the SignalR JavaScript library from the server and establishes a connection.
-2. The server and client negotiate the best transport mechanism (WebSockets, Server-Sent Events, or long polling) for communication.
-3. The server-side and client-side code use the SignalR API to send and receive messages.
-4. The server broadcasts messages to connected clients as needed, and clients update their UI in response to incoming messages.
-
-## Getting Started with SignalR
-
-To start using SignalR in your ASP.NET Core application, follow these steps:
-
-1. Install the `Microsoft.AspNetCore.SignalR` NuGet package.
-2. Configure SignalR in your `Startup.cs` file by adding the following code in the `ConfigureServices` method:
+Define a hub:
 
 ```csharp
-services.AddSignalR();
-```
+using Microsoft.AspNetCore.SignalR;
 
-3. Add a SignalR hub, which is a class that inherits from `Hub`, to define server-side methods that can be called by clients:
-
-```csharp
 public class ChatHub : Hub
 {
     public async Task SendMessage(string user, string message)
@@ -68,31 +50,67 @@ public class ChatHub : Hub
 }
 ```
 
-4. In the `Configure` method of your `Startup.cs` file, add the following code to map the hub to a specific endpoint:
+Register SignalR and map the hub in `Program.cs` (the minimal hosting model used since .NET 6; older projects do the same thing in `Startup.ConfigureServices` and `Startup.Configure`):
 
 ```csharp
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ChatHub>("/chatHub");
-});
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
+
+var app = builder.Build();
+
+app.UseStaticFiles();
+app.MapHub<ChatHub>("/chatHub");
+
+app.Run();
 ```
 
-5. On the client-side, add a reference to the SignalR JavaScript library and write JavaScript code to connect to the hub and handle incoming messages:
+## The JavaScript client
+
+Install the client from npm:
+
+```bash
+npm install @microsoft/signalr
+```
+
+The browser build is at `node_modules/@microsoft/signalr/dist/browser/signalr.js`; copy it into `wwwroot` or bundle it. Then connect to the hub:
 
 ```javascript
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/chatHub")
+    .withAutomaticReconnect()
     .build();
 
 connection.on("ReceiveMessage", (user, message) => {
-    // Update the UI with the received message
+    const li = document.createElement("li");
+    li.textContent = `${user}: ${message}`;
+    document.getElementById("messages").appendChild(li);
 });
 
-connection.start().catch(err => console.error(err.toString()));
+async function start() {
+    try {
+        await connection.start();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+start();
+
+// Call the hub method from a button handler, for example:
+// await connection.invoke("SendMessage", "alice", "hello");
 ```
 
-With these steps, you've created a simple real-time chat application using SignalR.
+The string passed to `connection.on` must match the name used in `SendAsync` on the server, and the name passed to `invoke` must match the hub method name.
 
-## Conclusion
+## Gotchas
 
-SignalR is a powerful library for creating real-time web applications on the .NET platform. By providing an abstraction over various real-time communication techniques and handling connection management, SignalR allows developers to focus on crafting engaging and interactive user experiences. Withits support for popular front-end frameworks, automatic transport selection, and scale-out capabilities, SignalR is a valuable tool for any developer looking to build real-time web applications.
+- `withAutomaticReconnect()` doesn't retry the *initial* `start()`. If the first connection fails, retry it yourself.
+- Hubs are transient: a new instance is created for each call. Don't store state in hub fields; use a singleton service or a database.
+- Behind a proxy or load balancer, make sure WebSocket upgrades are allowed, or SignalR will silently fall back to slower transports.
+
+## Further reading
+
+- [Overview of ASP.NET Core SignalR](https://learn.microsoft.com/aspnet/core/signalr/introduction)
+- [Tutorial: Get started with ASP.NET Core SignalR](https://learn.microsoft.com/aspnet/core/tutorials/signalr)
+- [SignalR hosting and scaling](https://learn.microsoft.com/aspnet/core/signalr/scale)

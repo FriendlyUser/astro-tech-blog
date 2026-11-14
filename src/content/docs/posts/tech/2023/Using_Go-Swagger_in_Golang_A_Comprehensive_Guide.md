@@ -1,56 +1,38 @@
 ---
-description: In this article, we will explore how to use go-swagger in your Golang
-  project to enhance your API development experience
+description: Use go-swagger to validate a Swagger 2.0 spec, generate a Go server and client from it, and wire up a handler for a small todo API.
 imgSrc: /imgs/2023/3063879952.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-01T19:53:10.000Z'
-tags: []
-title: Using Go-Swagger in Golang A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags:
+  - go
+title: Generating a Go API server and client from a Swagger spec with go-swagger
 ---
 
-# Using Go-Swagger in Golang: A Comprehensive Guide
+go-swagger is a code generator and toolkit for the Swagger 2.0 (OpenAPI 2.0) specification in Go. You write the API contract in YAML, and `swagger` generates the models, request parameter parsing and validation, routing, a runnable server, and a typed client. You fill in the handlers.
 
-Go-Swagger is a powerful, feature-rich toolkit for working with the OpenAPI (formerly Swagger) specification in the Go programming language. It provides a powerful code generation tool, runtime middleware, and an extensive set of utilities to simplify the process of building, validating, and deploying RESTful APIs. In this article, we will explore how to use go-swagger in your Golang project to enhance your API development experience.
+:::note
+go-swagger supports **Swagger 2.0 only**; it does not support OpenAPI 3.x. If your spec is OpenAPI 3, look at a generator such as [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) instead.
+:::
 
-## Table of Contents
+## Installation
 
-1. [Introduction to OpenAPI and Go-Swagger](#introduction)
-2. [Installation](#installation)
-3. [Defining the API Specification](#defining-api)
-4. [Generating Server and Client Code](#generating-server-client)
-5. [Customizing Generated Code](#customizing)
-6. [Validating the API Specification](#validating)
-7. [Conclusion](#conclusion)
-
-<a name="introduction"></a>
-## 1. Introduction to OpenAPI and Go-Swagger
-
-OpenAPI is an industry-standard specification for describing RESTful APIs. It provides a standardized way of documenting and sharing API contracts, making it easier for developers to understand, test, and integrate APIs into their applications. Go-Swagger is a toolkit that embraces the OpenAPI specification and provides tools for generating, validating, and working with OpenAPI documents in Go.
-
-Some of the key features of Go-Swagger include:
-
-- Code generation for server and client implementations
-- API validation and linting
-- API documentation generation
-- Runtime middleware for handling request validation, authentication, and more
-
-<a name="installation"></a>
-## 2. Installation
-
-To install go-swagger, you can download precompiled binaries for your platform from the [latest release](https://github.com/go-swagger/go-swagger/releases/latest) or install it using `go get`:
+Either download a prebuilt binary from the [releases page](https://github.com/go-swagger/go-swagger/releases/latest), or build it with Go:
 
 ```sh
-go get -u github.com/go-swagger/go-swagger/cmd/swagger
+go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 ```
 
-This command installs the `swagger` CLI tool in your `$GOPATH/bin` directory. Ensure this directory is included in your `PATH` so you can access the `swagger` command.
+`go install` puts the binary in `$(go env GOPATH)/bin`, so make sure that directory is on your `PATH`. Building from source needs a recent Go toolchain; the [install docs](https://goswagger.io/go-swagger/install/) list the current requirement. (The older `go get -u .../cmd/swagger` command no longer installs binaries in module mode.)
 
-<a name="defining-api"></a>
-## 3. Defining the API Specification
+## Writing the spec
 
-Before generating server and client code, you need to define your API using the OpenAPI specification. Create a new YAML or JSON file (e.g., `swagger.yaml` or `swagger.json`) and start defining your API according to the OpenAPI standard.
+Start a module and save this as `swagger.yaml`:
 
-Here's a minimal example of an OpenAPI specification in YAML:
+```sh
+mkdir todo && cd todo
+go mod init example.com/todo
+```
 
 ```yaml
 swagger: '2.0'
@@ -61,12 +43,19 @@ info:
 basePath: /api/v1
 schemes:
   - http
+consumes:
+  - application/json
+produces:
+  - application/json
 paths:
   /todos:
     get:
+      tags:
+        - todos
+      operationId: listTodos
       summary: List all todos
       responses:
-        200:
+        '200':
           description: An array of todos
           schema:
             type: array
@@ -83,69 +72,75 @@ definitions:
         type: string
       completed:
         type: boolean
-    required:
-      - id
-      - title
-      - completed
 ```
 
-<a name="generating-server-client"></a>
-## 4. Generating Server and Client Code
+`tags` and `operationId` matter more than they look: go-swagger uses the first tag as the Go package name for the operation and the `operationId` for the generated type names. Without them you get names derived from the method and path.
 
-Once you have defined your API specification, you can use the `swagger` CLI tool to generate server and client code. Run the following commands in your project directory:
-
-For server code generation:
-
-```sh
-swagger generate server -A todo -f ./swagger.yaml
-```
-
-For client code generation:
-
-```sh
-swagger generate client -A todo -f ./swagger.yaml
-```
-
-These commands generate a Go server and client implementation based on your OpenAPI specification. The `-A` flag is used to specify the application name, which affects the package names and other identifiers generated.
-
-<a name="customizing"></a>
-## 5. Customizing Generated Code
-
-Go-Swagger generates a default implementation for your API, but you can customize the generated code by implementing your own handlers. Handlers are generated in the `restapi/operations` directory.
-
-For example, to implement the "List all todos" endpoint, edit the `restapi/operations/todos/get_todos. file and modify the `ConfigureAPI` function:
-
-```go
-func ConfigureAPI(api *operations.TodoAPI) http.Handler {
-  // Configure the API here
-  api.TodosGetTodosHandler = todos.GetTodosHandlerFunc(func(params todos.GetTodosParams) middleware.Responder {
-    todos := []models.Todo{
-      {ID: 1, Title: "First Todo", Completed: false},
-      {ID: 2, Title: "Second Todo", Completed: true},
-    }
-    return todos.NewGetTodosOK().WithPayload(todos)
- })
-
-  return setupGlobalMiddleware(api.Serve(setupMiddlewares))
-}
-```
-
-This code snippet replaces the default implementation with a custom handler that returns a hardcoded list of todos.
-
-<a name="validating"></a>
-## 6. Validating the API Specification
-
-Go-Swagger provides tools for validating your OpenAPI specification. This can help catch errors and ensure your API behaves as expected. To validate your API specification, run the following command:
+Validate the spec before generating anything:
 
 ```sh
 swagger validate ./swagger.yaml
 ```
 
-This command checks your OpenAPI document for syntax errors, inconsistencies, and conformance to the specification. If there are any issues, the validator will provide detailed error messages to help you fix them.
+This checks the document against the Swagger 2.0 schema and reports problems such as unresolved `$ref`s or invalid parameter definitions.
 
-<a name="conclusion"></a>
-## 7. Conclusion
+## Generating the server and client
 
-In this article, we have explored how to use Go-Swagger to generate server and client code, customize generated code, and validate your API specification. By leveraging the power of Go-Swagger and the OpenAPI standard, you can streamline your API development process and improve the quality of your APIs.
+```sh
+swagger generate server -A todo -f ./swagger.yaml
+swagger generate client -A todo -f ./swagger.yaml
+go mod tidy
+```
 
-To learn more about Go-Swagger, visit the [official documentation](https://goswagger.io/) and the [GitHub repository](https://github.com/go-swagger/go-swagger).
+`-A todo` sets the application name, which drives identifiers such as `operations.TodoAPI` and the `cmd/todo-server` directory. The server generator writes:
+
+- `models/` with a `Todo` struct
+- `restapi/operations/todos/` with the `ListTodos` parameters, responses, and handler types
+- `restapi/configure_todo.go`, the one file meant for you to edit
+- `cmd/todo-server/main.go`
+
+The client generator writes a `client/` package you can import from other Go programs.
+
+## Implementing the handler
+
+Everything under `restapi/operations` is regenerated each time you run `swagger generate server`, so don't put code there. go-swagger generates `restapi/configure_todo.go` once and won't overwrite it later; that's where handlers go. The generated `configureAPI` assigns a placeholder that returns `middleware.NotImplemented(...)`; replace it with a real handler:
+
+```go
+func configureAPI(api *operations.TodoAPI) http.Handler {
+	// ...generated setup code...
+
+	api.TodosListTodosHandler = todos.ListTodosHandlerFunc(func(params todos.ListTodosParams) middleware.Responder {
+		items := []*models.Todo{
+			{ID: 1, Title: "First Todo", Completed: false},
+			{ID: 2, Title: "Second Todo", Completed: true},
+		}
+		return todos.NewListTodosOK().WithPayload(items)
+	})
+
+	// ...generated setup code...
+	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
+}
+```
+
+Add `example.com/todo/models` to the imports; the file already imports `middleware` (`github.com/go-openapi/runtime/middleware`), `operations`, and `todos`. Note that the local variable is `items`, not `todos`: naming it `todos` would shadow the `todos` package and the `NewListTodosOK` call wouldn't compile.
+
+The generated handler field is named after the tag and operation ID (`Todos` + `ListTodos`), and the response constructor after the operation ID and status (`NewListTodosOK`). The array payload is `[]*models.Todo`.
+
+All three `Todo` properties are optional, so the generated fields are plain `int64`, `string`, and `bool` and the struct literal above works as written. If you add a `required` list to the definition, those properties generally become pointer fields (for example `*string`) so validation can tell "missing" from a zero value, and you'll need to take addresses when building values. The go-swagger docs on schema generation describe the exact nullability rules.
+
+## Running it
+
+```sh
+go run ./cmd/todo-server --port 8080
+curl http://localhost:8080/api/v1/todos
+```
+
+Without `--port` (or the `PORT` environment variable), the generated server listens on a random port and prints it on startup.
+
+## Gotchas
+
+- Regenerating overwrites everything except `configure_<app>.go`. Commit the spec and treat the generated code as build output.
+- Generated code depends on the `github.com/go-openapi/*` packages, so `go mod tidy` after each generation.
+- go-swagger can also work the other way round and generate a spec from annotated Go code (`swagger generate spec`), but you then maintain the annotations instead of the YAML.
+
+Further reading: [go-swagger documentation](https://goswagger.io/go-swagger/), including the [todo-list tutorial](https://goswagger.io/go-swagger/tutorial/todo-list/), and the [GitHub repository](https://github.com/go-swagger/go-swagger).

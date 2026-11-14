@@ -1,178 +1,138 @@
 ---
-description: In this article, we'll dive into the fundamentals of Hibernate ORM, its
-  key features, and how to get started with the framework to improve your Java applications
+description: "What Hibernate ORM does and how to use it today: annotated entities, a SessionFactory, persisting and querying with HQL in Hibernate 7, plus the old APIs that are now gone."
 imgSrc: /imgs/2023/251520990.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-06T05:08:26.000Z'
-tags: []
-title: Understanding Hibernate ORM A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["java"]
+title: "Hibernate ORM basics: map, save and query Java entities with Hibernate 7"
 ---
 
-# Understanding Hibernate ORM: A Comprehensive Guide
+:::caution
+An earlier version of this post used Hibernate 5.6 with `hbm.xml` mapping files and `session.save()`. Those APIs are gone: `hbm.xml` was deprecated in Hibernate 6, and `Session.save()`, `update()` and `saveOrUpdate()` were removed in Hibernate 7. The example below uses annotations and Hibernate 7.4.
+:::
 
-Hibernate ORM (Object-Relational Mapping) is a powerful and widely-used Java-based framework for mapping an object-oriented domain model to a relational database. In this article, we'll dive into the fundamentals of Hibernate ORM, its key features, and how to get started with the framework to improve your Java applications.
+Hibernate ORM maps Java classes to relational tables. You annotate a class as an entity, and Hibernate generates the SQL to insert, update, load and delete rows for it. It also tracks changes to loaded objects and writes them back when a transaction commits. Hibernate implements the Jakarta Persistence (JPA) specification and adds its own APIs on top. It's the default JPA provider in Spring Boot and Quarkus.
 
-## What is Hibernate ORM?
+## Setup
 
-Hibernate ORM is an open-source library that enables Java developers to easily interact with relational databases. It provides a powerful and flexible object-relational mapping solution, allowing developers to map Java objects to database tables and manage their lifecycle efficiently.
-
-At its core, Hibernate aims to simplify the development process by automating common tasks, such as:
-
-1. Mapping Java objects to database tables and vice versa
-2. Generating SQL queries to interact with the database
-3. Managing transactions and caching for improved performance
-
-## Key Features of Hibernate ORM
-
-Hibernate ORM offers a multitude of features that streamline the development process and enhance your applications. Some of the most significant features include:
-
-### 1. Object-Relational Mapping (ORM)
-
-Hibernate abstracts the database layer, allowing developers to focus on the domain model instead of writing complex SQL queries. It automatically generates SQL queries based on the mapping configuration between Java objects and database tables, which reduces the amount of boilerplate code required.
-
-### 2. Mapping Strategies
-
-Hibernate supports various mapping strategies, such as XML-based mapping and annotations. Developers can choose the most suitable strategy according to their project requirements.
-
-### 3. Query Languages
-
-Hibernate introduces two powerful query languages: Hibernate Query Language (HQL) and Criteria API. HQL is a SQL-like language that operates on Java objects, while Criteria API allows developers to build type-safe queries programmatically.
-
-### 4. Caching
-
-Caching is a crucial aspect of improving application performance. Hibernate provides a built-in caching mechanism, including first-level and second-level caching, as well as query caching.
-
-### 5. Extensibility
-
-Hibernate is highly extensible, allowing developers to customize its behavior by implementing interfaces or extending base classes. Additionally, Hibernate supports integration with popular Java frameworks, such as Spring and Java Persistence API (JPA).
-
-## Getting Started with Hibernate ORM
-
-To start using Hibernate ORM in your Java project, follow these steps:
-
-### 1. Add Dependencies
-
-First, add the Hibernate ORM and JDBC driver dependencies to your project's build file. For Maven, add the following to your `pom.xml`:
+Hibernate 7 requires Java 17 or later. For Maven, add Hibernate and a JDBC driver. This example uses the H2 in-memory database so it runs without a database server:
 
 ```xml
 <dependencies>
     <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
-        <version>5.6.0.Final</version>
+        <version>7.4.15.Final</version>
     </dependency>
     <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.26</version>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>2.5.252</version>
+        <scope>runtime</scope>
     </dependency>
 </dependencies>
 ```
 
-### 2. Configure Hibernate
+Note the group ID: since Hibernate 6 the artifacts are published under `org.hibernate.orm`, not `org.hibernate`.
 
-Create a `hibernate.cfg.xml` file in your project's `src/main/resources` directory and configure the database connection properties:
-
-```xml
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-
-<hibernate-configuration>
-    <session-factory>
-        <!-- Database connection settings -->
-        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/my_database</property>
-        <property name="connection.username">root</property>
-        <property name="connection.password">password</property>
-
-        <!-- JDBC connection pool settings -->
-        <property name="connection.pool_size">10</property>
-
-        <!-- SQL dialect -->
-        <property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
-
-        <!-- Enable logging of SQL statements -->
-        <property name="show_sql">true</property>
-
-        <!-- Automatic schema generation -->
-        <property name="hbm2ddl.auto">update</property>
-
-        <!-- Mapping files -->
-        <mapping resource="com/example/MyEntity.hbm.xml"/>
-    </session-factory>
-</hibernate-configuration>
-```
-
-### 3. Create Mapping Files and Entities
-
-Define the mapping between Java objects and database tables using XML files or annotations. For example, create a `MyEntity.hbm.xml` file to map the `MyEntity` class to a table:
-
-```xml
-<!DOCTYPE hibernate-mapping PUBLIC
-        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-
-<hibernate-mapping>
-    <class name="com.example.MyEntity" table="my_table">
-        <id name="id" column="id">
-            <generator class="native"/>
-        </id>
-        <property name="name" column="name"/>
-        <property name="description" column="description"/>
-    </class>
-</hibernate-mapping>
-```
-
-Then, create the `MyEntity` Java class with corresponding properties:
+## Define an entity
 
 ```java
 package com.example;
 
-public class MyEntity {
-    private Long id;
-    private String name;
-    private String description;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
-    // Getters and setters
-}
-```
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue
+    Long id;
 
-### 4. Interact with the Database
+    String title;
+    String author;
 
-Create a `SessionFactory` to manage connections to the database and perform CRUD operations:
+    protected Book() {}  // JPA needs a no-arg constructor
 
-```java
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+    public Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
 
-public class HibernateDemo {
-    public static void main(String[] args) {
-        // Setup Hibernate
-        Configuration configuration = new Configuration().configure();
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-
-        // Create a new entity
-        MyEntity myEntity = new MyEntity();
-        myEntity.setName("Example");
-        myEntity.setDescription("This is an example entity.");
-
-        // Save the entity to the database
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            session.save(myEntity);
-            session.getTransaction().commit();
-        }
-
-        // Close the session factory
-        sessionFactory.close();
+    @Override
+    public String toString() {
+        return id + ": " + title + " by " + author;
     }
 }
 ```
 
-## Conclusion
+The imports are `jakarta.persistence`, not `javax.persistence`. Hibernate 6 moved to the Jakarta namespace, which is the most common reason old tutorials fail to compile. By default the table is named after the class (`Book`) and each column after its field.
 
-Hibernate ORM is a powerful and flexible framework for Java developers, enabling efficient communication with relational databases. By automating common tasks and providing advanced features, Hibernate ORM allows developers to focus on their domain model, resulting in more maintainable and scalable applications.
+## Save and query
 
-To learn more about Hibernate ORM and its capabilities, refer to the official documentation at [https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html](https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html).
+```java
+package com.example;
+
+import org.hibernate.jpa.HibernatePersistenceConfiguration;
+
+public class Main {
+    public static void main(String[] args) {
+        try (var sessionFactory = new HibernatePersistenceConfiguration("Bookshelf")
+                .managedClass(Book.class)
+                .jdbcUrl("jdbc:h2:mem:db1")
+                .jdbcCredentials("sa", "")
+                .showSql(true, true, true)
+                .createEntityManagerFactory()) {
+
+            // create tables for the managed entities
+            sessionFactory.getSchemaManager().create(true);
+
+            // insert two rows in one transaction
+            sessionFactory.inTransaction(session -> {
+                session.persist(new Book("Hibernate in Action", "Christian Bauer"));
+                session.persist(new Book("Java Persistence with Hibernate", "Christian Bauer"));
+            });
+
+            // query with HQL
+            var books = sessionFactory.fromTransaction(session ->
+                    session.createSelectionQuery(
+                                    "from Book where title like :pattern order by title", Book.class)
+                            .setParameter("pattern", "%Persistence%")
+                            .getResultList());
+
+            books.forEach(System.out::println);
+        }
+    }
+}
+```
+
+A few points about this code:
+
+- `HibernatePersistenceConfiguration` configures Hibernate in code, with no XML. The older `Configuration` class and a JPA `persistence.xml` file are alternatives.
+- `inTransaction` and `fromTransaction` open a `Session`, begin a transaction, commit it (or roll it back if an exception is thrown) and close the session. That replaces the manual `beginTransaction()` / `commit()` / `close()` boilerplate.
+- `persist()` is the JPA method for inserting a new entity. The ID is assigned from a database sequence because of `@GeneratedValue`.
+- HQL queries entity and field names (`Book`, `title`), not table and column names. Always bind parameters (`:pattern`) instead of concatenating strings.
+- Without a connection pool library on the classpath, Hibernate uses a simple built-in pool that isn't meant for production. Add `hibernate-agroal` or `hibernate-hikaricp` for real applications.
+
+To use MySQL instead, swap H2 for `com.mysql:mysql-connector-j` (version 26.10.0 at the time of writing) and change the URL to something like `jdbc:mysql://localhost:3306/mydb`. You don't need to set a dialect: Hibernate detects the database from the JDBC connection.
+
+## What else Hibernate gives you
+
+- **Dirty checking.** Load an entity in a transaction, change a field, and Hibernate issues the `UPDATE` at commit. There's no `update()` call.
+- **Caching.** Each `Session` acts as a first-level cache, so loading the same ID twice returns the same object. A second-level cache shared across sessions is optional and needs a provider such as a JCache implementation.
+- **Queries.** Besides HQL, you can use the Jakarta Persistence Criteria API to build queries in code, or native SQL. Hibernate's own legacy `Criteria` API was removed in Hibernate 6.
+- **Schema management.** `getSchemaManager()` (or the `hibernate.hbm2ddl.auto` setting) can create or validate tables. Use a migration tool like Flyway or Liquibase in production instead of letting Hibernate alter the schema.
+
+## Gotchas
+
+- **N+1 queries.** Lazy associations load one row at a time when you iterate them. Use `join fetch` in HQL or entity graphs when you know you need the related data.
+- **`LazyInitializationException`.** Accessing a lazy association after the session has closed fails. Fetch what you need inside the transaction.
+- **`equals`/`hashCode` on entities.** Don't base them on a generated ID that is `null` until the entity is persisted.
+
+## Further reading
+
+- [An Introduction to Hibernate 7](https://docs.hibernate.org/orm/7.4/introduction/html_single/Hibernate_Introduction.html)
+- [Hibernate 7.0 migration guide](https://docs.hibernate.org/orm/7.0/migration-guide/)
+- [Hibernate ORM releases](https://hibernate.org/orm/releases/)

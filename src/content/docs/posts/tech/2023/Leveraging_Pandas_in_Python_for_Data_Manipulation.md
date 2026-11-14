@@ -1,123 +1,132 @@
 ---
-description: In this article, we will explore the key features of Pandas and demonstrate
-  how to use it effectively for data manipulation and analysis
+description: "Pandas basics in Python: build DataFrames and Series, load a CSV, then select, filter, sort and group rows, with a note on Copy-on-Write and .loc."
 imgSrc: /imgs/2023/481242631.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-12-03T08:17:39.000Z'
-tags: []
-title: Leveraging Pandas in Python for Data Manipulation
+lastUpdated: 2026-11-14
+tags: ["python", "pandas"]
+title: "Pandas basics: create, select, filter, sort and group DataFrames"
 ---
 
-# Leveraging Pandas in Python for Data Manipulation
+Pandas is the standard Python library for working with tabular data: it loads CSVs, Excel files and SQL query results into a `DataFrame`, then gives you vectorized operations to filter, reshape and aggregate them. The name comes from "panel data", the econometrics term for multi-dimensional data sets.
 
-Pandas is a powerful data manipulation library in Python that offers intuitive data structures and functions for data analysis. The name Pandas is derived from the term "Panel Data," which refers to multi-dimensional structured data sets commonly used in statistics and econometrics. In this article, we will explore the key features of Pandas and demonstrate how to use it effectively for data manipulation and analysis.
-
-## Getting Started with Pandas
-
-To install Pandas, simply run the following command in your terminal or command prompt:
+## Install and import
 
 ```sh
 pip install pandas
 ```
 
-Once the installation is complete, you can import Pandas in your Python script as follows:
-
 ```python
 import pandas as pd
 ```
 
-The alias `pd` is widely adopted in the Python community and allows for a shorter and more convenient way to call Pandas functions.
+`pd` is the conventional alias. You'll see it in the docs and almost every example online.
 
-## Key Data Structures: DataFrame and Series
+## DataFrame and Series
 
-Pandas provides two primary data structures: DataFrame and Series. A DataFrame is a two-dimensional, size-mutable, and heterogeneous tabular data structure with labeled axes (rows and columns), while a Series is a one-dimensional labeled array capable of holding any data type.
+A `DataFrame` is a two-dimensional table with labelled rows (the index) and labelled columns, where each column can have its own dtype. A `Series` is a single labelled column. Selecting one column from a DataFrame gives you a Series.
 
-### Creating DataFrames and Series
-
-You can create a DataFrame from various data sources, such as lists, dictionaries, or external files (e.g., CSV, Excel, or SQL databases). Here are some examples:
+The examples below all use this DataFrame:
 
 ```python
-## Creating a DataFrame from a dictionary
-data = {
-    "col1": [1, 2, 3, 4],
-    "col2": ["A", "B", "C", "D"],
-    "col3": [1.1, 2.2, 3.3, 4.4],
-}
-df = pd.DataFrame(data)
+import pandas as pd
 
-## Creating a Series from a list
-s = pd.Series([1, 2, 3, 4], index=["A", "B", "C", "D"])
+df = pd.DataFrame(
+    {
+        "col1": [1, 2, 3, 4],
+        "col2": ["A", "B", "A", "B"],
+        "col3": [1.1, 2.2, 3.3, 4.4],
+    }
+)
+
+s = pd.Series([1, 2, 3, 4], index=["a", "b", "c", "d"])
 ```
 
-### Loading Data from External Files
-
-To load data from an external CSV file, you can use the `pd.read_csv()` function:
+## Load data from a file
 
 ```python
-filename = "example.csv"
-df = pd.read_csv(filename)
+df = pd.read_csv("example.csv")
 ```
 
-## Basic Data Manipulation
+There are matching readers for other formats, such as `pd.read_excel`, `pd.read_parquet`, `pd.read_json` and `pd.read_sql`. Call `df.head()`, `df.info()` and `df.describe()` right after loading to check that the columns and dtypes are what you expect.
 
-Pandas provides a variety of functions for data manipulation, such as filtering, sorting, and aggregating. Here are some examples:
+## Select columns and rows
 
-### Selecting Data
-
-To select a specific column from a DataFrame, use the column name as an index:
+One column returns a Series. A list of columns returns a DataFrame:
 
 ```python
 col1 = df["col1"]
+subset = df[["col1", "col3"]]
 ```
 
-To select multiple columns, pass a list of column names:
+For rows, use the two indexers. `iloc` selects by position and `loc` selects by label (or by a boolean mask):
 
 ```python
-selected_columns = df[["col1", "col3"]]
+first_row = df.iloc[0]          # first row by position
+first_two = df.iloc[0:2]        # rows 0 and 1
+by_label = df.loc[0, "col3"]    # row label 0, column "col3" -> 1.1
 ```
 
-To select rows based on their index, use the `iloc[]` function:
+With the default integer index, labels and positions happen to match. After filtering or sorting they won't, so be clear which one you mean.
+
+## Filter rows
+
+A comparison on a column produces a boolean Series, which you can use as a mask:
 
 ```python
-first_row = df.iloc[0]
+big = df[df["col1"] > 2]
 ```
 
-### Filtering Data
-
-To filter rows based on a specific condition, use the following syntax:
+Combine conditions with `&` (and), `|` (or) and `~` (not). Each condition needs its own parentheses, because `&` binds more tightly than `>`:
 
 ```python
-filtered_df = df[df["col1"] > 2]
+filtered = df[(df["col1"] > 2) & (df["col3"] < 4)]   # only the row where col1 == 3
 ```
 
-You can also combine multiple conditions using the `&` (AND) or `|` (OR) operators:
-
-```python
-filtered_df = df[(df["col1"] > 2) & (df["col3"] < 4)]
-```
-
-### Sorting Data
-
-To sort a DataFrame based on a specific column, use the `sort_values()` function:
+## Sort
 
 ```python
 sorted_df = df.sort_values("col1", ascending=False)
+sorted_df = df.sort_values(["col2", "col3"])          # sort by several columns
 ```
 
-### Aggregating Data
+## Aggregate and group
 
-Pandas provides various aggregation functions, such as `sum()`, `mean()`, `min()`, `max()`, and `count()`. You can apply these functions to a specific column like this:
+Columns have the usual aggregations: `sum()`, `mean()`, `min()`, `max()`, `count()`:
 
 ```python
-mean_col1 = df["col1"].mean()
+mean_col1 = df["col1"].mean()   # 2.5
 ```
 
-To group data by a specific column and apply an aggregation function, use the `groupby()` function:
+`groupby` splits the rows by a key, applies an aggregation to each group, and combines the results:
 
 ```python
-grouped_df = df.groupby("col2")["col1"].sum()
+totals = df.groupby("col2")["col1"].sum()
+# col2
+# A    4
+# B    6
+# Name: col1, dtype: int64
+
+summary = df.groupby("col2").agg(total=("col1", "sum"), avg_col3=("col3", "mean"))
 ```
 
-## Conclusion
+## Gotcha: modify with `.loc`, not chained indexing
 
-In this article, we introduced Pandas, its key data structures (DataFrame and Series), and demonstrated basic data manipulation techniques. Pandas is a powerful library for data analysis and manipulation in Python, and learning to use it effectively can greatly enhance your productivity as a data scientist or analyst.
+This looks like it should set `col3` to zero for the filtered rows, but it doesn't change `df`:
+
+```python
+df[df["col1"] > 2]["col3"] = 0   # assigns to a temporary copy
+```
+
+Since pandas 3.0, Copy-on-Write is always on, so the first indexing step always produces a new object and the assignment is lost (pandas emits a `ChainedAssignmentError` warning). Older versions raised `SettingWithCopyWarning`. Do the selection and the assignment in a single `.loc` call:
+
+```python
+df.loc[df["col1"] > 2, "col3"] = 0
+```
+
+## Further reading
+
+- [10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html)
+- [Indexing and selecting data](https://pandas.pydata.org/docs/user_guide/indexing.html)
+- [Group by: split-apply-combine](https://pandas.pydata.org/docs/user_guide/groupby.html)
+- [Migration guide: Copy-on-Write](https://pandas.pydata.org/docs/user_guide/migration.html#copy-on-write-cow)

@@ -1,52 +1,22 @@
 ---
-title: Utilizing the C++ Standard Library for Efficient and Robust Code
+title: "C++ Standard Library basics: vector, list, map, algorithms and file I/O"
 pubDate: "2023-05-03T14:16:44.621Z"
-description: "In this article, we will explore some of the key components of the C++ Standard Library and demonstrate how they can be used to write efficient and robust code."
+lastUpdated: 2026-11-14
+description: "Short, runnable examples of std::vector, std::list, std::map, std::sort, std::find, std::transform and file streams, plus the gotchas that trip people up."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2575289368.png
 ---
-# Utilizing the C++ Standard Library for Efficient and Robust Code
 
-The C++ Standard Library is a collection of classes, functions, and macros that are part of the C++ programming language. It provides a wide range of functionality, including data structures, algorithms, and utilities for input and output, making it an essential toolkit for all C++ programmers. In this article, we will explore some of the key components of the C++ Standard Library and demonstrate how they can be used to write efficient and robust code.
+The C++ Standard Library gives you containers, algorithms that work on any container through iterators, and stream-based I/O. Reaching for it first usually means less code and fewer bugs than hand-rolled arrays and loops. Each example below is a complete program; the map example uses structured bindings, so compile with `-std=c++17` or later.
 
-## Table of Contents
+Every component lives in a header you include, for example `<vector>` for `std::vector`.
 
-1. Introduction to the C++ Standard Library
-2. Containers
-    1. Vector
-    2. List
-    3. Map
-3. Algorithms
-    1. Sort
-    2. Find
-    3. Transform
-4. Input and Output
-5. Conclusion
+## Containers
 
-## 1. Introduction to the C++ Standard Library
+### std::vector
 
-The C++ Standard Library is organized into several categories, including:
-
-- Containers: These are data structures that store collections of objects.
-- Algorithms: These provide various methods for manipulating and processing data in containers.
-- Iterators: These are used to traverse and access elements in containers.
-- Input/Output (I/O) facilities: These support reading and writing data to and from files, strings, and other sources.
-- Utility functions: These provide functionality unrelated to data structures, such as time operations or type conversions.
-
-To use any component from the C++ Standard Library, you must first include the appropriate header file. For example, if you want to use a `std::vector`, you should include the `<vector>` header:
-
-```cpp
-#include <vector>
-```
-
-## 2. Containers
-
-The C++ Standard Library provides several container classes to store data. These containers are designed to be efficient, flexible, and easy to use.
-
-### 2.1. Vector
-
-`std::vector` is a dynamic array that automatically resizes itself as you add or remove elements. It provides random access and is the most commonly used container in C++.
+`std::vector` is a contiguous, dynamically sized array. It is the default container to pick unless you have a reason not to: elements sit next to each other in memory, which makes iteration cache-friendly, and indexing is constant time.
 
 ```cpp
 #include <iostream>
@@ -55,88 +25,73 @@ The C++ Standard Library provides several container classes to store data. These
 int main() {
     std::vector<int> numbers = {1, 2, 3, 4, 5};
 
-    // Access elements using the at() function or the [] operator.
+    // at() checks bounds and throws std::out_of_range; [] does not check.
     std::cout << numbers.at(0) << ' ' << numbers[1] << '\n';
 
-    // Add elements to the vector.
-    numbers.push_back(6);
+    numbers.push_back(6);  // append
+    numbers.pop_back();    // remove the last element
 
-    // Remove the last element.
-    numbers.pop_back();
-
-    // Iterate over the elements using a range-based for loop.
     for (int num : numbers) {
         std::cout << num << ' ';
     }
     std::cout << '\n';
-
-    return 0;
 }
 ```
 
-### 2.2. List
+### std::list
 
-`std::list` is a doubly-linked list that provides constant-time insertion and deletion of elements. It is useful when you need to frequently insert or remove elements in the middle of the sequence.
+`std::list` is a doubly linked list. Inserting or erasing is constant time *once you have an iterator to the position*; getting that iterator is a linear walk. In practice a `std::vector` is often faster even for middle insertions on small to medium data because of memory locality, so measure before switching.
 
 ```cpp
 #include <iostream>
+#include <iterator>
 #include <list>
 
 int main() {
     std::list<int> numbers = {1, 2, 3, 4, 5};
 
-    // Insert an element at the beginning.
-    numbers.insert(numbers.begin(), 0);
+    numbers.insert(numbers.begin(), 0);         // insert at the front
+    numbers.erase(std::next(numbers.begin()));  // remove the second element
 
-    // Remove the second element.
-    numbers.erase(std::next(numbers.begin()));
-
-    // Iterate over the elements using a range-based for loop.
     for (int num : numbers) {
         std::cout << num << ' ';
     }
-    std::cout << '\n';
-
-    return 0;
+    std::cout << '\n';  // 0 2 3 4 5
 }
 ```
 
-### 2.3. Map
+### std::map
 
-`std::map` is an associative container that stores key-value pairs in a sorted order. It provides logarithmic time complexity for inserting, deleting, and searching elements.
+`std::map` stores key-value pairs sorted by key (usually a red-black tree), with logarithmic insert, erase and lookup. If you don't need ordering, `std::unordered_map` gives average constant-time lookups.
 
 ```cpp
 #include <iostream>
 #include <map>
+#include <string>
 
 int main() {
     std::map<std::string, int> ages = {{"Alice", 30}, {"Bob", 25}, {"Charlie", 20}};
 
-    // Access elements using the at() function or the [] operator.
+    // at() throws if the key is missing; [] inserts a default value if it is missing.
     std::cout << ages.at("Alice") << ' ' << ages["Bob"] << '\n';
 
-    // Insert a new element.
-    ages["David"] = 35;
-
-    // Remove an element.
+    ages["David"] = 35;    // insert or overwrite
     ages.erase("Charlie");
 
-    // Iterate over the elements using a range-based for loop.
+    // Structured bindings (C++17). Iteration is in key order.
     for (const auto& [name, age] : ages) {
         std::cout << name << ": " << age << '\n';
     }
-
-    return 0;
 }
 ```
 
-## 3. Algorithms
+## Algorithms
 
-The C++ Standard Library provides a wide variety of algorithms for sorting, searching, and manipulating data in containers. These algorithms are designed to be efficient and work with any container that meets certain requirements.
+The functions in `<algorithm>` operate on iterator ranges, so the same `std::sort` or `std::find` works on a vector, an array, or anything else that provides the right kind of iterator.
 
-### 3.1. Sort
+### std::sort
 
-`std::sort` is an algorithm that sorts elements in a container in ascending order by default. It can also be used with a custom comparisonfunction for sorting in descending order or with other criteria.
+`std::sort` orders a range using `operator<` by default, or a comparison you pass in. It needs random-access iterators, so it works on `std::vector` but not `std::list` (use the `list.sort()` member function there). It is not stable; use `std::stable_sort` if equal elements must keep their order.
 
 ```cpp
 #include <algorithm>
@@ -146,50 +101,45 @@ The C++ Standard Library provides a wide variety of algorithms for sorting, sear
 int main() {
     std::vector<int> numbers = {5, 3, 1, 4, 2};
 
-    // Sort in ascending order.
-    std::sort(numbers.begin(), numbers.end());
+    std::sort(numbers.begin(), numbers.end());  // 1 2 3 4 5
 
-    // Sort in descending order using a lambda function.
+    // Descending, using a lambda as the comparison.
     std::sort(numbers.begin(), numbers.end(), [](int a, int b) { return a > b; });
 
-    // Print the sorted elements.
     for (int num : numbers) {
         std::cout << num << ' ';
     }
-    std::cout << '\n';
-
-    return 0;
+    std::cout << '\n';  // 5 4 3 2 1
 }
 ```
 
-### 3.2. Find
+### std::find
 
-`std::find` is an algorithm that searches for an element in a container and returns an iterator pointing to the first occurrence of the element. If the element is not found, it returns an iterator pointing to the end of the container.
+`std::find` returns an iterator to the first matching element, or the end iterator if there is no match. It is a linear search; for sorted data use `std::lower_bound` or `std::binary_search`.
 
 ```cpp
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 int main() {
     std::vector<int> numbers = {1, 2, 3, 4, 5};
 
-    // Find the element with a value of 3.
     auto it = std::find(numbers.begin(), numbers.end(), 3);
 
     if (it != numbers.end()) {
-        std::cout << "Found " << *it << " at position " << std::distance(numbers.begin(), it) << '\n';
+        std::cout << "Found " << *it << " at position "
+                  << std::distance(numbers.begin(), it) << '\n';
     } else {
         std::cout << "Element not found.\n";
     }
-
-    return 0;
 }
 ```
 
-### 3.3. Transform
+### std::transform
 
-`std::transform` is an algorithm that applies a given function to each element in a source container and stores the result in a destination container.
+`std::transform` applies a function to each element of an input range and writes the results to an output range. The output must already have room for the results (here the vector is sized up front), or you can pass `std::back_inserter(squared)` to an empty vector instead.
 
 ```cpp
 #include <algorithm>
@@ -200,22 +150,19 @@ int main() {
     std::vector<int> numbers = {1, 2, 3, 4, 5};
     std::vector<int> squared(numbers.size());
 
-    // Apply the square function to each element.
-    std::transform(numbers.begin(), numbers.end(), squared.begin(), [](int num) { return num * num; });
+    std::transform(numbers.begin(), numbers.end(), squared.begin(),
+                   [](int num) { return num * num; });
 
-    // Print the squared elements.
     for (int num : squared) {
         std::cout << num << ' ';
     }
-    std::cout << '\n';
-
-    return 0;
+    std::cout << '\n';  // 1 4 9 16 25
 }
 ```
 
-## 4. Input and Output
+## File and string streams
 
-The C++ Standard Library provides facilities for performing input and output operations on files, strings, and other sources. The most common I/O classes are `std::ifstream` for reading from files, `std::ofstream` for writing to files, and `std::stringstream` for manipulating strings as streams.
+`std::ifstream` reads files, `std::ofstream` writes them, and `std::stringstream` lets you build or parse strings with the same `<<` and `>>` operators.
 
 ```cpp
 #include <fstream>
@@ -224,37 +171,42 @@ The C++ Standard Library provides facilities for performing input and output ope
 #include <string>
 
 int main() {
-    // Read from a file.
+    // Read a file line by line.
     std::ifstream input_file("input.txt");
-    if (input_file.is_open()) {
+    if (input_file) {
         std::string line;
         while (std::getline(input_file, line)) {
             std::cout << line << '\n';
         }
-        input_file.close();
     } else {
         std::cerr << "Unable to open input file.\n";
     }
 
     // Write to a file.
     std::ofstream output_file("output.txt");
-    if (output_file.is_open()) {
+    if (output_file) {
         output_file << "Hello, World!\n";
-        output_file.close();
     } else {
         std::cerr << "Unable to open output file.\n";
     }
 
-    // Use a stringstream to concatenate strings.
+    // Build a string with a stream.
     std::stringstream ss;
     ss << "Hello, " << "World!" << '\n';
     std::cout << ss.str();
-
-    return 0;
 }
 ```
 
-## 5. Conclusion
+Streams close their files in their destructors, so explicit `close()` calls are only needed if you want to close early or check for errors on close.
 
-The C++ Standard Library is a powerful and flexible set of tools that can help you write efficient and robust code. By leveraging the various containers, algorithms, and I/O facilities provided by the library, you can greatly simplify your code and improve its performance. As a C++ programmer, it is essential to familiarize yourself with the Standard Library and make use of its capabilities in your projects.
+## Gotchas
 
+- **Iterator invalidation.** `push_back` on a `std::vector` can reallocate and invalidate every iterator, pointer and reference into it. Don't hold iterators across insertions.
+- **`map[key]` inserts.** Reading a missing key with `[]` silently adds it. Use `find()`, `contains()` (C++20) or `at()` when you only want to look.
+- **Ranges (C++20).** `std::ranges::sort(numbers)` and `std::ranges::find(numbers, 3)` take the container directly instead of a begin/end pair, which removes a class of mismatched-iterator bugs.
+
+## Further reading
+
+- [cppreference: Containers library](https://en.cppreference.com/w/cpp/container)
+- [cppreference: Algorithms library](https://en.cppreference.com/w/cpp/algorithm)
+- [cppreference: Input/output library](https://en.cppreference.com/w/cpp/io)

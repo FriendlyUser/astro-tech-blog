@@ -1,98 +1,100 @@
 ---
-description: This article will explore the Deno Fetch module in-depth, explaining
-  its key components, usage, and benefits.
+description: 'Make HTTP requests in Deno with the built-in fetch: GET and POST, error handling, timeouts, streaming a download to disk, and Deno-specific options.'
 imgSrc: /imgs/2023/2581699444.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-24T14:08:45.000Z'
-tags: []
-title: Deno Fetch Module A Deep Dive into HTTP Request Handling
+lastUpdated: 2026-11-14
+tags: ["deno", "typescript"]
+title: 'HTTP requests in Deno with fetch'
 ---
 
-# Deno Fetch Module: A Deep Dive into HTTP Request Handling
+:::caution[Updated in November 2026]
+The first version of this post imported `fetch` from `https://deno.land/x/std/fetch/mod.ts`. That module never existed. `fetch` is a global in Deno, exactly as in browsers, and needs no import. The examples below were run with Deno 2.9.
+:::
 
-Deno, a modern and secure runtime for JavaScript and TypeScript, has gained significant traction since its launch in 2018. One of the key features of Deno is its built-in Fetch module, which provides a robust and user-friendly way to perform HTTP requests. This article will explore the Deno Fetch module in-depth, explaining its key components, usage, and benefits.
+Deno implements the web-standard [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) as globals: `fetch()`, `Request`, `Response` and `Headers`. Code you write against it also runs in browsers, Node.js 18+ and Bun, and you don't need a library like Axios for ordinary HTTP calls. The one Deno-specific part is permissions: a script can only reach hosts you allow with `--allow-net`.
 
-## What is the Fetch Module?
+## The pieces
 
-The Fetch module in Deno implements the Fetch API, which is a modern and powerful standard for handling HTTP requests and responses. It is natively supported in modern web browsers and Deno as well. The Fetch API provides a simple and unified way to interact with HTTP resources, regardless of the underlying protocol (HTTP or HTTPS).
+- `fetch(input, init?)` takes a URL string, `URL` or `Request`, plus optional settings (`method`, `headers`, `body`, `signal`, …), and returns a `Promise<Response>`.
+- `Request` describes a request. Build one when you want to reuse or pass around a request object; otherwise pass the URL and options straight to `fetch`.
+- `Response` holds the status, headers and body. The body can be read once, as `.json()`, `.text()`, `.bytes()`, `.arrayBuffer()` or `.blob()`, or consumed as a stream through `.body`.
+- `Headers` is a case-insensitive map with `get`, `set`, `append`, `has` and `delete`.
 
-## Deno Fetch Module Components
+## A GET request
 
-The main components of the Fetch module are the `fetch()` function and the associated classes and methods for handling the request and response objects. Let's take a closer look at these components:
-
-### Fetch function
-
-The `fetch()` function is the entry point for initiating an HTTP request. It accepts two arguments:
-
-1. **input:** A string representing the URL of the resource, or a [Request](#request-class) object.
-2. **init:** An optional object containing configuration options for the request, such as method, headers, and body.
-
-The `fetch()` function returns a Promise that resolves to a [Response](#response-class) object representing the response of the request.
-
-### Request class
-
-The `Request` class represents an HTTP request. It enables you to create and manage HTTP request objects, including setting request headers, method, and body. You can instantiate a new `Request` object by passing a URL and an optional configuration object to the constructor.
-
-### Response class
-
-The `Response` class represents an HTTP response. It provides methods and properties for accessing the response's status, headers, and body. A `Response` object is typically obtained as a result of the `fetch()` function call.
-
-### Headers class
-
-The `Headers` class is a utility for managing HTTP headers. It provides methods to set, get, and delete header values. Both `Request` and `Response` objects have a `headers` property that is an instance of the `Headers` class.
-
-## Using the Deno Fetch Module
-
-To use the Fetch module, you first need to import the `fetch` function from the `deno.ns` namespace:
-
-```javascript
-import { fetch } from "https://deno.land/x/std/fetch/mod.ts";
-```
-
-### Making a Simple GET Request
-
-Here's an example of a simple GET request to fetch data from a JSON API:
-
-```javascript
-import { fetch } from "https://deno.land/x/std/fetch/mod.ts";
-
+```typescript
 const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
-const data = await response.json();
-console.log(data);
+if (!response.ok) {
+  throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+}
+const post = await response.json();
+console.log(post.title);
 ```
 
-### Making a POST Request
+```bash
+deno run --allow-net=jsonplaceholder.typicode.com get.ts
+```
 
-To make a POST request, you can pass a configuration object with the `method` and `body` properties to the `fetch()` function:
+`fetch` only rejects on network failures (DNS errors, refused connections, aborts). A 404 or 500 still resolves to a `Response`, so check `response.ok` or `response.status` yourself.
 
-```javascript
-import { fetch } from "https://deno.land/x/std/fetch/mod.ts";
+## A POST request with a JSON body
 
-const postData = {
-  title: "New Post",
-  body: "This is a new post created using Deno Fetch module.",
-  userId: 1,
-};
-
+```typescript
 const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(postData),
+  body: JSON.stringify({ title: "New post", body: "Sent from Deno", userId: 1 }),
 });
 
-const data = await response.json();
-console.log(data);
+console.log(response.status); // 201
+console.log(await response.json());
+// { title: "New post", body: "Sent from Deno", userId: 1, id: 101 }
 ```
 
-## Benefits of the Deno Fetch Module
+`body` also accepts a string, `Uint8Array`, `Blob`, `FormData`, `URLSearchParams` or a `ReadableStream`. For `FormData` and `URLSearchParams`, `fetch` sets the `Content-Type` header for you.
 
-Using the Deno Fetch module offers several benefits:
+## Timeouts and cancellation
 
-1. **Unified API:** The Fetch API provides a consistent and easy-to-use interface for both client-side and server-side HTTP requests.
-2. **Asynchronous by design:** The Fetch module leverages JavaScript Promises and `async/await` syntax, making it straightforward to handle asynchronous HTTP requests.
-3. **Modern features:** The Fetch API supports modern features like streaming, request cancellation, and fetch interception (via Service Workers).
-4. **Built-in support:** No need for external libraries such as Axios or `request`; the Fetch module comes built-in with Deno.
+`fetch` has no timeout of its own. Pass an `AbortSignal`; `AbortSignal.timeout(ms)` creates one that fires after a delay:
 
-## Conclusion
+```typescript
+try {
+  const response = await fetch("https://httpbin.org/delay/5", {
+    signal: AbortSignal.timeout(2000),
+  });
+  console.log(response.status);
+} catch (err) {
+  if (err instanceof DOMException && err.name === "TimeoutError") {
+    console.log("Request timed out");
+  } else {
+    throw err;
+  }
+}
+```
 
-The Deno Fetch module provides a powerful, modern, and easy-to-use interface for performing HTTP requests. Its unified API and asynchronous design make it a great choice for developers working with Deno. As you start building applications with Deno, make sure to explore the Fetch module and leverage its capabilities to handle your HTTP requests seamlessly.
+Use an `AbortController` instead if you want to cancel from your own code (for example, when the user navigates away or another request wins a race).
+
+## Streaming a large download to disk
+
+`response.body` is a `ReadableStream<Uint8Array>`, and a Deno file has a `writable` stream, so you can pipe one into the other without holding the whole response in memory:
+
+```typescript
+const response = await fetch("https://jsonplaceholder.typicode.com/photos");
+const file = await Deno.create("photos.json");
+await response.body!.pipeTo(file.writable);
+```
+
+`pipeTo` closes the file when the stream ends. This one needs `--allow-net` and `--allow-write=photos.json`.
+
+## Deno-specific behaviour
+
+- **Local files.** Deno's `fetch` accepts `file:` URLs, so `await fetch(new URL("./data.json", import.meta.url))` reads a file next to your module. It needs `--allow-read`.
+- **Proxies and certificates.** `Deno.createHttpClient()` creates a client with options such as a proxy, extra CA certificates or HTTP/2 settings. Pass it as `fetch(url, { client })` and call `client.close()` when you're done. Deno also respects the `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environment variables.
+- **No CORS.** CORS is a browser rule. Deno doesn't apply it to outgoing requests, so a request that fails in the browser may work from Deno.
+
+## Further reading
+
+- [Fetch API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- [`fetch` in the Deno API reference](https://docs.deno.com/api/web/fetch)
+- [`Deno.createHttpClient`](https://docs.deno.com/api/deno/~/Deno.createHttpClient)

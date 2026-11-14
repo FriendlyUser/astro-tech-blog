@@ -1,47 +1,53 @@
 ---
-description: In this article, we will explore the potential developments in Swift's
-  future and how it could impact the programming world
+description: "Where Swift is heading beyond iOS: compile-time data-race safety, server-side frameworks, Linux, Windows, Android and WebAssembly SDKs, and what happened to Swift for TensorFlow."
 imgSrc: /imgs/2023/945555918.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-21T10:03:09.000Z'
-tags: []
-title: The Future of Swift and Its Potential Impact on the Programming World
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Where Swift is heading: concurrency, server-side Swift and new platforms"
 ---
 
-# The Future of Swift and Its Potential Impact on the Programming World
+:::caution
+An earlier version of this post presented Swift for TensorFlow as the future of Swift in machine learning. That project was [archived in February 2021](https://github.com/tensorflow/swift). The concurrency features it described as "planned" shipped years ago. This revision reflects Swift 6.4, the current release.
+:::
 
-Swift, Apple's powerful and easy-to-use programming language, has come a long way since its inception in 2014. Over the years, Swift has continued to evolve, with the open-source community contributing to its growth and adoption. With the rapid advancements in technology and the increasing demand for high-performance, user-friendly applications, Swift's future seems bright. In this article, we will explore the potential developments in Swift's future and how it could impact the programming world.
+Swift launched in 2014 as Apple's replacement for Objective-C and became open source in 2015. Most Swift code still ships in iOS and macOS apps. The interesting changes are elsewhere: the language has added compile-time data-race checking, and the toolchain now targets Linux, Windows, Android, WebAssembly and microcontrollers.
 
-## Swift's Adoption and Growth
+## Language changes go through Swift Evolution
 
-Since its introduction, Swift has witnessed a steady rise in popularity. In the [2021 Stack Overflow Developer Survey](https://insights.stackoverflow.com/survey/2021), Swift ranked as the 15th most popular programming language, a testament to its growing user base. As developers continue to embrace Swift, we can expect the language to gain even more traction and become a key player in the programming world.
+New features are proposed and reviewed in public in the [swift-evolution](https://github.com/swiftlang/swift-evolution) repository and on the Swift Forums. Each proposal (SE-NNNN) states the motivation, design and source-compatibility impact. If you want to know where the language is going, read the proposals under review there rather than predictions in blog posts.
 
-### Cross-Platform Development
+## Concurrency: from roadmap to compiler errors
 
-Swift has primarily been associated with iOS and macOS app development. However, with the release of [Swift for TensorFlow](https://github.com/tensorflow/swift) and the [Swift on Server](https://swift.org/server/) initiative, Swift is poised to become a language of choice for various platforms and domains.
+The [Swift Concurrency Roadmap](https://forums.swift.org/t/swift-concurrency-roadmap/41611) from 2020 has been delivered:
 
-The Swift on Server initiative has the potential to revolutionize web development by offering the benefits of Swift's safety, speed, and ease of use in creating server-side applications. Moreover, the integration of Swift with popular web frameworks and the availability of [Vapor](https://vapor.codes/), a server-side Swift framework, further strengthens Swift’s position as a viable option for web development.
+- **Swift 5.5** added `async`/`await`, structured concurrency (`async let`, task groups) and actors.
+- **Swift 6.0** added the Swift 6 language mode, in which data races that the compiler can detect are errors instead of warnings. Adopting it is opt-in per module, and many existing codebases needed real work to migrate.
+- **Swift 6.2** made that model easier to adopt. For example, a module can make code main-actor-isolated by default, which suits app code that is mostly single-threaded.
 
-### Machine Learning and Artificial Intelligence
+The result is that Swift is one of the few mainstream languages where the compiler rejects data races. This is a bigger change for concurrent code than any single framework.
 
-Swift for TensorFlow, an open-source project led by Google, combines the strengths of Swift with TensorFlow, a cutting-edge machine learning framework. This combination allows developers to leverage Swift's language features, such as static typing and compile-time safety, to create performant and expressive machine learning models.
+## Server-side Swift
 
-As machine learning and artificial intelligence continue to shape the future of technology, Swift's integration with TensorFlow establishes it as a strong contender in the field of data science and AI.
+Swift on the server is real but niche. [Vapor](https://vapor.codes/) and [Hummingbird](https://hummingbird.codes/) are the main web frameworks, both built on Apple's SwiftNIO networking library. The [Swift Server Workgroup](https://www.swift.org/documentation/server/) maintains guides and vets shared packages such as logging, metrics and HTTP clients. The Static Linux SDK can build fully statically linked Linux binaries, which makes container images small. The main reason to pick Swift here is sharing models and logic with an existing Swift app, or wanting value types and data-race checking on the backend. The library ecosystem is much smaller than Java's, Go's or Node's.
 
-## Swift Evolution and Language Features
+## More platforms
 
-Swift's evolution process is driven by the [Swift Evolution](https://github.com/apple/swift-evolution) repository, which openly accepts proposals from the community. This collaborative approach ensures that Swift remains relevant and continues to grow.
+- **Linux and Windows:** official toolchains are on [swift.org/install](https://www.swift.org/install/). In Swift 6.4, SwiftPM uses Swift Build by default, so projects build the same way on Linux, macOS and Windows.
+- **Android:** there is now an official [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html) for sharing Swift code with Android apps.
+- **WebAssembly:** a [Swift SDK for Wasm](https://www.swift.org/documentation/articles/wasm-getting-started.html) is published on swift.org, and JavaScriptKit handles calls to and from JavaScript.
+- **Embedded Swift:** a restricted language subset that compiles to small binaries for microcontrollers.
+- **Interop:** Swift 5.9 added direct C++ interoperability, and the swift-java project covers calls between Swift and Java.
 
-### Improved Concurrency Support
+None of these turn Swift into a default choice for cross-platform UI. On Android, for example, you still write the UI in Kotlin or Java and call shared Swift code.
 
-Concurrency is an essential aspect of modern programming, enabling developers to create high-performance and responsive applications. The [Swift Concurrency Roadmap](https://forums.swift.org/t/swift-concurrency-roadmap/41611) outlines plans to improve Swift's concurrency support by introducing native language constructs like async/await, actors, and structured concurrency.
+## Machine learning
 
-These additions will make it easier for developers to write concurrent code in Swift, enhancing the language's appeal for demanding applications like gaming, finance, and real-time data processing.
+Swift for TensorFlow is gone. Its most lasting result is language-level differentiable programming, which continues as an experimental feature in the Swift compiler. For ML on Apple hardware today, the practical options are Core ML and Apple's [MLX](https://github.com/ml-explore/mlx-swift), which has Swift bindings. Training and research still happen mostly in Python.
 
-### Swift's Impact on the Programming World
+## What to watch
 
-Swift's future developments have the potential to significantly impact the programming world, with the language becoming a top choice for cross-platform development, machine learning, and web development.
-
-In addition to its technical advancements, Swift's strong community and open-source nature will further contribute to its rise in popularity, making it an indispensable tool for developers and a driving force in the programming world.
-
-In conclusion, the future of Swift is bright, with the language poised to make a significant impact on the programming landscape. Its continuous evolution, the growing adoption across various domains, and its integration with cutting-edge technologies make Swift an exciting language to watch in the coming years.
+- Proposals in the swift-evolution repo, especially ownership and performance work such as `Span` and non-copyable types.
+- How the Android and Wasm SDKs mature, since they decide whether Swift becomes a shared-logic language outside Apple platforms.
+- The [Swift blog](https://www.swift.org/blog/) release posts, which list what each version actually shipped.

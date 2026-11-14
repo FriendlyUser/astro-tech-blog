@@ -1,31 +1,100 @@
 ---
-title: Introduction to Flutter
-description: Getting started with flutter
+title: "Getting started with Flutter: create and run your first app"
+description: "What Flutter is, how its widget model works, and how to create, run and edit a first Flutter app with hot reload."
 alt: Bintray Removed
 layout: '@/templates/BasePost.astro'
 pubDate: Wed, 23 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["flutter", "dart"]
 imgSrc: '/assets/images/image-post.jpeg'
 imgAlt: 'Image post 6'
 ---
 
-Flutter is a popular, open-source mobile application development framework created by Google. It allows developers to build cross-platform mobile applications for Android and iOS using a single codebase. This means that developers can write an app once and deploy it to both platforms, saving time and resources.
+Flutter is Google's open-source UI toolkit for building apps from one Dart codebase. The same code targets Android, iOS, the web, Windows, macOS and Linux. Instead of wrapping each platform's native UI controls, Flutter draws every pixel itself with its own rendering engine. You get the same layout on every platform, and the Material and Cupertino widget sets are there when you want a platform look.
 
-One of the standout features of Flutter is its fast development cycle. With Flutter's hot reload feature, developers can make changes to their code and see the results almost instantly on the emulator or device. This speeds up the development process and allows for more iteration and experimentation.
+The steps below were checked against Flutter 3.50, the current stable release.
 
-Flutter also has a comprehensive set of customizable widgets that allow developers to easily create beautiful and intuitive user interfaces. Its design-centric approach means that developers can focus on building an app that looks and feels native to the platform it is running on, without having to worry about platform-specific differences.
+## How a Flutter UI is built
 
-In addition to its fast development cycle and customizable widgets, Flutter has a strong community of developers and a robust ecosystem of packages and plugins. This means that developers have access to a wide range of resources and tools to help them build their apps.
+Everything on screen is a widget, and you build the UI by nesting widgets. A `StatelessWidget` renders purely from its inputs. A `StatefulWidget` keeps a `State` object, and calling `setState` tells Flutter to call `build` again with the new values.
 
-Overall, Flutter is a powerful and user-friendly framework that makes it easy for developers to build high-quality mobile applications. If you are a mobile developer looking to build apps for Android and iOS, Flutter is definitely worth considering.
+During development Flutter runs your Dart code in a JIT-compiled VM, which is what makes **hot reload** possible. Save a file and the running app picks up the change in about a second while keeping its current state. Release builds are compiled ahead of time to native machine code (or to JavaScript/WebAssembly for the web).
 
+## Create and run an app
 
-To create a simple Flutter app, you will need to install the Flutter SDK and set up your development environment. Once you have done this, follow these steps:
+Install the SDK by following the [install guide](https://docs.flutter.dev/install) for your OS, then check that your toolchain (Android SDK, Xcode, Chrome, and so on) is set up:
 
-1. Open a terminal window and navigate to the directory where you want to create your project.
-2. Run the command flutter create my_app, where "my_app" is the name of your app. This will create a new Flutter project in a directory with the same name.
-3. Navigate to the project directory by running cd my_app.
-4. Run the command flutter run to launch the app in an emulator or on a connected device.
-5. Your Flutter app will have a basic layout with a single "Welcome to Flutter" message displayed on the screen. You can customize the app by editing the code in the main.dart file located in the lib directory.
+```bash
+flutter doctor
+```
 
-To learn more about developing apps with Flutter, you can refer to the Flutter documentation or check out online tutorials and resources. There are also a variety of resources available for learning about Flutter and mobile app development in general, including online courses, books, and community forums.
+Create a project and run it:
+
+```bash
+flutter create my_app
+cd my_app
+flutter run
+```
+
+`flutter run` builds for a connected device, a running emulator or simulator, or a desktop or browser target. If more than one is available it asks which one to use, or you can pick with `-d`, for example `flutter run -d chrome`.
+
+The generated app is the counter demo: a "Flutter Demo Home Page" app bar, the text "You have pushed the button this many times:", and a floating **+** button that increments the number.
+
+## Edit the app
+
+The code lives in `lib/main.dart`. Replace it with this smaller version to see the pieces:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(home: CounterPage());
+  }
+}
+
+class CounterPage extends StatefulWidget {
+  const CounterPage({super.key});
+
+  @override
+  State<CounterPage> createState() => _CounterPageState();
+}
+
+class _CounterPageState extends State<CounterPage> {
+  int _count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('My first Flutter app')),
+      body: Center(child: Text('Tapped $_count times')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() => _count++),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+```
+
+With `flutter run` still going, save the file and press `r` in the terminal (most editors hot reload on save). Tap the button a few times, then change the `Text` string and reload again: the label changes but the count stays, because hot reload keeps the widget state. Press `R` for a hot restart, which resets the state.
+
+## Things to know early
+
+- Hot reload doesn't re-run `main()`, `initState()`, or the initialisers of global variables and static fields. If a change doesn't show up, use hot restart.
+- Changes to native code (Kotlin, Java, Swift, Objective-C), including adding a plugin that has some, need a full restart: stop the app and `flutter run` again.
+- Flutter apps are larger than a minimal native app because they ship the engine with them.
+
+## Further reading
+
+- [Flutter documentation](https://docs.flutter.dev/)
+- [Learning pathway](https://docs.flutter.dev/learn/pathway)
+- [Hot reload](https://docs.flutter.dev/tools/hot-reload)
+- [pub.dev](https://pub.dev/), the Dart and Flutter package registry

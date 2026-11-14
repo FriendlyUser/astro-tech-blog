@@ -1,74 +1,159 @@
 ---
-title: "Dynamic Linking in Rust's FFI: Understanding the Essentials"
-description: Rust's Foreign Function Interface (FFI) allows Rust code to call functions defined in other programming languages, such as C or C++. One of the key features of Rust's FFI is dynamic linking, which enables Rust to call functions from shared libraries at runtime.
+title: "Calling shared libraries from Rust: link-time vs runtime loading"
+description: How Rust calls functions in a C shared library, either linked when the program starts or loaded at runtime with libloading or dlopen.
 pubDate: Saturday, 24 November 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
 ---
 
-Dynamic Linking in Rust's FFI: Understanding the Essentials
+Rust's foreign function interface (FFI) lets Rust call functions written in C, or in anything that exports a C ABI. When those functions live in a shared library (`.so` on Linux, `.dylib` on macOS, `.dll` on Windows), there are two different ways to use them:
 
-Rust's Foreign Function Interface (FFI) allows Rust code to call functions defined in other programming languages, such as C or C++. One of the key features of Rust's FFI is dynamic linking, which enables Rust to call functions from shared libraries at runtime. In this article, we will delve into the essentials of dynamic linking and how it works in Rust's FFI.
+1. **Link against the library at build time.** You declare the functions in an `extern "C"` block, the linker records a dependency on the library, and the OS loader maps it in when the program starts. If the library is missing, the program won't start.
+2. **Load the library at runtime.** The program opens the library itself (`dlopen` / `LoadLibrary`), looks up symbols by name, and casts them to function pointers. This is how plugin systems work, and it lets you handle a missing library gracefully.
 
-What is Dynamic Linking?
+The two are often mixed up. An `extern "C"` block is for option 1; it plays no part in option 2.
 
-Dynamic linking is a process of linking an executable program with a shared library or DLL (Dynamic Link Library) at runtime, instead of statically linking the library at compile time. In other words, dynamic linking allows the program to access functions and data in the shared library only when it is needed, rather than including the entire library in the program's executable file.
+Either way, the library's code is shared between processes and can be updated without recompiling your program, which is the main reason to use shared libraries rather than static ones.
 
-Dynamic linking has several advantages over static linking, such as smaller executable size, efficient memory usage, and easier maintenance of the shared library. It also allows multiple programs to share the same library in memory, reducing the overall memory usage of the system.
+## A C library to call
 
-How Dynamic Linking Works in Rust's FFI?
+All the examples call this function:
 
-Rust's FFI relies on dynamic linking to call functions from shared libraries, such as C or C++ libraries. The process of dynamic linking in Rust's FFI can be summarized in the following steps:
-
-Step 1: Defining the External Function
-
-The first step in using dynamic linking in Rust's FFI is to define the external function that Rust will call from the shared library. This is done by using the extern keyword followed by the function signature, as shown below:
-
-extern "C" {
-    fn my_function(arg1: i32, arg2: f64) -> f64;
+```c
+// mylib.c
+double my_function(int a, double b) {
+    return a * b;
 }
-Here, extern "C" specifies the calling convention used by the function, which is the C calling convention. The function signature fn my_function(arg1: i32, arg2: f64) -> f64; specifies the name and argument types of the function that Rust will call from the shared library.
+```
 
-Step 2: Loading the Shared Library
+Build it as a shared library (Linux shown; on macOS use `-dynamiclib -o libmylib.dylib`):
 
-The next step is to load the shared library at runtime using the dlopen function from the libc crate. The dlopen function takes the path to the shared library as an argument and returns a handle to the loaded library, as shown below:
+```bash
+gcc -shared -fPIC -o libmylib.so mylib.c
+```
 
-use std::ffi::CString;
-use std::os::raw::c_void;
-use libc::{c_double, c_int, dlclose, dlopen, dlsym};
+Put `libmylib.so` in the root of your Cargo project.
 
-let path = CString::new("/path/to/shared/library.so").unwrap();
-let handle = unsafe { dlopen(path.as_ptr(), libc::RTLD_NOW) };
-Here, CString::new("/path/to/shared/library.so").unwrap() creates a C-style string from the path to the shared library. The dlopen function loads the shared library specified by the path and returns a handle to the loaded library. The RTLD_NOW flag specifies that all symbols in the library should be resolved immediately.
+## Option 1: link at build time
 
-Step 3: Resolving the Function Symbol
+Declare the function with `#[link]` so rustc tells the linker which library to use:
 
-Once the shared library is loaded, the next step is to resolve the function symbol using the dlsym function. The dlsym function takes the handle to the loaded library and the name of the symbol as arguments and returns a pointer to the symbol, as shown below:
+```rust
+// src/main.rs
+use std::ffi::{c_double, c_int};
 
-let symbol_name = CString::new("my_function").unwrap();
-let symbol = unsafe {
-    let ptr = dlsym(handle, symbol_name.as_ptr());
-    std::mem::transmute::<*mut c_void, fn(c_int, c_double) -> c_double>(ptr)
-};
-Here, CString::new("my_function").unwrap() creates a C-style string from the name of the function symbol. The dlsym function resolves the function symbol specified by the name and returns a pointer to the symbol. The std::mem::transmute function converts the pointer to the symbol into a Rust function pointer with the same signature as the external function.
-
-Step 4: Calling the External Function
-
-The final step is to call the external function using the Rust function pointer obtained from the dlsym function, as shown below:
-
-let result = symbol(42, 3.14);
-Here, symbol(42, 3.14) calls the external function with the arguments 42 and 3.14 and returns the result.
-
-Step 5: Unloading the Shared Library
-
-Once the external function is called, it is important to unload the shared library using the dlclose function to free the memory used by the library, as shown below:
-
-unsafe {
-    dlclose(handle);
+#[link(name = "mylib")]
+unsafe extern "C" {
+    fn my_function(a: c_int, b: c_double) -> c_double;
 }
-Here, dlclose(handle) unloads the shared library specified by the handle.
 
-Conclusion
+fn main() {
+    // Calling a foreign function is unsafe: the compiler can't check
+    // that this signature matches what the C code actually does.
+    let result = unsafe { my_function(42, 1.5) };
+    println!("my_function(42, 1.5) = {result}");
+}
+```
 
-Dynamic linking is a powerful feature of Rust's FFI that allows Rust code to call functions from shared
+The `unsafe extern` spelling is required in the 2024 edition (the default for new Cargo projects) and accepted since Rust 1.82. On older editions, write `extern "C"`.
+
+The linker also needs to know where to find the library. Add a `build.rs` next to `Cargo.toml`:
+
+```rust
+// build.rs
+fn main() {
+    let dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    println!("cargo:rustc-link-search=native={dir}");
+}
+```
+
+Then run it, telling the dynamic loader where to look at startup:
+
+```bash
+LD_LIBRARY_PATH=. cargo run
+# my_function(42, 1.5) = 63
+```
+
+In a real deployment the library would be installed in a system library directory or found via an rpath instead of `LD_LIBRARY_PATH`.
+
+## Option 2: load at runtime with `libloading`
+
+The [`libloading`](https://crates.io/crates/libloading) crate wraps `dlopen`/`dlsym` on Unix and `LoadLibraryW`/`GetProcAddress` on Windows. It also ties each looked-up symbol to the lifetime of the `Library`, so you can't call a function after unloading the library that contains it.
+
+```toml
+[dependencies]
+libloading = "0.9"
+```
+
+No `build.rs` and no `extern` block are needed:
+
+```rust
+use std::ffi::{c_double, c_int};
+
+use libloading::{Library, Symbol};
+
+// The function pointer type must use the C ABI.
+type MyFunction = unsafe extern "C" fn(c_int, c_double) -> c_double;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    unsafe {
+        // Loading runs the library's initialisers, so it is unsafe too.
+        let lib = Library::new("./libmylib.so")?;
+        let my_function: Symbol<MyFunction> = lib.get(b"my_function")?;
+        println!("my_function(42, 1.5) = {}", my_function(42, 1.5));
+    } // `lib` is dropped here, which unloads the library
+    Ok(())
+}
+```
+
+`libloading` 0.9 (current at the time of writing, 0.9.1) requires Rust 1.88 or newer. Use `libloading::library_filename("mylib")` if you want the platform-specific file name (`libmylib.so`, `libmylib.dylib`, `mylib.dll`) built for you.
+
+## Option 2 without a crate: `dlopen` via `libc`
+
+On Unix you can call the C API directly through the [`libc`](https://crates.io/crates/libc) crate (`libc = "0.2"`). This is what `libloading` does under the hood, minus the safety checks, so you have to do them yourself:
+
+```rust
+use std::ffi::CStr;
+
+use libc::{c_double, c_int, dlclose, dlerror, dlopen, dlsym, RTLD_NOW};
+
+type MyFunction = unsafe extern "C" fn(c_int, c_double) -> c_double;
+
+fn main() {
+    unsafe {
+        // RTLD_NOW resolves every undefined symbol in the library immediately.
+        let handle = dlopen(c"./libmylib.so".as_ptr(), RTLD_NOW);
+        if handle.is_null() {
+            panic!("dlopen failed: {}", CStr::from_ptr(dlerror()).to_string_lossy());
+        }
+
+        let ptr = dlsym(handle, c"my_function".as_ptr());
+        if ptr.is_null() {
+            panic!("dlsym failed: {}", CStr::from_ptr(dlerror()).to_string_lossy());
+        }
+
+        let my_function: MyFunction = std::mem::transmute(ptr);
+        println!("my_function(42, 1.5) = {}", my_function(42, 1.5));
+
+        // After this, calling my_function would be undefined behaviour.
+        dlclose(handle);
+    }
+}
+```
+
+The `c"..."` C-string literals need Rust 1.77 or newer.
+
+## Gotchas
+
+- **Use `extern "C" fn` types, not plain `fn`.** Transmuting a symbol to `fn(i32, f64) -> f64` uses the Rust ABI, which isn't guaranteed to match C's. That's undefined behaviour even if it happens to work.
+- **Check for null.** `dlopen` and `dlsym` return null on failure; calling through a null function pointer crashes.
+- **Signatures aren't checked.** Neither the compiler nor the loader verifies that your Rust declaration matches the C function. Use the exact C types (`c_int`, `c_double`, `c_char`) and consider generating declarations with [`bindgen`](https://crates.io/crates/bindgen) for larger APIs.
+- **Don't unload while in use.** Any function pointer or static obtained from a library becomes invalid after `dlclose`. `libloading`'s `Symbol` lifetime prevents this; raw pointers don't.
+
+## Further reading
+
+- [The Rustonomicon: FFI](https://doc.rust-lang.org/nomicon/ffi.html)
+- [The Rust Reference: `#[link]` and external blocks](https://doc.rust-lang.org/reference/items/external-blocks.html)
+- [`libloading` documentation](https://docs.rs/libloading)

@@ -1,155 +1,128 @@
 ---
-title: Using Fresh in Deno for Web Development
+title: "Getting started with Fresh 2 in Deno: routes, handlers and islands"
 pubDate: "2023-05-03T14:16:45.051Z"
-description: "In this article, we will dive into the world of Deno web development by exploring **Fresh**, a minimalistic web framework for Deno"
-tags: ["deno"]
+lastUpdated: 2026-11-14
+description: "Create a Fresh 2 app in Deno and add a file-based route with a data handler, a JSON API route and an interactive Preact island."
+tags: ["deno", "typescript"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3053072516.png
 ---
-# Using Fresh in Deno for Web Development
 
-In this article, we will dive into the world of Deno web development by exploring **Fresh**, a minimalistic web framework for Deno. Deno is a runtime for JavaScript and TypeScript built on the V8 JavaScript engine and Rust language. It is designed to be secure, fast, and built with modern web development in mind. Fresh is a lightweight framework that helps developers create server-rendered applications with ease.
+[Fresh](https://usefresh.dev/) is Deno's web framework. It renders pages on the server with Preact, routes requests based on the files in `routes/`, and ships JavaScript to the browser only for the components you mark as "islands". By default a page is plain HTML with no client-side JS.
 
-## Prerequisites
+An earlier version of this post showed an Oak-style `Application`/`Router` API imported from `deno.land/x/fresh`. Fresh has never had that API, so the examples below have been rewritten for Fresh 2, which is published on JSR as `@fresh/core`. Fresh 2.0 went stable in 2025.
 
-Before diving into Fresh, make sure you have the following tools installed:
+## Create a project
 
-1. [Deno](https://deno.land/manual/getting_started/installation): A secure runtime for JavaScript and TypeScript.
-
-2. [Deno Deploy](https://deno.com/deploy/docs/getting-started): A global serverless platform for deploying Deno applications.
-
-## Getting Started with Fresh
-
-To get started with Fresh, create a new directory for your project and navigate to it:
+You only need [Deno](https://docs.deno.com/runtime/getting_started/installation/) installed.
 
 ```bash
-mkdir fresh-app && cd fresh-app
+deno run -Ar jsr:@fresh/init
+cd fresh-project   # or whatever directory name you chose
+deno task dev
 ```
 
-Create a `deps.ts` file in the root of your project, which will hold all the dependencies for your application. This is an excellent practice in Deno applications, as it allows you to manage and update dependencies more efficiently.
+Open the URL the dev server prints. The generated project looks roughly like this:
 
-```ts
-// deps.ts
-export { Application } from "https://deno.land/x/fresh/mod.ts";
+```text
+components/   shared Preact components (server-rendered only)
+islands/      components that also run in the browser
+routes/       file-based routes; routes/index.tsx renders /
+static/       CSS, images and other static assets
+main.ts       server entry point
+utils.ts      exports the typed `define` helper used by routes
+deno.json     dependencies, tasks and import map (`@/` maps to the project root)
 ```
 
-Now, create a `main.ts` file in the root directory, which will be the entry point for your application:
+## A page with a data handler
 
-```ts
-// main.ts
-import { Application } from "./deps.ts";
+A route file can export a `handler`, which runs on the server for each request, and a default page component. The handler passes data to the page with `page()`:
 
-const app = new Application();
+```tsx
+// routes/index.tsx
+import { page } from "fresh";
+import { define } from "@/utils.ts";
 
-app.use(async (ctx) => {
-  ctx.response.body = "Hello, Fresh!";
+export const handler = define.handlers({
+  GET() {
+    return page({ message: "This is a dynamic message" });
+  },
 });
 
-await app.listen({ port: 8000 });
-console.log("Server is running on http://localhost:8000");
-```
-
-In the code above, we import `Application` from our `deps.ts` file, create a new instance of it, and define a simple middleware that sends "Hello, Fresh!" as the response body. Finally, we start our server on port 8000.
-
-To run the application, execute the following command in your terminal:
-
-```bash
-deno run --allow-net main.ts
-```
-
-Now, if you visit `http://localhost:8000` in your browser, you should see the "Hello, Fresh!" message.
-
-## Routing with Fresh
-
-Fresh has a built-in router that allows you to create routes for your application easily. Let's create a new `routes.ts` file in the root directory and define some routes:
-
-```ts
-// routes.ts
-import { Router } from "https://deno.land/x/fresh/mod.ts";
-
-const router = new Router();
-
-router.get("/", (ctx) => {
-  ctx.response.body = "Welcome to the Fresh application!";
+export default define.page<typeof handler>(({ data }) => {
+  return (
+    <main>
+      <h1>Welcome to the Fresh application!</h1>
+      <p>{data.message}</p>
+    </main>
+  );
 });
+```
 
-router.get("/about", (ctx) => {
-  ctx.response.body = "This is the about page.";
+`define.page<typeof handler>` ties the page's `data` prop to the handler's return type, so `data.message` is type-checked. A page without data can skip the handler and export only `define.page(...)`. For example, `routes/about.tsx` serves `/about`.
+
+Dynamic segments come from the filename: `routes/posts/[slug].tsx` matches `/posts/anything`, and the handler reads the value from `ctx.params.slug`.
+
+## A JSON API route
+
+A route that exports only a handler can return any `Response`:
+
+```ts
+// routes/api/time.ts
+import { define } from "@/utils.ts";
+
+export const handler = define.handlers({
+  GET() {
+    return Response.json({ now: new Date().toISOString() });
+  },
 });
-
-export default router;
 ```
 
-In your `main.ts` file, import the router and use it as middleware:
+## An interactive island
 
-```ts
-// main.ts
-import { Application } from "./deps.ts";
-import router from "./routes.ts";
+Everything in `routes/` and `components/` renders to static HTML. To add client-side behaviour, put the component in `islands/`:
 
-const app = new Application();
+```tsx
+// islands/LikeButton.tsx
+import { useSignal } from "@preact/signals";
 
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-await app.listen({ port: 8000 });
-console.log("Server is running on http://localhost:8000");
-```
-
-Now, when you visit `http://localhost:8000` and `http://localhost:8000/about`, you will see the respective messages.
-
-## Server-Side Rendering with Fresh
-
-Fresh makes server-side rendering easy. Let's create a simple template engine for rendering HTML pages. Create a new `render.ts` file:
-
-```ts
-// render.ts
-export function render(view: string, data: Record<string, any> = {}): string {
-  return view.replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] || "");
+export default function LikeButton() {
+  const likes = useSignal(0);
+  return (
+    <button type="button" onClick={() => likes.value++}>
+      Likes: {likes}
+    </button>
+  );
 }
 ```
 
-Now, update your `routes.ts` file to use the render function:
+Use it from a page like any other component:
 
-```ts
-// routes.ts
-import { Router } from "https://deno.land/x/fresh/mod.ts";
-import { render } from "./render.ts";
+```tsx
+// routes/about.tsx
+import { define } from "@/utils.ts";
+import LikeButton from "@/islands/LikeButton.tsx";
 
-const router = new Router();
-
-router.get("/", (ctx) => {
-  const html = `
-    <h1>Welcome to the Fresh application!</h1>
-    <p>{{message}}</p>
-  `;
-
-  ctx.response.body = render(html, { message: "This is a dynamic message" });
+export default define.page(() => {
+  return (
+    <main>
+      <h1>About</h1>
+      <LikeButton />
+    </main>
+  );
 });
-
-router.get("/about", (ctx) => {
-  const html = `
-    <h1>About</h1>
-    <p>This is the about page.</p>
-  `;
-
-  ctx.response.body = render(html);
-});
-
-export default router;
 ```
 
-Now, when you visit the routes, you will see the HTML pages rendered with dynamic content.
+Fresh hydrates only that button. The rest of the page stays plain HTML. Props passed to an island must be serializable, because Fresh sends them to the browser.
 
-## Conclusion
+## Things to know
 
-In this article, we've explored Fresh, a minimalistic web framework for Deno, and learned how to create a simple server-rendered application with routing and templating. Fresh is an excellentchoice for developers who want a lightweight and easy-to-use tool for building server-rendered applications in Deno.
+- Fresh 1.x projects (`fresh.gen.ts`, imports from `$fresh/`) need migrating to 2.x. See the official docs for the migration guide.
+- Islands are the only components that run in the browser. Event handlers on non-island components do nothing.
+- Fresh is tied to Preact. If you need React-only libraries, check for `preact/compat` support first.
 
-As you continue to explore Fresh and Deno, you may want to look into other features and tools, such as:
+## Further reading
 
-- Middleware for handling static files and serving assets
-- Handling form data and file uploads
-- Authentication and authorization
-- Integrating with databases and ORMs
-- Deploying your Deno applications using Deno Deploy or other platforms
-
+- [Fresh documentation](https://usefresh.dev/docs/introduction)
+- [Getting started](https://usefresh.dev/docs/getting-started)
+- [@fresh/core on JSR](https://jsr.io/@fresh/core)

@@ -1,137 +1,101 @@
 ---
 tags: ['js', "googlemaps"]
-title: How to use Google Maps API in your web application
-description: In this post I will show how to integrate google maps into a web page.
+title: Add a Google Map with a marker to a web page using the Maps JavaScript API
+description: Get an API key, load the Google Maps JavaScript API, and render a map with an advanced marker in a plain HTML page.
 pubDate: Fri, 15 May 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/654074938.png
 ---
 
+The Maps JavaScript API lets you embed an interactive Google Map in a web page and add markers, info windows, and overlays to it. This post covers the minimum to get a map with one marker on screen: an API key, the script tag that loads the API, and a small `initMap` function.
 
-Google Maps API is a powerful tool that allows developers to integrate Google Maps into their web applications. With Google Maps API, developers can create custom maps, add markers, and overlays to the map, and even integrate real-time traffic data. In this article, we will go through the process of using the Google Maps API in your web application.
+You need a Google Cloud account with billing enabled. Google Maps Platform requires a billing account even if your usage stays inside the free tier.
 
+## Step 1: Enable the API and create a key
 
-Creating interactive maps with Google Maps is important for many reasons. For one, it can enhance the user experience on your website or web application by providing visual information about locations and directions. Interactive maps can also be used to display real-time traffic data, which is especially useful for transportation-related applications.
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) and pick or create a project.
+2. Go to **APIs & Services > Library**, search for **Maps JavaScript API**, and click **Enable**.
+3. Go to **APIs & Services > Credentials**, click **Create credentials > API key**, and copy the key.
+4. Restrict the key before you ship anything: under the key's settings, limit it to **Websites** (HTTP referrers) for your domain and to the Maps JavaScript API. An unrestricted key embedded in a public page can be used by anyone who views the source.
 
-In addition, interactive maps can be used in a variety of industries such as real estate, tourism, and retail to provide location-based information to customers. Maps can be customized to display specific information and can also be integrated with other services, such as reviews and ratings.
+## Step 2: Load the API
 
-Overall, creating interactive maps with Google Maps can improve the functionality and user experience of a web application or website, as well as provide valuable location-based information to users.
+Google's recommended script tag uses `loading=async` and a `callback` that runs once the API is ready:
 
-
-Before we get started, you will need to have a basic understanding of HTML, CSS, and JavaScript. Also, you will need to create a Google Cloud Platform account to obtain an API key for the Google Maps API.
-
-Step 1: Create a Google Cloud Platform account and enable the Google Maps API
-
-The first step is to create a Google Cloud Platform account. To do this, go to the Google Cloud Platform website and follow the instructions to create an account. Once you have created an account, you will need to enable the Google Maps API.
-
-To enable the Google Maps API, follow these steps:
-
-1. Go to the Google Cloud Console and sign in.
-2. Click the hamburger menu in the top-left corner of the page and select APIs & Services > Dashboard.
-3. Click the Enable APIs and Services button at the top of the page.
-4. Search for Google Maps JavaScript API and click Enable.
-
-Step 2: Obtain an API key
-
-Once you have enabled the Google Maps API, you will need to obtain an API key. An API key is a unique identifier that allows your web application to access the Google Maps API.
-
-To obtain an API key, follow these steps:
-
-1. Go to the Google Cloud Console and sign in.
-2. Click the hamburger menu in the top-left corner of the page and select APIs & Services > Credentials.
-3. Click the Create credentials button and select API key.
-4. Copy the API key and save it for later use.
-
-Step 3: Add the Google Maps API to your web application
-
-To add the Google Maps API to your web application, follow these steps:
-
-1. Open your web application in your preferred code editor.
-2. Add the following script tag to your HTML file:
-
-
-```js
+```html
 <script
- src="https://maps.googleapis.com/maps/api/js?key=YOUR\_API\_KEY&callback=initMap&libraries=&v=weekly"
- defer
+  async
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&loading=async&callback=initMap"
 ></script>
 ```
-Replace YOUR\_API\_KEY with the API key you obtained in Step 2.
 
-3. Create a new JavaScript file and add the following code:
+Replace `YOUR_API_KEY` with the key from step 1. Include this tag only once per page.
 
+## Step 3: Render a map with a marker
 
-```js
-function initMap() {
- const map = new google.maps.Map(document.getElementById("map"), {
- zoom: 8,
- center: { lat: -34.397, lng: 150.644 },
- });
-}
-```
-This code creates a new Google Maps object and sets the center of the map to Sydney, Australia.
+`google.maps.Marker` has been deprecated since February 2024 (v3.56). New code should use `google.maps.marker.AdvancedMarkerElement`, which needs the `marker` library and a map ID. For testing, Google accepts the placeholder `DEMO_MAP_ID`; for production, create a map ID under **Google Maps Platform > Map Management**.
 
-4. Add a div element with an id of "map" to your HTML file:
-
-
-```js
-<div id="map"></div>
-```
-This is where the map will be displayed in your web application.
-
-Step 4: Customize the Google Map
-
-Now that you have added the Google Maps API to your web application, you can customize the map by adding markers, overlays, and real-time traffic data. The Google Maps API documentation provides a comprehensive list of customization options that you can use to create a unique and interactive map for your web application.
-
-An full example is listed below:
+Here is a complete page that centres the map on San Francisco and drops a marker there:
 
 ```html
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Google Maps API Example</title>
+    <title>Google Maps API example</title>
     <style>
-      /* Set the height of the map container */
+      /* The map container needs an explicit height or it renders as 0px tall */
       #map {
         height: 400px;
       }
     </style>
   </head>
   <body>
-    <h1>Google Maps API Example</h1>
+    <h1>Google Maps API example</h1>
     <div id="map"></div>
-    <script>
-      function initMap() {
-        // Set the coordinates for the center of the map
-        var center = { lat: 37.7749, lng: -122.4194 };
 
-        // Create a new Google Maps object
-        var map = new google.maps.Map(document.getElementById("map"), {
-          center: center,
+    <script>
+      async function initMap() {
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+        const center = { lat: 37.7749, lng: -122.4194 };
+
+        const map = new Map(document.getElementById("map"), {
+          center,
           zoom: 13,
+          mapId: "DEMO_MAP_ID", // required for advanced markers
         });
 
-        // Add a marker to the map
-        var marker = new google.maps.Marker({
+        new AdvancedMarkerElement({
+          map,
           position: center,
-          map: map,
+          title: "San Francisco",
         });
       }
     </script>
     <script
       async
-      defer
-      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&loading=async&callback=initMap"
     ></script>
   </body>
 </html>
 ```
 
-Conclusion
+`initMap` is defined in a classic (non-module) script, so it is a global function the API can call. If you move it into an ES module or a bundler, assign it explicitly with `window.initMap = initMap`.
 
-In this article, we have gone through the process of using the Google Maps API in your web application. We started by creating a Google Cloud Platform account and enabling the Google Maps API. Then, we obtained an API key and added the Google Maps API to our web application. Finally, we customized the map by adding markers, overlays, and real-time
+## Gotchas
 
+- **Blank grey map or "For development purposes only" watermark**: usually billing isn't enabled on the project, or the key's referrer restriction doesn't match the page's URL. The browser console shows the exact error.
+- **Map doesn't appear at all**: check that `#map` has a height.
+- **Marker doesn't appear**: advanced markers need a `mapId` on the map. Check that it is set and look in the console for a warning.
 
+## Further reading
+
+- [Load the Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/load-maps-js-api)
+- [Migrate to advanced markers](https://developers.google.com/maps/documentation/javascript/advanced-markers/migration)
+- [API key best practices](https://developers.google.com/maps/api-security-best-practices)
 
 ## References
+
 - https://github.com/FriendlyUser/Pirates-Game/tree/master

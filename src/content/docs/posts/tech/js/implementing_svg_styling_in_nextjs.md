@@ -1,110 +1,57 @@
 ---
-title: How I style svg in next.js
-description: Using svg in next.js for custom styling
+title: "How I style SVG icons in Next.js: inline fetch plus CSS modules"
+description: A small React component that fetches an SVG file and inlines it, so a CSS module can recolour the icon's paths when it is toggled.
 alt: my first blog post
 tags: ["next","svg"]
 layout: '@/templates/BasePost.astro'
 pubDate: Saturday, 2 September 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/DALL·E 2023-01-23 21.47.24 - abstract images.png'
 ---
 
+I wanted icons in a Next.js app that change colour when clicked. SVG suits this: icons are vector shapes, so they stay sharp at any size, and simple icons are usually smaller than the equivalent PNG. Inline SVG elements can also be styled with CSS like any other DOM node.
 
-SVGs (Scalable Vector Graphics) have several advantages over PNGs (Portable Network Graphics) and other raster image formats:
+The catch is that an SVG loaded through `<img src="icon.svg">` is a separate document, and your page's CSS can't reach inside it. To recolour the paths, the SVG markup has to be inlined into the page. My approach is a small component that fetches the file and injects it, plus a CSS module that targets the `path` and `g` elements.
 
-Scalability: SVGs are vector-based images, which means they can be scaled to any size without losing quality. This makes them perfect for responsive design and high-resolution displays.
+## Fetching and inlining the SVG
 
-Smaller file size: Since SVGs are code-based, they generally have a smaller file size than raster images like PNGs. This means they can be loaded faster and take up less space on a device.
-
-Interactivity: SVGs can be animated and modified with CSS and JavaScript, which means they can be more interactive and dynamic.
-
-Accessibility: SVGs can be easily indexed and searched by search engines and screen readers, making them more accessible to users with disabilities.
-
-Better for logos and icons: SVGs are perfect for logos and icons because they can be infinitely scaled without losing quality, and they can be easily manipulated with CSS.
-
-In summary, SVGs are a great choice for images that need to be scalable, lightweight and interactive, and logos or icons.
-```js
+```tsx
+"use client";
 import React, { useEffect, useState } from "react";
 
 export interface SvgInlineProps {
   url: string;
   className?: string;
-  style?: React.CSSProperties | undefined;
+  style?: React.CSSProperties;
 }
-// for next.js if icon does not exist this will throw an error
+
 export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) => {
-  const [svg, setSvg] = useState<string>("");
+  const [svg, setSvg] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [isErrored, setIsErrored] = useState(false);
 
   useEffect(() => {
+    setIsLoaded(false);
+    setIsErrored(false);
+
     fetch(url)
       .then((res) => {
+        // A missing file in /public returns Next.js's HTML 404 page,
+        // so check the status rather than injecting whatever came back.
+        if (!res.ok) {
+          throw new Error(`Failed to load ${url}: ${res.status}`);
+        }
         return res.text();
       })
-      .then((text) => {
-        if (text.includes("html")) {
-          // use fallback svg
-          console.log("file does not exist");
-        } else {
-          setSvg(text);
-        }
+      .then(setSvg)
+      .catch((err) => {
+        console.error(err);
+        setIsErrored(true);
       })
-      .catch(setIsErrored)
-      .then(() => {
-        return setIsLoaded(true);
-      });
+      .finally(() => setIsLoaded(true));
   }, [url]);
+
   return (
-    <div
-      className={`svgInline svgInline--${isLoaded ? "loaded" : "loading"} ${
-        isErrored ? "svgInline--errored" : ""
-      } ${className || ""}`}
-      style={style}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  );
-};
-
-```
-```js
-// import react
-import React, { useEffect, useState } from "react";
-
-export interface SvgInlineProps {
-  url: string;
-  className?: string;
-  style?: React.CSSProperties | undefined;
-}
-// for next.js if icon does not exist this will throw an error
-export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) => {
-  // set the state of the svg to be empty and set the default as false
-  const [svg, setSvg] = useState<string>("");
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isErrored, setIsErrored] = useState(false);
-
-  useEffect(() => {
-    // fetch the url
-    fetch(url)
-      .then((res) => {
-        return res.text();
-      })
-      // set the svg to the text
-      .then((text) => {
-        if (text.includes("html")) {
-          // use fallback svg
-          console.log("file does not exist");
-        } else {
-          setSvg(text);
-        }
-      })
-      // set the error state to true
-      .catch(setIsErrored)
-      .then(() => {
-        return setIsLoaded(true);
-      });
-  }, [url]);
-  return (
-    // add class names for the states
     <div
       className={`svgInline svgInline--${isLoaded ? "loaded" : "loading"} ${
         isErrored ? "svgInline--errored" : ""
@@ -116,88 +63,91 @@ export const SvgInline: React.FC<SvgInlineProps> = ({ url, className, style }) =
 };
 ```
 
+How it works:
 
-1. The component accepts three props: url, className and style.
-2. The component uses the useState hook to set the state of the SVG and the loading state.
-3. The useEffect hook is used to fetch the SVG and set the state.
-4. Then the SVG is set to the state.
-5. If the SVG does not exist, the component will use a fallback SVG.
-6. The component will add a class name for the states: loading, loaded, errored.
-7. The SVG is then rendered using the dangerouslySetInnerHTML prop.
+1. It takes a `url` plus optional `className` and `style`.
+2. `useEffect` fetches the file whenever `url` changes.
+3. A non-2xx response (such as a missing icon) is treated as an error. The component renders an empty `div` with a `svgInline--errored` class instead of inlining an HTML error page.
+4. The wrapper gets `loading`, `loaded` and `errored` class names, so you can style each state, for example with a placeholder size while loading.
+5. The SVG markup is injected with `dangerouslySetInnerHTML`.
 
-```js
-"use client"; // this is a client component
+Only use this with SVG files you control, such as files in `/public`. SVG can carry scripts and event-handler attributes, so injecting markup from an untrusted URL is an XSS risk. Sanitise it first, for example with DOMPurify, if the source isn't yours.
+
+The component uses hooks, so in the App Router it must be a client component. The `"use client"` directive at the top handles that.
+
+## A clickable icon that toggles colour
+
+```tsx
+"use client";
 import React from "react";
 import classes from "./svgIcon.module.css";
 import { SvgInline } from "./SvgInline";
 
-export interface SearchIconProps {
+export interface SvgIconProps {
   label?: string;
   iconUrl?: string;
-  svgStyle?: React.CSSProperties;
 }
 
-export const SvgIcon: React.FC<SearchIconProps> = ({
-  label,
-  iconUrl,
-}) => {
-  const [testActive, setTestActive] = React.useState(false);
+export const SvgIcon: React.FC<SvgIconProps> = ({ label, iconUrl }) => {
+  const [active, setActive] = React.useState(false);
 
-  const activeClasses = testActive ? classes.activeClass : classes.inActiveClass;
   return (
-    <>
-      <div tabIndex={-1} onClick={() => {
-        setTestActive(!testActive);
-      }} className={activeClasses} style={{
-        width: '100px',
-        maxWidth: "150px"
-      }}>
-        {iconUrl && <SvgInline url={iconUrl}  />}
-        </div>
-    </>
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={active}
+      onClick={() => setActive(!active)}
+      className={active ? classes.activeClass : classes.inActiveClass}
+      style={{ width: "100px", maxWidth: "150px" }}
+    >
+      {iconUrl && <SvgInline url={iconUrl} />}
+    </button>
   );
 };
 ```
 
-This is a client-side React component called "SvgIcon" that renders an SVG image based on a provided URL. The component also has a state called "testActive" which is used to toggle a CSS class for the rendered SVG element. The component also receives a "label" prop and an "iconUrl" prop, and uses the "SvgInline" component to render the SVG image. The component also has a onClick event handler that toggles the state of the testActive variable.
+Clicking toggles `active`, which switches the wrapper between the two CSS module classes. I originally used a `div` with an `onClick`, but a `button` can be focused and activated from the keyboard for free. `aria-pressed` tells screen readers it is a toggle. `label` becomes the accessible name, since the icon itself has no text.
 
+## The CSS module
 
 ```css
-.activeClass path {
-    fill: black;
-    stroke: black;
-    stroke-width: 0.25px;
+/* svgIcon.module.css */
+.activeClass,
+.inActiveClass {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
+.activeClass path,
 .activeClass g {
-    fill: black;
-    stroke: black;
-    stroke-width: 0.25px;
+  fill: black;
+  stroke: black;
+  stroke-width: 0.25px;
 }
 
-.inActiveClass path {
-    fill: gray !important;
-    stroke: gray !important;
-    stroke-width: 0.25px;
-}
-
+.inActiveClass path,
 .inActiveClass g {
-    fill: gray !important;
-    stroke: gray !important;
-    stroke-width: 0.25px;
+  fill: gray !important;
+  stroke: gray !important;
+  stroke-width: 0.25px;
 }
 
-.activeClass svg {
-    max-width: 100px;
-    max-height: 100px;
-}
-
+.activeClass svg,
 .inActiveClass svg {
-    max-width: 100px;
-    max-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
 }
 ```
-These are CSS styles for the "SvgIcon" component. The styles set the fill and stroke color of the "path" and "g" elements within the SVG, as well as the stroke width. When the "testActive" state is true, the class "activeClass" is applied to the SVG, which sets the fill and stroke color to black. When "testActive" is false, the class "inActiveClass" is applied, which sets the fill and stroke color to gray. The styles also set a maximum width and height for the SVG element when either class is applied. The "!important" keyword is used to ensure that these styles override any other styles that may be applied to the elements.
+
+The first rule strips the default button styling. The `path` and `g` rules set the fill and stroke colour for each state, and the last rule caps the icon's size.
+
+A note on `!important`: a normal CSS rule already overrides SVG presentation attributes such as `fill="red"`, so plain rules (like the active ones) work for most icons. `!important` is only needed when the SVG has inline `style="fill: ..."` attributes, which some export tools add. If your icons have those, use `!important` in both classes, not just one, or strip the inline styles from the files.
+
+## When not to do this
+
+Fetching at runtime adds a network request per icon and a flash of empty space while it loads. For icons that are known at build time, importing them as React components with [SVGR](https://react-svgr.com/) avoids both, and lets you write `fill="currentColor"` in the SVG so the icon follows the CSS `color` of its parent. The fetch approach is useful when the icon URL is only known at runtime, for example when it comes from a CMS or a database.
 
 ## References
 

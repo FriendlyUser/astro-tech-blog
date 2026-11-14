@@ -1,74 +1,136 @@
 ---
-description: In this article, we will discuss the core features and benefits of the
-  Spring Framework and delve into its primary components
+description: 'What the Spring Framework does: the IoC container and dependency injection, its main modules, a runnable example, and how Spring Boot fits in.'
 imgSrc: /imgs/2023/2679960937.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-05T04:26:36.000Z'
-tags: []
-title: An Introduction to the Spring Framework
+lastUpdated: 2026-11-14
+tags: ["java"]
+title: 'Spring Framework basics: dependency injection, modules and Spring Boot'
 ---
 
-# An Introduction to the Spring Framework
+The Spring Framework is an open-source application framework for Java. At its core is a container that creates your objects and wires their dependencies together (inversion of control, or dependency injection). Around that sit modules for database access, transactions, web applications and testing. Most Spring applications today are started with Spring Boot, which configures the framework for you.
 
-The Spring Framework is an open-source, comprehensive Java-based framework that simplifies the development of enterprise-level applications. Created by Rod Johnson in 2002, it has since evolved into a powerful, flexible ecosystem that offers several modules to streamline the development process. In this article, we will discuss the core features and benefits of the Spring Framework and delve into its primary components.
+Spring grew out of code in Rod Johnson's 2002 book *Expert One-on-One J2EE Design and Development*, and 1.0 shipped in March 2004. It's maintained by the Spring team, now part of Broadcom. As of November 2026 the current release is Spring Framework 7.0 (7.1 is in release candidates), which needs Java 17 or newer and targets Jakarta EE 11. Spring Boot 4.x is built on it.
 
-## Spring Framework: The Basics
+## Dependency injection in one example
 
-The Spring Framework provides a lightweight container that can be easily integrated into applications. It is designed to address the common challenges faced by developers in building complex, scalable applications, such as:
+Without a container, a class creates its own collaborators:
 
-- Dependency management and inversion of control
-- Data access and transaction management
-- Security and authentication
-- Web services and RESTful API development
-- Integration with other technologies and frameworks
+```java
+public class Greeter {
+    private final MessageService messages = new EnglishMessageService();
+}
+```
 
-One of the primary goals of the Spring Framework is to promote the development of maintainable and testable code. It achieves this by encouraging loose coupling between components and providing a suite of tools to support testing and debugging.
+That hard-codes the implementation, so you can't swap it in a test or in another environment. With dependency injection, `Greeter` asks for a `MessageService` in its constructor and Spring decides which one to pass.
 
-## Core Components and Modules
+Here's a complete program using only the `spring-context` module (Maven coordinates `org.springframework:spring-context:7.0.10`). Each class goes in its own file in the `com.example` package:
 
-The Spring Framework is organized into several modules, each targeting specific application requirements. Some of the key modules include:
+```java
+package com.example;
 
-### Spring Core and Spring Beans
+public interface MessageService {
+    String message(String name);
+}
+```
 
-These modules form the foundation of the Spring Framework. Spring Core implements the Inversion of Control (IoC) container, which is responsible for managing and injecting dependencies when needed. Spring Beans defines the mechanisms for creating and configuring application components, known as beans.
+```java
+package com.example;
 
-### Spring Context
+import org.springframework.stereotype.Service;
 
-Spring Context is the module that provides the ApplicationContext interface, which is an extension of the bean factory. The ApplicationContext offers advanced features, such as internationalization, event propagation, and resource handling. Furthermore, it is responsible for the lifecycle management of beans and the integration of other modules.
+@Service
+public class EnglishMessageService implements MessageService {
+    @Override
+    public String message(String name) {
+        return "Hello, " + name + "!";
+    }
+}
+```
 
-### Spring AOP
+```java
+package com.example;
 
-Aspect-Oriented Programming (AOP) is a programming paradigm that focuses on the separation of concerns in software design. Spring AOP offers support for implementing cross-cutting concerns, such as logging, security, and transaction management, in a modular and non-invasive way. This helps to improve code maintainability and reduce code duplication.
+import org.springframework.stereotype.Component;
 
-### Spring Data Access
+@Component
+public class Greeter {
+    private final MessageService messages;
 
-The Spring Framework provides various data access modules to simplify the integration with different data storage technologies. These modules include:
+    public Greeter(MessageService messages) {
+        this.messages = messages;
+    }
 
-- Spring JDBC: Simplifies JDBC programming by providing a template class (JdbcTemplate) and handling common tasks, such as resource management and exception handling.
-- Spring ORM: Integrates Object-Relational Mapping (ORM) frameworks, like Hibernate, JPA, and JDO, into the Spring environment.
-- Spring Transaction: Offers a unified, declarative model for managing transactions across various data access technologies.
+    public void greet(String name) {
+        System.out.println(messages.message(name));
+    }
+}
+```
 
-### Spring Security
+```java
+package com.example;
 
-Spring Security is a powerful, customizable authentication and access control framework. It provides out-of-the-box support for various authentication mechanisms, such as OAuth2, SAML, and LDAP, and offers a comprehensive API for implementing custom security features.
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-### Spring Web
+@Configuration
+@ComponentScan
+public class App {
+    public static void main(String[] args) {
+        try (var context = new AnnotationConfigApplicationContext(App.class)) {
+            context.getBean(Greeter.class).greet("Spring"); // Hello, Spring!
+        }
+    }
+}
+```
 
-Spring Web offers several modules to simplify web application development, including:
+What happens when this runs:
 
-- Spring Web MVC: A flexible, annotation-based framework for building web applications with a Model-View-Controller (MVC) architecture.
-- Spring WebFlux: A reactive web framework for developing non-blocking, event-driven applications with support for backpressure and asynchronous processing.
-- Spring REST: Provides tools and abstractions for building RESTful APIs, including support for JSON and XML serialization and client-side HTTP access.
+1. `AnnotationConfigApplicationContext` reads the `App` configuration class. `@ComponentScan` with no arguments scans `App`'s package (`com.example`) and its sub-packages.
+2. It finds `@Service` and `@Component` classes and registers them as beans. By default each bean is a singleton within the context.
+3. To create `Greeter`, it sees the constructor needs a `MessageService`, finds the one bean that implements it, and passes it in. A class with a single constructor doesn't need `@Autowired`.
+4. Closing the context (here, via try-with-resources) runs any shutdown callbacks on the beans.
 
-## Advantages of the Spring Framework
+If two beans implemented `MessageService`, startup would fail with a `NoUniqueBeanDefinitionException` until you marked one `@Primary` or picked one with `@Qualifier`.
 
-The Spring Framework offers multiple benefits for developers, such as:
+The payoff is in testing. `Greeter` is a plain class, so a unit test needs no Spring at all:
 
-- Flexibility: The modular architecture allows developers to choose the components they need and integrate them seamlessly into their applications.
-- Testability: Spring promotes the development of testable code by encouraging dependency injection and providing comprehensive testing support.
-- Scalability: The framework is designed to support the development of high-performance, scalable applications, with features like caching, batch processing, and asynchronous processing.
-- Community: With a large, active community and extensive documentation, developers can quickly find solutions to common problems and learn best practices for using the Spring Framework.
+```java
+Greeter greeter = new Greeter(name -> "Hi " + name);
+```
 
-## Conclusion
+## The main modules
 
-The Spring Framework is a powerful, flexible ecosystem for building enterprise-level Java applications. With its modular architecture and comprehensive suite of tools, it simplifies the development process and promotes the creation of maintainable, testable code. Whether you are building web applications, microservices, or data-driven solutions, the Spring Framework offers a solid foundation to support your development efforts.
+The framework is split into modules (separate JARs), so you only depend on what you use:
+
+- **Core container** (`spring-core`, `spring-beans`, `spring-context`, `spring-expression`): the IoC container, `ApplicationContext`, application events, resource loading and the Spring Expression Language.
+- **AOP** (`spring-aop`): proxies that wrap beans to add behaviour such as transactions, caching or security checks without changing the bean's code. This is how `@Transactional` and `@Cacheable` work.
+- **Data access** (`spring-jdbc`, `spring-tx`, `spring-orm`, `spring-r2dbc`): `JdbcClient` and `JdbcTemplate` for SQL without the JDBC boilerplate, declarative transactions with `@Transactional`, and integration with JPA and Hibernate.
+- **Web** (`spring-web`, `spring-webmvc`, `spring-webflux`): Spring MVC for servlet-based web apps and REST APIs (`@RestController`), and Spring WebFlux for non-blocking, reactive ones. `spring-web` also includes the HTTP clients: `RestClient` (synchronous, added in 6.1), `WebClient` (reactive), and declarative HTTP interface clients. The Spring team has announced plans to deprecate the older `RestTemplate`.
+- **Testing** (`spring-test`): loads an application context in JUnit tests, plus `MockMvc` for testing controllers without starting a server.
+
+Some things often described as "part of Spring" are separate projects with their own release cycles: Spring Boot, Spring Security, Spring Data, Spring Batch and Spring Cloud.
+
+## Where Spring Boot fits
+
+Spring Framework on its own leaves you to choose and configure a web server, JSON library, connection pool, logging and so on. Spring Boot does that for you:
+
+- **Starters** such as `spring-boot-starter-web` pull in a tested set of dependencies.
+- **Auto-configuration** creates beans based on what's on the classpath. Add a JDBC driver and you get a `DataSource`.
+- **An embedded server** (Tomcat by default) means the app runs as `java -jar app.jar`.
+- **Externalized configuration** through `application.properties`/`application.yml` and environment variables.
+
+For a new application, start at [start.spring.io](https://start.spring.io), pick the starters you need, and build from the generated project. Use plain Spring Framework without Boot when you're embedding Spring in an existing application or writing a library.
+
+## When Spring is a poor fit
+
+- **Small scripts and CLIs.** Startup time and dependency size are hard to justify for a tool that runs for a second.
+- **Fast startup or low memory.** Spring Boot apps typically take a second or more to start on the JVM. Spring supports GraalVM native images to fix this, at the cost of longer builds and limits on reflection. Quarkus and Micronaut were designed for this case from the start.
+- **When you want explicit wiring.** Annotation scanning and auto-configuration can make it hard to see where a bean came from. Running a Spring Boot app with `--debug` prints the auto-configuration report, which helps.
+
+## Further reading
+
+- [Spring Framework reference documentation](https://docs.spring.io/spring-framework/reference/), especially the "Core Technologies" chapter on the IoC container
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Spring guides](https://spring.io/guides), short task-focused tutorials

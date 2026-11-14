@@ -1,45 +1,59 @@
 ---
-title: Using Rustfmt to Format Rust Code
+title: "Formatting Rust code with rustfmt and cargo fmt"
 pubDate: "2023-04-20T14:45:32.893Z"
-description: "This article will guide you through the process of installing Rustfmt, configuring it, and using it to format your Rust code."
+lastUpdated: 2026-11-14
+description: "Install rustfmt, run cargo fmt locally and in CI, configure it with rustfmt.toml, and set up format-on-save in your editor."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/633020239.png
 ---
-# Using Rustfmt to Format Rust Code
 
-Rustfmt is a code formatting tool for the Rust programming language. It helps developers maintain a consistent coding style across their projects, making the codebase more readable and maintainable. This article will guide you through the process of installing Rustfmt, configuring it, and using it to format your Rust code.
+rustfmt is the official formatter for Rust. It rewrites your source to follow the [Rust style guide](https://doc.rust-lang.org/style-guide/), so code reviews don't get bogged down in brace placement and line wrapping. Almost every Rust project runs it, which also means most Rust code you read looks the same.
 
-## Table of Contents
+## Installing
 
-1. [Installing Rustfmt](#installing-rustfmt)
-2. [Configuration](#configuration)
-3. [Using Rustfmt](#using-rustfmt)
-4. [Integrating with IDEs and Editors](#integrating-with-ides-and-editors)
-5. [Conclusion](#conclusion)
-
-## 1. Installing Rustfmt <a name="installing-rustfmt"></a>
-
-Rustfmt is part of the Rust toolchain, so if you have Rust installed, you likely already have Rustfmt. To check if Rustfmt is installed, run the following command:
+rustfmt ships as a rustup component and is included in the default profile, so you probably have it already:
 
 ```sh
-rustup component list | grep rustfmt
+cargo fmt --version
 ```
 
-If you see `rustfmt` as an installed component, you're good to go. If not, install it by running:
+If that fails, add it:
 
 ```sh
 rustup component add rustfmt
 ```
 
-## 2. Configuration <a name="configuration"></a>
+## Running it
 
-Rustfmt offers several configuration options to customize the formatting style. To configure Rustfmt, create a `rustfmt.toml` or `.rustfmt.toml` file in the root of your project.
+From the root of a Cargo project (or workspace), format every crate:
 
-Here's a sample configuration file with some commonly used options:
+```sh
+cargo fmt
+```
+
+To check formatting without changing files, which is what you want in CI:
+
+```sh
+cargo fmt --check
+```
+
+It exits with a non-zero status and prints a diff if anything would change. A minimal GitHub Actions step is just `run: cargo fmt --all --check` (`--all` covers every package in a workspace).
+
+You can also run `rustfmt` on a single file:
+
+```sh
+rustfmt src/main.rs
+```
+
+One gotcha: `cargo fmt` passes the crate's edition from `Cargo.toml` to rustfmt, but calling `rustfmt` directly does not, and it defaults to the 2015 edition. Code using newer syntax (such as `async fn`) can then fail to parse. Pass `--edition 2024` (or whichever edition you use), or set `edition` in `rustfmt.toml`.
+
+## Configuration
+
+Most projects use the defaults. If you want to change something, put a `rustfmt.toml` or `.rustfmt.toml` in the project root. rustfmt looks in the current directory and then its parents, and uses the first file it finds.
 
 ```toml
-edition = "2021"
+edition = "2024"
 max_width = 100
 hard_tabs = false
 tab_spaces = 4
@@ -47,46 +61,34 @@ newline_style = "Auto"
 use_small_heuristics = "Default"
 ```
 
-- `edition`: Specifies the Rust edition to use, e.g., "2015", "2018", or "2021".
-- `max_width`: The maximum line width for your code. Default is 100 characters.
-- `hard_tabs`: Use hard tabs instead of spaces for indentation. Default is `false`.
-- `tab_spaces`: The number of spaces per indentation level. Default is 4 spaces.
-- `newline_style`: The line ending style to use. Options are "Auto", "Native", "Unix", and "Windows".
-- `use_small_heuristics`: Determines the heuristic used for fitting items within the `max_width`. Options are "Default", "Max", "Off", and "Minimum".
+The values above are all the defaults except `edition`, so this file only shows where the knobs are:
 
-For a complete list of configuration options, refer to the [official Rustfmt configuration documentation](https://rust-lang.github.io/rustfmt/?version=master&search=#configurations).
+- `edition`: the Rust edition used to parse the code (`"2015"`, `"2018"`, `"2021"`, `"2024"`). `cargo fmt` sets it from `Cargo.toml`.
+- `style_edition`: which version of the style guide to format with. Like `edition`, `cargo fmt` infers it from your crate's edition, so you rarely set it.
+- `max_width`: maximum line width. Default `100`.
+- `hard_tabs` / `tab_spaces`: indent with tabs or with this many spaces. Defaults `false` and `4`.
+- `newline_style`: `"Auto"` (default), `"Native"`, `"Unix"` or `"Windows"`.
+- `use_small_heuristics`: how aggressively short expressions (function calls, struct literals, chains) are kept on one line. `"Default"`, `"Off"` or `"Max"`. `"Max"` packs as much onto one line as `max_width` allows.
 
-## 3. Using Rustfmt <a name="using-rustfmt"></a>
-
-To format a single Rust file, run the following command:
+Some popular options are still unstable, for example `imports_granularity` and `group_imports` for organizing `use` statements. They only take effect on the nightly toolchain:
 
 ```sh
-rustfmt path/to/your_file.rs
+cargo +nightly fmt
 ```
 
-To format all Rust files in your project, run the following command from your project's root directory:
+If you set unstable options in `rustfmt.toml` and run stable `cargo fmt`, rustfmt prints a warning and ignores them.
 
-```sh
-cargo fmt
-```
+To leave a specific item alone, mark it with `#[rustfmt::skip]`. This is useful for hand-aligned tables or matrices.
 
-You can also check if your code is formatted correctly without actually modifying the files by running:
+The full list of options, with which are stable, is in the [rustfmt configuration docs](https://rust-lang.github.io/rustfmt/).
 
-```sh
-cargo fmt -- --check
-```
+## Editor integration
 
-This command will return a non-zero exit code if any file requires formatting.
+Most editors run rustfmt through rust-analyzer, the Rust language server:
 
-## 4. Integrating with IDEs and Editors <a name="integrating-with-ides-and-editors"></a>
+- **VS Code**: install the [rust-analyzer extension](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and enable `editor.formatOnSave`. The older `rust-lang.rust` extension is deprecated.
+- **JetBrains**: RustRover (or the Rust plugin in other JetBrains IDEs) can use rustfmt instead of its built-in formatter. Turn this on in the Rustfmt settings page.
+- **Sublime Text**: [LSP-rust-analyzer](https://packagecontrol.io/packages/LSP-rust-analyzer) or [Rust Enhanced](https://packagecontrol.io/packages/Rust%20Enhanced).
+- **Vim/Neovim**: [rust.vim](https://github.com/rust-lang/rust.vim) provides `:RustFmt` and `let g:rustfmt_autosave = 1` for format-on-save. Neovim users with an LSP setup can format through rust-analyzer instead.
 
-Most modern IDEs and text editors support Rustfmt integration. Here are a few examples:
-
-- **VSCode**: Install the [Rust extension](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust), which includes Rustfmt support. You can enable the "Format on Save" option to automatically format your Rust code when you save a file.
-- **IntelliJ IDEA**: Install the [IntelliJ Rust plugin](https://plugins.jetbrains.com/plugin/8182-rust). Rustfmt integration is built-in, and you can configure it in the Rust settings page.
-- **Sublime Text**: Install the [Rust Enhanced](https://packagecontrol.io/packages/Rust%20Enhanced) package, which includes Rustfmt support. You can configure it to run on save or manually through the command palette.
-- **Vim**: Install the [rust.vim](https://github.com/rust-lang/rust.vim) plugin, which provides Rustfmt integration. Configure it to run on save, or use the `:RustFmt` command to format the current file.
-
-## 5. Conclusion <a name="conclusion"></a>
-
-Using Rustfmt allows you to maintain a consistent coding style in your Rust projects, improving code readability and maintainability. By configuring Rustfmt to your preferred style and integrating it into your development environment, you can ensure that your code is always formatted properly.
+Formatting on save plus `cargo fmt --check` in CI is enough to keep formatting out of code review.

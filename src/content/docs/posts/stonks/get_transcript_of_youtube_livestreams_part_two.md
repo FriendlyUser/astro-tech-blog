@@ -1,184 +1,136 @@
 ---
-title: Get Transcript of youtube livestreams Part II
-description: transcript for youtube livestreams
+title: 'Transcribing YouTube livestreams with Whisper, part 2: ffmpeg chunks and wit.ai'
+description: How fdrtt splits recorded video into audio chunks with ffmpeg, transcribes them with Whisper, and parsed the streamed wit.ai responses it used before.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 20 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["youtube", "whispers", "python"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-15 20.40.00 - blank transcript.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-In the original post we covered how to iterate across files and pull data from youtube.
+[Part 1](/posts/stonks/get_transcript_of_youtube_livestreams_part_one/) covered the driver loop in [fdrtt](https://github.com/dli-invest/fdrtt): it records a YouTube livestream in 4.5-minute MP4 chunks and hands each one to `transcribe_audio_whisper`. This post covers that function: splitting video into audio chunks with ffmpeg, running Whisper on them, and the wit.ai parser it replaced.
 
-See https://friendlyuser.github.io/posts/stonks/get_transcript_of_youtube_livestreams_part_one/
+## Splitting a video into audio chunks
 
-In this piece, we will delve into the process of utilizing ffmpeg to divide a live streaming video into smaller segments that can be processed by the whispers library to transcribe the audio into text.
+For a finished (non-live) video, `processing.py` first cuts the file into 4.5-minute MP3 chunks. That chunk size came from the wit.ai version, which needed short audio files. Here is the repo version, trimmed of logging:
 
 ```python
-
-
-def transcribe_audio_whisper(filename: str, is_livestream: bool = False):
-    final_object = {
-        "speech": {
-            "tokens": []
-        },
-        "text": "",
-    }
-    text_bodies = []
-    for count, chunk_name in enumerate(split_vid_into_chunks(filename, is_livestream)):
-        mp3_file = chunk_name.replace(".mp4", ".mp3")
-        # load audio and pad/trim it to fit 30 seconds
-        t2_start = time.perf_counter()
-        # try:
-        # iterate through files with _{d} format
-        final_object = {
-            "speech": {
-                "tokens": []
-            },
-            "text": "",
-        }
-        # get text from mp3
-        partial_object = get_text_from_mp3_whisper(chunk_name)
-        text_bodies.append({
-            "text": partial_object.get("text", ""),
-            "count": count,
-            "id": chunk_name,
-        })
-        # except Exception as e:
-        #     ic(f"Error getting text from mp3 for {filename}")
-        #     ic(e)
-        #     return None
-    # make final_object, group by number in _{d} format
-    final_object = {
-        "text": "",
-    }
-    # sort text_bodies by id number in _{d} format
-    text_bodies = sorted(text_bodies, key=lambda k: k['count'])
-    for text_body in text_bodies:
-        final_object["text"] += text_body.get("text", "")
-    # print the recognized text
-    return final_object
+def split_vid_into_chunks(filename: str, is_livestream: bool = False, chunk_size: int = 4*60+30):
+    if not is_livestream:
+        length_in_secs = math.ceil(float(get_video_length(filename)))
+        for i in range(math.ceil(length_in_secs / chunk_size)):
+            start = i * chunk_size
+            end = (i + 1) * chunk_size
+            chunk_filename = filename.replace(".mp4", f"_{i}.mp3")
+            os.system(f"ffmpeg -y -i {filename} -ss {format_seconds(start)} -t {format_seconds(end)} -vn {chunk_filename}")
+            yield chunk_filename
+    else:
+        convert_mp4_to_mp3(filename)
+        yield filename
 ```
 
-This function appears to split a video file into smaller chunks of a fixed length, and then yields the filename of each chunk. It does this by using the ffmpeg command-line tool to extract a portion of the original video for each chunk. The extracted portion starts at a certain time and has a fixed duration specified by the chunk_size parameter. The function also handles the case where the input is a live stream, in which case it simply converts the stream to an MP3 file and yields the filename.
+It has three bugs:
 
-The function has some additional code for timing and error handling, as well as some calls to other functions (get_video_length, convert_mp4_to_mp3, and format_seconds) that are not shown.
+- **`-t` is a duration, not an end time.** Passing `end` makes chunk `i` run for `(i + 1) * chunk_size` seconds, so the chunks overlap more and more and the transcript repeats itself. Either pass `-t chunk_size` or use `-to end`.
+- **The livestream branch always fails.** The helper in the file is named `convert_to_mp4_to_mp3`, so `convert_mp4_to_mp3` raises `NameError`, which the surrounding `try` re-raises as a generic exception. The conversion isn't needed anyway: Whisper decodes MP4 directly through ffmpeg.
+- **`-ss` after `-i` is slow.** Placed after the input, ffmpeg decodes and discards everything before the start time. Placed before `-i`, it seeks in the input, which is much faster for later chunks and still frame-accurate when re-encoding.
 
+`os.system` with an unquoted filename also breaks on paths containing spaces. Passing a list to `subprocess.run` avoids that.
 
-```python
-def transcribe_audio_whisper(filename: str, is_livestream: bool = False):
-    final_object = {
-        "speech": {
-            "tokens": []
-        },
-        "text": "",
-    }
-    text_bodies = []
-    for count, chunk_name in enumerate(split_vid_into_chunks(filename, is_livestream)):
-        mp3_file = chunk_name.replace(".mp4", ".mp3")
-        # load audio and pad/trim it to fit 30 seconds
-        t2_start = time.perf_counter()
-        # try:
-        # iterate through files with _{d} format
-        final_object = {
-            "speech": {
-                "tokens": []
-            },
-            "text": "",
-        }
-        # get text from mp3
-        partial_object = get_text_from_mp3_whisper(chunk_name)
-        text_bodies.append({
-            "text": partial_object.get("text", ""),
-            "count": count,
-            "id": chunk_name,
-        })
-    final_object = {
-        "text": "",
-    }
-    # sort text_bodies by id number in _{d} format
-    text_bodies = sorted(text_bodies, key=lambda k: k['count'])
-    for text_body in text_bodies:
-        final_object["text"] += text_body.get("text", "")
-    # print the recognized text
-    return final_object
-```
+## Transcribing with Whisper
 
-This function appears to be a wrapper function that transcribes an audio file by splitting it into smaller chunks, transcribing each chunk, and then concatenating the transcriptions. It does this by calling the split_vid_into_chunks function, which yields the filenames of the chunks, and then calling the get_text_from_mp3_whisper function on each chunk. The function then combines the transcriptions into a single string and returns an object with this string as the value of the "text" field. The function also has some additional code for error handling, but this code is currently commented out.
+The Whisper side was short: load a model, call `transcribe`, join the text.
 
 ```python
-def format_seconds(seconds: int):
-    """
-    format seconds to hh:mm:ss
-    """
-    hours = math.floor(seconds / 3600)
-    minutes = math.floor((seconds % 3600) / 60)
-    seconds %= 60
-    return f"{hours}:{minutes}:{seconds}"
-
-# think I want model loaded and reused?
 def get_text_from_mp3_whisper(mp3_file: str):
     model = whisper.load_model("tiny")
-    # options = whisper.DecodingOptions(language="en", without_timestamps=True)
     result = model.transcribe(mp3_file)
     return result
 ```
 
-The format_seconds function takes an integer representing a number of seconds and returns a string in the format "hh:mm:ss" representing the same duration.
+`load_model` runs on every call. The comment I left above it in the repo (`think I want model loaded and reused?`) was right: loading once and reusing the model saves a few seconds per chunk. `tiny` is the smallest Whisper model, which keeps transcription quick on GitHub's CPU-only runners. Larger models such as `small` or `turbo` are more accurate but far slower without a GPU.
 
-The get_text_from_mp3_whisper function appears to use the whisper library to transcribe an MP3 audio file. It first loads a model using the load_model function, and then transcribes the audio file by calling the transcribe method on this model and passing in the filename of the audio file. Finally, it returns the result of the transcription.
-
-For the original wit ai implementation
+Here is a corrected version of the whole module. It needs `pip install openai-whisper` (version 20250625 at the time of writing) and the `ffmpeg` and `ffprobe` executables on your `PATH`:
 
 ```python
-def parse_witai_response(data: str):
-    """
-    Parse wit.ai response
-    """
-    # scan for export interface and export type
+import math
+import subprocess
+from functools import lru_cache
 
-    type_start_line = None
-    type_end_line = None
-    matches = []
-    lines = data.split("\n")
-    for i, value in enumerate(lines):
-        line = lines[i]
-        # make sure this isnt a comment 
-        # match { at start of line
-        if line.startswith("{") and type_start_line is None:
-            type_start_line = i
+import whisper
 
-        if type_start_line is not None and line.startswith("}"):
-            type_end_line = i
-            # append entry to matches
-            # get all rows from type_start_line to type_end_line
-            matches.append({
-                "type_start": type_start_line,
-                "type_end": type_end_line,
-                "data": lines[type_start_line:type_end_line+1]
-            })
-            type_start_line = None
-            type_end_line = None
-    # combine all data results and remove duplicates and merge text
-    final_object = {
-        "speech": {
-            "tokens": []
-        },
-        "text": "",
-    }
-    for match in matches:
-        matchstr = "".join(match.get("data"))
-        transcript_data = json.loads(matchstr)
-        # only append entries that has is final
-        if transcript_data.get("is_final"):
-            # final_object["speech"]["tokens"].append(data)
-            final_object["text"] += transcript_data.get("text", "") + " "
-            # final_object["text"] += data.get("text", "")
-        # else:
-        #     final_status = transcript_data.get("is_final")
-        #     print("not final", final_status)
-    return final_object
+CHUNK_SECS = 4 * 60 + 30
+
+
+@lru_cache(maxsize=None)
+def get_model(name: str = "tiny"):
+    return whisper.load_model(name)
+
+
+def get_video_length(path: str) -> float:
+    out = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=noprint_wrappers=1:nokey=1", path],
+        check=True, capture_output=True, text=True,
+    )
+    return float(out.stdout)
+
+
+def split_vid_into_chunks(filename: str, chunk_size: int = CHUNK_SECS):
+    length = math.ceil(get_video_length(filename))
+    for i in range(math.ceil(length / chunk_size)):
+        chunk_filename = filename.replace(".mp4", f"_{i}.mp3")
+        subprocess.run(
+            ["ffmpeg", "-y", "-ss", str(i * chunk_size), "-i", filename,
+             "-t", str(chunk_size), "-vn", chunk_filename],
+            check=True, capture_output=True,
+        )
+        yield chunk_filename
+
+
+def transcribe_audio_whisper(filename: str, is_livestream: bool = False) -> dict:
+    model = get_model()
+    if is_livestream:
+        # each livestream file is already a single 4.5-minute chunk
+        return {"text": model.transcribe(filename)["text"]}
+    texts = [model.transcribe(chunk)["text"] for chunk in split_vid_into_chunks(filename)]
+    return {"text": "".join(texts)}
+
+
+if __name__ == "__main__":
+    print(transcribe_audio_whisper("video.mp4")["text"])
 ```
 
-The parse_witai_response function appears to parse a string containing a response from the Wit.ai natural language processing service. It does this by first splitting the string into lines, and then scanning through the lines looking for lines that start with a curly brace ('{') and end with a curly brace ('}'). When it finds such lines, it adds them to a list of "matches" along with their start and end positions in the input string. Finally, the function combines the data from the matches into a single object, removes duplicates, and merges the "text" fields. The resulting object is returned by the function.
+Each segment of Whisper's output text starts with a space, so plain `"".join` keeps words separated across chunks.
+
+With Whisper you don't strictly need to chunk at all. `model.transcribe(path)` reads the whole file and slides a 30-second window over it, and its result includes `segments` with `start` and `end` times. That's a better source of timestamps than counting chunks. I kept the chunks because the rest of the pipeline (Discord posts, database rows) was built around them.
+
+## The wit.ai parser
+
+Before Whisper, fdrtt posted each MP3 to wit.ai's dictation endpoint (`https://api.wit.ai/dictation`). The response body isn't one JSON document. It's a series of pretty-printed JSON objects as wit.ai streams partial results, and only the objects with `"is_final": true` hold finished text. When `r.json()` failed, the repo fell back to scanning lines: an object starts at a line beginning with `{` and ends at a line beginning with `}`.
+
+That depends on wit.ai's exact formatting. `json.JSONDecoder.raw_decode` reads one object at a time from a string and returns where it stopped, so it handles the stream regardless of whitespace:
+
+```python
+import json
+
+
+def parse_witai_response(body: str) -> dict:
+    decoder = json.JSONDecoder()
+    texts, pos = [], 0
+    while (start := body.find("{", pos)) != -1:
+        obj, pos = decoder.raw_decode(body, start)
+        if obj.get("is_final"):
+            texts.append(obj.get("text", ""))
+    return {"text": " ".join(texts)}
+```
+
+Switching from wit.ai to Whisper was the biggest single improvement to the transcripts. It also removed the need for an API token and the network round trip per chunk.
+
+## Further reading
+
+- [openai/whisper](https://github.com/openai/whisper): model sizes, CLI and Python usage
+- [ffmpeg main options](https://ffmpeg.org/ffmpeg.html#Main-options): `-ss`, `-t` and `-to`
+- [dli-invest/fdrtt](https://github.com/dli-invest/fdrtt): full source, including `processing.py`

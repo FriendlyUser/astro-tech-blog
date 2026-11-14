@@ -1,77 +1,102 @@
 ---
-title: Advanced Git - Cherry-picking, Merge Strategies, and Release Management
-description: Strategies for managing specific commits and handling merge conflicts automatically
+title: "Git cherry-pick, merge strategy options, and release tags in shell scripts"
+description: "Applying single commits with git cherry-pick, resolving conflicts automatically with -X ours/theirs and rerere, and scripting annotated or signed release tags."
 alt: A diagram of git branches merging with conflict resolution
 pubDate: Saturday, 30 November 2025 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["git", "bash", "devops"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/bear_book_1.png'
 ---
 
-To apply specific commits from one branch to another without merging the entire history, you can use the `git cherry-pick` command. This is particularly useful for applying hotfixes to production branches.
+## Cherry-picking specific commits
 
-For example:
+`git cherry-pick` applies the changes from one or more existing commits onto the current branch without merging the rest of the source branch's history. The typical use is backporting a hotfix from `main` to a release branch.
 
 ```sh
 #!/bin/bash
+set -euo pipefail
 
-# Set the commit hash you want to pick
-COMMIT_HASH=<commit-hash>
+# The commit to apply (full or abbreviated SHA)
+COMMIT_HASH="abc1234"
 
-# Apply the commit to the current branch
-git cherry-pick "$COMMIT_HASH"
+# -x appends "(cherry picked from commit ...)" to the message,
+# so you can trace the backport to its original later.
+git cherry-pick -x "$COMMIT_HASH"
 ```
 
-Replace `<commit-hash>` with the SHA identifier of the commit. If you encounter conflicts, git will pause the process, allowing you to resolve them before running `git cherry-pick --continue`.
+If the commit conflicts, Git stops and leaves the conflict markers in place. Fix the files, `git add` them, then run `git cherry-pick --continue`. To give up and return to where you started, run `git cherry-pick --abort`.
 
-To handle specific ranges of commits, you can also pass a range `A..B`. However, be mindful that cherry-picking creates new commit hashes, which can duplicate history if the branches are eventually merged.
+You can also pick a range. Note that `A..B` means "commits reachable from B but not from A", so it **excludes** `A` itself:
 
-When automating merges or dealing with large conflicts where one branch should take precedence, you can utilize automatic merge resolution strategies. Specifically, the `-X` (strategy-option) flag is powerful for batch operations.
+```sh
+git cherry-pick A..B    # commits after A, up to and including B
+git cherry-pick A^..B   # A through B, inclusive
+```
 
-For example, to merge a development branch into your current branch but always prefer the incoming changes in the event of a conflict:
+Cherry-picked commits get new hashes. If the two branches are later merged, Git usually recognises the identical changes and applies them cleanly, but the history will show the same change twice, and if either copy was edited afterwards you can get conflicts.
+
+## Resolving conflicts automatically with `-X ours` / `-X theirs`
+
+When one side should win any conflicting hunk (for example, regenerating a branch from an upstream you don't modify), pass a strategy option to the default `ort` merge strategy with `-X`:
 
 ```sh
 #!/bin/bash
+set -euo pipefail
 
-# Set the source branch
 SOURCE_BRANCH="feature/new-ui"
 
-# Merge allowing unrelated histories if necessary, favoring 'theirs' on conflict
-git merge -X theirs "$SOURCE_BRANCH" --no-edit
+# On conflicting hunks, take the version from $SOURCE_BRANCH.
+git merge -X theirs --no-edit "$SOURCE_BRANCH"
 ```
 
-The `-X theirs` option tells git to resolve conflicts by accepting the incoming changes (the branch you are merging in), whereas `-X ours` would keep the current branch's version. The `--no-edit` flag prevents the editor from opening to modify the auto-generated merge message.
+- `-X theirs` resolves conflicting hunks in favour of the branch being merged in.
+- `-X ours` resolves them in favour of the current branch.
+- Non-conflicting changes from both sides are still merged as usual. Only the hunks that would have conflicted are decided automatically.
+- `--no-edit` accepts the auto-generated merge message instead of opening an editor.
 
-For repetitive conflict resolution, you might also look into enabling `git rerere` (reuse recorded resolution), which remembers how you resolved a hunk conflict and applies it automatically next time.
+Don't confuse `-X ours` with `-s ours`. The `ours` *strategy* (`-s ours`) ignores the other branch's changes entirely and just records a merge commit; the `ours` *option* (`-X ours`) only affects conflicts.
 
-For proper release management, adhering to conventions like Semantic Versioning (SemVer) and Conventional Commits allows for automated tagging.
+The same `-X` option works with `git cherry-pick` and `git rebase`, but with rebase the meaning of "ours" and "theirs" is swapped, because rebase replays your commits on top of the upstream.
 
-To create a signed release tag using a Bash script based on a version variable:
+If you resolve the same conflicts repeatedly (for example, when rebasing a long-lived branch), enable `rerere` ("reuse recorded resolution"). Git records how you resolved each conflicting hunk and replays that resolution the next time it sees the same conflict:
+
+```sh
+git config --global rerere.enabled true
+```
+
+## Scripting release tags
+
+If commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`fix:`, `feat:`, `feat!:` / `BREAKING CHANGE:`), you can derive the next [Semantic Version](https://semver.org/) from them: `fix` bumps the patch version, `feat` the minor version, and a breaking change the major version. The commits since the last tag are easy to list with `git log` (see my earlier post on filtering commits between tags).
+
+Once you know the version, tagging is two commands:
 
 ```sh
 #!/bin/bash
+set -euo pipefail
 
-# Set the version and message convention
 VERSION="1.2.0"
-MSG="Release: v$VERSION - Major feature update"
+MSG="Release v$VERSION"
 
-# Create an annotated tag
+# -a creates an annotated tag (stores tagger, date and message).
+# Use -s instead of -a to also sign the tag with your GPG/SSH key.
 git tag -a "v$VERSION" -m "$MSG"
 
-# Push tags to remote
 git push origin "v$VERSION"
 ```
 
-Ideally, your release management strategy should pair with the `git log` filtering discussed in previous posts. By filtering for "fix:" or "feat:" in your commit messages, you can automatically determine whether to bump the major, minor, or patch version.
+Annotated tags are what `git describe` uses by default and what most release tooling expects; lightweight tags (`git tag v1.2.0` with no `-a`) are just a name pointing at a commit.
 
-Despite having tools like semantic-release or custom CI/CD pipelines:
+Despite tools like these existing for automating releases:
 
-*   https://github.com/semantic-release/semantic-release
-*   https://github.com/conventional-changelog/conventional-changelog
+- https://github.com/semantic-release/semantic-release
+- https://github.com/conventional-changelog/conventional-changelog
 
-I should have dedicated the time to standardizing commit messages across teams earlier.
+I should have dedicated the time to standardizing commit messages across teams earlier. The tooling only works if the commit messages are consistent.
 
 ## References
 
-*   https://friendlyuser.github.io/posts/tech/using_git_to_filter_for_commits_between_tags/
-*   https://git-scm.com/docs/git-cherry-pick
+- https://friendlyuser.github.io/posts/tech/using_git_to_filter_for_commits_between_tags/
+- https://git-scm.com/docs/git-cherry-pick
+- https://git-scm.com/docs/git-merge#_merge_strategies
+- https://git-scm.com/docs/git-rerere

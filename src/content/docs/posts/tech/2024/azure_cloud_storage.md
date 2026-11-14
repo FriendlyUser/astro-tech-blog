@@ -1,73 +1,92 @@
 ---
-title: "Utilizing `tempfile` for File Storage in Read-Only Environments: A Case Study with Azure Function Apps"
-description: "Explore how the Python `tempfile` module can be leveraged to work with file storage in read-only environments like Azure Function Apps. Learn to create and manage temporary files securely and efficiently, ensuring applications are scalable and compliant with serverless architecture constraints."
+title: "Writing temporary files in Azure Functions with Python's tempfile"
+description: "Why writes to your Azure Functions app folder fail, where you can write instead, and how to use Python's tempfile module to handle files safely in a function."
 tags: ["tempfile", "File Storage", "Read-Only Environment", "Azure Function Apps", "Serverless Architecture", "Python"]
 pubDate: "2024-03-23T19:17:25.000Z"
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
 ---
 
-# Utilizing `tempfile` for File Storage in Read-Only Environments: A Case Study with Azure Function Apps
+Many Python libraries want a file path rather than bytes: PDF parsers, `ffmpeg` wrappers, zip tools. In an Azure Function, writing that file next to your code usually fails with a read-only file system error. The fix is to write to the instance's temp directory, and the standard library's `tempfile` module does that for you.
 
-In cloud computing, serverless architectures like Azure Function Apps have become increasingly popular due to their ability to scale automatically and charge users only for the resources they consume. However, these environments often come with their own set of constraints. One such constraint is the read-only file system, which poses challenges for applications that need to generate or manipulate files. This article explores how the Python `tempfile` module can be leveraged to work with file storage in these read-only environments, using Azure Function Apps as a case study.
+## Why the app folder is read-only
 
-## Understanding the Read-Only Environment
+Python functions only run on Linux in Azure Functions. When the app runs from a deployment package, the runtime mounts the zip as a read-only `/home/site/wwwroot`. That's the default on the Flex Consumption plan, and it's what the `WEBSITE_RUN_FROM_PACKAGE` setting turns on for the other plans. Anything that tries to write there, including libraries that cache files next to the code, raises `OSError: [Errno 30] Read-only file system`.
 
-Azure Function Apps, part of the serverless offerings from Microsoft Azure, executes functions in a managed environment. This environment restricts write operations to the file system, primarily for security and scalability reasons. The read-only nature ensures that the function app instances are stateless, making them easier to scale.
+The instance's temporary storage is writable. On Linux that's `/tmp`, which is what `tempfile.gettempdir()` returns. A few things to know about it:
 
-However, many applications need to create temporary files for processing data, caching, or as part of their normal operation. This is where `tempfile` comes into play.
+- It's local to one instance. Another instance, or the next invocation after a scale-in, won't see your files.
+- It's small. At the time of writing, Microsoft's [service limits table](https://learn.microsoft.com/en-us/azure/azure-functions/functions-scale#service-limits) lists 0.8 GB of temporary storage for Flex Consumption and 11 GB or more for Premium.
+- It's not cleaned up between invocations on a warm instance, so delete what you create.
 
-## The `tempfile` Module
+If a file needs to outlive the invocation, put it in Blob Storage instead.
 
-The Python standard library includes the `tempfile` module, which is designed to create temporary files and directories. `tempfile` provides a convenient way of generating unique temporary files that can be used for a wide range of tasks without worrying about file name collisions or the need to manually manage their cleanup.
+## Example: process an uploaded file
 
-### Key Features of `tempfile`
+This HTTP-triggered function uses the Python v2 programming model. It writes the request body to a temporary directory, hands the path to code that needs a real file, and lets the context manager delete everything afterwards.
 
-- **Secure creation**: It avoids security issues by creating files with permissions that allow access only to the user who created them.
-- **Automatic cleanup**: Temporary files can be set to be automatically deleted when they are closed or when the program ends.
-- **Customizable location**: While it uses system default temporary directories, it allows developers to specify the directory where the temporary files should be created.
+```python
+import os
+import tempfile
 
-## Using `tempfile` in Azure Function Apps
+import azure.functions as func
 
-In an Azure Function App environment, since the main file system is read-only, `tempfile` can be utilized to create temporary files in the designated temporary storage space provided by Azure. This space is writeable, allowing the functions to perform file-based operations without running into permission issues.
+app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
-### Example Scenario: Processing Uploaded Files
 
-Consider an Azure Function App that needs to process uploaded files. Since the function cannot store the files in its file system for processing, it can use `tempfile` to temporarily store and process these files.
+def count_lines(path: str) -> int:
+    # Stand-in for a library that only accepts a file path.
+    with open(path, "rb") as f:
+        return sum(1 for _ in f)
 
-#### Step 1: Import `tempfile`
 
-First, ensure that your function app includes the `tempfile` module.
+@app.route(route="upload", methods=["POST"])
+def upload(req: func.HttpRequest) -> func.HttpResponse:
+    body = req.get_body()
+    if not body:
+        return func.HttpResponse("Empty request body", status_code=400)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        path = os.path.join(tmpdir, "upload.bin")
+        with open(path, "wb") as f:
+            f.write(body)
+
+        lines = count_lines(path)
+
+    # tmpdir and everything in it is gone here
+    return func.HttpResponse(f"{lines} lines")
+```
+
+The example uses `TemporaryDirectory` rather than `NamedTemporaryFile` on purpose. A directory lets you pick the file name and extension (some libraries look at the extension), lets a tool write extra output files next to the input, and is removed in one go. If you only need a single scratch file, this works too:
 
 ```python
 import tempfile
+
+with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
+    tmp.write(data)
+    tmp.flush()  # make sure the bytes are on disk before another reader opens tmp.name
+    result = parse_pdf(tmp.name)
+# the file is deleted when the with block exits
 ```
 
-#### Step 2: Create a Temporary File
+Here `data` and `parse_pdf` stand in for your own bytes and parser. Don't forget the `flush()`. Without it, a library that opens `tmp.name` may read an empty or partial file, because the data is still sitting in Python's buffer.
 
-Use `tempfile.NamedTemporaryFile` to create a temporary file. This function returns a file-like object that you can read from and write to.
+## What tempfile gives you
 
-```python
-with tempfile.NamedTemporaryFile(delete=True) as tmp_file:
-    # Write data to the temporary file
-    tmp_file.write(b'This is a test')
-    tmp_file.seek(0)  # Go back to the beginning of the file
+- Unique names, so concurrent invocations on the same instance don't overwrite each other's files.
+- Files created with mode `0600` and directories with `0700`, so only the creating user can read them.
+- Cleanup when the context manager exits, including when an exception is raised.
+- A `dir=` argument if you need to put files somewhere other than the default temp directory.
 
-    # Read data from the temporary file
-    data = tmp_file.read()
+## Gotchas
 
-    # Process the data
-    process_data(data)
-```
+- Don't build paths with a hardcoded `/tmp/myfile`. Two invocations running at once on the same instance will collide. Let `tempfile` choose the name.
+- Large uploads are buffered in memory by `req.get_body()` before you ever write them. HTTP requests to Functions are capped at 210 MB, and the Flex Consumption memory sizes start at 512 MB. For big files, have the client upload directly to Blob Storage and trigger on the blob.
+- Code that runs fine locally can still fail after deployment, because your local project folder is writable. Test file writes in Azure, or point them at `tempfile.gettempdir()` from the start.
 
-In this example, the temporary file is automatically deleted when the `with` block is exited, thanks to the `delete=True` argument. This behavior ensures that temporary files do not accumulate and consume unnecessary storage.
+## Further reading
 
-### Advantages
-
-- **Security**: `tempfile` creates files in a secure manner, reducing the risk of security vulnerabilities.
-- **Scalability**: By leveraging temporary files, Azure Function Apps can handle large volumes of data without being constrained by the read-only file system.
-- **Clean Environment**: Automatic cleanup of temporary files ensures that the temporary storage space does not become cluttered.
-
-## Conclusion
-
-The read-only nature of serverless environments like Azure Function Apps presents unique challenges for file handling. However, the Python `tempfile` module offers a robust solution for creating and managing temporary files securely and efficiently. By understanding and leveraging `tempfile`, developers can ensure their applications are scalable, secure, and compliant with the constraints of serverless architectures.
+- [`tempfile` documentation](https://docs.python.org/3/library/tempfile.html)
+- [Azure Functions Python developer guide](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Run your functions from a package file](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)

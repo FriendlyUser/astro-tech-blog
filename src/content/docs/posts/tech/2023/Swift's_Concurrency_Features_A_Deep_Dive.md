@@ -1,147 +1,164 @@
 ---
-description: In this article, we'll explore Swift's concurrency features, including
-  async/await, actors, and structured concurrency with tasks
+description: Swift concurrency with working examples of async/await, actors, task groups, and cancellation, including a timeout helper and common gotchas.
 imgSrc: /imgs/2023/2851628136.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-05T03:10:42.000Z'
-tags: []
-title: Swift's Concurrency Features A Deep Dive
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift concurrency basics: async/await, actors, task groups and cancellation"
 ---
 
-# Swift's Concurrency Features: A Deep Dive
+Swift's built-in concurrency model, introduced in Swift 5.5, replaces most completion handlers and manual locking with three pieces: `async`/`await` for writing asynchronous code in a straight line, actors for protecting shared mutable state, and tasks for running work concurrently with clear lifetimes. The examples below use `Task.sleep(for:)`, which needs Swift 5.7 and, on Apple platforms, iOS 16 or macOS 13.
 
-Concurrency is a critical aspect of modern software development, allowing developers to write efficient programs that can execute multiple tasks simultaneously. In this article, we'll explore Swift's concurrency features, including async/await, actors, and structured concurrency with tasks.
+## async/await
 
-## Async/Await
-
-Swift's async/await pattern simplifies asynchronous programming by allowing developers to write asynchronous code that resembles synchronous code. This is achieved by marking functions with the `async` keyword and using the `await` keyword to call these functions.
-
-### Defining Async Functions
-
-To define an async function, simply add the `async` keyword before the function's return type:
+Mark a function `async` if it can suspend, and `throws` if it can fail. Callers use `await` (and `try`) at each call site, so every possible suspension point is visible in the code.
 
 ```swift
-func fetchData() async -> Data {
-    // Simulate fetching data from the network
-    await Task.sleep(UInt64(2 * 1_000_000_000)) // Sleep for 2 seconds
-    return Data()
+import Foundation
+
+struct ProcessedData {
+    let byteCount: Int
+}
+
+func fetchData(from url: URL) async throws -> Data {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return data
+}
+
+func processData(from url: URL) async throws -> ProcessedData {
+    let data = try await fetchData(from: url)
+    return ProcessedData(byteCount: data.count)
 }
 ```
 
-### Awaiting Async Functions
+`await` suspends the current task, not the thread. While `fetchData` waits on the network, the thread is free to run other tasks.
 
-To call an async function, use the `await` keyword:
-
-```swift
-func processData() async -> ProcessedData {
-    let data = await fetchData()
-    // Process the data
-    return ProcessedData()
-}
-```
-
-Note that you can only use `await` within an async function. To call an async function from a non-async context, you can use a `Task`:
+You can only call `async` functions from an async context. From synchronous code, such as a button action, start a `Task`:
 
 ```swift
-func main() {
+func refreshButtonTapped(url: URL) {
     Task {
-        let processedData = await processData()
-        print("Processed data: \(processedData)")
+        do {
+            let processed = try await processData(from: url)
+            print("Downloaded \(processed.byteCount) bytes")
+        } catch {
+            print("Failed: \(error)")
+        }
     }
 }
 ```
 
+In a command-line tool you can use `await` directly in top-level code (`main.swift`) or in an `@main` type's `static func main() async`. An unstructured `Task` started from a synchronous `main` won't keep the process alive, so the program can exit before it finishes.
+
 ## Actors
 
-Actors are Swift's way of ensuring safe concurrency, preventing data races and other concurrency issues by synchronizing access to their state. An actor is a reference type, similar to a class, that can have methods, properties, and subscripts. However, the key difference is that actors ensure that all of their mutable state is accessed by only one task at a time.
-
-### Defining Actors
-
-To define an actor, use the `actor` keyword:
+An actor is a reference type like a class, but it only runs one piece of code against its state at a time. Code outside the actor has to `await` when calling its methods or reading its properties, even synchronous ones, because the call may have to wait its turn.
 
 ```swift
 actor Counter {
-    private(set) var count: Int = 0
+    private(set) var count = 0
 
     func increment() {
         count += 1
     }
 }
-```
 
-### Accessing Actor State
-
-To access an actor's state, you need to use the `await` keyword, even if the accessed function or property is not marked as `async`. This is because the actor may need to synchronize access to its state:
-
-```swift
-func main() {
+func runCounter() async {
     let counter = Counter()
 
-    Task {
-        for _ in 0..<10 {
-            await counter.increment()
+    await withTaskGroup(of: Void.self) { group in
+        for _ in 0..<2 {
+            group.addTask {
+                for _ in 0..<1_000 {
+                    await counter.increment()
+                }
+            }
         }
     }
 
-    Task {
-        for _ in 0..<10 {
-            await counter.increment()
-        }
-    }
+    print(await counter.count) // always 2000
 }
 ```
 
-In this example, the two tasks increment the `Counter` actor's `count` property without any data races, thanks to the actor's synchronization.
+With a plain class and two concurrent tasks, `count += 1` would be a data race and the result would vary between runs. The actor serializes the increments, and `runCounter` waits for both child tasks before reading the total.
 
-## Structured Concurrency
+UI code uses a special global actor, `@MainActor`, which runs on the main thread. Annotate view models or functions that touch the UI with it.
 
-Swift provides structured concurrency with tasks, allowing developers to control the lifetime of concurrent operations and ensure that all tasks are completed before proceeding.
+## Task groups
 
-### Task Groups
-
-Task groups allow you to spawn multiple child tasks and wait for them to complete:
+A task group runs a dynamic number of child tasks concurrently and waits for all of them before returning. Use `withThrowingTaskGroup` when children can throw:
 
 ```swift
-func fetchAllData() async -> [Data] {
-    await withTaskGroup(of: Data.self) { group in
+func fetchAll(_ urls: [URL]) async throws -> [URL: Data] {
+    try await withThrowingTaskGroup(of: (URL, Data).self) { group in
         for url in urls {
             group.addTask {
-                return await fetchData(from: url)
+                (url, try await fetchData(from: url))
             }
         }
 
-        var allData: [Data] = []
-        for await data in group {
-            allData.append(data)
+        var results: [URL: Data] = [:]
+        for try await (url, data) in group {
+            results[url] = data
         }
-        return allData
+        return results
     }
 }
 ```
 
-In this example, we create a task group to fetch data from multiple URLs concurrently. The `withTaskGroup` function blocks until all child tasks have completed, and then we return the aggregated results.
+Results arrive in completion order, not the order you added the tasks, which is why this returns a dictionary keyed by URL. If any child throws, the error leaves the `for try await` loop, the remaining children are cancelled, and the group waits for them to finish before rethrowing. That is what "structured" means here: no child task outlives the group.
 
-### Task Cancellation
-
-Tasks can be cancelled to stop their execution early. For instance, you might want to cancel a task if a user cancels an operation or if a timeout occurs:
+For a fixed number of concurrent calls, `async let` is shorter:
 
 ```swift
-func processWithTimeout() async -> ProcessedData? {
-    let processingTask = Task { () -> ProcessedData in
-        return await processData()
-    }
+async let first = fetchData(from: url1)
+async let second = fetchData(from: url2)
+let (a, b) = try await (first, second)
+```
 
-    do {
-        return try await processingTask.value(withTimeout: 5)
-    } catch {
-        processingTask.cancel()
-        return nil
+## Cancellation and timeouts
+
+Cancellation in Swift is cooperative. Calling `cancel()` on a task only sets a flag; the task stops when it next checks for cancellation. Many built-in APIs check for you: `Task.sleep` throws `CancellationError`, and `URLSession` cancels the request and throws a `URLError` with code `.cancelled`. In your own loops, call `try Task.checkCancellation()` or check `Task.isCancelled`.
+
+There is no built-in timeout for a task, but you can build one from a task group: race the operation against a sleep, take whichever finishes first, and cancel the other.
+
+```swift
+struct TimeoutError: Error {}
+
+func withTimeout<T: Sendable>(
+    seconds: Double,
+    operation: @escaping @Sendable () async throws -> T
+) async throws -> T {
+    try await withThrowingTaskGroup(of: T.self) { group in
+        group.addTask { try await operation() }
+        group.addTask {
+            try await Task.sleep(for: .seconds(seconds))
+            throw TimeoutError()
+        }
+
+        let result = try await group.next()!
+        group.cancelAll()
+        return result
     }
+}
+
+// Usage
+let data = try await withTimeout(seconds: 5) {
+    try await fetchData(from: url)
 }
 ```
 
-In this example, we create a task to process data and use the `withTimeout` method to wait for the task's result. If the timeout is reached, we cancel the task and return `nil`.
+If the sleep finishes first, `group.next()` throws `TimeoutError` and the group cancels the fetch. If the fetch finishes first, `cancelAll()` stops the sleep. The timeout only works if the operation responds to cancellation; a tight loop that never checks will keep running.
 
-## Conclusion
+## Gotchas
 
-Swift's concurrency features, such as async/await, actors, and structured concurrency with tasks, offer powerful tools for developers to write safe and efficient concurrent code. By embracing these features, you can create applications that provide a responsive user experience while making the most of your system's resources.
+- **Actor reentrancy.** When an actor method hits an `await`, other calls can run on the actor before it resumes. Don't assume state is unchanged after a suspension point; re-check it.
+- **`Sendable` checking.** Values passed between tasks or into actors must be `Sendable`. In the Swift 6 language mode these checks are errors rather than warnings, so expect to fix them when migrating.
+- **`Task { }` inherits context.** A `Task` started from `@MainActor` code also runs on the main actor. Use `Task.detached` only when you specifically need to drop that inheritance.
+
+## Further reading
+
+- [The Swift Programming Language: Concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/)
+- [Swift 6 migration guide](https://www.swift.org/migration/documentation/migrationguide/)
+- [Apple: Task](https://developer.apple.com/documentation/swift/task)

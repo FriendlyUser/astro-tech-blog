@@ -1,103 +1,91 @@
 ---
-description: In this article, we will explore how to use PyInstaller to create standalone
-  executables for your Python applications
+description: Package a Python script into a standalone executable with PyInstaller, set an icon, hide the console, bundle data files and fix common build problems.
 imgSrc: /imgs/2023/336369522.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-03T18:16:10.000Z'
-tags: []
-title: Using PyInstaller to Create Standalone Executables in Python
+lastUpdated: 2026-11-14
+tags:
+  - python
+title: Packaging Python scripts as standalone executables with PyInstaller
 ---
 
-# Using PyInstaller to Create Standalone Executables in Python
-
-PyInstaller is a powerful tool that allows you to convert your Python scripts into standalone executables. This can be incredibly useful for distributing your applications without requiring users to install Python or external packages. In this article, we will explore how to use PyInstaller to create standalone executables for your Python applications.
-
-## Table of Contents
-
-- [Introduction to PyInstaller](#introduction-to-pyinstaller)
-- [Installation](#installation)
-- [Creating a Simple Executable](#creating-a-simple-executable)
-- [Customizing the Executable](#customizing-the-executable)
-  - [Specifying an Icon](#specifying-an-icon)
-  - [Hiding the Console Window](#hiding-the-console-window)
-- [Working with External Libraries and Data Files](#working-with-external-libraries-and-data-files)
-- [Troubleshooting Common Issues](#troubleshooting-common-issues)
-- [Conclusion](#conclusion)
-
-## Introduction to PyInstaller
-
-PyInstaller is an open-source project that allows you to package your Python applications into standalone executables for Windows, macOS, and Linux. The executables created by PyInstaller include a bundled version of the Python interpreter, which means that your users won't need to install Python to run your application.
-
-Some benefits of using PyInstaller include:
-
-- Easy distribution of your applications without requiring users to install Python.
-- Support for including external libraries and data files required by your application.
-- Customization options, such as specifying an icon and hiding the console window.
+PyInstaller bundles a Python script, the Python interpreter, and the packages it imports into a folder or a single executable. People can then run your program without installing Python or any dependencies. It works on Windows, macOS, and Linux, but it is **not a cross-compiler**: to get a Windows `.exe` you build on Windows, to get a macOS app you build on macOS, and so on.
 
 ## Installation
 
-To install PyInstaller, you can use the `pip` package manager. Run the following command to install it:
+Install it into the same virtual environment as your project's dependencies, because PyInstaller bundles whatever that environment has installed:
 
 ```bash
 pip install pyinstaller
 ```
 
-This will download and install PyInstaller and its dependencies.
+## Building an executable
 
-## Creating a Simple Executable
+```bash
+pyinstaller your_script.py
+```
 
-To create a standalone executable for your Python script, navigate to the directory containing your script using the command line, and run the following command:
+PyInstaller follows your imports, collects the modules it finds, and writes:
+
+- `build/`: intermediate files (safe to delete)
+- `dist/your_script/`: the app folder to distribute. Since PyInstaller 6.0, most of its contents sit in an `_internal/` subfolder next to the executable.
+- `your_script.spec`: the generated build configuration
+
+That default is **one-folder** mode. To get a single file instead:
 
 ```bash
 pyinstaller --onefile your_script.py
 ```
 
-Replace `your_script.py` with the name of your Python script. The `--onefile` option tells PyInstaller to create a single executable file, which is generally easier to distribute.
+A one-file executable is easier to hand around, but each time it starts it unpacks itself to a temporary directory first, so it starts slower than the one-folder build.
 
-After running this command, PyInstaller will analyze your script and create an executable in the `dist` directory. You can then distribute this executable to your users, and they can run it without needing to install Python.
+## Customising the build
 
-## Customizing the Executable
-
-### Specifying an Icon
-
-By default, your executable will use the default icon for the platform it's built on. However, you can specify a custom icon for your executable using the `--icon` option:
+### Icon
 
 ```bash
-pyinstaller --onefile --icon=your_icon.ico your_script.py
+pyinstaller --onefile --icon=app.ico your_script.py
 ```
 
-Make sure to replace `your_icon.ico` with the path to your icon file. Note that Windows requires `.ico` files, while macOS and Linux use `.icns` and `.png` files, respectively.
+`--icon` applies to Windows executables (`.ico`) and macOS app bundles (`.icns`). If you pass another image format and Pillow is installed, PyInstaller tries to convert it. On Linux there's no executable icon to set; desktop icons come from a `.desktop` file instead.
 
-### Hiding the Console Window
+### Hiding the console window
 
-When running your executable on Windows, a console window will be displayed by default. If you want to hide this window, you can use the `--noconsole` option:
+For GUI programs (Tkinter, PySide, and so on) you usually don't want a terminal window to appear:
 
 ```bash
-pyinstaller --onefile --noconsole your_script.py
+pyinstaller --onefile --windowed your_script.py
 ```
 
-Keep in mind that this option is only available for Windows.
+`--windowed` and `--noconsole` are the same option. It works on Windows and macOS (on macOS it also produces a `.app` bundle) and is ignored on Linux. With no console, `print` output and tracebacks have nowhere to go, so log to a file.
 
-## Working with External Libraries and Data Files
+## Data files
 
-PyInstaller should automatically detect and include most external libraries used by your script. However, some libraries or data files might need to be manually specified in your PyInstaller command.
-
-To include a specific library or data file, use the `--add-data` option:
+PyInstaller only finds Python imports. Non-code files your program opens at runtime (images, templates, config files) must be added with `--add-data SOURCE:DEST`, where `DEST` is the folder inside the bundle:
 
 ```bash
-pyinstaller --onefile --add-data="path/to/data:data" your_script.py
+pyinstaller --onefile --add-data "assets/config.json:assets" your_script.py
 ```
 
-The value for the `--add-data` option should be in the format `source:destination`. This tells PyInstaller to include the data file or library located at `source` and make it available at `destination` within the bundled application.
+Since PyInstaller 6.0, the `:` separator works on every platform. Older versions required `;` on Windows (`assets/config.json;assets`), which you'll still see in older tutorials.
 
-## Troubleshooting Common Issues
+In the code, locate bundled files relative to the module's `__file__`, not the current working directory. PyInstaller sets `__file__` so this works both in development and in the bundle:
 
-If you encounter any issues while using PyInstaller, here are a few common solutions:
+```python
+from pathlib import Path
 
-- Ensure that all required libraries are installed in your Python environment.
-- Check the PyInstaller output for any error messages or warnings.
-- Consult the [PyInstaller documentation](https://pyinstaller.readthedocs.io/) for detailed information on available options and usage.
+config_path = Path(__file__).resolve().parent / "assets" / "config.json"
+print(config_path.read_text())
+```
 
-## Conclusion
+Older guides use `sys._MEIPASS` for this; it still works, but the PyInstaller docs now recommend `__file__`.
 
-In this article, we introduced PyInstaller, a powerful tool for creating standalone executables from your Python scripts. We covered installing PyInstaller, creating a simple executable, customizing the executable, working with external libraries and data files, and troubleshooting common issues. With this knowledge, you can now easily package and distribute your Python applications without requiring users to install Python or external packages.
+## Troubleshooting
+
+- **`ModuleNotFoundError` when running the executable.** The package was imported dynamically (for example via `importlib` or a plugin system), so PyInstaller didn't see it. Add `--hidden-import package_name`, or `--collect-all package_name` to pull in a package's submodules and data files.
+- **It works in development but can't find a file in the bundle.** Usually a relative path resolved against the working directory, or a missing `--add-data`. Use the `__file__` pattern above.
+- **The build is huge.** PyInstaller bundles every package your code imports, plus whatever those packages import, from the active environment. Build from a clean virtual environment with only your runtime dependencies installed.
+- **Errors disappear before you can read them.** Build without `--windowed` (or add `--debug=imports`) and run the executable from a terminal to see the output.
+- **Repeated builds with lots of flags.** Edit the generated `.spec` file and run `pyinstaller your_script.spec` instead of retyping options.
+
+Further reading: [PyInstaller manual](https://pyinstaller.org/en/stable/), especially [Using PyInstaller](https://pyinstaller.org/en/stable/usage.html) for the full option list and [When things go wrong](https://pyinstaller.org/en/stable/when-things-go-wrong.html).

@@ -1,149 +1,140 @@
 ---
 tags: ['go']
-title: File Handling and Error Handling in Go.
-description: File Handling and Error Handling in Go.
+title: "Web development in Go: net/http routing and html/template"
+description: "Build a small web server with Go's standard library: register handlers, route by method and path wildcard, and render HTML safely with html/template."
 pubDate: Fri, 21 October 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1648720574.png
 ---
-Web development is an essential skill for any modern-day programmer, and Go provides a robust framework for creating web applications. In this chapter, we'll cover the basics of web development in Go, including how to build a simple web server, handle HTTP requests, and create dynamic web pages using templates.
+Go's standard library is enough to build a working web server: `net/http` handles requests and routing, and `html/template` renders HTML. This post builds a simple server, adds method-aware routes, and renders a page from a template.
 
-### Building a Simple Web Server
-
-The first step in web development with Go is to create a web server. Here's a simple example:
-
+## A minimal web server
 
 ```go
 package main
 
 import (
- "fmt"
- "net/http"
+	"fmt"
+	"log"
+	"net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+Run it with `go run .` and open `http://localhost:8080/Gopher` to see `Hello, Gopher!`.
+
+- `http.HandleFunc` registers `handler` on the default `ServeMux`. The pattern `/` matches every path that no more specific pattern claims.
+- `http.ListenAndServe` blocks while serving and only returns on error (for example, when the port is already in use). Wrapping it in `log.Fatal` makes that error visible instead of the program silently exiting.
+- A handler gets an `http.ResponseWriter` to write the response and an `*http.Request` with the method, URL, headers and body.
+- If you don't set `Content-Type`, Go guesses it from the first 512 bytes written (`http.DetectContentType`). Setting it explicitly is safer when the response contains user input.
+
+## Routing by method and path
+
+Since Go 1.22, `ServeMux` patterns can include an HTTP method and path wildcards. The value of a wildcard is read with `r.PathValue`:
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
 )
 
 func main() {
- http.HandleFunc("/", handler)
- http.ListenAndServe(":8080", nil)
-}
+	mux := http.NewServeMux()
 
-func handler(w http.ResponseWriter, r \*http.Request) {
- fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-}
-```
-This code creates a simple web server that listens on port 8080 and responds to all requests with the message "Hello, [name]!" where `[name]` is whatever follows the forward slash in the URL.
+	mux.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Hello, World!")
+	})
 
-### Handling HTTP Requests
+	mux.HandleFunc("GET /hello/{name}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		fmt.Fprintf(w, "Hello, %s!", r.PathValue("name"))
+	})
 
-To handle HTTP requests in Go, you need to define a handler function that takes an `http.ResponseWriter` and an `http.Request` as arguments. The `http.ResponseWriter` is used to send the response back to the client, while the `http.Request` contains information about the incoming request, such as the HTTP method (GET, POST, etc.) and any parameters or headers.
-
-Here's an example handler function that handles GET requests for a specific URL:
-
-
-```go
-func handler(w http.ResponseWriter, r \*http.Request) {
- if r.Method == "GET" && r.URL.Path == "/hello" {
- fmt.Fprintf(w, "Hello, World!")
- } else {
- w.WriteHeader(http.StatusNotFound)
- }
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 ```
-This code checks if the incoming request is a GET request for the `/hello` URL. If it is, it sends the message "Hello, World!" back to the client. If it's not, it sends a 404 Not Found status code.
 
-### Creating Dynamic Web Pages with Templates
+With method patterns, the mux does the checks you'd otherwise write by hand: a `POST /hello` gets `405 Method Not Allowed` (with an `Allow` header), and a path with no matching pattern gets `404 Not Found`. A `GET` pattern also matches `HEAD` requests.
 
-Finally, you can use Go's built-in template engine to create dynamic web pages. Here's an example:
+On Go versions before 1.22 you'd compare `r.Method` against `http.MethodGet` and parse `r.URL.Path` yourself, or use a router such as chi or gorilla/mux.
 
+## Rendering HTML with templates
+
+`html/template` fills in a template with data and escapes values for the context they appear in (HTML text, attributes, URLs, JavaScript), which protects against cross-site scripting. Use it instead of `text/template` for anything that ends up in a browser.
+
+Create `template.html` next to your code:
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>{{.Name}}</h1>
+    <p>Age: {{.Age}}</p>
+  </body>
+</html>
+```
+
+Then render it:
 
 ```go
 package main
 
 import (
- "html/template"
- "net/http"
+	"html/template"
+	"log"
+	"net/http"
 )
 
 type Person struct {
- Name string
- Age int
+	Name string
+	Age  int
 }
 
-func handler(w http.ResponseWriter, r \*http.Request) {
- p := Person{"Alice", 30}
- t, _ := template.ParseFiles("template.html")
- t.Execute(w, p)
-}
+// Parse once at startup. template.Must panics if the file is missing or invalid,
+// which is what you want for a template the server can't run without.
+var tmpl = template.Must(template.ParseFiles("template.html"))
 
-func main() {
- http.HandleFunc("/", handler)
- http.ListenAndServe(":8080", nil)
-}
-```
-This code defines a `Person` struct and a handler function that creates a `Person` object and passes it to a template file called `template.html`. The `template.ParseFiles` function reads in the template file and returns a `*template.Template` object, which can be executed with the `t.Execute` method to generate the final HTML output.
-
-### Conclusion
-
-In this chapter, we covered the basics of web development in Go, including how to build a simple web server, handle HTTP requests, and create dynamic web pages using templates. Go provides a simple and powerful framework for web development, making it a great choice for building web applications of all kinds.
-
-
-In web development with Go, the HTTP package is the foundation for handling HTTP requests and responses. It provides the `http.ListenAndServe` function for starting an HTTP server, as well as a number of other functions and types for working with HTTP requests and responses.
-
-Here's an example of using the HTTP package to handle an HTTP request:
-
-
-```go
-package main
-
-import (
- "fmt"
- "net/http"
-)
-
-func handler(w http.ResponseWriter, r \*http.Request) {
- fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
+func handler(w http.ResponseWriter, r *http.Request) {
+	p := Person{Name: "Alice", Age: 30}
+	if err := tmpl.Execute(w, p); err != nil {
+		log.Println("render:", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 }
 
 func main() {
- http.HandleFunc("/", handler)
- http.ListenAndServe(":8080", nil)
+	http.HandleFunc("GET /", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
-In this example, the `http.HandleFunc` function is used to register the `handler` function to handle incoming HTTP requests to the root path. The `http.ListenAndServe` function is then used to start the HTTP server, listening on port 8080.
 
-### Conclusion
+Templates can only read exported fields, which is why `Name` and `Age` are capitalised. If `Execute` fails partway, some HTML may already have been sent, so the `http.Error` call can't always replace it; for pages where that matters, render into a `bytes.Buffer` first and copy it to `w` only on success.
 
-The HTTP package in Go provides a simple and powerful way to handle HTTP requests and responses in web development. With the `http.ListenAndServe` function and the `http.HandleFunc` function, you can quickly build a web server that responds to incoming HTTP requests.
+## Before you deploy
 
+- `http.ListenAndServe` uses a server with no timeouts. For anything public, create an `http.Server` with `ReadHeaderTimeout`, `ReadTimeout` and `WriteTimeout` set and call its `ListenAndServe`.
+- Use `http.FileServer` (or `http.FileServerFS` with `embed`) for static assets rather than reading files in a handler.
 
-In web development with Go, a web application is a program that runs on a web server and provides a web interface for users to interact with. Web applications are typically built using the HTTP package, which provides the foundation for handling HTTP requests and responses.
+## Further reading
 
-Here's an example of a simple web application in Go:
-
-
-```go
-package main
-
-import (
- "fmt"
- "net/http"
-)
-
-func handler(w http.ResponseWriter, r \*http.Request) {
- fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
-}
-
-func main() {
- http.HandleFunc("/", handler)
- http.ListenAndServe(":8080", nil)
-}
-```
-In this example, the `handler` function is used to handle incoming HTTP requests to the root path. The `http.HandleFunc` function is then used to register the `handler` function with the HTTP server. Finally, the `http.ListenAndServe` function is used to start the HTTP server, listening on port 8080.
-
-### Conclusion
-
-Web applications are a fundamental part of web development, and Go provides a simple and powerful way to build them. With the HTTP package, you can quickly build a web server that responds to incoming HTTP requests, allowing you to create dynamic web applications that can be accessed from anywhere in the world.
-
-
+- [`net/http` package](https://pkg.go.dev/net/http)
+- [`html/template` package](https://pkg.go.dev/html/template)
+- [Writing Web Applications](https://go.dev/doc/articles/wiki/) (official tutorial)
+- [Routing enhancements for Go 1.22](https://go.dev/blog/routing-enhancements)
 
 ## References
+
 - https://github.com/FriendlyUser/bluey-wordpress-theme

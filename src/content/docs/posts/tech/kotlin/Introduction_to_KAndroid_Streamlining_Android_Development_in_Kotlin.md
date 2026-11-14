@@ -1,96 +1,121 @@
 ---
-title: Introduction to KAndroid Streamlining Android Development in Kotlin
+title: KAndroid Kotlin extensions for Android, and what replaces them today
 pubDate: "2023-05-03T14:16:44.908Z"
-description: "In this article, we'll explore the features of KAndroid, how to set it up in an Android project, and demonstrate its usage with practical examples."
-tags: ["kotlin"]
+lastUpdated: 2026-11-14
+description: "What the KAndroid library offers (text watchers, toasts, intents, threading and logging helpers), how to add it with JitPack, and the AndroidX equivalents."
+tags: ["kotlin", "android"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3131299487.png
 ---
-# Introduction to KAndroid: Streamlining Android Development in Kotlin
 
-KAndroid is a powerful library designed to enhance Android development when using the Kotlin programming language. It simplifies and streamlines common tasks, making it easier to develop high-quality Android applications with less boilerplate code. In this article, we'll explore the features of KAndroid, how to set it up in an Android project, and demonstrate its usage with practical examples.
+:::caution[KAndroid is unmaintained]
+KAndroid's last release, 0.8.8, came out in August 2018. It's built against the old Android Support Library rather than AndroidX, so an AndroidX app needs Jetifier enabled to use it. Its own `find()` helper is marked deprecated in favour of `findViewById()`. For new code, use [Android KTX](https://developer.android.com/kotlin/ktx), [View Binding](https://developer.android.com/topic/libraries/view-binding) and Kotlin coroutines instead. The equivalents are listed at the end.
+:::
 
-## Features of KAndroid
+[KAndroid](https://github.com/pawegio/KAndroid) is a small Apache-2.0 library by Paweł Gajda. It adds Kotlin extension functions for repetitive Android code: text watchers, toasts, intents, threading and logging. It doesn't add new features. Each helper is a thin wrapper over the platform API it replaces.
 
-KAndroid provides a range of features that help developers focus on writing clean, concise, and expressive code. Some of these features include:
+## Setup
 
-1. **View binding**: KAndroid allows you to easily access views in your layout, cutting down on the need to use `findViewById` and cast the view to the correct type.
-2. **Event listeners**: Simplify the process of setting up event listeners, such as click listeners, with easy-to-use extension functions.
-3. **Extensions**: KAndroid offers numerous extension functions for common Android classes, such as `Context`, `View`, `SharedPreferences`, and more.
-4. **Async tasks**: KAndroid provides a simple way to run code asynchronously without dealing with the complexity of `AsyncTask` or other threading solutions.
-5. **Logging**: KAndroid's built-in logging capabilities make it easier to log messages during development.
-
-## Setting up KAndroid
-
-To get started with KAndroid, add the library to your Android project's Gradle configuration. In your project's `build.gradle` file, add the following dependency:
+KAndroid is served from JitPack. Add the repository, then the dependency:
 
 ```groovy
-dependencies {
-    implementation 'com.github.yoavst:kandroid:0.8.6'
-}
-```
-
-Make sure to replace the version number with the latest available version. You can find the most up-to-date version on the [KAndroid GitHub repository](https://github.com/yoavst/kandroid).
-
-## Using KAndroid in Your Project
-
-Now that KAndroid is set up, let's explore its features with some practical examples.
-
-### View Binding
-
-Instead of using `findViewById` and casting the view to the correct type, KAndroid allows you to access views directly by their ID. For example, if you have a `TextView` with the ID `text_view`, you can access it like this:
-
-```kotlin
-val textView: TextView = find(R.id.text_view)
-```
-
-### Event Listeners
-
-KAndroid makes it easy to set up event listeners, such as click listeners. Instead of using anonymous inner classes or implementing interfaces, you can use simple extension functions. Here's an example of setting a click listener on a button:
-
-```kotlin
-val button: Button = find(R.id.my_button)
-button.onClick {
-    Toast.makeText(this, "Button clicked!", Toast.LENGTH_SHORT).show()
-}
-```
-
-### Extensions
-
-KAndroid provides many useful extension functions for common Android classes. For instance, the following code demonstrates how to show a toast message using a KAndroid extension function:
-
-```kotlin
-fun showWelcomeToast() {
-    toast("Welcome to KAndroid!")
-}
-```
-
-### Async Tasks
-
-KAndroid simplifies running code asynchronously with the `doAsync` function. The following example demonstrates how to fetch data from a URL and update a `TextView` with the response:
-
-```kotlin
-fun fetchDataAndUpdateTextView(textView: TextView, url: String) {
-    doAsync {
-        val data = URL(url).readText()
-        uiThread {
-            textView.text = data
-        }
+// settings.gradle (or the allprojects block in an older root build.gradle)
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 ```
 
-### Logging
-
-KAndroid's built-in logging capabilities make it easier to log messages during development. You can use the `logd` function to log debug messages, like this:
-
-```kotlin
-fun performCalculation() {
-    logd("Performing calculation...")
-    // Your calculation logic here
+```groovy
+// app/build.gradle
+dependencies {
+    implementation 'com.github.pawegio:KAndroid:0.8.8@aar'
 }
 ```
 
-## Conclusion
+```properties
+# gradle.properties: needed because KAndroid uses the Support Library
+android.enableJetifier=true
+```
 
-KAndroid is an invaluable tool for streamlining Android development when using Kotlin. It simplifies common tasks, such as view binding, event listeners, and logging, allowing developers to focus on writing clean and concise code. By incorporating KAndroid into your Android projects, you'll be able to develop high-quality applications with ease.
+All the functions live in the `com.pawegio.kandroid` package.
+
+## Examples
+
+All of these examples come from the project's README.
+
+### Finding views
+
+```kotlin
+val textView = find<TextView>(R.id.textView)
+```
+
+This is just `findViewById` with a reified type. Since API 26 the platform's `findViewById<TextView>(R.id.textView)` does the same thing, which is why KAndroid deprecated it.
+
+### Listeners
+
+KAndroid has no click-listener helper; Kotlin's SAM conversion already makes `button.setOnClickListener { ... }` short. It does wrap the listener interfaces that have several callbacks:
+
+```kotlin
+editText.textWatcher {
+    afterTextChanged { text -> preview.text = text }
+}
+
+searchView.onQueryChange { query -> update(query) }
+
+seekBar.onProgressChanged { progress, fromUser ->
+    if (fromUser) mediaPlayer.seekTo(progress)
+}
+```
+
+### Toasts and intents
+
+```kotlin
+toast("Hi, I'm a short toast")
+longToast(R.string.my_string)
+
+startActivity<SampleActivity>()
+startActivityForResult<SampleActivity>(REQUEST_CODE)
+```
+
+### Threading
+
+`runAsync` starts a new `Thread`, and `runOnUiThread` posts to the main looper:
+
+```kotlin
+fun fetchDataAndUpdateTextView(textView: TextView, url: String) {
+    runAsync {
+        val data = URL(url).readText()
+        runOnUiThread { textView.text = data }
+    }
+}
+```
+
+That's one raw thread per call, with no cancellation. If the activity is destroyed while the request is in flight, the callback still touches the old view.
+
+### Logging
+
+The log functions are extensions on `Any` and use the caller's class name as the tag:
+
+```kotlin
+w("Warn log message")
+e("Error log message")
+d { "Debug log message" }
+v("CustomTag", "Verbose log message with custom tag")
+```
+
+The lambda forms (`d { }`, `v { }`, `i { }`) only build the message if `Log.isLoggable(tag, level)` returns true. By default only INFO and above pass that check, so `d { }` prints nothing unless you raise the level with `adb shell setprop log.tag.<ClassName> DEBUG`. The string overloads always log.
+
+## Modern replacements
+
+| KAndroid | Replacement |
+| --- | --- |
+| `find<T>(id)` | View Binding, or `findViewById<T>(id)` |
+| `textWatcher { afterTextChanged { } }` | `doAfterTextChanged { }` from `androidx.core:core-ktx` |
+| `runAsync` / `runOnUiThread` | `lifecycleScope.launch { withContext(Dispatchers.IO) { ... } }` |
+| `startActivity<T>()` | `startActivity(Intent(this, T::class.java))` |
+| `startActivityForResult<T>(code)` | `registerForActivityResult(...)` (Activity Result API) |
+| `d { }` / `w()` | `android.util.Log`, or Timber |

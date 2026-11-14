@@ -1,100 +1,49 @@
 ---
-description: ' In this article, we''ll explore the basics of AutoMapper, how to set
-  it up, and how to use it in your .NET applications.'
+description: How to install AutoMapper, define mapping profiles, register it with ASP.NET Core dependency injection, and customise member mappings with ForMember.
 imgSrc: /imgs/2023/2921207460.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-15T23:06:49.000Z'
-tags: []
-title: Demystifying AutoMapper Streamlining Object-to-Object Mapping in .NET
+lastUpdated: 2026-11-14
+tags: ["csharp", "dotnet"]
+title: "AutoMapper in .NET: profiles, DI registration and custom mappings"
 ---
 
-# Demystifying AutoMapper: Streamlining Object-to-Object Mapping in .NET
+:::note[Licensing changed in AutoMapper 15]
+Since version 15, AutoMapper is dual-licensed and expects a license key (a free Community license is available for some organisations; see [automapper.io](https://automapper.io/)). A missing key only produces a log warning and doesn't change runtime behaviour. Version 15 also changed the `AddAutoMapper` signature, which the examples below use. They were checked against AutoMapper 17.0.0.
+:::
 
-## Introduction
+AutoMapper copies data between objects of different types by convention: properties with matching names (and compatible types) are mapped automatically. The typical use is turning entity classes into DTOs or view models without writing a page of `dto.Name = user.Name` assignments.
 
-In the world of software development, it's quite common to work with different object models to represent the same data. For instance, we might have a data object model for interacting with a database, and a separate view model for displaying data in a UI. Often, we need to map properties from one object model to another, which can result in tedious and error-prone code if done manually.
+The examples use these two classes:
 
-That's where AutoMapper comes in. AutoMapper is a popular open-source library for .NET that simplifies object-to-object mapping. It saves developers from writing repetitive code by automating the process of mapping properties between different object models. In this article, we'll explore the basics of AutoMapper, how to set it up, and how to use it in your .NET applications.
+```csharp
+public class User
+{
+    public int Id { get; set; }
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public string Email { get; set; } = "";
+}
 
-## Setting Up AutoMapper
+public class UserDto
+{
+    public int Id { get; set; }
+    public string FullName { get; set; } = "";
+    public string Email { get; set; } = "";
+}
+```
 
-To get started with AutoMapper, you'll need to install the NuGet package. In Visual Studio, you can do this by right-clicking on your project, selecting "Manage NuGet Packages," and searching for "AutoMapper." Alternatively, you can use the Package Manager Console with the following command:
+## Install
 
 ```sh
-Install-Package AutoMapper
+dotnet add package AutoMapper
 ```
 
-Once you have AutoMapper installed, you can begin configuring your mappings.
+Since version 13 the ASP.NET Core dependency-injection extensions (`AddAutoMapper`) ship in the main package. The old `AutoMapper.Extensions.Microsoft.DependencyInjection` package is discontinued, so remove it if you're upgrading.
 
-## Configuring Mappings
+## Define a profile
 
-To configure mappings between your object models, you'll need to create a mapping profile. A mapping profile is a class that inherits from `Profile`and contains the mapping definitions for your objects. Here's an example of a simple mapping profile:
-
-```csharp
-using AutoMapper;
-
-public class UserProfile : Profile
-{
-    public UserProfile()
-    {
-        CreateMap<User, UserDto>();
-        CreateMap<UserDto, User>();
-    }
-}
-```
-
-In this example, we're defining two mappings: one from the `User` object to the `UserDto` object, and another from `UserDto` back to `User`. The `CreateMap` method tells AutoMapper how to map properties between these objects. AutoMapper will automatically map properties with the same name and compatible types.
-
-## Initializing AutoMapper
-
-After defining your mapping profiles, you'll need to initialize AutoMapper with these profiles. It's a good practice to do this during the application startup. In a .NET Core application, you would typically do this in the `Startup.cs` file:
-
-```csharp
-using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
-
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // ...
-        services.AddAutoMapper(typeof(UserProfile).Assembly);
-    }
-}
-```
-
-By calling `AddAutoMapper` and passing the assembly containing your mapping profiles, AutoMapper will automatically discover and register your profiles.
-
-## Using AutoMapper
-
-Now that AutoMapper is configured, you can start using it to map objects in your application. To do this, you'll need an instance of the `IMapper` interface. In a .NET Core application, you can simply inject it into your classes through dependency injection.
-
-Here's an example of using AutoMapper to map a `User` object to a `UserDto` object:
-
-```csharp
-public class UserService
-{
-    private readonly IMapper _mapper;
-
-    public UserService(IMapper mapper)
-    {
-        _mapper = mapper;
-    }
-
-    public UserDto GetUserDto(int userId)
-    {
-        User user = GetUserFromDatabase(userId);
-        UserDto userDto = _mapper.Map<UserDto>(user);
-        return userDto;
-    }
-}
-```
-
-In this example, we're using the `Map` method to convert a `User` object to a `UserDto` object. AutoMapper takes care of mapping the properties for us, so we don't have to write any manual mapping code.
-
-## Customizing Mappings
-
-Sometimes, AutoMapper's default behavior isn't sufficient for your needs. In these cases, you can customize your mappings using the `ForMember` method. Here's an example of customizing a mapping to concatenate the first and last name properties:
+Mappings live in classes that inherit from `Profile`. Each `CreateMap<TSource, TDestination>()` call declares one direction:
 
 ```csharp
 using AutoMapper;
@@ -104,13 +53,76 @@ public class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<User, UserDto>()
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+            .ForMember(dest => dest.FullName,
+                       opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
     }
 }
 ```
 
-In this example, we're telling AutoMapper to map the `FullName` property of the `UserDto` object to the concatenation of the `FirstName` and `LastName` properties of the `User` object. The `ForMember` method allows you to specify custom mappings for individual properties.
+`Id` and `Email` map by name. `FullName` has no matching source property, so `ForMember` tells AutoMapper how to build it.
 
-## Conclusion
+If you also need to map back from `UserDto` to `User`, add `.ReverseMap()` to the chain or write a second `CreateMap<UserDto, User>()`. Be careful with reverse maps that write into entities: they make it easy to overwrite fields the client was never supposed to change.
 
-AutoMapper is a powerful and flexible library that can save you time and reduce errors by automating the process of mapping properties between different object models. By following the steps outlined in this article, you'll be well on your way to leveraging AutoMapper in your .NET applications. Happy mapping!
+## Register with dependency injection
+
+In an ASP.NET Core app's `Program.cs`, pass a configuration action (where the license key goes) and a type from each assembly that contains profiles:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAutoMapper(
+    cfg => cfg.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"],
+    typeof(UserProfile));
+
+var app = builder.Build();
+```
+
+AutoMapper scans those assemblies, registers every `Profile` it finds, and adds `IMapper` to the container. If you leave `LicenseKey` unset, AutoMapper reads the `AUTOMAPPER_LICENSE_KEY` environment variable instead.
+
+Before version 15 the call was `services.AddAutoMapper(typeof(UserProfile))`, without the configuration action. That overload no longer exists.
+
+## Map objects
+
+Inject `IMapper` wherever you need it:
+
+```csharp
+using AutoMapper;
+
+public class UserService(IMapper mapper, AppDbContext db)
+{
+    public async Task<UserDto?> GetUserAsync(int id)
+    {
+        var user = await db.Users.FindAsync(id);
+        return user is null ? null : mapper.Map<UserDto>(user);
+    }
+}
+```
+
+`AppDbContext` here stands in for whatever data access you use. For EF Core queries, `ProjectTo<UserDto>(mapper.ConfigurationProvider)` (from `AutoMapper.QueryableExtensions`) translates the mapping into the SQL `SELECT`, so only the needed columns are loaded instead of whole entities.
+
+## Validate the configuration
+
+The most common AutoMapper bug is a destination property that silently stays at its default because nothing maps to it. Catch that in a unit test:
+
+```csharp
+using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
+
+var config = new MapperConfiguration(
+    cfg => cfg.AddProfile<UserProfile>(),
+    NullLoggerFactory.Instance);
+
+config.AssertConfigurationIsValid();
+```
+
+`AssertConfigurationIsValid` throws if any destination member has no source and isn't explicitly ignored with `opt.Ignore()`. Since version 15 the `MapperConfiguration` constructor also takes an `ILoggerFactory`.
+
+## When not to use it
+
+AutoMapper hides assignments behind conventions. That pays off with many similar DTOs, but it costs you "Find all references" and compile-time errors when a property is renamed. For a handful of mappings, a hand-written `ToDto()` method or a source-generator-based mapper is easier to read and debug. Keep mapping logic simple either way: business rules inside `MapFrom` lambdas are hard to find later.
+
+## Further reading
+
+- [AutoMapper documentation](https://docs.automapper.io/en/stable/)
+- [15.0 upgrade guide](https://docs.automapper.io/en/stable/15.0-Upgrade-Guide.html)
+- [License configuration](https://docs.automapper.io/en/stable/License-configuration.html)

@@ -1,138 +1,150 @@
 ---
-title: Understanding Microsoft.Extensions.Configuration A Comprehensive Guide
+title: "Microsoft.Extensions.Configuration: providers, precedence and the options pattern"
 pubDate: "2024-08-22T15:54:27.000Z"
-description: "In this article, we will explore the core concepts of Microsoft.Extensions.Configuration and learn how to leverage its features to create maintainable and flexible configuration management in .NET applications."
-tags: []
+lastUpdated: 2026-11-14
+description: "How .NET configuration works: providers and their precedence, environment-specific files, environment variables, and binding sections to classes with IOptions."
+tags: ["dotnet", "csharp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3619698287.png
 ---
-# Understanding Microsoft.Extensions.Configuration: A Comprehensive Guide
 
-## Introduction
+`Microsoft.Extensions.Configuration` reads settings from JSON files, environment variables, command-line arguments, user secrets and other sources, and merges them into one set of key-value pairs exposed through `IConfiguration`. ASP.NET Core and the generic host set it up for you; you can also use it on its own in any .NET app.
 
-Microsoft.Extensions.Configuration is a powerful and flexible library that enables developers to work with configuration data in .NET applications. This library simplifies the process of accessing, reading, and managing configuration settings from various sources such as JSON files, XML files, environment variables, or even in-memory collections.
+## Keys and sections
 
-In this article, we will explore the core concepts of Microsoft.Extensions.Configuration and learn how to leverage its features to create maintainable and flexible configuration management in .NET applications.
+Configuration is a flat dictionary of string keys and string values. Hierarchy is expressed with `:` in the key, so this JSON:
 
-## Table of Contents
+```json
+{
+  "AppSettings": {
+    "Title": "My Application",
+    "Version": "1.0.0"
+  }
+}
+```
 
-1. Configuration Basics
-2. Configuration Providers
-3. Configuration Builder
-4. Working with Strongly Typed Configuration
-5. Environment-Specific Configuration
-6. Best Practices
-
-## 1. Configuration Basics
-
-Configuration data in .NET applications is typically stored in key-value pairs. These key-value pairs can be organized into hierarchical structures, which make it easy to group related settings together.
-
-To store and manage configuration data, Microsoft.Extensions.Configuration introduces the `IConfiguration` interface. This interface provides methods for accessing configuration values and supports the hierarchical organization of settings.
-
-Here's a simple example of using IConfiguration:
+becomes the keys `AppSettings:Title` and `AppSettings:Version`. You can read values directly or get a section:
 
 ```csharp
+using Microsoft.Extensions.Configuration;
+
 IConfiguration configuration = new ConfigurationBuilder()
-    .AddInMemoryCollection(new Dictionary<string, string>
+    .AddInMemoryCollection(new Dictionary<string, string?>
     {
-        { "AppSettings:Title", "My Application" },
-        { "AppSettings:Version", "1.0.0" },
+        ["AppSettings:Title"] = "My Application",
+        ["AppSettings:Version"] = "1.0.0",
     })
     .Build();
 
-string title = configuration["AppSettings:Title"];
-string version = configuration["AppSettings:Version"];
+string? title = configuration["AppSettings:Title"];
+IConfigurationSection section = configuration.GetSection("AppSettings");
+string? version = section["Version"];
 ```
 
-## 2. Configuration Providers
+Values are always strings. `GetValue<T>` (from the `Microsoft.Extensions.Configuration.Binder` package) converts them: `configuration.GetValue<int>("Cache:Minutes", 5)`.
 
-Microsoft.Extensions.Configuration supports multiple configuration sources through the concept of configuration providers. Configuration providers are responsible for reading configuration data from various sources and exposing it through the IConfiguration interface.
+## Providers and precedence
 
-Out-of-the-box, the library provides several configuration providers, including:
+Each source is a provider, and each lives in its own package:
 
-- InMemoryConfigurationProvider: Reads configuration data from an in-memory collection.
-- JsonConfigurationProvider: Reads configuration data from a JSON file.
-- XmlConfigurationProvider: Reads configuration data from an XML file.
-- EnvironmentVariablesConfigurationProvider: Reads configuration data from environment variables.
+| Source | Package | Builder method |
+| --- | --- | --- |
+| In-memory dictionary | `Microsoft.Extensions.Configuration` | `AddInMemoryCollection` |
+| JSON file | `Microsoft.Extensions.Configuration.Json` | `AddJsonFile` |
+| XML file | `Microsoft.Extensions.Configuration.Xml` | `AddXmlFile` |
+| INI file | `Microsoft.Extensions.Configuration.Ini` | `AddIniFile` |
+| Environment variables | `Microsoft.Extensions.Configuration.EnvironmentVariables` | `AddEnvironmentVariables` |
+| Command line | `Microsoft.Extensions.Configuration.CommandLine` | `AddCommandLine` |
+| User secrets | `Microsoft.Extensions.Configuration.UserSecrets` | `AddUserSecrets` |
 
-You can also create custom configuration providers if needed. To use a configuration provider, add it to the ConfigurationBuilder.
-
-## 3. Configuration Builder
-
-The `ConfigurationBuilder` class is the central component of the Microsoft.Extensions.Configuration library. It is responsible for constructing an IConfiguration instance by aggregating configuration data from various providers.
-
-Here's an example of using the ConfigurationBuilder with multiple configuration providers:
+Providers are applied in the order you add them, and **the last one to set a key wins**:
 
 ```csharp
 IConfiguration configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables()
+    .AddCommandLine(args)
     .Build();
 ```
 
-In this example, the ConfigurationBuilder first reads settings from a JSON file and then from environment variables. If a key is present in both sources, the value from the environment variable will overwrite the value from the JSON file.
+Here a command-line argument overrides an environment variable, which overrides `appsettings.json`.
 
-## 4. Working with Strongly Typed Configuration
+Environment variable names can't contain `:` on every platform, so use a double underscore instead: `AppSettings__Title=Prod` sets `AppSettings:Title`.
 
-Strongly typed configuration is a technique that maps configuration data to a custom .NET class. This approach provides several benefits, including compile-time error checking, IntelliSense support, and improved readability.
+## Environment-specific settings
 
-To create a strongly typed configuration, follow these steps:
+`WebApplication.CreateBuilder` and `Host.CreateApplicationBuilder` already load, in order: `appsettings.json`, `appsettings.{Environment}.json`, user secrets (only in the `Development` environment), environment variables, and command-line arguments. The environment name comes from `DOTNET_ENVIRONMENT` or, in ASP.NET Core, `ASPNETCORE_ENVIRONMENT`, and defaults to `Production`.
 
-1. Define a custom class that represents your configuration structure.
-2. Use the `IOptions<T>` or `IOptionsSnapshot<T>` interface to inject the strongly typed configuration into your classes.
-
-Here's an example:
+If you build configuration yourself, do the same thing explicitly:
 
 ```csharp
-public class AppSettings
-{
-    public string Title { get; set; }
-    public string Version { get; set; }
-}
-
-// In your Startup.cs file, register the AppSettings class
-services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
-// Inject the strongly typed configuration into your classes
-public class MyClass
-{
-    private readonly AppSettings _appSettings;
-
-    public MyClass(IOptions<AppSettings> appSettings)
-    {
-        _appSettings = appSettings.Value;
-    }
-}
-```
-
-## 5. Environment-Specific Configuration
-
-Microsoft.Extensions.Configuration makes it easy to manage environment-specific configuration settings. To achieve this, use multiple configuration files �? one file per environment �? and load the appropriate file based on the current environment.
-
-Here's an example:
-
-```csharp
-string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
 
 IConfiguration configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .AddJsonFile($"appsettings.{environment}.json", optional: true)
+    .AddEnvironmentVariables()
     .Build();
 ```
 
-In this example, the ConfigurationBuilder first reads the common settings from `appsettings.json` and then loads the environment-specific settings from a file named `appsettings.{environment}.json`. The environment-specific settings will overwrite any common settings with the same key.
+Only the keys present in `appsettings.Production.json` replace the base file's values; the rest are inherited.
 
-## 6. Best Practices
+## Binding to classes with the options pattern
 
-Here are some best practices to follow when using Microsoft.Extensions.Configuration:
+Reading string keys all over the codebase is error-prone. Bind a section to a class once, and inject it with `IOptions<T>`:
 
-- Keep your configuration files small and focused by splitting them into multiple files based on feature or environment.
-- Use strongly typed configuration to improve maintainability and readability.
-- Avoid hardcoding configuration keys in your code. Instead, use constants or helper methods to reference keys.
--Use environment variables or secret managers for sensitive information, such as passwords and API keys, to avoid storing them in configuration files.
+```csharp
+public class AppSettings
+{
+    public string Title { get; set; } = "";
+    public string Version { get; set; } = "";
+}
+```
 
-## Conclusion
+```csharp
+var builder = WebApplication.CreateBuilder(args);
 
-Microsoft.Extensions.Configuration is a powerful and flexible library for managing configuration data in .NET applications. By understanding its core concepts and features, you can create maintainable and scalable configuration management systems that adapt to various environments and requirements.
+builder.Services.AddOptions<AppSettings>()
+    .Bind(builder.Configuration.GetSection("AppSettings"))
+    .Validate(s => !string.IsNullOrEmpty(s.Title), "AppSettings:Title is required")
+    .ValidateOnStart();
+```
 
-In this article, we covered the basics of Microsoft.Extensions.Configuration, including its configuration providers, ConfigurationBuilder, strongly typed configuration, environment-specific configuration, and best practices. With this knowledge, you can confidently build .NET applications with robust and flexible configuration management systems.
+```csharp
+using Microsoft.Extensions.Options;
+
+public class AboutService
+{
+    private readonly AppSettings _settings;
+
+    public AboutService(IOptions<AppSettings> options)
+    {
+        _settings = options.Value;
+    }
+
+    public string Describe() => $"{_settings.Title} v{_settings.Version}";
+}
+```
+
+`builder.Services.Configure<AppSettings>(section)` also works; `AddOptions<T>().Bind(...)` is the same thing with validation chained on. `ValidateOnStart` makes a bad configuration fail at startup instead of on the first request that reads it.
+
+Pick the interface by how you want changes to show up:
+
+- `IOptions<T>`: read once, singleton. Changes to the file are ignored.
+- `IOptionsSnapshot<T>`: re-read per scope (per request in ASP.NET Core). Can't be injected into singletons.
+- `IOptionsMonitor<T>`: singleton that always returns the current value and has an `OnChange` callback.
+
+The last two only see changes if the provider reloads, for example `AddJsonFile(..., reloadOnChange: true)`, which the default builders use.
+
+## Gotchas
+
+- Keys are case-insensitive. `appsettings:title` and `AppSettings:Title` are the same key.
+- Binding is lenient: a misspelled property name is silently ignored. Use validation (or `BinderOptions.ErrorOnUnknownConfiguration`) if that matters.
+- Don't put secrets in `appsettings.json`. Use user secrets for local development and environment variables or a secret store such as Azure Key Vault in production.
+
+## Further reading
+
+- [Configuration in .NET](https://learn.microsoft.com/dotnet/core/extensions/configuration)
+- [Configuration in ASP.NET Core](https://learn.microsoft.com/aspnet/core/fundamentals/configuration/)
+- [Options pattern in .NET](https://learn.microsoft.com/dotnet/core/extensions/options)

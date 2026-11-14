@@ -1,42 +1,45 @@
 ---
-description: In this article, we will explore the key features of Retrofit, how to
-  set up a project using Retrofit, and some best practices for using this library
-  in your Android applications
+description: Set up Retrofit in an Android app, define an API interface, make an async
+  call with enqueue, and share one OkHttpClient for caching, auth headers and pooling.
 imgSrc: /imgs/2023/pokemon_types_by_gen.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-19T00:14:29.000Z'
-tags: []
-title: Introduction to the Android Retrofit Networking Library
+lastUpdated: 2026-11-14
+tags:
+  - android
+  - java
+title: "Retrofit on Android: calling a REST API from Java"
 ---
 
-# Introduction to the Android Retrofit Networking Library
+Retrofit is Square's HTTP client for Android and the JVM. You describe an API as a Java (or Kotlin) interface with annotations such as `@GET` and `@Path`, and Retrofit generates the implementation at runtime. It sends requests through OkHttp and uses a converter (Gson, Moshi, Jackson, kotlinx.serialization and others) to turn JSON into your model classes.
 
-In today's interconnected world, mobile applications often rely on the ability to communicate with remote servers and APIs to provide a rich user experience. One popular library for handling network communication in Android applications is Retrofit, developed by Square. Retrofit is a powerful, type-safe HTTP client for Android and Java applications that simplifies the process of consuming RESTful web services.
+## Dependencies
 
-In this article, we will explore the key features of Retrofit, how to set up a project using Retrofit, and some best practices for using this library in your Android applications.
-
-## Key Features of Retrofit
-
-1. **Type-Safety**: Retrofit uses annotations to define the API endpoints and parameters, ensuring type safety and reducing the chances of runtime errors.
-
-2. **Ease of Use**: Retrofit simplifies network communication by abstracting the complexity of raw HTTP requests and responses, allowing developers to focus on the application's core functionality.
-
-3. **Customizability**: Retrofit allows developers to add custom converters for serialization and deserialization, as well as custom interceptors for modifying requests and responses.
-
-4. **Performance**: Retrofit is built on top of the powerful and efficient OkHttp library, ensuring that network requests are handled efficiently and providing support for HTTP/2 and connection pooling.
-
-## Setting Up Retrofit in an Android Project
-
-To get started with Retrofit, you'll need to add the required dependencies to your app's `build.gradle` file:
+In your app module's `build.gradle`:
 
 ```groovy
-implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
 ```
 
-The first dependency is the core Retrofit library, and the second is a Gson converter for handling JSON serialization and deserialization. You can replace the Gson converter with other converters such as Jackson or Moshi, depending on your preference.
+3.0.0 was the latest release on Maven Central when this post was updated. It moved the underlying OkHttp dependency from 3.14 to 4.12 but kept the same package names and API as 2.x, so the code below also works with 2.9.0, which the original post used.
 
-Next, you'll need to create an interface that represents your API endpoints. This interface should include methods annotated with the appropriate HTTP verbs and path parameters. For example, let's assume we have a simple RESTful web service that provides information about users:
+Your app also needs network access in `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+## Defining the API
+
+Say the service returns users at `GET /users/{id}`. Model the response and the endpoint:
+
+```java
+public class User {
+    public int id;
+    public String name;
+}
+```
 
 ```java
 import retrofit2.Call;
@@ -49,22 +52,27 @@ public interface UserService {
 }
 ```
 
-In this example, we have a single API endpoint to get a user by their ID. The `@GET` annotation indicates that this is a GET request, and the `{id}` in the URL is replaced with the value provided by the `@Path` annotation.
+`{id}` in the path is replaced by the argument annotated with `@Path("id")`. Gson maps JSON fields to fields of the same name on `User`.
 
-Next, create a `Retrofit` instance to handle network requests:
+## Building the client
 
 ```java
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiClient {
+public final class ApiClient {
     private static final String BASE_URL = "https://api.example.com/";
-    private static Retrofit retrofit = null;
+    private static Retrofit retrofit;
 
-    public static Retrofit getClient() {
+    private ApiClient() {}
+
+    public static synchronized Retrofit getClient() {
         if (retrofit == null) {
+            OkHttpClient okHttp = new OkHttpClient.Builder().build();
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
+                    .client(okHttp)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
@@ -73,41 +81,50 @@ public class ApiClient {
 }
 ```
 
-This `ApiClient` class is responsible for initializing the `Retrofit` instance with the base URL for your web service and the Gson converter. You can also add custom interceptors or configure other settings as needed.
+The base URL must end with `/`, or `baseUrl(...)` throws an `IllegalArgumentException`. Relative paths in the interface (like `users/{id}`) are resolved against it.
 
-Finally, you can use the `Retrofit` instance to create an implementation of your API interface and make network requests:
+## Making a request
 
 ```java
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 UserService userService = ApiClient.getClient().create(UserService.class);
-Call<User> call = userService.getUser(1);
-call.enqueue(new Callback<User>() {
+
+userService.getUser(1).enqueue(new Callback<User>() {
     @Override
     public void onResponse(Call<User> call, Response<User> response) {
         if (response.isSuccessful()) {
             User user = response.body();
-            // Handle the user object
+            // Update the UI with user
         } else {
-            // Handle error response
+            // HTTP error such as 404 or 500: inspect response.code()
         }
     }
 
     @Override
     public void onFailure(Call<User> call, Throwable t) {
-        // Handle network failure
+        // No response: network error, timeout, or JSON that failed to parse
     }
 });
 ```
 
-In this example, we create a `UserService` instance using the `ApiClient` and make a network request to fetch a user with the ID `1`. The `enqueue` method is used to make the request asynchronously, and the `Callback` implementation handles the response or failure.
+`enqueue` runs the request on a background thread, and on Android the callbacks are delivered on the main thread, so you can touch views directly in them. `execute()` is the synchronous version; calling it on the main thread throws `NetworkOnMainThreadException`.
 
-## Best Practices
+Note the split: a 404 or 500 still lands in `onResponse` with `isSuccessful()` false. `onFailure` is only for requests that produced no usable response.
 
-1. **Use Singletons**: Ensure that you create only a single `Retrofit` instance per application, as it manages resources like thread pools and connection pools internally. Creating multiple instances can lead to resource leaks and poor performance.
+In Kotlin you can declare the method as `suspend fun getUser(@Path("id") id: Int): User` (supported since Retrofit 2.6.0) and call it from a coroutine instead of using callbacks.
 
-2. **Error Handling**: Always handle error responses and network failures gracefully. Inform the user about the issue and provide options to retry or proceed without the network data.
+## Practical tips
 
-3. **Caching**: Retrofit integrates seamlessly with OkHttp's caching mechanism. Configure caching for your application to improve performance and reduce the load on the server.
+- **Share one `OkHttpClient`.** Each `OkHttpClient` has its own connection pool and thread pool. Create one for the app and reuse it (or derive variants with `okHttp.newBuilder()`, which shares the pools).
+- **Add auth headers with an interceptor.** An OkHttp `Interceptor` can add an `Authorization` header to every request instead of repeating `@Header` on each method.
+- **Enable caching in OkHttp.** Retrofit doesn't cache; pass an `okhttp3.Cache` to `OkHttpClient.Builder.cache(...)` and OkHttp will honour the server's cache headers.
+- **Log while debugging.** `HttpLoggingInterceptor` from `com.squareup.okhttp3:logging-interceptor` prints requests and responses. Turn it off in release builds, since it can log tokens.
 
-4. **Authentication**: Use interceptors to add authentication headers to your requests when needed, such as adding an OAuth2 access token to the `Authorization` header.
+## Further reading
 
-Byutilizing Retrofit in your Android projects, you can streamline network communication and enhance the reliability of your application. This powerful library simplifies the process of consuming RESTful web services and ensures type safety, making it an excellent choice for developers building data-driven applications. With the help of the best practices outlined in this article, you can effectively harness the power of Retrofit to create robust and efficient Android applications.
+- [Retrofit documentation](https://square.github.io/retrofit/)
+- [Retrofit changelog](https://github.com/square/retrofit/blob/trunk/CHANGELOG.md)
+- [OkHttp interceptors](https://square.github.io/okhttp/features/interceptors/)

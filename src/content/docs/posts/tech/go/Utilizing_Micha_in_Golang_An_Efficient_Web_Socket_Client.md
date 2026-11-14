@@ -1,108 +1,121 @@
 ---
-title: Utilizing Micha in Golang An Efficient Web Socket Client
+title: Writing a callback-style WebSocket client in Go with gowebsocket
 pubDate: "2023-05-24T18:13:58.199Z"
-description: "In this article, we will explore the steps to implement Micha in Golang, providing examples and best practices."
+lastUpdated: 2026-11-14
+description: "Connect to a WebSocket server from Go with sacOO7/gowebsocket: event callbacks, sending text and binary messages, and closing cleanly."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/818001379.png
 ---
-# Utilizing Micha in Golang: An Efficient Web Socket Client
 
-In the modern era of web development, real-time communication between client-side and server-side applications has become essential. WebSockets enable bidirectional communication without the need for a constant request-response pattern. In Golang, there are numerous libraries available to help developers create WebSocket-based applications. One such library is **Micha**.
+:::caution[Correction]
+An earlier version of this post described a WebSocket library called "Micha" at `github.com/sacOO7/micha`. That repository does not exist; the Go library called `micha` that does exist, [onrik/micha](https://github.com/onrik/micha), is a Telegram bot client. The API the post showed matches the same author's [`gowebsocket`](https://github.com/sacOO7/gowebsocket), so the post now uses that, with the callback signatures corrected.
 
-Micha is an efficient and easy-to-use WebSocket client library for Golang that allows developers to build real-time applications with ease. In this article, we will explore the steps to implement Micha in Golang, providing examples and best practices.
+`gowebsocket` has not had a commit since 2022. For new code, [`coder/websocket`](https://github.com/coder/websocket) or [`gorilla/websocket`](https://github.com/gorilla/websocket) are better-maintained choices.
+:::
 
-## Installation
+`gowebsocket` is a thin wrapper around `gorilla/websocket` that gives you a callback-based client: you set functions for "connected", "text message received", "disconnected" and so on, call `Connect()`, and the library runs the read loop for you. It suits small tools and bots that just need to react to messages.
 
-First, you need to install the Micha library. To do this, run the following command in your terminal:
+## Install
 
-```bash
-go get -u github.com/sacOO7/micha
+Inside a Go module:
+
+```sh
+go get github.com/sacOO7/gowebsocket
 ```
 
-After the installation is complete, you can include it in your Golang project by importing the library:
+## Connecting and handling events
 
-```go
-import "github.com/sacOO7/micha"
-```
-
-## Creating a WebSocket Client
-
-To create a WebSocket client and connect to a WebSocket server, you must first create an instance of the `micha.WebSocket` struct, passing the WebSocket server URL as a parameter. After creating the instance, you can define the various event handlers and connect to the server.
-
-Here's an example of how to create a WebSocket client and connect to a server:
+`gowebsocket.New` takes a `ws://` or `wss://` URL and returns a `Socket`. Each callback receives the socket as its last argument:
 
 ```go
 package main
 
 import (
-	"fmt"
-	"github.com/sacOO7/micha"
+	"log"
+	"os"
+	"os/signal"
+
+	"github.com/sacOO7/gowebsocket"
 )
 
 func main() {
-	// Define WebSocket server URL
-	url := "ws://example.com/websocket"
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
 
-	// Create a new WebSocket instance
-	client := micha.NewWebSocket(url)
+	socket := gowebsocket.New("ws://localhost:8080/ws")
 
-	// Define event handlers
-	client.OnConnected = func(ws *micha.WebSocket) {
-		fmt.Println("Connected to server")
+	socket.OnConnected = func(s gowebsocket.Socket) {
+		log.Println("connected")
+	}
+	socket.OnConnectError = func(err error, s gowebsocket.Socket) {
+		log.Println("connect error:", err)
+	}
+	socket.OnTextMessage = func(message string, s gowebsocket.Socket) {
+		log.Println("text:", message)
+	}
+	socket.OnBinaryMessage = func(data []byte, s gowebsocket.Socket) {
+		log.Printf("binary: %v", data)
+	}
+	socket.OnDisconnected = func(err error, s gowebsocket.Socket) {
+		log.Println("disconnected:", err)
 	}
 
-	client.OnConnectError = func(err error) {
-		fmt.Printf("Connection error: %s\n", err)
+	socket.Connect()
+	if !socket.IsConnected {
+		os.Exit(1) // OnConnectError has already logged the reason
 	}
 
-	client.OnTextMessage = func(message string) {
-		fmt.Printf("Received text message: %s\n", message)
-	}
+	socket.SendText("Hello, WebSocket!")
 
-	client.OnBinaryMessage = func(data []byte) {
-		fmt.Printf("Received binary message: %v\n", data)
-	}
-
-	client.OnDisconnected = func() {
-		fmt.Println("Disconnected from server")
-	}
-
-	// Connect to WebSocket server
-	client.Connect()
-
-	// Wait for user input to close the program
-	fmt.Scanln()
+	<-interrupt // wait for Ctrl+C
+	socket.Close()
 }
 ```
 
-## Sending Messages
+`Connect()` performs the handshake before returning and then reads messages on a background goroutine, so `main` has to stay alive; here it blocks on the interrupt signal.
 
-To send messages to the WebSocket server, use the `SendText()` and `SendBinary()` methods of the `micha.WebSocket` struct. These methods allow you to send text and binary data, respectively.
+If the handshake fails, `Connect()` calls `OnConnectError` and returns without a connection. Calling `SendText` or `Close` after that panics with a nil pointer, which is why the example checks `IsConnected` first. One quirk: the library only sets `IsConnected` to `true` when an `OnConnected` callback is registered, so always set one.
 
-Here's an example of how to send a text message:
-
-```go
-client.SendText("Hello, WebSocket!")
-```
-
-And here's an example of how to send binary data:
+## Sending messages
 
 ```go
-data := []byte{0x01, 0x02, 0x03, 0x04, 0x05}
-client.SendBinary(data)
+socket.SendText("Hello, WebSocket!")
+socket.SendBinary([]byte{0x01, 0x02, 0x03})
 ```
 
-## Disconnecting from the Server
+`SendText` and `SendBinary` don't return an error; a failed write is only logged. If you need to know, use `coder/websocket` or `gorilla/websocket` directly. Sends are guarded by a mutex, so you can call them from several goroutines, including from inside the callbacks via the `s` argument.
 
-To disconnect from the WebSocket server, call the `Disconnect()` method:
+## Headers and connection options
+
+Set request headers before calling `Connect()`, for example to pass an auth token:
 
 ```go
-client.Disconnect()
+socket.RequestHeader.Set("Authorization", "Bearer "+token)
 ```
 
-## Conclusion
+Compression, subprotocols and a proxy are configured through `ConnectionOptions`:
 
-Micha is an efficient and easy-to-use WebSocket client library for Golang that helps developers build real-time applications with ease. By following the examples and best practices shared in this article, you can quickly create WebSocket clients and interact with WebSocket servers in your Golang projects.
+```go
+socket.ConnectionOptions = gowebsocket.ConnectionOptions{
+	UseCompression: true,
+	UseSSL:         false, // see below
+	Subprotocols:   []string{"chat"},
+}
+```
 
-Now that you have a basic understanding of how to use Micha in Golang, you can start exploring its advanced features, such as customizing connection headers, handling connection timeouts, and more.
+Watch out for `UseSSL`: it is passed straight to `tls.Config.InsecureSkipVerify`, and `New()` sets it to `true`. So by default a `wss://` connection does **not** verify the server's certificate. Set `UseSSL: false` to turn verification on.
+
+## Closing
+
+```go
+socket.Close()
+```
+
+This sends a close frame, closes the connection, and calls `OnDisconnected` (with a `nil` error if the close frame was sent successfully). `OnDisconnected` also fires if the server closes the connection or a read fails.
+
+## Further reading
+
+- [gowebsocket on GitHub](https://github.com/sacOO7/gowebsocket)
+- [coder/websocket](https://github.com/coder/websocket), a maintained, context-aware WebSocket library
+- [gorilla/websocket](https://github.com/gorilla/websocket)

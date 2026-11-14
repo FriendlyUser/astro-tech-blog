@@ -1,129 +1,167 @@
 ---
-title: Android Firebase Realtime Database A Comprehensive Guide
+title: "Firebase Realtime Database on Android: setup, reads, writes and security rules"
 pubDate: "2024-07-04T02:40:40.000Z"
-description: "In this article , we will delve into the Firebase Realtime Database's features, setup, and usage in an Android application"
-tags: []
+lastUpdated: 2026-11-14
+description: "Add Firebase Realtime Database to an Android app with the Firebase BoM, write and listen for data in Java, enable offline persistence, and lock it down with rules."
+tags: ["android", "java", "firebase"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1086816529.png
 ---
-# Android Firebase Realtime Database: A Comprehensive Guide
 
-The Firebase Realtime Database is a cloud-hosted NoSQL database that enables real-time data syncing and storage for Android, iOS, and Web applications. Developed by Google, it offers an efficient way to store and sync data across multiple clients, ensuring a seamless user experience. In this article, we will delve into the Firebase Realtime Database's features, setup, and usage in an Android application.
+Firebase Realtime Database is a Google-hosted NoSQL database that stores everything as one big JSON tree. Clients attach listeners to paths in the tree, and any change is pushed to every connected client within moments. That makes it a good fit for chat, presence indicators and small collaborative apps. It's a poor fit for complex queries: you can sort and filter on one child key at a time, with no joins. For richer querying, Google points new projects at Cloud Firestore.
 
-## Features of Firebase Realtime Database
+## What you get
 
-1. **Real-time synchronization:** The Realtime Database enables data synchronization across all connected clients in real-time. This makes it suitable for applications that require real-time updates, such as messaging, collaboration tools, and gaming platforms.
+- **Live sync.** Listeners fire with the current value, then again on every change.
+- **Offline writes.** The client queues writes made while offline and sends them when it reconnects. With disk persistence enabled (off by default, see below), cached data and queued writes also survive an app restart.
+- **Security Rules.** A JSON rules language, evaluated on the server, decides who can read and write each path.
+- **Limits worth knowing.** A single database allows 200,000 simultaneous connections (100 on the free Spark plan) and around 1,000 writes per second. Past that, you shard data across multiple database instances.
 
-2. **Offline support:** The Realtime Database SDK caches data locally on the device, allowing applications to continue functioning even when offline. Once connectivity is reestablished, the local changes are synced to the server.
+## Setup
 
-3. **Scalability:** The Realtime Database is designed to handle large amounts of unstructured data, automatically scaling to meet the needs of the application.
+1. In the [Firebase console](https://console.firebase.google.com/), create a project, add an Android app with your package name, and download `google-services.json` into the `app/` directory.
+2. In the console, open **Realtime Database** and create a database. Pick **locked mode** unless you're only experimenting; test mode lets anyone read and overwrite your data.
+3. Add the Google services Gradle plugin and the Firebase BoM. With the Kotlin DSL, in the root `build.gradle.kts`:
 
-4. **Security:** Firebase provides robust security options, including user authentication and access control. Developers can define granular read and write permissions using Firebase Security Rules.
-
-5. **Cross-platform support:** Firebase Realtime Database SDKs are available for Android, iOS, and Web platforms, making it easy to synchronize data across various devices and platforms.
-
-## Setting Up Firebase Realtime Database
-
-Before you start using the Firebase Realtime Database in your Android application, you need to set up a Firebase project and add the required dependencies.
-
-1. **Create a Firebase project:** Sign in to the [Firebase console](https://console.firebase.google.com/) and create a new project. Follow the on-screen instructions to set up your project.
-
-2. **Add Firebase to your Android app:** In the Firebase console, click on the Android icon to add your app. Enter your app's package name, app nickname, and debug signing certificate (optional). Download the `google-services.json` file and place it in the `app` folder of your Android project.
-
-3. **Add Firebase SDK dependencies:** In your project-level `build.gradle` file, add the following:
-
-```gradle
-buildscript {
-    repositories {
-        // ...
-        google() // Add this line
-    }
-    dependencies {
-        // ...
-        classpath 'com.google.gms:google-services:4.3.10' // Add this line
-    }
+```kotlin
+plugins {
+    id("com.google.gms.google-services") version "4.6.0" apply false
 }
 ```
 
-In your app-level `build.gradle` file, add the following:
+In `app/build.gradle.kts`:
 
-```gradle
+```kotlin
+plugins {
+    id("com.android.application")
+    id("com.google.gms.google-services")
+}
+
 dependencies {
-    // ...
-    implementation 'com.google.firebase:firebase-database:20.0.3' // Add this line
+    implementation(platform("com.google.firebase:firebase-bom:35.2.0"))
+    implementation("com.google.firebase:firebase-database")
 }
-
-apply plugin: 'com.google.gms.google-services' // Add this line at the end
 ```
 
-Finally, sync your project with the updated Gradle files.
+The BoM pins compatible versions of every Firebase library, so the individual Firebase dependencies don't need version numbers. The separate `-ktx` artifacts are gone: the Kotlin extensions now live in the main modules.
 
-## Using Firebase Realtime Database in your Android App
-
-### Initializing the Realtime Database
-
-To start using the Firebase Realtime Database in your Android app, you need to initialize it. Add the following import statement at the top of your Java or Kotlin file:
+## Getting a database reference
 
 ```java
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-```
 
-Initialize an instance of the `FirebaseDatabase` class and get a reference to the root of the database:
-
-```java
 FirebaseDatabase database = FirebaseDatabase.getInstance();
-DatabaseReference rootReference = database.getReference();
+DatabaseReference users = database.getReference("users");
 ```
 
-### Reading and Writing Data
-
-To read and write data to the Firebase Realtime Database, you use `DatabaseReference` objects. You can create references to specific paths in your database like this:
+The no-argument `getInstance()` only finds databases in `us-central1`. If you created the database in another region, pass its URL, which you'll find at the top of the Realtime Database page in the console:
 
 ```java
-DatabaseReference userReference = rootReference.child("users");
+FirebaseDatabase database =
+        FirebaseDatabase.getInstance("https://my-app-default-rtdb.europe-west1.firebasedatabase.app");
 ```
 
-**Writing data:** To write data to the database, use the `setValue` method on a `DatabaseReference` object:
+## Writing data
+
+The SDK maps plain Java objects to JSON. The class needs a public no-argument constructor and public getters (or public fields):
 
 ```java
-String userId = userReference.push().getKey(); // Generates a unique key for a new user
-User newUser = new User("John Doe", "john.doe@example.com");
-userReference.child(userId).setValue(newUser);
+public class User {
+    private String name;
+    private String email;
+
+    public User() {} // required for getValue(User.class)
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+}
 ```
 
-**Reading data:** To read data from the database, you need to attach a listener to a `DatabaseReference` object. This listener will be triggered whenever the data at the specified path changes.
+`push()` creates a child with a unique, time-ordered key:
 
 ```java
-userReference.addValueEventListener(new ValueEventListener() {
+users.push()
+        .setValue(new User("John Doe", "john.doe@example.com"))
+        .addOnFailureListener(e -> Log.w("Users", "Write failed", e));
+```
+
+To update a few fields without overwriting the whole node, use `updateChildren(Map<String, Object>)` instead of `setValue`.
+
+## Listening for data
+
+`addValueEventListener` fires once with the current data and again whenever anything under that path changes:
+
+```java
+import android.util.Log;
+import androidx.annotation.NonNull;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+ValueEventListener listener = new ValueEventListener() {
     @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-            User user = userSnapshot.getValue(User.class);
-            Log.d("User", user.getName() + ", " + user.getEmail());
+    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        for (DataSnapshot child : snapshot.getChildren()) {
+            User user = child.getValue(User.class);
+            if (user != null) {
+                Log.d("Users", child.getKey() + ": " + user.getName() + ", " + user.getEmail());
+            }
         }
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) {
-        Log.w("Error", "Failed to read value.", databaseError.toException());
+    public void onCancelled(@NonNull DatabaseError error) {
+        // Usually a permission-denied error from your security rules
+        Log.w("Users", "Listener cancelled", error.toException());
     }
-});
+};
+
+users.addValueEventListener(listener);
 ```
 
-### Securing Your Data
+Remove the listener when the screen goes away (for example in `onStop`) with `users.removeEventListener(listener)`, or it keeps downloading updates and holds a reference to your Activity. For a one-off read, use `users.get()`, which returns a `Task<DataSnapshot>`.
 
-To ensure the security of your data, you can define Firebase Security Rules in the Firebase console. These rules control read and write access to your database. Here's an example of a security rule that allows only authenticated users to read or write data:
+A value listener on `users` downloads the entire list every time any user changes. For lists, prefer `addChildEventListener`, which tells you which child was added, changed or removed, and limit the data with a query such as `users.orderByKey().limitToLast(50)`.
+
+## Offline persistence
+
+Disk persistence is off by default. Turn it on once, before you create any references, usually in `Application.onCreate()`:
+
+```java
+FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+```
+
+By default the SDK caches up to 10 MB of previously synced data and evicts the least recently used data beyond that. Transactions are not persisted across app restarts.
+
+## Security rules
+
+Rules are set in the console under **Realtime Database → Rules**, or deployed with the Firebase CLI. Rules cascade: a `.read` or `.write` granted at a path applies to everything below it, and a child rule can't take it away. This version lets any signed-in user read the user list, but only write their own record:
 
 ```json
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
   }
 }
 ```
 
-## Conclusion
+`auth` is only set when the user is signed in with Firebase Authentication (the `firebase-auth` library). To use rules like this, write records under the signed-in user's UID (`users.child(FirebaseAuth.getInstance().getUid())`) rather than under `push()` keys. Rules are not filters: a read on `/users` that isn't allowed fails entirely rather than returning only the permitted children.
 
-The Firebase Realtime Database is a powerful tool for developing real-time, scalable, and collaborative applications. In this article, we covered its key features, setup, and usage in an Android application. With its real-time synchronization, offline support, and robust security options, Firebase Realtime Database can help you create engaging and responsive user experiences.
+## Further reading
+
+- [Get started with Realtime Database on Android](https://firebase.google.com/docs/database/android/start)
+- [Structure your database](https://firebase.google.com/docs/database/android/structure-data)
+- [Enabling offline capabilities](https://firebase.google.com/docs/database/android/offline-capabilities)
+- [Realtime Database Security Rules](https://firebase.google.com/docs/database/security)
+- [Usage limits](https://firebase.google.com/docs/database/usage/limits)

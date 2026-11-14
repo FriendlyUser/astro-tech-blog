@@ -1,39 +1,35 @@
 ---
-description: In this article, we will discuss JSON Web Tokens (JWT) and how to use
-  the PyJWT library to encode and decode JWTs in your Python applications
+description: How a JSON Web Token is structured, and how to sign, verify and expire JWTs in Python with PyJWT 2.x, including which exceptions to catch.
 imgSrc: /imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-07T00:01:07.000Z'
-tags: []
-title: Using PyJWT for JSON Web Token Authentication in Python
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: Signing and verifying JSON Web Tokens in Python with PyJWT
 ---
 
-# Using PyJWT for JSON Web Token Authentication in Python
+A JSON Web Token (JWT) is a signed, URL-safe string that carries a set of claims, such as "this request is from user 42 and is valid until 10:15". Web APIs use them as bearer tokens: the server signs a token at login, and later checks the signature instead of looking up a session. [PyJWT](https://pyjwt.readthedocs.io/) is the usual library for this in Python. The examples below were run against PyJWT 2.15.1.
 
-In this article, we will discuss JSON Web Tokens (JWT) and how to use the PyJWT library to encode and decode JWTs in your Python applications. JWTs are widely used for authentication and authorization purposes in web applications, and PyJWT is a popular library for handling JWTs in Python.
+## How a JWT is put together
 
-## What are JSON Web Tokens?
+A JWT has three Base64url-encoded parts joined by dots:
 
-JSON Web Tokens (JWT) are a compact, URL-safe means of representing claims to be transferred between two parties. They are often used for authentication and authorization in web applications. JWTs consist of three parts: a header, a payload, and a signature. The header and payload are Base64Url-encoded JSON strings, and they are concatenated with a period ('.') separator. Then, the resulting string is signed to produce the signature.
-
-```
+```text
 header.payload.signature
 ```
 
-### Header
-The header typically contains information about the token's type and the signing algorithm being used. For example:
+The **header** names the signing algorithm and token type:
 
-```
+```json
 {
   "alg": "HS256",
   "typ": "JWT"
 }
 ```
 
-### Payload
-The payload, also known as the claim set, contains the actual data being transferred. It usually includes information about the user (subject), issuer, expiration time, and other custom claims.
+The **payload** holds the claims. Some names are registered in [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1), such as `sub` (subject), `iss` (issuer), `iat` (issued at) and `exp` (expiry); you can add your own alongside them:
 
-```
+```json
 {
   "sub": "1234567890",
   "name": "John Doe",
@@ -41,20 +37,19 @@ The payload, also known as the claim set, contains the actual data being transfe
 }
 ```
 
-### Signature
-The signature is created by taking the encoded header, the encoded payload, a secret key, and applying the signing algorithm specified in the header. The signature is used to verify the integrity of the token and ensure that it has not been tampered with.
+The **signature** is computed over `base64url(header) + "." + base64url(payload)` using the algorithm in the header and a key. With HS256 that is an HMAC-SHA256 with a shared secret; with RS256 or ES256 it is a private-key signature that anyone holding the public key can check.
 
-## PyJWT Library
+The signature only proves the token wasn't changed. The header and payload are encoded, not encrypted, so anyone holding the token can read them. Don't put secrets in a JWT.
 
-PyJWT is a Python library that allows you to encode and decode JSON Web Tokens using various algorithms. You can install it using pip:
+## Installing PyJWT
 
+```bash
+pip install pyjwt
 ```
-pip install PyJWT
-```
 
-### Encoding a JWT
+That covers the HMAC algorithms (HS256, HS384, HS512). For RSA or EC algorithms, install the `cryptography` extra with `pip install "pyjwt[crypto]"`.
 
-To create a JWT using the PyJWT library, you can use the `jwt.encode()` function. Here's an example:
+## Encoding and decoding
 
 ```python
 import jwt
@@ -62,62 +57,91 @@ import jwt
 payload = {
     "sub": "1234567890",
     "name": "John Doe",
-    "iat": 1516239022
+    "iat": 1516239022,
 }
 
-secret = "my_secret_key"
+# HS256 keys should be at least 32 bytes; PyJWT warns about shorter ones.
+secret = "replace-me-with-a-random-32-byte-or-longer-secret"
 
 encoded_jwt = jwt.encode(payload, secret, algorithm="HS256")
-
 print(encoded_jwt)
+
+decoded = jwt.decode(encoded_jwt, secret, algorithms=["HS256"])
+print(decoded)
 ```
 
-This will output the encoded JWT string:
+Output:
 
-```
-b'eyJ0eXAiOiAiSldUIiwgImFsZyI6ICAiSFMyNTYifQ.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsICJuYW1lIjogIkpvaG4gRG9lIiwgImlhdCI6IDE1MTYyMzkwMjJ9.8KjYbCkYelzOHwLSqbhj3rWGEJv3NQX9ATxXwx8QfWg'
-```
-
-### Decoding a JWT
-
-To decode a JWT, you can use the `jwt.decode()` function:
-
-```python
-import jwt
-
-encoded_jwt = b'eyJ0eXAiOiAiSldUIiwgImFsZyI6ICAiSFMyNTYifQ.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsICJuYW1lIjogIkpvaG4gRG9lIiwgImlhdCI6IDE1MTYyMzkwMjJ9.8KjYbCkYelzOHwLSqbhj3rWGEJv3NQX9ATxXwx8QfWg'
-
-secret = "my_secret_key"
-
-decoded_jwt = jwt.decode(encoded_jwt, secret, algorithms=["HS256"])
-
-print(decoded_jwt)
-```
-
-This will output the decoded payload:
-
-```
+```text
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.KyKFQfD9LQl_TEbhLdnYnDu3TQ8DZU2nvuzthSb_ADI
 {'sub': '1234567890', 'name': 'John Doe', 'iat': 1516239022}
 ```
 
-## Error Handling
+Since PyJWT 2.0, `jwt.encode()` returns a `str`. Older 1.x code and examples show `bytes` (`b'eyJ...'`) and call `.decode("utf-8")` on the result, which fails on 2.x.
 
-While decoding a JWT, various exceptions might be raised, such as `ExpiredSignatureError`, `InvalidSignatureError`, or `DecodeError`. It's essential to handle these exceptions in your application to ensure robustness.
+Two details in `decode()` matter:
+
+- `algorithms` is required, and you should list only the algorithms you actually issue. Accepting whatever the token's header says is how the classic "alg: none" and key-confusion attacks work.
+- Recent PyJWT versions reject a `sub` claim that isn't a string, so use `"sub": "42"`, not `"sub": 42`.
+
+In a real application, load the secret from configuration or a secrets manager rather than hard-coding it. `python -c "import secrets; print(secrets.token_urlsafe(32))"` generates a suitable value.
+
+## Expiry and error handling
+
+Tokens should expire. PyJWT accepts `datetime` objects for `exp`, `iat` and `nbf`, converts them to Unix timestamps, and checks `exp` and `nbf` automatically on decode.
+
+All validation errors inherit from `jwt.exceptions.InvalidTokenError`. `ExpiredSignatureError` and `InvalidSignatureError` are subclasses of it, so catch them first and use `InvalidTokenError` as the catch-all for malformed tokens, missing claims and so on:
 
 ```python
-import jwt
-from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError, DecodeError
+from datetime import datetime, timedelta, timezone
 
-try:
-    decoded_jwt = jwt.decode(encoded_jwt, secret, algorithms=["HS256"])
-except InvalidSignatureError:
-    print("Invalid signature.")
-except ExpiredSignatureError:
-    print("Token has expired.")
-except DecodeError:
-    print("Token could not be decoded.")
+import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError
+
+secret = "replace-me-with-a-random-32-byte-or-longer-secret"
+
+
+def issue_token(user_id: str) -> str:
+    now = datetime.now(tz=timezone.utc)
+    claims = {"sub": user_id, "iat": now, "exp": now + timedelta(minutes=15)}
+    return jwt.encode(claims, secret, algorithm="HS256")
+
+
+def verify_token(token: str) -> dict | None:
+    try:
+        return jwt.decode(token, secret, algorithms=["HS256"])
+    except ExpiredSignatureError:
+        print("Token has expired.")
+    except InvalidSignatureError:
+        print("Invalid signature.")
+    except InvalidTokenError as exc:
+        print(f"Invalid token: {exc}")
+    return None
+
+
+token = issue_token("42")
+print(verify_token(token))
+print(verify_token("not-a-jwt"))
 ```
 
-## Conclusion
+Output (the timestamps will differ):
 
-In this article, we have covered JSON Web Tokens and how to use the PyJWT library for encoding and decoding JWTs in your Python applications. JWTs are a popular choice for authentication and authorization in web applications, and PyJWT provides a simple and effective way to handle JWTs in Python.
+```text
+{'sub': '42', 'iat': 1794674251, 'exp': 1794675151}
+Invalid token: Not enough segments
+None
+```
+
+`decode()` only checks `exp` if the token has one. To reject tokens that lack it, pass `options={"require": ["exp"]}`, which raises `MissingRequiredClaimError` (also an `InvalidTokenError`).
+
+## Gotchas
+
+- A signed JWT can't be revoked before it expires. Keep lifetimes short, or keep a server-side denylist if you need logout to take effect immediately.
+- With HS256, every service that verifies tokens also holds the key that can mint them. If several services need to verify, use RS256 or ES256 so they only need the public key.
+- Allow for clock drift between servers with the `leeway` argument to `decode()`, for example `leeway=10` seconds.
+
+## Further reading
+
+- [PyJWT usage examples](https://pyjwt.readthedocs.io/en/stable/usage.html)
+- [PyJWT API reference](https://pyjwt.readthedocs.io/en/stable/api.html)
+- [RFC 7519: JSON Web Token](https://datatracker.ietf.org/doc/html/rfc7519)

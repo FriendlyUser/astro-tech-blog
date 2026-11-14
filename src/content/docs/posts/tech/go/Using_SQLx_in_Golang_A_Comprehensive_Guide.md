@@ -1,145 +1,167 @@
 ---
-title: Using SQLx in Golang A Comprehensive Guide
+title: "sqlx in Go: scanning rows into structs, named queries and transactions"
 pubDate: "2023-05-03T14:16:45.171Z"
-description: " In this article, we will explore the various features of SQLx and demonstrate how it can be used to interact with SQL databases in a Golang application."
+lastUpdated: 2026-11-14
+description: "Use jmoiron/sqlx with PostgreSQL to scan query results into structs, insert with named parameters, run transactions and handle sql.ErrNoRows."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3072838870.png
 ---
-# Using SQLx in Golang: A Comprehensive Guide
 
-SQLx is a popular library for working with SQL databases in Go. It provides a set of powerful and easy-to-use features that allow developers to write efficient and safe SQL queries while maintaining the simplicity and performance of the Go language. In this article, we will explore the various features of SQLx and demonstrate how it can be used to interact with SQL databases in a Golang application.
+[sqlx](https://github.com/jmoiron/sqlx) is a thin layer over Go's standard `database/sql` package. It keeps the same connection pool, drivers and plain SQL, and removes the most tedious part: calling `rows.Scan` with a pointer for every column. Its main additions are:
 
-## Table of Contents
+- `Get` and `Select`, which scan one row or many rows straight into a struct or slice of structs;
+- named parameters (`:email`) bound from struct fields or maps;
+- `sqlx.In` for expanding `IN (?)` clauses from a slice;
+- `Beginx`, which returns a transaction with the same helpers.
 
-1. [Introduction to SQLx](#introduction-to-sqlx)
-2. [Setting Up SQLx](#setting-up-sqlx)
-3. [Executing Queries](#executing-queries)
-4. [Working with Transactions](#working-with-transactions)
-5. [Error Handling](#error-handling)
-6. [Conclusion](#conclusion)
+sqlx does not check your SQL at compile time (that is the Rust crate of the same name) and is not an ORM. Queries are strings, and mistakes show up at run time.
 
-## Introduction to SQLx
-
-SQLx is an extension of the standard `database/ package in Go. It is designed to provide a more convenient and safer way to work with SQL databases without sacrificing the simplicity and performance of the Go language. SQLx builds on top of the standard `database/ package and offers additional features, such as:
-
-- Named parameter support
-- Automatic scanning of query results into structs
-- Compile-time checking of SQL queries
-- Support for transactions and connection pooling
-
-## Setting Up SQLx
-
-To start using SQLx, you need to install the library by running the following command:
+## Setup
 
 ```bash
-go get -u github.com/jmoiron/sqlx
+go get github.com/jmoiron/sqlx github.com/lib/pq
 ```
 
-Next, you need to import the SQLx package in your Go code:
+The examples use sqlx v1.4.0 and the `lib/pq` PostgreSQL driver. Any `database/sql` driver works; for example, with pgx v5 you import `github.com/jackc/pgx/v5/stdlib` and use the driver name `"pgx"`.
+
+They assume this table:
+
+```sql
+CREATE TABLE users (
+    id         SERIAL PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name  TEXT NOT NULL,
+    email      TEXT NOT NULL UNIQUE
+);
+```
+
+## Connecting and mapping a struct
 
 ```go
+package main
+
 import (
-    "github.com/jmoiron/sqlx"
-    _ "github.com/lib/pq" // PostgreSQL driver
+	"database/sql"
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq" // registers the "postgres" driver
 )
-```
 
-Note that you also need to import the appropriate database driver for the database system you are using. In this example, we are using the PostgreSQL driver (`github.com/lib/pq`), but you can replace this with the driver for your preferred database system.
-
-Now you can open a new database connection using the `sqlx.Connect` function:
-
-```go
-func main() {
-    db, err := sqlx.Connect("postgres", "user=postgres password=mysecretpassword dbname=mydb sslmode=disable")
-    if err != nil {
-        log.Fatalln(err)
-    }
-    defer db.Close()
-}
-```
-
-## Executing Queries
-
-### Selecting Data
-
-To query data from the database, you can use the `Select` method. This method automatically scans the query results into a slice of structs:
-
-```go
 type User struct {
-    ID        int
-    FirstName string `db:"first_name"`
-    LastName  string `db:"last_name"`
-    Email     string
+	ID        int    `db:"id"`
+	FirstName string `db:"first_name"`
+	LastName  string `db:"last_name"`
+	Email     string `db:"email"`
 }
 
+func main() {
+	db, err := sqlx.Connect("postgres",
+		"user=postgres password=mysecretpassword dbname=mydb sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer db.Close()
+
+	if err := createUser(db, &User{FirstName: "Ada", LastName: "Lovelace", Email: "ada@example.com"}); err != nil {
+		log.Fatalln(err)
+	}
+
+	users, err := getUsers(db)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(users)
+}
+```
+
+`sqlx.Connect` opens the pool and pings the database, so a bad connection string fails here rather than on the first query.
+
+The `db` struct tags map columns to fields. Without a tag, sqlx matches the lowercased field name, so `Email` would map to `email` on its own, but `FirstName` would look for `firstname` and fail. Tagging every field avoids surprises.
+
+## Selecting rows
+
+`Select` runs a query and appends each row to a slice:
+
+```go
 func getUsers(db *sqlx.DB) ([]User, error) {
-    users := []User{}
-    err := db.Select(&users, "SELECT * FROM users")
-    if err != nil {
-        return nil, err
-    }
-    return users, nil
+	var users []User
+	err := db.Select(&users, "SELECT id, first_name, last_name, email FROM users ORDER BY id")
+	return users, err
 }
 ```
 
-### Inserting Data
-
-To insert data into the database, you can use the `NamedExec` method. This method allows you to use named parameters in your SQL query:
-
-```go
-func createUser(db *sqlx.DB, user *User) error {
-    query := `INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)`
-    _, err := db.NamedExec(query, user)
-    return err
-}
-```
-
-## Working with Transactions
-
-SQLx provides support for transactions, which allows you to execute a series of SQL commands atomically. You can start a new transaction using the `Beginx` method:
-
-```go
-func createUsers(db *sqlx.DB, users []User) error {
-    tx, err := db.Beginx()
-    if err != nil {
-        return err
-    }
-    defer tx.Rollback()
-
-    query := `INSERT INTO users (first_name, last_name, email) VALUES (:first_name, :last_name, :email)`
-    for _, user := range users {
-        if _, err := tx.NamedExec(query, &user); err != nil {
-            return err
-        }
-    }
-
-    return tx.Commit()
-}
-```
-
-## Error Handling
-
-When working with SQLx, you will encounter errors from the `database/ package. SQLx provides a set of helper functions to check for specific error types, such as `sqlx.ErrNoRows` and `sqlx.ErrTxDone`:
+`Get` scans exactly one row and returns `sql.ErrNoRows` if there isn't one. sqlx doesn't define its own error values; check for the standard library's:
 
 ```go
 func getUserByEmail(db *sqlx.DB, email string) (*User, error) {
-    user := User{}
-    err := db.Get(&user, "SELECT * FROM users WHERE email = $1", email)
-    if err != nil {
-        if err == sql.ErrNoRows {
-            return nil, fmt.Errorf("user not found")
-        }
-        return nil, err
-    }
-    return &user, nil
+	var user User
+	err := db.Get(&user, "SELECT id, first_name, last_name, email FROM users WHERE email = $1", email)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("user %q not found", email)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 ```
 
-## Conclusion
+List columns explicitly rather than using `SELECT *`. If the query returns a column that has no matching field, sqlx returns a "missing destination name" error, so adding a column to the table would break every `SELECT *` query.
 
-In this article, weexplored the various features of SQLx and demonstrated how it can be used to interact with SQL databases in a Golang application. SQLx provides a set of powerful and easy-to-use features that allow developers to write efficient and safe SQL queries while maintaining the simplicity and performance of the Go language.
+Placeholders are whatever your driver uses: `$1` for PostgreSQL, `?` for MySQL and SQLite. `db.Rebind` converts `?` to the driver's style if you want to write queries once.
 
-By using SQLx, you can take advantage of features such as named parameters, automatic scanning of query results into structs, compile-time checking of SQL queries, and support for transactions and connection pooling. These features can help you write cleaner, more maintainable code when working with SQL databases in Go.
+## Inserting with named parameters
 
-As you continue to build your Go applications, keep SQLx in mind to simplify your database interactions and improve the overall quality of your code.
+`NamedExec` replaces `:name` placeholders with the struct field that has the matching `db` tag:
+
+```go
+func createUser(db *sqlx.DB, user *User) error {
+	_, err := db.NamedExec(
+		`INSERT INTO users (first_name, last_name, email)
+		 VALUES (:first_name, :last_name, :email)`, user)
+	return err
+}
+```
+
+To get the generated `id` back in PostgreSQL, add `RETURNING id` and use `db.PrepareNamed(...)` followed by `stmt.Get(&user.ID, user)`. `Result.LastInsertId` is not supported by `lib/pq`.
+
+## Transactions
+
+`Beginx` returns a `*sqlx.Tx` with the same `Get`, `Select` and `NamedExec` methods:
+
+```go
+func createUsers(db *sqlx.DB, users []User) error {
+	tx, err := db.Beginx()
+	if err != nil {
+		return err
+	}
+	// Rollback after a successful Commit is a no-op that returns sql.ErrTxDone.
+	defer tx.Rollback()
+
+	const query = `INSERT INTO users (first_name, last_name, email)
+	               VALUES (:first_name, :last_name, :email)`
+	for _, user := range users {
+		if _, err := tx.NamedExec(query, user); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
+}
+```
+
+If any insert fails, the function returns early and the deferred `Rollback` undoes the earlier inserts. For a request-scoped operation, use `BeginTxx(ctx, nil)` so the transaction is cancelled with the request.
+
+## Gotchas
+
+- Use the `...Context` variants (`GetContext`, `SelectContext`, `NamedExecContext`) in servers so queries stop when the request is cancelled.
+- `Select` loads the whole result set into memory. For large results, use `Queryx` and call `rows.StructScan` in a loop.
+- Nullable columns need `sql.NullString`, `*string` or similar, or scanning a `NULL` fails.
+
+## Further reading
+
+- [sqlx on pkg.go.dev](https://pkg.go.dev/github.com/jmoiron/sqlx)
+- [Illustrated guide to SQLx](https://jmoiron.github.io/sqlx/)

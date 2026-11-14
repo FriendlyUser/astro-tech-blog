@@ -1,139 +1,100 @@
 ---
 tags: ['python', 'chatgpt', 'edgegpt']
-title: Using chatgpt to write my posts instead of edge gpt.
-description: Comparing differences between chatgpt and edge gpt.
+title: Why my blog post generator uses ChatGPT instead of EdgeGPT (Bing Chat)
+description: Notes from porting my ChatGPT blog post generator to EdgeGPT (Bing Chat), including how to strip Bing's citation markers from responses.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/other/output_1.png
 ---
 
-As a technical writer, you may have heard of GPT models before. GPT models, short for Generative Pre-trained Transformer models, have been in the spotlight for the past few years due to their impressive natural language processing capabilities. In this post, we'll dive into the advantages of using a GPT model to write your blog, and how it can help you create high-quality content that resonates with your audience.
+:::caution
+[EdgeGPT](https://github.com/acheong08/EdgeGPT) was an unofficial, reverse-engineered client for Bing Chat. It was archived in August 2023 and Bing Chat has since been rebranded as Microsoft Copilot, so the code below no longer works. It is kept as a record of how the generator worked. For a maintained way to script an LLM from Python, use an official SDK such as [openai-python](https://github.com/openai/openai-python).
+:::
 
-1. Increased Efficiency
+I built a script that generates blog post drafts from a YAML config using ChatGPT (`chatgpt_blog_generator`). I then made a version that talks to Bing Chat through the EdgeGPT library instead (`edgegpt_blog_generator`). The structure is the same: read the config, generate an image, write the frontmatter, then send each section prompt and append the reply.
 
-Writing a blog post can be a time-consuming process, especially when you're dealing with writer's block. Using a GPT model can help you generate content quickly and efficiently. You can use the model to generate outlines, headlines, and even entire paragraphs based on a few keywords or prompts. This can save you a lot of time and energy, allowing you to focus on other aspects of your blog, such as editing and promotion.
+The conclusion, from the `edgegpt_blog_generator` README: Bing's model is tuned for search, which makes it a weak replacement for ChatGPT. ChatGPT answered the prompts directly, while Bing kept asking for more information before giving a useful answer. So I kept using ChatGPT for my posts.
 
-2. Improved Quality
+## Removing Bing's citation markers
 
-GPT models have been trained on vast amounts of data, allowing them to generate high-quality content that's both engaging and informative. By using a GPT model, you can ensure that your blog post is well-researched and contains accurate information. Additionally, GPT models can help you write in a style that resonates with your audience, improving the readability and engagement of your blog post.
-
-3. SEO Optimization
-
-Search engine optimization, or SEO, is an essential aspect of blogging. By using a GPT model, you can optimize your blog post for SEO by generating headlines and content that include relevant keywords and phrases. This can help your blog post rank higher in search engine results, driving more traffic to your website.
-
-4. Increased Consistency
-
-Maintaining consistency in your blog can be challenging, especially if you're publishing multiple posts per week. By using a GPT model, you can ensure that your blog posts are consistent in tone, style, and format. This can help build your brand and establish your blog as a reliable source of information in your niche.
-
-In conclusion, using a GPT model to write your blog can help you save time, improve the quality of your content, optimize for SEO, and maintain consistency. While it's essential to remember that GPT models are not perfect and may require some editing and customization, they can be a valuable tool for any technical writer looking to create high-quality content that resonates with their audience.
-
-For parsing the response from bing gpt I removed references using the following regex
+Bing's answers include footnote-style citations such as `[^1^]` and `[^2^]` that point to the web sources it searched. Those are noise in a blog post, so the script removes them with a regex:
 
 ```python
+import re
 
-pattern = r"\[\^\d\^\]"
+CITATION = re.compile(r"\[\^\d+\^\]")
+
+text = "Python is a programming language[^1^] created by Guido van Rossum[^2^]."
+print(CITATION.sub("", text))
+# Python is a programming language created by Guido van Rossum.
 ```
-The regex pattern pattern = r"\[\^\d\^\]" matches a specific string format that starts with [^\, followed by a single digit \d, and ending with ^].
 
-In other words, the pattern matches any string that has a [^\ character sequence, followed by a single digit, and ending with ^]. For example, the pattern would match the following strings:
+The pattern matches a literal `[`, a literal `^`, one or more digits, another `^`, and a closing `]`. The original version used `\d`, which only matches single-digit citations and would leave `[^10^]` behind; `\d+` handles any number.
 
-[^\1^]
-[^\2^]
-[^\3^]
-This pattern is often used to remove footnote references from text, as these references are typically formatted using the [^\d^] syntax. By removing these references, the resulting text is more readable and can be used in various natural language processing applications
+## Getting the reply for a prompt
 
-```python 
+EdgeGPT's `Chatbot.ask()` returned the whole conversation as a dict, with the messages under `item.messages`. The function below finds the message whose text equals the prompt, takes the message after it (the bot's reply), and strips the citations:
 
- async def handlePrompt(bot: Chatbot, prompt: str):
-    resp = await bot.ask(prompt)
-    # get resp item.messages
-    # filter for bot responses
-    # find text equal to prompt, then grab the next message then return the text of that message
-    for i, message in enumerate(resp.get("item", {}).get("messages", [])):
+```python
+import re
+
+from EdgeGPT.EdgeGPT import Chatbot
+
+CITATION = re.compile(r"\[\^\d+\^\]")
+
+
+async def handle_prompt(bot: Chatbot, prompt: str) -> str:
+    resp = await bot.ask(prompt=prompt)
+    messages = resp.get("item", {}).get("messages", [])
+    for i, message in enumerate(messages):
         if message.get("text", "") == prompt:
-            raw_resp = resp.get("item", {}).get("messages", [])
-            try:
-                raw_message = raw_resp[i+1].get("text", "")
-            except:
-                # grab latest message
-                raw_message = raw_resp[-1].get("text", "")
-                if raw_message == "":
-                    return ""
-                # no message after prompt
-                return ""
+            if i + 1 < len(messages):
+                reply = messages[i + 1].get("text", "")
+                return CITATION.sub("", reply)
             break
-    # clean message
-    clean_message = re.sub(pattern, "", raw_message)
-    return clean_message 
- ```
+    return ""
+```
 
-.
+If the prompt isn't in the conversation, or there is no message after it, the function returns an empty string. (The original version could reach the `re.sub` call with `raw_message` never assigned, which raised an `UnboundLocalError`.)
 
-The code snippet above defines an asynchronous function called `handlePrompt` that takes two arguments - a `bot` object of type `Chatbot` and a `prompt` string.
+## The main function
 
-The function sends the `prompt` string to the `bot` object using the `ask()` method and waits for a response. The response is then parsed to retrieve the next message from the bot after the prompt.
+`main` is the same flow as the ChatGPT version, plus copying the finished post and image into this blog's folders. `generate_image`, `generate_frontmatter` and `generate_body` are defined elsewhere in the script.
 
-The function filters the messages in the response to find the message that matches the prompt, and then retrieves the next message in the list. If no message is found after the prompt, it returns an empty string.
+```python
+import os
+import shutil
 
-The `re.sub()` function is used to remove any unwanted characters from the retrieved message before returning it.
-
-Overall, this function can be used to automate interactions with a chatbot and retrieve specific messages from the bot's response.
+from yaml import Loader, load
 
 
-```python 
- async def main(args):
-    image_root = ""
-    # valid files exist
-    # argparse for file eventually
-    with open(args.file, 'r') as f:
+async def main(args):
+    with open(args.file, "r") as f:
         cfg = load(f, Loader=Loader)
-    # if file exists skip
-    # if not run these functions
-    if os.path.exists(cfg['outputFile']):
-        print('file exists')
-        exit(0)
-    # if genImage is true, then makeImage
-    if cfg['imageArgs']:
+
+    if os.path.exists(cfg["outputFile"]):
+        print("file exists")
+        return
+
+    image_path = None
+    if cfg.get("imageArgs"):
         image_path = generate_image(cfg)
-        pass
-    
-    astro_image_folder = "/imgs/2023"
-    # grab basename from image_path
-    image_basename = os.path.basename(image_path)
-    imgSrc = f"{astro_image_folder}/{image_basename}"
-    #
-    cfg["frontMatter"]["imgSrc"] = imgSrc
+        # the blog serves images from /imgs/2023
+        cfg["frontMatter"]["imgSrc"] = f"/imgs/2023/{os.path.basename(image_path)}"
+
     generate_frontmatter(cfg)
     await generate_body(cfg)
 
-    ## cp file to ../astro-tech-blog/${directory}
-    try:
-        if cfg["postOutput"]:
-            # check for postOutput.folder
-            # check for postOutput.imgFolder
-            # mv cfg['outputFile'] to ../astro-tech-blog/${postOutput.folder}
-            post_output_folder = cfg['postOutput']['folder']
-            post_output_img_folder = cfg['postOutput']['imgFolder']
-            if post_output_folder:
-                # copy file to ../astro-tech-blog/${postOutput.folder}
-                shutil.copy(cfg['outputFile'], post_output_folder)
-                # copy image to ../astro-tech-blog/${postOutput.imgFolder}
-            if post_output_img_folder:
-                shutil.copy(image_path, post_output_img_folder) 
- ```
+    # Copy the post and image into the blog repo, if configured
+    post_output = cfg.get("postOutput") or {}
+    if post_output.get("folder"):
+        shutil.copy(cfg["outputFile"], post_output["folder"])
+    if image_path and post_output.get("imgFolder"):
+        shutil.copy(image_path, post_output["imgFolder"])
+```
 
-The code above defines an asynchronous function called `main` that takes an argument `args`.
-
-The function first initializes an empty string called `image_root`. It then reads a configuration file specified in the `args` argument and loads it using the `load()` method from the PyYAML library.
-
-If the `outputFile` specified in the configuration file already exists, the function exits. Otherwise, if `imageArgs` is set to true in the configuration file, the function generates an image using the `generate_image()` function and sets the path to the generated image in the `imgSrc` variable.
-
-The function then updates the `imgSrc` in the configuration file, generates the front matter using the `generate_frontmatter()` function, and generates the body of the blog post using the `generate_body()` function.
-
-Finally, if `postOutput` is specified in the configuration file, the function copies the output file and the generated image to the folders specified in the `postOutput.folder` and `postOutput.imgFolder` keys, respectively.
-
-Overall, this function reads a configuration file, generates an image and a blog post, and saves them to the appropriate directories.
-
+Compared with the original: `image_path` is only used when an image was actually generated (it was previously unset when `imageArgs` was empty), and the dangling `try:` block without an `except` is gone.
 
 ## References
 

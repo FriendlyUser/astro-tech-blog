@@ -1,8 +1,9 @@
 ---
-title: "Web Scraping for Construction and Procurement Data"
+title: "Lessons from scraping construction permits and bid sites"
 description: "What I learned scraping permit reports, open data and bid-opportunity sites for YellowSheet, plus a small C# scraper at CSPS."
 tags: ["Web Scraping", "Python", "OCR", "Camoufox", "Proxies", "C#"]
 pubDate: "2023-11-07T16:20:00.000Z"
+lastUpdated: 2026-11-14
 ---
 
 Most of my scraping work has been for YellowSheet, a construction data subscription on Vancouver Island. I built the pipelines that pull building permits and tenders into the weekly issues. That work ended up split across three pieces: a FastAPI service for permit PDFs and open data, a set of GitHub Actions scrapers for permit trackers and bid sites, and an ingest API on the PHP site. At CSPS I also maintained a small C# function that scrapes the NJC kilometric rates page.
@@ -29,7 +30,7 @@ Most of my scraping work has been for YellowSheet, a construction data subscript
 - **Text cleanup.** Unicode dashes, zero-width spaces and other non-ASCII text kept breaking inserts until I added `unidecode` and NFKD normalization.
 - **CSPS kilometric rates.** The NJC directive page is versioned, so the old C# function kept reading an outdated URL. I updated it to take the "Current" link from the version dropdown first and log a warning when a "Notice to the reader" alert shows up:
 
-```dotnet
+```csharp
 HtmlNode latestVersionLink = val.DocumentNode.SelectSingleNode("//ul[@aria-labelledby='section-versions']//li//a");
 ```
 

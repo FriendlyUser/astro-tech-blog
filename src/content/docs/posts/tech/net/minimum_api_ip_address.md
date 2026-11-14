@@ -1,215 +1,131 @@
 ---
-title: Minimum api in .net with the ip address
-description: .net ip address api
+title: An IP address lookup API with ASP.NET Core minimal APIs
+description: A small ASP.NET Core minimal API that returns the server's public IP, looks up details for any IP address, and reports the caller's IP.
 pubDate: Saturday, 5 August 2023 13:00:00 GMT
-tags: ["minimum-api", ".net"]
+lastUpdated: 2026-11-14
+tags: ["minimum-api", ".net", "aspnet", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/DALL·E 2023-01-08 14.26.14 - mailbox.png'
 ---
 
+:::caution
+The lookup service this API calls, `iplist.cc`, no longer responds: as of November 2026 the domain shows a parked page. The endpoint structure below still applies, but to run it you'll need to point `LookupAsync` at another IP information service and change the `IpInfo` record to match its response.
+:::
 
-ASP.NET Core Minimal APIs offer a streamlined way to build efficient HTTP APIs with minimal code and configuration. With this approach, you can create fully functional REST endpoints without the need for traditional scaffolding or unnecessary controllers. Instead, you can declare your API routes and actions fluently, allowing you to quickly build APIs that meet your specific needs. By leveraging the power of ASP.NET Core, you can build APIs that are fast and scalable, and easily incorporate them into your application. Whether you are building a small API for a personal project or a larger API for a business, Minimal APIs provide a powerful and flexible solution for building and deploying your APIs with ease.
+Minimal APIs let you declare HTTP endpoints straight in `Program.cs` with `MapGet`, `MapPost` and friends, without controllers. That suits a small service like this one, which has three endpoints:
 
+- `GET /ip` returns the public IP address of the machine running the API (via [jsonip.com](https://jsonip.com)).
+- `GET /ip/{address}` returns registry, country and ASN details for an IP address.
+- `GET /ip/info` returns the same details for the caller's IP address.
+
+The code was first written for .NET 7 with Swashbuckle. It's updated here for .NET 10, which has OpenAPI document generation built in.
+
+## Setup
+
+Create the project from the Web API template, which already references `Microsoft.AspNetCore.OpenApi`:
+
+```bash
+dotnet new webapi -n IpApi
+cd IpApi
+```
+
+## Program.cs
 
 ```csharp
-using System;
-using System.IO;
 using System.Net;
-using Microsoft.AspNetCore.OpenApi;
-using System.Text.Json;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => {
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "Ip Api",
-        Description = "An ASP.NET Core Web API for managing calling ip addresses",
-        // TermsOfService = new Uri("https://example.com/terms"),
-        Contact = new OpenApiContact
-        {
-            Name = "Friendlyuser",
-            Url = new Uri("friendlyuser.github.io")
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Example License",
-            Url = new Uri("https://example.com/license")
-        }
-    });
-});
+builder.Services.AddOpenApi();     // OpenAPI document generation
+builder.Services.AddHttpClient();  // registers IHttpClientFactory
 
 var app = builder.Build();
-```
 
+app.MapOpenApi();                  // serves /openapi/v1.json
 
+app.MapGet("/", () => "Hello World!").WithName("HelloWorld");
 
+var ip = app.MapGroup("/ip");
 
-This code creates an ASP.NET Core web application using the WebApplication.CreateBuilder method, and configures the application to use OpenAPI (formerly known as Swagger) to document its API.
-
-The AddEndpointsApiExplorer method adds support for generating API documentation based on the endpoints defined in the application.
-
-The AddSwaggerGen method adds a Swagger generator to the service collection, and configures it to generate Swagger documentation for the API's "v1" version. The OpenApiInfo object passed to the SwaggerDoc method contains metadata about the API, such as its version, title, and contact information.
-
-Finally, the Build method is called to build the web application and return an IApplicationBuilder instance, which can be used to configure the request handling pipeline and start the application.  
-
-
-
-```csharp
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.MapGet("/", () => "Hello World!").WithName("Hello World")
-.WithOpenApi();;
-
-var ipItems = app.MapGroup("/ip");
-
-ipItems.MapGet("/", GetIpAddressAsync).WithName("GetIpAddress")
-.WithOpenApi();
-
-// info with argument for ip address
-ipItems.MapGet("/{ip}", async (string ip) =>
+// Public IP of the machine running this API
+ip.MapGet("/", async (IHttpClientFactory factory) =>
 {
-    return await GetIpInfoAsync(ip);
-}).WithName("GetIp").WithOpenApi();
+    var client = factory.CreateClient();
+    var response = await client.GetFromJsonAsync<JsonIpResponse>("https://jsonip.com");
+    return response is null ? Results.Problem("jsonip.com returned no data") : Results.Ok(response.Ip);
+}).WithName("GetIpAddress");
 
-// info 
-ipItems.MapGet("/info", async (HttpContext context) =>
+// Details for the caller's IP. Literal segments win over parameters,
+// so /ip/info does not get captured by /ip/{address}.
+ip.MapGet("/info", async (HttpContext context, IHttpClientFactory factory) =>
 {
-    // get ip for requester
-    string? ip;
-    ip =   context?.Connection?.RemoteIpAddress.ToString();
-    if (string.IsNullOrEmpty(ip))
+    IPAddress? remote = context.Connection.RemoteIpAddress;
+    if (remote is null)
     {
-        ip =  context.Request.Headers["X-Forwarded-For"].ToString();
+        return Results.BadRequest("Could not determine the caller's IP address");
     }
-    return await GetIpInfoAsync(ip);
-}).WithName("Get Server Ip Info").WithOpenApi();
+    if (remote.IsIPv4MappedToIPv6)
+    {
+        remote = remote.MapToIPv4();   // "::ffff:1.2.3.4" -> "1.2.3.4"
+    }
+    return await LookupAsync(factory.CreateClient(), remote.ToString());
+}).WithName("GetCallerIpInfo");
+
+// Details for any IP address
+ip.MapGet("/{address}", async (string address, IHttpClientFactory factory) =>
+{
+    if (!IPAddress.TryParse(address, out _))
+    {
+        return Results.BadRequest("Not a valid IP address");
+    }
+    return await LookupAsync(factory.CreateClient(), address);
+}).WithName("GetIp");
 
 app.Run();
-```
-This code is setting up an ASP.NET Core web application to use Swagger for API documentation and defining a few API endpoints.
 
-The UseSwagger and UseSwaggerUI methods enable Swagger and Swagger UI in the application. Swagger UI is a web-based tool that allows you to interactively explore and test your API.
-
-The MapGet method is used to define a GET endpoint for the API. For example, the first MapGet method defines an endpoint at the root path ("/") that returns the string "Hello World!". This endpoint is given the name "Hello World". The WithOpenApi method specifies that this endpoint should be included in the generated Swagger documentation.
-
-The MapGroup method is used to define a group of related endpoints. In this case, the group is defined for the path "/ip" and all endpoints in the group will have this path as a prefix. For example, the MapGet method that follows it defines an endpoint at the path "/ip/{ip}" that returns information about the specified IP address. This endpoint is given the name "GetIp".
-
-The remaining MapGet methods define similar endpoints for getting information about IP addresses. The third endpoint, at the path "/ip/info", gets the IP address of the requester and returns information about it. This endpoint is given the name "Get Server Ip Info".
-
-Finally, the Run method starts the application and begins listening for requests.
-
-```csharp
-static async System.Threading.Tasks.Task<string> GetIpAddressAsync()
+static async Task<IResult> LookupAsync(HttpClient client, string address)
 {
-    {
-        try
-        {
-            using HttpClient client = new HttpClient();
-            using HttpResponseMessage response = await client.GetAsync("https://jsonip.com");
-            using Stream responseStream = await response.Content.ReadAsStreamAsync();
-            using StreamReader reader = new StreamReader(responseStream);
-
-            string json = await reader.ReadToEndAsync();
-            // exception here for minimum api
-            if (json == null || json == "")
-            {
-                throw new Exception("Invalid response");
-            }
-            JsonIpResponse jsonResponse = JsonSerializer.Deserialize<JsonIpResponse>(json);
-            if (jsonResponse == null)
-            {
-                throw new Exception("Invalid response");
-            }
-            return jsonResponse.ip;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw e;
-        }
-    }
+    var info = await client.GetFromJsonAsync<IpInfo>($"https://iplist.cc/api/{address}");
+    return info is null ? Results.Problem("Lookup returned no data") : Results.Ok(info);
 }
 
-static async System.Threading.Tasks.Task<IPResponse> GetIpInfoAsync(string ip)
-{
-    {
-        try
-        {
-            using HttpClient client = new HttpClient();
-            using HttpResponseMessage response = await client.GetAsync($"https://iplist.cc/api/{ip}");
-            using Stream responseStream = await response.Content.ReadAsStreamAsync();
-            using StreamReader reader = new StreamReader(responseStream);
+record JsonIpResponse(string Ip);
 
-            string json = await reader.ReadToEndAsync();
-            // exception here for minimum api
-            if (json == null || json == "")
-            {
-                throw new Exception("Invalid response");
-            }
-            IPResponse jsonResponse = JsonSerializer.Deserialize<IPResponse>(json);
-            if (jsonResponse == null)
-            {
-                throw new Exception("Invalid response");
-            }
-            // send as json
-            return jsonResponse;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw e;
-        }
-    }
-}
-```
-These two methods, GetIpAddressAsync and GetIpInfoAsync, are used to retrieve information about IP addresses from external services.
+record IpInfo(
+    string Ip,
+    string Registry,
+    string CountryCode,
+    string CountryName,
+    Asn? Asn,
+    bool Spam,
+    bool Tor,
+    string? City,
+    string? Detail,
+    string[]? Website);
 
-The GetIpAddressAsync method uses the HttpClient class to send a GET request to the "https://jsonip.com" URL and returns the IP address contained in the response. The response is read from the stream as a string and then deserialized using the JsonSerializer.Deserialize method into an object of type JsonIpResponse. If the response is invalid or if an exception occurs during the request, an exception is thrown.
-
-The GetIpInfoAsync method is similar, but it sends a GET request to the "https://iplist.cc/api/{ip}" URL, where {ip} is the IP address passed as an argument. The response is read from the stream as a string and then deserialized into an object of type IPResponse. If the response is invalid or if an exception occurs during the request, an exception is thrown.
-
-Both methods use the async and await keywords to perform the requests asynchronously, allowing the application to continue processing other tasks while the requests are being made.
-
-
-```csharp
-public class JsonIpResponse
-{
-    public string ip { get; set; }
-}
-public class IPResponse
-{
-    public string ip { get; set; }
-    public string registry { get; set; }
-    public string countrycode { get; set; }
-    public string countryname { get; set; }
-    public Asn asn { get; set; }
-    public bool spam { get; set; }
-    public bool tor { get; set; }
-    public string city { get; set; }
-    public string detail { get; set; }
-    public string[] website { get; set; }
-}
-
-public class Asn
-{
-    public string code { get; set; }
-    public string name { get; set; }
-    public string route { get; set; }
-    public string start { get; set; }
-    public string end { get; set; }
-    public string count { get; set; }
-}
+record Asn(string Code, string Name, string Route, string Start, string End, string Count);
 ```
 
-These three classes define the structure of the data that is returned by the GetIpAddressAsync and GetIpInfoAsync methods.
+A few things worth pointing out:
 
-The JsonIpResponse class has a single property, ip, which represents the IP address.
+- `GetFromJsonAsync` deserializes with the web defaults, which match property names case-insensitively, so the lowercase JSON fields (`countrycode`, `countryname`) map onto PascalCase record properties. It also throws `HttpRequestException` on a non-success status code, which surfaces as a 500 response.
+- The original version created a `new HttpClient()` per request and wrapped each call in `catch (Exception e) { throw e; }`. The first can exhaust sockets under load; the second throws away the stack trace. `IHttpClientFactory` and letting exceptions propagate fix both.
+- `/ip` returns the *server's* public address, because the outbound request to jsonip.com comes from the server. Use `/ip/info` for the caller's address.
 
-The IPResponse class has several properties that represent various pieces of information about an IP address, such as its registry, country code, country name, and ASN (Autonomous System Number) details. It also has a property of type Asn, which represents the ASN information.
+## The caller's IP behind a proxy
 
-The Asn class has several properties that represent details about an ASN, such as its code, name, route, and start and end addresses.
+`Connection.RemoteIpAddress` is the address of whatever opened the TCP connection. Behind a reverse proxy or load balancer, that's the proxy. The earlier version only read `X-Forwarded-For` when `RemoteIpAddress` was null, which never happens behind a proxy.
+
+The fix is the forwarded headers middleware, which rewrites `RemoteIpAddress` from `X-Forwarded-For`. Only trust the header from proxies you list in `KnownProxies` or `KnownIPNetworks` (`KnownNetworks` before .NET 10), because otherwise any client can set it to whatever it likes. See [Configure ASP.NET Core to work with proxy servers and load balancers](https://learn.microsoft.com/aspnet/core/host-and-deploy/proxy-load-balancer).
+
+## OpenAPI and `WithOpenApi`
+
+The 2023 version called `.WithOpenApi()` on each endpoint. That's no longer needed: `AddOpenApi()` includes every endpoint in the document, and `WithOpenApi` is marked obsolete in .NET 10 (diagnostic `ASPDEPR002`). Use `WithSummary`, `WithDescription` and `WithTags` for per-endpoint metadata.
+
+.NET 9 and later templates don't ship Swagger UI. To browse the API, point Swagger UI, Scalar or another OpenAPI viewer at `/openapi/v1.json`.
+
+## Further reading
+
+- [Minimal APIs overview](https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis/overview)
+- [Generate OpenAPI documents](https://learn.microsoft.com/aspnet/core/fundamentals/openapi/aspnetcore-openapi)
+- [`WithOpenApi` deprecation notice](https://learn.microsoft.com/aspnet/core/breaking-changes/10/withopenapi-deprecated)

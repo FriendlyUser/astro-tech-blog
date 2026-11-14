@@ -1,96 +1,133 @@
 ---
-description: In this article, we will explore the basics of unit testing in Swift,
-  using XCTest the testing framework provided by Apple
+description: Set up a test target in Xcode, write unit tests with XCTest assertions, run them, and see the same tests written with the newer Swift Testing framework.
 imgSrc: /imgs/2023/3170249337.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-05T00:16:03.000Z'
-tags: []
-title: A Practical Guide to Unit Testing in Swift
+lastUpdated: 2026-11-14
+tags: ["swift", "testing"]
+title: "Unit testing in Swift with XCTest and Swift Testing"
 ---
 
-# A Practical Guide to Unit Testing in Swift
+A unit test calls one function or type in isolation and checks the result. In Swift you have two frameworks for this, both built into Xcode: **XCTest**, which has been around since Xcode 5, and **Swift Testing**, introduced with Xcode 16 in 2024. This post writes the same tests in both against a small `Calculator` type.
 
-Unit testing is an essential practice in software development, allowing developers to ensure that their code behaves as expected and to detect errors before they become critical issues. In this article, we will explore the basics of unit testing in Swift, using XCTest �? the testing framework provided by Apple.
+## The code under test
 
-## Table of Contents
-1. [Introduction to Unit Testing](#introduction-to-unit-testing)
-2. [Setting Up a Test Target](#setting-up-a-test-target)
-3. [Writing Test Cases](#writing-test-cases)
-4. [Using XCTAssert Functions](#using-xctassert-functions)
-5. [Running and Analyzing Tests](#running-and-analyzing-tests)
-6. [Conclusion](#conclusion)
+Put this in your app target (here called `MyApp`):
 
-### Introduction to Unit Testing
+```swift
+struct Calculator {
+    func add(_ a: Int, _ b: Int) -> Int { a + b }
+    func subtract(_ a: Int, _ b: Int) -> Int { a - b }
 
-Unit testing is the practice of testing individual units of code, such as functions or methods, in isolation. The main goal is to verify that each unit behaves as expected under various conditions, including edge cases and unexpected inputs. 
+    func divide(_ a: Int, _ b: Int) throws -> Int {
+        guard b != 0 else { throw CalculatorError.divisionByZero }
+        return a / b
+    }
+}
 
-Unit testing has several benefits, including:
+enum CalculatorError: Error {
+    case divisionByZero
+}
+```
 
-- Improving code quality by catching bugs early
-- Making it easier to refactor code without introducing regressions
-- Facilitating collaboration between team members by providing a shared understanding of the codebase
-- Serving as documentation for how the code is intended to work
+## Add a test target
 
-### Setting Up a Test Target
+New projects created with "Include Tests" already have one. Otherwise:
 
-To get started with unit testing in Swift, you'll need to create a test target in your Xcode project. Here's how:
+1. In Xcode, choose **File > New > Target…**.
+2. Pick your platform and the **Unit Testing Bundle** template, then click **Next**.
+3. Name it (for example `MyAppTests`), choose the testing system (Swift Testing or XCTest), set the target to be tested, and click **Finish**.
 
-1. Open your project in Xcode.
-2. Click `File` > `New` > `Target...`.
-3. In the template chooser, select `iOS` (or the appropriate platform) and choose `Unit Testing Bundle`. Click `Next`.
-4. Name your test target (e.g., "MyAppTests") and click `Finish`.
+## Writing tests with XCTest
 
-Xcode will create a new test target with a default test file named `MyAppTests.swift`. This file contains a sample XCTestCase subclass with a single test method, which you can use as a starting point for your own tests.
-
-### Writing Test Cases
-
-To write unit tests in XCTest, you'll create subclasses of XCTestCase and add test methods to these subclasses. Test methods should start with the word `test` and should be marked with the `@testable` attribute to ensure they are recognized by XCTest.
-
-Here's an example of a simple XCTestCase subclass with two test methods:
+Test classes subclass `XCTestCase`. XCTest discovers test methods by convention: instance methods whose names start with `test`, take no arguments and return nothing. The `@testable` attribute goes on the **import**, not on the methods; it gives the test target access to `internal` declarations in your app module.
 
 ```swift
 import XCTest
 @testable import MyApp
 
-class CalculatorTests: XCTestCase {
+final class CalculatorTests: XCTestCase {
+    var calculator: Calculator!
+
+    override func setUp() {
+        super.setUp()
+        calculator = Calculator()
+    }
+
     func testAddition() {
-        let calculator = Calculator()
-        let result = calculator.add(2, 3)
-        XCTAssertEqual(result, 5, "Expected 2 + 3 to equal 5")
+        XCTAssertEqual(calculator.add(2, 3), 5, "Expected 2 + 3 to equal 5")
     }
 
     func testSubtraction() {
-        let calculator = Calculator()
-        let result = calculator.subtract(7, 3)
-        XCTAssertEqual(result, 4, "Expected 7 - 3 to equal 4")
+        XCTAssertEqual(calculator.subtract(7, 3), 4)
+    }
+
+    func testDivideByZeroThrows() {
+        XCTAssertThrowsError(try calculator.divide(1, 0)) { error in
+            XCTAssertEqual(error as? CalculatorError, .divisionByZero)
+        }
     }
 }
 ```
 
-### Using XCTAssert Functions
+`setUp()` runs before each test method, so every test gets a fresh `Calculator`. Use `tearDown()` for cleanup.
 
-XCTest provides a range of XCTAssert functions that you can use to verify your code's behavior. The most common of these are:
+### Common assertions
 
-- `XCTAssertEqual(_:_:file:line:description:)`: Asserts that two values are equal.
-- `XCTAssertNotEqual(_:_:file:line:description:)`: Asserts that two values are not equal.
-- `XCTAssertTrue(_:_:file:line:description:)`: Asserts that a Boolean expression is true.
-- `XCTAssertFalse(_:_:file:line:description:)`: Asserts that a Boolean expression is false.
-- `XCTAssertNil(_:_:file:line:description:)`: Asserts that a value is nil.
-- `XCTAssertNotNil(_:_:file:line:description:)`: Asserts that a value is not nil.
+Each assertion takes an optional message as the last positional argument, shown when the assertion fails:
 
-These functions take an optional `description` parameter, which you can use to provide a helpful error message if the assertion fails.
+- `XCTAssertEqual(a, b)` / `XCTAssertNotEqual(a, b)`
+- `XCTAssertTrue(expr)` / `XCTAssertFalse(expr)`
+- `XCTAssertNil(value)` / `XCTAssertNotNil(value)`
+- `XCTAssertThrowsError(try expr)` / `XCTAssertNoThrow(try expr)`
+- `XCTAssertEqual(a, b, accuracy: 0.001)` for floating-point values
+- `XCTUnwrap(optional)`, which fails the test and throws if the value is `nil` (mark the test method `throws`)
 
-### Running and Analyzing Tests
+## The same tests with Swift Testing
 
-To run your tests in Xcode, do the following:
+Swift Testing replaces naming conventions with the `@Test` macro and the long list of assertion functions with two macros: `#expect`, which records a failure and keeps going, and `#require`, which stops the test. Because `#expect` takes an ordinary Boolean expression, failure messages show the values on both sides without needing a special `Equal` variant.
 
-1. Click the `Product` menu, then `Test` (or press `Cmd+U`).
-2. Xcode will build your project and execute your test suite.
+```swift
+import Testing
+@testable import MyApp
 
-After running your tests, the Test Navigator (�?6) will display the results. You can click on individual tests to view their status (passed, failed, or skipped) and any error messages.
+struct CalculatorTests {
+    let calculator = Calculator()   // a new instance is created for each test
 
-If a test fails, you can use the error message and Xcode's debugging tools to identify and fix the issue. Remember to re-run your tests after making any changes to ensure that the issue is resolved and that no new issues have been introduced.
+    @Test func addition() {
+        #expect(calculator.add(2, 3) == 5)
+    }
 
-### Conclusion
+    @Test func subtraction() {
+        #expect(calculator.subtract(7, 3) == 4)
+    }
 
-Unit testing is an invaluable tool for maintaining high-quality software. By using XCTest to create and run tests in your Swift projects, you can ensure that your code is robust, reliable, and free of defects. As you gain experience with unit testing, you'll find that it becomes an integral part of your development workflow, helping you write better code and catch issues before they become problematic.
+    @Test func divideByZeroThrows() {
+        #expect(throws: CalculatorError.divisionByZero) {
+            try calculator.divide(1, 0)
+        }
+    }
+}
+```
+
+The two frameworks can live in the same test target, so you can add Swift Testing to an existing project and migrate gradually. UI tests (`XCUIApplication`) and performance tests (`measure`) still need XCTest.
+
+## Running tests
+
+- **Product > Test** (⌘U) builds the app and test target and runs every test.
+- The Test navigator (⌘6) lists tests by target and class or suite; click the diamond next to one to run it alone. The same diamonds appear in the editor gutter.
+- From the command line: `xcodebuild test -scheme MyApp -destination 'platform=iOS Simulator,name=iPhone 16'` (adjust the simulator name to one you have installed). Swift packages run tests with `swift test`.
+
+When a test fails, Xcode marks the failing line in the editor and shows the message in the Report navigator (⌘9). Set a breakpoint inside the test and rerun just that test to step through it.
+
+## Tips
+
+- Keep tests independent. Don't rely on one test leaving state for the next: Swift Testing runs tests in parallel by default, and XCTest can be configured to randomise execution order.
+- `@testable import` only works if the app was built with testability enabled, which is the default for the Debug configuration. Running tests against a Release build fails to compile for this reason.
+- Test behaviour you can describe, including edge cases (zero, empty input, errors), rather than mirroring the implementation line by line.
+
+## Further reading
+
+- [XCTest documentation](https://developer.apple.com/documentation/xctest)
+- [Swift Testing documentation](https://developer.apple.com/documentation/testing)
+- [Migrating a test from XCTest](https://developer.apple.com/documentation/testing/migratingfromxctest)

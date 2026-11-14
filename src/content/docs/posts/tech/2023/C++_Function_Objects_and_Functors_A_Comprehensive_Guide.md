@@ -1,33 +1,16 @@
 ---
-description: In this article, we will dive deep into function objects and functors
-  in C++, exploring their use cases and benefits
+description: How C++ function objects work, why algorithms like std::sort can inline them, and how to use the standard functors and lambdas in their place.
 imgSrc: /imgs/2023/248665811.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-03T21:43:43.000Z'
-tags: []
-title: C++ Function Objects and Functors A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: "C++ function objects (functors): operator(), standard functors and lambdas"
 ---
 
-# C++ Function Objects and Functors: A Comprehensive Guide
+A function object, or functor, is any object you can call like a function. In C++ that means a class or struct that defines `operator()`. You pass one wherever an algorithm or container expects "something callable", such as a comparator for `std::sort` or the key ordering for `std::map`.
 
-C++ offers various ways to represent functions and callable objects, with function pointers, lambda expressions, and functors being the most common. In this article, we will dive deep into function objects and functors in C++, exploring their use cases and benefits.
-
-## What are Function Objects and Functors?
-
-A function object, also known as a functor, is an object that can be called as if it were a function. Functors are instances of a class or a struct that define the function call operator, `operator()`. This operator allows objects of the class to be called with arguments like a regular function.
-
-## Why Use Functors?
-
-Functors provide several advantages over regular functions and function pointers:
-
-1. **State**: Functors can maintain state between calls, unlike regular functions.
-2. **Inline Expansion**: The C++ compiler can inline the `operator()` call, potentially leading to better performance.
-3. **Customization**: Functors can be customized by providing different implementations of the `operator()` for different situations.
-4. **Object-Oriented Design**: Functors align with object-oriented design principles, allowing for better code organization and maintainability.
-
-## Defining a Functor
-
-To define a functor, you need to create a class or struct that implements the `operator()` with the desired signature. Here's an example of a simple functor that adds a constant value to its input:
+## Defining a functor
 
 ```cpp
 #include <iostream>
@@ -46,49 +29,79 @@ private:
 
 int main() {
     AddValue add_five(5);
-    std::cout << "10 + 5 = " << add_five(10) << std::endl; // Output: 10 + 5 = 15
-
-    return 0;
+    std::cout << "10 + 5 = " << add_five(10) << '\n'; // 10 + 5 = 15
 }
 ```
 
-In this example, the `AddValue` class implements a functor that adds a constant value to its input. The constructor takes the constant value and stores it in the private member `value_`. The `operator()` is defined as a member function, taking an integer input and returning the result of adding the stored value to it.
+The constructor captures the value once; each call to `add_five(...)` uses it. Marking `operator()` as `const` matters: some standard library code calls function objects through a `const` reference.
 
-## Functors in the Standard Library
+## Why use a functor instead of a function pointer
 
-C++ Standard Library provides a variety of predefined functors that are commonly used in algorithms and data structures. Some of the most widely used functors include:
+- **State.** A functor carries data with it (`value_` above) without globals.
+- **Inlining.** Each functor is its own type, so when you pass one to a template such as `std::sort`, the compiler knows exactly which `operator()` will run and can inline it. A function pointer is a runtime value, and the call is only inlined if the optimiser can prove which function it points to.
 
-### Arithmetic Functors
+## Stateful functors with algorithms
 
-These functors perform arithmetic operations:
+`std::for_each` returns the function object it was given, so a functor can accumulate results as it runs:
 
-- `std::plus<>`: Adds two values.
-- `std::minus<>`: Subtracts the second value from the first.
-- `std::multiplies<>`: Multiplies two values.
-- `std::divides<>`: Divides the first value by the second.
-- `std::modulus<>`: Computes the remainder of the division of the first value by the second.
+```cpp
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <numeric>
+#include <vector>
 
-### Comparison Functors
+struct CountAbove {
+    int threshold;
+    int count = 0;
+    void operator()(int x) { if (x > threshold) ++count; }
+};
 
-These functors perform comparison operations:
+int main() {
+    std::vector<int> v{5, 2, 9, 1, 7};
 
-- `std::equal_to<>`: Checks if two values are equal.
-- `std::not_equal_to<>`: Checks if two values are not equal.
-- `std::greater<>`: Checks if the first value is greater than the second.
-- `std::less<>`: Checks if the first value is less than the second.
-- `std::greater_equal<>`: Checks if the first value is greater than or equal to the second.
-- `std::less_equal<>`: Checks if the first value is less than or equal to the second.
+    std::sort(v.begin(), v.end(), std::greater<>{});                            // 9 7 5 2 1
+    int product = std::accumulate(v.begin(), v.end(), 1, std::multiplies<>{});  // 630
+    CountAbove counter = std::for_each(v.begin(), v.end(), CountAbove{4});
 
-### Logical Functors
+    std::cout << product << ' ' << counter.count << '\n'; // 630 3
+}
+```
 
-These functors perform logical operations:
+Other algorithms copy the function object freely, so don't rely on state surviving a call to `std::sort` or `std::transform`. If you need that, keep the state outside and hold a reference to it.
 
-- `std::logical_and<>`: Performs a logical AND operation.
-- `std::logical_or<>`: Performs a logical OR operation.
-- `std::logical_not<>`: Performs a logical NOT operation.
+## Lambdas are functors
 
-These functors can be used with standard algorithms like `std::transform`, `std::accumulate`, and `std::sort`.
+A lambda expression creates an unnamed class with an `operator()`, and the captures become its data members. `AddValue add_five(5)` and this lambda are equivalent:
 
-## Conclusion
+```cpp
+int value = 5;
+auto add_five = [value](int input) { return input + value; };
+```
 
-Functors are a powerful and flexible way to represent callable objects in C++. They offer several advantages over regular functions and function pointers, such as maintaining state, inline expansion, customization, and adherence to object-oriented design principles. By leveraging functors and the predefined functors in the C++ Standard Library, you can create more efficient and maintainable code.
+For one-off callables, a lambda is usually shorter. A named functor class is still useful when the same callable is reused in several places, needs several overloads of `operator()`, or must be named as a type (for example `std::set<Key, MyCompare>`).
+
+To store "any callable with this signature" (functor, lambda, or function pointer) in one variable, use `std::function<int(int)>`. It type-erases the callable, which usually means an indirect call and possibly a heap allocation, so prefer templates or `auto` where the type can stay visible.
+
+## Standard library functors
+
+`<functional>` provides function objects for the built-in operators:
+
+| Category | Functors |
+| --- | --- |
+| Arithmetic | `plus`, `minus`, `multiplies`, `divides`, `modulus`, `negate` |
+| Comparison | `equal_to`, `not_equal_to`, `greater`, `less`, `greater_equal`, `less_equal` |
+| Logical | `logical_and`, `logical_or`, `logical_not` |
+| Bitwise | `bit_and`, `bit_or`, `bit_xor`, `bit_not` |
+
+Each is a class template. `std::less<int>` compares two `int`s; `std::less<>` (C++14 and later) is the "transparent" version that deduces argument types at the call site. Prefer `std::less<>`: it avoids accidental conversions and lets ordered containers such as `std::map<std::string, int, std::less<>>` look up keys by `std::string_view` or `const char*` without building a temporary `std::string`.
+
+## Gotchas
+
+- `std::bind1st`, `std::bind2nd`, `std::ptr_fun` and `std::not1` were removed in C++17. Use lambdas, `std::bind`, or `std::not_fn` instead.
+- A comparator passed to `std::sort`, `std::set` or `std::map` must be a strict weak ordering. Using `<=` instead of `<` is undefined behaviour.
+
+## Further reading
+
+- [Function objects on cppreference](https://en.cppreference.com/w/cpp/utility/functional)
+- [Lambda expressions on cppreference](https://en.cppreference.com/w/cpp/language/lambda)

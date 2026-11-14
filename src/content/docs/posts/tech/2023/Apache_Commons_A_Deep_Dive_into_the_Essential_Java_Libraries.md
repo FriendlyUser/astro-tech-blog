@@ -1,28 +1,46 @@
 ---
-description: This article will provide an overview of some of the most widely used
-  Apache Commons libraries, along with code examples to demonstrate their usage.
+description: Working examples of Apache Commons Lang (StringUtils, NumberUtils), Commons IO (FileUtils) and Commons Collections (MultiValuedMap), with current Maven coordinates.
 imgSrc: /imgs/2023/1113292628.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-21T20:28:26.000Z'
-tags: []
-title: Apache Commons A Deep Dive into the Essential Java Libraries
+lastUpdated: 2026-11-14
+tags: ["java"]
+title: 'Apache Commons Lang, IO and Collections: examples in Java'
 ---
 
-# Apache Commons: A Deep Dive into the Essential Java Libraries
+Apache Commons is a set of small, independent Java libraries maintained by the Apache Software Foundation. Each one fills a gap in the JDK: null-safe string helpers, one-line file copies, collection types the standard library doesn't have. You add only the modules you need.
 
-## Introduction
+This post covers the three you're most likely to run into: Lang, IO and Collections.
 
-The Apache Commons project is a collection of open-source Java libraries developed by the Apache Software Foundation. These libraries provide reusable components that simplify Java software development and reduce the amount of boilerplate code that developers need to write. They offer a wide range of functionalities, from basic utilities and data structures to more specialized libraries for mathematical operations, file handling, and networking.
+## Dependencies
 
-This article will provide an overview of some of the most widely used Apache Commons libraries, along with code examples to demonstrate their usage.
+The versions below are current as of November 2026. Check [Maven Central](https://central.sonatype.com/) for newer releases.
 
-## Apache Commons Lang
+```xml
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.22.0</version>
+</dependency>
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.22.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-collections4</artifactId>
+    <version>4.6.0</version>
+</dependency>
+```
 
-**Apache Commons Lang** is a library that provides a set of utility classes and methods for common programming tasks, such as string manipulation, number conversion, and working with dates and time.
+Note the package names. Commons Lang 3 lives in `org.apache.commons.lang3` and Collections 4 in `org.apache.commons.collections4`. The old `commons-lang` (2.x) and `commons-collections` (3.x) artifacts are older lines with different packages, so watch which one your IDE picks when auto-importing.
+
+## Commons Lang
 
 ### StringUtils
 
-StringUtils is a class that provides utility methods for working with Strings. Here are a few examples of its usage:
+`StringUtils` methods accept `null` without throwing, which is most of the reason to use them.
 
 ```java
 import org.apache.commons.lang3.StringUtils;
@@ -30,107 +48,112 @@ import org.apache.commons.lang3.StringUtils;
 public class StringUtilsExample {
     public static void main(String[] args) {
         String str = "  Apache Commons Lang  ";
-        
-        // Trim whitespace from both ends of the string
-        String trimmed = StringUtils.trim(str); // "Apache Commons Lang"
 
-        // Check if a string is empty, including whitespace
-        boolean isEmpty = StringUtils.isBlank(str); // false
+        // Trim whitespace from both ends; returns null for null input
+        String trimmed = StringUtils.trim(str);                  // "Apache Commons Lang"
 
-        // Count the occurrences of a substring in a string
-        int count = StringUtils.countMatches("ababa", "ab"); // 1
+        // True for null, "" or whitespace-only strings
+        boolean blank = StringUtils.isBlank(str);                // false
+        boolean blankNull = StringUtils.isBlank(null);           // true
 
-        // Replace all occurrences of a substring in a string
-        String replaced = StringUtils.replace("ababa", "ab", "cd"); // "cdaba"
+        // Count non-overlapping occurrences of a substring
+        int count = StringUtils.countMatches("ababa", "ab");     // 2
+
+        // Replace every occurrence of a substring
+        String replaced = StringUtils.replace("ababa", "ab", "cd"); // "cdcda"
+
+        System.out.println(trimmed + " " + blank + " " + blankNull + " " + count + " " + replaced);
     }
 }
 ```
 
+Since Java 11, `String.isBlank()` and `String.strip()` cover some of this, but they throw on `null`.
+
 ### NumberUtils
 
-NumberUtils is a utility class for working with numbers, including conversions and comparisons. Here are a few examples of its usage:
+`NumberUtils.toInt` parses a string and returns a default instead of throwing `NumberFormatException`.
 
 ```java
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class NumberUtilsExample {
     public static void main(String[] args) {
-        // Convert a string to an int, with a default value
-        int intValue = NumberUtils.toInt("123", 0); // 123
-        int defaultValue = NumberUtils.toInt("NaN", 0); // 0
+        int value = NumberUtils.toInt("123", 0);      // 123
+        int fallback = NumberUtils.toInt("NaN", 0);   // 0
 
-        // Find the minimum or maximum value in a set of numbers
-        int min = NumberUtils.min(3, 5, 1, 7); // 1
-        int max = NumberUtils.max(3, 5, 1, 7); // 7
+        int min = NumberUtils.min(3, 5, 1, 7);        // 1
+        int max = NumberUtils.max(3, 5, 1, 7);        // 7
+
+        System.out.println(value + " " + fallback + " " + min + " " + max);
     }
 }
 ```
 
-## Apache Commons IO
-
-**Apache Commons IO** is a library that provides utility classes and methods for handling input/output operations, such as working with files, directories, and streams.
+## Commons IO
 
 ### FileUtils
 
-FileUtils is a utility class for working with files and directories. Here are a few examples of its usage:
+`FileUtils` wraps common file operations in single calls. Always pass a charset explicitly when reading or writing text. The overloads without one are deprecated because they depend on the platform default.
 
 ```java
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class FileUtilsExample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File source = new File("source.txt");
         File destination = new File("destination.txt");
 
-        try {
-            // Copy a file
-            FileUtils.copyFile(source, destination);
+        FileUtils.writeStringToFile(source, "hello from commons-io\n", StandardCharsets.UTF_8);
 
-            // Read a file into a string
-            String content = FileUtils.readFileToString(source, Charset.defaultCharset());
+        // Copy a file, creating parent directories if needed
+        FileUtils.copyFile(source, destination);
 
-            // Write a string to a file
-            FileUtils.writeStringToFile(destination, content, Charset.defaultCharset());
+        // Read a whole file into a string
+        String content = FileUtils.readFileToString(destination, StandardCharsets.UTF_8);
+        System.out.print(content);
 
-            // Delete a file or directory
-            FileUtils.forceDelete(source);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Delete a file, or a directory and everything in it; throws if it fails
+        FileUtils.forceDelete(source);
     }
 }
 ```
 
-## Apache Commons Collections
+On Java 11+, `java.nio.file.Files` has `readString`, `writeString` and `copy`, so for single files you may not need Commons IO. It still saves code for recursive directory copies (`FileUtils.copyDirectory`) and deletes (`FileUtils.deleteDirectory`).
 
-**Apache Commons Collections** is a library that provides additional data structures and utility classes for working with Java Collections Framework.
+## Commons Collections
 
-### MultiMap
+### MultiValuedMap
 
-MultiMap is an interface that represents a map with multiple values for a single key. Here's an example of using a MultiValueMap, an implementation of MultiMap:
+A `MultiValuedMap` holds several values per key. Older examples use `MultiMap` and `MultiValueMap`. Both have been deprecated since Collections 4.1. Use `MultiValuedMap` and one of its implementations, such as `ArrayListValuedHashMap` (values kept in insertion order, duplicates allowed) or `HashSetValuedHashMap` (no duplicate values per key).
 
 ```java
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-public class MultiMapExample {
+public class MultiValuedMapExample {
     public static void main(String[] args) {
-        MultiMap<String, Integer> multiMap = new MultiValueMap<>();
+        MultiValuedMap<String, Integer> multiMap = new ArrayListValuedHashMap<>();
 
         multiMap.put("one", 1);
         multiMap.put("one", 11);
         multiMap.put("two", 2);
 
-        System.out.println(multiMap.get("one")); // [1, 11]
-        System.out.println(multiMap.get("two")); // [2]
+        System.out.println(multiMap.get("one"));   // [1, 11]
+        System.out.println(multiMap.get("two"));   // [2]
+        System.out.println(multiMap.get("three")); // [] (empty, never null)
     }
 }
 ```
 
-## Conclusion
+If you only need this in one place, a plain `Map<String, List<Integer>>` with `computeIfAbsent(key, k -> new ArrayList<>()).add(value)` does the same job without a dependency.
 
-In this article, we've explored a small subset of the wide range of functionality provided by the Apache Commons libraries. By leveraging these libraries, developers can save time and effort, reduce boilerplate code, and focus on the core logic of their applications. For more information and additional libraries within the Apache Commons project, visit the [official documentation](https://commons.apache.org/).
+## Further reading
+
+- [Apache Commons home](https://commons.apache.org/), with the full list of components
+- [Commons Lang user guide](https://commons.apache.org/proper/commons-lang/userguide.html)
+- [Commons IO](https://commons.apache.org/proper/commons-io/)
+- [Commons Collections](https://commons.apache.org/proper/commons-collections/)

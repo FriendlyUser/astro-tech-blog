@@ -1,176 +1,161 @@
 ---
 tags: ['rust']
-title: Todo list in Rust
-description:  Rust is a systems programming language that is designed for speed, safety, and concurrency. It provides low-level control over hardware resources while ensuring memory safety and preventing common programming errors.
+title: "Building a command-line to-do list in Rust"
+description: "Build an interactive to-do list in Rust with only the standard library: reading commands from stdin, matching on them, and editing a Vec of tasks."
 pubDate: Fri, 21 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/267929881.png"
 ---
 
+This post builds a small interactive to-do list that runs in the terminal. It uses only the standard library and covers the basics of a Rust CLI loop: reading lines from stdin, matching on commands, and passing a `Vec` around by shared and mutable reference.
 
+The program supports four commands:
 
-Introduction
+- `list` shows the tasks with their numbers
+- `add` asks for a task and appends it
+- `remove` asks for a task number and deletes it
+- `quit` exits
 
-To-do lists are an essential tool for organizing and managing tasks. In this article, we will explore how to create a simple to-do list application in Rust. Rust is a systems programming language that is designed for speed, safety, and concurrency. It provides low-level control over hardware resources while ensuring memory safety and preventing common programming errors.
+## Setup
 
-In this tutorial, we will use Rust and the Rust standard library to create a command-line interface (CLI) to-do list application. The application will allow users to add, remove, and view tasks in a list.
-
-Setting up the Project
-
-Before we get started, we need to set up a new Rust project. To create a new Rust project, open a terminal window and run the following command:
-
-```
-$ cargo new todo_list
-```
-
-This command will create a new Rust project named `todo_list`. The project will contain a `Cargo.toml` file that describes the project's dependencies and a `src` directory that contains the project's source code.
-
-The `Cargo.toml` file will look like this:
-
-```toml
-[package]
-name = "todo_list"
-version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
-edition = "2018"
-
-[dependencies]
+```sh
+cargo new todo_list
+cd todo_list
 ```
 
-We will add dependencies to the `Cargo.toml` file as we need them.
+No dependencies are needed. Everything below goes in `src/main.rs`.
 
-Creating the CLI Interface
+## Reading a line
 
-To create a CLI interface for our to-do list application, we will use the Rust standard library's `std::io` module. This module provides functions and types for working with input and output.
-
-We will create a function named `run` that will handle the user's input and output. The function will loop indefinitely until the user enters the `quit` command.
-
-Let's start by creating a skeleton of the `run` function:
+Every command needs to print a prompt and read a line, so start with a helper:
 
 ```rust
-fn run() {
-    loop {
-        // Get user input
-        // Handle user input
+use std::io::{self, Write};
+
+/// Print `message`, then read one line from stdin.
+/// Returns `None` at end of input (Ctrl+D, or Ctrl+Z then Enter on Windows).
+fn prompt(message: &str) -> Option<String> {
+    print!("{message}");
+    io::stdout().flush().ok()?;
+
+    let mut input = String::new();
+    match io::stdin().read_line(&mut input) {
+        Ok(0) | Err(_) => None,
+        Ok(_) => Some(input.trim().to_string()),
     }
 }
 ```
 
-In the `run` function, we will use the `std::io` module's `stdin()` function to get user input from the command line. We will use the `read_line()` function to read a line of text from the user.
+Two details matter here:
 
-```rust
-use std::io;
+- `print!` doesn't end with a newline, and stdout is line-buffered, so without `flush()` the prompt wouldn't appear until after the user typed something. `flush` comes from the `Write` trait, which is why it has to be imported.
+- `read_line` returns `Ok(0)` at end of input. If you ignore that, the main loop spins forever on empty input when stdin is closed or piped from a file.
 
-fn run() {
-    loop {
-        let mut input = String::new();
-
-        io::stdin().read_line(&mut input).unwrap();
-
-        // Handle user input
-    }
-}
-```
-
-The `read_line()` function reads the user's input and stores it in the `input` variable. The `&mut` operator is used to pass a mutable reference to the `input` variable to the `read_line()` function.
-
-Handling User Input
-
-Now that we can get user input, we need to handle it. We will create a `match` statement to handle the user's input. The `match` statement will match the user's input to a command and call the appropriate function.
+## The command loop
 
 ```rust
 fn run() {
-    let mut todo_list = Vec::new();
+    let mut todo_list: Vec<String> = Vec::new();
 
-    loop {
-        let mut input = String::new();
-
-        io::stdin().read_line(&mut input).unwrap();
-
-        let command = input.trim();
-
-        match command {
-            "quit" => break,
+    while let Some(command) = prompt("> ") {
+        match command.as_str() {
             "list" => list_tasks(&todo_list),
             "add" => add_task(&mut todo_list),
             "remove" => remove_task(&mut todo_list),
-            _ => println!("Unknown command: {}", command),
+            "quit" => break,
+            "" => {}
+            other => println!("Unknown command: {other}. Try list, add, remove or quit."),
         }
     }
 }
+
+fn main() {
+    run();
+}
 ```
 
-In this `match` statement, we match the user's input to four commands: `quit`, `list`, `add`, and `remove`. If the user enters the `quit` command, the loop will break and the program will exit. If the user enters the `list` command, the `list_tasks` function will be called to display the tasks in the to-do list. If the user enters the `add` command, the `add_task` function will be called to add a new task to the to-do list. If the user enters the `remove` command, the `remove_task` function will be called to remove a task from the to-do list. If the user enters an unknown command, a message will be printed to the console.
+`match` on a `String` needs `as_str()`, because the patterns are string literals (`&str`). The loop ends either on `quit` or when `prompt` returns `None`.
 
-Implementing the Functions
-
-Now that we can handle the user's input, we need to implement the functions that will perform the appropriate actions.
-
-The `list_tasks` function will display the tasks in the to-do list. We will loop through the tasks in the list and print each one to the console.
+## Listing tasks
 
 ```rust
-fn list_tasks(todo_list: &Vec<String>) {
-    println!("Tasks:");
-
-    for task in todo_list {
-        println!(" - {}", task);
+fn list_tasks(todo_list: &[String]) {
+    if todo_list.is_empty() {
+        println!("No tasks.");
+        return;
+    }
+    for (i, task) in todo_list.iter().enumerate() {
+        println!("{}. {task}", i + 1);
     }
 }
 ```
 
-The `add_task` function will add a new task to the to-do list. We will use the `std::io` module's `stdout()` function to prompt the user to enter a new task. We will use the `push()` method to add the new task to the end of the to-do list.
+The parameter is `&[String]` rather than `&Vec<String>`: a slice accepts a `&Vec<String>` (through deref coercion) and also arrays and sub-slices. The tasks are numbered from 1, since that's what the user will type when removing one.
+
+## Adding a task
 
 ```rust
 fn add_task(todo_list: &mut Vec<String>) {
-    let mut input = String::new();
-
-    print!("Enter task: ");
-    io::stdout().flush().unwrap();
-
-    io::stdin().read_line(&mut input).unwrap();
-    let task = input.trim().to_string();
-
-    todo_list.push(task);
-
-    println!("Task added!");
-}
-```
-
-The remove_task function will remove a task from the to-do list. We will use the std::io module's stdout() function to prompt the user to enter the index of the task to be removed. We will use the remove() method to remove the task at the specified index.
-
-```rust
-fn remove_task(todo_list: &mut Vec<String>) {
-    let mut input = String::new();
-
-    print!("Enter task index to remove: ");
-    io::stdout().flush().unwrap();
-
-    io::stdin().read_line(&mut input).unwrap();
-    let index = input.trim().parse::<usize>().unwrap();
-
-    if index >= todo_list.len() {
-        println!("Invalid index!");
-    } else {
-        todo_list.remove(index);
-        println!("Task removed!");
+    match prompt("Task: ") {
+        Some(task) if !task.is_empty() => {
+            todo_list.push(task);
+            println!("Added.");
+        }
+        _ => println!("Nothing added."),
     }
 }
 ```
-Testing the Application
 
-Now that we have implemented the to-do list application, we can test it by running the run function. To run the application, open a terminal window, navigate to the project directory, and run the following command:
+## Removing a task
 
-```bash
-$ cargo run
+The user might type something that isn't a number, or a number that's out of range. The original version of this post called `parse().unwrap()`, which crashes the program on `abc`. Handle both cases instead:
+
+```rust
+fn remove_task(todo_list: &mut Vec<String>) {
+    let Some(input) = prompt("Task number: ") else { return };
+
+    match input.parse::<usize>() {
+        Ok(n) if (1..=todo_list.len()).contains(&n) => {
+            let task = todo_list.remove(n - 1);
+            println!("Removed: {task}");
+        }
+        Ok(_) => println!("No task with that number."),
+        Err(_) => println!("Please enter a number."),
+    }
+}
 ```
 
-This command will compile and run the to-do list application. The application will prompt the user to enter a command. The user can enter one of the following commands:
+`Vec::remove` shifts every later element down by one, so the remaining tasks are renumbered on the next `list`.
 
-list: Displays the tasks in the to-do list.
-add: Prompts the user to enter a new task and adds it to the to-do list.
-remove: Prompts the user to enter the index of the task to be removed and removes it from the to-do list.
-quit: Exits the application.
+## Running it
 
-Conclusion
+```sh
+cargo run
+```
 
-In this article, we have explored how to create a simple to-do list application in Rust using the Rust standard library. We have used Rust's strong type system and memory safety features to create a robust and efficient application. We have also used Rust's concise syntax and powerful pattern matching capabilities to create a clean and easy-to-read code. With this knowledge, you can now create your own Rust applications and explore the full potential of this powerful programming language.
+```text
+> add
+Task: write blog post
+Added.
+> add
+Task: review PR
+Added.
+> list
+1. write blog post
+2. review PR
+> remove
+Task number: 1
+Removed: write blog post
+> list
+1. review PR
+> quit
+```
+
+## Next steps
+
+The list lives in memory and disappears when the program exits. Natural next steps:
+
+- **Persist it.** Write one task per line to a file with `std::fs::write` on each change and read it back at startup with `std::fs::read_to_string`, or use `serde_json` for structured tasks.
+- **Mark tasks done** instead of deleting them, by storing a small struct (`struct Task { text: String, done: bool }`) rather than a `String`.
+- **Use subcommands instead of a prompt** (`todo add "write blog post"`), with [`clap`](https://docs.rs/clap) parsing the arguments. That makes the tool scriptable.

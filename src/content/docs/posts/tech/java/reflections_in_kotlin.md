@@ -1,172 +1,127 @@
 ---
 tags: ['kotlin']
-title: Reflection and annotations in Kotlin
-description: Introduction reflection and annotations in Kotlin
+title: "Reflection and annotations in Kotlin: reading properties and custom annotations"
+description: How to inspect a class at runtime with Java reflection and kotlin-reflect, and how to declare, apply and read your own annotations in Kotlin.
 pubDate: Fri, 14 December 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2766162233.png
 ---
 
-## Reflection and annotations in Kotlin
-Reflection and annotations are powerful tools in Kotlin for introspection and metaprogramming.
+Reflection lets a program inspect its own classes, properties and functions at runtime. Annotations attach metadata to declarations. Used together, they let a library read your code's structure and behave differently based on it. This is how serializers, dependency-injection frameworks and test runners work.
 
-Reflection is the ability of a program to inspect its own structure at runtime. Kotlin's reflection API allows you to retrieve information about classes, properties, and functions at runtime. You can also use reflection to dynamically create instances of classes, invoke methods, and get and set properties.
+On the JVM, Kotlin gives you two reflection APIs: the Java one (`java.lang.reflect`), which is always available, and Kotlin's own (`kotlin.reflect`), which understands Kotlin concepts such as properties, nullability and default arguments.
 
-Annotations are metadata that you can attach to classes, properties, and functions to provide additional information about them. Kotlin provides several built-in annotations that you can use, such as @Deprecated and @JvmName. You can also create your own annotations to add custom metadata to your code.
+## Java reflection from Kotlin
 
-Here's an example of using reflection to get the properties of a class:
-
+`javaClass` returns the `java.lang.Class` of any object, so the standard Java reflection API works without extra dependencies:
 
 ```kotlin
 data class Person(val name: String, val age: Int)
 
 fun main() {
- val person = Person("Alice", 29)
- val properties = person.javaClass.declaredFields
- properties.forEach { property ->
- property.isAccessible = true
- val value = property.get(person)
- println("${property.name} = $value")
- }
+    val person = Person("Alice", 29)
+    for (field in person.javaClass.declaredFields) {
+        field.trySetAccessible()
+        println("${field.name} = ${field.get(person)}")
+    }
 }
 ```
-In this example, we create a `Person` class with two properties, `name` and `age`. We then use reflection to get the declared fields of the `Person` class and print out their names and values. We set `isAccessible` to `true` to allow us to access private properties.
 
-Here's an example of using an annotation to mark a deprecated function:
+A Kotlin `val` compiles to a private backing field plus a public getter, so the fields have to be made accessible before you read them. `trySetAccessible()` (Java 9+) does that and returns `false` instead of throwing if it isn't allowed. Note that the JVM doesn't guarantee the order of `declaredFields`.
 
+This API sees what the compiler produced (fields, getters, synthetic methods), not the Kotlin declarations you wrote.
+
+## Kotlin reflection
+
+The full `kotlin.reflect` API lives in a separate library, `kotlin-reflect`, so it doesn't bloat apps that don't need it. With Gradle's Kotlin DSL, add:
 
 ```kotlin
-@Deprecated("Use the 'greet' function instead")
+dependencies {
+    implementation(kotlin("reflect"))
+}
+```
+
+Then you can work with properties directly:
+
+```kotlin
+import kotlin.reflect.full.memberProperties
+
+data class Person(val name: String, val age: Int)
+
+fun main() {
+    val person = Person("Alice", 29)
+    for (prop in Person::class.memberProperties) {
+        println("${prop.name} = ${prop.get(person)}")
+    }
+}
+```
+
+`Person::class` is a `KClass<Person>`, and `memberProperties` returns `KProperty1<Person, *>` objects that you can call `get` on. Public properties don't need any accessibility changes. Some things work without `kotlin-reflect`, such as `Person::class.simpleName` and passing function references like `list.filter(::isValid)`. Calls into `kotlin.reflect.full` fail at runtime with `KotlinReflectionNotSupportedError` if the library is missing.
+
+## Built-in annotations
+
+Kotlin ships annotations such as `@Deprecated`, `@JvmName`, `@JvmStatic` and `@Suppress`. `@Deprecated` is the one you'll use most:
+
+```kotlin
+@Deprecated(
+    message = "Use greet() instead",
+    replaceWith = ReplaceWith("greet(name)"),
+)
 fun hello(name: String) {
- println("Hello, $name!")
+    println("Hello, $name!")
 }
 
 fun greet(name: String) {
- println("Hi, $name!")
+    println("Hi, $name!")
 }
 
 fun main() {
- hello("Alice")
- greet("Bob")
+    hello("Alice") // compiler warning: 'hello' is deprecated
+    greet("Bob")
 }
 ```
-In this example, we have a deprecated `hello` function that we mark with the `@Deprecated` annotation. We provide a message that tells the user to use the `greet` function instead. When we call the `hello` function in our `main` function, we get a warning that the function is deprecated.
 
-Overall, reflection and annotations are powerful tools that you can use to add flexibility and customization to your Kotlin code.
+Calling `hello` produces a compiler warning, and `ReplaceWith` lets IntelliJ rewrite the call for you. Pass `level = DeprecationLevel.ERROR` to make calls fail to compile, or `DeprecationLevel.HIDDEN` to hide the function from callers entirely.
 
+## Custom annotations, read with reflection
 
-Destructuring declarations is a feature in Kotlin that allows you to break down an object into multiple variables. This feature is particularly useful when working with data classes or other types of objects with multiple properties.
-
-To use destructuring declarations, you simply create a new variable for each property you want to extract and assign them using the object you want to destructure. For example:
-
+This example combines both features: a `@Sensitive` annotation marks properties whose values should be masked when an object is logged.
 
 ```kotlin
-data class Person(val name: String, val age: Int)
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
+
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Sensitive
+
+data class User(val email: String, @Sensitive val password: String)
+
+fun describe(obj: Any): String =
+    obj::class.memberProperties.joinToString(prefix = "${obj::class.simpleName}(", postfix = ")") { prop ->
+        val value = if (prop.findAnnotation<Sensitive>() != null) "***" else prop.getter.call(obj)
+        "${prop.name}=$value"
+    }
 
 fun main() {
- val person = Person("John Doe", 30)
- val (name, age) = person
- println("Name: $name, Age: $age")
+    val user = User("alice@example.com", "hunter2")
+    println(user)           // data class toString() prints the password
+    println(describe(user)) // password is masked
 }
 ```
-In this example, we create a `Person` object and then use destructuring declarations to extract the `name` and `age` properties into separate variables. We then print out the values of these variables.
 
-Destructuring declarations can also be used with other types of objects, such as arrays and maps. For example:
+Things to note:
 
+- `@Retention(AnnotationRetention.RUNTIME)` keeps the annotation in the bytecode so reflection can see it. `RUNTIME` is Kotlin's default, but stating it makes the intent clear. `SOURCE` annotations are discarded by the compiler.
+- `@Target` controls where the annotation can go. On a constructor `val` parameter, one annotation could apply to the parameter, the property, or the backing field. Restricting the target to `PROPERTY` removes the ambiguity. You can also be explicit at the use site with `@property:Sensitive`.
+- `obj::class` has type `KClass<out Any>`, so `prop.get(obj)` doesn't type-check. `prop.getter.call(obj)` works around that.
 
-```kotlin
-fun main() {
- val array = arrayOf("John", "Doe")
- val (firstName, lastName) = array
- println("First name: $firstName, Last name: $lastName")
- 
- val map = mapOf("name" to "John Doe", "age" to 30)
- val (name, age) = map
- println("Name: $name, Age: $age")
-}
-```
-In this example, we use destructuring declarations to extract the values from an array and a map. We create new variables for each value we want to extract and then assign them using destructuring declarations. We then print out the values of these variables.
+## When not to use reflection
 
+Reflection is slower than direct calls, skips compile-time checks, and can break with code shrinkers such as R8/ProGuard, which rename or strip members they think are unused. If you know the types at compile time, prefer plain code, `when` over a sealed hierarchy, or a compiler plugin or KSP processor that generates code ahead of time. kotlinx.serialization takes the compiler-plugin approach for this reason.
 
-Sealed classes are a special type of class in Kotlin that restricts the inheritance of the class hierarchy. In other words, sealed classes are used when we have a limited set of possible subclasses that we want to restrict.
+## Further reading
 
-To define a sealed class, we use the "sealed" keyword followed by the name of the class. Then, we define the subclasses of the sealed class within the same file as the sealed class using the "class" keyword.
-
-The main benefit of using sealed classes is that they allow us to use "when" expressions (similar to switch statements in other languages) to handle a limited set of possible subclasses. This can make our code more concise and easier to read.
-
-Here's an example of how to define a sealed class in Kotlin:
-
-
-```kotlin
-sealed class Shape {
- class Circle(val radius: Double) : Shape()
- class Rectangle(val width: Double, val height: Double) : Shape()
-}
-```
-In this example, we define a sealed class called "Shape" with two subclasses: "Circle" and "Rectangle". Now, we can use "when" expressions to handle instances of these subclasses:
-
-
-```kotlin
-fun calculateArea(shape: Shape): Double {
- return when (shape) {
- is Shape.Circle -> Math.PI * shape.radius * shape.radius
- is Shape.Rectangle -> shape.width * shape.height
- }
-}
-```
-In this example, we define a function called "calculateArea" that takes an instance of "Shape" as an argument and returns the area of the shape. We use a "when" expression to handle each of the possible subclasses of "Shape" and calculate the area accordingly.
-
-
-Type aliases in Kotlin allow developers to create custom names for existing types in the code. This feature can be helpful in creating more concise and expressive code, and can also improve readability and maintainability. Type aliases are especially useful when dealing with complex types, such as function types or nested classes.
-
-To define a type alias in Kotlin, use the "typealias" keyword followed by the desired alias name and the existing type. Here is an example:
-
-
-```kotlin
-typealias EmployeeSet = Set<Employee>
-```
-In this example, we are creating an alias called "EmployeeSet" for the existing type "Set<Employee>". Once this alias is defined, it can be used in place of the original type in the code:
-
-
-```kotlin
-fun addEmployee(employeeSet: EmployeeSet, employee: Employee) {
- employeeSet.add(employee)
-}
-```
-Here, the "EmployeeSet" alias is used as the parameter type for the "addEmployee" function.
-
-Type aliases can also be used with function types:
-
-
-```kotlin
-typealias Operation = (Int, Int) -> Int
-
-val add: Operation = { a, b -> a + b }
-val subtract: Operation = { a, b -> a - b }
-
-fun calculate(op: Operation, a: Int, b: Int): Int {
- return op(a, b)
-}
-```
-In this example, we define a type alias called "Operation" for a function type that takes two integers and returns an integer. We then define two variables of type "Operation", which represent the addition and subtraction operations. Finally, we define a function called "calculate" that takes an operation and two integers as parameters, and returns the result of applying the operation to the integers.
-
-Type aliases can make code more readable and concise by allowing developers to define custom names for complex types. They are especially useful when working with function types and nested classes.
-
-
-Operator overloading is a feature in Kotlin that allows operators such as +, -, \*, /, %, and many others to be defined with custom behavior when used with custom types. It allows for more expressive and readable code when working with custom types.
-
-To overload an operator in Kotlin, the operator keyword is used followed by the operator being overloaded. For example, to overload the plus operator (+), the function signature would be:
-
-
-```kotlin
-operator fun plus(other: CustomType): CustomType {
- // custom implementation
-}
-```
-The function can then be called using the plus operator with instances of the custom type:
-
-
-```kotlin
-val result = customType1 + customType2
-```
-It is important to note that not all operators can be overloaded and some have predefined behavior that cannot be changed. Additionally, it is recommended to use operator overloading sparingly and only when it adds clarity to the code.
+- [Kotlin docs: Reflection](https://kotlinlang.org/docs/reflection.html)
+- [Kotlin docs: Annotations](https://kotlinlang.org/docs/annotations.html)

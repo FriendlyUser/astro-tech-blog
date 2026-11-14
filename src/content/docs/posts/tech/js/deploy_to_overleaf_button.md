@@ -1,116 +1,98 @@
 ---
 tags: ['next', 'latex', 'nextra']
-title: Create a deploy to overleaf button
-description: How to create a deploy to overleaf button in react and plain html
+title: Add an "Open in Overleaf" button in HTML or React
+description: Build a link that opens a public .tex file as a new Overleaf project, as a plain HTML anchor, a Python helper, and a reusable React component.
 pubDate: Fri, 7 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 ---
 
-Overleaf is a web-based platform that allows users to create, edit, and share LaTeX documents online. It is useful for writing reports in LaTeX because it provides a collaborative and streamlined writing environment.
+Overleaf is a browser-based LaTeX editor, so readers can compile and edit a document without installing a TeX distribution. If you publish LaTeX examples, a button that opens the file straight in Overleaf saves readers from copying and pasting.
 
-In traditional LaTeX, users typically need to download and configure a LaTeX distribution on their local machine, which can be time-consuming and require a significant amount of technical expertise. With Overleaf, users can skip this step and start writing immediately within their web browser. Additionally, Overleaf provides a variety of pre-built templates and examples that users can use as starting points for their documents, which can be helpful for beginners.
+## How it works
 
-One of the biggest advantages of Overleaf is its collaborative features. Users can share their documents with others, invite collaborators to work on a document together, and even chat with collaborators within the platform. This makes it an ideal tool for writing reports or papers with co-authors.
+Overleaf accepts files at `https://www.overleaf.com/docs`. There is no API key or authentication step on your side: you pass the location of the file in the `snip_uri` parameter, and Overleaf downloads it and creates a new project in the reader's account (prompting them to log in if needed).
 
+```text
+https://www.overleaf.com/docs?snip_uri=<url-encoded URL of a .tex or .zip file>
+```
 
-To use the Overleaf API to open a file, you will need to follow these steps:
+Things to know:
 
-1. Obtain an API key from Overleaf. You can do this by logging into your Overleaf account and navigating to your account settings. From there, you can generate an API key that you will use to authenticate your API requests.
-2. Make an API request to the Overleaf API using the file URL. You can do this using the following endpoint: `https://www.overleaf.com/docs?snip_uri=URL`. Replace "URL" with the URL of your LaTeX file, which should end in `.tex`.
+- The file must be publicly reachable over HTTP or HTTPS, for example a `raw.githubusercontent.com` URL. A GitHub page URL (`github.com/.../blob/...`) returns HTML, not the `.tex` file.
+- `snip_uri` can also point to a `.zip`, which is how you open a multi-file project (e.g. a `.tex` file plus images).
+- URL-encode the value. A file URL that contains its own `?` or `&` will otherwise be cut off.
+- Optional parameters include `engine` (`pdflatex`, `xelatex`, `lualatex`, `latex_dvipdf`) and `main_document` for zips with more than one `.tex` file.
 
-Here is some sample code in Python that demonstrates how to use the Overleaf API to open a file:
+## Plain HTML
 
+```html
+<a
+  href="https://www.overleaf.com/docs?snip_uri=https%3A%2F%2Fraw.githubusercontent.com%2FFriendlyUser%2FLatexDiagrams%2Fmaster%2FBlogDiagrams%2FbuildingDapp.tex"
+  target="_blank"
+  rel="noopener noreferrer"
+  style="display: inline-block; background-color: green; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 16px;"
+>
+  Open in Overleaf
+</a>
+```
+
+Overleaf's developer page also shows the same thing as a `<form method="post">` with a `snip_uri` field, which avoids encoding the URL by hand.
+
+## From Python
+
+Handy for opening a generated file during development. `quote(..., safe='')` encodes the `:` and `/` in the file URL.
 
 ```python
 import webbrowser
+from urllib.parse import quote
 
-# Replace FILE\_URL with the URL of your LaTeX file
-FILE_URL = 'http://pathtoyourfile.tex'
-
-# Construct the API request URL
-api_url = f'https://www.overleaf.com/docs?snip_uri={FILE_URL}'
-
-# Make the API request
-webbrowser.open(api_url)
+file_url = "https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/BlogDiagrams/buildingDapp.tex"
+webbrowser.open(f"https://www.overleaf.com/docs?snip_uri={quote(file_url, safe='')}")
 ```
-This code will open the LaTeX file in Overleaf in a new tab or window in your web browser. You can also use this code to open a LaTeX file in Overleaf from a website or document.
 
-
-```js 
- <a href="https://www.overleaf.com/docs?snip_uri={FILE_URL}" target="_blank" style={{
-        display: "inline-block",
-        backgroundColor: "green",
-        color: "white",
-        padding: "8px 16px",
-        borderRadius: "4px",
-        textDecoration: "none",
-        fontSize: "16px",
-        textAlign: "center"
-      }}>Deploy to overleaf</a> 
- ```
-
-This is an HTML anchor tag (`<a>`) with a link to a LaTeX file on Overleaf.
-
-The link has a `target="_blank"` attribute, which tells the browser to open the link in a new tab or window when the user clicks on it.
-
-The style of the link is defined using inline CSS, with a green background color, white text, and other formatting properties such as padding and border radius. The text inside the link reads "Deploy to overleaf" and is centered using the `text-align` property.
-
-When a user clicks on this link, it will open the LaTeX file in Overleaf in a new tab or window, allowing them to view and edit the file. The link could be useful for sharing a LaTeX file with collaborators or for quickly accessing a file from a website or document.
-
-
-To parameterize the component you provided as a React component, you can modify the code to use props. Here is an example implementation:
-
+## React component
 
 ```jsx
-import React from 'react';
+const defaultStyle = {
+  display: "inline-block",
+  backgroundColor: "green",
+  color: "white",
+  padding: "8px 16px",
+  borderRadius: "4px",
+  textDecoration: "none",
+  fontSize: "16px",
+};
 
-function OverleafDeployButton(props) {
- const { 
- texFileBaseUrl,
- relFolderPath,
- texFilePath,
- buttonText,
- buttonStyle 
- } = props;
+export function OverleafButton({ texUrl, engine, children = "Open in Overleaf", style = defaultStyle }) {
+  const params = new URLSearchParams({ snip_uri: texUrl });
+  if (engine) params.set("engine", engine);
 
- const fileUrl = `https://www.overleaf.com/docs?snip_uri=${texFilePath}.tex`;
-
- return (
- <a href={fileUrl} target="\_blank" style={buttonStyle}>
- {buttonText}
- </a>
- );
+  return (
+    <a
+      href={`https://www.overleaf.com/docs?${params}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={style}
+    >
+      {children}
+    </a>
+  );
 }
 ```
-In this implementation, we define a `OverleafDeployButton` function component that takes in props using the `props` parameter. The props are then destructured to extract the necessary values.
 
-We use the destructured props to construct the `fileUrl` variable, which is then used in the anchor tag's `href` attribute.
+`URLSearchParams` does the encoding, so you can pass the raw file URL. In an MDX page (Next.js or Nextra) it is used like this:
 
-The button text and style are also passed as props and used to set the text and style of the anchor tag.
-
-This component can then be used in a React application by importing the `OverleafDeployButton` component and passing in the required props, like this:
-
-
-```js
-<OverleafDeployButton
- texFilePath="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/BlogDiagrams/buildingDapp"
- buttonText="Deploy to Overleaf"
- buttonStyle={{
- display: "inline-block",
- backgroundColor: "green",
- color: "white",
- padding: "8px 16px",
- borderRadius: "4px",
- textDecoration: "none",
- fontSize: "16px",
- textAlign: "center"
- }}
-/>
+```jsx
+<OverleafButton texUrl="https://raw.githubusercontent.com/FriendlyUser/LatexDiagrams/master/BlogDiagrams/buildingDapp.tex" />
 ```
-This will render a button with the text "Deploy to Overleaf" that, when clicked, will open the specified LaTeX file in Overleaf. The button style is also customizable using the `buttonStyle` prop.
+
+The earlier version of this component built the URL without encoding, appended `.tex` to whatever was passed in, and set `target="\_blank"` (with a stray backslash), which opened a window named `\_blank` instead of a new tab.
 
 ## References
+
+- [Overleaf: Open in Overleaf API](https://www.overleaf.com/devs)
 - https://github.com/FriendlyUser/dli-vue-docs
 - https://github.com/FriendlyUser/latex-diagrams-docs
 - https://latex-diagrams-docs.vercel.app/
