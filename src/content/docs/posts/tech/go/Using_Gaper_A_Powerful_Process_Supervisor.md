@@ -1,87 +1,92 @@
 ---
-title: A Powerful Process Supervisor Gaper
+title: "Gaper: rebuild and restart a Go program on crash or file change"
 pubDate: "2023-05-26T15:32:48.952Z"
-description: "We'll explore Gapers features and demonstrate how to use it effectively in your Golang projects."
-tags: []
+lastUpdated: 2026-11-14
+description: "How to install and run gaper, a development-only supervisor that rebuilds your Go program when files change and restarts it when it exits."
+tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1230376530.png
 ---
 
-## What is Gaper
+[Gaper](https://github.com/maxcnunes/gaper) is a command-line tool that builds your Go program, runs it, and rebuilds and restarts it when a watched file changes or when the program exits. It is the Go equivalent of `nodemon` or `node-supervisor`, and its README says it is aimed at development only. It is not a production process manager: for that, use systemd, a container restart policy, or similar.
 
-When developing applications in Golang, it is crucial to ensure that your programs run smoothly, and that they are able to recover from unexpected crashes or restarts. This is where Gaper, a process supervisor for Golang, comes in handy. In this article, we'll explore Gaper's features and demonstrate how to use it effectively in your Golang projects.
+You don't import gaper into your code. You run it from the project directory in place of `go run`.
 
-Gaper is a lightweight and easy-to-use process supervisor designed specifically for Golang applications. It is responsible for managing the lifecycle of your application, as well as monitoring and restarting it in case of failures or crashes.
+:::note
+The latest gaper release is v1.1.0 (August 2022), and the repository has had no commits since 2023. It still works as described here, but if you want an actively developed alternative, look at [Air](https://github.com/air-verse/air).
+:::
 
-The key features of Gaper include:
+## Install
 
-1. Automatic restarts when the application crashes or exits unexpectedly.
-2. Configurable backoff strategy for restarts to avoid overwhelming the system.
-3. Support for both long-running services and one-off tasks.
-4. Clean shutdown of child processes on termination.
-5. Easy integration with Golang applications, with minimal configuration required.
+With Go 1.17 or later, install the binary with `go install`:
 
-## Getting Started with Gaper
-
-Before diving into examples, make sure you have Golang installed on your system. If not, follow the [official installation guide](https://golang.org/doc/install).
-
-To install Gaper, use the following command:
-
-```sh
-go get -u github.com/maxence-charriere/gaper
+```bash
+go install github.com/maxcnunes/gaper/cmd/gaper@latest
 ```
 
-This command will download and install Gaper into your `$GOPATH`.
+This puts `gaper` in `$(go env GOPATH)/bin`, so make sure that directory is on your `PATH`. Prebuilt binaries are also on the [releases page](https://github.com/maxcnunes/gaper/releases).
 
-## Using Gaper in Your Golang Application
+## Run it
 
-To use Gaper, you'll need to create a `main. file that will serve as the entry point for your application. This file will include the Gaper package and use its `gaper.Run()` function to start your application.
+From the root of a `main` package, run gaper with no arguments:
 
-Here's an example of a simple `main. file:
-
-```go
-package main
-
-import (
-	"github.com/maxence-charriere/gaper"
-	"yourapp/cmd"
-)
-
-func main() {
-	gaper.Run(cmd.Execute)
-}
+```bash
+gaper
 ```
 
-In this example, replace `yourapp/cmd` with the import path to your application's main package. The `cmd.Execute` function should be the entry point for your application, starting all necessary services or tasks.
+With the defaults, gaper:
 
-## Configuring Gaper
+- builds the package in `.` into a binary named after the current directory;
+- runs that binary;
+- polls `.go` files every 500 ms and rebuilds and restarts the program when one changes;
+- restarts the program whenever it exits, whether it crashed or not;
+- ignores hidden files and folders, `*_test.go` files and the `vendor` folder.
 
-Gaper provides a variety of configuration options through environment variables. Here are some of the most commonly used options:
+## Useful flags
 
-- `GAPER_RESTART_DELAY`: The initial delay before restarting the application (in milliseconds). Defaults to 1000 (1 second).
-- `GAPER_MAX_RESTART_DELAY`: The maximum delay before restarting the application (in milliseconds). Defaults to 32000 (32 seconds).
-- `GAPER_BACKOFF_FACTOR`: The factor by which the restart delay increases on each consecutive failure (geometric progression). Defaults to 2.
-- `GAPER_MAX_RETRIES`: The maximum number of retries before giving up on restarting the application. Defaults to 10.
+All configuration is done with command-line flags; there is no config file or environment variables.
 
-For example, to set a custom restart delay and maximum retries, add the following lines to your `main. file:
+| Flag | What it does |
+| --- | --- |
+| `--build-path` | Path to the program's source (default `.`) |
+| `--bin-name` | Name of the binary gaper builds |
+| `--build-args` | Extra arguments for `go build` |
+| `--program-args` | Arguments passed to your program |
+| `-w`, `--watch` | Files or folders to watch (repeatable, globs allowed) |
+| `-i`, `--ignore` | Files or folders to ignore (repeatable, globs allowed) |
+| `-e`, `--extensions` | File extensions to watch (default `go`) |
+| `-p`, `--poll-interval` | Polling interval in milliseconds (default 500) |
+| `-n`, `--no-restart-on` | `error`, `exit` or `success` (see below) |
+| `--disable-default-ignore` | Also watch hidden files, tests and `vendor` |
+| `--verbose` | Print gaper's own log messages |
 
-```go
-package main
+`--no-restart-on` controls what happens when your program exits on its own:
 
-import (
-	"github.com/maxence-charriere/gaper"
-	"os"
-)
+- `error`: don't restart when the program fails; a clean exit (code 0) still restarts. In v1.1.0 the check is for exit code 1 specifically, so other non-zero codes still trigger a restart.
+- `success`: don't restart on a clean exit; crashes still restart.
+- `exit`: never restart automatically. Gaper still rebuilds and restarts on file changes.
 
-func main() {
-	os.Setenv("GAPER_RESTART_DELAY", "2000")
-	os.Setenv("GAPER_MAX_RETRIES", "5")
-	// ...
-}
+A typical setup for a web server whose `main` package lives in `cmd/server`, and which also serves templates and static files:
+
+```bash
+gaper \
+  --build-path cmd/server \
+  --bin-name build/api-dev \
+  -w . -e go -e html -e css \
+  --program-args "-port 8080" \
+  --no-restart-on exit
 ```
 
-## Wrapping Up
+When adding a directory to `--watch` or `--ignore`, end it with a `/` (for example `build/`). Otherwise the pattern can also match files that start with the same name, such as `build_settings.go`.
 
-Gaper is a powerful and easy-to-use process supervisor for Golang applications that can help you ensure the reliability and resiliency of your programs. By integrating Gaper into your projects, you can automatically restart your applications in case of failures and crashes, and configure the behavior of these restarts using a variety of options.
+## Gotchas
 
-With Gaper, you can focus on developing your application's core functionality, knowing that the process supervision is taken care of.
+- Gaper polls the file system rather than using file system events, so very large trees with a short `--poll-interval` cost some CPU.
+- Restarting on every exit is the default. If your program is a one-shot CLI rather than a server, pass `--no-restart-on success` or it will run in a loop.
+- There is no backoff or retry limit. A program that crashes on startup is rebuilt and restarted over and over until you fix it. A Go panic exits with code 2, which `--no-restart-on error` does not catch, so use `--no-restart-on exit` if the loop gets noisy.
+- If a rebuild fails, gaper logs the compiler error and keeps watching; the next file change triggers another build.
+
+## Further reading
+
+- [gaper README](https://github.com/maxcnunes/gaper)
+- [Air](https://github.com/air-verse/air), a more actively maintained live-reload tool for Go

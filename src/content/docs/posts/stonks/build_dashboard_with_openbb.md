@@ -1,68 +1,111 @@
 ---
-title: "Streamlining Technical Analysis with OpenBB and Streamlit"
-description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
+title: "Building a Bollinger Bands web app with Streamlit and the OpenBB SDK"
+description: "How my Streamlit app loaded stock prices with the OpenBB SDK, rendered OpenBB's Bollinger Bands chart as an image, and what to use now that the SDK is retired."
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 12 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/sample.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-This project is a Streamlit app that uses openbb-sdk to display technical analysis graphs for a given stock. The app allows the user to input a ticker symbol, start date, and end date in the sidebar, and then displays a line chart of the stock's adjusted close price, as well as a Bollinger Bands graph using the openbb-sdk. The Bollinger Bands graph is saved to an image file and then displayed in the app.
+:::caution[OpenBB SDK and st.cache are retired]
+This app was built on the `openbb-terminal` package (the "OpenBB SDK" v3). OpenBB has since sunset the Terminal and replaced the SDK with the [OpenBB Platform](https://docs.openbb.co/) (`pip install openbb`, `from openbb import obb`), so the `openbb_terminal` imports below no longer work on a fresh install. `st.cache` was deprecated in Streamlit 1.18 and removed in 1.62; use `st.cache_data` instead. The last section shows a version without OpenBB.
+:::
+
+This project is a small Streamlit app that draws technical analysis charts for a stock. You type a ticker, start date and end date in the sidebar, and it shows a line chart of the closing price plus a Bollinger Bands chart produced by the OpenBB SDK. OpenBB writes the chart to a PNG, and the app displays that file.
+
+## Reading the inputs
+
+The sidebar holds three text inputs, defaulting to ZIM from May 2020 to today:
 
 ```python
+import datetime
+
+import streamlit as st
+
 today = datetime.date.today()
+
 def user_input_features():
-    ticker = st.sidebar.text_input("Ticker", 'ZIM')
-    start_date = st.sidebar.text_input("Start Date", '2020-05-01')
-    end_date = st.sidebar.text_input("End Date", f'{today}')
-    # ta_range = st.sidebar.number_input("TA Range", min_value=1, max_value=50)
-    return ticker, start_date, end_date # , ta_range
+    ticker = st.sidebar.text_input("Ticker", "ZIM")
+    start_date = st.sidebar.text_input("Start Date", "2020-05-01")
+    end_date = st.sidebar.text_input("End Date", f"{today}")
+    return ticker, start_date, end_date
 
 symbol, start, end = user_input_features()
 ```
 
-The user_input_features() function is used to get the user input from the sidebar. The user can input a ticker symbol, start date, and end date. The start date and end date are used to get the stock data from the yfinance API. The ticker symbol is used to get the company name from the yfinance API using the open bb load utility.
+The dates go to OpenBB's `load` helper (`from openbb_terminal.stocks.stocks_helper import load`), which fetched daily prices, from Yahoo Finance by default. The ticker is only upper-cased for the chart headings; the app doesn't look up the company name.
 
+## Rendering the OpenBB chart
 
-```python
-@st.cache  # 👈 Added this
-def build_bbands_img(data, symbol, file_name="sample.png"):
-    ...
-    pass
-```
-
-
-To improve the performance of the app, you can use Streamlit's @st.cache decorator on the build_bbands_img() function. This will enable caching of the results of the function, so that it is only executed when the input values change. This can help reduce the time it takes to generate the Bollinger Bands image, especially if the user is repeatedly requesting the same data. 
+OpenBB's `display_bbands` view function didn't return a figure. Instead it saved the chart when you passed `export="bbands.png"`, writing it to `~/OpenBBUserData/exports/`. So the app builds that path, calls the view function, and hands the file to `st.image`:
 
 ```python
-stream = os.popen('cd ~ && pwd')
-root_dir = stream.read()
-# /home/codespace/OpenBBUserData/exports/temp.png
-# find root directory/OpenBBUserData/exports
-sample_dir = root_dir.strip()
-# root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-temp_image = os.path.join(sample_dir, "OpenBBUserData", "exports", file_name)
+import os
+
+from openbb_terminal.common.technical_analysis.volatility_view import display_bbands
+
+@st.cache  # removed in current Streamlit; use @st.cache_data
+def build_bbands_img(data, symbol, file_name="bbands.png"):
+    temp_image = os.path.join(os.path.expanduser("~"), "OpenBBUserData", "exports", file_name)
+    if os.path.exists(temp_image):
+        os.remove(temp_image)
+    display_bbands(data, symbol, 15, 2, export=file_name)
+    return temp_image
 ```
 
-The code above is used to find the root shell directory of the project. This is used to find the location of the image file that is generated by the openbb-sdk. The image file is then displayed in the app using Streamlit's st.image() function.
+The first version found the home directory with `os.popen('cd ~ && pwd')`, which only works where a POSIX shell is available. `os.path.expanduser("~")` (or `pathlib.Path.home()`) does the same thing on every OS.
+
+Caching the function means a rerun with the same ticker and dates skips regenerating the image. Streamlit reruns the whole script on every widget change, so without the cache every sidebar change would regenerate the chart.
 
 ```python
 bbands_img = build_bbands_img(data, symbol, "bbands.png")
-# plot ta using open bb sdk in streamlit
-st.header(f"Bollinger Bands\n {company_name}")
-# 
-# if bbands.png exists, display it
+st.header(f"Bollinger Bands\n {symbol.upper()}")
 
 if bbands_img:
-    st.image(bbands_img, caption='Sunrise by the mountains')
+    st.image(bbands_img, caption="Bollinger Bands chart")
 ```
 
+## The same app without OpenBB
 
-To view the full app go to https://friendlyuser-stonk-ta-app-app-fhrcso.streamlit.app/
+Since the OpenBB SDK is gone, here is an equivalent that fetches prices with `yfinance` and calculates the bands with pandas. Plotting the series with `st.line_chart` gives an interactive chart and no temporary files. Tested with Streamlit 1.67 and yfinance 1.8:
+
+```python
+import datetime
+
+import pandas as pd
+import streamlit as st
+import yfinance as yf
 
 
-and view the source code at
+@st.cache_data(ttl="1h")
+def load_prices(ticker: str, start: datetime.date, end: datetime.date) -> pd.DataFrame:
+    return yf.Ticker(ticker).history(start=start, end=end)
 
-https://github.com/FriendlyUser/stonk_ta_app
+
+ticker = st.sidebar.text_input("Ticker", "ZIM")
+start = st.sidebar.date_input("Start date", datetime.date(2020, 5, 1))
+end = st.sidebar.date_input("End date", datetime.date.today())
+
+prices = load_prices(ticker, start, end)
+close = prices["Close"]
+
+st.header(f"Adjusted close: {ticker.upper()}")
+st.line_chart(close)
+
+# Bollinger Bands: 15-day SMA +/- 2 standard deviations
+mid = close.rolling(15).mean()
+std = close.rolling(15).std()
+st.header("Bollinger Bands (15, 2)")
+st.line_chart(pd.DataFrame({"Close": close, "Upper": mid + 2 * std, "Lower": mid - 2 * std}))
+```
+
+Run it with `streamlit run app.py`. `Ticker.history()` returns split- and dividend-adjusted prices by default. If you want to stay with OpenBB, the Platform's `openbb-technical` extension provides `obb.technical.bbands(data=..., length=15, std=2)`, which takes a DataFrame you've already loaded.
+
+## Source
+
+- Source code: [FriendlyUser/stonk_ta_app](https://github.com/FriendlyUser/stonk_ta_app)
+- The app was hosted on Streamlit Community Cloud at <https://friendlyuser-stonk-ta-app-app-fhrcso.streamlit.app/>. It still depends on `openbb-terminal`, so it may no longer load.
+- Follow-up post: [adding Donchian Channels and `st.cache_data`](/posts/stonks/build_dashboard_with_openbb_II/)

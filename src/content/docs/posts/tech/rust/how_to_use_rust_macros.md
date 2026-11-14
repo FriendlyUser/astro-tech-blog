@@ -1,78 +1,114 @@
 ---
-title: How to use Rust's macros
-description: In this article, we will explore Rust's macros and build a program that demonstrates their usage.
+title: "Write a procedural macro in Rust: a custom assert_equals! with syn and quote"
+description: Build a function-like procedural macro that compares two expressions and prints both values on failure, and compare it with a macro_rules! version.
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+Rust macros generate code at compile time. There are two kinds:
 
-Rust is a modern programming language that emphasizes safety, speed, and concurrency. It provides a rich set of features, including powerful macros, that enable developers to write expressive and efficient code. In this article, we will explore Rust's macros and build a program that demonstrates their usage.
+- **Declarative macros** (`macro_rules!`) match on token patterns and expand to a template. Most macros you use day to day, like `vec!` and `println!`, are this kind.
+- **Procedural macros** are Rust functions that take a `TokenStream` and return a new one. They come in three flavours: function-like (`my_macro!(...)`), derive (`#[derive(MyTrait)]`) and attribute (`#[my_attr]`).
 
-Macros are a powerful feature of Rust that allow developers to write code that generates other code. They are a way to write code that can be used to generate repetitive or boilerplate code, making it easier to write and maintain complex applications. Rust's macros are known as procedural macros, which means they operate on the abstract syntax tree (AST) of the code and generate new code based on it.
+This post builds a function-like procedural macro, `assert_equals!(a, b)`, that panics with both expressions and their values when they differ.
 
-To demonstrate the usage of Rust's macros, we will build a custom assert macro that prints out the values being compared if the assertion fails. This will help us understand how macros work and how they can be used to simplify our code.
+## Project layout
 
-Let's start by creating a new Rust project using Cargo, Rust's package manager. Open a terminal and run the following command:
+A procedural macro has to live in its own crate with `proc-macro = true`, and that crate can only export macros. So we need two crates: the macro crate and a binary that uses it.
 
-```rust
+```bash
 cargo new assert-demo
-```
-
-This will create a new Rust project named `assert-demo`. Now, navigate to the project directory by running:
-
-```rust
 cd assert-demo
+cargo new --lib assert_macros
 ```
 
-Next, open the `Cargo.toml` file and add the following dependencies:
+In `assert_macros/Cargo.toml`, mark the crate as a proc-macro crate and add `syn` and `quote`:
 
-```rust
+```toml
+[lib]
+proc-macro = true
+
 [dependencies]
-syn = "1.0"
-quote = "1.0"
+syn = { version = "2", features = ["full"] }
+quote = "1"
 ```
 
-These dependencies are required for building procedural macros. The `syn` crate provides a parser for Rust's syntax, while the `quote` crate allows us to generate new Rust code.
+`syn` parses the incoming tokens into a syntax tree; `quote` turns Rust-like templates back into tokens. The `full` feature lets `syn` parse any Rust expression, not just the subset needed for derive macros. This example is written against `syn` 2 (2.0.119) and `quote` 1.0.47; `syn` 3 has since been released and may need small changes.
 
-Now, let's create a new file named `src/lib.rs` and add the following code:
+In the top-level `Cargo.toml`, depend on the macro crate by path:
+
+```toml
+[dependencies]
+assert_macros = { path = "assert_macros" }
+```
+
+## The macro
+
+Replace `assert_macros/src/lib.rs` with:
 
 ```rust
-extern crate proc_macro;
-
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Expr};
+use syn::parse::{Parse, ParseStream};
+use syn::{parse_macro_input, Expr, Token};
+
+/// Two comma-separated expressions, with an optional trailing comma.
+struct Args {
+    left: Expr,
+    right: Expr,
+}
+
+impl Parse for Args {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let left = input.parse()?;
+        input.parse::<Token![,]>()?;
+        let right = input.parse()?;
+        input.parse::<Option<Token![,]>>()?;
+        Ok(Args { left, right })
+    }
+}
 
 #[proc_macro]
 pub fn assert_equals(input: TokenStream) -> TokenStream {
-    let exprs = parse_macro_input!(input as syn::ExprBinary);
-
-    let left = exprs.left;
-    let right = exprs.right;
+    let Args { left, right } = parse_macro_input!(input as Args);
 
     let expanded = quote! {
-        if !(#left == #right) {
-            panic!("assertion failed: {} != {}", #left, #right);
+        match (&(#left), &(#right)) {
+            (left_val, right_val) => {
+                if !(*left_val == *right_val) {
+                    panic!(
+                        "assertion failed: `{} == {}`\n  left: {:?}\n right: {:?}",
+                        stringify!(#left),
+                        stringify!(#right),
+                        left_val,
+                        right_val,
+                    );
+                }
+            }
         }
     };
 
-    TokenStream::from(expanded)
+    expanded.into()
 }
 ```
 
-Let's go through this code step by step. First, we import the `proc_macro` module, which allows us to define procedural macros. We also import the `quote` and `syn` crates, which we added as dependencies earlier.
+How it works:
 
-Next, we define a new procedural macro named `assert_equals`. This macro takes an expression as input, which should be a binary expression like `assert_equals!(a + b, c)`. We use the `parse_macro_input` macro from the `syn` crate to parse the input expression into an `ExprBinary` object.
+- `Args` implements `syn::parse::Parse`, so `parse_macro_input!` can turn the input tokens into two `Expr` values. If the input isn't `expr, expr`, `parse_macro_input!` returns a compile error pointing at the bad tokens instead of panicking inside the compiler.
+- `quote!` builds the output. `#left` and `#right` splice the parsed expressions back in.
+- Each expression is evaluated once and borrowed (`&(#left)`), the same trick the standard `assert_eq!` uses, so `assert_equals!(v.pop(), Some(3))` doesn't call `pop()` twice and non-`Copy` values aren't moved.
+- `stringify!` keeps the source text of each expression for the message, and `{:?}` prints the values, so both sides need to implement `PartialEq` and `Debug`.
 
-We then extract the left and right expressions from the `ExprBinary` object using the `left` and `right` fields.
+## Using it
 
-Finally, we use the `quote` macro to generate new Rust code. We construct an `if` statement that checks whether the left and right expressions are equal. If they are not, we panic with a message indicating that the assertion failed and print out the values of the left and right expressions.
-
-Now that we've defined our macro, let's use it in our main program. Open the `src/main.rs` file and add the following code:
+`src/main.rs`:
 
 ```rust
+use assert_macros::assert_equals;
+
 fn main() {
     let a = 1;
     let b = 2;
@@ -80,20 +116,45 @@ fn main() {
 }
 ```
 
-This code defines two variables, `a` and `b`, and then uses our `assert_equals` macro to assert that they are equal. Since `a` and `b` are not equal, the assertion will fail and our macro will print out the values of `a` and `b`.
+`cargo run` panics with:
 
-To run the program, use the following command:
-
+```text
+thread 'main' panicked at src/main.rs:6:5:
+assertion failed: `a == b`
+  left: 1
+ right: 2
 ```
-cargo run
-```
 
-You should see the following output:
+To see what the macro expanded to, install [`cargo-expand`](https://github.com/dtolnay/cargo-expand) and run `cargo expand`.
+
+## You probably don't need a proc macro for this
+
+Everything above can be done with a declarative macro in a few lines, with no extra crate and no `syn` compile time:
 
 ```rust
-thread 'main' panicked at 'assertion failed: 1 != 2', src/main.rs:4:5
+macro_rules! assert_equals {
+    ($left:expr, $right:expr $(,)?) => {
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if !(*left_val == *right_val) {
+                    panic!(
+                        "assertion failed: `{} == {}`\n  left: {:?}\n right: {:?}",
+                        stringify!($left),
+                        stringify!($right),
+                        left_val,
+                        right_val,
+                    );
+                }
+            }
+        }
+    };
+}
 ```
 
-This output indicates that the assertion failed and that the values of `a` and `b` are 1 and 2, respectively.
+And the standard library's `assert_eq!` already prints both values. Reach for procedural macros when you need to inspect the structure of the input, such as generating trait impls from a struct's fields with a derive macro, which `macro_rules!` can't do.
 
-In conclusion, Rust's macros are a powerful feature that enable developers to write expressive and efficient code. In this article, we built a custom assert macro that prints out the values being compared if the assertion fails. We learned how to define procedural macros, parse input expressions using the `syn` crate, and generate new Rust code using the `quote` crate. By using macros, we can simplify our code and improve its readability and maintainability.
+## Further reading
+
+- [Macros chapter of The Rust Programming Language](https://doc.rust-lang.org/book/ch20-05-macros.html)
+- [Procedural macros in the Rust Reference](https://doc.rust-lang.org/reference/procedural-macros.html)
+- [`syn` documentation](https://docs.rs/syn)

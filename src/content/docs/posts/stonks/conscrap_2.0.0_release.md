@@ -1,128 +1,126 @@
 ---
-title: Conscrap 2.0.0 Release
-description: Explaining how I fixed conscrap using the new shadow root api 
+title: "Conscrap 2.0.0: scraping Yahoo Finance comments inside shadow roots with Selenium"
+description: "What changed in conscrap 2.0.0: reading Yahoo Finance comments from shadow DOM with a JavaScript helper, the move to .NET 7, and publishing to NuGet from GitHub Actions."
 alt: Explaining how conscrap project grabs comments from yahoo finance using selenium.
 pubDate: Friday, 25 August 2023 13:00:00 GMT
-tags: ["dotnet", "stonks", "selenium"]
+lastUpdated: 2026-11-14
+tags: ["dotnet", "stonks", "selenium", "csharp"]
 projects: ["conscrap"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/conscrap200.png'
 imgAlt: 'Conscrap'
 ---
 
-## Shadow Root
+:::caution[.NET 7 is out of support]
+This release targeted .NET 7, which reached end of support in May 2024. .NET 8 and .NET 9 followed on November 10, 2026, so new work should target .NET 10 (LTS). The Yahoo Finance selectors below are from August 2023; Yahoo changes its comment markup often, so expect to update them.
+:::
 
-The ShadowRoot interface represents the root of a shadow DOM subtree, which is a separate DOM tree that is hidden from the main document tree. The Element.shadowRoot property allows you to access the shadow root of an element, but only if it was created using the Element.attachShadow() method with the mode set to "open".
+[Conscrap](https://github.com/dli-invest/conscrap) is my C# tool that uses Selenium to collect comments from Yahoo Finance stock pages. Version 2.0.0 fixes scraping after Yahoo moved the comments into a shadow DOM, moves the project to .NET 7, and adds automatic publishing to NuGet.
 
+## Reading comments inside shadow roots
 
-Web scraping shadow roots with Selenium can be a bit more challenging than scraping regular web pages because shadow roots are not directly accessible from the main DOM tree. However, it is still possible to scrape data from shadow roots using Selenium by utilizing its JavaScript execution capabilities.
+A shadow root is the root of a separate DOM tree attached to a host element. Its contents don't show up in `document.querySelectorAll` or in normal Selenium lookups on the page. From JavaScript you reach it through the host's `element.shadowRoot` property, which is only set when the shadow root was attached with `mode: "open"`; for closed shadow roots it returns `null`.
 
-Here's an example of how you might do this in Python:
+Selenium 4 can step into a shadow root directly. In Python, `WebElement.shadow_root` returns a search context you can query with CSS selectors:
 
 ```python
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 
-# create a new instance of the Firefox driver
-driver = webdriver.Firefox()
-
-# navigate to the page you want to scrape
+driver = webdriver.Chrome()
 driver.get("https://example.com")
 
-# execute a JavaScript script to get the shadow root
-shadow_root = driver.execute_script("return arguments[0].shadowRoot", element)
+host = driver.find_element(By.CSS_SELECTOR, "my-widget")  # the element that owns the shadow root
+shadow_root = host.shadow_root
+data = shadow_root.find_element(By.CSS_SELECTOR, "#data").text
 
-# now you can access the shadow root like a regular DOM tree
-# and scrape the data you need
-data = shadow_root.find_element_by_css_selector("#data").text
-
-# close the browser
 driver.quit()
 ```
 
-Here, element is the element whose shadow root you want to access.
+The C# equivalent is `host.GetShadowRoot()`, which returns an `ISearchContext`.
 
-It's worth noting that if the website you want to scrape is using Shadow DOM v0, you can directly access the shadow root of an element using the element.shadowRoot property. But for Shadow DOM v1 or later, you need to use the above script.
+That works when you know which host element to start from. Instead of using the Selenium bindings in C#, I decided to use plain JavaScript to search every shadow root on the page and return the comment list as an HTML string.
 
-Also, keep in mind that some website might have anti-scraping measures or CORS policy that might block Selenium scraping and in that case, you might have to use a proxy or a VPN to bypass it.
+The helper takes two arguments:
 
-With the changes to the yahoo finance comments api, the comments are added to the dom via a shadow root. In order to scrap the comments from yahoo finance, I have to access the shadow root.
+- `selector`: the CSS selector to search for.
+- `el` (optional): the node to start from, `document.body` by default.
 
-Instead of leverage selenium bindings in C#, I decided to use plain javascript to access all shadowroots and return the comments as a html string.
+It finds every element under `el` that has a `shadowRoot`, calls itself on each of those shadow roots, then combines those results with `el.querySelectorAll(selector)` and flattens them into one array:
 
-The js command I send over to selenium, creates a function to get all shadow roots and then finds a certain selector.
 ```csharp
-String getCommentsCmd = Constants.jsQuerySelectorAllShadows + """const results = querySelectorAllShadows("ul.spcv_messages-list"); return results[0].outerHTML.toString();""";
-```
-
-That selector has dom elements that contain all the comments for the yahoo finance stock.
-
-The function takes two arguments:
-
-* selector: a string containing a CSS selector that specifies the elements to search for.
-* el: (optional) The DOM element to start searching from, defaults to document.body if not provided. The function first searches for all elements with shadowRoot property and recursively calls itself on each of these shadow roots.
-
-It then takes the results of these recursive calls and concatenates them with the results obtained from the current el.querySelectorAll(selector) call.
-Finally, it flattens the results array and returns it.
-```csharp
-        public const string jsQuerySelectorAllShadows = 
+public const string jsQuerySelectorAllShadows =
 @"function querySelectorAllShadows(selector, el = document.body) {
-                // recurse on childShadows
-                const childShadows = Array.from(el.querySelectorAll('*')).
-                    map(el => el.shadowRoot).filter(Boolean);
-                // console.log('[querySelectorAllShadows]', selector, el, `(${childShadows.length} shadowRoots)`);
-                const childResults = childShadows.map(child => querySelectorAllShadows(selector, child));
-                
-                // fuse all results into singular, flat array
-                const result = Array.from(el.querySelectorAll(selector));
-                return result.concat(childResults).flat();
-            }
+    // recurse into every child shadow root
+    const childShadows = Array.from(el.querySelectorAll('*'))
+        .map(el => el.shadowRoot)
+        .filter(Boolean);
+    const childResults = childShadows.map(child => querySelectorAllShadows(selector, child));
+
+    // fuse all results into a single flat array
+    const result = Array.from(el.querySelectorAll(selector));
+    return result.concat(childResults).flat();
+}
 ";
 ```
 
-The disadvantage of selenium based web-scrapping tends to be the speed.
-
+The command sent to Selenium appends a call to the helper. `ul.spcv_messages-list` is the list that held every comment for the stock:
 
 ```csharp
-try {
-    // find Maybe later by text Maybe Later
+string getCommentsCmd = Constants.jsQuerySelectorAllShadows +
+    """const results = querySelectorAllShadows("ul.spcv_messages-list"); return results[0].outerHTML;""";
+```
+
+The `"""..."""` raw string literal is a C# 11 feature, which comes with .NET 7. It saves escaping the double quotes in the JavaScript. Running the string with `IJavaScriptExecutor.ExecuteScript` returns the list's HTML.
+
+Because the helper walks every element on the page, it only sees open shadow roots and it isn't fast. Speed is the usual downside of Selenium-based scraping anyway.
+
+## Dismissing the "Maybe later" popup
+
+After switching to the iframe that contains the comments, Yahoo shows unauthenticated users a "Maybe later" popup. Conscrap clicks it if it's there:
+
+```csharp
+try
+{
     IWebElement maybeLater = driver.FindElement(By.XPath("//button[contains(text(), 'Maybe later')]"));
-    // IWebElement maybeLater = driver.FindElement(By.XPath("//button[contains(@class, 'btn btn-primary')]"));
     maybeLater.Click();
-} catch (NoSuchElementException) {
+}
+catch (NoSuchElementException)
+{
     Console.WriteLine("No Maybe Later Button");
 }
 ```
 
-After swapping to the iframe containing all the comments, I attempt to hide the Maybe later popout that yahoo finance shows for unauthenticated users.
+The rest of the scraping changes were small XPath adjustments for the new comment format.
 
-Outside of that, there are some minor xpath adjustments that were made due to changes in the comment format.
+## Migrating to .NET 7
 
-## Migrating to .NET 7.0
-In general it was pretty simple for this project to migrate to .net 7.0, have not encountered any major issues.
+Moving from .NET 6 to .NET 7 was simple for this project and I haven't hit any issues. The steps were:
 
-Migrating from .NET 6.0 to .NET 7.0 will depend on the specific applications and libraries that you are using. Here are a few general steps that you can follow:
+1. Change `<TargetFramework>net6.0</TargetFramework>` to `net7.0` in each `.csproj`.
+2. Check that each dependency supports .NET 7. Some libraries lag behind new releases, and you may need to wait for an update or swap them out.
+3. Set `dotnet-version: 7.0.x` in `actions/setup-dotnet` in the CI workflows.
 
-Check for compatibility: Before you begin, check if your application and its dependencies are compatible with .NET 7.0. Some libraries or frameworks may not have been updated to work with the latest version of .NET, and you may need to find alternatives or wait for updates.
+The same steps apply for moving to a supported version today; check Microsoft's breaking-changes list for each version you skip.
 
-Update the target framework: Update your application's target framework to .NET 7.0. You can do this by opening your project in Visual Studio and navigating to the Properties page.
+## Publishing to NuGet
 
-## Publishing to nuget
-
-In this release, I added a deployment action to nuget for github and nuget packages.
-
+This release added a GitHub Actions step that publishes the package to both nuget.org and GitHub Packages when a `release/*` branch is pushed. The version below packs into a known folder and pushes with `dotnet nuget push` for both feeds:
 
 ```yaml
-if: startsWith(github.ref, 'refs/heads/release')
-run: |
-  dotnet pack --configuration $BUILD_CONFIG --no-restore
-  nuget setapikey "${{ secrets.NUGET_KEY }}"
-  nuget push **\*.nupkg -Source "https://api.nuget.org/v3/index.json" -SkipDuplicate
-  dotnet nuget add source --username dli-invest --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dli-invest/index.json"
-  dotnet nuget push **\*.nupkg --api-key "${{ secrets.GITHUB_TOKEN }}" --source "github"
+- name: Publish NuGet
+  if: startsWith(github.ref, 'refs/heads/release')
+  run: |
+    dotnet pack --configuration $BUILD_CONFIG --no-restore --output nupkgs
+    dotnet nuget push "nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+    dotnet nuget add source --username dli-invest --password "${{ secrets.GITHUB_TOKEN }}" --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dli-invest/index.json"
+    dotnet nuget push "nupkgs/*.nupkg" --api-key "${{ secrets.GITHUB_TOKEN }}" --source "github" --skip-duplicate
 ```
+
+The first version pushed `**\*.nupkg` unquoted. The workflow runs on `ubuntu-latest`, where bash treats that backslash as an escape rather than a path separator. Packing to `nupkgs/` and quoting the glob lets `dotnet nuget push` expand it itself. Pushing to GitHub Packages with `GITHUB_TOKEN` also needs `packages: write` in the job's `permissions` if the repository's default token is read-only.
 
 ## References
 
-View the documentation for conscrap at
-
-* https://github.com/dli-invest/conscrap
+- [conscrap on GitHub](https://github.com/dli-invest/conscrap)
+- [Selenium: finding elements, including in shadow DOM](https://www.selenium.dev/documentation/webdriver/elements/finders/)
+- [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)

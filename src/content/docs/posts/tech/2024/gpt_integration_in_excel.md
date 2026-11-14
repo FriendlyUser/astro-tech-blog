@@ -1,66 +1,45 @@
 ---
-title: "Embedding GPT in Excel Applications: A Guide for Beginners"
+title: "Building an Excel add-in that calls OpenAI and Alpha Vantage"
 pubDate: "2024-03-30T00:00:00.000Z"
-description: "A beginner's guide to embedding OpenAI's GPT in Excel plugins, enhancing spreadsheets with AI's power for automation and efficiency. This article covers the basics of creating an Excel Add-in, integrating GPT, and demonstrates the benefits of AI-driven Excel applications."
+lastUpdated: 2026-11-14
+description: "Scaffold an Excel task pane add-in with yo office, then make it ask OpenAI for a stock ticker and show the company overview from Alpha Vantage."
 tags: ["GPT", "Excel", "AI Integration", "Software Development", "JavaScript", "TypeScript", "Excel Add-in", "OpenAI", "Automation", "Productivity"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3292707171.png"
 ---
 
-# Embedding GPT in Excel Applications: A Guide for Beginners
+:::caution
+The original version of this add-in used `gpt-3.5-turbo`, which OpenAI shut down on 23 October 2026. The code below takes the model name from a constant; set it to a model listed on [OpenAI's models page](https://developers.openai.com/api/docs/models).
+:::
 
-In the ever-evolving landscape of technology, the integration of advanced AI tools like OpenAI's Generative Pre-trained Transformer (GPT) into everyday applications has opened new frontiers for automation and efficiency. One such practical application is embedding GPT into Excel plugins, enabling users to harness the power of AI directly within their spreadsheets. This article will guide beginners through understanding how to embed GPT into an Excel plugin, using a basic plugin as an example, and discuss the potential benefits of this approach.
+An Excel add-in is a small web app (HTML and JavaScript) that Excel loads into a task pane. Because it's just a web page, it can call any HTTP API, including OpenAI's. This post builds a basic add-in first, then a stock lookup add-in: you type a description of a company, GPT suggests a ticker, and the add-in fetches the company overview from Alpha Vantage.
 
-Creating an Excel plugin, also known as an Excel Add-in, using JavaScript or TypeScript involves several steps, from setting up your development environment to writing the code and testing your Add-in within Excel. This guide will walk you through the process, focusing on a simple example to get you started.
+## Scaffold an add-in
 
-### Step 1: Prerequisites
+You need Node.js (an active LTS release) and Excel, either desktop with a Microsoft 365 subscription or Excel on the web.
 
-- **Microsoft Office**: You need Excel installed on your computer or access to Excel on the web.
-- **Node.js**: Install Node.js, which includes npm (node package manager), to run the development server and manage your project's dependencies.
-- **Yeoman and Yeoman Office Generator**: Yeoman helps scaffold new projects, and the Yeoman Office Generator (`generator-office`) provides templates for creating Office Add-ins.
+Install Yeoman and Microsoft's Office generator, then run it:
 
-### Step 2: Setting Up Your Project
+```bash
+npm install -g yo generator-office
+yo office
+```
 
-1. **Install Yeoman and the Yeoman Office Generator**:
+For a project with the classic XML manifest, answer the prompts with:
 
-   Open a terminal or command prompt and run the following command:
+- **Project type**: Office Add-in Task Pane project
+- **Script type**: JavaScript or TypeScript
+- **Office client application**: Excel
 
-   ```bash
-   npm install -g yo generator-office
-   ```
+The generator creates a project folder and runs `npm install`. The files you'll edit:
 
-2. **Scaffold Your Excel Add-in Project**:
+- `manifest.xml`: describes the add-in to Excel (name, icons, the URL of the task pane).
+- `src/taskpane/taskpane.html`: the task pane markup.
+- `src/taskpane/taskpane.js` (or `.ts`): the code that talks to Excel.
 
-   Run the Yeoman generator for Office Add-ins:
+## A first add-in: write to a cell
 
-   ```bash
-   yo office
-   ```
-
-   Follow the prompts to set up your project. Choose:
-   - **Project Type**: Office Add-in Task Pane project
-   - **Script Type**: JavaScript or TypeScript (according to your preference)
-   - **Office Application**: Excel
-
-   This will create a new directory with your project's name and set up a basic project structure.
-
-### Step 3: Understanding the Project Structure
-
-Your project directory will contain several files and folders:
-
-- **src**: Contains the source code for your project.
-  - **taskpane.html**: The HTML file for the task pane UI.
-  - **taskpane.js** (or **taskpane.ts** for TypeScript): The JavaScript or TypeScript file that contains the logic for your Add-in.
-- **package.json**: Manages your project's dependencies and scripts.
-- **manifest.xml**: The XML file that describes your Add-in to Excel.
-
-### Step 4: Developing Your Add-in
-
-Open the `taskpane.html` and `taskpane.js` (or `.ts`) files in your preferred code editor to start adding your custom code. For example, you might want to fetch data from a web API and display it in Excel.
-
-#### Sample JavaScript Code
-
-If you're using JavaScript, your `taskpane.js` might look something like this to write data to an Excel sheet:
+Excel code goes inside `Excel.run`. You queue operations on proxy objects, then `context.sync()` sends them to Excel in one batch:
 
 ```javascript
 Office.onReady((info) => {
@@ -83,81 +62,38 @@ async function run() {
 }
 ```
 
-#### Sample TypeScript Code
+The TypeScript version is the same code; the types (`Excel.RequestContext`, `Excel.Range`) come from `@types/office-js`, which the generator installs.
 
-For TypeScript, you might have a `taskpane.ts` with similar functionality:
+## Run it
 
-```typescript
-Office.onReady((info: Office.InitializationReason) => {
-  if (info.host === Office.HostType.Excel) {
-    const runButton: HTMLButtonElement = document.getElementById("run") as HTMLButtonElement;
-    runButton.onclick = run;
-  }
-});
+From the project folder:
 
-async function run(): Promise<void> {
-  try {
-    await Excel.run(async (context: Excel.RequestContext) => {
-      const sheet: Excel.Worksheet = context.workbook.worksheets.getActiveWorksheet();
-      const range: Excel.Range = sheet.getRange("A1");
-      range.values = [["Hello, Excel!"]];
-      await context.sync();
-    });
-  } catch (error) {
-    console.error(error);
-  }
-}
+```bash
+npm start
 ```
 
-### Step 5: Testing Your Add-in
+This starts a local HTTPS dev server, installs a development certificate if needed, and opens Excel desktop with the add-in sideloaded. Open it from **Home** > **Show Task Pane**. To test in Excel on the web instead, pass the URL of a workbook in your OneDrive or SharePoint:
 
-1. **Start the Local Web Server**:
+```bash
+npm run start -- web --document <workbook-url>
+```
 
-   Run the following command in your project directory:
+`npm stop` stops the server and removes the sideloaded add-in.
 
-   ```bash
-   npm start
-   ```
+To share the add-in beyond your machine, see Microsoft's guide to [deploying and publishing Office Add-ins](https://learn.microsoft.com/en-us/office/dev/add-ins/publish/publish).
 
-   This command starts a local web server and opens your default web browser to the Office Add-in loading page.
+## The stock lookup add-in
 
-2. **Load Your Add-in in Excel**:
+The flow:
 
-   - For Excel on the desktop, use the `Upload My Add-in` button on the Office Add-in loading page to upload the manifest file.
-   - For Excel on the web, go to `Insert` > `Office Add-ins` > `Upload My Add-in` and upload your manifest file.
+1. Read the description the user typed into the task pane.
+2. Send it to OpenAI's Chat Completions API and ask for a single ticker symbol.
+3. Call Alpha Vantage's `OVERVIEW` endpoint with that ticker.
+4. Show the company description in the task pane.
 
-### Step 6: Publish Your Add-in
+### Task pane HTML
 
-To share your Add-in with others, you need to publish it to an Add-in catalog or to the Office Store. The specifics of this process depend on your target audience and distribution needs.
-
-## Introduction to the Stock Excel Plugin
-
-The example provided demonstrates a basic Excel plugin designed to showcase how developers can integrate AI functionalities into Excel. The plugin utilizes HTML for the user interface and JavaScript for backend logic, incorporating OpenAI's GPT and the AlphaVantage API to offer investment advice and stock information directly within Excel.
-
-### Key Components of the Plugin
-
-1. **HTML File (User Interface):** This file defines the visual layout and elements of the plugin, including the welcome message, input field, and search button. It also includes references to external resources like Fluent UI for styling and Office.js for integrating with Excel.
-
-2. **JavaScript File (Logic and API Calls):** This file contains the logic for the plugin, handling events (e.g., clicking the search button), making API calls to OpenAI for generating stock recommendations based on user input, and fetching stock details from AlphaVantage.
-
-3. **Environment Variables:** The `OPENAI_KEY` and `ALPHAVANTAGE_KEY` are used to authenticate requests to the respective APIs. Note that the provided OpenAI key is expired and for demonstration purposes only.
-
-## How It Works
-
-When the user enters a description of a company in the input field and clicks the "Search" button, the plugin executes the following steps:
-
-1. **Capture User Input:** The plugin retrieves the user's input from the text field.
-2. **OpenAI Chat Function:** It then calls the `openAiChat` function, sending the input to OpenAI's API to receive a stock ticker recommendation based on the input.
-3. **AlphaVantage Function:** With the recommended stock ticker, the plugin calls the `alphaVantage` function to fetch detailed information about the stock from the AlphaVantage API.
-4. **Display Information:** Finally, the plugin displays the fetched stock information in the plugin interface.
-
-### Understanding the Code Structure
-
-The integration is made up of two main components: an HTML file that serves as the user interface and a JavaScript file that contains the logic and API calls to OpenAI and AlphaVantage.
-
-#### HTML File: User Interface
-
-This file (`index.html`) sets up the UI of the Excel plugin. It includes references to external libraries and stylesheets, such as Office.js (for Excel integration) and Fluent UI (for styling). The body of the HTML file contains elements like headers, sections, and inputs that form the user interface of the plugin.
+This is the generator's template with the body replaced by a text box, a button and an output area:
 
 ```html
 <!DOCTYPE html>
@@ -166,22 +102,18 @@ This file (`index.html`) sets up the UI of the Excel plugin. It includes referen
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contoso Task Pane Add-in</title>
-    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"/>
+    <title>Stock lookup</title>
+    <script src="https://officeapis.public.onecdn.static.microsoft/1/office.js"></script>
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
     <link href="taskpane.css" rel="stylesheet" type="text/css" />
 </head>
 <body class="ms-font-m ms-welcome ms-Fabric">
-    <header class="ms-welcome__header ms-bgColor-neutralLighter">
-        <img width="90" height="90" src="../../assets/logo-filled.png" alt="Contoso" title="Contoso" />
-        <h1 class="ms-font-su">Welcome</h1>
-    </header>
     <section id="sideload-msg" class="ms-welcome__main">
-        <h2 class="ms-font-xl">Please <a href="https://learn.microsoft.com/">sideload</a> your add-in to see app body.</h2>
+        <h2 class="ms-font-xl">Please sideload your add-in to see the app body.</h2>
     </section>
     <main id="app-body" class="ms-welcome__main" style="display: none;">
-        <p class="ms-font-l">Input a description of a company and hit <b>Search</b>.</p>
-        <input type="textarea" id="prompt" placeholder="enter prompt here"></input>
+        <p class="ms-font-l">Describe a company and select <b>Search</b>.</p>
+        <textarea id="prompt" placeholder="e.g. the company that makes the iPhone"></textarea>
         <div role="button" id="run" class="ms-welcome__action ms-Button">
             <span class="ms-Button-label">Search</span>
         </div>
@@ -191,13 +123,13 @@ This file (`index.html`) sets up the UI of the Excel plugin. It includes referen
 </html>
 ```
 
-#### JavaScript File: Logic and API Calls
-
-This file (`commands.js`) is responsible for the plugin's functionality. It uses the Office JavaScript API to interact with Excel and fetches from OpenAI and AlphaVantage to get stock recommendations and details.
+### Task pane script
 
 ```javascript
-import fetch from "cross-fetch";
 import { OPENAI_KEY, ALPHAVANTAGE_KEY } from "./env";
+
+// gpt-3.5-turbo was retired; use a current model from OpenAI's models page.
+const MODEL = "gpt-6-luna";
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -207,61 +139,71 @@ Office.onReady((info) => {
   }
 });
 
-async function openAiChat(prompt) {
-  const apiKey = OPENAI_KEY;
+async function suggestTicker(description) {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${OPENAI_KEY}`,
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "system", content: "Investment advice prompt" }, { role: "user", content: prompt }],
-      temperature: 0.7,
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Reply with only the stock ticker symbol of the publicly listed company " +
+            "that best matches the user's description. No other text.",
+        },
+        { role: "user", content: description },
+      ],
     }),
   });
-
+  if (!response.ok) {
+    throw new Error(`OpenAI request failed: ${response.status}`);
+  }
   const data = await response.json();
-  return data.choices[0].message.content;
+  return data.choices[0].message.content.trim().toUpperCase();
 }
 
-async function alphaVantage(symbol) {
-  const url = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${ALPHAVANTAGE_KEY}`;
+async function companyOverview(symbol) {
+  const url =
+    "https://www.alphavantage.co/query?function=OVERVIEW" +
+    `&symbol=${encodeURIComponent(symbol)}&apikey=${ALPHAVANTAGE_KEY}`;
   const response = await fetch(url);
-  const data = await response.json();
-  return data;
+  return response.json();
 }
 
 async function run() {
+  const output = document.getElementById("description");
   try {
-    await Excel.run(async (context) => {
-      const inputValue = document.getElementById("prompt").value;
-      await context.sync();
-      const stockResponse = await openAiChat(inputValue);
-      const tickerData = JSON.parse(stockResponse);
-      const results = await alphaVantage(tickerData.ticker);
-      document.getElementById("description").innerHTML = results.Description;
-    });
+    const description = document.getElementById("prompt").value;
+    const ticker = await suggestTicker(description);
+    const overview = await companyOverview(ticker);
+    // Alpha Vantage returns {} for unknown symbols and an "Information" or "Note"
+    // field when the key is invalid or rate limited.
+    output.textContent = overview.Description
+      ? `${ticker}: ${overview.Description}`
+      : `No overview found for ${ticker}.`;
   } catch (error) {
     console.error(error);
+    output.textContent = "Lookup failed. See the console for details.";
   }
 }
-
-
-
-// Note: OPENAI_KEY and ALPHAVANTAGE_KEY are placeholders and should be replaced with valid API keys.
 ```
 
-### Benefits of Embedding GPT in Excel
+The `env.js` module just exports the two keys as strings. The task pane runs in the browser engine Excel embeds, so the built-in `fetch` is all you need. Nothing here touches the workbook, so the script doesn't need `Excel.run`. A natural next step is to write the ticker and overview fields into the active sheet with the pattern from the first example.
 
-Embedding GPT into Excel applications like this plugin enables several powerful capabilities:
+## Things to fix before anyone else uses this
 
-- **Automation:** Reduces manual data entry and analysis, saving users valuable time and effort.
-- **Intelligence:** Leverages AI to provide insightful recommendations and data, enhancing decision-making.
-- **Customization:** Allows for tailored functionalities to meet specific user needs, making Excel a more versatile tool.
-- **Accessibility:** Brings advanced AI capabilities into a familiar environment, making it more accessible to a broader audience.
+- **The API keys ship to every user.** Anything imported into the task pane script is bundled into JavaScript that the user's machine downloads, so anyone with the add-in can read your OpenAI key. Put the OpenAI and Alpha Vantage calls behind a small server or serverless function that holds the keys, and have the add-in call that instead.
+- **The model can be wrong.** GPT may return a ticker for the wrong company, a delisted company, or text that isn't a ticker at all. Show the ticker next to the result (as above) so the user can see what it picked, and treat the output as a lookup aid, not investment advice.
+- **Alpha Vantage limits free keys.** Expect the "Information" message instead of data once you hit the limit.
+- **Use `textContent`, not `innerHTML`,** for text that comes from an API, so a response can't inject markup into the task pane.
 
-### Conclusion
+## Further reading
 
-Integrating GPT into Excel plugins represents a significant leap forward in making AI accessible and usable in everyday applications. This guide and the provided example serve as a starting point for beginners to explore the integration of AI into Excel, highlighting the steps involved and the benefits of such an approach. As you become more comfortable with these concepts, you can expand upon this foundation to create even more sophisticated and customized Excel plugins, leveraging the full power of AI to transform how we work with data.
+- [Build your first Excel task pane add-in](https://learn.microsoft.com/en-us/office/dev/add-ins/quickstarts/excel-quickstart-jquery) (Microsoft Learn)
+- [Excel JavaScript API overview](https://learn.microsoft.com/en-us/office/dev/add-ins/reference/overview/excel-add-ins-reference-overview)
+- [OpenAI Chat Completions API reference](https://developers.openai.com/api/reference/resources/chat)
+- [Alpha Vantage API documentation](https://www.alphavantage.co/documentation/)

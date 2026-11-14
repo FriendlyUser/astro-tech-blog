@@ -1,78 +1,93 @@
 ---
-description: In this article, we'll explore the functional programming capabilities
-  of Swift and how they can be used to write clean, reusable, and maintainable code
+description: Functional programming in Swift with closures, map/filter/reduce, function
+  types, value-type immutability, pattern matching, and recursion, with runnable examples.
 imgSrc: /imgs/2023/2575289368.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-22T09:17:57.000Z'
-tags: []
-title: Functional Programming in Swift
+lastUpdated: 2026-11-14
+tags: ['swift']
+title: Functional programming in Swift with closures, map/filter/reduce, and value types
 ---
 
-# Functional Programming in Swift
+Swift isn't a pure functional language, but it has first-class functions, closures, value types, and exhaustive pattern matching. Used together, they let you write code that transforms data instead of mutating it in place, which tends to be easier to test. This post walks through those features with small examples you can paste into a playground.
 
-Swift is a powerful, modern programming language developed by Apple. It combines the best features of both object-oriented and functional programming paradigms, resulting in a powerful and expressive language. In this article, we'll explore the functional programming capabilities of Swift and how they can be used to write clean, reusable, and maintainable code.
+## Functional programming in brief
 
-## What is Functional Programming?
+The core idea is to build programs out of functions that return new values rather than changing shared state. Functions are values: you can store them in variables, pass them as arguments, and return them from other functions. Code written this way has fewer hidden dependencies, because a function's result depends only on its inputs.
 
-Functional programming is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing state and mutable data. In functional programming, functions are first-class citizens, meaning they can be passed as arguments to other functions, returned as values from other functions, and assigned to variables. This allows for a more declarative and expressive style of programming, leading to code that is easier to reason about, test, and maintain.
+## Higher-order functions
 
-## Functional Programming Concepts in Swift
+A higher-order function takes a function as an argument, returns one, or both. In Swift you'll mostly meet them through closures and the standard library's collection methods.
 
-Swift incorporates several functional programming concepts, such as higher-order functions, immutability, and pattern matching. We'll discuss each of these in more detail below.
+### Closures
 
-### Higher-order functions
-
-Higher-order functions are functions that either take other functions as arguments, return functions, or both. Swift supports higher-order functions through closures and function types.
-
-**Closures**
-
-Closures are self-contained blocks of code that can be passed around and used in your code. They have similar functionality to functions but have a more compact syntax. Closures can capture and store references to variables and constants from the surrounding context, even after the context has gone out of scope.
+A closure is an unnamed function that can capture values from the scope where it's defined. `map` takes a closure and applies it to every element:
 
 ```swift
 let numbers = [1, 2, 3, 4, 5]
-let doubledNumbers = numbers.map { (number) -> Int in
-    return number * 2
-}
-print(doubledNumbers) // Output: [2, 4, 6, 8, 10]
+let doubled = numbers.map { $0 * 2 }
+print(doubled) // [2, 4, 6, 8, 10]
 ```
 
-In the example above, `map` is a higher-order function that takes a closure as its argument. The closure takes an integer and returns a new integer after doubling its value.
+`{ $0 * 2 }` is shorthand for `{ (number: Int) -> Int in return number * 2 }`. Swift infers the parameter and return types from `map`'s signature.
 
-**Function types**
+`filter` and `reduce` round out the usual trio:
 
-Function types allow you to define a type that represents a function with a specific parameter and return type. You can use function types to declare variables or constants that can store functions or closures of a certain type.
+```swift
+let numbers = [1, 2, 3, 4, 5, 6]
+let sumOfEvenSquares = numbers
+    .filter { $0 % 2 == 0 }
+    .map { $0 * $0 }
+    .reduce(0, +)
+print(sumOfEvenSquares) // 4 + 16 + 36 = 56
+```
+
+`reduce(0, +)` passes the `+` operator as a function, which works because operators are functions in Swift. `compactMap` is also worth knowing: it maps and drops `nil` results, as in `["1", "x", "3"].compactMap { Int($0) }` giving `[1, 3]`.
+
+Each step allocates a new array. For long chains over large collections, `numbers.lazy.filter { ... }.map { ... }` avoids the intermediate arrays.
+
+### Function types
+
+A function type such as `(Int) -> Int` can be named with a `typealias` and used like any other type:
 
 ```swift
 typealias IntToIntFunction = (Int) -> Int
 
-let square: IntToIntFunction = { (number) in
-    return number * number
+let square: IntToIntFunction = { $0 * $0 }
+
+func applyTwice(_ f: IntToIntFunction, to value: Int) -> Int {
+    f(f(value))
 }
 
-let result = square(4) // Output: 16
+print(square(4))                       // 16
+print(applyTwice(square, to: 3))       // 81
 ```
 
-Here, we define a function type `IntToIntFunction` that takes an integer and returns an integer. We then declare a constant `square` of that type and assign a closure that squares the input integer.
+`applyTwice` is a higher-order function: it takes `square` as an argument and calls it twice.
 
-### Immutability
+## Immutability
 
-Immutability is an important concept in functional programming, as it enables us to write code that is easier to reason about and test. Swift encourages immutability through the use of constants, value types, and the `let` keyword.
+Swift encourages immutability in two ways: `let` constants, and value types (`struct`, `enum`, tuples, and the standard collections) that are copied on assignment.
 
 ```swift
 struct Point {
-    let x: Int
-    let y: Int
+    var x: Int
+    var y: Int
 }
 
 let p1 = Point(x: 2, y: 3)
-// p1.x = 4 // Error: Cannot assign to property: 'x' is a 'let' constant
+// p1.x = 4 // error: cannot assign to property: 'p1' is a 'let' constant
+
+var p2 = p1   // p2 is an independent copy
+p2.x = 10
+print(p1.x, p2.x) // 2 10
 ```
 
-In this example, we define a `Point` struct with two immutable properties, `x` and `y`. Once we create an instance of `Point`, we cannot modify its properties directly.
+Because `Point` is a struct, changing `p2` never affects `p1`. With a `class`, both names would refer to the same object. Collections use copy-on-write, so the copy is cheap until one side is actually modified.
 
-### Pattern matching
+## Pattern matching
 
-Pattern matching is a powerful feature in Swift that allows you to compare a value against a series of patterns and execute a block of code based on the first matching pattern. Swift's pattern matching capabilities are provided through the `switch` statement and the `if case`, `while case`, and `for case` statements.
+`switch` statements in Swift must be exhaustive, and they can match on enum cases, tuples, ranges, and associated values. That makes them a good fit for modelling states as data:
 
 ```swift
 enum TrafficLight {
@@ -89,27 +104,32 @@ case .yellow:
 case .green:
     print("Go")
 }
-// Output: Stop
+// Stop
 ```
 
-In this example, we define an enumeration `TrafficLight` with three cases. We then use a `switch` statement to perform pattern matching on the `currentLight` constant and execute the appropriate block of code.
+If you add a new case to `TrafficLight`, every `switch` that doesn't handle it stops compiling, which is the main practical benefit. Pattern matching also works in `if case`, `guard case`, and `for case` statements.
 
 ## Recursion
-Recursion is a technique used in functional programming to repeat the same operation or process by having a function call itself. This avoids mutating state and reliance on loops.
+
+Recursion replaces a loop with a function that calls itself on a smaller input until it reaches a base case:
 
 ```swift
 func factorial(_ number: Int) -> Int {
-  if number == 0 {
-    return 1 
-  } else {
-    return number * factorial(number - 1)
-  }
+    precondition(number >= 0, "factorial is undefined for negative numbers")
+    return number == 0 ? 1 : number * factorial(number - 1)
 }
 
-print(factorial(5)) // Output: 120
+print(factorial(5)) // 120
 ```
 
-Here, we calculate the factorial of a number recursively without using a loop construct. The function calls itself repeatedly until the base case is reached.
-## Conclusion
+Two caveats: Swift doesn't guarantee tail-call optimization, so very deep recursion can overflow the stack, and `Int` overflow traps at runtime (here, past `factorial(20)` on 64-bit platforms). For simple accumulations, `(1...5).reduce(1, *)` does the same job without recursion.
 
-Functional programming allows you to write Swift code that is concise, readable, and easy to reason about. Concepts like immutability, higher-order functions, and pattern matching facilitate a declarative style of programming that avoids side effects. While Swift is not a pure functional language, incorporating functional concepts results in code that is efficient, modular, and less prone to bugs.
+## When to stop
+
+Not everything has to be a chain of closures. A `for` loop with a mutable accumulator is often clearer than a three-level nested `reduce`, and SwiftUI and UIKit are built around reference types and mutation anyway. Use the functional style where it makes data transformations easier to read and test.
+
+## Further reading
+
+- [The Swift Programming Language: Closures](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/)
+- [Structures and Classes](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/)
+- [Patterns](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/patterns/)

@@ -1,37 +1,34 @@
 ---
-title: Accelerating HashMap Performance in Rust with Hashbrown
+title: "Hashbrown in Rust: what it adds over std HashMap and where the speed comes from"
 pubDate: "2023-04-22T16:25:05.078Z"
-description: "A technical article about Rust"
-tags: []
+lastUpdated: 2026-11-14
+description: "std's HashMap is already built on hashbrown. Here is what the crate still offers (no_std, a faster default hasher) and how to benchmark it fairly."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Accelerating HashMap Performance in Rust with Hashbrown
+`hashbrown` is a Rust port of Google's SwissTable hash map. It is worth knowing about, but not for the reason usually given: since Rust 1.36, `std::collections::HashMap` *is* hashbrown internally. Swapping one for the other does not change the table algorithm. What changes is the default hasher, and whether you need the standard library at all.
 
-Rust is a systems programming language with a focus on safety, concurrency, and performance. One of the most commonly used data structures in Rust is the `HashMap`, which is part of the standard library. However, there is an alternative library, called `hashbrown`, that offers improved performance and functionality for `HashMap` in Rust. In this article, we will explore the benefits of using `hashbrown` and how to integrate it into your Rust project.
+## What the crate gives you
 
-## What is Hashbrown?
+- **A faster default hasher.** std's `HashMap` uses SipHash-1-3 by default, which resists HashDoS attacks (an attacker choosing keys that all collide). hashbrown defaults to [foldhash](https://crates.io/crates/foldhash), which is much faster but, per the hashbrown README, does not give the same level of HashDoS resistance.
+- **`no_std` support.** hashbrown works without `std`, needing only the `alloc` crate and a global allocator, so you can use it in embedded code or kernels.
+- **APIs std doesn't expose**, such as `HashTable` (a raw table where you supply the hash and equality yourself) and optional `rayon` and `serde` integration behind Cargo features.
 
-Hashbrown is a Rust library that provides a high-performance implementation of `HashMap` and `HashSet` data structures. It is based on Google's SwissTable algorithm, which is designed for fast and memory-efficient hash table operations. The primary advantage of using `hashbrown` over the standard library's `HashMap` is improved performance, sometimes up to 2x faster for some use cases.
+## Using it
 
-## Getting Started with Hashbrown
-
-To start using `hashbrown`, you need to add it as a dependency in your `Cargo.toml` file:
+Add the dependency (0.17.1 is the current release at the time of writing):
 
 ```toml
 [dependencies]
-hashbrown = "0.11"
+hashbrown = "0.17"
 ```
 
-After adding the dependency, you can use `hashbrown` in your Rust code by importing its `HashMap` and `HashSet` types:
+The types are drop-in replacements for the std ones:
 
 ```rust
 use hashbrown::{HashMap, HashSet};
-```
 
-Now you can create and manipulate `HashMap` and `HashSet` instances just as you would with the standard library's implementation:
-
-```rust
 fn main() {
     let mut map = HashMap::new();
     map.insert("key", "value");
@@ -43,48 +40,70 @@ fn main() {
 }
 ```
 
-## Comparing Performance
+## Comparing performance fairly
 
-To demonstrate the performance benefits of `hashbrown`, let's compare it with the standard library's `HashMap` in a simple benchmark. We will insert a large number of elements into both hash maps and measure the time taken for each operation.
+The original version of this post timed one million inserts into std's `HashMap` and hashbrown's and printed numbers that were never measured. Because both maps use the same table, the gap you see in a test like that comes almost entirely from SipHash versus foldhash. You can confirm this by adding a third map: std's `HashMap` with foldhash as the hasher.
+
+```toml
+[dependencies]
+hashbrown = "0.17"
+foldhash = "0.2"
+```
 
 ```rust
 use std::collections::HashMap as StdHashMap;
+use std::hint::black_box;
+use std::time::{Duration, Instant};
+
+use foldhash::{HashMap as StdFoldHashMap, HashMapExt};
 use hashbrown::HashMap as HbHashMap;
-use std::time::Instant;
+
+const N: u64 = 1_000_000;
+
+fn time(label: &str, mut insert_all: impl FnMut()) {
+    let start = Instant::now();
+    insert_all();
+    let elapsed: Duration = start.elapsed();
+    println!("{label:<24} {elapsed:?}");
+}
 
 fn main() {
-    let num_elements = 1_000_000;
-    let mut std_map = StdHashMap::new();
-    let mut hb_map = HbHashMap::new();
+    time("std (SipHash)", || {
+        let mut m = StdHashMap::new();
+        for i in 0..N {
+            m.insert(i, i);
+        }
+        black_box(m);
+    });
 
-    // Benchmark standard library's HashMap
-    let start = Instant::now();
-    for i in 0..num_elements {
-        std_map.insert(i, i);
-    }
-    let duration_std = start.elapsed();
+    time("std + foldhash", || {
+        let mut m = StdFoldHashMap::new();
+        for i in 0..N {
+            m.insert(i, i);
+        }
+        black_box(m);
+    });
 
-    // Benchmark hashbrown's HashMap
-    let start = Instant::now();
-    for i in 0..num_elements {
-        hb_map.insert(i, i);
-    }
-    let duration_hb = start.elapsed();
-
-    println!("Std HashMap: {:?}", duration_std);
-    println!("Hashbrown HashMap: {:?}", duration_hb);
+    time("hashbrown (foldhash)", || {
+        let mut m = HbHashMap::new();
+        for i in 0..N {
+            m.insert(i, i);
+        }
+        black_box(m);
+    });
 }
 ```
 
-Running this benchmark, you should see that `hashbrown` consistently outperforms the standard library's `HashMap`:
+Run it with `cargo run --release`; debug builds are not meaningful for this. Expect the two foldhash maps to land close together and the SipHash map to be slower. Exact numbers depend on your CPU, key type and map size, so measure your own workload. For anything you plan to act on, use a benchmarking harness such as [criterion](https://crates.io/crates/criterion), which runs many iterations and reports variance; a single `Instant` timing is easily skewed by allocation and cache warm-up.
 
-```
-Std HashMap: 126.00 ms
-Hashbrown HashMap: 57.00 ms
-```
+## When to use which
 
-This performance difference can be even more significant in more complex applications and workloads.
+- **You only want faster hashing in a normal `std` program:** keep `std::collections::HashMap` and plug in a faster hasher (`foldhash`, or `rustc-hash` for integer keys). No new map type leaks into your public API.
+- **Keys come from untrusted input** (HTTP headers, user-supplied JSON keys): keep std's default SipHash, or choose a hasher with HashDoS resistance.
+- **`no_std`, or you need `HashTable` or the extra entry APIs:** use `hashbrown` directly.
 
-## Conclusion
+## Further reading
 
-Hashbrown is an excellent alternative to the standard library's `HashMap` in Rust, offering improved performance and memory efficiency. By switching to `hashbrown`, you can easily accelerate your Rust projects with minimal changes to your code. Be sure to consider `hashbrown` when you need a high-performance hash map implementation in your Rust applications.
+- [hashbrown on GitHub](https://github.com/rust-lang/hashbrown)
+- [hashbrown on docs.rs](https://docs.rs/hashbrown)
+- [`std::collections::HashMap` docs](https://doc.rust-lang.org/std/collections/struct.HashMap.html)

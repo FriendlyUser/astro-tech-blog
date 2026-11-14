@@ -1,109 +1,117 @@
 ---
-title: Android OkHttp Networking Library An In-Depth Guide
+title: "OkHttp on Android: making requests and adding interceptors"
 pubDate: "2023-10-01T18:38:10.000Z"
-description: "In this article , we'll dive into the OkHttp library, exploring its features, benefits, and how to use it effectively in your Android projects"
-tags: []
+lastUpdated: 2026-11-14
+description: "Add OkHttp 5 to an Android app, make an asynchronous GET request without leaking responses, and write an interceptor for logging or auth headers."
+tags: ["android", "java"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1492118595.png
 ---
-# Android OkHttp Networking Library: An In-Depth Guide
 
-In the world of Android development, networking is a critical aspect of building successful applications. To simplify this process, developers often turn to powerful networking libraries such as OkHttp. In this article, we'll dive into the OkHttp library, exploring its features, benefits, and how to use it effectively in your Android projects.
+OkHttp is Square's open-source HTTP client for Android and the JVM. It's the HTTP layer underneath Retrofit and many other libraries, so even if you never call it directly, you're probably shipping it. You'd use it directly when you want plain HTTP calls without Retrofit's interface-based API, or when you need to customize the client that those libraries share.
 
-## Introduction to OkHttp
+## What it does for you
 
-OkHttp is an open-source HTTP client library for Android and Java applications. It was developed by Square, Inc. and is designed to facilitate efficient communication between your app and web services. OkHttp excels in handling network requests and responses, making it an ideal choice for any developer looking to enhance their app's networking capabilities.
+- **HTTP/2**, so requests to the same host share one socket.
+- **Connection pooling**, which reuses connections when HTTP/2 isn't available.
+- **Transparent GZIP**: it sends `Accept-Encoding: gzip` and decompresses responses for you. It doesn't compress request bodies.
+- **Response caching**, opt-in, by giving the client a `Cache` directory.
+- **Interceptors** for logging, auth headers, retries, and rewriting requests or responses.
+- **Timeouts**: connect, read, and write timeouts default to 10 seconds each; the whole-call timeout is off by default.
 
-### Features of OkHttp
+## Add the dependency
 
-Some of the notable features of OkHttp include:
+OkHttp 5.5.1 is current. It supports Android 5.0 (API 21) and later. In the module's `build.gradle.kts`:
 
-1. **Connection pooling**: OkHttp reuses existing connections to reduce latency and conserve system resources.
-2. **Transparent GZIP**: OkHttp automatically compresses and decompresses request and response bodies to save bandwidth.
-3. **HTTP/2 support**: OkHttp supports the HTTP/2 protocol, which allows for faster and more efficient communication with servers.
-4. **Interceptors**: OkHttp offers a flexible mechanism to intercept and modify requests and responses, enabling developers to implement features such as caching, logging, and authentication.
-5. **Timeout management**: OkHttp provides configurable timeouts for various stages of a network request.
-
-## Adding OkHttp to Your Android Project
-
-To get started with OkHttp, you'll need to add the necessary dependencies to your Android project. In your app's `build.gradle` file, add the following:
-
-```groovy
+```kotlin
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3' // Replace with the latest version
+    implementation("com.squareup.okhttp3:okhttp:5.5.1")
 }
 ```
 
-Sync your project to ensure that the library is downloaded and available for use.
+OkHttp 5 is a Kotlin Multiplatform library, and Gradle picks the Android variant automatically. Your app also needs `<uses-permission android:name="android.permission.INTERNET" />` in the manifest.
 
-## Using OkHttp in Your Android App
+## Make a GET request
 
-Once you've added the OkHttp dependency, you can start using it to make network requests. Here's a simple example of making a GET request using OkHttp:
+Create one `OkHttpClient` and reuse it. Each client has its own connection pool and thread pools, so creating one per request throws away the main performance benefits.
 
 ```java
+import java.io.IOException;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
-public void fetchData() {
-    OkHttpClient client = new OkHttpClient();
+public class DataSource {
+    private final OkHttpClient client = new OkHttpClient();
 
-    Request request = new Request.Builder()
-            .url("https://api.example.com/data")
-            .build();
+    public void fetchData() {
+        Request request = new Request.Builder()
+                .url("https://api.example.com/data")
+                .build();
 
-    client.newCall(request).enqueue(new Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-            // Handle the error
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            if (response.isSuccessful()) {
-                String responseData = response.body().string();
-                // Process the response
-            } else {
-                // Handle the error
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Network failure, timeout, or the call was cancelled.
             }
-        }
-    });
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody body = response.body()) {
+                    if (!response.isSuccessful()) {
+                        // HTTP error such as 404 or 500.
+                        return;
+                    }
+                    String responseData = body.string();
+                    // Parse responseData here.
+                }
+            }
+        });
+    }
 }
 ```
 
-In this example, we create an `OkHttpClient` instance and use it to build a `Request`. Then, we enqueue the request, which sends it to the server asynchronously. The `Callback` interface allows us to handle the response or any errors that may occur during the request process.
+A few things this example gets right that are easy to miss:
+
+- `enqueue` runs the call on OkHttp's background threads. Calling `execute()` on the main thread instead throws `NetworkOnMainThreadException`.
+- `onResponse` is also called on a background thread. Post back to the main thread (for example with `runOnUiThread` or a `Handler`) before touching views.
+- The response body must be closed, or the connection leaks. The try-with-resources block does that. `body.string()` reads the whole body into memory, so for large downloads read from `body.byteStream()` instead.
+- `onResponse` is called for any HTTP response, including 4xx and 5xx. Only network-level failures go to `onFailure`.
 
 ## Interceptors
 
-One of the most powerful features of OkHttp is its support for interceptors. Interceptors can be used to modify requests and responses, making them ideal for implementing functionality like logging, caching, and authentication.
-
-To create an interceptor, implement the `Interceptor` interface and override the `intercept` method:
+An interceptor sees every request before it goes out and every response before it comes back. Implement `Interceptor` and call `chain.proceed(request)` to continue the chain:
 
 ```java
+import android.util.Log;
+
+import java.io.IOException;
+
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 
 public class LoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-
-        // Log the request
-        Log.d("OkHttp", "Request: " + request.toString());
+        long start = System.nanoTime();
+        Log.d("OkHttp", "--> " + request.method() + " " + request.url());
 
         Response response = chain.proceed(request);
 
-        // Log the response
-        Log.d("OkHttp", "Response: " + response.toString());
-
+        long tookMs = (System.nanoTime() - start) / 1_000_000;
+        Log.d("OkHttp", "<-- " + response.code() + " " + response.request().url() + " (" + tookMs + "ms)");
         return response;
     }
 }
 ```
 
-To add an interceptor to your OkHttpClient, use the `addInterceptor` method:
+Register it when you build the client:
 
 ```java
 OkHttpClient client = new OkHttpClient.Builder()
@@ -111,10 +119,27 @@ OkHttpClient client = new OkHttpClient.Builder()
         .build();
 ```
 
-With this setup, every request made using this `OkHttpClient` instance will pass through the `LoggingInterceptor`, allowing you to log both requests and responses.
+The same pattern adds a header to every request, such as an auth token:
 
-## Conclusion
+```java
+Interceptor auth = chain -> chain.proceed(
+        chain.request().newBuilder()
+                .header("Authorization", "Bearer " + tokenProvider.getToken())
+                .build());
+```
 
-OkHttp is a powerful and efficient networking library for Android that simplifies the process of making network requests and handling responses. Its extensive feature set, including connection pooling, GZIP compression, HTTP/2 support, and interceptors, make it an excellent choice for developers looking to improve their app's networking capabilities.
+`addInterceptor` registers an *application* interceptor, which runs once per call. `addNetworkInterceptor` registers a *network* interceptor, which runs for each network request, including redirects and retries, and sees the headers OkHttp adds (like `Accept-Encoding: gzip`). See the [interceptors docs](https://github.com/square/okhttp/blob/master/docs/features/interceptors.md) for the full comparison.
 
-By incorporating OkHttp into your Android projects, you can streamline the process of communicating with web services and build more robust, efficient applications.
+For logging you don't need to write your own. The `com.squareup.okhttp3:logging-interceptor` artifact provides `HttpLoggingInterceptor`. At `Level.HEADERS` or `Level.BODY` it logs headers such as `Authorization` and cookies, so either call `redactHeader("Authorization")` or only add it in debug builds.
+
+## Gotchas
+
+- If you need a client with different settings (say, a longer timeout for one endpoint), derive it with `client.newBuilder()`. It shares the original client's connection pool and dispatcher.
+- The default `Dispatcher` allows 64 concurrent requests in total and 5 per host; extra calls wait in a queue.
+- For a typed REST API, put [Retrofit](https://github.com/square/retrofit) on top of OkHttp instead of parsing JSON by hand in callbacks.
+
+## Further reading
+
+- [OkHttp on GitHub](https://github.com/square/okhttp)
+- [Calls](https://github.com/square/okhttp/blob/master/docs/features/calls.md) and [interceptors](https://github.com/square/okhttp/blob/master/docs/features/interceptors.md) docs
+- [logging-interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor)

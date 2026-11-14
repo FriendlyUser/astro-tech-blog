@@ -1,114 +1,85 @@
 ---
-title: Introduction to docker with express
-description: Docker is a popular platform for building, deploying, and running applications in containers.
+title: Running an Express server in a Docker container
+description: Write a Dockerfile for a small Express app, build the image, and run it with the port mapped to your machine.
 alt: my first blog post
 tags: ["js","introToJs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 15 Feb 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/2269624161_forest.png'
 ---
 
-See my previous post on [Getting started with nodejs and express](https://friendlyuser.github.io/posts/tech/js/getting_started_with_node_and_express/)
+See my previous post on [Getting started with nodejs and express](https://friendlyuser.github.io/posts/tech/js/getting_started_with_node_and_express/) for the Express app itself. This post packages that app into a Docker image.
 
+A Docker container bundles an application with its runtime, libraries and dependencies, and runs it as an isolated process on the host. The practical benefit for a Node app is that the Node version and installed packages are fixed in the image, so the server behaves the same on your laptop, in CI and in production. Containers share the host's kernel instead of booting a full guest OS like a virtual machine, so they start quickly and use less memory.
 
-Docker is a popular platform for building, deploying, and running
-applications in containers. A container is a lightweight, standalone,
-and executable package of an application that includes everything the
-application needs to run, such as the code, libraries, and dependencies.
+## The Dockerfile
 
-Containers provide a number of benefits over traditional approaches to
-building and deploying applications, such as virtual machines. Some of
-the key benefits of using Docker and containers include:
-
--   Portability: Containers are isolated from the host system and can
-    run on any machine that has Docker installed, regardless of the host
-    operating system or system configuration. This makes it easy to
-    deploy and run applications on different environments, such as local
-    development, staging, and production.
-
--   Consistency: Containers provide a consistent and predictable runtime
-    environment for applications, which helps to ensure that
-    applications will behave the same way no matter where they are
-    deployed. This can reduce the time and effort required to
-    troubleshoot issues and ensure that applications are working as
-    expected.
-
--   Scalability: Containers are lightweight and can be easily scaled up
-    or down to meet the changing needs of an application. This makes it
-    easy to manage the resources that an application uses, and allows
-    applications to be quickly and easily adapted to handle changes in
-    workload or traffic.
-
--   Efficiency: Containers use less resources than traditional virtual
-    machines, which makes it possible to run more applications on the
-    same hardware. This can help to reduce the cost and complexity of
-    running and managing applications, and can improve the overall
-    efficiency of an application's infrastructure.
-
-In summary, Docker is a platform for building, deploying, and running
-applications in containers. Containers provide a number of benefits over
-traditional approaches, such as portability, consistency, scalability,
-and efficiency. This makes Docker a useful tool for building and
-deploying modern applications.
-
-Here is an example of a Dockerfile that can be used to create a Docker
-image for a simple Express server:
+Put this `Dockerfile` in the project root, next to `package.json`:
 
 ```dockerfile
+# Node.js 26 is an LTS release; the alpine variant keeps the image small
+FROM node:26-alpine
 
-Copy code
-# Use the official Node.js 10 LTS image as the base image
-FROM node:10-lts
-
-# Create a directory for the application
-RUN mkdir -p /usr/src/app
-
-# Set the working directory to the application directory
+# Set the working directory (created if it doesn't exist)
 WORKDIR /usr/src/app
 
-# Copy the package.json and package-lock.json files to the working directory
+# Copy only the dependency manifests first so this layer is cached
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm install
+# Install exactly what's in package-lock.json, without dev dependencies
+RUN npm ci --omit=dev
 
-# Copy the application source code to the working directory
+# Copy the application source code
 COPY . .
 
-# Expose port 3000 so it can be accessed from the outside
+# Document the port the server listens on
 EXPOSE 3000
 
-# Start the Express server when the container is started
+# Start the Express server
 CMD ["npm", "start"]
 ```
 
-Your file directory should look like
+Copying `package*.json` and installing before copying the rest of the source means Docker can reuse the `npm ci` layer when you only change application code, which makes rebuilds much faster. `npm ci` requires a `package-lock.json`; if you don't have one, run `npm install` locally first to create it.
 
-In this Dockerfile, the official Node.js 10 LTS image is used as the
-base image. The package.json and package-lock.json files are copied to
-the working directory and the dependencies are installed using npm. The
-application source code is then copied to the working directory, and
-port 3000 is exposed so it can be accessed from the outside. Finally,
-the npm start command is specified as the default command for the
-container, which will start the Express server when the container is
-started.
+`EXPOSE` doesn't publish anything by itself. It documents the port; you still map it with `-p` when you run the container.
 
-To build a Docker image using this Dockerfile, you can run the following
-command from the directory where the Dockerfile is located:
+Add a `.dockerignore` so your local `node_modules` (which may contain binaries built for a different OS) isn't copied over the one installed in the image:
 
-    docker build -t my-express-app .
+```text
+node_modules
+npm-debug.log
+.git
+```
 
-This will build a Docker image with the name my-express-app using the
-instructions in the Dockerfile. You can then run the image as a Docker
-container using the following command:
+The project should look like this:
 
-    docker run -p 3000:3000 my-express-app
+```text
+my-express-app/
+├── .dockerignore
+├── Dockerfile
+├── app.js
+├── package.json
+└── package-lock.json
+```
 
-This will start a Docker container based on the my-express-app image,
-and will map port 3000 on the host to port 3000 in the container. The
-Express server will start automatically when the container is started,
-and you will be able to access the server at http://localhost:3000.
+`package.json` needs a `start` script, for example `"start": "node app.js"`, and the app should listen on port 3000. Call `app.listen(3000)` without a host argument (or with `0.0.0.0`). If the server binds to `127.0.0.1`, it is only reachable from inside the container.
 
+## Build and run
+
+Build the image from the directory containing the `Dockerfile`:
+
+```bash
+docker build -t my-express-app .
+```
+
+Then run it, mapping port 3000 on your machine to port 3000 in the container:
+
+```bash
+docker run -p 3000:3000 my-express-app
+```
+
+The server is now at http://localhost:3000. Add `-d` to run it in the background, and stop it with `docker stop <container-id>` (`docker ps` lists running containers). `Ctrl+C` may not stop it: the process running as PID 1 in a container ignores `SIGINT` unless it installs a handler, so either handle the signal in your app or add `--init` to `docker run`.
 
 ## References
 
@@ -117,3 +88,7 @@ This content came from a book I generated using chatGPT and a lot of editing.
 View on the source material see amazon https://www.amazon.com/dp/B0BSL14M71
 
 For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf
+
+- [Docker's Node.js language guide](https://docs.docker.com/guides/nodejs/)
+- [Official Node.js image on Docker Hub](https://hub.docker.com/_/node)
+- [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)

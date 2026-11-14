@@ -1,56 +1,66 @@
 ---
-title: Simple web app to transcribe audio
-description: Transcribing audio with python using openai and whispers
+title: A small Gradio web app to transcribe audio with OpenAI Whisper
+description: A few lines of Python that wrap OpenAI's open-source Whisper model in a Gradio UI, so you can upload an audio file, such as an investor call, and get a transcript.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 5 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["whisper", "gradio", "python"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-14 22.06.43 - blank book open on the coffee table.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-## Summary
+Transcribing audio turns a recording into text you can search, skim and quote. My use case is investor calls: company executives talk through results and outlook for an hour, and a transcript lets me find the part about margins or guidance without replaying the whole thing.
 
-Audio transcription is the process of converting speech in an audio recording into written text. This can be useful in a variety of situations, such as when a person wants to search for a specific word or phrase within an audio recording, or when a person wants to make the content of an audio recording more accessible to people who are deaf or hard of hearing. Audio transcription can also be useful for creating written records of meetings, interviews, and other events that are recorded in audio form. In general, audio transcription can help to make the information in audio recordings more easily accessible and searchable.
+Whisper is OpenAI's open-source speech recognition model. It runs locally, so this needs no API key. Gradio wraps a Python function in a web UI, so you can upload a file in the browser and see the result.
 
+## Requirements
 
-Audio transcription can be useful for transcribing investor calls, which are typically audio recordings of meetings or conference calls where company executives discuss the company's financial performance and outlook with investors. Transcribing these calls can make the information contained in them more easily accessible and searchable, which can be helpful for investors who want to review the information discussed in the calls at a later date. 
+`requirements.txt`:
 
-The contents of requirements.txt are as follows:
+```text
+openai-whisper
+gradio
 ```
-whispers
-git+https://github.com/openai/whisper.git
-```
+
+The PyPI package is `openai-whisper`. (An earlier version of this post also listed `whispers`, which is an unrelated tool for finding secrets in config files.) Whisper also needs [ffmpeg](https://ffmpeg.org/) on your `PATH` to decode audio. On Hugging Face Spaces, add `ffmpeg` to `packages.txt`.
+
+## The app
 
 ```python
-import whisper
 import gradio as gr
+import whisper
+
+# Load once at startup, not on every request.
+# Sizes: tiny, base, small, medium, large, turbo (bigger = slower but more accurate).
+model = whisper.load_model("base")
 
 
-def get_text_from_mp3_whisper(mp3_file: str)->str:
-    model = whisper.load_model("base")
-    # options = whisper.DecodingOptions(language="en", without_timestamps=True)
-    result = model.transcribe(mp3_file)
-    return result.get("text", "No text found"), result.get("segments", {})
-    
-    
- 
+def transcribe(audio_path: str) -> tuple[str, list]:
+    result = model.transcribe(audio_path)
+    return result["text"], result["segments"]
+
+
 gr.Interface(
-    title = 'OpenAI Whisper Transcribe audio files to text', 
-    fn=get_text_from_mp3_whisper, 
-    inputs=[
-        gr.inputs.Audio(type="filepath")
-    ],
-    outputs=[
-        "textbox", "json"
-    ],
-    live=True).launch()
+    fn=transcribe,
+    inputs=gr.Audio(type="filepath"),
+    outputs=[gr.Textbox(label="Transcript"), gr.JSON(label="Segments")],
+    title="OpenAI Whisper: transcribe audio files to text",
+).launch()
 ```
 
-This code uses the whisper and gradio libraries to create an interface for transcribing audio files. The get_text_from_mp3_whisper function uses the whisper library to load a model and transcribe the audio file at the given filepath. The transcription results are returned as text and a JSON object. The gradio library is then used to create an interface that allows users to input an audio file and see the transcription results. The interface also has a live mode, which allows users to see the transcription results as they are being generated.
+`model.transcribe()` returns a dict with the full `text`, the detected `language`, and a list of `segments`. Each segment has `start` and `end` times in seconds, which is useful for jumping back to a specific part of a call. The app shows the text in a textbox and the segments as JSON.
 
-## References 
+`gr.Audio(type="filepath")` hands the function a path to a temporary file, which is what `whisper` expects. The original version of this app used `gr.inputs.Audio`; the `gr.inputs`/`gr.outputs` namespaces were removed in Gradio 4, so use the components directly as above.
 
-This app is hosted on hugging space
+## Gotchas
 
-See https://huggingface.co/spaces/FriendlyUser/whisper_demo
+- The `base` model is fast on CPU but makes mistakes on names and tickers. `small` or `turbo` are noticeably better if you have a GPU.
+- An hour-long call takes a while on CPU. The free Hugging Face Spaces hardware is CPU-only, so stick to the smaller models there.
+- Whisper sometimes "hallucinates" text during long silences or music, so check the transcript before quoting it.
+
+## References
+
+- The app is hosted on Hugging Face Spaces: https://huggingface.co/spaces/FriendlyUser/whisper_demo
+- [openai/whisper on GitHub](https://github.com/openai/whisper)
+- [Gradio Interface docs](https://www.gradio.app/docs/gradio/interface)

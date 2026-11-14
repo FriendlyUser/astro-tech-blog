@@ -1,135 +1,108 @@
 ---
-title: Using WebAssembly for Multimedia Processing
+title: "Image processing in the browser with WebAssembly: a Gaussian blur with OpenCV.js"
 pubDate: "2023-09-23T11:33:12.000Z"
-description: "In this article , we will explore how WebAssembly can be used for multimedia processing tasks, such as audio and video manipulation, image processing, and more"
-tags: []
+lastUpdated: 2026-11-14
+description: "Use OpenCV.js, OpenCV compiled to WebAssembly, to blur an image in the browser, plus where Wasm helps for audio and video and what it costs."
+tags: ['opencv', 'javascript', 'cpp']
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2465919888.png
 ---
-# Using WebAssembly for Multimedia Processing
 
-## Introduction
+WebAssembly (Wasm) lets you compile C, C++ or Rust to a bytecode that browsers run at close to native speed. For multimedia that's useful in two ways: heavy per-pixel or per-sample loops run much faster than equivalent JavaScript, and you can reuse existing native libraries (OpenCV, FFmpeg, audio codecs) instead of rewriting them.
 
-WebAssembly (often abbreviated as wasm) is a binary instruction format designed as a portable target for the compilation of high-level languages like C, C++, and Rust. It enables the deployment of code on the web with performance close to native code. One of the key strengths of WebAssembly is its ability to run code at near-native speed by taking advantage of common hardware capabilities available on various platforms.
+This post blurs an image with OpenCV.js, which is OpenCV compiled to Wasm with the Emscripten toolchain, then covers when to build your own module and where Wasm fits for audio and video.
 
-In this article, we will explore how WebAssembly can be used for multimedia processing tasks, such as audio and video manipulation, image processing, and more. We'll discuss the advantages of using WebAssembly for these tasks, demonstrate some examples, and provide resources for further learning.
+## Example: Gaussian blur with OpenCV.js
 
-## Advantages of Using WebAssembly for Multimedia Processing
-
-There are several reasons why WebAssembly is well-suited for multimedia processing tasks:
-
-1. **Performance**: WebAssembly provides near-native performance, which is crucial for real-time multimedia processing applications. This is especially important for tasks that require a lot of computational power, such as video encoding or image manipulation.
-
-2. **Portability**: WebAssembly code can run on any modern web browser, regardless of the underlying platform. This means that multimedia processing applications written in WebAssembly can be easily deployed across different devices and operating systems without modification.
-
-3. **Language Support**: WebAssembly supports a range of high-level languages, allowing developers to use familiar programming languages and libraries for multimedia processing tasks.
-
-4. **Security**: WebAssembly applications run in a secure sandboxed execution environment, which isolates them from the surrounding system. This ensures that multimedia processing tasks are performed securely, without exposing sensitive data or system resources.
-
-## Example: Image Processing with WebAssembly
-
-To demonstrate the use of WebAssembly for multimedia processing, let's consider a simple example of image processing using the popular library OpenCV. We will create a WebAssembly module that applies a Gaussian blur filter to an input image.
-
-### Prerequisites
-
-Before we begin, make sure you have the following tools installed:
-
-- Emscripten SDK: This is a toolchain for compiling C/C++ code to WebAssembly. You can download it from [the Emscripten website](https://emscripten.org/).
-- OpenCV: We will use the C++ version of OpenCV for our example. You can download it from [the OpenCV website](https://opencv.org/).
-
-### Creating the WebAssembly Module
-
-First, let's create a simple C++ file called `gaussian_blur.:
-
-```cpp
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <emscripten/bind.h>
-
-using namespace cv;
-using namespace emscripten;
-
-Mat gaussianBlur(const Mat& input, int ksize, double sigma) {
-    Mat output;
-    GaussianBlur(input, output, Size(ksize, ksize), sigma);
-    return output;
-}
-
-EMSCRIPTEN_BINDINGS(gaussian_blur) {
-    function("gaussianBlur", &gaussianBlur, allow_raw_pointers());
-}
-```
-
-In this code snippet, we define a function `gaussianBlur` that takes an input image (in OpenCV's `Mat` format), a kernel size, and a sigma value for the Gaussian blur filter. The function applies the filter using OpenCV's `GaussianBlur` function and returns the result.
-
-We then use Emscripten's `EMSCRIPTEN_BINDINGS` macro to expose the `gaussianBlur` function to JavaScript.
-
-### Compiling the WebAssembly Module
-
-Next, we'll compile the C++ file to WebAssembly using the Emscripten compiler:
-
-```bash
-emcc gaussian_blur.cpp -O3 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -s EXPORT_NAME="'GaussianBlurModule'" -o gaussian_blur.js -I/path/to/opencv/include -L/path/to/opencv/lib -lopencv_core -lopencv_imgproc
-```
-
-This will generate two files: `gaussian_blur.js` and `gaussian_blur.wasm`. The former is a JavaScript glue code that loads and initializes the WebAssembly module, while the latter contains the compiled WebAssembly binary.
-
-### Using the WebAssembly Module
-
-Finally, let's create an HTML file that loads the WebAssembly module and applies the Gaussian blur filter to an input image:
+The OpenCV project publishes a prebuilt `opencv.js` (the Wasm binary is embedded in the file), so there's nothing to compile. Save this as `index.html` and open it in a browser:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Image Processing with WebAssembly</title>
+  <meta charset="UTF-8">
+  <title>Gaussian blur with OpenCV.js</title>
 </head>
 <body>
-    <input type="file" id="inputImage" accept="image/*">
-    <canvas id="resultCanvas"></canvas>
-    <script src="gaussian_blur.js"></script>
-    <script>
-        const inputImage = document.getElementById('inputImage');
-        const resultCanvas = document.getElementById('resultCanvas');
-        
-        inputImage.addEventListener('change', async (event) =>            {
-                const file = event.target.files[0];
-                const image = new Image();
-                image.src = URL.createObjectURL(file);
+  <input type="file" id="fileInput" accept="image/*" disabled>
+  <img id="source" alt="Selected image" style="max-width: 45%">
+  <canvas id="output"></canvas>
 
-                image.onload = async () => {
-                    const { gaussianBlur } = await GaussianBlurModule();
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const img = document.getElementById('source');
 
-                    const inputMat = cv.imread(image);
-                    const outputMat = gaussianBlur(inputMat, 5, 0);
-                    cv.imshow(resultCanvas, outputMat);
+    // opencv.js finishes loading before its Wasm runtime is ready,
+    // so wait for onRuntimeInitialized unless it has already run.
+    function onOpenCvReady() {
+      if (cv.Mat) {
+        fileInput.disabled = false;
+      } else {
+        cv.onRuntimeInitialized = () => { fileInput.disabled = false; };
+      }
+    }
 
-                    inputMat.delete();
-                    outputMat.delete();
-                };
-            });
-    </script>
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) img.src = URL.createObjectURL(file);
+    });
+
+    img.addEventListener('load', () => {
+      // cv.imread(img) would use the <img>'s displayed size, so copy
+      // the image to a canvas at full resolution and read that instead.
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+
+      const src = cv.imread(canvas); // RGBA cv.Mat
+      const dst = new cv.Mat();
+      cv.GaussianBlur(src, dst, new cv.Size(15, 15), 0, 0, cv.BORDER_DEFAULT);
+      cv.imshow('output', dst);     // draws the Mat on the canvas
+
+      // Mats live in Wasm memory, which the JS garbage collector
+      // doesn't manage. Free them explicitly.
+      src.delete();
+      dst.delete();
+      URL.revokeObjectURL(img.src);
+    });
+  </script>
+  <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady()"></script>
 </body>
 </html>
 ```
 
-In this HTML file, we have an input element for selecting an image file and a canvas element for displaying the result. We also load the `gaussian_blur.js` script, which initializes the WebAssembly module.
+How it works:
 
-When the user selects an image file, we create an `Image` object and set its `src` attribute to a URL representing the file. Once the image has loaded, we call the `gaussianBlur` function, passing the input image, kernel size, and sigma value. We then display the result on the canvas element.
+- `cv.imread()` reads the pixels from an `<img>` or `<canvas>` into a `cv.Mat`. For an `<img>` it uses the element's displayed width and height, which is why the example draws to a full-size canvas first. `cv.imshow()` writes a `Mat` back to a canvas. Both are JavaScript helpers that ship with OpenCV.js.
+- `cv.GaussianBlur(src, dst, ksize, sigmaX, sigmaY, borderType)` has the same signature as the C++ function. The kernel size must be odd; passing `0` for sigma lets OpenCV derive it from the kernel size.
+- Every `cv.Mat` must be freed with `.delete()`. Forgetting this is the most common OpenCV.js bug: memory grows with each image until the page slows down or crashes.
 
-## Conclusion
+The `4.x` URL always serves the latest 4.x release, so for production, pin a specific version (for example `https://docs.opencv.org/4.13.0/opencv.js`) or host the file yourself. It's around 10 MB, so load it only on pages that need it.
 
-In this article, we have explored the use of WebAssembly for multimedia processing tasks, focusing on a simple example of image processing using the OpenCV library. We demonstrated the advantages of using WebAssembly for these tasks, such as near-native performance, portability, and language support.
+## Building your own Wasm module
 
-There are many other multimedia processing tasks that can benefit from WebAssembly, such as audio processing, video encoding and decoding, and more. We encourage you to explore further and leverage the power of WebAssembly for your multimedia processing needs.
+Prebuilt OpenCV.js covers most of OpenCV's image-processing API. You'd build your own module when you want a smaller download or your own C++ code:
 
-## Further Resources
+- **A slimmer OpenCV.js.** OpenCV's `platforms/js/build_js.py` script builds OpenCV.js with Emscripten. Its `--config` option takes your own copy of `opencv_js.config.py`, the whitelist of functions exported to JavaScript, so you can include only what you call. See [Build OpenCV.js](https://docs.opencv.org/4.x/d4/da1/tutorial_js_setup.html).
+- **Your own C++ that uses OpenCV.** Your code and OpenCV must be compiled into the *same* Wasm module, using OpenCV static libraries that were themselves built with Emscripten. Linking against a desktop OpenCV install (`-L/usr/lib -lopencv_core`) won't work, because those are native x86 or ARM libraries. You also can't pass a `cv.Mat` from the prebuilt OpenCV.js into a separately compiled module: each module has its own linear memory.
+- **Plain pixel loops.** For a simple filter you may not need OpenCV at all. Write a C or Rust function that takes a pointer to an RGBA buffer, compile it with Emscripten or `wasm-pack`, and copy `ImageData.data` into the module's memory before calling it.
 
-- [WebAssembly Official Website](https://webassembly.org/)
-- [Emscripten Documentation](https://emscripten.org/docs/introducing_emscripten/index.html)
-- [OpenCV Documentation](https://docs.opencv.org/master/)
+## Audio and video
+
+- **Video**: [ffmpeg.wasm](https://ffmpegwasm.netlify.app/docs/overview/) is FFmpeg compiled to Wasm and can transcode, trim or extract frames in the browser. It's noticeably slower than native FFmpeg, so it suits short clips and keeping files on the user's device, not bulk transcoding. Where the browser supports it, the WebCodecs API gives you hardware-accelerated encoding and decoding without shipping a codec at all.
+- **Audio**: Wasm DSP code is usually run inside an `AudioWorkletProcessor`, which processes audio on a dedicated real-time thread in 128-sample blocks. Keep allocations out of the processing loop so the garbage collector doesn't cause dropouts.
+
+## Gotchas
+
+- Copying pixels between JavaScript and Wasm memory costs time. For small images, or a single cheap operation, a canvas filter or plain JavaScript may be just as fast.
+- Wasm runs on the CPU. For filters that run every frame on video, a WebGL or WebGPU shader is often faster still.
+- Multithreaded Wasm builds need `SharedArrayBuffer`, which only works on cross-origin isolated pages (served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`).
+
+## Further reading
+
+- [OpenCV.js tutorials](https://docs.opencv.org/4.x/d5/d10/tutorial_js_root.html)
+- [Emscripten documentation](https://emscripten.org/docs/introducing_emscripten/index.html)
+- [WebAssembly official website](https://webassembly.org/)
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
-- [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
-
+- [WebGL API](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)

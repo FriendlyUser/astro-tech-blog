@@ -1,69 +1,69 @@
 ---
-tags: ['chatgpt', 'flutter']
-title: In this blog post I will show you to build a markdown viewer in Flutter.
-description: For chatgpt usage, it is easier to view the prompts in a markdown viewer as a chrome extension.
+tags: ['chatgpt', 'flutter', 'dart']
+title: Building a Chrome extension in Flutter to view my ChatGPT prompts
+description: A Flutter web app packaged as a Manifest V3 Chrome extension popup that fetches a markdown file of ChatGPT prompts from GitHub and renders it.
 pubDate: Fri, 7 July 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1028024527.png
 ---
-A Chrome extension is a small software program that adds new features to the Google Chrome web browser. Chrome extensions can modify and enhance the functionality of Chrome by adding or removing certain features, or by integrating with other web services or applications. Chrome extensions can be installed from the Chrome Web Store and can be managed and configured through the browser's settings menu.
+I keep my ChatGPT prompts in a markdown README on GitHub. Having them one click away in the browser toolbar is easier than opening the repo every time, so I built a small Chrome extension that fetches the README and renders it. The UI is a Flutter web app.
 
+An earlier version of this post said you can't build a Chrome extension in Flutter. That's wrong. A Flutter web build is a set of static HTML, JS and asset files, and a Chrome extension popup is an HTML page, so you can package the build as an extension as long as it satisfies the extension's Content Security Policy.
 
-Flutter is a popular open-source framework for building high-performance mobile and web applications. However, building a Chrome extension in Flutter is not currently possible, as Flutter is primarily designed for building standalone mobile and web applications, rather than browser extensions.
+## The app
 
-To build a Chrome extension, you can use web development technologies like HTML, CSS, and JavaScript. You can also use popular JavaScript frameworks like React, Vue, or Angular to create more complex extensions.
+```dart
+import 'dart:async';
 
-To get started, you'll need to create a manifest file that defines the structure and behavior of your extension, as well as any required permissions. You can then use JavaScript to create the user interface and implement the functionality of your extension.
-
-Here's a high-level overview of the steps involved in building a Chrome extension:
-
-1. Define the structure and behavior of your extension in a manifest file.
-2. Create a popup or settings page for your extension using HTML and CSS.
-3. Use JavaScript to implement the functionality of your extension, including any interactions with external APIs or services.
-4. Test your extension and submit it to the Chrome Web Store for distribution.
-
-There are many resources available online to help you get started with building Chrome extensions, including the official Chrome Extension Developer Guide and various tutorials and code samples.
-
-
-```dart 
- import 'dart:async'; // import Timer
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:http/http.dart' as http;
-// import clipboard from services
-import 'package:flutter/services.dart';
+
+const promptsUrl =
+    'https://raw.githubusercontent.com/FriendlyUser/chatgpt_prompts/main/README.md';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _markdownData = "";
+  String _markdownData = '';
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     fetchMarkdownData();
 
-    // Schedule fetching markdown data again after 50 minutes
-    Timer.periodic(const Duration(minutes: 50), (timer) {
+    // Refresh the prompts every 50 minutes while the page is open
+    _timer = Timer.periodic(const Duration(minutes: 50), (_) {
       fetchMarkdownData();
     });
   }
 
-  void fetchMarkdownData() async {
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> fetchMarkdownData() async {
     try {
-      final response = await http.get(Uri.parse("https://raw.githubusercontent.com/FriendlyUser/chatgpt_prompts/main/README.md"));
+      final response = await http.get(Uri.parse(promptsUrl));
+      if (response.statusCode != 200 || !mounted) return;
       setState(() {
         _markdownData = response.body;
       });
     } catch (e) {
-      print(e);
+      debugPrint('Failed to fetch prompts: $e');
     }
   }
 
@@ -71,47 +71,73 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text("ChatGpt Prompt Viewer"),
-        ),
+        appBar: AppBar(title: const Text('ChatGPT Prompt Viewer')),
         body: Markdown(
-              data: _markdownData,
-              selectable: true,
-              // onTapLink: (text, href, title) {
-              //   Clipboard.setData(ClipboardData(text: text));
-              // },
+          data: _markdownData,
+          selectable: true,
         ),
       ),
     );
   }
-} 
- ```
+}
+```
 
-The code above is a Flutter application that fetches Markdown data from a remote server and displays it in a widget. The app is also set up to periodically fetch the data again after a certain time interval.
+The app downloads the README with the `http` package and shows it in a scrollable, selectable `Markdown` widget, so I can highlight a prompt and copy it. The periodic timer refreshes the content and is cancelled in `dispose()`. The fetch ignores non-200 responses instead of rendering an error page as markdown.
 
-The `main()` function initializes the application by calling `runApp()` with an instance of the `MyApp` widget. The `MyApp` widget is a `StatefulWidget`, which means it has mutable state that can change over time.
+When I first wrote this I used `flutter_markdown`. The Flutter team has since discontinued that package, and its pub.dev page points to [`flutter_markdown_plus`](https://pub.dev/packages/flutter_markdown_plus), which keeps the same `Markdown` widget API. Add both dependencies with:
 
-The `fetchMarkdownData()` function is an asynchronous function that uses the `http` package to fetch Markdown data from a remote server. Once the data has been fetched, it updates the `_markdownData` state variable using `setState()`. If an error occurs during the fetch process, it is printed to the console.
+```bash
+flutter pub add flutter_markdown_plus http
+```
 
-The `_MyAppState` class is the state object associated with the `MyApp` widget. In its `initState()` method, it calls `fetchMarkdownData()` to initialize the `_markdownData` state variable. It also sets up a `Timer` to periodically call `fetchMarkdownData()` again every 50 minutes.
+## Turning the build into an extension
 
-In the `build()` method of the `_MyAppState` class, the `_markdownData` state variable is passed to a `Markdown` widget, which displays the Markdown data in a scrollable view. The `selectable` property is set to `true`, which allows the user to select and copy text from the Markdown view.
+Replace `web/manifest.json` (the PWA manifest Flutter generates) with an extension manifest:
 
-Note that the code includes commented-out code to handle tapping on links in the Markdown view, but it is currently disabled. The commented-out code uses the `clipboard` package to copy the link text to the device clipboard when a link is tapped.
+```json
+{
+  "name": "Chrome Extension ChatGpt Prompts",
+  "description": "Making it easy to find my chat gpt prompts",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "icons/Icon-192.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  }
+}
+```
 
+Chrome's default extension-page policy is `script-src 'self'; object-src 'self';`, which disables WebAssembly. Flutter's CanvasKit renderer is WebAssembly, so the manifest adds `'wasm-unsafe-eval'`. That's the most Manifest V3 allows.
 
-To install a Chrome extension from a bundle, follow these steps:
+Then build:
 
-1. Download the extension bundle: This will typically be a `.crx` or `.zip` file. You can download the bundle from the developer's website or from a third-party source.
-2. Extract the extension files: If the bundle is a `.zip` file, you can extract its contents using a program like WinZip or 7-Zip. If it's a `.crx` file, you can change the file extension to `.zip` and then extract the contents.
-3. Open the Chrome extensions page: In the Chrome browser, click on the three-dot menu icon in the upper-right corner and select "More tools" > "Extensions". Alternatively, you can type `chrome://extensions/` in the address bar.
-4. Enable developer mode: In the top right corner of the extensions page, toggle the "Developer mode" switch to the "On" position.
-5. Click "Load unpacked": This button should now be visible on the extensions page. Click it and select the folder that contains the extracted extension files.
-6. Confirm installation: Once you've selected the folder, the extension should be installed and listed on the extensions page. If you see any errors or warnings, review the manifest file for the extension and ensure that it meets the requirements for Chrome extensions.
+```bash
+flutter build web --csp --no-web-resources-cdn
+```
 
-Note that installing an extension from a bundle that is not from a trusted source can be risky, as it may contain malware or other harmful code. Always be cautious when downloading and installing extensions from third-party sources, and only install extensions from trusted developers and sources.
+- `--csp` stops Flutter from generating code at runtime, which Manifest V3's default policy blocks.
+- `--no-web-resources-cdn` bundles CanvasKit into the build instead of loading it from Google's CDN. Manifest V3 doesn't allow remotely hosted code.
+- Older guides add `--web-renderer html`. The HTML renderer and that flag were removed from Flutter, so leave it out.
 
+The fetch to `raw.githubusercontent.com` works without extra permissions because GitHub serves raw files with permissive CORS headers.
 
+## Loading it in Chrome
+
+1. Open `chrome://extensions/`.
+2. Turn on **Developer mode** (top right).
+3. Click **Load unpacked** and select the `build/web` folder.
+
+The extension icon appears in the toolbar, and clicking it opens the popup. If Chrome reports manifest or CSP errors, they show on the extension's card on the same page.
+
+## Gotchas
+
+- A popup sizes itself to its content, and Flutter's canvas has no intrinsic size. Give the `<body>` in `web/index.html` an explicit width and height, or the popup may open tiny. Chrome caps popups at 800×600.
+- The popup closes as soon as it loses focus, so the 50-minute refresh only matters if you open the app as a full tab (`chrome-extension://<id>/index.html`).
+- Flutter web output is several megabytes, so it's heavy for a simple viewer. A plain HTML page with a JS markdown library would be smaller, but this let me stay in Dart.
 
 ## References
 - https://raw.githubusercontent.com/FriendlyUser/chatgpt_chrome_extension/main/lib/main.dart
+- [Chrome extensions: manifest Content Security Policy](https://developer.chrome.com/docs/extensions/reference/manifest/content-security-policy)

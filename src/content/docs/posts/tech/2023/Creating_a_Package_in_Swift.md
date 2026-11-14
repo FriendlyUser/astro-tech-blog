@@ -1,52 +1,47 @@
 ---
-description: In this article, we will explore how to create, manage, and distribute
-  a package in Swift using the Swift Package Manager
+description: "Create a Swift library with swift package init, understand the Package.swift manifest, add a dependency, build and test it, and publish versions with Git tags."
 imgSrc: /imgs/2023/4161054396.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-15T13:22:30.000Z'
-tags: []
-title: Creating a Package in Swift
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Creating, testing and publishing a Swift package with SwiftPM"
 ---
 
-# Creating a Package in Swift
+A Swift package is a folder of source files plus a `Package.swift` manifest that describes what it builds and what it depends on. The Swift Package Manager (SwiftPM) ships with the Swift toolchain, so you can create, build and test packages from the command line on macOS, Linux or Windows, and Xcode opens them directly.
 
-Swift is a powerful and easy-to-use language for iOS, macOS, watchOS, and tvOS app development. One of the great features of Swift is its support for packages, which allows you to bundle reusable code into a single unit that can be easily shared among different projects. In this article, we will explore how to create, manage, and distribute a package in Swift using the Swift Package Manager.
+## Create the package
 
-## What is a Swift Package?
-
-A Swift package is a collection of source files, resources, and a manifest file that defines the package's structure and its dependencies. The manifest file, called `Package.swift`, specifies the package metadata such as the name, version, and the products it provides (libraries or executables).
-
-## Getting Started: Creating a New Package
-
-To create a new Swift package, you need to have the [Swift command line tools](https://swift.org/download/) installed on your system. Once you have the command line tools installed, open the terminal and navigate to the directory where you want to create your package. Then, run the following command:
+Install a toolchain from [swift.org](https://www.swift.org/install/) (or install Xcode on macOS). `swift package init` creates the package in the current directory and names it after the folder:
 
 ```bash
+mkdir MyPackage
+cd MyPackage
 swift package init --type library
 ```
 
-This command will create a new package with the default folder structure and a `Package.swift` manifest file. The `--type` flag specifies that we want to create a library package, which can be imported into other projects. If you want to create an executable package, you can use `--type executable` instead.
+Use `--type executable` for a command-line tool instead. The library template creates:
 
-The folder structure of a newly created package looks like this:
-
-```
+```text
 MyPackage
-├── Package.swift
-├── README.md
 ├── .gitignore
-└── Sources
-    └── MyPackage
-        └── MyPackage.swift
+├── Package.swift
+├── Sources
+│   └── MyPackage
+│       └── MyPackage.swift
 └── Tests
     └── MyPackageTests
         └── MyPackageTests.swift
 ```
 
-## Package.swift Manifest File
+Depending on your toolchain version, the generated test uses Swift Testing (`import Testing`) or XCTest; `swift package init --help` lists the flags for choosing.
 
-The `Package.swift` manifest file is the heart of a Swift package. It defines the package metadata, dependencies, and products. Let's take a closer look at a basic `Package.swift` file:
+## The manifest
+
+Here's a manifest for the library with platform minimums added:
 
 ```swift
-// swift-tools-version:5.5
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -56,68 +51,92 @@ let package = Package(
         .iOS(.v13),
     ],
     products: [
-        .library(
-            name: "MyPackage",
-            targets: ["MyPackage"]),
+        .library(name: "MyPackage", targets: ["MyPackage"]),
     ],
     dependencies: [],
     targets: [
-        .target(
-            name: "MyPackage",
-            dependencies: []),
-        .testTarget(
-            name: "MyPackageTests",
-            dependencies: ["MyPackage"]),
+        .target(name: "MyPackage"),
+        .testTarget(name: "MyPackageTests", dependencies: ["MyPackage"]),
     ]
 )
 ```
 
-Here is a brief explanation of each section:
+- The `swift-tools-version` comment on the first line is required. It sets the minimum SwiftPM version that can read the manifest and which manifest APIs are available.
+- `platforms` sets minimum deployment targets for Apple platforms. Leave it out to use SwiftPM's defaults.
+- `products` are what other packages can import. A target that isn't in a product is internal to the package.
+- `targets` are modules. By convention a target's sources live in `Sources/<TargetName>` and a test target's in `Tests/<TargetName>`.
 
-- `swift-tools-version`: Specifies the minimum version of the Swift tools required to build the package.
-- `import PackageDescription`: Imports the `PackageDescription` module needed to define the package.
-- `name`: The name of the package.
-- `platforms`: Specifies the platforms and their minimum deployment target versions supported by the package.
-- `products`: Describes the libraries or executables that the package provides.
-- `dependencies`: Lists the package's external dependencies.
-- `targets`: Defines the package's build targets, including their source files and dependencies.
+## Write some code and a test
 
-## Adding Dependencies
+Other modules can only see declarations marked `public`, including the initialiser, which isn't public by default:
 
-To add a dependency to your package, you need to add it to the `dependencies` array in the `Package.swift` file. Each dependency requires a URL and a version range. For example, let's add the popular Alamofire networking library to our package:
+```swift
+// Sources/MyPackage/MyPackage.swift
+public struct Greeter {
+    public init() {}
+
+    public func greet(_ name: String) -> String {
+        "Hello, \(name)!"
+    }
+}
+```
+
+A test using Swift Testing (Swift 6 toolchain or Xcode 16 and later):
+
+```swift
+// Tests/MyPackageTests/MyPackageTests.swift
+import Testing
+@testable import MyPackage
+
+@Test func greeting() {
+    #expect(Greeter().greet("Swift") == "Hello, Swift!")
+}
+```
+
+`@testable import` lets tests reach `internal` declarations as well as public ones.
+
+## Add a dependency
+
+Add the package URL and a version requirement to `dependencies`, then name the product in the target that uses it. For Alamofire:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.0")
+    .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.12.2"),
 ],
+targets: [
+    .target(
+        name: "MyPackage",
+        dependencies: [
+            .product(name: "Alamofire", package: "Alamofire"),
+        ]
+    ),
+    .testTarget(name: "MyPackageTests", dependencies: ["MyPackage"]),
+]
 ```
 
-Next, you need to specify the dependency in the corresponding target. In this case, we'll add Alamofire to the `MyPackage` target:
+`from: "5.12.2"` means "5.12.2 or any later 5.x release". 5.12.2 was the latest Alamofire release when this post was updated. SwiftPM records the exact resolved versions in `Package.resolved`. Packages that depend on yours ignore that file and resolve their own versions, so the `from:` range is what matters for consumers.
 
-```swift
-.target(name: "MyPackage", dependencies: ["Alamofire"]),
-```
-
-Now the package is set up to use Alamofire.
-
-## Building and Testing Your Package
-
-To build your package, navigate to the package directory in the terminal and run:
+## Build and test
 
 ```bash
 swift build
-```
-
-This command will compile the package and its dependencies. To run the package's tests, execute:
-
-```bash
 swift test
 ```
 
-## Distributing Your Package
+`swift build` fetches dependencies on first run and compiles everything into `.build/`. `swift test` builds the test targets and runs them. In Xcode, open the package folder and use **Product > Test**.
 
-To make your package available to others, you should host the package's source code on a public Git repository such as GitHub, GitLab, or Bitbucket. Once your package is hosted, other developers can add it as a dependency to their projects using the repository URL and a version range.
+## Publish it
 
-## Conclusion
+SwiftPM installs packages straight from Git, so publishing means pushing to a public repository (GitHub, GitLab, Bitbucket and so on) and tagging releases with semantic version numbers:
 
-In this article, we covered the basics of creating, managing, and distributing a Swift package using the Swift Package Manager. Packages are an excellent way to modularize, share, and reuse code in the Swift ecosystem. By creating and distributing your own packages, you can contribute to the community and help make Swift even more powerful and versatile.
+```bash
+git tag 1.0.0
+git push origin 1.0.0
+```
+
+Other packages can then depend on yours with `.package(url: "https://github.com/<you>/MyPackage.git", from: "1.0.0")`. Without a version tag, consumers can only depend on a branch or commit. Optionally, submit the package to the [Swift Package Index](https://swiftpackageindex.com/) so people can find it and see which platforms it builds on.
+
+## Further reading
+
+- [Swift Package Manager documentation](https://www.swift.org/documentation/package-manager/)
+- [PackageDescription API reference](https://developer.apple.com/documentation/packagedescription)

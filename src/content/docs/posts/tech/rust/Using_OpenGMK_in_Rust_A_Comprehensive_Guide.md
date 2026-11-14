@@ -1,147 +1,91 @@
 ---
 tags: ['rust']
-title: Using OpenGMK in Rust
-description:  In this article, we will explore how to use OpenGMK in Rust with the help of `opengmk-rs`, a Rust library that provides a convenient interface for working with OpenGMK documents.
+title: "OpenGMK: building the Rust GameMaker Classic runner, TAS tools and decompiler"
+description: "OpenGMK is a Rust rewrite of the GameMaker Classic (GM8) runner with TAS tooling and a decompiler. How to build it from source and run, record and decompile games."
 pubDate: Fri, 21 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1340975325.png"
 ---
-# Using OpenGMK in Rust: A Comprehensive Guide
 
-## Introduction
+:::caution
+An earlier version of this post described OpenGMK as an "Open Generalized Markup Language" with a Rust
+library called `opengmk-rs`. Neither exists: there is no such markup language, and no `opengmk-rs` (or any
+`opengmk`) crate on crates.io. The code samples were invented and have been removed. The real OpenGMK is
+described below.
+:::
 
-Open Generalized Markup Language (OpenGMK) is a powerful and flexible markup language designed for general-purpose data representation. Rust, a systems programming language focused on safety, speed, and concurrency, is an excellent choice for working with OpenGMK data. In this article, we will explore how to use OpenGMK in Rust with the help of `opengmk-rs`, a Rust library that provides a convenient interface for working with OpenGMK documents.
+[OpenGMK](https://github.com/OpenGMK/OpenGMK) is an open-source rewrite, in Rust, of the runners for
+*GameMaker Classic*, the pre-Studio versions of GameMaker such as GameMaker 8. It plays old GM8-era game
+executables and adds tooling the original engine never had, mainly for tool-assisted speedruns (TAS). It is
+licensed GPL-2.0 and, per its README, is a work in progress maintained by a few people in their free time.
+GameMaker: Studio games are not supported.
 
-## Prerequisites
+It isn't a library you add to `Cargo.toml`; it's a Cargo workspace of programs and supporting crates:
 
-To follow along, you will need:
+- **`gm8emulator`**: the runner. Plays a game, and records and replays TAS input with savestates.
+- **`gm8decompiler`**: extracts the assets (sprites, rooms, GML code) from a game executable and rebuilds a
+  GameMaker project file (`.gmk` / `.gm81`). It was previously the standalone
+  [GM8Decompiler](https://github.com/OpenGMK/GM8Decompiler) project.
+- Supporting crates for reading GameMaker executables and parsing GML, plus `gm8emulator-wow64`, a helper
+  needed on 64-bit Windows for games that load 32-bit DLLs.
 
-1. Basic knowledge of Rust programming language.
-2. Rust and Cargo installed on your system.
+## Building from source
 
-## Installing the Library
+The README recommends building from source because the pre-built releases are old. You need a Rust
+toolchain; on Windows only the MSVC toolchain is supported. The repository uses git submodules:
 
-To start using `opengmk-rs`, add the following dependency to your project's `Cargo.toml` file:
-
-```toml
-[dependencies]
-opengmk-rs = "0.1"
+```sh
+git clone --recurse-submodules https://github.com/OpenGMK/OpenGMK
+cd OpenGMK
+cargo build --release
 ```
 
-Next, run `cargo build` to download and compile the library.
+The `gm8emulator` and `gm8decompiler` binaries end up in `target/release`. Games that depend on 32-bit DLLs
+also need the WoW64 server, built separately for the `i686-pc-windows-msvc` target; see the README for the
+exact steps.
 
-## Reading an OpenGMK Document
+## Running a game
 
-Let's look at how to read an OpenGMK document using the `opengmk-rs` library. Suppose we have the following OpenGMK document named `example.gmk`:
+Pass the game's executable:
 
-```gmk
-<root>
-    <person>
-        <name>John Doe</name>
-        <age>30</age>
-    </person>
-    <person>
-        <name>Jane Doe</name>
-        <age>28</age>
-    </person>
-</root>
+```sh
+gm8emulator path/to/game.exe
 ```
 
-To read the document, use the following code:
+## Recording a TAS
 
-```rust
-use opengmk_rs::parse;
+Add a project name with `-n` to start (or continue) recording:
 
-fn main() {
-    let input = std::fs::read_to_string("example.gmk").expect("Failed to read file");
-    let parsed_document = parse(&input).expect("Failed to parse document");
-    println!("{:?}", parsed_document);
-}
+```sh
+gm8emulator path/to/game.exe -n my-run
 ```
 
-The `parse` function returns a `Result` containing the root node of the document. If the parsing was successful, you can traverse the nodes and their attributes using the provided methods.
+In record mode each savestate is written as a `save#.bin`. You can export a `save#.gmtas`, which holds only
+the inputs and is the file to share. Savestates can break between OpenGMK versions, so keep the `.gmtas`:
+replaying it regenerates the `.bin`. To do that quickly with the frame limiter off (`-l`):
 
-## Traversing Nodes
-
-To traverse the nodes in the document, you can use the `children`, `parent`, and `siblings` methods provided by the `Node` struct:
-
-```rust
-use opengmk_rs::{parse, Node};
-
-fn main() {
-    let input = std::fs::read_to_string("example.gmk").expect("Failed to read file");
-    let parsed_document = parse(&input).expect("Failed to parse document");
-
-    if let Node::Element(root) = &parsed_document {
-        for person in root.children() {
-            if let Node::Element(person) = person {
-                let name = person
-                    .get_child_by_name("name")
-                    .and_then(Node::as_text)
-                    .unwrap_or("<unknown>");
-                let age = person
-                    .get_child_by_name("age")
-                    .and_then(Node::as_text)
-                    .unwrap_or("0");
-
-                println!("Name: {}, Age: {}", name, age);
-            }
-        }
-    }
-}
+```sh
+gm8emulator path/to/game.exe -l -f path/to/save1.gmtas -o path/to/save1.bin
 ```
 
-This code will output:
+On Windows, TAS projects are stored in a `projects/` folder.
 
-```
-Name: John Doe, Age: 30
-Name: Jane Doe, Age: 28
-```
+## Decompiling a game
 
-## Creating an OpenGMK Document
+`gm8decompiler` takes a GameMaker 8.x executable and writes back a project file you can open in the original
+GameMaker editor. The README doesn't document its command-line options, so check the `gm8decompiler`
+source in the repository for the flags your build supports.
 
-You can also create an OpenGMK document from scratch using the `opengmk-rs` library. Here's how you can create the same document as above:
+## Limitations
 
-```rust
-use opengmk_rs::{Document, Element};
+- The README says a stable release may never happen; expect savestate formats to change between builds.
+- The README documents the Windows TAS project folder; the Linux location is described as a near-future feature.
+- If you're interested in emulator or interpreter internals, the source is a readable reference for how
+  GameMaker Classic executables and GML are structured.
 
-fn main() {
-    let mut root = Element::new("root");
-    let mut person1 = Element::new("person");
-    let mut person2 = Element::new("person");
+## Further reading
 
-    person1.add_child(Element::new_with_text("name", "John Doe"));
-    person1.add_child(Element::new_with_text("age", "30"));
-
-    person2.add_child(Element::new_with_text("name", "Jane Doe"));
-    person2.add_child(Element::new_with_text("age", "28"));
-
-    root.add_child(person1);
-    root.add_child(person2);
-
-    let document = Document::new(root);
-    println!("{}", document);
-}
-```
-
-This code will output the same OpenGMK document we used earlier:
-
-```gmk
-<root>
-    <person>
-        <name>John Doe</name>
-        <age>30</age>
-    </person>
-    <person>
-        <name>Jane Doe</name>
-        <age>28</age>
-    </person>
-</root>
-```
-
-## Conclusion
-
-In this article, we've covered how to use OpenGMK in Rust using the `opengmk-rs` library. We've seen how to read, traverse, and create OpenGMK documents, providing you with the necessary tools to work with OpenGMK data in your Rust applications. The `opengmk-rs` library is an excellent choice for Rust developers who need to work with OpenGMK documents and provides a safe, fast,and convenient interface for doing so.
-
-As you continue working with OpenGMK in Rust, consider exploring more advanced features of the `opengmk-rs` library, such as error handling, support for editing documents, or even contributing to the library to help improve its functionality.
-
+- [OpenGMK on GitHub](https://github.com/OpenGMK/OpenGMK) (README covers building, TAS workflow and known
+  limitations)
+- [GM8Decompiler](https://github.com/OpenGMK/GM8Decompiler)

@@ -1,54 +1,65 @@
 ---
-tags: ['vuepress', 'vuepress-theme-cool']
-title: Introducing Vuepress Theme Cool - A Vuepress Theme for Blogs and documentation
-description: Vuepress Theme Cool is a Vuepress theme for Blogs and documentation.
+tags: ['vuepress', 'vuepress-theme-cool', 'vue']
+title: vuepress-theme-cool, a VuePress 1 theme with Mermaid, charts and admonitions
+description: How vuepress-theme-cool extends the VuePress 1 default theme with Mermaid diagrams, a pros/cons component, Chart.js charts, sortable tables and admonitions.
 pubDate: Fri, 2 March 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3997466131.png"
 ---
-VuePress is a static site generator based on Vue.js that allows you to easily create documentation websites or any other kind of website that requires structured content. It features a built-in Markdown editor, support for custom themes, and plugins that extend its functionality.
 
+:::caution[VuePress 1 is in maintenance mode]
+This theme targets VuePress 1 (Vue 2, webpack). The VuePress project has put v1 in maintenance mode and points new sites to [VitePress](https://vitepress.dev/) (supported by the Vue team) or VuePress 2, which is still in release candidate on npm. The theme does not work with either of them.
+:::
 
-To create a custom theme for VuePress, you can follow these steps:
+[vuepress-theme-cool](https://github.com/FriendlyUser/vuepress-theme-cool) is a VuePress theme for personal documentation. It inherits the default theme's layout, navbar and sidebar, and adds Mermaid and PlantUML diagrams, KaTeX math, Chart.js charts, sortable/filterable tables and styled admonitions. The [starter repo](https://github.com/FriendlyUser/vuepress-theme-cool-starter) is a working example.
 
-1. Create a new folder in your VuePress project's `theme` directory. For example, you could name it `my-theme`.
-2. Inside the `my-theme` folder, create an `enhanceApp.js` file. This file will be used to inject additional Vue components or plugins into the app.
-3. Create a `Layout.vue` file in the `my-theme` folder. This file will define the basic layout structure of your custom theme.
-4. Customize the CSS in the `Layout.vue` file and add any other Vue components you need to create your desired layout.
-5. Create or modify any other necessary files, such as `index.js` or `config.js`, to define your custom theme's behavior.
+## Installing
 
-Once you've created your custom theme, you can configure VuePress to use it by modifying the `theme` option in your `config.js` file to point to the folder containing your custom theme. For example:
+The README still says `yarn global add vuepress@next`, but on npm the `next` tag now points to a VuePress 2 release candidate, which this theme won't work with. Pin VuePress 1 instead:
 
+```bash
+npm install -D vuepress@1 vuepress-theme-cool
+```
+
+Then point `.vuepress/config.js` at the theme and register the markdown-it plugins it relies on. They're installed as dependencies of the theme:
 
 ```js
 // .vuepress/config.js
-
 module.exports = {
- theme: 'my-theme',
- // ... other options ...
+  theme: 'cool', // VuePress resolves this to vuepress-theme-cool
+  markdown: {
+    extendMarkdown: md => {
+      md.set({ html: true })
+      md.use(require('markdown-it-katex'))
+      md.use(require('markdown-it-plantuml'))
+      md.use(require('markdown-it-admonition'))
+    }
+  }
 }
 ```
-After making these changes, your VuePress site should use your custom theme.
 
+## Extending the default theme
 
-```js 
- module.exports = {
+The theme's whole `index.js` is one line of config:
+
+```js
+// vuepress-theme-cool/index.js
+module.exports = {
   extend: '@vuepress/theme-default'
-} 
- ```
+}
+```
 
-The code you provided is a configuration object in a VuePress project's `config.js` file.
+`extend` is VuePress 1's theme inheritance. Any file the child theme doesn't provide, such as `Layout.vue` and the navbar and sidebar components, falls back to `@vuepress/theme-default`. So the child theme only needs the extras: components in `global-components/`, styles in `styles/`, and an `enhanceApp.js`. `extend` belongs in the theme's `index.js`, not in the site's `.vuepress/config.js`.
 
-It sets the default theme as the base theme for your VuePress site, and allows you to extend and customize it using additional configuration options.
+If you want a local theme instead of a package, put it in `.vuepress/theme/` (with its own `index.js` and, if not extending another theme, a `Layout.vue`). VuePress 1 uses that directory automatically.
 
-By using `extend` property, you are inheriting and extending the functionality of the `@vuepress/theme-default` theme. This means that you can override or add to the default settings and components of the theme to create a custom look and feel for your site.
+## Mermaid diagrams
 
-For example, you could add your own custom components or layouts, change the default color scheme, or modify the site's sidebar navigation.
+VuePress 1 auto-registers every component in a theme's `global-components/` directory. The Mermaid component comes from [VuePress issue #111](https://github.com/vuejs/vuepress/issues/111):
 
-
-```vue 
- // .vuepress/components/mermaid.vue
-
+```vue
+<!-- global-components/mermaid.vue -->
 <template>
   <div class="mermaid">
     <slot></slot>
@@ -68,375 +79,103 @@ export default {
   }
 };
 </script>
+```
 
- 
- ```
+Mermaid is imported lazily in `mounted()`, so it only runs in the browser and isn't part of the server-side render. `m.init()` renders every element with the `mermaid` class. That API is from Mermaid 8, which the theme depends on (`^8.2.6`). Mermaid 10 deprecated `init()` in favour of `mermaid.run()`.
 
-The code you provided is a Vue component that defines a `mermaid` custom element in your VuePress project.
+In a Markdown page:
 
-This component is designed to render [Mermaid diagrams](https://mermaid-js.github.io/mermaid/#/) in your VuePress pages. It works by importing the `mermaid` library and initializing it when the component is mounted.
-
-Here is a breakdown of what's happening in the code:
-
-* The `<template>` section defines the HTML template for the `mermaid` component. It includes a `<slot>` element, which allows you to pass in content to be rendered inside the component.
-* The `<script>` section defines the JavaScript logic for the `mermaid` component.
-* `export default` defines the component as the default export for this module, which allows it to be imported and used in other parts of your VuePress project.
-* `name: 'mermaid'` sets the name of the component to `mermaid`.
-* `mounted()` is a lifecycle method that is called when the component is mounted to the DOM.
-* `import("mermaid/dist/mermaid")` dynamically imports the `mermaid` library.
-* `m.initialize({ startOnLoad: true })` initializes the `mermaid` library with a configuration option to automatically start rendering diagrams when the page is loaded.
-* `m.init()` tells the `mermaid` library to initialize any `<div>` elements with a `class` of `mermaid` and render them as diagrams.
-
-To use this component in your VuePress pages, you can include it like this:
-
-
-```js
+```md
 <mermaid>
- graph TD;
- A-->B;
- A-->C;
- B-->D;
- C-->D;
-</mermaid>`
+graph TD
+  A-->B
+  A-->C
+  B-->D
+  C-->D
+</mermaid>
 ```
-This will render the Mermaid diagram inside the `<mermaid>` element. Note that you can include any valid Mermaid diagram code inside the `<mermaid>` element.
 
+## Pros and cons lists
 
-```vue 
- <template>
-  <div>
-    <p class="intro">
-      {{ intro }}
-    </p>
-    <div class="comparison">
-      <div class="comparison__container">
-        <div class="comparison__heading">
-          <i class="material-icons blue-text">check</i>
-          Pros
-        </div>
-        <ul>
-          <li
-            v-for="item in good"
-            :key="item"
-            :inner-html.prop="item"
-          />
-        </ul>
-      </div>
+`pros-cons.vue` renders two lists side by side, with a blue "Pros" heading and a red "Cons" heading. It takes a required `intro` string plus `good` and `bad` arrays. Items are inserted with `:inner-html.prop`, so they can contain HTML, which means you shouldn't pass in untrusted strings.
 
-      <div class="comparison__container comparison__container--donts">
-        <div class="comparison__heading comparison__heading--donts">
-          <i class="material-icons">close</i>
-          Cons
-        </div>
-        <ul>
-          <li
-            v-for="item in bad"
-            :key="item"
-            :inner-html.prop="item"
-          />
-        </ul>
-      </div>
-    </div>
-  </div>
-</template>
+```md
+<pros-cons
+  intro="Pros and cons of VuePress 1:"
+  :good="[
+    'Markdown pages with Vue components inline',
+    'Extensible through themes and plugins',
+  ]"
+  :bad="[
+    'In maintenance mode',
+    'Requires some knowledge of Vue 2',
+  ]"
+/>
+```
 
-<script>
-export default {
-  name: 'pros-cons',
-  props: {
-    intro: {
-      type: String,
-      required: true,
-    },
-    good: {
-      type: Array,
-      default: null,
-    },
-    bad: {
-      type: Array,
-      default: null,
-    },
-  },
-}
-</script>
+The styles are written in Stylus and use variables such as `$fw-bold`, `$fs-1` and `$base-sizing`. Neither VuePress nor the theme's `palette.styl` defines them, so add them to your own `.vuepress/styles/palette.styl`. Otherwise those font sizes and weights won't apply.
 
-<style scoped lang='stylus'>
+## Charts and tables
 
-.intro
-  margin 0
-  font-weight $fw-bold
-.comparison
-  display flex
-  margin-top 1.5rem
-  &__container
-    width 50%
-    padding-left 1.5rem
-    margin-bottom 1.5em
-    border-top 4px solid  blue(#000, 255)
-    &--donts
-      border-color red(#000, 255)
-  &__heading
-    margin-top 38px
-    margin-bottom 28px
-    font-size $fs-1
-    font-weight $fw-bold
-    color blue(#000, 255)
-    display flex
-    align-items center
-    &--donts
-      color red(#000, 255)
-  &__icon
-    margin-right 0.5rem
-    height 24px
-  li
-    margin-bottom $base-sizing
-    padding-left 0
-    font-size $fs-2
-    line-height 1.33rem
-    list-style-type initial
-    text-indent 0
-</style> 
- ```
-
-The code you provided is a Vue component that creates a `pros-cons` custom element. This component allows you to display a list of pros and cons side by side, with an optional introduction text.
-
-Here is a breakdown of what's happening in the code:
-
-* The `<template>` section defines the HTML template for the `pros-cons` component. It includes a `<p>` element for the introduction text, and two `<ul>` elements for the pros and cons lists.
-* The `v-for` directive is used to iterate over the `good` and `bad` arrays, and render a `<li>` element for each item. The `:inner-html.prop` binding is used to insert the item text as raw HTML.
-* The `<script>` section defines the JavaScript logic for the `pros-cons` component.
-* `export default` defines the component as the default export for this module, which allows it to be imported and used in other parts of your VuePress project.
-* `name: 'pros-cons'` sets the name of the component to `pros-cons`.
-* `props` is an object that defines the component's props. In this case, the component expects three props: `intro`, `good`, and `bad`.
-* The `intro` prop is a required string that is used as the introduction text for the component.
-* The `good` and `bad` props are arrays that contain the list of pros and cons, respectively.
-* The `<style>` section defines the component's styles using Stylus, with the `scoped` attribute to limit the styles to this component only.
-
-To use this component in your VuePress pages, you can include it like this:
-
+`enhanceApp.js` runs once when the Vue app is created. The theme uses it to install Vuex, vue-chartkick (backed by Chart.js 2) and vue-good-table globally. It also overrides `$title` so that page titles read `Page title | Site title`:
 
 ```js
-<pros-cons
- intro="Here are the pros and cons of using VuePress:"
- :good="[
- 'Easy to set up and use',
- 'Built-in support for Markdown and Vue components',
- 'Extensible through plugins',
- ]"
- :bad="[
- 'Limited customizability',
- 'Requires some knowledge of Vue.js and JavaScript',
- 'May not be suitable for large or complex sites',
- ]"
-/>`
-```
-This will render the `pros-cons` component with the provided introduction text and lists of pros and cons. Note that you can customize the component's styles by modifying the `<style>` section in this file.
-
-
-```js 
- import Vuex from 'vuex'
-//import './timetableStyles.css'
-//import timetable from 'vue-timetable'
-//Vue.use(timetable)
+// enhanceApp.js
+import Vuex from 'vuex'
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
+import VueGoodTable from 'vue-good-table'
 
-import VueGoodTable from 'vue-good-table';
-// import the styles 
-//import 'vue-good-table/dist/vue-good-table.css'
 export default ({ Vue, options, router, siteData }) => {
-    Vue.use(Vuex)
-    Vue.use(VueChartkick, {adapter: Chart})
-    Vue.use(VueGoodTable)
-    Vue.mixin({
-        computed: {
-            $title() {
-                const page = this.$page
-                const siteTitle = this.$siteTitle
-                const selfTitle = page.frontmatter.home ? null : (
-                    page.frontmatter.title || // explicit title
-                    (page.title ? page.title.replace(/[_`]/g, '') : '') // inferred title
-                )
-                return siteTitle
-                    ? selfTitle
-                        ? (selfTitle + ' | ' + siteTitle)
-                        : siteTitle
-                    : selfTitle || 'VuePress'
-            }
-        }
-    })
+  Vue.use(Vuex)
+  Vue.use(VueChartkick, { adapter: Chart })
+  Vue.use(VueGoodTable)
+  Vue.mixin({
+    computed: {
+      $title() {
+        const page = this.$page
+        const siteTitle = this.$siteTitle
+        const selfTitle = page.frontmatter.home ? null : (
+          page.frontmatter.title ||                              // explicit title
+          (page.title ? page.title.replace(/[_`]/g, '') : '')    // inferred title
+        )
+        return siteTitle
+          ? selfTitle
+            ? (selfTitle + ' | ' + siteTitle)
+            : siteTitle
+          : selfTitle || 'VuePress'
+      }
+    }
+  })
 }
- 
- ```
+```
 
-This is an example of a VuePress plugin, which can be used to add functionality to a VuePress site. This particular plugin imports and installs several third-party libraries: Vuex for state management, VueChartkick and Chart.js for charting, and VueGoodTable for creating tables. Additionally, it defines a computed property `$title` on the Vue instance, which is used to generate the title for each page based on the page's metadata and the site's title. This plugin is included in a VuePress project's `.vuepress/enhanceApp.js` file, which is responsible for importing and applying plugins to the site.
+After that, chart tags work directly in Markdown:
 
+```md
+<pie-chart :data="[['Blueberry', 44], ['Strawberry', 23]]" />
+```
 
-Admonitions are a feature in the VuePress documentation system that allows authors to call out specific pieces of text with a visually distinct block that draws attention to them. They are commonly used for notes, warnings, tips, and other similar types of information. Admonitions are typically displayed as a colored block with an icon and a title that describes the type of information being presented, followed by the text of the admonition itself. In VuePress, admonitions can be created using a special syntax in Markdown that is transformed into HTML and styled using CSS.
+vue-good-table's CSS is imported by a separate `Styles` global component, so add `<Styles />` to any page that uses a table.
 
+## Admonitions
 
-```scss 
-     @import url(https://fonts.googleapis.com/icon?family=Material+Icons)
-    .admonition.note,
-    .admonition.hint,
-    .admonition.danger,
-    .admonition.caution,
-    .admonition.error,
-    .admonition.attention {
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
-        position: relative;
-        margin: 1.5625em 0;
-        padding: 0 1.2rem;
-        border-left: 0.4rem solid #448aff;
-        border-radius: 0.2rem;
-        overflow: auto;
-    }
+`markdown-it-admonition` turns blocks like this:
 
-    html .admonition>:last-child {
-        margin-bottom: 1.2rem;
-    }
+```md
+!!! note This is the admonition title
+This is the admonition body
+!!!
+```
 
-    .admonition .admonition {
-        margin: 1em 0;
-    }
+into `<div class="admonition note">` with a `<p class="admonition-title">` inside. The plugin supports these types: `note`, `abstract`, `info`, `tip`, `success`, `question`, `warning`, `failure`, `danger`, `bug`, `example` and `quote`.
 
-    .admonition p {
-        margin-top: 0.5em;
-    }
+The theme's `styles/index.styl` styles each type in a Stylus loop. Each type gets its own border colour, a tinted title bar and a Material Icons glyph, with the icon font loaded from Google Fonts. To change a colour or icon, edit the `admonition_types` map in that file.
 
-    .admonition.note>.admonition-title:before,
-    .admonition.hint>.admonition-title:before,
-    .admonition.danger>.admonition-title:before,
-    .admonition.caution>.admonition-title:before,
-    .admonition.error>.admonition-title:before,
-    .admonition.attention>.admonition-title:before {
-        position: absolute;
-        left: 1.2rem;
-        font-family: "Material Icons";
-        font-size: 24px;
-        display: inline-block;
-        line-height: 1;
-        text-transform: none;
-        letter-spacing: normal;
-        word-wrap: normal;
-        white-space: nowrap;
-        direction: ltr;
-    /* Support for all WebKit browsers. */
-        -webkit-font-smoothing: antialiased;
-    /* Support for Safari and Chrome. */
-        text-rendering: optimizeLegibility;
-    /* Support for Firefox. */
-        -moz-osx-font-smoothing: grayscale;
-    /* Support for IE. */
-        font-feature-settings: 'liga';
-    }
-
-    .admonition.note>.admonition-title,
-    .admonition.hint>.admonition-title,
-    .admonition.danger>.admonition-title,
-    .admonition.caution>.admonition-title,
-    .admonition.error>.admonition-title,
-    .admonition.attention>.admonition-title {
-        margin: 0 -1.2rem;
-        padding: 0.8rem 1.2rem 0.8rem 4rem;
-        border-bottom: 0.1rem solid rgba(68,138,255,0.1);
-        background-color: rgba(68,138,255,0.1);
-        font-weight: 700;
-    }
-
-    .admonition>.admonition-title:last-child {
-        margin-bottom: 0;
-    }
-
-    .admonition.note {
-        border-left-color: #448aff;
-    }
-
-    .admonition.note>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(68,138,255,0.1);
-        background-color: rgba(68,138,255,0.1);
-    }
-
-    .admonition.note>.admonition-title:before {
-        color: #448aff;
-        content: "note";
-    }
-
-    .admonition.hint {
-        border-left-color: #00bfa5;
-    }
-
-    .admonition.hint>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(0,191,165,0.1);
-        background-color: rgba(0,191,165,0.1);
-    }
-
-    .admonition.hint>.admonition-title:before {
-        color: #00bfa5;
-        content: "info";
-    }
-
-    .admonition.danger {
-        border-left-color: #ff1744;
-    }
-
-    .admonition.danger>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(255,23,68,0.1);
-        background-color: rgba(255,23,68,0.1);
-    }
-
-    .admonition.danger>.admonition-title:before {
-        color: #ff1744;
-        content: "block";
-    }
-
-    .admonition.caution {
-        border-left-color: #ff9100;
-    }
-
-    .admonition.caution>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(255,145,0,0.1);
-        background-color: rgba(255,145,0,0.1);
-    }
-
-    .admonition.caution>.admonition-title:before {
-        color: #ff9100;
-        content: "warning";
-    }
-
-    .admonition.error {
-        border-left-color: #ff1744;
-    }
-
-    .admonition.error>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(255,23,68,0.1);
-        background-color: rgba(255,23,68,0.1);
-    }
-
-    .admonition.error>.admonition-title:before {
-        color: #ff1744;
-        content: "error";
-    }
-
-    .admonition.attention {
-        border-left-color: #64dd17;
-    }
-
-    .admonition.attention>.admonition-title {
-        border-bottom-color: 0.1rem solid rgba(100,221,23,0.1);
-        background-color: rgba(100,221,23,0.1);
-    }
-
-    .admonition.attention>.admonition-title:before {
-        color: #64dd17;
-        content: "priority_high";
-    } 
- ```
-
-This is a block of CSS code that defines styles for different types of admonitions, which are visual cues that can be added to a text to indicate important or noteworthy information. The CSS code defines various style properties, such as the color, border, and background color of the admonitions, as well as the size and position of the icons used to denote the type of admonition (e.g. "note", "hint", "danger", etc.).
-
-
+This syntax is different from the default theme's built-in `::: tip` / `::: warning` containers. Both work side by side.
 
 ## References
+
 - https://github.com/FriendlyUser/vuepress-theme-cool-starter
 - https://github.com/FriendlyUser/vuepress-theme-cool
+- [VuePress 1 docs: theme inheritance](https://v1.vuepress.vuejs.org/theme/inheritance.html)

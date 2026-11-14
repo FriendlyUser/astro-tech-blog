@@ -1,162 +1,140 @@
 ---
 tags: ['alfred', 'dart', 'backend']
-title: Alfred backend with openfoodfacts
-description: Using alfred backend as a wrapper around the openfoodfacts api.
+title: Wrapping the Open Food Facts API with an Alfred server in Dart
+description: A small Dart backend built with Alfred that turns query-string parameters into an Open Food Facts product search and returns the results as JSON.
 pubDate: Mon, 30 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/2421950579.png'
 ---
-This post is related to my last post at https://friendlyuser.github.io/posts/tech/flutter/how_to_deploy_dart_to_hs.html. I will be using the same backend to create a wrapper around the openfoodfacts api. The openfoodfacts api is a free and open source api that provides information about food products. The api is available at https://world.openfoodfacts.org/data. The api is available in different languages and I will be using dart.
-Food facts are important for a variety of reasons. First and foremost, they help us understand what we are eating and what nutrients our body is receiving. This information can be used to make informed decisions about our diets, which can impact our health and well-being.
+This post follows on from my last post at https://friendlyuser.github.io/posts/tech/flutter/how_to_deploy_dart_to_hs.html. I'm reusing the same Dart backend to wrap the [Open Food Facts](https://world.openfoodfacts.org/data) API, a free, open database of food products with ingredients, allergens and nutrition data. The server uses [Alfred](https://pub.dev/packages/alfred) for HTTP and the official [openfoodfacts](https://pub.dev/packages/openfoodfacts) Dart package for the API calls.
 
-Food facts also play a role in food labeling, which is regulated by government agencies to ensure that consumers have accurate information about the food they are purchasing. This can include information about ingredients, allergens, and calorie content. This helps consumers with specific dietary needs, such as food allergies or weight management, make informed choices.
+I wanted a simple HTTP endpoint that takes query-string parameters, so I could search products from any client without pulling the full SDK into it.
 
-In addition, food facts can be used to promote public health. For example, information about the sodium content of processed foods can be used to raise awareness about the risks of high sodium diets, and promote the consumption of healthier alternatives.
+## Building the search query
 
-Overall, food facts are an important tool for empowering consumers to make informed decisions about their diets and for promoting public health.
+The `search` function maps query-string keys onto the package's search parameters: search terms, no additives, sort order, PNNS food group, page size, page number, and tag filters.
 
-
-```dart 
+```dart
 import 'package:openfoodfacts/openfoodfacts.dart';
 
 Future<SearchResult> search(Map<String, String> query) {
-  var parametersList = <Parameter>[];
-  // check for terms in query
+  final parametersList = <Parameter>[];
 
-  if (query.containsKey('terms')) {
-    var terms = query['terms'];
-    if (terms != null && terms.isNotEmpty) {
-      parametersList.add(SearchTerms(terms: terms.split(',')));
-    }
-  }
-  // check for withoutAddictives
-  if (query.containsKey('withoutAdditives')) {
-    var withoutAdditives = query['withoutAdditives'];
-    if (withoutAdditives != null && withoutAdditives == "true") {
-      parametersList.add(WithoutAdditives());
-    }
+  // ?terms=pizza,cheese
+  final terms = query['terms'];
+  if (terms != null && terms.isNotEmpty) {
+    parametersList.add(SearchTerms(terms: terms.split(',')));
   }
 
-  if (query.containsKey('sort')) {
-    var sort = query['sort'];
-    if (sort != null && sort.isNotEmpty) {
-      var option = SortOption.values.firstWhere(
-          (e) => e.toString() == sort,
-          orElse: () => SortOption.PRODUCT_NAME);
-      parametersList.add(SortBy(option: option));
-    }
+  // ?withoutAdditives=true
+  if (query['withoutAdditives'] == 'true') {
+    parametersList.add(const WithoutAdditives());
   }
 
-  if (query.containsKey('pnnsGroup2')) {
-    // print('pnnsGroup2: ${query['pnnsGroup2']}');
-    var pnnsGroup2 = query['pnnsGroup2'];
-    if (pnnsGroup2 != null && pnnsGroup2.isNotEmpty) {
-       var option = PnnsGroup2.values.firstWhere(
-          (e) => e.toString() == pnnsGroup2,
-          orElse: () => PnnsGroup2.PIZZA_PIES_AND_QUICHE);
-      parametersList.add(PnnsGroup2Filter(pnnsGroup2: option));
-    }
+  // ?sort=POPULARITY (any SortOption name)
+  final sort = query['sort'];
+  if (sort != null && sort.isNotEmpty) {
+    final option = SortOption.values.firstWhere(
+      (e) => e.name == sort,
+      orElse: () => SortOption.PRODUCT_NAME,
+    );
+    parametersList.add(SortBy(option: option));
   }
 
-  // page size
-  if (query.containsKey('size')) {
-    var size = query['size'];
-    if (size != null && size.isNotEmpty) {
-      parametersList.add(PageSize(size: int.parse(size)));
-    }
+  // ?pnnsGroup2=PIZZA_PIES_AND_QUICHE (any PnnsGroup2 name)
+  final pnnsGroup2 = query['pnnsGroup2'];
+  if (pnnsGroup2 != null && pnnsGroup2.isNotEmpty) {
+    final group = PnnsGroup2.values.firstWhere(
+      (e) => e.name == pnnsGroup2,
+      orElse: () => PnnsGroup2.PIZZA_PIES_AND_QUICHE,
+    );
+    parametersList.add(PnnsGroup2Filter(pnnsGroup2: group));
   }
 
-  // page number
-  if (query.containsKey('page')) {
-    var page = query['page'];
-    if (page != null && page.isNotEmpty) {
-      parametersList.add(PageNumber(page: int.parse(page)));
-    }
+  // ?size=20&page=2
+  final size = int.tryParse(query['size'] ?? '');
+  if (size != null) {
+    parametersList.add(PageSize(size: size));
+  }
+  final page = int.tryParse(query['page'] ?? '');
+  if (page != null) {
+    parametersList.add(PageNumber(page: page));
   }
 
-  // by tags
-  if (query.containsKey('tags')) {
-    var rawTags = query['tags'];
-    if (rawTags != null && rawTags.isNotEmpty) {
-      var tags = rawTags.split(',');
-      // iterate over tags
-      for (var tag in tags) {
-        // check for tag with value
-        // check tag
-        if (tag.contains(':')) {
-          var tagParts = tag.split(':');
-          var tagName = tagParts[0];
-          var tagValue = tagParts[1];
-          var tagType = TagFilterType.values.firstWhere(
-              (e) => e.toString() == tagName,
-              orElse: () => TagFilterType.CATEGORIES);
-          parametersList.add(TagFilter.fromType(tagFilterType: tagType, tagName: tagValue));
-        }
-      }
+  // ?tags=CATEGORIES:pizzas,LABELS:organic (TagFilterType name : tag value)
+  final rawTags = query['tags'];
+  if (rawTags != null && rawTags.isNotEmpty) {
+    for (final tag in rawTags.split(',')) {
+      final separator = tag.indexOf(':');
+      if (separator == -1) continue;
+      final typeName = tag.substring(0, separator);
+      final value = tag.substring(separator + 1);
+      final type = TagFilterType.values.firstWhere(
+        (e) => e.name == typeName,
+        orElse: () => TagFilterType.CATEGORIES,
+      );
+      parametersList.add(TagFilter.fromType(tagFilterType: type, tagName: value));
     }
   }
 
-  ProductSearchQueryConfiguration configuration =
-      ProductSearchQueryConfiguration(
+  final configuration = ProductSearchQueryConfiguration(
     parametersList: parametersList,
     version: ProductQueryVersion.v3,
   );
-  return OpenFoodAPIClient.searchProducts(
-    User(userId: '', password: ''),
-    configuration,
-  );
+  // Searching is read-only, so no user credentials are needed.
+  return OpenFoodAPIClient.searchProducts(null, configuration);
 }
 
 void mkConfiguration() {
   OpenFoodAPIConfiguration.userAgent = UserAgent(
-      name: 'dart_off_server',
-      url: 'https://friendlyuser-dart-off-server.hf.space/');
+    name: 'dart_off_server',
+    url: 'https://friendlyuser-dart-off-server.hf.space/',
+  );
   OpenFoodAPIConfiguration.globalLanguages = <OpenFoodFactsLanguage>[
-    OpenFoodFactsLanguage.ENGLISH
+    OpenFoodFactsLanguage.ENGLISH,
   ];
-
   OpenFoodAPIConfiguration.globalCountry = OpenFoodFactsCountry.CANADA;
 }
- 
- ```
+```
 
-This code is written in Dart and makes use of the OpenFoodFacts API to search for food products. The code first checks for various parameters in the `query` map and adds the relevant filters to the `parametersList` array. These parameters include search terms, without additives, sort option, food category, page size and number, and tags.
+A few details:
 
-The code then creates a `ProductSearchQueryConfiguration` object with the parameters in the `parametersList` and makes a call to the OpenFoodAPIClient's `searchProducts` method to search for products based on the configuration.
+- Enum values are matched with `.name`, so the query string uses the bare value (`POPULARITY`). The original version compared against `toString()`, which would have required `SortOption.POPULARITY` in the URL.
+- `searchProducts` takes a nullable `User`. Passing `null` is cleaner than a user with empty credentials.
+- `mkConfiguration` sets a User-Agent. Open Food Facts asks every app to identify itself so its requests aren't mistaken for abuse. It also sets English and Canada as the default language and country.
 
-Finally, the code sets the `OpenFoodAPIConfiguration` user agent and global language and country.
+## Exposing it with Alfred
 
+```dart
+import 'package:alfred/alfred.dart';
+import 'package:dart_off_server/core.dart' as openfood;
 
- ```dart 
- import 'package:openfoodfacts/openfoodfacts.dart';
- import 'package:dart_off_server/core.dart' as openfood;
- void main(List<String> arguments) async  { 
-  ...
+Future<void> main(List<String> arguments) async {
   openfood.mkConfiguration();
+
   final app = Alfred();
-  app.get('/food/search', (req, res) { 
-    final query = req.uri.queryParameters;
-    return openfood.search(query).then((value) { 
-      res.json(value); }
-    ).catchError((error) { 
-      res.json(error); 
-    }); 
-});
-``` 
-This Dart code defines a REST API endpoint for searching food information.
 
-The first line imports the openfoodfacts library, which is used for accessing food product information through the OpenFoodFacts API.
+  app.get('/food/search', (req, res) async {
+    try {
+      final result = await openfood.search(req.uri.queryParameters);
+      return result.toJson();
+    } catch (error) {
+      res.statusCode = 500;
+      return {'error': error.toString()};
+    }
+  });
 
-The second line imports the dart\_off\_server library and creates an alias "openfood".
+  await app.listen(3000);
+}
+```
 
-In the main function, the configuration for the OpenFoodFacts API is set up by calling `openfood.mkConfiguration()`.
+Alfred serializes a returned `Map` as JSON, so the handler returns `SearchResult.toJson()` directly. The original version passed the raw exception object to `res.json`, which can't be JSON-encoded. This version sets a 500 status and returns the error message.
 
-An instance of `Alfred` is then created and the API endpoint is defined with the line `app.get('/food/search', (req, res) { ... }`. The endpoint is listening for a GET request to the `/food/search` URL.
+A request like `/food/search?terms=pizza&size=5` then returns the first five matching products.
 
-The `req.uri.queryParameters` object is used to extract the search parameters passed in the URL query string. The parameters are then passed to `openfood.search(query)` which performs the search.
-
-The result of the search is returned as a JSON object to the client using `res.json(value)`. If an error occurs during the search, it is caught and returned as a JSON object using `res.json(error)`.
-
-
- ## References
-* https://friendlyuser-dart-off-server.hf.space/food/search?terms=%22Pizza%22 * https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main 
+## References
+* https://friendlyuser-dart-off-server.hf.space/food/search?terms=%22Pizza%22
+* https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main
+* [openfoodfacts on pub.dev](https://pub.dev/packages/openfoodfacts)
+* [Alfred on pub.dev](https://pub.dev/packages/alfred)

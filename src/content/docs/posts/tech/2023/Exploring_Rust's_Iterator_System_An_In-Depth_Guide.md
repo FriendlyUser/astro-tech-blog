@@ -1,76 +1,70 @@
 ---
-title: Exploring Rust's Iterator System An In-Depth Guide
+title: "Rust iterators: adapters, consumers, and writing your own"
 pubDate: "2024-04-21T08:28:32.000Z"
-description: "In this article , we'll take a deep dive into the various aspects of Rust's iterator system, including creating custom iterators, working with existing iterators, and understanding their performance characteristics"
-tags: []
+lastUpdated: 2026-11-14
+description: "How Rust's Iterator trait works, how lazy adapters like map and filter chain into consumers like sum, how to implement a custom iterator, and common pitfalls."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1452718796.png
 ---
-# Exploring Rust's Iterator System: An In-Depth Guide
 
-Rust is a systems programming language that emphasizes safety, performance, and concurrency. One of its most powerful and expressive features is its iterator system. In this article, we'll take a deep dive into the various aspects of Rust's iterator system, including creating custom iterators, working with existing iterators, and understanding their performance characteristics.
+An iterator in Rust is any type that implements the `Iterator` trait. Iterators are lazy: adapters such as `map` and `filter` build up a pipeline, and nothing runs until a consumer such as `sum`, `collect`, or a `for` loop pulls values through it. This post covers the trait, how chains are evaluated, and how to write your own iterator.
 
-## Table of Contents
+## The `Iterator` trait
 
-1. [What are Iterators?](#what-are-iterators)
-2. [Basic Usage of Iterators](#basic-usage-of-iterators)
-3. [Method Chaining](#method-chaining)
-4. [Creating Custom Iterators](#creating-custom-iterators)
-5. [Performance Characteristics](#performance-characteristics)
-6. [Conclusion](#conclusion)
-
-## What are Iterators?
-
-In Rust, an iterator is an object that implements the `Iterator` trait, which defines a single method, `next`. This method returns an `Option<Item>` where `Item` is the type of the value being iterated over. When there are no more items left, `next` returns `None`.
+The trait has one required method, `next`, which returns `Some(item)` until the sequence is exhausted and then `None`:
 
 ```rust
 pub trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
+    // ...plus dozens of provided methods: map, filter, take, sum, collect, etc.
 }
 ```
 
-Rust's iterators are lazy, meaning they only compute values as they are needed. This allows for efficient iteration over large or even infinite sequences without consuming unnecessary resources.
+Implement `next` and you get every provided method (`map`, `filter`, `zip`, `enumerate`, `fold`, …) for free.
 
-## Basic Usage of Iterators
+## Getting an iterator
 
-Iterators can be created from various types such as arrays, slices, and ranges. Here's an example of iterating over a range of integers:
+Ranges are iterators themselves. Collections give you three flavours:
+
+- `iter()` yields shared references (`&T`).
+- `iter_mut()` yields mutable references (`&mut T`).
+- `into_iter()` yields owned values (`T`) and consumes the collection.
+
+A `for` loop calls `into_iter()` on whatever you give it, so `for x in &v` iterates by reference and `for x in v` moves `v`.
 
 ```rust
 fn main() {
-    let range = 1..6;
-
-    for i in range {
-        println!("{}", i);
+    for i in 1..6 {
+        println!("{}", i); // 1 through 5; the upper bound is exclusive
     }
 }
 ```
 
-In this example, the range `1..6` is an iterator that yields integers from 1 to 5. The `for` loop automatically handles the iteration and termination, making it a convenient and idiomatic way to use iterators.
+## Chaining adapters into a consumer
 
-## Method Chaining
-
-One of the most powerful features of Rust's iterators is the ability to chain methods together to create complex transformations on the data. Iterator methods typically consume the iterator and return a new iterator with the desired behavior. Some common iterator methods are `map`, `filter`, and `collect`.
-
-Here's an example of using method chaining to find the sum of all even squares less than 100:
+Adapters take the iterator by value and return a new iterator. Here's the sum of all even squares below 100:
 
 ```rust
 fn main() {
-    let sum = (1..)
+    let sum: i32 = (1..)
         .map(|x| x * x)
         .take_while(|&x| x < 100)
         .filter(|x| x % 2 == 0)
         .sum();
 
-    println!("Sum: {}", sum);
+    println!("Sum: {}", sum); // 4 + 16 + 36 + 64 = 120
 }
 ```
 
-In this example, we create an infinite iterator of squares using `map`, then use `take_while` to take only the squares less than 100. Finally, we filter out the odd squares and use `sum` to compute the result.
+`(1..)` is infinite, which is fine because `take_while` stops the chain as soon as a square reaches 100. `sum` needs a type annotation (`let sum: i32`) because it can produce any type implementing `Sum`; without it the code doesn't compile.
 
-## Creating Custom Iterators
+With infinite iterators, make sure something in the chain actually stops it. Replacing `take_while` with `filter(|&x| x < 100)` would type-check but never terminate, because `filter` keeps pulling from `(1..)` looking for more matches.
 
-To create a custom iterator, we need to implement the `Iterator` trait for our type. Let's create an iterator that generates Fibonacci numbers:
+## Writing a custom iterator
+
+Store the iteration state in a struct and implement `next`. A Fibonacci generator:
 
 ```rust
 pub struct Fibonacci {
@@ -80,10 +74,7 @@ pub struct Fibonacci {
 
 impl Fibonacci {
     pub fn new() -> Self {
-        Fibonacci {
-            current: 0,
-            next: 1,
-        }
+        Fibonacci { current: 0, next: 1 }
     }
 }
 
@@ -92,30 +83,51 @@ impl Iterator for Fibonacci {
 
     fn next(&mut self) -> Option<Self::Item> {
         let current = self.current;
+        let next = current.checked_add(self.next)?; // end the sequence on overflow
         self.current = self.next;
-        self.next = current + self.next;
-
+        self.next = next;
         Some(current)
     }
 }
 
 fn main() {
-    let fib_iterator = Fibonacci::new().take(10);
-
-    for number in fib_iterator {
+    for number in Fibonacci::new().take(10) {
         println!("{}", number);
     }
 }
 ```
 
-In this example, we created a `Fibonacci` struct to hold the state of the iterator and implemented the `Iterator` trait for it. The `next` method computes the next Fibonacci number and returns it as an `Option`.
+Without `checked_add`, iterating far enough would overflow `u32`: that panics in debug builds and silently wraps in release builds. Returning `None` instead ends the iterator cleanly, a little before the largest Fibonacci number that fits in a `u32`.
 
-## Performance Characteristics
+For one-off iterators you often don't need a struct. `std::iter::successors` and `std::iter::from_fn` build an iterator from a closure:
 
-Rust's iterators are designed to be zero-cost abstractions, meaning that their overhead should be minimal or nonexistent when compared to hand-written loops. The Rust compiler is often able to optimize iterator chains into efficient code that is equivalent to what you would write by hand.
+```rust
+fn main() {
+    let powers_of_two: Vec<u32> = std::iter::successors(Some(1u32), |&n| n.checked_mul(2))
+        .take(5)
+        .collect();
+    println!("{:?}", powers_of_two); // [1, 2, 4, 8, 16]
+}
+```
 
-However, it's important to be aware of potential pitfalls. For example, using the `collect` method to create intermediate data structures can cause unnecessary memory allocations and performance overhead. Be sure to understand the implications of each iterator method and use them judiciously.
+## Performance
 
-## Conclusion
+Iterator chains compile down to the same machine code as a hand-written loop in most cases. Each adapter is a small struct, and the optimizer inlines the `next` calls. In some cases iterators are faster than indexed loops, because iterating a slice avoids per-element bounds checks.
 
-Rust's iterator system is a powerful and expressive feature, allowing developers to write clean, efficient, and functional code. By understanding how to create and use iterators, you can unlock a new level of expressiveness and efficiency in your Rust programs.
+The things that do cost something:
+
+- `collect()` allocates. Avoid collecting into a `Vec` just to iterate it again; keep the chain going instead.
+- `clone()` or `cloned()` on items you could borrow.
+- Boxing iterators (`Box<dyn Iterator<Item = T>>`) prevents inlining. Use `impl Iterator<Item = T>` in return position when you can.
+
+## Gotchas
+
+- An adapter chain with no consumer does nothing. The compiler warns about this because adapters are marked `#[must_use]`.
+- Calling `.iter()` on a `Vec<i32>` gives `&i32` items, which is why closures often need `|&x|` or `|x| *x`.
+- An iterator is consumed as you use it. To iterate twice, create it twice or `clone()` it (most std iterators implement `Clone`).
+
+## Further reading
+
+- [`Iterator` trait documentation](https://doc.rust-lang.org/std/iter/trait.Iterator.html)
+- [`std::iter` module overview](https://doc.rust-lang.org/std/iter/index.html)
+- [The Rust Book: Processing a Series of Items with Iterators](https://doc.rust-lang.org/book/ch13-02-iterators.html)

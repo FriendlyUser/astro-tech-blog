@@ -1,38 +1,27 @@
 ---
-title: Visualize Data with Asciigraph in Golang
+title: Plotting ASCII line graphs in Go with asciigraph
 pubDate: "2023-04-26T15:32:49.017Z"
-description: " In this article, we will explore how to create and customize line graphs using Asciigraph in Golang."
+lastUpdated: 2026-11-14
+description: How to draw line graphs in the terminal from Go with the asciigraph package, and how to set height, width, captions, colours and multiple series.
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1519800630.png
 ---
-# Visualize Data with Asciigraph in Golang
 
-Asciigraph is a lightweight and versatile library for creating ASCII line graph visualizations in Golang. This library is perfect for creating simple visualizations in the terminal or plain text environments. In this article, we will explore how to create and customize line graphs using Asciigraph in Golang.
+[asciigraph](https://github.com/guptarohit/asciigraph) draws line graphs out of box-drawing characters, so you can print a chart straight to a terminal, a log file or a CI job's output. It has no dependencies outside the standard library and one main function: `Plot`.
 
-## Prerequisites
+## Install
 
-To follow along, you should have a basic understanding of Golang and be familiar with the process of installing packages using `go get`. If you need a refresher, check out the [official Golang website](https://golang.org/doc/).
-
-## Installing Asciigraph
-
-To get started, install the Asciigraph library using the following command:
+Inside a Go module:
 
 ```sh
-go get -u github.com/guptarohit/asciigraph
+go mod init example.com/graphs
+go get github.com/guptarohit/asciigraph
 ```
 
-Once the package is installed, you can import it into your project like this:
+## A basic graph
 
-```go
-import "github.com/guptarohit/asciigraph"
-```
-
-## Creating a Basic Line Graph
-
-Creating a line graph with Asciigraph is simple. First, you need a slice of float64 values that represent the data points to be plotted. Then, you can call the `asciigraph.Plot()` function to generate the graph.
-
-Here's a basic example:
+`asciigraph.Plot` takes a `[]float64` and returns the graph as a string:
 
 ```go
 package main
@@ -52,23 +41,17 @@ func main() {
 }
 ```
 
-This code snippet will output the following graph:
+With no options, one column is drawn per data point and the height follows the range of the data, with the y-axis labelled from the minimum (2) to the maximum (9).
 
-```
-  9.00 ┤  ╭─╮    
-  8.00 ┤  �? �?    
-  7.00 ┤  �? �?    
-  6.00 ┤ ╭╯ �?    
-  5.00 ┤ �?  ╰╮   
-  4.00 ┤╭╯   ╰╮  
-  3.00 ┼╯      ╰ 
-```
+## Options
 
-## Customizing the Graph
+`Plot` takes options as variadic functional arguments, not a config struct. The common ones:
 
-Asciigraph provides several options for customizing the appearance of your graph. You can adjust the height, width, caption, and more by passing an `asciigraph.Config` struct to the `asciigraph.Plot()` function.
-
-Here's an example that demonstrates some of the available options:
+- `asciigraph.Height(n)` sets the number of rows.
+- `asciigraph.Width(n)` sets the number of columns. A positive width interpolates the data across that many columns; zero or less goes back to one column per point.
+- `asciigraph.Caption("...")` prints a caption under the graph.
+- `asciigraph.Precision(n)` sets the decimal places on the y-axis labels.
+- `asciigraph.LowerBound(x)` / `asciigraph.UpperBound(x)` fix the y-axis range instead of fitting it to the data.
 
 ```go
 package main
@@ -82,33 +65,51 @@ import (
 func main() {
 	data := []float64{3, 4, 9, 6, 2, 4, 5, 8, 5}
 
-	config := asciigraph.Config{
-		Height:  10,
-		Width:   50,
-		Caption: "Sample Graph",
-	}
-
-	graph := asciigraph.Plot(data, config)
+	graph := asciigraph.Plot(data,
+		asciigraph.Height(10),
+		asciigraph.Width(50),
+		asciigraph.Caption("Sample Graph"),
+		asciigraph.Precision(0),
+	)
 
 	fmt.Println(graph)
 }
 ```
 
-This will output a graph with a custom height, width, and caption:
+## Several series
 
+`PlotMany` takes a `[][]float64` and accepts the same options, plus per-series colours and legends:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	data := [][]float64{
+		{3, 4, 9, 6, 2, 4, 5, 8, 5},
+		{5, 6, 4, 3, 5, 7, 6, 4, 3},
+	}
+
+	graph := asciigraph.PlotMany(data,
+		asciigraph.Height(8),
+		asciigraph.SeriesColors(asciigraph.Red, asciigraph.Blue),
+		asciigraph.SeriesLegends("cpu", "mem"),
+	)
+
+	fmt.Println(graph)
+}
 ```
-Sample Graph
-  9.00 ┤       ╭─╮
-  8.00 ┤       �? �?
-  7.00 ┤       �? �?
-  6.00 ┤     ╭─╯ �?
-  5.00 ┤     �?   ╰─╮
-  4.00 ┤   ╭─╯     ╰─╮
-  3.00 ┼─╭─╯         ╰
-```
 
-## Conclusion
+Colours are ANSI escape codes, so they show up in a terminal but turn into noise if you write the output to a file or a log viewer that doesn't render them.
 
-Asciigraph offers a simple and effective way to create ASCII line graphs in Golang. With just a few lines of code, you can visualize data in the terminal or other plain text environments. This library is particularly useful for developers who need to quickly analyze data without the overhead of more complex visualization tools.
+## Gotchas
 
-To learn more about Asciigraph and explore additional customization options, visit the [official Asciigraph GitHub repository](https://github.com/guptarohit/asciigraph).
+- The graph is only as wide as your terminal. Long series wrap and become unreadable; use `Width` to squeeze them down.
+- The output uses Unicode box-drawing characters. Make sure your terminal font and encoding (UTF-8) support them, or you'll see `?` in place of the lines.
+
+The full option list is in the [package docs](https://pkg.go.dev/github.com/guptarohit/asciigraph) and the [GitHub README](https://github.com/guptarohit/asciigraph).

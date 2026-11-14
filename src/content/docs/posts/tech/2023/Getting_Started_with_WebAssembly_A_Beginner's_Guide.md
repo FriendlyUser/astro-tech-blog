@@ -1,123 +1,134 @@
 ---
-title: Getting Started with WebAssembly A Beginner's Guide
+title: 'WebAssembly with Emscripten: compile C to wasm and call it from JavaScript'
 pubDate: "2024-12-16T13:33:03.000Z"
-description: "In this article , we'll cover the basics of WebAssembly and walk you through the process of setting up your development environment, compiling a simple program, and running it in the browser"
-tags: []
+lastUpdated: 2026-11-14
+description: "Install Emscripten, compile a small C program to WebAssembly, run it in the browser, and call an exported C function from JavaScript with cwrap."
+tags:
+  - javascript
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/945555918.png
 ---
-# Getting Started with WebAssembly: A Beginner's Guide
 
-WebAssembly, or wasm for short, is a low-level binary format that is designed to be a compilation target for high-level programming languages like C, C++, and Rust. Its primary goal is to enable web developers to run code at near-native speed in web browsers, offering a fast, compact, and secure alternative to JavaScript.
+WebAssembly (wasm) is a compact binary instruction format that browsers (and runtimes such as Node.js and Wasmtime) can compile and run at close to native speed. You don't usually write it by hand: you compile C, C++, Rust or another language to it. It runs alongside JavaScript rather than replacing it. JavaScript still owns the DOM and loads the module, and wasm handles the CPU-heavy parts.
 
-In this article, we'll cover the basics of WebAssembly and walk you through the process of setting up your development environment, compiling a simple program, and running it in the browser.
+This post uses Emscripten to compile a C program to wasm, run it in the browser, and call a C function from JavaScript.
 
-## Prerequisites
+## A few concepts first
 
-To follow this guide, you should have a basic understanding of web development concepts, such as HTML, JavaScript, and the browser's DOM. Familiarity with a programming language like C or Rust is also helpful, but not strictly necessary.
+- **Module**: a `.wasm` file. The browser validates and compiles it before running it, and it runs inside the same sandbox as JavaScript.
+- **Linear memory**: a single resizable `ArrayBuffer`, grown in 64 KiB pages. C pointers are just offsets into this buffer, and JavaScript can read and write it through typed arrays.
+- **Imports and exports**: a module declares the functions, memories and globals it needs from the host (imports) and the ones it provides (exports). That is how JavaScript calls into wasm and vice versa.
 
-## WebAssembly Basics
+Wasm functions only take and return numbers. Strings, arrays and structs have to be copied into linear memory and passed as pointers; Emscripten's helpers (`ccall`, `cwrap`) handle the simple cases for you.
 
-Before we dive into the practical aspects of working with WebAssembly, let's briefly go over some essential concepts:
+## Install Emscripten
 
-- **Binary format**: WebAssembly code is distributed in a compact binary format, which makes it fast to decode, compile, and execute. This is in contrast to JavaScript, which is a text-based format and must be parsed, compiled, and optimized before it can be executed.
+Emscripten is installed through `emsdk`. Follow the [official instructions](https://emscripten.org/docs/getting_started/downloads.html); on macOS or Linux it boils down to:
 
-- **Linear memory**: WebAssembly uses a single, resizable block of memory called linear memory, which is divided into fixed-size pages. This memory can be directly manipulated from WebAssembly code and shared between WebAssembly modules and JavaScript.
+```bash
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install latest
+./emsdk activate latest
+source ./emsdk_env.sh
+```
 
-- **Imports and exports**: WebAssembly modules can import and export functions, global variables, and memory segments. This allows you to call WebAssembly functions from JavaScript and vice versa, as well as share memory between the two.
+On Windows, run `emsdk.bat install latest`, `emsdk.bat activate latest`, then `emsdk_env.bat`. The `emsdk_env` script only sets up `PATH` for the current terminal, so run it again in each new shell. Check the install with `emcc --version`.
 
-## Setting Up Your Development Environment
+## Hello, WebAssembly
 
-To get started with WebAssembly, you'll need to install some tools for compiling and running your code. In this guide, we'll be using the Emscripten toolchain, which provides a complete set of tools for building and running WebAssembly code using C and C++.
+Create `hello.c`:
 
-1. **Install Emscripten**: Follow the [official instructions](https://emscripten.org/docs/getting_started/downloads.html) to download and install Emscripten on your computer.
+```c
+#include <stdio.h>
 
-2. **Activate the Emscripten environment**: After installing Emscripten, you'll need to activate its environment in your terminal or command prompt by running:
+int main(void) {
+  printf("Hello, WebAssembly!\n");
+  return 0;
+}
+```
 
-   ````
-   source <path/to/emsdk>/emsdk_env.sh
-   ```
+Compile it:
 
-   On Windows, you would run:
+```bash
+emcc hello.c -o hello.html
+```
 
-   ````
-   <path/to/emsdk>/emsdk_env.bat
-   ```
+This produces three files: `hello.wasm` (the compiled code), `hello.js` (the glue that loads the module and provides things like `printf`), and `hello.html` (a test page). WebAssembly output is the default, so the old `-s WASM=1` flag is no longer needed.
 
-   This sets up the necessary environment variables for using the Emscripten tools.
+Browsers won't load the `.wasm` file from a `file://` URL, so serve the directory over HTTP:
 
-## Creating a Simple WebAssembly Program
+```bash
+python3 -m http.server 8000
+```
 
-Now that your development environment is set up, let's create a simple C program that we'll compile to WebAssembly:
+Open `http://localhost:8000/hello.html`. The `printf` output appears in the page's text area and in the browser console. Emscripten also ships `emrun hello.html`, which starts a server and opens the browser for you.
 
-1. **Create a new directory**: Create a new directory for your WebAssembly project, and navigate to it in your terminal or command prompt.
+## Calling C from JavaScript
 
-2. **Create a C file**: Create a new file called `hello.c` in your project directory, and add the following code:
+Add a function to `hello.c`:
 
-   ````c
-   #include <stdio.h>
+```c
+#include <stdio.h>
 
-   int main() {
-     printf("Hello, WebAssembly!\n");
-     return 0;
-   }
-   ```
+int add(int a, int b) {
+  return a + b;
+}
 
-   This is a simple "Hello, World!" program written in C.
+int main(void) {
+  printf("Hello, WebAssembly!\n");
+  printf("2 + 3 = %d\n", add(2, 3));
+  return 0;
+}
+```
 
-3. **Compile the C file to WebAssembly**: In your terminal or command prompt, run the following command to compile the C program to WebAssembly:
+JavaScript can only call functions the module exports, and Emscripten exports only what you list (unused code is removed, and `add` may be inlined into `main`). It also leaves out runtime helpers you don't ask for. Export `add` (C symbols get a leading underscore) and the `cwrap` helper:
 
-   ````
-   emcc hello.c -o hello.html -s WASM=1
-   ```
+```bash
+emcc hello.c -o hello.js \
+  -sEXPORTED_FUNCTIONS=_main,_add \
+  -sEXPORTED_RUNTIME_METHODS=cwrap
+```
 
-   This command tells Emscripten to compile the `hello.c` file and generate an HTML file called `hello. that includes the necessary JavaScript code to run the WebAssembly module.
+This time the output is just `hello.js` and `hello.wasm`, so you write the page yourself. Create `index.html`:
 
-4. **Run the WebAssembly program**: Open the generated `hello. file in a web browser that supports WebAssembly (e.g., Chrome, Firefox, Safari, or Edge). You should see the message "Hello, WebAssembly!" printed in the browser's console.
+```html
+<!doctype html>
+<html>
+  <body>
+    <script>
+      var Module = {
+        onRuntimeInitialized() {
+          const add = Module.cwrap("add", "number", ["number", "number"]);
+          console.log("5 + 7 =", add(5, 7));
+        },
+      };
+    </script>
+    <script src="hello.js"></script>
+  </body>
+</html>
+```
 
-## Interacting with JavaScript
+The `Module` object has to exist before `hello.js` loads; the glue code reads it and calls `onRuntimeInitialized` once the wasm module has been fetched and compiled. Calling exported functions before that point fails. `cwrap` takes the C function name, its return type, and its argument types, and returns a normal JavaScript function.
 
-WebAssembly can interact with JavaScript in various ways, such as importing and exporting functions and sharing memory. Let's modify our example to demonstrate this:
+Serve the folder again and open `http://localhost:8000/index.html`. The console shows:
 
-1. **Update the C file**: Modify your `hello.c` file to include a new function called `add`:
+```text
+Hello, WebAssembly!
+2 + 3 = 5
+5 + 7 = 12
+```
 
-   ````c
-   #include <stdio.h>
+For a one-off call you can use `Module.ccall("add", "number", ["number", "number"], [5, 7])` instead, or call the raw export `Module._add(5, 7)`, since both arguments are plain numbers.
 
-   int add(int a, int b) {
-     return a + b;
-   }
+## Where to go next
 
-   int main() {
-     printf("Hello, WebAssembly!\n");
-     printf("2 + 3 = %d\n", add(2, 3));
-     return 0;
-   }
-   ```
+- Passing strings: use `"string"` as a `ccall`/`cwrap` argument type for simple cases. For anything bigger, allocate in linear memory with `malloc` and copy the data in yourself.
+- Bundlers: compile with `-sMODULARIZE -sEXPORT_ES6` to get a factory function you can `import` instead of relying on a global `Module`.
+- Don't expect wasm to speed up DOM-heavy code. Every DOM call still goes through JavaScript. Wasm is a good fit for compute-heavy work such as codecs, image processing, physics and parsers, or for reusing an existing C/C++ library on the web.
 
-2. **Expose the `add` function**: Update the `emcc` command to export the `add` function so that it can be called from JavaScript:
+## Further reading
 
-   ````
-   emcc hello.c -o hello.html -s WASM=1 -s EXPORTED_FUNCTIONS='["_main", "_add"]'
-   ```
-
-   This tells Emscripten to export the `_main` and `_add` functions. Note that the function names are prefixed with an underscore.
-
-3. **Modify the HTML file**: Open the generated `hello. file in a text editor, and add the following JavaScript code at the end of the `<script>` tag:
-
-   ````javascript
-   Module.onRuntimeInitialized = function () {
-     const add = Module.cwrap('add', 'number', ['number', 'number']);
-     const result = add(5, 7);
-     console.log('5 + 7 =', result);
-   };
-   ```
-
-   This code waits for the WebAssembly module to be initialized, then uses the `cwrap` function to create a JavaScript wrapper for the exported `add` function. The `cwrap` function takes three arguments: the name of the exported function, the return type, and an array of argument types. Finally, the code calls the `add` function with the arguments `5` and `7`, and logs the result in the console.
-
-4. **Run the updated WebAssembly program**: Refresh the `hello. file in your web browser, and you should now see both the "Hello, WebAssembly!" message and the result of the `add` function printed in the console.
-
-## Conclusion
-
-In this guide, we've introduced the basics of WebAssembly and shown you how to set up your development environment, compile a simple program, and interact with JavaScript. WebAssembly offers a powerful way to boost the performance of web applications and provide new capabilities that were previously unavailable to web developers.
-
+- [Emscripten tutorial](https://emscripten.org/docs/getting_started/Tutorial.html)
+- [Interacting with code (ccall, cwrap, exports)](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html)
+- [WebAssembly on MDN](https://developer.mozilla.org/en-US/docs/WebAssembly)

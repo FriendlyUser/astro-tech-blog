@@ -1,70 +1,115 @@
 ---
-description: This article will explore various debugging techniques in Swift, including
-  breakpoints, LLDB, and print statements, as well as some advanced features like
-  the Address Sanitizer and Thread Sanitizer.
+description: How to debug Swift code in Xcode with breakpoints, LLDB's p, po and v commands, print and Logger output, and the Address and Thread Sanitizers.
 imgSrc: /imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-23T01:41:19.000Z'
-tags: []
-title: Debugging Techniques in Swift
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Debugging Swift in Xcode: breakpoints, LLDB, logging and sanitizers"
 ---
 
-# Debugging Techniques in Swift
+Most Swift debugging happens in Xcode with four tools: breakpoints to stop the program, LLDB to inspect it while it's stopped, logging for things you can't stop on, and sanitizers for memory and threading bugs that don't show up until runtime.
 
-Swift is a powerful and intuitive programming language developed by Apple, designed for building iOS, macOS, watchOS, and tvOS applications. Debugging is an essential skill for every developer, as it helps you identify and resolve issues in your code. This article will explore various debugging techniques in Swift, including breakpoints, LLDB, and print statements, as well as some advanced features like the Address Sanitizer and Thread Sanitizer.
+## Breakpoints
 
-## 1. Breakpoints
+Click a line number in the editor gutter to add a breakpoint. Run the app, and execution pauses on that line. From the debug bar you can then Step Over (F6), Step Into (F7), Step Out (F8) or Continue (Ctrl-Cmd-Y).
 
-Breakpoints are a fundamental debugging tool that allows you to pause the execution of your code at a specific point. By pausing the execution, you can inspect the values of variables and the state of your application. In Xcode, you can set a breakpoint by clicking on the line number you want to pause at in the gutter.
+Plain breakpoints are only the start. Right-click a breakpoint and choose **Edit Breakpoint** to get more out of it:
 
-![Setting a breakpoint in Xcode](https://docs-assets.developer.apple.com/published/6e2ce6e3d6/8a8a84f6-50b6-4317-8975-5e5e5f5e5f5d.png)
+- **Condition**: only stop when an expression is true, for example `index == 42`. Useful inside loops.
+- **Ignore**: skip the first N hits.
+- **Action**: run an LLDB command, log a message, or play a sound when the breakpoint hits. Combine a log action with **Automatically continue after evaluating actions** and you get a print statement that doesn't require recompiling.
 
-Once the breakpoint is set, you can run your application, and it will pause when it hits the breakpoint. You can then step through your code line-by-line using the "Step Over," "Step Into," and "Step Out" buttons in the Debug area of Xcode.
+In the Breakpoint navigator (Cmd-8), the **+** button at the bottom adds symbolic breakpoints and a **Swift Error Breakpoint**, which stops wherever a Swift error is thrown. That's often faster than working backwards from a `catch` block.
 
-## 2. LLDB
+## LLDB
 
-LLDB is the default debugger integrated with Xcode and is used to debug Swift code. When your code execution is paused at a breakpoint, you can interact with your application's state using the LLDB command prompt in the Debug area.
+When execution is paused, the console in the Debug area is an LLDB prompt. The commands you'll use most:
 
-Some common LLDB commands include:
+| Command | What it does |
+| --- | --- |
+| `v count` | Read a variable directly from memory (`v` is short for `frame variable`). Doesn't run code, so it works even when expression evaluation fails. |
+| `p count` | Print a variable or evaluate an expression. |
+| `po person` | Print an object's description (`CustomDebugStringConvertible` / `description`). |
+| `expr count = 0` | Evaluate an expression, including ones with side effects such as changing a value. |
+| `bt` | Show the call stack of the current thread. |
+| `frame variable` | Show all local variables in the current frame. |
 
-- `po [expression]`: Print the value of a given expression.
-- `expr [expression]`: Evaluate an expression and display the result.
-- `bt`: Display the current call stack.
-- `frame variable`: Show the local variables of the current frame.
+Since Xcode 15, `p` and `po` are aliases for LLDB's `dwim-print` command. For a plain variable, `p` reads it the same way `v` does, and only falls back to compiling an expression when it has to. If `p` or `po` fails with an expression-evaluation error, try `v`.
 
-For example, to print the value of a variable named `count`, you can use the following command:
-
+```text
+(lldb) v count
+(Int) count = 42
+(lldb) expr count = 0
+(lldb) continue
 ```
-(lldb) po count
-```
 
-## 3. Print statements
+## Print statements and logging
 
-Print statements are a simple and effective way to gather information about your code's execution. You can use Swift's `print` function to output the value of a variable, a message, or the result of an expression to the console.
+`print` is still the quickest way to see what's happening:
 
 ```swift
 let count = 42
 print("The value of count is \(count)")
 ```
 
-While print statements can be helpful, they can also clutter your code and output. It's essential to remove them once you've resolved the issue you were debugging.
+Two related functions are worth knowing. `debugPrint(_:)` prints the debug description (strings appear quoted, for example). `dump(_:)` prints a value's full structure, including nested properties, which is handy for structs and arrays.
 
-## 4. Address Sanitizer (ASan)
+For anything you want to keep in the codebase, use `Logger` from the `os` framework instead of `print`. Log messages have levels, show up in Xcode's console with filtering, and can be read from a device in Console.app:
 
-The Address Sanitizer is a runtime memory error detector that can identify various memory issues such as use-after-free, heap buffer overflow, and stack buffer overflow. To enable the Address Sanitizer in your Xcode project, navigate to your project settings, select the "Diagnostics" tab, and check the "Address Sanitizer" box.
+```swift
+import os
 
-![Enabling Address Sanitizer in Xcode](https://i.stack.imgur.com/8pW5a.png)
+let logger = Logger(subsystem: "com.example.MyApp", category: "network")
 
-ASan will report any memory issues it encounters while running your application, along with a detailed stack trace and diagnostic information.
+func handle(items: [String]) {
+    logger.debug("Fetched \(items.count) items")
+}
+```
 
-## 5. Thread Sanitizer (TSan)
+Interpolated strings in `Logger` messages are treated as private by default and are redacted in logs collected outside the debugger. Mark values with `privacy: .public` only when they contain nothing sensitive.
 
-The Thread Sanitizer is a runtime data race detection tool that can help you identify concurrency issues in your Swift code. To enable TSan, navigate to your project settings, select the "Diagnostics" tab, and check the "Thread Sanitizer" box.
+## Address Sanitizer (ASan)
 
-![Enabling Thread Sanitizer in Xcode](https://i.stack.imgur.com/yPeCm.png)
+Swift is memory-safe by default, so ASan matters mostly when you use unsafe pointers or call into C and Objective-C. It detects use-after-free, heap and stack buffer overflows, and similar errors at runtime, and stops with a report showing where the bad access happened and where the memory was allocated.
 
-TSan will report data races and other concurrency-related issues as they occur, along with a detailed stack trace and diagnostic information.
+To turn it on, open **Product > Scheme > Edit Scheme**, select **Run**, open the **Diagnostics** tab and check **Address Sanitizer**. Rebuild and run.
 
-## Conclusion
+This writes one element past the end of a buffer, which ASan reports as a heap-buffer-overflow:
 
-Debugging is a critical skill for every Swift developer, and there are several techniques available to help you identify and resolve issues in your code. Familiarize yourself with breakpoints, LLDB commands, print statements, and advanced tools like ASan and TSan to become more proficient in debugging and improve the quality of your Swift applications.
+```swift
+let buffer = UnsafeMutablePointer<Int>.allocate(capacity: 4)
+buffer.initialize(repeating: 0, count: 4)
+buffer[4] = 1 // out of bounds: valid indices are 0...3
+buffer.deallocate()
+```
+
+## Thread Sanitizer (TSan)
+
+TSan detects data races: two threads accessing the same memory without synchronization, where at least one access is a write. Enable it in the same **Diagnostics** tab by checking **Thread Sanitizer**. You can't enable ASan and TSan at the same time, and TSan runs on macOS and simulators, not on physical iOS devices.
+
+This compiles in Swift 5 language mode and races on `counter`:
+
+```swift
+import Foundation
+
+var counter = 0
+DispatchQueue.concurrentPerform(iterations: 1000) { _ in
+    counter += 1
+}
+print(counter) // often less than 1000
+```
+
+TSan pauses at the racing access and shows the stacks of both threads. Fix it by protecting the shared state (a lock, a serial queue, or an actor). In Swift 6 language mode, strict concurrency checking catches many races like this at compile time, but TSan still helps with code that opts out of checking or crosses into C and Objective-C.
+
+## Gotchas
+
+- Sanitizers slow the app down considerably and increase memory use. Turn them on for a debugging session or a CI test run, not for everyday builds.
+- Optimized (Release) builds make LLDB less useful: variables may show as unavailable and stepping jumps around. Debug with the Debug configuration when you can.
+- `po` relies on running code in your process. If the process is in a bad state, `v` is more reliable.
+
+## Further reading
+
+- [Xcode: Diagnosing memory, thread, and crash issues early](https://developer.apple.com/documentation/xcode/diagnosing-memory-thread-and-crash-issues-early)
+- [Debugging improvements in Swift 5.9](https://www.swift.org/blog/whats-new-swift-debugging-5.9/)
+- [LLDB tutorial](https://lldb.llvm.org/use/tutorial.html)

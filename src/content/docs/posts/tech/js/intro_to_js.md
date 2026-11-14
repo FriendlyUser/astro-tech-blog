@@ -1,27 +1,32 @@
 ---
 tags: ['js', 'introToJs']
-title: Introduction to javascript free ebook
-description: A free ebook on javascript, node.js and asynchronous programming.
+title: "Introduction to JavaScript: a free ebook on JS, Node.js and promises"
+description: An introductory ebook on JavaScript, Node.js and asynchronous programming, written in LaTeX and published on Amazon KDP, with a free PDF copy.
 pubDate: Sunday, 2 Feburary 2023
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/2075079294_A_dream_of_a_distant_galaxy__concept_art.png'
 layout: '@/templates/BasePost.astro'
 ---
-KDP (Kindle Direct Publishing) is a self-publishing platform offered by Amazon that allows authors and publishers to independently publish their books, e-books, and other digital content directly to Kindle devices and Amazon's Kindle store. KDP provides a way for authors to reach a large audience and get their content in front of millions of Kindle users without the need for a traditional publisher.
 
+This short book is an introduction to JavaScript, asynchronous programming and Node.js. It's on Amazon, and the PDF is free.
 
-LaTeX is a typesetting system used for technical and scientific documents, and it can also be used for book publishing. LaTeX is a popular choice for authors who need fine control over the layout and formatting of their documents, as it offers a high degree of customization and produces high-quality output. With LaTeX, you can create a professional-looking book with custom styles, mathematical equations, tables, figures, and other elements.
+## What the book covers
 
-To publish a book with LaTeX, you first need to write your content in a text editor and format it using LaTeX syntax and commands. Once you have completed your manuscript, you can use a LaTeX compiler to convert it into a PDF or other format that can be uploaded to online bookstores or printed as a physical book. LaTeX is a free and open-source software, so it can be a cost-effective option for self-publishing authors who want to produce a high-quality book without incurring significant expenses.
+- **JavaScript**: the language itself. It is best known for making web pages interactive, but it also runs on servers.
+- **Node.js**: a runtime that runs JavaScript outside the browser, built on Chrome's V8 engine. It is commonly used for web servers, command-line tools, and build tooling.
+- **Promises and asynchronous code**: a `Promise` is a built-in object representing a value that will be available later, such as the result of a network request or file read. Promises, and the `async`/`await` syntax built on them, replace deeply nested callbacks with code that reads top to bottom.
 
+## How it was made
 
-This book serves as a introduction to Javascript, asynchronous programming and node.js JavaScript is a popular, high-level programming language used for creating interactive user experiences on the web. It is often used for front-end development, but it can also be used for back-end development using runtime environments like Node.js.
-Node.js is a runtime environment for JavaScript that allows you to run JavaScript code on the server-side. It is built on Chrome's V8 JavaScript engine and is commonly used for building scalable and high-performance web applications.
-Promises are a pattern in JavaScript that can be used to handle asynchronous operations. They provide a way to write cleaner and more organized asynchronous code, and they are often used in conjunction with Node.js and other technologies that make use of asynchronous programming.
-As an AI language model, I do not have personal opinions or preferences, and I don't have the ability to purchase items or support authors in the traditional sense. My purpose is to provide helpful and accurate information in response to user questions.
+The book is written in [LaTeX](https://www.latex-project.org/), a typesetting system that gives fine control over layout and handles code listings, tables and figures well. The source compiles to a PDF, and the source is on GitHub (linked below).
 
+It is published through Kindle Direct Publishing (KDP), Amazon's self-publishing platform. KDP lets you publish ebooks and print books to the Amazon store without going through a traditional publisher.
 
- For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf
-  
-### References 
-* https://www.amazon.com/dp/B0BSL14M71 
-* https://github.com/FriendlyUser/introToJsBook 
+## Get a copy
+
+For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf
+
+## References
+
+* https://www.amazon.com/dp/B0BSL14M71
+* https://github.com/FriendlyUser/introToJsBook

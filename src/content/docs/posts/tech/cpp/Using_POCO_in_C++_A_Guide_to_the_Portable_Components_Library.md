@@ -1,176 +1,178 @@
 ---
-title: Using POCO in C++ A Guide to the Portable Components Library
+title: "POCO C++ Libraries: an HTTP client, threads, and directory listing"
 pubDate: "2023-05-03T14:16:44.691Z"
-description: "In this article, we will discuss the benefits of using POCO and provide examples of how to implement its key features in your C++ projects."
+lastUpdated: 2026-11-14
+description: "Install the POCO C++ Libraries with vcpkg or Conan, link them with CMake, and write an HTTP GET client, a threaded worker, and a recursive directory listing."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2465919888.png
 ---
-# Using POCO in C++: A Guide to the Portable Components Library
 
-POCO (Portable Components) is a powerful, open-source C++ library designed to simplify the development of network-centric, portable applications. POCO provides a wide range of features, such as abstractions for network protocols, multithreading, file system access, and more. In this article, we will discuss the benefits of using POCO and provide examples of how to implement its key features in your C++ projects.
+POCO (Portable Components) is a set of open-source C++ libraries for networked, cross-platform applications. It's split into modules you link separately: `Foundation` (threads, streams, file system, logging), `Net` (sockets, HTTP client and server), `NetSSL` (TLS), `Util` (configuration, command-line apps), plus `JSON`, `XML`, `Data` (databases) and others. It runs on Windows, Linux and macOS and is released under the Boost Software License.
 
-## Benefits of Using POCO
+This post sets it up and walks through three small programs: an HTTP GET request, two worker threads, and a recursive directory listing.
 
-1. **Portability**: POCO allows you to write portable code that can be easily adapted to different platforms, such as Windows, Linux, and macOS.
-2. **Modularity**: The library is designed with a modular architecture, making it simple to use only the components you need for your specific application.
-3. **Ease of use**: POCO's API is designed to be intuitive and easy to use, allowing developers to quickly implement advanced features without excessive boilerplate code.
-4. **Scalability**: The library provides components for handling high-performance, concurrent, and distributed applications, making it a suitable choice for large-scale projects.
-5. **Comprehensive feature set**: POCO provides a wide range of functionality, including support for network protocols, multithreading, streams, file system access, and more.
+## Installing and linking
 
-## Setting Up POCO
-
-Before we dive into the examples, you'll need to set up POCO on your development environment. You can download the library from the official POCO website (https://pocoproject.org/) and follow the build instructions for your platform.
-
-Alternatively, you can use package managers like `vcpkg` or `conan` to install POCO:
+With vcpkg:
 
 ```sh
-# vcpkg
 vcpkg install poco
-
-# conan
-conan install poco/1.11.0@
 ```
 
-Once the library is installed, include the necessary headers in your C++ project and link against the appropriate POCO libraries.
+With Conan 2 (1.15.4 is the current version on ConanCenter at the time of writing):
 
-## Example 1: HTTP Client
+```sh
+conan install --requires=poco/1.15.4 --build=missing -g CMakeDeps -g CMakeToolchain
+```
 
-One of the most common use cases for POCO is creating an HTTP client. In this example, we will create a simple HTTP client to send a GET request and process the response.
+You can also build from source using the instructions on [pocoproject.org](https://pocoproject.org/download). Either way, POCO installs CMake package files, so a project only needs:
+
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(poco_demo CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+find_package(Poco REQUIRED COMPONENTS Foundation Net)
+
+add_executable(http_get http_get.cpp)
+target_link_libraries(http_get PRIVATE Poco::Net Poco::Foundation)
+```
+
+## An HTTP GET request
+
+`HTTPClientSession` holds the connection, `HTTPRequest` describes what to send, and `receiveResponse()` fills an `HTTPResponse` and returns a stream for the body.
 
 ```cpp
 #include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
+#include <Poco/Exception.h>
 #include <Poco/StreamCopier.h>
 #include <iostream>
 
-int main()
-{
-    Poco::Net::HTTPClientSession session("example.com");
-    Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, "/");
-    Poco::Net::HTTPResponse response;
+int main() {
+    try {
+        Poco::Net::HTTPClientSession session("example.com", 80);
+        Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_GET, "/",
+                                       Poco::Net::HTTPMessage::HTTP_1_1);
+        Poco::Net::HTTPResponse response;
 
-    session.sendRequest(request);
-    std::istream &responseStream = session.receiveResponse(response);
+        session.sendRequest(request);
+        std::istream& body = session.receiveResponse(response);
 
-    if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
-    {
-        Poco::StreamCopier::copyStream(responseStream, std::cout);
+        if (response.getStatus() == Poco::Net::HTTPResponse::HTTP_OK) {
+            Poco::StreamCopier::copyStream(body, std::cout);
+        } else {
+            std::cerr << "HTTP " << response.getStatus() << " " << response.getReason() << '\n';
+            return 1;
+        }
+    } catch (const Poco::Exception& e) {
+        std::cerr << "Request failed: " << e.displayText() << '\n';
+        return 1;
     }
-    else
-    {
-        std::cerr << "Error: " << response.getStatus() << " " << response.getReason() << std::endl;
-    }
-
     return 0;
 }
 ```
 
-In this example, we create an `HTTPClientSession` object and pass the domain name as an argument. We then create an `HTTPRequest` object with the HTTP method (GET) and the request path ("/"). The request is sent, and the response is received and processed. If the status is HTTP_OK, we copy the response body to the standard output using `StreamCopier`.
+Network errors (DNS failure, refused connection, timeout) are thrown as `Poco::Exception` subclasses, not returned, so wrap the call in `try`/`catch`. `displayText()` gives a more useful message than `what()`.
 
-## Example 2: Multithreading
+`HTTPClientSession` speaks plain HTTP only. For HTTPS, use `Poco::Net::HTTPSClientSession` from the `NetSSL` module (`Poco::NetSSL` in CMake), which builds on OpenSSL or, on Windows, Schannel. POCO doesn't follow redirects for you either; check for 3xx statuses and the `Location` header yourself.
 
-POCO provides a comprehensive set of classes for multithreading and synchronization. In this example, we will demonstrate how to create a simple multithreaded program that calculates the Fibonacci sequence.
+## Running work on threads
+
+`Poco::Thread` runs any object that implements `Poco::Runnable`. The example computes two Fibonacci numbers on separate threads and prints the results.
 
 ```cpp
-#include <Poco/Thread.h>
-#include <Poco/Runnable.h>
 #include <Poco/Mutex.h>
+#include <Poco/Runnable.h>
+#include <Poco/Thread.h>
 #include <iostream>
 
-class FibonacciCalculator : public Poco::Runnable
-{
-public:
-    FibonacciCalculator(int n) : _n(n) {}
+// One mutex shared by all workers, so their output lines don't interleave.
+static Poco::FastMutex coutMutex;
 
-    void run() override
-    {
-        _result = fibonacci(_n);
-        _mutex.lock();
-        std::cout << "Fibonacci(" << _n << ") = " << _result << std::endl;
-        _mutex.unlock();
+class FibonacciCalculator : public Poco::Runnable {
+public:
+    explicit FibonacciCalculator(int n) : _n(n) {}
+
+    void run() override {
+        long long result = fibonacci(_n);
+        Poco::FastMutex::ScopedLock lock(coutMutex);
+        std::cout << "Fibonacci(" << _n << ") = " << result << '\n';
     }
 
 private:
     int _n;
-    int _result;
-    Poco::Mutex _mutex;
 
-    int fibonacci(int n)
-    {
-        if (n <= 1)
-        {
-            return n;
-        }
-        return fibonacci(n - 1) + fibonacci(n - 2);
+    static long long fibonacci(int n) {
+        return n <= 1 ? n : fibonacci(n - 1) + fibonacci(n - 2);
     }
 };
 
-int main()
-{
-    FibonacciCalculator calculator1(10);
-    FibonacciCalculator calculator2(20);
+int main() {
+    FibonacciCalculator calc1(10);
+    FibonacciCalculator calc2(30);
 
     Poco::Thread thread1;
     Poco::Thread thread2;
-
-    thread1.start(calculator1);
-    thread2.start(calculator2);
+    thread1.start(calc1);
+    thread2.start(calc2);
 
     thread1.join();
     thread2.join();
-
     return 0;
 }
 ```
 
-Inthis example, we define a `FibonacciCalculator` class that inherits from `Poco::Runnable`. The `run()` method calculates the Fibonacci number for a given `_n` and prints the result to the standard output. A `Poco::Mutex` is used to synchronize access to the standard output, ensuring that the printed messages do not overlap.
+The mutex must be shared between the threads to do anything. If each `Runnable` owns its own mutex, every thread locks a different object and nothing is synchronised. `ScopedLock` releases the lock even if the output throws.
 
-In the `main()` function, we create two instances of `FibonacciCalculator` with different values of `n`. We then create two `Poco::Thread` instances and start them with the `FibonacciCalculator` instances. Finally, we join the threads to wait for their completion before exiting the program.
+`Thread::start(Runnable&)` doesn't copy the object, so it must outlive the thread; here the calculators live in `main` until after `join()`. For a short task, `thread.startFunc([] { ... })` takes a lambda instead. For many small tasks, `Poco::ThreadPool::defaultPool()` reuses threads rather than creating one per job.
 
-## Example 3: File System Access
+## Listing a directory tree
 
-POCO provides several classes for working with the file system. In this example, we will demonstrate how to traverse a directory and print the names of all files and subdirectories.
+`Poco::DirectoryIterator` yields a `Poco::File` for each entry in one directory. Recursing on subdirectories gives a full tree.
 
 ```cpp
-#include <Poco/File.h>
-#include <Poco/Path.h>
 #include <Poco/DirectoryIterator.h>
+#include <Poco/Exception.h>
+#include <Poco/Path.h>
 #include <iostream>
+#include <string>
 
-void listDirectory(const std::string &directoryPath)
-{
+void listDirectory(const std::string& directoryPath, int depth = 0) {
     Poco::DirectoryIterator end;
-    for (Poco::DirectoryIterator it(directoryPath); it != end; ++it)
-    {
-        Poco::Path filePath(it->path());
-        
-        if (it->isFile())
-        {
-            std::cout << "File: " << filePath.getFileName() << std::endl;
-        }
-        else if (it->isDirectory())
-        {
-            std::cout << "Directory: " << filePath.getFileName() << std::endl;
-            listDirectory(filePath.toString());
+    for (Poco::DirectoryIterator it(directoryPath); it != end; ++it) {
+        std::string indent(depth * 2, ' ');
+        if (it->isLink()) {
+            std::cout << indent << "Link: " << it.name() << '\n';  // don't follow links
+        } else if (it->isDirectory()) {
+            std::cout << indent << "Directory: " << it.name() << '\n';
+            listDirectory(it.path().toString(), depth + 1);
+        } else if (it->isFile()) {
+            std::cout << indent << "File: " << it.name() << '\n';
         }
     }
 }
 
-int main()
-{
-    std::string directoryPath = ".";
-    listDirectory(directoryPath);
-
+int main(int argc, char* argv[]) {
+    try {
+        listDirectory(argc > 1 ? argv[1] : ".");
+    } catch (const Poco::Exception& e) {
+        std::cerr << e.displayText() << '\n';
+        return 1;
+    }
     return 0;
 }
 ```
 
-In this example, we define a `listDirectory()` function that takes a directory path as an argument. We use a `Poco::DirectoryIterator` to traverse the directory and print the names of all files and subdirectories. If a subdirectory is encountered, we recursively call the `listDirectory()` function.
+Skipping symbolic links avoids infinite loops when a link points back up the tree. Unreadable directories throw (for example `Poco::FileAccessDeniedException`), which `main` catches. POCO also has `Poco::RecursiveDirectoryIterator` if you'd rather not write the recursion yourself.
 
-In the `main()` function, we call `listDirectory()` with the current directory path ("."). The result is a printed list of all files and subdirectories in the current directory and its subdirectories.
+## When not to reach for POCO
 
-## Conclusion
+Since C++11 and C++17, the standard library covers some of this: `std::thread`, `std::mutex` and `std::filesystem::recursive_directory_iterator` do the jobs of the last two examples without an extra dependency. POCO is more useful for what the standard library still lacks: HTTP clients and servers, TLS, SMTP/FTP, JSON/XML parsing, configuration files and database access, all with one consistent API. If you only need an HTTP client, smaller libraries such as libcurl or cpp-httplib are worth comparing.
 
-POCO is a powerful and versatile C++ library that provides a comprehensive set of features for developing portable, network-centric applications. By leveraging POCO's intuitive API, you can easily implement advanced functionality such as network communication, multithreading, and file system access in your C++ projects. The examples provided in this article offer a starting point for using POCO in your own applications, but the library's extensive documentation and vibrant community can provide further guidance and support as you explore its full potential.
+## Further reading
+
+- [POCO documentation](https://docs.pocoproject.org/)
+- [POCO on GitHub](https://github.com/pocoproject/poco)

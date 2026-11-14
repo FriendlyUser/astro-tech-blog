@@ -1,121 +1,150 @@
 ---
-description: In this article, we'll explore the features, benefits, and usage of Dapper
-  ORM.
+description: Use Dapper to run SQL from C# and map rows to objects, with a runnable SQLite
+  example covering queries, parameters, inserts and transactions.
 imgSrc: /imgs/2023/bear_book_1.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-15T13:51:04.000Z'
-tags: []
-title: A Deep Dive into Dapper ORM A High-Performance Micro-ORM for .NET
+lastUpdated: 2026-11-14
+tags: ["csharp", "dotnet", "sql"]
+title: 'Dapper in .NET: run SQL and map the results to C# objects'
 ---
 
-# A Deep Dive into Dapper ORM: A High-Performance Micro-ORM for .NET
+Dapper is a small library that adds extension methods such as `Query<T>` and `Execute` to ADO.NET's `IDbConnection`. You write the SQL yourself, and Dapper handles parameters and maps the result columns onto your objects' properties by name. It was originally built at Stack Overflow, is now maintained in the [DapperLib/Dapper](https://github.com/DapperLib/Dapper) repository, and is licensed under Apache 2.0.
 
-## Introduction
+It's often called a "micro-ORM" because it does only the mapping part of an ORM. There is no change tracking, no LINQ-to-SQL translation, no migrations and no lazy loading. That's the trade-off. Your SQL runs as written, and the overhead on top of a hand-written `DataReader` loop is small. The project README has a benchmark table comparing it with other mappers.
 
-Object-Relational Mapping (ORM) has become an essential component of modern application development. It simplifies data access and manipulation by providing a bridge between object-oriented programming (OOP) and relational database management systems (RDBMS). While there are numerous ORM solutions available, Dapper ORM stands out due to its simplicity, performance, and flexibility.
+The examples use Dapper 2.1.89 with C# top-level statements, and they build without warnings on .NET 9.
 
-Dapper is a Micro-ORM (Object-Relational Mapper) for .NET, designed to be fast and lightweight. It was developed by Stack Overflow to address the performance limitations they experienced with other ORM solutions. In this article, we'll explore the features, benefits, and usage of Dapper ORM.
+## Setup
 
-## Dapper ORM: Features and Benefits
+Dapper works with any ADO.NET provider. This post uses SQLite so you can run the code without a database server:
 
-### High Performance
-
-Dapper is known for its high performance, even when compared with other popular ORM solutions. With its streamlined design and minimal overhead, Dapper allows developers to write efficient data access code without sacrificing readability or maintainability.
-
-### Simplicity
-
-Dapper is a Micro-ORM, which means it focuses on a small set of core features, avoiding the complexity often associated with full-fledged ORMs. Its API is straightforward and easy to understand, making it accessible to both novice and experienced developers.
-
-### Flexibility
-
-Dapper doesn't impose any specific patterns or conventions on your code. It works seamlessly with your existing data structures and SQL queries. This flexibility makes it suitable for projects with complex or custom database schemas and allows developers to optimize their data access code as needed.
-
-### Lightweight and Easy to Install
-
-Dapper is distributed as a single DLL file, making it easy to include in your projects. It's also available as a NuGet package, so you can install and update it using the standard .NET package management tools.
-
-## Getting Started with Dapper ORM
-
-To start using Dapper, you'll need to install the `Dapper` NuGet package in your project. You can do this using the Package Manager Console:
-
-```
-Install-Package Dapper
+```bash
+dotnet new console -n DapperDemo
+cd DapperDemo
+dotnet add package Dapper
+dotnet add package Microsoft.Data.Sqlite
 ```
 
-Once you have Dapper installed, you'll need to create a connection to your database. Dapper works with any ADO.NET-compatible data provider, such as SQL Server, MySQL, or SQLite. In this example, we'll use SQL Server:
+For SQL Server, install `Microsoft.Data.SqlClient` and create a `SqlConnection` instead. Don't use the older `System.Data.SqlClient` package. Microsoft deprecated it in 2024, and it doesn't support .NET 10 and later.
 
 ```csharp
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
+
+using var connection = new SqlConnection(
+    "Server=(localdb)\\MSSQLLocalDB;Database=MyDatabase;Integrated Security=True");
+```
+
+Everything else in this post works the same with either connection type.
+
+## A complete example
+
+This program creates a table, inserts rows, reads them back in a few ways, and runs two changes inside a transaction:
+
+```csharp
 using Dapper;
+using Microsoft.Data.Sqlite;
 
-string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MyDatabase;Integrated Security=True";
-using (var connection = new SqlConnection(connectionString))
+using var connection = new SqliteConnection("Data Source=people.db");
+connection.Open();
+
+connection.Execute("""
+    CREATE TABLE IF NOT EXISTS People (
+        Id        INTEGER PRIMARY KEY,
+        FirstName TEXT NOT NULL,
+        LastName  TEXT NOT NULL
+    )
+    """);
+connection.Execute("DELETE FROM People");
+
+// Passing a collection runs the statement once per item
+int inserted = connection.Execute(
+    "INSERT INTO People (FirstName, LastName) VALUES (@FirstName, @LastName)",
+    new[]
+    {
+        new { FirstName = "Ada", LastName = "Lovelace" },
+        new { FirstName = "Grace", LastName = "Hopper" },
+        new { FirstName = "Alan", LastName = "Turing" },
+    });
+Console.WriteLine($"Inserted {inserted} rows");
+
+// Map rows to a class
+IEnumerable<Person> people = connection.Query<Person>(
+    "SELECT Id, FirstName, LastName FROM People ORDER BY LastName");
+foreach (var p in people)
+    Console.WriteLine($"{p.Id}: {p.FirstName} {p.LastName}");
+
+// Parameters come from an anonymous object
+Person? grace = connection.QuerySingleOrDefault<Person>(
+    "SELECT Id, FirstName, LastName FROM People WHERE FirstName = @name",
+    new { name = "Grace" });
+Console.WriteLine(grace?.LastName);
+
+// A single value
+int count = connection.ExecuteScalar<int>("SELECT COUNT(*) FROM People");
+Console.WriteLine($"{count} people");
+
+// Two changes that succeed or fail together
+using (var transaction = connection.BeginTransaction())
 {
-    // Your Dapper code here
+    connection.Execute(
+        "UPDATE People SET LastName = @LastName WHERE Id = @Id",
+        new { Id = 1, LastName = "King" }, transaction);
+    connection.Execute(
+        "DELETE FROM People WHERE Id = @Id",
+        new { Id = 2 }, transaction);
+    transaction.Commit();
 }
-```
 
-## Querying Data with Dapper
-
-Dapper provides extension methods for the `IDbConnection` interface, allowing you to perform queries and execute commands using familiar SQL syntax. 
-
-To query data, use the `Query` or `QueryAsync` methods. These methods can return either dynamic objects or strongly-typed results. Here's an example:
-
-```csharp
 public class Person
 {
     public int Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-}
-
-using (var connection = new SqlConnection(connectionString))
-{
-    IEnumerable<Person> people = connection.Query<Person>("SELECT * FROM People");
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
 }
 ```
 
-## Inserting, Updating, and Deleting Data
+Output:
 
-For commands that modify data, such as `INSERT`, `UPDATE`, or `DELETE`, use the `Execute` or `ExecuteAsync` methods. These methods return the number of rows affected:
+```text
+Inserted 3 rows
+2: Grace Hopper
+1: Ada Lovelace
+3: Alan Turing
+Hopper
+3 people
+```
+
+A few things to notice:
+
+- **Parameters are real parameters.** `@name` is sent as a database parameter, not pasted into the SQL string, so it's safe from SQL injection. Never build SQL with string interpolation of user input.
+- **Mapping is by column name.** Columns map to properties with the same name, ignoring case. If a column name differs, alias it in SQL (`SELECT first_name AS FirstName`). Dapper also converts compatible types. SQLite returns `INTEGER` as a 64-bit value, and Dapper converts it to the `int` property.
+- **Transactions are passed explicitly.** Disposing a transaction without calling `Commit` rolls it back, so the `using` block is enough for error handling. You don't need a `try`/`catch` that calls `Rollback`. Each command inside the transaction must receive the `transaction` argument. Microsoft.Data.Sqlite and Microsoft.Data.SqlClient both throw if you forget.
+
+## Other useful calls
 
 ```csharp
-using (var connection = new SqlConnection(connectionString))
-{
-    int rowsAffected = connection.Execute("INSERT INTO People (FirstName, LastName) VALUES (@FirstName, @LastName)",
-        new { FirstName = "John", LastName = "Doe" });
-}
+// Async versions of every method
+var all = await connection.QueryAsync<Person>("SELECT Id, FirstName, LastName FROM People");
+
+// IN lists: Dapper expands the array into (@ids1, @ids2, ...)
+var some = connection.Query<Person>(
+    "SELECT Id, FirstName, LastName FROM People WHERE Id IN @ids",
+    new { ids = new[] { 1, 3 } });
 ```
 
-## Handling Transactions
+- `QueryFirst`, `QueryFirstOrDefault`, `QuerySingle` and `QuerySingleOrDefault` return one row. The `Single` versions throw if more than one row comes back.
+- `QueryMultiple` reads several result sets from one command.
+- Multi-mapping (`Query<TFirst, TSecond, TReturn>` with `splitOn`) maps a joined row onto two objects, for example a `Post` and its `Author`.
 
-Dapper also supports transactions, making it easy to execute multiple commands as a single atomic operation. To use transactions, simply create and manage an `IDbTransaction` object:
+## Gotchas
 
-```csharp
-using (var connection = new SqlConnection(connectionString))
-{
-    connection.Open();
-    using (var transaction = connection.BeginTransaction())
-    {
-        try
-        {
-            int rowsAffected1 = connection.Execute("UPDATE People SET LastName = @LastName WHERE Id = @Id",
-                new { Id = 1, LastName = "Smith" }, transaction);
+- `Query<T>` buffers every row into a list by default. For very large result sets, pass `buffered: false` to stream rows instead. The underlying data reader stays open until you finish iterating, so don't run other commands on that connection in the meantime.
+- Dapper caches information about each query it runs, keyed by the SQL text and parameter types. If you generate a different SQL string on every call, that cache keeps growing. Use parameters instead of building unique strings.
+- Dapper doesn't generate SQL. Add-on packages such as Dapper.Contrib provide CRUD helpers, but Dapper.Contrib hasn't had a release since 2020. If you want a library to write the SQL and track changes for you, use EF Core instead. Many projects use both: EF Core for most data access and Dapper for hand-tuned queries.
 
-            int rowsAffected2 = connection.Execute("DELETE FROM People WHERE Id = @Id",
-                new { Id = 2 }, transaction);
+## Further reading
 
-            transaction.Commit();
-        }
-        catch (Exception)
-        {
-            transaction.Rollback();
-            throw;
-        }
-    }
-}
-```
-
-## Conclusion
-
-Dapper ORM is a powerful and flexible Micro-ORM for .NET, offering high performance, simplicity, and a lightweight footprint. Its intuitive API and compatibility with ADO.NET data providers make it an attractive choice for developers looking to optimize their data access code. With Dapper, you can build data-driven applications that are fast, maintainable, and scalable.
+- [Dapper README](https://github.com/DapperLib/Dapper)
+- [Dapper on NuGet](https://www.nuget.org/packages/Dapper)
+- [Microsoft.Data.SqlClient introduction](https://learn.microsoft.com/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace)

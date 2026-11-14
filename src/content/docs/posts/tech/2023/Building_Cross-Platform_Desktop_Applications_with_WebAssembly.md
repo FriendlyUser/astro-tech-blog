@@ -1,65 +1,57 @@
 ---
-title: Building Cross-Platform Desktop Applications with WebAssembly
+title: "WebAssembly in desktop apps: a Rust module in a Tauri window"
 pubDate: "2023-10-22T16:26:42.000Z"
-description: "In this article , we'll explore the potential of WebAssembly for building desktop applications and discuss how to get started with it"
-tags: []
+lastUpdated: 2026-11-14
+description: "Where WebAssembly fits in a cross-platform desktop app, and how to compile a Rust function to Wasm with wasm-bindgen and call it from a Tauri 2 frontend."
+tags:
+  - rust
+  - javascript
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3708253319.png
 ---
-# Building Cross-Platform Desktop Applications with WebAssembly
 
-As the demand for cross-platform desktop applications grows, developers are continuously exploring innovative methods to create efficient and maintainable solutions. With the advent of WebAssembly, a new era of building cross-platform applications has begun. In this article, we'll explore the potential of WebAssembly for building desktop applications and discuss how to get started with it.
+WebAssembly (Wasm) is a portable binary instruction format. Rust, C, C++ and other languages compile to it, and it runs in every major browser engine and in standalone runtimes. Wasm doesn't draw windows by itself, so in a desktop app it plays one of two roles: compiled code running inside a webview-based shell such as Tauri or Electron, or a sandboxed plugin format loaded by a native app through a runtime like Wasmtime.
 
-## What is WebAssembly?
+This post covers the first case: compiling a small Rust library to Wasm and calling it from a Tauri 2 window. An earlier version of this post used Tauri APIs that don't exist (`tauri::AppBuilder`, `app.load_web_assembly`); the code below replaces them.
 
-WebAssembly (Wasm) is a binary instruction format for a stack-based virtual machine. It is designed as a portable target for the compilation of high-level languages like C, C++, and Rust, enabling deployment on the web for client and server applications.
+## What Wasm gives you
 
-The primary goal of WebAssembly is to provide a compact binary format that enables fast execution and is suitable for use as a compilation target for a variety of programming languages. It achieves this by offering a low-level virtual machine that runs code at near-native speed.
+- **Compiled code in the frontend.** CPU-heavy work such as parsing, image processing or compression can be written in Rust or C++ and called from JavaScript.
+- **One module for desktop and web.** The same `.wasm` file runs in the desktop webview and in a browser, which is the main reason to use it inside Tauri or Electron.
+- **A sandbox.** A Wasm module can only call the functions its host passes in as imports. It has no file system or network access unless the host grants it, which is why it suits third-party plugins.
 
-## Why Use WebAssembly for Desktop Applications?
+What it doesn't give you: the desktop shell still has to be built separately for Windows, macOS and Linux. Calls between JavaScript and Wasm also cost something, so pass work in large chunks rather than one number at a time.
 
-There are several reasons to consider WebAssembly for building cross-platform desktop applications:
+## The toolchain
 
-1. **Performance**: WebAssembly code is designed for efficient execution, as it runs at near-native speed. This makes it suitable for performance-critical applications.
+- **Compiler target.** For Rust, `wasm32-unknown-unknown` for browser and webview use, or `wasm32-wasip1`/`wasm32-wasip2` for WASI runtimes. For C and C++, Emscripten.
+- **Bindings.** `wasm-bindgen` generates the JavaScript glue for Rust: type conversion, strings, and the loader.
+- **Shell.** Tauri (Rust backend, system webview) or Electron (bundled Chromium and Node.js). Both can load the same generated module.
+- **Standalone runtimes**, if you want Wasm plugins in a native app: Wasmtime, Wasmer, or WAMR (WebAssembly Micro Runtime).
 
-2. **Portability**: WebAssembly applications can run on any platform that has a compatible virtual machine, making it easy to target multiple platforms without recompiling the code.
+## Example: a Rust calculator in a Tauri window
 
-3. **Security**: WebAssembly has a strong sandboxing mechanism that ensures the safety and isolation of your application.
+You need Rust, Node.js, and the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS.
 
-4. **Language Flexibility**: WebAssembly can be used as a compilation target for various languages, allowing developers to continue using their preferred programming languages.
+### Step 1: write the Rust library
 
-## Getting Started with WebAssembly
-
-To build cross-platform desktop applications using WebAssembly, you'll need a few tools and frameworks in your arsenal. The following are the primary components you'll work with:
-
-1. **WebAssembly Compiler**: To compile your high-level language code into WebAssembly, you'll need a compatible compiler. For C and C++, you can use Emscripten, while for Rust, you can use the `wasm32-unknown-unknown` target.
-
-2. **WebAssembly Runtime**: To run your WebAssembly code, you'll need a runtime that provides a virtual machine. Wasmer, Wasmtime, and WebAssembly Micro Runtime (WAMR) are some popular options.
-
-3. **Desktop Framework**: To build the user interface and interact with the system, you'll need a desktop framework. Electron, NW.js, and Tauri are excellent choices for this purpose.
-
-### Building a Sample Application
-
-Let's build a simple cross-platform desktop application using Rust, WebAssembly, and Tauri. We'll create a basic calculator app as an example.
-
-#### Prerequisites
-
-Ensure you have the following tools installed on your system:
-
-- Rust and Cargo
-- Node.js and npm
-- Tauri CLI
-
-#### Step 1: Create a Rust Library
-
-Create a new Rust library:
-
-```
-$ cargo new wasm_calculator --lib
-$ cd wasm_calculator
+```sh
+cargo new --lib wasm_calculator
+cd wasm_calculator
+rustup target add wasm32-unknown-unknown
 ```
 
-Edit the `src/lib.rs` file to add the following code:
+In `Cargo.toml`, set the crate type to `cdylib` (that is what produces a standalone `.wasm` file) and add `wasm-bindgen`:
+
+```toml
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+```
+
+`src/lib.rs`:
 
 ```rust
 use wasm_bindgen::prelude::*;
@@ -75,61 +67,40 @@ pub fn subtract(a: i32, b: i32) -> i32 {
 }
 ```
 
-Add the `wasm-bindgen` dependency to your `Cargo.toml`:
+### Step 2: compile and generate bindings
 
-```toml
-[dependencies]
-wasm-bindgen = "0.2"
+```sh
+cargo build --target wasm32-unknown-unknown --release
 ```
 
-#### Step 2: Compile the Rust Library to WebAssembly
+The raw `.wasm` file isn't enough: `#[wasm_bindgen]` functions need the generated JavaScript glue. Install the `wasm-bindgen` CLI at exactly the same version as the `wasm-bindgen` crate in your `Cargo.lock` (0.2.130 at the time of writing), then run it:
 
-Compile the Rust library to WebAssembly using the following command:
-
-```
-$ cargo build --target wasm32-unknown-unknown --release
-```
-
-This generates a `.wasm` file in the `target/wasm32-unknown-unknown/release` directory.
-
-#### Step 3: Create a Tauri Application
-
-Create a new Tauri application:
-
-```
-$ npx create-tauri-app --name wasm_calculator_app
-$ cd wasm_calculator_app
+```sh
+cargo install wasm-bindgen-cli --version 0.2.130
+wasm-bindgen --target web --out-dir pkg target/wasm32-unknown-unknown/release/wasm_calculator.wasm
 ```
 
-Copy the `.wasm` file generated earlier to the `src-tauri/src` directory:
+This writes `pkg/wasm_calculator.js` (an ES module with an `init` default export) and `pkg/wasm_calculator_bg.wasm`. If the CLI and crate versions differ, `wasm-bindgen` refuses to run and tells you which version to install.
 
-```
-$ cp ../wasm_calculator/target/wasm32-unknown-unknown/release/wasm_calculator.wasm src-tauri/src/
-```
+### Step 3: create the Tauri app
 
-Edit the `src-tauri/src/main.rs` file to include the WebAssembly module:
+From the parent directory:
 
-```rust
-fn main() {
-    tauri::AppBuilder::default()
-        .setup(|app| {
-            // Load the WebAssembly module
-            let wasm_bytes = include_bytes!("wasm_calculator.wasm");
-            let wasm_module = app.load_web_assembly(wasm_bytes).unwrap();
-
-            // Make the WebAssembly module available to the JS context
-            app.window().unwrap().eval(&format!("window.wasm_calculator = {}", wasm_module)).unwrap();
-
-            Ok(())
-       })
-        .build()
-        .run();
-}
+```sh
+npm create tauri-app@latest
 ```
 
-#### Step 4: Create the User Interface
+Name the app `wasm_calculator_app`, choose the **Vanilla** template with **JavaScript**, then copy the bindings into the frontend folder:
 
-Edit the `src/index. file to create the user interface for the calculator:
+```sh
+cd wasm_calculator_app
+npm install
+cp -r ../wasm_calculator/pkg src/pkg
+```
+
+### Step 4: the user interface
+
+Replace `src/index.html`:
 
 ```html
 <!DOCTYPE html>
@@ -137,48 +108,67 @@ Edit the `src/index. file to create the user interface for the calculator:
 <head>
     <meta charset="utf-8" />
     <title>Wasm Calculator</title>
-    <link rel="stylesheet" href="index.css" />
+    <script type="module" src="/main.js"></script>
 </head>
 <body>
-    <div id="app">
-        <h1>Wasm Calculator</h1>
-        <input type="number" id="number1" />
-        <input type="number" id="number2" />
-        <button id="add">Add</button>
-        <button id="subtract">Subtract</button>
-        <p>Result: <span id="result"></span></p>
-    </div>
-    <script>
-        document.getElementById("add").addEventListener("click", () => {
-            const number1 = parseInt(document.getElementById("number1").value);
-            const number2 = parseInt(document.getElementById("number2").value);
-            const result = window.wasm_calculator.add(number1, number2);
-            document.getElementById("result").textContent = result;
-        });
-
-        document.getElementById("subtract").addEventListener("click", () => {
-            const number1 = parseInt(document.getElementById("number1").value);
-            const number2 = parseInt(document.getElementById("number2").value);
-            const result = window.wasm_calculator.subtract(number1, number2);
-            document.getElementById("result").textContent = result;
-        });
-    </script>
+    <h1>Wasm Calculator</h1>
+    <input type="number" id="number1" />
+    <input type="number" id="number2" />
+    <button id="add">Add</button>
+    <button id="subtract">Subtract</button>
+    <p>Result: <span id="result"></span></p>
 </body>
 </html>
 ```
 
-#### Step 5: Build and Run the Application
+And `src/main.js`:
 
-Build and run the Tauri application:
+```js
+import init, { add, subtract } from "./pkg/wasm_calculator.js";
 
+await init(); // fetches and instantiates wasm_calculator_bg.wasm
+
+const value = (id) => parseInt(document.getElementById(id).value, 10) || 0;
+const show = (n) => (document.getElementById("result").textContent = n);
+
+document.getElementById("add").addEventListener("click", () => {
+    show(add(value("number1"), value("number2")));
+});
+
+document.getElementById("subtract").addEventListener("click", () => {
+    show(subtract(value("number1"), value("number2")));
+});
 ```
-$ npm run tauri:build
-$ npm run tauri:serve
+
+The template's `tauri.conf.json` sets no Content Security Policy. If you add one, include `'wasm-unsafe-eval'` in `script-src`, or the webview will refuse to compile the module.
+
+### Step 5: run and build
+
+```sh
+npm run tauri dev     # development window with reload
+npm run tauri build   # release build and installers for the current OS
 ```
 
-This will launch a desktop application with a calculator user interface, powered by WebAssembly.
+The same `src/` folder, `pkg` included, also works as a static website, which is the point of putting the logic in Wasm.
 
-## Conclusion
+## When you don't need Wasm
 
-WebAssembly has opened up new possibilities for building cross-platform desktop applications. By combining it with various desktop frameworks, you can create efficient, maintainable, and secure applications that run on multiple platforms. With the ever-growing ecosystem of tools and libraries, the future of WebAssembly in desktop applications looks promising.
+In Tauri, the backend is already native Rust. If the code only has to run on the desktop, a Tauri command is simpler than a Wasm module:
 
+```rust
+#[tauri::command]
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// in the builder: .invoke_handler(tauri::generate_handler![add])
+```
+
+The frontend calls it with `invoke("add", { a: 1, b: 2 })` from `@tauri-apps/api/core`. That code runs natively and can use the file system and threads. Choose Wasm when the same logic has to run in a browser, or when you need to load untrusted plugins in a sandbox.
+
+## Further reading
+
+- [WebAssembly on MDN](https://developer.mozilla.org/en-US/docs/WebAssembly)
+- [The wasm-bindgen guide](https://wasm-bindgen.github.io/wasm-bindgen/)
+- [Tauri 2: create a project](https://v2.tauri.app/start/create-project/)
+- [Wasmtime](https://wasmtime.dev/)

@@ -1,19 +1,26 @@
 ---
-title: "Unsafe Rust: Going Below the Abstraction"
-description: Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.
+title: "Unsafe Rust basics: raw pointers and calling C's malloc and free"
+description: What the unsafe keyword allows in Rust, with two examples, dereferencing a raw pointer and managing a buffer with libc's malloc and free, plus the rules you must uphold.
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+Safe Rust rejects any program the compiler can't prove is memory-safe. Some correct programs, such as code that talks to C libraries or implements low-level data structures, can't be proven safe by the compiler. For those, Rust has `unsafe`: a block or function where you promise the compiler that you've checked the invariants it can't.
 
-# Unsafe Rust: Going Below the Abstraction
-Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.  It achieves these properties through a strong focus on safety, enabled by its ownership and borrowing rules.  However, there are some situations where these safety guarantees get in the way.  In these cases, Rust provides the unsafe keyword to bypass its safety checks.
+`unsafe` doesn't switch off the borrow checker or type checking. It unlocks five extra operations:
 
-Unsafe code gives you more low-level control and efficiencies, but also more responsibility.  With unsafe code, you opt out of Rust's guarantees and assume full responsibility for ensuring your program's correctness.  Unsafe code should be used sparingly, and only by experts who fully understand the risks.
+- dereferencing a raw pointer (`*const T` / `*mut T`)
+- calling an `unsafe` function, including foreign (C) functions
+- reading or writing a mutable `static`
+- implementing an `unsafe` trait (such as `Send` or `Sync`)
+- reading fields of a `union`
 
-Let's look at an example that uses unsafe code to perform raw pointer arithmetic, which is disallowed in safe Rust:
+If code in an `unsafe` block breaks one of Rust's rules, for example by reading freed memory, the result is undefined behaviour, the same as in C.
+
+## Dereferencing a raw pointer
 
 ```rust
 fn main() {
@@ -21,49 +28,77 @@ fn main() {
     let ptr = &mut num as *mut i32;
 
     unsafe {
-        *ptr += 1; 
+        *ptr += 1;
     }
 
-    println!("{}", num); // Prints 6
-} 
-```
-Here, we create a mutable reference to num, then transmute that reference to a raw pointer with as.  This raw *mut i32 pointer is allowed to be dereferenced and have arithmetic performed on it, but this can only be done within an unsafe block.  Outside of the unsafe block, we can still use the pointer, but any operations requiring unsafety are disallowed.
-
-Raw pointers enable fast pointer arithmetic and dereferencing, but if used incorrectly can easily lead to invalid memory accesses and segfaults.  Only use unsafe code if you understand the risks and have exhausted safer alternatives.  Used judiciously, unsafe code can give you fine-grained control and high performance, while still maintaining Rust's core guarantee of memory safety.
-
-Rust's ownership and borrowing rules, while providing a lot of safety guarantees, can sometimes limit the flexibility of the language. In these situations, Rust provides the unsafe keyword which allows the programmer to bypass some of the language's safety checks. However, it's important to note that with great power comes great responsibility. Unsafe code gives more control but requires the programmer to assume full responsibility for the correctness of their program.
-
-Here's another example that showcases how unsafe Rust can be used to manipulate raw pointers to achieve greater control over memory management:
-
-```rust
-fn main() {
-    let array = [1, 2, 3, 4, 5];
-    let ptr = array.as_ptr();
-    let len = array.len();
-    let byte_len = len * std::mem::size_of::<i32>();
-
-    let buffer = unsafe {
-        let buffer = malloc(byte_len) as *mut i32;
-        std::ptr::copy_nonoverlapping(ptr, buffer, len);
-        std::slice::from_raw_parts_mut(buffer, len)
-    };
-
-    buffer[0] = 10;
-
-    for i in 0..len {
-        println!("{}", buffer[i]);
-    }
-
-    unsafe {
-        free(buffer as *mut c_void);
-    }
+    println!("{num}"); // 6
 }
 ```
 
-In this example, we use unsafe Rust to allocate a buffer using the C malloc function and copy the contents of an array into the buffer. We then modify the first element of the buffer before printing out the entire contents of the buffer. Finally, we deallocate the buffer using free.
+`&mut num as *mut i32` casts a mutable reference to a raw pointer. Creating a raw pointer is safe; only dereferencing it needs `unsafe`, because the compiler no longer tracks whether it points at valid, live memory. Here it obviously does, since `num` is still in scope.
 
-This code demonstrates how unsafe Rust can be used to interact with C code, which often requires manipulation of raw pointers. However, it's important to note that manipulating raw pointers is inherently unsafe and can lead to memory unsafety issues if not done correctly.
+Raw pointers also support pointer arithmetic (`ptr.add(n)`, `ptr.offset(n)`), which is `unsafe` too: going past the end of the allocation is undefined behaviour.
 
-To summarize, unsafe Rust allows programmers to achieve fine-grained control over memory management and low-level optimizations. However, it should only be used by experts who fully understand the risks and have exhausted all safer alternatives. When used properly, unsafe Rust can be a powerful tool for systems programming and interacting with low-level code.
+## Allocating a buffer with C's malloc
 
-The article gives an overview of Rust's unsafe code with an illustrative example using raw pointers.  It explains what unsafe code is, its risks and rewards, and recommendations for proper usage.  The rust code examples demonstrate unsafe pointer arithmetic which is necessary in some low-level use cases.  Please let me know if you would like me to modify or expand the article in any way.
+Calling C functions is the most common reason to write `unsafe`. This example uses the [`libc`](https://crates.io/crates/libc) crate (0.2.191 at the time of writing) for the `malloc` and `free` declarations:
+
+```toml
+[dependencies]
+libc = "0.2"
+```
+
+```rust
+use std::{ptr, slice};
+
+fn main() {
+    let array = [1, 2, 3, 4, 5];
+    let len = array.len();
+    let byte_len = len * std::mem::size_of::<i32>();
+
+    // SAFETY: malloc returns either null or a pointer to at least `byte_len`
+    // bytes, suitably aligned for any type, which we check before using.
+    let raw = unsafe { libc::malloc(byte_len) } as *mut i32;
+    if raw.is_null() {
+        panic!("malloc failed");
+    }
+
+    {
+        // SAFETY: `raw` points to `len` i32s worth of uninitialised memory that
+        // nothing else uses. We initialise it with the copy before creating a
+        // slice over it, and the slice is dropped before we free the memory.
+        let buffer = unsafe {
+            ptr::copy_nonoverlapping(array.as_ptr(), raw, len);
+            slice::from_raw_parts_mut(raw, len)
+        };
+
+        buffer[0] = 10;
+        for value in buffer.iter() {
+            println!("{value}");
+        }
+    }
+
+    // SAFETY: `raw` came from malloc and is freed exactly once.
+    unsafe { libc::free(raw as *mut libc::c_void) };
+}
+```
+
+This prints `10 2 3 4 5`, one per line. The things that make it correct are all things the compiler can't check:
+
+- `malloc` can return null, so we check before using the pointer.
+- The memory must be initialised before we make a slice over it; `copy_nonoverlapping` does that.
+- The slice `buffer` must not be used after `free`. The inner block ends its lifetime first. `from_raw_parts_mut` would otherwise hand back a slice with an unbounded lifetime that the borrow checker can't tie to the allocation.
+- Memory from `malloc` must be released with `free`, not Rust's allocator, and only once.
+
+In real code you'd only do this if a C library hands you `malloc`ed memory or expects you to give it some. For your own buffers, `Vec<i32>` (or `std::alloc` if you need manual control) does the same thing safely.
+
+## Keeping unsafe code manageable
+
+- Keep `unsafe` blocks small and wrap them in a safe function whose signature can't be misused. That's how most of the standard library is built.
+- Write a `// SAFETY:` comment on each `unsafe` block explaining why the invariants hold. Clippy's `undocumented_unsafe_blocks` lint can enforce this.
+- Run tests under [Miri](https://github.com/rust-lang/miri), which detects many kinds of undefined behaviour (out-of-bounds access, use-after-free, invalid aliasing) at runtime.
+
+## Further reading
+
+- [Unsafe Rust in The Rust Programming Language](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html)
+- [The Rustonomicon](https://doc.rust-lang.org/nomicon/), the detailed guide to writing unsafe code

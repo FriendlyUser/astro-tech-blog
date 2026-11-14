@@ -1,323 +1,218 @@
 ---
 tags: ['go']
-title: History of golang.
-description: Covering reasons to use golang and why it's a good choice for your next project.
+title: "Go basics: variables, constants, types, operators and control flow"
+description: "The building blocks of a Go program: package layout, variables and constants, basic types and conversions, operators, and if, switch and for, with runnable examples."
 pubDate: Fri, 21 October 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/454515535.png
 ---
 
-Go's design is influenced by C and its syntax is similar to C, making it easy for C programmers to learn Go. However, Go includes modern language features, such as garbage collection, concurrent programming, and memory safety. These features make Go a popular choice for building high-performance, scalable, and distributed systems.
+This chapter covers the pieces every Go program is made of: how a program is laid out, variables and constants, the basic types, operators, and control flow. Each example is a complete program. Save it as `main.go` and run it with `go run main.go`, or paste it into the [Go Playground](https://go.dev/play/).
 
-Some of the basic concepts of Go programming include:
-
-### Packages
-
-Go programs are organized into packages, which are collections of related Go source files. A package is a way to group related functions, types, and variables together into a single unit that can be easily imported and reused in other programs.
-
-### Functions
-
-Functions are the building blocks of Go programs. A function is a block of code that performs a specific task. Functions can have input parameters and return values, or they can have no parameters and no return value.
-
-### Variables
-
-Variables are used to store data in a Go program. A variable is a named storage location that has a specific type, such as int, float64, or string. Go is a statically typed language, which means that variables must be declared with a specific type before they can be used.
-
-### Control Structures
-
-Control structures are used to control the flow of execution in a Go program. The most common control structures in Go are if/else statements, for loops, and switch statements.
-
-### Pointers
-
-A pointer is a variable that holds the memory address of another variable. Pointers are used to pass large data structures efficiently between functions, and to modify data in place.
-
-### Structs
-
-A struct is a composite data type that groups together zero or more values with different types under a single name. Structs are used to create complex data structures that can be passed between functions and used throughout a Go program.
-
-In summary, Go is a modern programming language that is designed for simplicity, efficiency, and scalability. Its basic concepts include packages, functions, variables, control structures, pointers, and structs. These concepts form the foundation of Go programming, and are essential for building high-performance, scalable, and distributed systems.
-
-
-Variables and constants are used to store and manipulate data in a Go program. In this section, we will discuss the differences between variables and constants, and how to declare and use them in a Go program.
-
-### Variables
-
-A variable is a named storage location that holds a value of a specific type. In Go, variables must be declared before they can be used. To declare a variable, you use the `var` keyword followed by the variable name, the type of the variable, and an optional initial value. Here's an example:
-
+## Program structure
 
 ```go
-var message string = "Hello, World!"
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, World!")
+}
 ```
-In this example, we declare a variable named `message` of type `string` and assign it the value `"Hello, World!"`. We can also declare multiple variables in a single statement, like this:
 
+Every Go file starts with a `package` clause. Files in the same directory belong to the same package. An executable program needs `package main` with a `func main()`, which is where execution starts. `import` brings in other packages, here `fmt` from the standard library.
 
-```go
-var x, y int = 10, 20
-```
-In this example, we declare two variables `x` and `y` of type `int` and assign them the values `10` and `20`, respectively.
+The compiler is strict about two things beginners hit straight away: an unused import and an unused local variable are both compile errors, not warnings.
 
-If you omit the initial value, Go will automatically set the variable to its "zero value". The zero value depends on the type of the variable. For example, the zero value of an `int` variable is `0`, and the zero value of a `string` variable is `""` (an empty string). Here's an example:
-
+## Variables and constants
 
 ```go
-var count int // count is set to 0
-var name string // name is set to ""
-```
-You can also use the `:=` shorthand to declare and initialize a variable in a single statement, like this:
+package main
 
+import "fmt"
 
-```go
-message := "Hello, World!"
-```
-In this example, Go automatically infers the type of the variable based on the initial value.
+const pi = 3.14159 // untyped constant
 
-### Constants
-
-A constant is a named value that cannot be changed during the execution of a program. In Go, constants are declared using the `const` keyword followed by the constant name, the type of the constant (which can be omitted if the type can be inferred), and the value of the constant. Here's an example:
-
-
-```go
-const pi = 3.14159
-```
-In this example, we declare a constant named `pi` of type `float64` and assign it the value `3.14159`. Constants can also be declared in a group, like this:
-
-
-```go
 const (
- monday = "Monday"
- tuesday = "Tuesday"
- wednesday = "Wednesday"
+	monday  = "Monday"
+	tuesday = "Tuesday"
 )
-```
-In this example, we declare three constants `monday`, `tuesday`, and `wednesday` of type `string` and assign them the corresponding values.
 
-Constants are useful for values that are used throughout a program and should not be changed, such as mathematical constants like pi, or values that define program behavior, such as error codes.
+type Level int
 
-### Conclusion
+const (
+	Low    Level = iota // 0
+	Medium              // 1
+	High                // 2
+)
 
-In this section, we discussed the differences between variables and constants, and how to declare and use them in a Go program. Variables are named storage locations that hold a value of a specific type and can be changed during the execution of a program. Constants are named values that cannot be changed during the execution of a program. By using variables and constants effectively, you can store and manipulate data in a Go program with ease.
+func main() {
+	var message string = "Hello, World!"
+	var x, y int = 10, 20
 
+	var count int   // zero value: 0
+	var name string // zero value: "" (empty string)
 
-In Go, like any other programming language, data types define the kind of data that a variable can hold. In this section, we will discuss the basic data types that are available in Go.
+	greeting := "hi" // short declaration, type inferred as string
 
-### Numeric Types
-
-Go supports several numeric data types, including integers and floating-point numbers. Here are some of the most commonly used numeric data types:
-
-* `int`: a signed integer type that can hold a range of values depending on the size of the int (e.g., `int32`, `int64`, etc.).
-* `uint`: an unsigned integer type that can hold only positive values (e.g., `uint8`, `uint16`, etc.).
-* `float32`: a floating-point type that can hold single-precision floating-point values.
-* `float64`: a floating-point type that can hold double-precision floating-point values.
-
-Here's an example of declaring variables of these types:
-
-
-```go
-var x int = 10
-var y uint = 20
-var z float32 = 3.14
-```
-### Boolean Type
-
-The `bool` data type represents a boolean value, which can be either `true` or `false`. Here's an example:
-
-
-```go
-var a bool = true
-var b bool = false
-```
-### String Type
-
-The `string` data type represents a sequence of characters. Strings are immutable in Go, which means that once a string is created, its contents cannot be changed. Here's an example:
-
-
-```go
-var message string = "Hello, World!"
-```
-### Other Types
-
-Go also supports other data types such as arrays, slices, maps, and structs, which are used to store and manipulate more complex data structures. We will cover these data types in more detail in later sections.
-
-### Type Conversion
-
-Sometimes, it may be necessary to convert a variable from one data type to another. In Go, you can convert a variable from one type to another by using a type conversion expression. Here's an example:
-
-
-```go
-var x int32 = 10
-var y int64 = int64(x)
-```
-In this example, we declare a variable `x` of type `int32` and assign it the value `10`. We then declare a variable `y` of type `int64` and assign it the value of `x`, which we convert to `int64` using a type conversion expression.
-
-### Conclusion
-
-In this section, we discussed the basic data types that are available in Go, including numeric types, boolean types, and string types. We also covered type conversion, which is used to convert a variable from one data type to another. By understanding the different data types in Go, you can choose the appropriate type for your variables and ensure that your program works correctly.
-
-
-In Go, operators are used to perform various operations on variables and constants. In this section, we will discuss the different types of operators that are available in Go.
-
-### Arithmetic Operators
-
-Arithmetic operators are used to perform arithmetic operations such as addition, subtraction, multiplication, and division. Here are some of the most commonly used arithmetic operators in Go:
-
-* `+`: addition
-* `-`: subtraction
-* `*`: multiplication
-* `/`: division
-* `%`: remainder
-
-Here's an example:
-
-
-```go
-var x int = 10
-var y int = 5
-var z int = x + y // z will be 15
-```
-### Comparison Operators
-
-Comparison operators are used to compare two values and return a boolean value. Here are some of the most commonly used comparison operators in Go:
-
-* `==`: equal to
-* `!=`: not equal to
-* `<`: less than
-* `>`: greater than
-* `<=`: less than or equal to
-* `>=`: greater than or equal to
-
-Here's an example:
-
-
-```go
-var x int = 10
-var y int = 5
-var result bool = x > y // result will be true
-```
-### Logical Operators
-
-Logical operators are used to combine two or more boolean values and return a boolean value. Here are the three logical operators that are available in Go:
-
-* `&&`: logical AND
-* `||`: logical OR
-* `!`: logical NOT
-
-Here's an example:
-
-
-```go
-var x bool = true
-var y bool = false
-var result bool = x && y // result will be false
-```
-### Assignment Operators
-
-Assignment operators are used to assign a value to a variable. Here are some of the most commonly used assignment operators in Go:
-
-* `=`: simple assignment
-* `+=`: addition assignment
-* `-=`: subtraction assignment
-* `*=`: multiplication assignment
-* `/=`: division assignment
-* `%=`: remainder assignment
-
-Here's an example:
-
-
-```go
-var x int = 10
-x += 5 // x will be 15
-```
-### Bitwise Operators
-
-Bitwise operators are used to perform bitwise operations on integers. Here are some of the most commonly used bitwise operators in Go:
-
-* `&`: bitwise AND
-* `|`: bitwise OR
-* `^`: bitwise XOR
-* `<<`: left shift
-* `>>`: right shift
-
-Here's an example:
-
-
-```go
-var x uint8 = 0b00001010
-var y uint8 = 0b00000101
-var z uint8 = x & y // z will be 0b00000000
-```
-### Conclusion
-
-In this section, we discussed the different types of operators that are available in Go, including arithmetic operators, comparison operators, logical operators, assignment operators, and bitwise operators. By understanding these operators, you can perform various operations on your variables and constants and build more complex programs.
-
-
-Control structures are used in programming languages to control the flow of execution of a program. In this section, we will discuss the control structures that are available in Go.
-
-### Conditional Statements
-
-Conditional statements are used to execute different blocks of code based on the value of a condition. Here are the two conditional statements that are available in Go:
-
-#### If Statement
-
-The if statement is used to execute a block of code if a condition is true. Here's an example:
-
-
-```go
-var x int = 10
-if x > 5 {
- fmt.Println("x is greater than 5")
+	fmt.Println(message, x, y, count, name, greeting)
+	fmt.Println(pi*2, monday, tuesday, High)
 }
 ```
-#### If-else Statement
 
-The if-else statement is used to execute a block of code if a condition is true, and another block of code if the condition is false. Here's an example:
+- `var name type = value` declares a variable. You can drop the type if there's a value (`var x = 10`) or drop the value to get the type's zero value: `0` for numbers, `""` for strings, `false` for bools, `nil` for pointers, slices, maps, channels, functions and interfaces.
+- `:=` declares and initialises in one step, with the type inferred. It only works inside functions; package-level variables need `var`.
+- `const` values must be known at compile time, so `const now = time.Now()` doesn't compile. A constant without an explicit type, like `pi`, is *untyped*: it takes a type from where it's used, and defaults to `float64` when assigned to a variable without a type.
+- `iota` counts up from 0 within a `const` block and is the usual way to define enum-like values.
 
+## Basic types
 
-```go
-var x int = 10
-if x > 5 {
- fmt.Println("x is greater than 5")
-} else {
- fmt.Println("x is less than or equal to 5")
-}
-```
-### Looping Statements
+| Type | Notes |
+| --- | --- |
+| `int`, `uint` | 32 or 64 bits depending on the platform (64 on amd64 and arm64). `uint` holds only non-negative values. |
+| `int8` … `int64`, `uint8` … `uint64` | Fixed-size integers. `byte` is an alias for `uint8`, `rune` for `int32`. |
+| `float32`, `float64` | IEEE 754 floating point. `float64` is the default for floating-point literals. |
+| `complex64`, `complex128` | Complex numbers. |
+| `bool` | `true` or `false`. |
+| `string` | An immutable sequence of bytes, conventionally UTF-8. |
 
-Looping statements are used to execute a block of code repeatedly. Here are the three looping statements that are available in Go:
+Arrays, slices, maps and structs build on these and come later in the series.
 
-#### For Loop
-
-The for loop is used to execute a block of code a fixed number of times. Here's an example:
-
-
-```go
-for i := 0; i < 5; i++ {
- fmt.Println(i)
-}
-```
-#### While Loop
-
-Go doesn't have a dedicated while loop, but you can simulate one using the for loop. Here's an example:
-
+Go never converts between numeric types implicitly, even from `int32` to `int64`. You write the conversion yourself:
 
 ```go
-var i int = 0
-for i < 5 {
- fmt.Println(i)
- i++
+package main
+
+import "fmt"
+
+func main() {
+	var a int32 = 10
+	var b int64 = int64(a) // required: no implicit widening
+	var f float64 = float64(b) / 4
+
+	s := "héllo"
+
+	fmt.Println(b, f)           // 10 2.5
+	fmt.Println(len(s))         // 6: len counts bytes, and é is 2 bytes in UTF-8
+	fmt.Println(len([]rune(s))) // 5: number of characters (code points)
 }
 ```
-#### Infinite Loop
 
-The infinite loop is used to execute a block of code indefinitely. Here's an example:
-
+## Operators
 
 ```go
-for {
- fmt.Println("Hello, world!")
+package main
+
+import "fmt"
+
+func main() {
+	x, y := 7, 2
+
+	// Arithmetic: integer division truncates toward zero.
+	fmt.Println(x/y, x%y, -x/y, -x%y)    // 3 1 -3 -1
+	fmt.Println(float64(x) / float64(y)) // 3.5
+
+	// Comparison and logical operators produce bool.
+	// && and || short-circuit.
+	fmt.Println(x > y && y > 0, x == y || !(x > 0)) // true false
+
+	// Assignment operators; ++ and -- are statements, not expressions.
+	x += 5
+	x++
+	fmt.Println(x) // 13
+
+	// Bitwise operators.
+	var a uint8 = 0b00001010
+	var b uint8 = 0b00000101
+	fmt.Printf("%08b %08b %08b %08b\n", a&b, a|b, a^b, a&^0b00000010)
+	// 00000000 00001111 00001111 00001000
+	fmt.Println(a<<1, a>>1) // 20 5
 }
 ```
-You can exit an infinite loop using the `break` statement.
 
-### Conclusion
+- Arithmetic: `+ - * / %`. `+` also concatenates strings. The sign of `%` follows the left operand.
+- Comparison: `== != < > <= >=`.
+- Logical: `&& || !`.
+- Assignment: `= += -= *= /= %=` and the bitwise forms (`&=`, `<<=`, …). `x++` can't be used as a value, so `y := x++` doesn't compile.
+- Bitwise: `&` (AND), `|` (OR), `^` (XOR as a binary operator, bitwise NOT as a unary one), `&^` (AND NOT, clears bits), `<<` and `>>` (shifts).
 
-In this section, we discussed the control structures that are available in Go, including conditional statements and looping statements. By using these control structures, you can control the flow of execution of your program and build more complex programs.
+## Control flow
+
+Go has `if`, `switch` and a single loop keyword, `for`, which covers the jobs of `while` and infinite loops in other languages.
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+func main() {
+	// if can start with a short statement; n and err are scoped to the if/else.
+	if n, err := strconv.Atoi("42"); err != nil {
+		fmt.Println("not a number:", err)
+	} else if n > 5 {
+		fmt.Println(n, "is greater than 5")
+	} else {
+		fmt.Println(n, "is 5 or less")
+	}
+
+	// switch cases don't fall through, so no break is needed.
+	switch day := "Sat"; day {
+	case "Sat", "Sun":
+		fmt.Println("weekend")
+	default:
+		fmt.Println("weekday")
+	}
+
+	// Classic three-part for loop.
+	for i := 0; i < 3; i++ {
+		fmt.Println("i =", i)
+	}
+
+	// Condition-only for: Go's "while".
+	j := 0
+	for j < 3 {
+		j++
+	}
+	fmt.Println("j =", j)
+
+	// range over a string yields byte index and rune.
+	for i, r := range "go!" {
+		fmt.Println(i, string(r))
+	}
+
+	// range over an integer (Go 1.22+): 0, 1, 2.
+	for k := range 3 {
+		fmt.Println("k =", k)
+	}
+
+	// Infinite loop, exited with break.
+	count := 0
+	for {
+		count++
+		if count == 3 {
+			break
+		}
+	}
+	fmt.Println("count =", count)
+}
+```
+
+`range` also works over arrays, slices, maps and channels. `continue` skips to the next iteration, and labelled `break`/`continue` let you leave an outer loop from inside an inner one.
+
+## Gotchas
+
+- Braces are mandatory on `if` and `for`, and the opening brace must be on the same line. Go inserts semicolons at line ends, so a brace on the next line is a syntax error.
+- Unused variables and imports stop compilation. Use `_` to discard a value you don't need, as in `_, err := f()`.
+- `len` on a string counts bytes, not characters.
+- Integer overflow wraps around silently, and dividing an integer by a constant zero is a compile error, while dividing by a zero variable panics at runtime.
+
+## Further reading
+
+- [A Tour of Go](https://go.dev/tour/)
+- [The Go language specification](https://go.dev/ref/spec)
+- [Effective Go](https://go.dev/doc/effective_go)

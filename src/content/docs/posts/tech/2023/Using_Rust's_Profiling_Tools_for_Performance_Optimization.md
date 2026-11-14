@@ -1,80 +1,94 @@
 ---
-title: Using Rust's Profiling Tools for Performance Optimization
+title: Profiling Rust code with perf, Criterion and cargo-flamegraph
 pubDate: "2023-12-24T16:18:46.000Z"
-description: "This article will provide an overview of Rust's profiling tools, along with some practical examples to help you identify and eliminate performance bottlenecks in your code"
-tags: []
+lastUpdated: 2026-11-14
+description: "How to find slow code in a Rust program: sample it with perf, draw a flamegraph with cargo-flamegraph, and measure changes with Criterion benchmarks."
+tags: ['rust']
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/270485010_forest.png
 ---
-# Using Rust's Profiling Tools for Performance Optimization
 
-Rust is a systems programming language that promises both safety and performance. However, to truly harness its power and optimize your code, you need to be familiar with the available profiling tools. This article will provide an overview of Rust's profiling tools, along with some practical examples to help you identify and eliminate performance bottlenecks in your code.
+Rust gives you fast code by default, but "fast by default" doesn't tell you where your program actually spends its time. Three tools cover most of what you need:
 
-## Profiling Tools Overview
+- **`perf`**: the Linux sampling profiler. It records call stacks while your program runs and tells you which functions are hot.
+- **`cargo-flamegraph`**: wraps `perf` (or the platform equivalent) and renders the samples as an interactive SVG flamegraph.
+- **Criterion**: a benchmarking library. Once you know *what* is slow, it tells you whether your fix made it faster, with statistics to separate real changes from noise.
 
-There are several profiling tools available for Rust, each with its own strengths and weaknesses. Here are three of the most popular ones:
+A typical loop is: profile the whole program, find the hot function, write a benchmark for it, change the code, and re-run the benchmark.
 
-1. **`perf`**: A Linux-specific tool that provides a wealth of information on CPU performance, including hardware events, software events, and tracepoints. It is particularly useful for low-level performance analysis.
-2. **`criterion`**: A Rust library for benchmarking, which provides statistical analysis and comparison of performance data. It is useful for micro-benchmarks and measuring changes in performance over time.
-3. **`flamegraph`**: A visualization tool for profiling data, which presents a hierarchical view of function call stacks. It is useful for identifying hotspots in your code and understanding the overall call flow.
+## Build with debug symbols
 
-## Setting Up Your Environment
-
-Before we delve into specific examples, let's set up our environment to use these tools.
-
-### Installing `perf`
-
-On Ubuntu, you can install `perf` by running:
-
-```bash
-sudo apt-get install linux-tools-common linux-tools-generic
-```
-
-### Adding `criterion` to Your Project
-
-To add `criterion` to your Rust project, include it as a dev-dependency in your `Cargo.toml`:
+`cargo build --release` does not include debug info by default, so profilers show addresses or inlined mush instead of function names. Turn it on for the release profile:
 
 ```toml
-[dev-dependencies]
-criterion = "0.3"
+[profile.release]
+debug = true
 ```
 
-### Installing `flamegraph`
+This doesn't change optimisation level; it only adds symbols. You can also set it per command with the environment variable `CARGO_PROFILE_RELEASE_DEBUG=true`.
 
-You can install `flamegraph` by running:
+## Profiling with perf
+
+On Ubuntu, install `perf` with the package that matches your running kernel:
+
+```bash
+sudo apt-get install linux-tools-common linux-tools-generic linux-tools-$(uname -r)
+```
+
+Build, then record. `--call-graph dwarf` uses the debug info to unwind stacks, which works even though release builds omit frame pointers:
+
+```bash
+cargo build --release
+perf record --call-graph dwarf ./target/release/my_app
+perf report
+```
+
+`perf report` opens an interactive view in the terminal, sorted by the share of samples in each function. Expand an entry to see who called it.
+
+If `perf record` fails with a permissions error as a normal user, the kernel's `perf_event_paranoid` setting is blocking it. You can lower it for the current boot (this loosens a security setting, so don't do it on shared machines):
+
+```bash
+echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
+```
+
+## Flamegraphs with cargo-flamegraph
+
+Install the cargo subcommand:
 
 ```bash
 cargo install flamegraph
 ```
 
-## Profiling with `perf`
-
-Using `perf` with Rust is straightforward. First, build your project with debug information and optimizations enabled:
+Then run your binary through it:
 
 ```bash
-cargo build --release
+cargo flamegraph --bin my_app
 ```
 
-Next, record the performance data using `perf record`. For example, if your binary is called `my_app`, you can run:
+It builds in release mode, profiles the run, and writes `flamegraph.svg` to the current directory. Open it in a browser: the width of each box is the share of samples, so wide boxes near the top of a stack are where the time goes. Click a box to zoom in.
 
-```bash
-perf record --call-graph dwarf ./target/release/my_app
+On Linux it uses `perf`; on macOS it uses `xctrace`; on Windows it has built-in support (or uses `dtrace` if installed). See the [flamegraph README](https://github.com/flamegraph-rs/flamegraph) for options such as profiling a benchmark with `--bench`.
+
+## Benchmarking with Criterion
+
+Criterion needs your code to be in a library crate (`src/lib.rs`) so the benchmark can import it. Add it as a dev-dependency and register a bench target with the default test harness turned off:
+
+```toml
+[dev-dependencies]
+criterion = "0.8"
+
+[[bench]]
+name = "my_function_benchmark"
+harness = false
 ```
 
-Finally, generate a report with `perf report`:
+Without `harness = false`, Cargo uses the built-in benchmark harness and Criterion's `main` never runs.
 
-```bash
-perf report
-```
-
-This will display an interactive report in your terminal, showing which functions are taking the most time.
-
-## Benchmarking with `criterion`
-
-Let's say you have a function, `my_function`, that you want to benchmark. First, create a new benchmark file in your `benches` directory, for example, `my_function_benchmark.rs`. Then, add the following code:
+Create `benches/my_function_benchmark.rs`:
 
 ```rust
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
+use std::hint::black_box;
 use my_app::my_function;
 
 fn my_function_benchmark(c: &mut Criterion) {
@@ -87,24 +101,24 @@ criterion_group!(benches, my_function_benchmark);
 criterion_main!(benches);
 ```
 
-Now, you can run the benchmark by executing:
+`black_box` stops the compiler from constant-folding the call away, which would otherwise give you a benchmark of nothing. Use `std::hint::black_box`; Criterion's own `criterion::black_box` is deprecated.
+
+Run it:
 
 ```bash
 cargo bench
 ```
 
-This will provide detailed information about the performance of `my_function`, including the mean execution time, standard deviation, and more.
+Criterion reports a confidence interval for the time per iteration and, on later runs, whether the change from the previous run is statistically significant. Results are saved under `target/criterion/`; for HTML reports with charts, enable the crate's `html_reports` feature (`criterion = { version = "0.8", features = ["html_reports"] }`).
 
-## Visualizing Performance Data with `flamegraph`
+## Gotchas
 
-To generate a flamegraph for your Rust application, simply run:
+- Profile release builds. Debug builds have very different hot spots (bounds checks, no inlining) and will send you after the wrong code.
+- Benchmarks on a laptop are noisy. Close other programs and treat small changes (a few percent) with suspicion even when Criterion calls them significant.
+- A micro-benchmark can improve while the whole program doesn't. Re-profile the full program after a fix.
 
-```bash
-cargo flamegraph --bin my_app
-```
+## Further reading
 
-This will create an SVG file in your project directory, which you can open in a browser to visualize the call stacks and identify performance hotspots.
-
-## Conclusion
-
-Rust's profiling tools are powerful and versatile, enabling you to optimize your code for maximum performance. By using tools like `perf`, `criterion`, and `flamegraph`, you can gain deep insights into your code's behavior and make data-driven decisions to improve its performance. Remember, the key to effective performance optimization is to measure, analyze, and iterate.
+- [The Rust Performance Book: Profiling](https://nnethercote.github.io/perf-book/profiling.html)
+- [Criterion.rs user guide](https://criterion-rs.github.io/book/)
+- [cargo-flamegraph](https://github.com/flamegraph-rs/flamegraph)

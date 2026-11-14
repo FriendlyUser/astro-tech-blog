@@ -1,152 +1,167 @@
 ---
-description: In this article, we will explore the basics of Pygame Zero and guide
-  you through the process of creating a simple game
+description: 'Build a small space shooter with Pygame Zero: actors, keyboard input, shooting, collisions, a score and a game-over screen, in about 70 lines of Python.'
 imgSrc: /imgs/2023/359936451.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-16T23:52:29.000Z'
-tags: []
-title: An Introduction to Pygame Zero Building Your First Game in Python
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: 'Pygame Zero: build a simple space shooter in Python'
 ---
 
-# An Introduction to Pygame Zero: Building Your First Game in Python
+Pygame Zero is a thin layer over Pygame aimed at beginners and classrooms. You don't write a game loop or an event loop: you define `draw()` and `update()` functions plus a few named event handlers, and Pygame Zero calls them for you. Images and sounds are loaded by name from folders next to your script.
 
-Pygame Zero is a beginner-friendly game engine for Python that allows you to create simple video games without the need to write complex boilerplate code. This powerful library provides a straightforward interface that abstracts away many of the complexities of Pygame, a popular library for creating multimedia applications in Python. In this article, we will explore the basics of Pygame Zero and guide you through the process of creating a simple game.
+This post builds a small space shooter. The player moves a ship left and right, fires bullets with the space bar, and loses when an enemy reaches the bottom of the screen.
 
-## Table of Contents
-
-1. [Getting Started with Pygame Zero](#getting-started)
-2. [Building a Simple Game](#building-a-simple-game)
-     - [Setting Up the Game Window](#setting-up-the-game-window)
-     - [Sprites and Actors](#sprites-and-actors)
-     - [User Input and Movement](#user-input-and-movement)
-     - [Collisions and Scoring](#collisions-and-scoring)
-3. [Conclusion](#conclusion)
-
-## Getting Started with Pygame Zero<a name="getting-started"></a>
-
-Before diving into game development, make sure to install Python 3 and Pygame Zero. You can download Python from the [official website](https://www.python.org/downloads/) and install Pygame Zero by running the following command:
+## Installing
 
 ```bash
 pip install pgzero
 ```
 
-_Note: If you are using Python 3.8 or later, you may need to install the Pygame Zero version that supports the latest Python version with this command:_
+This installs Pygame Zero 1.2.1 (the current release on PyPI) along with Pygame and NumPy. Pygame 2.6.1 publishes prebuilt wheels for Python 3.6 to 3.13. On a newer Python, pip will try to build Pygame from source, which usually fails without the SDL development headers, so use Python 3.13 or older in a virtual environment.
 
-```bash
-pip install pgzero[pygame14]
+## Project layout
+
+Pygame Zero looks for images in an `images/` folder beside the script and refers to them by lowercase file name without the extension:
+
+```text
+spaceshooter/
+├── spaceshooter.py
+└── images/
+    ├── spaceship.png
+    ├── enemy.png
+    └── bullet.png
 ```
 
-Now that we have everything set up, let's start creating our game!
+Any small PNGs will do. Free sprite packs such as [Kenney's Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux) work well, once you rename the files.
 
-## Building a Simple Game<a name="building-a-simple-game"></a>
-
-In this tutorial, we will create a simple game where the player controls a spaceship that shoots down enemy spaceships. The game will end when an enemy spaceship reaches the bottom of the screen.
-
-### Setting Up the Game Window<a name="setting-up-the-game-window"></a>
-
-First, we need to set up the game window. Create a new Python file named `spaceshooter.py` and add the following code:
+## The full game
 
 ```python
+import random
+
 import pgzrun
 
 WIDTH = 800
 HEIGHT = 600
 
-pgzrun.go()
-```
-
-The `WIDTH` and `HEIGHT` variables define the dimensions of the game window, and the `pgzrun.go()` function starts the game loop.
-
-### Sprites and Actors<a name="sprites-and-actors"></a>
-
-Next, we will create the spaceship and enemy sprites using the `Actor` class. Add the following code to your `spaceshooter.py` file:
-
-```python
-player = Actor("spaceship")
-player.midbottom = (WIDTH // 2, HEIGHT)
-
+player = Actor("spaceship", midbottom=(WIDTH // 2, HEIGHT - 10))
+bullets = []
 enemies = []
+score = 0
+game_over = False
 
-for i in range(5):
+
+def spawn_enemy():
+    if game_over:
+        return
     enemy = Actor("enemy")
-    enemy.topleft = (i * 150 + 50, 50)
+    enemy.x = random.randint(40, WIDTH - 40)
+    enemy.bottom = 0
     enemies.append(enemy)
-```
 
-This code creates a spaceship `Actor` and positions it at the middle bottom of the screen. It also creates a list of enemy `Actor` objects and positions them horizontally across the screen.
 
-To render these actors, we need to define the `draw()` function:
-
-```python
 def draw():
     screen.clear()
     player.draw()
+    for bullet in bullets:
+        bullet.draw()
     for enemy in enemies:
         enemy.draw()
-```
+    screen.draw.text(f"Score: {score}", (10, 10), color="white")
+    if game_over:
+        screen.draw.text(
+            "GAME OVER", center=(WIDTH // 2, HEIGHT // 2), fontsize=60, color="red"
+        )
 
-### User Input and Movement<a name="user-input-and-movement"></a>
 
-Now, let's add controls to move the spaceship using the arrow keys. Add the following code to your `spaceshooter.py` file:
-
-```python
 def update():
+    global score, game_over
+    if game_over:
+        return
+
     if keyboard.left:
         player.x -= 5
     if keyboard.right:
         player.x += 5
-
     player.x = max(player.width // 2, min(player.x, WIDTH - player.width // 2))
-```
 
-The `update()` function is called every frame, and here we check for left or right arrow key presses to move the spaceship. The last line of code ensures that the spaceship stays within the screen boundaries.
+    # Iterate over copies so we can remove items from the real lists.
+    for bullet in bullets[:]:
+        bullet.y -= 10
+        if bullet.bottom < 0:
+            bullets.remove(bullet)
 
-### Collisions and Scoring<a name="collisions-and-scoring"></a>
-
-Finally, let's add a simple scoring system and detect collisions between the spaceship and enemies. Add the following code to your `spaceshooter.py` file:
-
-```python
-score = 0
-
-def on_key_down(key):
-    global score
-    if key == keys.SPACE:
-        for enemy in enemies:
-            if player.colliderect(enemy):
+    for enemy in enemies[:]:
+        enemy.y += 2
+        for bullet in bullets[:]:
+            if enemy.colliderect(bullet):
+                bullets.remove(bullet)
                 enemies.remove(enemy)
                 score += 1
                 break
+        else:
+            if enemy.bottom > HEIGHT:
+                game_over = True
 
-def update():
-    ## ...previous code for player movement...
-    for enemy in enemies:
-        enemy.y += 1
-        if enemy.bottom > HEIGHT:
-            print("Game Over!")
-            exit(1)
 
-def draw():
-    ## ...previous code for drawing actors...
-    screen.draw.text(f"Score: {score}", (10, 10), color="white")
+def on_key_down(key):
+    if key == keys.SPACE and not game_over:
+        bullets.append(Actor("bullet", midbottom=player.midtop))
+
+
+clock.schedule_interval(spawn_enemy, 1.0)
+
+pgzrun.go()
 ```
 
-The `on_key_down()` function is called when a key is pressed. Here, we check if the spacebar is pressed and detect collisions between the player and enemies. If a collision occurs, we remove the enemy from the list and increase the score.
+Run it with:
 
-In the `update()` function, we added code to move the enemies downwards. If an enemy reaches the bottom of the screen, the game ends.
+```bash
+python spaceshooter.py
+```
 
-Finally, we updated the `draw()` function to display the player's score on the screen.
+## How it works
 
-## Conclusion<a name="conclusion"></a>
+### Setup and the window
 
-Congratulations! You have just created a simple spaceship shooter game using Pygame Zero. You can now build upon this foundation to create more complex games and explore additional features of the Pygame Zero library.
+`import pgzrun` at the top injects Pygame Zero's built-in names (`Actor`, `screen`, `keyboard`, `keys`, `clock` and others) into your script. `pgzrun.go()` at the bottom starts the game loop, so it must be the last line. `WIDTH` and `HEIGHT` set the window size.
 
-Here are some ideas to enhance your current game:
+Your editor or linter may warn that `Actor` and `screen` are undefined, because they only exist at runtime. Alternatively, leave out the two `pgzrun` lines and start the game with the `pgzrun spaceshooter.py` command.
 
-- Add background music and sound effects.
-- Create multiple levels with increasing difficulty.
-- Implement a high score system.
-- Add power-ups and different types of enemies.
+### Actors
 
-You can find more information about Pygame Zero and its features in the [official documentation](https://pygame-zero.readthedocs.io/en/stable/).
+An `Actor` is a sprite with a position. `Actor("spaceship")` loads `images/spaceship.png`. You can place it with keyword arguments such as `midbottom=(x, y)`, or set attributes later: `x`, `y`, `left`, `right`, `top`, `bottom`, `center`, `midtop` and so on. The width and height come from the image.
 
-Happy game development!
+`spawn_enemy()` creates an enemy at a random horizontal position just above the top of the screen. `clock.schedule_interval(spawn_enemy, 1.0)` calls it once a second.
+
+### draw() and update()
+
+Pygame Zero calls `update()` and then `draw()` on each frame, aiming for 60 frames per second. Keep game logic in `update()` and rendering in `draw()`.
+
+- `keyboard.left` and `keyboard.right` are `True` while those keys are held, which gives smooth movement. The `max`/`min` line clamps the ship to the screen.
+- Bullets move up 10 pixels per frame and are removed once they leave the top of the screen.
+- Enemies move down 2 pixels per frame. Each one is checked against every bullet with `colliderect`, which tests whether the two bounding boxes overlap.
+- The `for ... else` runs the `else` branch only if the inner loop didn't `break`, meaning the enemy wasn't hit. That's where we check whether it reached the bottom.
+
+The loops iterate over copies (`bullets[:]`, `enemies[:]`) because removing items from a list while looping over it skips elements.
+
+### Events
+
+`on_key_down(key)` is called once per key press, which suits firing better than `keyboard.space` would (that is `True` on every frame the key is held). Each press creates a bullet at the ship's nose.
+
+### Game over
+
+Instead of calling `exit()` the moment an enemy gets through, the game sets a `game_over` flag. `update()` stops moving things, `spawn_enemy()` stops adding enemies, and `draw()` shows the message, so the player can see the final score.
+
+## Ideas for extending it
+
+- Add sounds: put `shoot.wav` in a `sounds/` folder and call `sounds.shoot.play()` in `on_key_down`.
+- Speed up enemy spawning as the score rises, using `clock.unschedule` and `clock.schedule_interval` with a shorter delay.
+- Restart the game when the player presses `R` after a game over, by resetting the lists, score and flag.
+- Use `colliderect` between enemies and the player to end the game on contact.
+
+## Further reading
+
+- [Pygame Zero documentation](https://pygame-zero.readthedocs.io/en/stable/), especially the [built-in objects](https://pygame-zero.readthedocs.io/en/stable/builtins.html) and [event hooks](https://pygame-zero.readthedocs.io/en/stable/hooks.html) pages
+- [Pygame Zero on GitHub](https://github.com/lordmauve/pgzero)

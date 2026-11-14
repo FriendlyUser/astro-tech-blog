@@ -1,18 +1,22 @@
 ---
-title: Anko A Powerful Library for Android Development in Kotlin
+title: "Anko for Android: Kotlin layout DSL, intents and dialogs (deprecated)"
 pubDate: "2023-05-03T14:16:44.888Z"
-description: " In this article, we'll explore the various features of Anko and see how it can be used to build a simple Android app."
-tags: ["kotlin"]
+lastUpdated: 2026-11-14
+description: "How JetBrains' Anko built Android layouts, intents and dialogs in Kotlin code, why it's deprecated, and the Jetpack Compose equivalent."
+tags: ["kotlin", "android"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/318527103.png
 ---
-# Anko: A Powerful Library for Android Development in Kotlin
 
-Anko is an open-source library developed by JetBrains for simplifying Android application development using Kotlin. The library provides a set of extensions, functions, and types that make Android programming more concise and expressive. In this article, we'll explore the various features of Anko and see how it can be used to build a simple Android app.
+:::caution[Anko is deprecated]
+JetBrains deprecated Anko, and the [GitHub repository](https://github.com/Kotlin/anko) was archived in July 2020. Its artifacts were published to JCenter, which now redirects to Maven Central, and Maven Central doesn't host Anko. The dependencies below won't resolve in a new project. The project's [goodbye note](https://github.com/Kotlin/anko/blob/master/GOODBYE.md) recommends Jetpack Compose for layouts, Android KTX for the Commons helpers, and Room or SQLDelight for SQLite. A Compose version of the example is at the end of this post.
+:::
 
-## Getting Started with Anko
+Anko was a JetBrains library for writing Android apps in Kotlin. It had two main parts. Anko Layouts was a Kotlin DSL that built view hierarchies in code instead of XML. Anko Commons was a set of helpers for intents, dialogs, toasts and logging. It's worth knowing if you maintain an older codebase that still uses it.
 
-To start using Anko in your Android project, add the following dependencies to your `build.gradle` file:
+## Dependencies
+
+The last release was 0.10.8:
 
 ```groovy
 dependencies {
@@ -23,13 +27,11 @@ dependencies {
 }
 ```
 
-These dependencies bring in the core Anko library, along with support for various Android SDK and AppCompat versions. You can replace the version numbers with the latest available versions from the [Anko GitHub repository](https://github.com/Kotlin/anko).
+`anko-commons` has the helpers and `anko-sdk27` has the layout DSL for the platform views. The `appcompat-v7` and `design` artifacts target the old Android Support Library, not AndroidX, so an AndroidX project also needs Jetifier enabled.
 
-## Anko Layouts
+## Layouts in code
 
-Anko Layouts is a feature that allows you to create Android UI layouts using Kotlin code instead of XML. This approach provides several benefits, including better compile-time type checking, more expressive layouts, and easier refactoring.
-
-To create a layout with Anko, you can define a subclass of `AnkoComponent` and implement the `createView` method. Here's a simple example:
+With Anko Layouts you subclass `AnkoComponent` and build the view tree in `createView`:
 
 ```kotlin
 class MainActivityUI : AnkoComponent<MainActivity> {
@@ -41,60 +43,89 @@ class MainActivityUI : AnkoComponent<MainActivity> {
             button("Say Hello") {
                 onClick { ctx.toast("Hello, ${name.text}!") }
             }
-        }
-    }
-}
-```
-
-In this example, we create a simple UI consisting of an `EditText` and a `Button` arranged in a vertical layout. The `createView` method takes an `AnkoContext` parameter, which is used to create the layout and access the parent activity.
-
-To use this layout in an activity, just call the `setContentView` method with an instance of the `AnkoComponent`:
-
-```kotlin
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        MainActivityUI().setContentView(this)
-    }
-}
-```
-
-## Anko Commons
-
-Anko Commons is a collection of utility functions and extensions that simplify common Android tasks, such as working with intents, dialogs, and logging.
-
-For example, the following code demonstrates how to use Anko Commons to start a new activity with an intent:
-
-```kotlin
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        MainActivityUI().setContentView(this)
-
-        button("Open Details Activity") {
-            onClick {
-                startActivity<DetailsActivity>("key" to "value")
+            button("Open Details Activity") {
+                onClick { ctx.startActivity<DetailsActivity>("key" to "value") }
+            }
+            button("Show Dialog") {
+                onClick {
+                    alert("This is an Anko dialog", "Anko Dialog") {
+                        yesButton { toast("You clicked Yes!") }
+                        noButton { toast("You clicked No!") }
+                    }.show()
+                }
             }
         }
     }
 }
 ```
 
-In this example, the `startActivity` function is provided by Anko Commons and allows you to start a new activity with a concise syntax. The `to` function creates a `Pair`, which can be used to pass data to the target activity.
-
-Anko Commons also provides functions to create dialogs and toasts with a more expressive syntax:
+The activity then sets the component as its content view:
 
 ```kotlin
-button("Show Dialog") {
-    onClick {
-        alert("This is an Anko dialog", "Anko Dialog") {
-            yesButton { toast("You clicked Yes!") }
-            noButton { toast("You clicked No!") }
-        }.show()
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MainActivityUI().setContentView(this)
     }
 }
 ```
 
-## Conclusion
+Because `editText` returns the created `EditText`, you can hold a reference to it in a local `val` and use it in a click handler without calling `findViewById`. `verticalLayout`, `editText` and `button` are only available inside a layout DSL block like this one, not directly in an activity's `onCreate`.
 
-Anko is a powerful library for simplifying Android development with Kotlin. It offers a more expressive and concise syntax for creating layouts, working with intents, and handling other common tasks. By leveraging Anko's features, you can create cleaner and more maintainable Android applications.
+## Commons helpers
+
+These helpers come from Anko Commons and are used in the layout above:
+
+- `startActivity<DetailsActivity>("key" to "value")` builds an `Intent` for `DetailsActivity`, puts each `Pair` in as an extra, and starts it.
+- `alert(message, title) { yesButton { ... }; noButton { ... } }.show()` wraps `AlertDialog.Builder`.
+- `toast("...")` is short for `Toast.makeText(...).show()`.
+
+## The same screen in Jetpack Compose
+
+Compose replaces both the XML layouts and the Anko DSL:
+
+```kotlin
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            var name by remember { mutableStateOf("") }
+            val context = LocalContext.current
+            Column {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    placeholder = { Text("Enter your name") },
+                )
+                Button(onClick = {
+                    Toast.makeText(context, "Hello, $name!", Toast.LENGTH_SHORT).show()
+                }) {
+                    Text("Say Hello")
+                }
+            }
+        }
+    }
+}
+```
+
+For dialogs, use Compose's `AlertDialog`. For starting activities, use a plain `Intent` or `context.startActivity(Intent(context, DetailsActivity::class.java))`. Android KTX's `bundleOf("key" to "value")` replaces Anko's pair-based extras.
+
+## Further reading
+
+- [Anko's goodbye note](https://github.com/Kotlin/anko/blob/master/GOODBYE.md)
+- [Jetpack Compose documentation](https://developer.android.com/develop/ui/compose)
+- [Android KTX](https://developer.android.com/kotlin/ktx)

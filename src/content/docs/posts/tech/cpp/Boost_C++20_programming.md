@@ -1,127 +1,169 @@
 ---
-title: "Leveraging Boost in C++20 Projects: A Comprehensive Guide for Developers"
+title: "Using Boost in a C++20 project: setup, Asio coroutines and a Beast HTTP client"
 pubDate: "2024-03-15T16:16:44.676Z"
-description: "Explore how to effectively integrate and use Boost in your C++20 projects. From setting up and configuring to practical examples of Boost.Asio and Boost.Beast, enhance your C++ development with Boost's powerful capabilities."
+lastUpdated: 2026-11-14
+description: "How to build and link Boost for a C++20 project, which Boost libraries still matter next to the standard library, and working Asio and Beast examples."
 tags: ["C++", "Boost", "C++20", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2024/leveraging-boost-cpp20.png
 ---
 
-# Leveraging Boost in C++20 Projects: A Comprehensive Guide for Developers
+Boost is a collection of peer-reviewed, portable C++ libraries. A lot of today's standard library started there (`shared_ptr`, `<regex>`, `<filesystem>`, `<chrono>`, `<thread>`), but C++20 still has no networking, so for sockets and HTTP Boost.Asio and Boost.Beast are still the usual choice. This post covers getting Boost into a C++20 build, then walks through an Asio server written with C++20 coroutines and a Beast HTTP client.
 
-As C++ continues to evolve, with the introduction of C++20 bringing a wealth of new features and improvements, the importance of external libraries like Boost remains undiminished. Boost is a collection of libraries that enhance the functionality of C++, filling gaps and providing solutions to common programming challenges. This comprehensive guide is designed to help software developers understand how to effectively integrate and use Boost in their C++20 projects, ensuring they can leverage both the standard library's new features and Boost's powerful capabilities.
+The examples were written against Boost 1.92.0.
 
-## Introduction to Boost
+## Installing Boost
 
-Boost provides a broad collection of peer-reviewed, portable C++ source libraries. It enhances C++ programming by offering components for tasks ranging from string manipulation and regex, to algorithms, data structures, and beyond. Notably, many of Boost's libraries have been adopted into the C++ Standard Library, a testament to their quality and utility.
+Most Boost libraries are header-only. A few (Filesystem, Thread, Program Options, Serialization and others) have to be compiled and linked.
 
-## Setting Up Boost with C++20
-
-Before diving into the specifics of using Boost with C++20, it's crucial to set up your development environment correctly. This setup involves downloading and installing the Boost libraries and configuring your compiler to use C++20.
-
-### Installing Boost
-
-1. **Download** the latest version of Boost from the official [Boost website](https://www.boost.org/). This ensures compatibility with C++20 features.
-2. **Extract** the downloaded archive to a directory of your choice.
-3. **Build Boost** (for libraries that require building) using the Boost.Build system. Open your terminal, navigate to the Boost root directory, and execute:
+The quickest route is a package manager:
 
 ```bash
-./bootstrap.sh # On Unix-like systems
-bootstrap.bat  # On Windows
+# Debian/Ubuntu (version follows the distro release, often a few behind)
+sudo apt install libboost-all-dev
 
-./b2 # On Unix-like systems
-b2.exe # On Windows
+# macOS
+brew install boost
+
+# vcpkg (any platform)
+vcpkg install boost-asio boost-beast
 ```
 
-4. **Include the Boost directory** in your project's include path. This step varies depending on your development environment or build system.
+To build from source, download the archive from [boost.org](https://www.boost.org/releases/latest/), extract it, and run the bootstrap script followed by B2 (formerly Boost.Build):
 
-### Configuring Your Compiler for C++20
+```bash
+# Unix-like systems
+./bootstrap.sh
+./b2 cxxstd=20 --with-filesystem --with-program_options
 
-Ensure your compiler supports C++20. Modern versions of GCC, Clang, and MSVC offer this support. You can specify the C++20 standard using the compiler flag `-std=c++20` for GCC and Clang, or `/std:c++20` for MSVC.
-
-## Integrating Boost with C++20
-
-With Boost installed and your compiler configured, you're ready to leverage Boost libraries in your C++20 projects. Here's how to do it effectively:
-
-### Boost and New C++20 Features
-
-C++20 introduces several significant features like concepts, coroutines, ranges, and more. While Boost has libraries that offer similar functionality (e.g., Boost.Coroutine, Boost.Range), C++20's standardization of these features doesn't render Boost obsolete. Instead, Boost continues to provide utility in areas not covered by C++20 or offers more advanced or specialized functionality.
-
-For instance, while C++20 standardizes ranges, Boost.Range still provides additional algorithms and adaptors that are not part of the standard library. Similarly, Boost.Hana offers metaprogramming capabilities that complement C++20's constexpr and template features.
-
-### Using Boost Libraries in Your Code
-
-To use a Boost library in your C++20 project, include the relevant Boost header files in your source code. For example, to use Boost.Filesystem:
-
-```cpp
-#include <boost/filesystem.hpp>
-
-int main() {
-    boost::filesystem::path p("/usr/local/bin");
-    // Use Boost.Filesystem functionality...
-}
+# Windows (Developer Command Prompt)
+bootstrap.bat
+b2 cxxstd=20 --with-filesystem --with-program_options
 ```
 
-Remember to link against the required Boost libraries if they are not header-only.
+`--with-<name>` limits the build to the libraries you need; leave it off to build everything. Compiled libraries end up in `stage/lib`. Header-only libraries such as Asio and Beast need nothing beyond the include path pointing at the Boost root.
 
-### Best Practices for Boost and C++20
+## Building with CMake
 
-- **Prefer Standard Library Features**: Where C++20 provides functionality equivalent to Boost (e.g., `<ranges>` vs. Boost.Range), prefer the standard library version for better portability and future-proofing your code.
-- **Stay Updated**: Boost is actively developed, with regular releases that improve compatibility and introduce new features. Keep your Boost libraries up to date to benefit from these enhancements.
-- **Know When to Use Boost**: Utilize Boost for its strengths—complex algorithms, data structures, and utilities not yet available in the standard library. Boost's extensive documentation and examples can help you decide when a Boost library is the right tool for the job.
+Boost installs a `BoostConfig.cmake` package, so use config mode:
 
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(boost_demo CXX)
 
-### Example 1: Boost.Asio for Networking
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-Boost.Asio is a cross-platform C++ library for network and low-level I/O programming that provides developers with a consistent asynchronous model. It's particularly useful in applications that require high-performance networking or need to handle a large number of concurrent network connections. With C++20's lack of a standard networking library, Boost.Asio fills a significant gap.
+find_package(Boost CONFIG REQUIRED)
+find_package(Threads REQUIRED)
 
-To use Boost.Asio for creating a simple TCP server:
+add_executable(server server.cpp)
+target_link_libraries(server PRIVATE Boost::headers Threads::Threads)
+```
+
+For compiled libraries, request them as components, e.g. `find_package(Boost CONFIG REQUIRED COMPONENTS filesystem)` and link `Boost::filesystem`. The old `FindBoost` module is removed under CMake 3.30's policy CMP0167, so don't rely on module mode in new projects.
+
+Without CMake, pass the standard flag directly: `-std=c++20` for GCC and Clang, `/std:c++20` for MSVC. GCC 10 also needs `-fcoroutines` for the coroutine example below. On MinGW, add `-lws2_32 -lmswsock` for Asio.
+
+## Boost next to the C++20 standard library
+
+Where C++17/20 now has an equivalent, prefer the standard version:
+
+- `std::filesystem` (C++17) was based on Boost.Filesystem and covers most uses. Boost.Filesystem is also a compiled library, so dropping it simplifies the build.
+- `std::ranges` covers the common Boost.Range use cases, though Boost.Range still has adaptors the standard lacks.
+- `std::optional`, `std::variant` and `std::any` replace their Boost counterparts in most code.
+
+Boost is still the pragmatic pick for networking (Asio, Beast), JSON (Boost.JSON), containers the standard doesn't have (`flat_map` before C++23, `static_vector`, `small_vector` in Boost.Container), and metaprogramming (Boost.Mp11, Boost.Hana).
+
+Avoid Boost.Coroutine for new code. It is deprecated, and its successor Boost.Coroutine2 provides stackful coroutines, which are a different mechanism from C++20's stackless `co_await` coroutines. Asio integrates directly with the C++20 language feature, as the next example shows.
+
+## Example: TCP server with Boost.Asio and C++20 coroutines
+
+This server accepts connections on port 12345 and sends each client a greeting. Every connection runs in its own coroutine, so one slow client doesn't block the others, while the code still reads top to bottom.
 
 ```cpp
-#include <boost/asio.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/asio/write.hpp>
+#include <exception>
 #include <iostream>
+#include <string>
+#include <utility>
 
-void run_server(boost::asio::io_context& io_context, short port) {
-    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
-    std::cout << "Server is running on port " << port << std::endl;
+namespace asio = boost::asio;
+using asio::awaitable;
+using asio::use_awaitable;
+using asio::ip::tcp;
+
+awaitable<void> greet(tcp::socket socket) {
+    try {
+        std::string message = "Hello from Boost.Asio server!\n";
+        co_await asio::async_write(socket, asio::buffer(message), use_awaitable);
+    } catch (std::exception const& e) {
+        std::cerr << "Connection error: " << e.what() << '\n';
+    }
+}
+
+awaitable<void> listener(unsigned short port) {
+    auto executor = co_await asio::this_coro::executor;
+    tcp::acceptor acceptor(executor, {tcp::v4(), port});
+    std::cout << "Server is running on port " << port << '\n';
 
     for (;;) {
-        tcp::socket socket(io_context);
-        acceptor.accept(socket);
-        std::string message = "Hello from Boost.Asio server!";
-        boost::system::error_code ignored_error;
-        boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+        tcp::socket socket = co_await acceptor.async_accept(use_awaitable);
+        asio::co_spawn(executor, greet(std::move(socket)), asio::detached);
     }
 }
 
 int main() {
     try {
-        boost::asio::io_context io_context;
-        run_server(io_context, 12345);
-    } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
+        asio::io_context io_context(1);
 
-    return 0;
+        asio::signal_set signals(io_context, SIGINT, SIGTERM);
+        signals.async_wait([&](auto, auto) { io_context.stop(); });
+
+        asio::co_spawn(io_context, listener(12345), asio::detached);
+        io_context.run();
+    } catch (std::exception const& e) {
+        std::cerr << "Exception: " << e.what() << '\n';
+    }
 }
 ```
 
-This example demonstrates creating a TCP server that listens on a specified port and sends a greeting message to each client that connects. Boost.Asio handles the asynchronous I/O operations, making the server efficient and scalable.
+Build and try it:
 
-### Example 2: Boost.Beast for HTTP and WebSockets
+```bash
+g++ -std=c++20 server.cpp -o server -pthread
+./server
+# in another terminal
+nc localhost 12345
+```
 
-Boost.Beast is a library that builds on top of Boost.Asio, providing implementations for HTTP and WebSocket protocols. It is designed to be fast, robust, and easy to use for developing applications that require HTTP client-server architectures or real-time communication using WebSockets.
+A few things to note:
 
-Here's a simple example of using Boost.Beast to make an HTTP GET request:
+- `co_spawn(..., asio::detached)` starts a coroutine and discards its result. Exceptions that escape a detached coroutine are lost, which is why `greet` catches its own.
+- `message` lives in the coroutine frame, so it stays valid for the whole `async_write`.
+- The `signal_set` lets Ctrl+C stop `io_context.run()` cleanly.
+- In recent Asio releases (Boost 1.87 and later) the default completion token is `deferred`, so `co_await socket.async_read_some(buf)` also works without `use_awaitable`. Passing it explicitly keeps the code working on older Boost versions.
+
+The Asio docs ship a similar [echo server example](https://www.boost.org/doc/libs/latest/doc/html/boost_asio/example/cpp20/coroutines/echo_server.cpp) that reads and writes in a loop.
+
+## Example: HTTP GET with Boost.Beast
+
+Beast builds HTTP and WebSocket support on top of Asio. It gives you message types, parsers and serializers, not a high-level client like libcurl, so you handle connections yourself. This synchronous client fetches `http://example.com/` and prints the response:
 
 ```cpp
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-#include <boost/asio/connect.hpp>
-#include <boost/asio/ip/tcp.hpp>
+#include <exception>
 #include <iostream>
-#include <string>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -133,7 +175,7 @@ int main() {
         auto const host = "example.com";
         auto const port = "80";
         auto const target = "/";
-        int version = 11;
+        int const version = 11;  // HTTP/1.1
 
         net::io_context ioc;
         tcp::resolver resolver{ioc};
@@ -152,23 +194,31 @@ int main() {
         http::response<http::dynamic_body> res;
         http::read(stream, buffer, res);
 
-        std::cout << res << std::endl;
+        std::cout << res << '\n';
 
         beast::error_code ec;
         stream.socket().shutdown(tcp::socket::shutdown_both, ec);
 
-        if(ec && ec != beast::errc::not_connected)
+        // not_connected happens sometimes, so don't treat it as an error
+        if (ec && ec != beast::errc::not_connected)
             throw beast::system_error{ec};
-
-    } catch(std::exception const& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+    } catch (std::exception const& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+        return 1;
     }
-    return 0;
 }
 ```
 
-This code snippet showcases making a simple HTTP GET request to "example.com" using Boost.Beast and Boost.Asio. It highlights how Boost libraries can be combined to build complex networked applications with C++20, showcasing the strength and versatility of Boost in areas not directly covered by the standard library.
+This is plain HTTP. For HTTPS you need `beast::ssl_stream` and OpenSSL; see the `http_client_sync_ssl` example in the Beast docs.
 
-## Conclusion
+## Gotchas
 
-Boost remains a vital resource for C++ developers, complementing the features introduced in C++20. By understanding how to install, configure, and integrate Boost into your C++20 projects, you can take advantage of both the standard library's advancements and Boost's powerful, high-quality libraries. Whether you're working on a complex application requiring advanced data structures or need utilities for tasks like parsing or networking, Boost and C++20 together provide a robust toolkit for modern C++ development. Remember, the key to effectively using Boost with C++20 lies in choosing the right tool for the task, keeping up with the latest developments in both the standard and Boost, and adhering to best practices for maintainable and portable code.
+- Mixing Boost versions between headers and compiled libraries causes link errors or ODR problems. Make sure the include path and library path point at the same install.
+- Distro packages can lag several releases behind. If you need a recent Asio or Beast feature, use vcpkg, Conan or a source build.
+- On Windows, Asio warns if `_WIN32_WINNT` isn't defined. Define it (for example `-D_WIN32_WINNT=0x0A00` for Windows 10) to silence the warning and pick the API level explicitly.
+
+## Further reading
+
+- [Boost getting started](https://www.boost.org/doc/libs/latest/more/getting_started/index.html)
+- [Boost.Asio C++20 coroutine support](https://www.boost.org/doc/libs/latest/doc/html/boost_asio/overview/composition/cpp20_coroutines.html)
+- [Boost.Beast examples](https://www.boost.org/doc/libs/latest/libs/beast/doc/html/beast/examples.html)

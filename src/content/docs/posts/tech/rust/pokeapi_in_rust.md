@@ -1,44 +1,43 @@
 ---
-tags: ["js"]
-title: Using the PokeAPI REST API in Rust
-description: In this article, we will explore how to interact with the PokeAPI REST API using the Rust programming language.
+tags: ["js", "rust"]
+title: Fetching Pokémon data from PokeAPI in Rust with reqwest and serde
+description: Build a small Rust CLI that looks up a Pokémon on PokeAPI, deserializes the JSON with serde, and prints its height, weight, and types.
 pubDate: Fri, 25 April 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/262205434.png
 ---
 
-# Using the PokeAPI REST API in Rust
+[PokeAPI](https://pokeapi.co/) is a free, read-only REST API with data on every Pokémon: types, stats, abilities, moves and more. It needs no API key, which makes it a good target for practising HTTP and JSON in Rust.
 
-In this article, we will explore how to interact with the [PokeAPI](https://pokeapi.co/) REST API using the Rust programming language. PokeAPI provides a wealth of information about Pokémon, including their abilities, types, stats, and more. Rust is a systems programming language that focuses on safety, speed, and concurrency.
+This post builds a command-line tool that takes a Pokémon name and prints its height, weight, and types. It uses `reqwest` for HTTP, `serde` to deserialize the JSON, and `tokio` as the async runtime.
 
-We'll build a simple command-line application that fetches and displays information about a Pokémon using the PokeAPI. To achieve this, we will leverage the `reqwest` and `serde` crates for making HTTP requests and handling JSON data, respectively.
+## Setting up the project
 
-## Setting Up the Project
-
-To start, ensure you have Rust and Cargo installed. If not, you can follow the official [installation guide](https://www.rust-lang.org/tools/install).
-
-Create a new Rust project by running:
+Install Rust with [rustup](https://www.rust-lang.org/tools/install) if you haven't already, then:
 
 ```sh
 cargo new pokeapi_rust
 cd pokeapi_rust
+cargo add reqwest --features json
+cargo add serde --features derive
+cargo add tokio --features macros,rt-multi-thread
 ```
 
-Open the `Cargo.toml` file and add the dependencies:
+The resulting dependencies (versions current as of November 2026):
 
 ```toml
 [dependencies]
-reqwest = { version = "0.11", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+reqwest = { version = "0.13", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
-Now, let's write the code to interact with the PokeAPI.
+You don't need `serde_json` as a direct dependency: `reqwest`'s `json` feature handles deserialization through `Response::json`.
 
-## Defining the Data Structures
+## Data structures and the request
 
-Create a new module called `pokemon.rs`, which will contain the data structures and functions for interacting with the PokeAPI.
+The `/api/v2/pokemon/{name}` response is large, but serde ignores fields you don't declare, so the structs only need the parts you use. Put this in `src/pokemon.rs`:
 
 ```rust
 // src/pokemon.rs
@@ -47,7 +46,9 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Pokemon {
     pub name: String,
+    /// Height in decimetres
     pub height: u32,
+    /// Weight in hectograms
     pub weight: u32,
     pub types: Vec<PokemonType>,
 }
@@ -62,105 +63,87 @@ pub struct PokemonType {
 pub struct TypeData {
     pub name: String,
 }
-```
 
-Here, we define three structs: `Pokemon`, `PokemonType`, and `TypeData`. These structs will help us deserialize the JSON data returned from the PokeAPI. The `Deserialize` trait from the `serde` crate is derived for these structs so that we can easily deserialize the JSON data.
-
-## Fetching Pokémon Data
-
-Now, let's create a function that fetches a Pokémon's data from the PokeAPI. We'll use the `reqwest` crate to make an HTTP GET request to the PokeAPI.
-
-```rust
-// src/pokemon.rs
-use reqwest::Error;
-
-pub async fn fetch_pokemon_data(pokemon_name: &str) -> Result<Pokemon, Error> {
-    let url = format!("https://pokeapi.co/api/v2/pokemon/{}", pokemon_name);
-    let response = reqwest::get(&url).await?;
-    let pokemon: Pokemon = response.json().await?;
-    Ok(pokemon)
+pub async fn fetch_pokemon_data(pokemon_name: &str) -> Result<Pokemon, reqwest::Error> {
+    let url = format!("https://pokeapi.co/api/v2/pokemon/{pokemon_name}");
+    reqwest::get(&url)
+        .await?
+        .error_for_status()?
+        .json::<Pokemon>()
+        .await
 }
 ```
 
-The `fetch_pokemon_data` function is an asynchronous function that takes a reference to a `pokemon_name` string and returns a `Result` with either a `Pokemon` struct or an `Error`. In the body of the function, we format the PokeAPI URL and make an HTTP GET request using `reqwest::get`. Then, we use the `json` method to deserialize the response into a `Pokemon` struct.
+The JSON field is called `type`, which is a Rust keyword, so `#[serde(rename = "type")]` maps it to `type_data`.
 
-## Displaying Pokémon Data
+`error_for_status()` matters here. For an unknown name, PokeAPI returns a 404 with a small error body that doesn't match the `Pokemon` struct. Without that call, `reqwest` treats the 404 as a successful response and you'd get a confusing JSON decoding error instead of "404 Not Found".
 
-Now, let's create a function in the `main.rs` file that calls `fetch_pokemon_data` and prints the Pokémon data to the console.
+## Printing the result
 
 ```rust
 // src/main.rs
 mod pokemon;
 
-use pokemon::{fetch_pokemon_data, Pokemon};
+use pokemon::{fetch_pokemon_data, PokemonType};
 use std::env;
-use tokio;
+use std::process::ExitCode;
 
-async fn display_pokemon_data(pokemon_name: &str) {
-    match fetch_pokemon_data(pokemon_name).await {
-        Ok(pokemon) => {
-            println!("Name: {}", pokemon.name);
-            println!("Height: {}", pokemon.height);
-            println!("Weight: {}", pokemon.weight);
-            println!("Types: {}", types_to_string(&pokemon.types));
-        }
-        Err(error) => {
-            eprintln!("Error: {}", error);
-        }
-    }
-}
-
-fn types_to_string(types: &[pokemon::PokemonType]) -> String {
+fn types_to_string(types: &[PokemonType]) -> String {
     types
         .iter()
-        .map(|ptype| ptype.type_data.name.as_str())
+        .map(|t| t.type_data.name.as_str())
         .collect::<Vec<_>>()
         .join(", ")
 }
 
 #[tokio::main]
-async fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() == 2 {
-        let pokemon_name = &args[1];
-        display_pokemon_data(pokemon_name).await;
-    } else {
+async fn main() -> ExitCode {
+    let Some(pokemon_name) = env::args().nth(1) else {
         eprintln!("Usage: pokeapi_rust <pokemon_name>");
+        return ExitCode::FAILURE;
+    };
+
+    match fetch_pokemon_data(&pokemon_name).await {
+        Ok(pokemon) => {
+            println!("Name: {}", pokemon.name);
+            println!("Height: {:.1} m", pokemon.height as f32 / 10.0);
+            println!("Weight: {:.1} kg", pokemon.weight as f32 / 10.0);
+            println!("Types: {}", types_to_string(&pokemon.types));
+            ExitCode::SUCCESS
+        }
+        Err(error) => {
+            eprintln!("Error: {error}");
+            ExitCode::FAILURE
+        }
     }
 }
 ```
 
-In `main.rs`, we define an asynchronous function `display_pokemon_data` that calls the `fetch_pokemon_data` function and prints the Pokémon datato the console. We also define a helper function, `types_to_string`, that takes a reference to a slice of `PokemonType` and converts it into a comma-separated string of type names.
+PokeAPI reports height in decimetres and weight in hectograms, so dividing by 10 gives metres and kilograms. Returning `ExitCode` means the program exits non-zero on failure, which is useful if you script it.
 
-The `main` function uses the `tokio::main` attribute macro, which allows us to use the `await` keyword in the main function. We then parse command-line arguments and call the `display_pokemon_data` function with the provided Pokémon name.
-
-## Testing the Application
-
-Now that our code is complete, let's test the application. Build and run the application by entering the following command in your terminal:
+## Running it
 
 ```sh
-cargo run <pokemon_name>
+cargo run -- pikachu
 ```
 
-Replace `<pokemon_name>` with the name of a Pokémon, such as "pikachu" or "charmander". For example:
-
-```sh
-cargo run pikachu
-```
-
-You should see output similar to the following:
-
-```
+```text
 Name: pikachu
-Height: 4
-Weight: 60
+Height: 0.4 m
+Weight: 6.0 kg
 Types: electric
 ```
 
-If you see this output, congratulations! You have successfully built a Rust application that fetches and displays Pokémon data using the PokeAPI REST API.
+An unknown name (`cargo run -- notapokemon`) prints a `404 Not Found` error and exits with status 1.
 
-## Conclusion
+## Next steps and gotchas
 
-In this article, we demonstrated how to interact with the PokeAPI REST API using Rust. We built a simple command-line application that fetches and displays information about a Pokémon. The `reqwest` and `serde` crates were used for making HTTP requests and handling JSON data, respectively.
+- **Cache responses.** PokeAPI's fair use policy asks clients to cache resources locally and limit how often they call the API. The data rarely changes, so writing each response to disk is an easy win.
+- **Reuse a `reqwest::Client`.** `reqwest::get` builds a new client per call. If you fetch many Pokémon, create one `Client` and call `client.get(url)` so connections are pooled.
+- **Ready-made wrapper.** PokeAPI's docs list community wrapper libraries, including [Rustemon](https://crates.io/crates/rustemon) for Rust, which caches responses automatically.
 
-You can extend this application by adding more features, such as fetching and displaying additional Pokémon properties, or by implementing a more sophisticated user interface. The PokeAPI offers a wealth of data, and Rust provides a powerful and safe foundation for building applications. Happy coding!
+## Further reading
+
+- [PokeAPI documentation](https://pokeapi.co/docs/v2)
+- [`reqwest` docs](https://docs.rs/reqwest)
+- [serde field attributes](https://serde.rs/field-attrs.html)

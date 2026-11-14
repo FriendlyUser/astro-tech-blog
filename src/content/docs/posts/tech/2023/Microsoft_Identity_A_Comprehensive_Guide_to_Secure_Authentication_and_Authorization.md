@@ -1,68 +1,121 @@
 ---
-description: This article explores the core components of Microsoft Identity, delves
-  into the concepts of authentication and authorization, and provides practical guidance
-  on integrating Microsoft Identity with your applications
+description: "An overview of the Microsoft identity platform (Entra ID, MSAL, External ID) and how to protect an ASP.NET Core API and call it with MSAL.NET."
 imgSrc: /imgs/2023/359936451.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-10T04:44:13.000Z'
-tags: []
-title: Microsoft Identity A Comprehensive Guide to Secure Authentication and Authorization
+lastUpdated: 2026-11-14
+tags: ["csharp", "dotnet"]
+title: "Microsoft identity platform: Entra ID, MSAL and protecting an ASP.NET Core API"
 ---
 
-# Microsoft Identity: A Comprehensive Guide to Secure Authentication and Authorization
+:::caution[Names have changed since this post was written]
+Azure Active Directory (Azure AD) was renamed **Microsoft Entra ID** in 2023. Azure AD B2B collaboration is now part of **Microsoft Entra External ID**, and Microsoft stopped selling **Azure AD B2C** to new customers on May 1, 2025, pointing them to External ID instead. Existing B2C tenants are still supported. The concepts below are unchanged; the product names are updated.
+:::
 
-**Table of Contents:**
+The Microsoft identity platform is the set of Microsoft services and libraries for signing users in and issuing tokens that apps and APIs use to authorize requests. It speaks standard OAuth 2.0 and OpenID Connect, so the ideas carry over to other identity providers; the Microsoft-specific parts are the directory, the portal and the client libraries.
 
-1. Introduction
-2. The Components of Microsoft Identity
-3. Authentication and Authorization
-4. Integrating Microsoft Identity with Your Applications
-5. Microsoft Identity Security Best Practices
-6. Conclusion
+## The pieces
 
-## 1. Introduction
+- **Microsoft Entra ID** (formerly Azure AD) – the cloud directory for an organization's users, groups and app registrations. It issues tokens and enforces single sign-on, multi-factor authentication (MFA) and Conditional Access.
+- **Microsoft Authentication Library (MSAL)** – client libraries for .NET, JavaScript, Python, Java, Android and iOS that handle sign-in flows, token caching and refresh.
+- **Microsoft.Identity.Web** – an ASP.NET Core library built on MSAL that wires up token validation for web APIs and sign-in for web apps.
+- **Microsoft Entra External ID** – identities from outside your organization: business partners invited as guests (B2B collaboration) and customer sign-up/sign-in for consumer-facing apps, the role Azure AD B2C used to fill.
 
-In today's digital world, securing user identities and managing access to resources has become a critical aspect of application development. Microsoft Identity, a suite of identity and access management (IAM) services, provides developers with a robust and scalable solution for implementing secure authentication and authorization.
+## Authentication vs authorization
 
-This article explores the core components of Microsoft Identity, delves into the concepts of authentication and authorization, and provides practical guidance on integrating Microsoft Identity with your applications. Additionally, we will discuss some best practices for securing your Microsoft Identity implementation.
+- **Authentication** answers "who is this?". The user signs in with Entra ID and your app receives an ID token (for the app itself) and/or an access token (for calling an API).
+- **Authorization** answers "may they do this?". Your API reads claims from the access token, such as `scp` (delegated scopes) or `roles` (app roles), and allows or rejects the request.
 
-## 2. The Components of Microsoft Identity
+Entra ID handles the first. Your code is still responsible for the second.
 
-Microsoft Identity consists of multiple services and components that work together to provide a comprehensive IAM solution:
+## Protecting an ASP.NET Core API
 
-1. **Azure Active Directory (Azure AD):** A cloud-based identity and access management service that offers features such as single sign-on (SSO), multi-factor authentication (MFA), and conditional access policies.
-2. **Microsoft Authentication Library (MSAL):** A set of libraries for various platforms that make it easy to authenticate users and obtain tokens to access protected resources.
-3. **Azure AD B2C:** A customer identity and access management (CIAM) service for consumer-facing applications, offering features like social identity providers, custom policies, and self-service password reset.
-4. **Azure AD B2B:** A service for securely sharing resources and collaborating with external users in other organizations, without the need for additional accounts or credentials.
+The usual flow:
 
-## 3. Authentication and Authorization
+1. **Register the API** in the Entra admin center under *App registrations*. Note the tenant ID and client ID, set an Application ID URI (e.g. `api://my-reports-api`), and define the scopes or app roles callers can be granted.
+2. **Register each client** (web app, SPA, daemon) and grant it permission to those scopes or roles.
+3. **Validate tokens in the API** with Microsoft.Identity.Web.
+4. **Acquire tokens in the client** with MSAL.
 
-Before diving into Microsoft Identity's features and capabilities, it's essential to understand the concepts of authentication and authorization:
+For step 3, add the `Microsoft.Identity.Web` package and point it at your registration:
 
-- **Authentication:** The process of verifying a user's identity, often through the use of credentials such as a username and password or a token issued by an identity provider.
-- **Authorization:** The process of determining if an authenticated user has permission to access a specific resource or perform a particular action.
+```json
+{
+  "AzureAd": {
+    "Instance": "https://login.microsoftonline.com/",
+    "TenantId": "<tenant-id>",
+    "ClientId": "<api-client-id>"
+  }
+}
+```
 
-Microsoft Identity provides a secure, flexible, and scalable solution for both authentication and authorization, ensuring that only authenticated users have access to the appropriate resources.
+The configuration section is still conventionally named `AzureAd`.
 
-## 4. Integrating Microsoft Identity with Your Applications
+```csharp
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
-To integrate Microsoft Identity with your applications, you'll often follow these general steps:
+var builder = WebApplication.CreateBuilder(args);
 
-1. **Register your application:** Register your application with Azure AD to obtain a unique client ID and configure the required permissions.
-2. **Use MSAL for authentication:** Implement user authentication using the Microsoft Authentication Library (MSAL) to obtain access tokens and refresh tokens.
-3. **Secure your API:** Protect your API endpoints by validating access tokens and ensuring that the authenticated user has the necessary permissions.
-4. **Implement authorization:** Use role-based access control (RBAC) or claims-based authorization to manage user access to specific resources and actions.
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
-## 5. Microsoft Identity Security Best Practices
+builder.Services.AddAuthorization(options =>
+{
+    // Only callers granted the "Reports.Read" app role get in
+    options.AddPolicy("ReportsReader", policy => policy.RequireRole("Reports.Read"));
+});
 
-To ensure the security of your Microsoft Identity implementation, consider following these best practices:
+var app = builder.Build();
 
-1. **Use multi-factor authentication (MFA):** Enable MFA for your users to add an additional layer of security during the authentication process.
-2. **Implement conditional access policies:** Define and enforce conditional access policies based on factors such as user location, device, and risk level.
-3. **Monitor and audit:** Regularly review logs and reports to detect suspicious activities and maintain compliance with security standards.
-4. **Follow the principle of least privilege:** Grant users only the minimum required permissions for their roles, reducing the potential impact of a security breach.
-5. **Keep libraries up-to-date:** Regularly update MSAL and other dependencies to ensure you're using the latest security features and bug fixes.
+app.UseAuthentication();
+app.UseAuthorization();
 
-## 6. Conclusion
+app.MapGet("/reports", () => new[] { "q1", "q2" })
+   .RequireAuthorization("ReportsReader");
 
-Microsoft Identity offers a comprehensive suite of tools and services to implement secure authentication and authorization in your applications. By understanding its core components, integrating it with your applications, and following security best practices, you can protect your users' identities and ensure that they have access to the appropriate resources.
+app.Run();
+```
+
+`AddMicrosoftIdentityWebApi` validates the token's signature, issuer, audience and lifetime against your tenant. The policy then checks the `roles` claim.
+
+## Calling the API with MSAL
+
+A background service with no signed-in user uses the client credentials flow. With the `Microsoft.Identity.Client` (MSAL.NET) package:
+
+```csharp
+using Microsoft.Identity.Client;
+
+IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
+    .Create(clientId)
+    .WithClientSecret(clientSecret)
+    .WithAuthority($"https://login.microsoftonline.com/{tenantId}")
+    .Build();
+
+AuthenticationResult result = await app
+    .AcquireTokenForClient(new[] { "api://my-reports-api/.default" })
+    .ExecuteAsync();
+
+// Send result.AccessToken as "Authorization: Bearer <token>"
+```
+
+Both snippets were compiled against .NET 9 with Microsoft.Identity.Web 4.18.0 and Microsoft.Identity.Client 4.92.0.
+
+MSAL caches tokens and refreshes them for you. You don't handle refresh tokens directly. For apps with a signed-in user, call `AcquireTokenSilent` first and fall back to an interactive flow only when it throws `MsalUiRequiredException`. In production, prefer a certificate or a managed identity over a client secret.
+
+## Security practices
+
+1. **Require MFA.** Turn it on for all users, through security defaults or Conditional Access policies.
+2. **Use Conditional Access** to require compliant devices or block risky sign-ins based on location, device and risk level. It needs a Microsoft Entra ID P1 licence or higher.
+3. **Grant least privilege.** Ask for the narrowest scopes or roles an app needs, and avoid broad Microsoft Graph permissions like `Directory.ReadWrite.All` unless there's no alternative.
+4. **Validate every claim you rely on.** Check audience and issuer (Microsoft.Identity.Web does this), and check scopes or roles on every endpoint, not only at the gateway.
+5. **Monitor sign-in and audit logs** in the Entra admin center, and send them to your SIEM if you have one.
+6. **Keep MSAL and Microsoft.Identity.Web up to date** to pick up security fixes.
+
+## Further reading
+
+- [Microsoft identity platform documentation](https://learn.microsoft.com/entra/identity-platform/)
+- [Protected web API: code configuration](https://learn.microsoft.com/entra/identity-platform/scenario-protected-web-api-app-configuration)
+- [MSAL overview](https://learn.microsoft.com/entra/identity-platform/msal-overview)
+- [Azure AD B2C end of sale FAQ](https://learn.microsoft.com/azure/active-directory-b2c/faq)

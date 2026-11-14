@@ -1,61 +1,77 @@
 ---
-title: Pros and Cons of Using Swift for Mobile App Development
+title: "Swift for mobile apps: strengths, drawbacks and when to pick something else"
 pubDate: "2024-06-12T20:34:39.000Z"
-description: "In this article, we'll discuss the pros and cons of using Swift for mobile app development, to help you decide if it's the right choice for your next project"
-tags: []
+lastUpdated: 2026-11-14
+description: "The practical pros and cons of Swift for mobile development: safety, Apple tooling, Objective-C interop, Android support, and language churn."
+tags:
+  - swift
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/244959930.png
 ---
-# Pros and Cons of Using Swift for Mobile App Development
 
-Swift is a modern, powerful, and intuitive programming language developed by Apple for iOS, iPadOS, macOS, watchOS, tvOS, and beyond. Introduced in 2014, Swift has quickly gained popularity among developers, and it has become the primary language for Apple's platforms. In this article, we'll discuss the pros and cons of using Swift for mobile app development, to help you decide if it's the right choice for your next project.
+Swift is Apple's language for iOS, iPadOS, macOS, watchOS, tvOS and visionOS. Apple introduced it in 2014 and open-sourced it in 2015, and it is now the default language for new Apple-platform apps. Whether it's the right choice for a mobile project mostly comes down to one question: are you building for Apple devices, Android, or both?
 
-## Pros of Using Swift
+## Where Swift works well
 
-### 1. Easy to Learn and Read
+### Safer by default than Objective-C
 
-Swift is designed to be easy to learn and read, with a clean and expressive syntax. This makes it an excellent choice for beginners and experienced developers alike. Thanks to its syntax, Swift code is more concise and easier to maintain compared to other languages like Objective-C.
+The biggest practical win is optionals. A value that might be missing has a different type (`String?`) from one that can't (`String`), and the compiler makes you unwrap it before use:
 
-### 2. Safety and Stability
+```swift
+let input = "42"
+if let number = Int(input) {   // Int(_:) returns Int? because parsing can fail
+    print(number + 1)
+} else {
+    print("not a number")
+}
+```
 
-One of the main goals of Swift is to provide a safe and stable environment for developers. Swift's strong typing system and error handling mechanisms help prevent common programming mistakes, such as null pointer dereferences, and make it easier to write reliable and bug-free code.
+That removes a whole class of "message sent to nil" and null-dereference bugs. Swift also checks array bounds and integer overflow at runtime (trapping instead of silently corrupting memory), and since Swift 6 the compiler can check for data races in concurrent code when you opt in to the Swift 6 language mode.
 
-### 3. Performance
+### Apple's tooling and frameworks are built for it
 
-Swift is designed to be fast and efficient, with performance optimizations that make it competitive with other high-performance languages like C++ and Java. Apple has also invested in improving the performance of the Swift runtime and compiler, resulting in better app performance and reduced resource consumption.
+New Apple frameworks are designed with Swift in mind, and some, such as SwiftUI, SwiftData and Swift Charts, are Swift-only. Xcode, Instruments, Swift Package Manager and Apple's documentation all assume Swift first.
 
-### 4. Open Source
+### Gradual adoption in Objective-C codebases
 
-Swift is an open-source language, which means that developers can contribute to its development and benefit from the work of the community. This has led to a rapidly growing ecosystem of libraries, frameworks, and tools that make it easier to build apps using Swift.
+Swift and Objective-C can live in the same app target. Swift can call Objective-C through a bridging header, and Objective-C can call Swift classes exposed with `@objc`. That lets an older app add new screens in Swift without a rewrite.
 
-### 5. Interoperability with Objective-C
+### Compiled to native code
 
-Swift was designed to be interoperable with Objective-C, the original language used for iOS and macOS development. This means that you can use Swift in conjunction with existing Objective-C codebases, making it easier to integrate Swift into your existing projects or start using it incrementally.
+Swift compiles ahead of time through LLVM to native machine code, with no virtual machine or garbage collector; memory is managed with automatic reference counting (ARC). For most app code, performance isn't the deciding factor between languages, but you don't pay a runtime startup cost either.
 
-### 6. First-Class Support from Apple
+### Open source, and not only for Apple
 
-As the primary language for Apple's platforms, Swift receives first-class support from Apple in terms of documentation, tools, and frameworks. This ensures that Swift developers have access to the latest and greatest technologies when building apps for iOS, iPadOS, macOS, and other platforms.
+The compiler, standard library and package manager are open source under the Apache 2.0 licence, with official toolchains for Linux and Windows. That makes it possible to share code between an iOS app and, for example, a Swift server.
 
-## Cons of Using Swift
+## Drawbacks
 
-### 1. Limited Platform Support
+### Android is possible, but not the default
 
-While Swift is a powerful and versatile language, its primary focus is on Apple's platforms. This means that if you're developing an app that needs to target Android or other non-Apple platforms, you'll need to use a different language, like Kotlin or Java, or rely on cross-platform solutions like Flutter or React Native.
+Swift 6.3 (March 2026) shipped the first official Swift SDK for Android. It lets you build Swift packages for Android and call them from an existing Kotlin or Java app through JNI using the Swift Java projects. It does not give you a cross-platform UI layer: Android screens are still built with Android's own toolkits. If you need one codebase for both platforms' UI today, the mainstream options are still Flutter, React Native or Kotlin Multiplatform, or two native apps.
 
-### 2. Rapid Evolution
+### The language keeps changing
 
-Swift is a relatively young language, and it has undergone significant changes since its introduction in 2014. While this rapid evolution has led to many improvements, it has also caused some growing pains for developers who need to keep up with the changes and update their code to ensure compatibility with newer Swift versions.
+Swift has evolved quickly. The early 1.x to 3 releases broke source compatibility, and more recently moving a project to the Swift 6 language mode with strict concurrency checking can produce a large number of new errors in an existing codebase. Each Xcode release bundles its own Swift compiler, and Apple periodically raises the minimum Xcode version for App Store submissions, so you can't stay on an old toolchain indefinitely.
 
-### 3. Smaller Community and Ecosystem
+### ABI stability is solved on Apple platforms, with caveats
 
-Compared to more established languages like Java or JavaScript, Swift has a smaller community and ecosystem. This means that there may be fewer resources, libraries, and frameworks available for Swift developers compared to other languages. However, the Swift community is growing rapidly, and this gap is shrinking over time.
+Swift 5.0 (2019) made the ABI stable on Apple platforms, so the Swift runtime now ships with the OS rather than inside every app. Distributing a closed-source binary framework that works across compiler versions additionally needs module stability (Swift 5.1+, built with library evolution enabled). Most app developers who consume libraries as source through Swift Package Manager never hit this; it mainly matters to SDK vendors shipping XCFrameworks.
 
-### 4. ABI Stability Concerns
+### Smaller ecosystem outside Apple
 
-Although Swift has gained ABI (Application Binary Interface) stability starting from version 5.0, some developers still experience concerns when using third-party libraries. This can lead to potential issues when updating the Swift version or using different versions of a library.
+For iOS work the ecosystem is large. Outside Apple platforms, such as server or general-purpose libraries, there are fewer packages and fewer people to hire than for Java, Kotlin or JavaScript.
 
-## Conclusion
+## When to choose something else
 
-Swift has many advantages for mobile app development, such as its ease of use, safety features, performance, and first-class support from Apple. However, it also has some drawbacks, including limited platform support and a rapidly evolving language that can require developers to keep up with changes.
+- You need both Android and iOS from one UI codebase and don't have the people for two native apps: look at Flutter, React Native or Kotlin Multiplatform.
+- Your team is mostly web developers and the app is mainly forms and lists: React Native lets them reuse more of what they know.
+- You're maintaining a large, stable Objective-C app: there's no need to rewrite working code; add Swift where you're writing new features.
 
-When considering whether to use Swift for your next mobile app project, it's essential to weigh these pros and cons and consider your target platforms, existing codebases, and the needs of your development team. While Swift may not be the best choice for every project, it's an excellent option for developers building apps for Apple's platforms, or those looking to leverage the benefits of a modern, high-performance language.
+For an app that targets Apple platforms only, Swift (with SwiftUI or UIKit) is the default choice and the one Apple's documentation and new APIs are written for.
+
+## Further reading
+
+- [Swift.org](https://www.swift.org/)
+- [The Swift Programming Language book](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/)
+- [Swift 6.3 release announcement (includes the Android SDK)](https://www.swift.org/blog/swift-6.3-released/)

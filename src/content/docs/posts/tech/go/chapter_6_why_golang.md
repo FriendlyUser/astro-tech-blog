@@ -1,188 +1,181 @@
 ---
 tags: ['go']
-title:  Object-Oriented Programming in Go.
-description:  Object-Oriented Programming in Go.
+title: "Object-oriented programming in Go: structs, methods, embedding and interfaces"
+description: "How Go covers classic OOP ideas without classes: structs and methods, package-level encapsulation, embedding instead of inheritance, and interfaces."
 pubDate: Fri, 21 October 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1452718796.png
 ---
-Object-oriented programming (OOP) is a popular programming paradigm that emphasizes the use of objects, which are instances of classes, to model real-world entities. OOP is widely used in software development because it offers several benefits, such as encapsulation, inheritance, and polymorphism. In this blog post, we'll explore how to implement OOP concepts in Go.
+Go has no classes and no inheritance, but it still covers what most people want from OOP: types that bundle data with behaviour, hidden internals, code reuse, and polymorphism. It does this with structs, methods, embedding and interfaces. This post walks through each one.
 
-Classes and Objects in Go
+## Structs and methods
 
-Go doesn't have classes like other object-oriented languages such as Java or Python. However, Go does have user-defined types, which can be used to achieve the same functionality as classes. A user-defined type is created using the `type` keyword, followed by the name of the type and the underlying type. For example, we can define a `Person` type as follows:
-
+A struct groups named fields. Methods are functions with a *receiver*, declared outside the struct:
 
 ```go
+package main
+
+import "fmt"
+
 type Person struct {
- name string
- age int
-}
-```
-In Go, we can create objects using struct literals, which are similar to object literals in JavaScript. Here's an example of creating a `Person` object:
-
-
-```go
-person := Person{name: "John Doe", age: 30}
-```
-Encapsulation in Go
-
-Encapsulation is the idea of hiding the implementation details of an object from the outside world. In Go, we can achieve encapsulation by using a combination of struct fields and methods. Struct fields that are capitalized are exported and can be accessed from outside the package, while unexported fields can only be accessed from within the package.
-
-Here's an example of encapsulation in Go:
-
-
-```go
-type BankAccount struct {
- owner string
- balance float64
- isLocked bool
-}
-
-func (b \*BankAccount) Deposit(amount float64) {
- if !b.isLocked {
- b.balance += amount
- }
-}
-
-func (b \*BankAccount) Withdraw(amount float64) {
- if !b.isLocked && b.balance >= amount {
- b.balance -= amount
- }
-}
-
-func (b \*BankAccount) Lock() {
- b.isLocked = true
-}
-
-func (b \*BankAccount) Unlock() {
- b.isLocked = false
-}
-```
-In this example, we have a `BankAccount` struct that has three fields: `owner`, `balance`, and `isLocked`. We also have four methods: `Deposit()`, `Withdraw()`, `Lock()`, and `Unlock()`. The `Deposit()` and `Withdraw()` methods modify the `balance` field, but only if the account is not locked. The `Lock()` and `Unlock()` methods modify the `isLocked` field.
-
-Inheritance in Go
-
-Inheritance is the idea of creating a new class that is a modified version of an existing class. In Go, we can achieve inheritance by embedding one struct into another.
-
-Here's an example of inheritance in Go:
-
-
-```go
-type Animal struct {
- name string
-}
-
-func (a \*Animal) Speak() {
- fmt.Println("My name is", a.name)
-}
-
-type Dog struct {
- Animal
- breed string
-}
-
-func main() {
- d := Dog{Animal{"Fido"}, "Labrador"}
- d.Speak() // Output: My name is Fido
-}
-```
-In this example, we have an `Animal` struct with a `name` field and a `Speak()` method. We also have a `Dog` struct that embeds the `Animal` struct and has a `breed` field. The `Speak()` method is inherited from the `Animal` struct.
-
-Polymorphism in Go
-
-Polymorphism is the idea of using a single interface to represent multiple types. In Go, we can achieve polymorphism by defining an interface that specifies a set of methods, and then implementing that interface for multiple types.
-
-Here's an example of
-
-
-A struct is a composite data type that groups together zero or more values with different types under a single name. Structs are similar to classes in object-oriented programming and are commonly used to represent real-world entities. In Go, a struct is defined using the `type` keyword followed by the name of the struct and a set of fields enclosed in curly braces. Here's an example:
-
-
-```go
-type Person struct {
- name string
- age int
-}
-```
-In this example, we define a struct called `Person` with two fields: `name` of type string and `age` of type int.
-
-We can create an instance of the `Person` struct using a struct literal. Here's an example:
-
-
-```go
-p := Person{name: "John", age: 30}
-```
-This creates a new `Person` object with the `name` field set to "John" and the `age` field set to 30.
-
-We can access the fields of a struct using the dot notation. Here's an example:
-
-
-```go
-sfmt.Println(p.name) // Output: John
-fmt.Println(p.age) // Output: 30
-```
-In Go, all struct fields are public by default, which means they can be accessed from outside the package. If we want to make a field private, we can use a lowercase first letter for the field name. For example:
-
-
-```go
-type Person struct {
- name string
- age int
- email string // private field
-}
-```
-In this example, the `email` field is private and can only be accessed from within the `Person` struct.
-
-
-In Go, methods are functions that belong to a struct or a type. Methods can be used to encapsulate behavior within a struct, making it easier to work with and maintain. Here's an example of a method in Go:
-
-
-```go
-type Person struct {
- name string
- age int
+	Name string
+	Age  int
 }
 
 func (p Person) SayHello() {
- fmt.Println("Hello, my name is", p.name)
+	fmt.Println("Hello, my name is", p.Name)
+}
+
+func main() {
+	p := Person{Name: "John", Age: 30}
+	fmt.Println(p.Age) // 30
+	p.SayHello()       // Hello, my name is John
 }
 ```
-In this example, we define a method called `SayHello()` on the `Person` struct. The method takes no parameters and simply prints a greeting to the console.
 
-We can call the `SayHello()` method on an instance of the `Person` struct using the dot notation. Here's an example:
+Use a pointer receiver (`func (p *Person) ...`) when the method needs to modify the struct or the struct is large enough that copying it matters. If some methods on a type use pointer receivers, it's conventional to make them all pointer receivers.
 
+## Encapsulation
+
+Go's visibility unit is the **package**, not the type. An identifier that starts with an uppercase letter is exported; anything lowercase is visible only inside the package that declares it. Fields are not public by default: `name` is unexported, `Name` is exported. There is no way to hide a field from other code in the same package.
+
+So to encapsulate state, keep the fields lowercase and expose methods (plus a constructor, since other packages can't set unexported fields in a struct literal):
 
 ```go
-p := Person{name: "John", age: 30}
-p.SayHello() // Output: Hello, my name is John
+package bank
+
+import "errors"
+
+var (
+	ErrLocked            = errors.New("account is locked")
+	ErrInsufficientFunds = errors.New("insufficient funds")
+)
+
+type BankAccount struct {
+	owner    string
+	balance  int64 // in cents, to avoid floating-point rounding
+	isLocked bool
+}
+
+func NewBankAccount(owner string) *BankAccount {
+	return &BankAccount{owner: owner}
+}
+
+func (b *BankAccount) Deposit(cents int64) error {
+	if b.isLocked {
+		return ErrLocked
+	}
+	b.balance += cents
+	return nil
+}
+
+func (b *BankAccount) Withdraw(cents int64) error {
+	if b.isLocked {
+		return ErrLocked
+	}
+	if b.balance < cents {
+		return ErrInsufficientFunds
+	}
+	b.balance -= cents
+	return nil
+}
+
+func (b *BankAccount) Balance() int64 { return b.balance }
+func (b *BankAccount) Lock()          { b.isLocked = true }
+func (b *BankAccount) Unlock()        { b.isLocked = false }
 ```
-Interfaces in Go are similar to interfaces in other programming languages. An interface is a set of method signatures that a type can implement. If a type implements all the methods in an interface, it is said to satisfy the interface. Here's an example of an interface in Go:
 
+Code outside `bank` can only change the balance through `Deposit` and `Withdraw`, and the methods return errors instead of silently ignoring a locked account or an overdraft.
+
+## Embedding instead of inheritance
+
+Embedding a struct promotes its fields and methods to the outer type:
 
 ```go
+package main
+
+import "fmt"
+
+type Animal struct {
+	Name string
+}
+
+func (a *Animal) Speak() {
+	fmt.Println("My name is", a.Name)
+}
+
+type Dog struct {
+	Animal // embedded
+	Breed  string
+}
+
+func main() {
+	d := Dog{Animal: Animal{Name: "Fido"}, Breed: "Labrador"}
+	d.Speak()           // My name is Fido
+	fmt.Println(d.Name) // promoted field
+	d.Animal.Speak()    // the explicit form of the same call
+}
+```
+
+This is composition, not inheritance. A `Dog` is not an `Animal`: you can't pass a `Dog` to a function that takes an `Animal`, and if `Dog` defines its own `Speak`, `Animal`'s methods won't call it (there is no virtual dispatch). When you need "any type that can do X", use an interface.
+
+## Interfaces and polymorphism
+
+An interface is a set of method signatures. A type satisfies it implicitly, just by having those methods; there's no `implements` keyword.
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
 type Shape interface {
- Area() float64
+	Area() float64
 }
 
 type Rectangle struct {
- width float64
- height float64
+	Width, Height float64
 }
 
-func (r Rectangle) Area() float64 {
- return r.width * r.height
+func (r Rectangle) Area() float64 { return r.Width * r.Height }
+
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) Area() float64 { return math.Pi * c.Radius * c.Radius }
+
+func main() {
+	shapes := []Shape{
+		Rectangle{Width: 10, Height: 5},
+		Circle{Radius: 1},
+	}
+	for _, s := range shapes {
+		fmt.Printf("%T: %.2f\n", s, s.Area())
+	}
 }
 ```
-In this example, we define an interface called `Shape` with a single method signature `Area() float64`. We also define a struct called `Rectangle` with two fields `width` and `height`, and a method `Area()` that calculates the area of the rectangle.
 
-We can create an instance of the `Rectangle` struct and use it to satisfy the `Shape` interface. Here's an example:
+Output:
 
-
-```go
-less`r := Rectangle{width: 10, height: 5}
-var s Shape = r
-
-fmt.Println(s.Area()) // Output: 50
+```text
+main.Rectangle: 50.00
+main.Circle: 3.14
 ```
-In this example, we create a new `Rectangle` object with a width of 10 and a height of 5. We then assign the `Rectangle` object to a variable of type `Shape`. Because the `Rectangle` struct implements the `Area()` method defined in the `Shape` interface, it satisfies the interface and we can call the `Area()` method on the `Shape` variable.
+
+Embedding and interfaces work together: because `Dog` embeds `Animal`, `*Dog` gets the promoted `Speak` method and satisfies an interface like `type Speaker interface{ Speak() }`.
+
+## Gotchas
+
+- Methods with pointer receivers are in the method set of `*T` only. If `Area` had a `*Rectangle` receiver, `var s Shape = Rectangle{}` would not compile; you'd need `&Rectangle{}`.
+- Keep interfaces small and define them where they're consumed. The standard library's `io.Reader` and `io.Writer` each have one method.
+- An interface holding a nil pointer is not itself nil, so `err != nil` can be true for a typed nil. Return a literal `nil` when there's no error.
+
+## Further reading
+
+- [Effective Go: Embedding](https://go.dev/doc/effective_go#embedding)
+- [Effective Go: Interfaces](https://go.dev/doc/effective_go#interfaces)
+- [Go FAQ: Is Go an object-oriented language?](https://go.dev/doc/faq#Is_Go_an_object-oriented_language)

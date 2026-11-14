@@ -1,51 +1,38 @@
 ---
-title: Using WebAssembly for Scientific Computing
+title: "Running C numerical code in the browser with WebAssembly and Emscripten"
 pubDate: "2023-12-10T03:33:03.000Z"
-description: "In this article , we will explore the benefits of using WebAssembly in scientific computing contexts and discuss how to get started with a simple example"
-tags: []
+lastUpdated: 2026-11-14
+description: "Compile a C dot-product function to WebAssembly with Emscripten, pass Float64Array data through Wasm memory, and see where Wasm fits for scientific code."
+tags: ["javascript"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/424066448.png
 ---
-# Using WebAssembly for Scientific Computing
 
-## Introduction
+WebAssembly (Wasm) is a compact binary instruction format that C, C++, Rust and other languages can compile to. For scientific code, the appeal is that an existing numerical routine written in C can run in a browser, close to native speed, without being rewritten in JavaScript. Pyodide is a well-known example: it is CPython compiled with Emscripten, and it runs NumPy and SciPy in the browser.
 
-WebAssembly (Wasm) is a binary instruction format designed as a portable target for the compilation of high-level languages like C, C++, and Rust. It allows developers to run code at near-native speed by taking advantage of common hardware capabilities and provides a compact binary format that is designed for fast decoding and execution. In recent years, WebAssembly has gained significant traction as a tool for developing web applications, but its potential for scientific computing is also noteworthy.
+This post compiles a small C function to Wasm with Emscripten and calls it from JavaScript, including the part most tutorials get wrong: passing arrays of `double`s.
 
-In this article, we will explore the benefits of using WebAssembly in scientific computing contexts and discuss how to get started with a simple example.
+## Why Wasm for numerical code
 
-## Benefits of WebAssembly for Scientific Computing
+- **Reuse existing code.** Numerical libraries are mostly C, C++ and Fortran. Emscripten compiles C and C++ directly, so you can ship an existing routine to the web instead of porting it.
+- **Predictable performance.** Wasm instructions are statically typed (`i32`, `f64` and so on), so tight loops avoid the type checks and deoptimisation that JavaScript JITs can hit.
+- **Sandboxing.** A Wasm module can only touch its own linear memory and the functions you import into it, which makes it reasonable to run untrusted or third-party compute code.
+- **Distribution.** A web page is easier to hand to a colleague than a build environment.
 
-There are several reasons why WebAssembly is well-suited for scientific computing tasks:
+## The example: a dot product
 
-1. **Performance**: WebAssembly is designed for efficient execution, offering performance close to native code. This is especially valuable for compute-intensive tasks common in scientific computing.
+### Install Emscripten
 
-2. **Portability**: WebAssembly code can run on any platform that supports a WebAssembly runtime, providing a truly cross-platform solution for scientific applications. This eliminates the need to maintain platform-specific codebases and simplifies deployment.
+Follow the [Emscripten install guide](https://emscripten.org/docs/getting_started/downloads.html) (it uses the `emsdk` tool). After activating the SDK, `emcc --version` should work in your shell.
 
-3. **Language Support**: WebAssembly can be compiled from various high-level languages, including C, C++, and Rust. This allows developers to leverage existing codebases and libraries in these languages.
-
-4. **Security**: WebAssembly enforces a strong sandboxing model, which isolates the runtime environment from the underlying system. This can help prevent unintended side effects and security vulnerabilities in scientific applications.
-
-5. **Integration with Web Technologies**: WebAssembly can be easily integrated with existing web technologies, allowing developers to create interactive scientific applications that can be deployed and accessed from a web browser.
-
-## Getting Started with WebAssembly for Scientific Computing
-
-To demonstrate the usage of WebAssembly in scientific computing, let's implement a simple example: calculating the dot product of two vectors.
-
-### Step 1: Install Emscripten
-
-We will use Emscripten, a popular WebAssembly toolchain, to compile our code. To install Emscripten, follow the instructions on the [official Emscripten website](https://emscripten.org/docs/getting_started/downloads.html).
-
-### Step 2: Write the C Code
-
-Let's write a simple C program to calculate the dot product of two vectors:
+### Write the C code
 
 ```c
 // dot_product.c
 #include <stddef.h>
 
-double dot_product(const double* a, const double* b, size_t length) {
-    double result = 0;
+double dot_product(const double *a, const double *b, size_t length) {
+    double result = 0.0;
     for (size_t i = 0; i < length; ++i) {
         result += a[i] * b[i];
     }
@@ -53,51 +40,85 @@ double dot_product(const double* a, const double* b, size_t length) {
 }
 ```
 
-### Step 3: Compile to WebAssembly
-
-We will use Emscripten to compile the C code to WebAssembly:
+### Compile to WebAssembly
 
 ```bash
-emcc -O3 -s WASM=1 -s EXPORTED_FUNCTIONS="['_dot_product']" -o dot_product.js dot_product.c
+emcc dot_product.c -O3 \
+  -sEXPORTED_FUNCTIONS=_dot_product,_malloc,_free \
+  -sEXPORTED_RUNTIME_METHODS=cwrap,HEAPF64 \
+  -o dot_product.js
 ```
 
-This command generates two files: `dot_product.wasm` and `dot_product.js`. The `.wasm` file contains the compiled WebAssembly binary, while the `.js` file contains the JavaScript glue code that allows us to interact with the WebAssembly module.
+This produces `dot_product.wasm` (the compiled module) and `dot_product.js` (glue code that loads it). The flags matter:
 
-### Step 4: Load and Use the WebAssembly Module
+- `EXPORTED_FUNCTIONS` lists the C functions JavaScript can call, with a leading underscore. We need `malloc` and `free` too, to allocate the input arrays inside Wasm memory.
+- `EXPORTED_RUNTIME_METHODS` exposes `cwrap` and the `HEAPF64` view of Wasm memory. Recent Emscripten releases no longer export the `HEAP*` views by default, so code that used `Module.HEAPF64` without this flag breaks.
 
-We can now create an HTML file to load and use our WebAssembly module:
+Wasm output is the default, so the old `-s WASM=1` flag is not needed.
+
+### Call it from JavaScript
+
+C pointers in Wasm are offsets into the module's linear memory. To pass two arrays of `double`s, allocate space with `malloc`, copy the values into the `HEAPF64` view, and pass the pointers.
 
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <script src="dot_product.js"></script>
-</head>
 <body>
   <script>
-    Module.onRuntimeInitialized = function() {
-      const dot_product = Module.cwrap('dot_product', 'number', ['array', 'array', 'number']);
-      
-      const a = [1, 2, 3];
-      const b = [4, 5, 6];
-      const length = a.length;
+    var Module = {
+      onRuntimeInitialized() {
+        const dotProduct = Module.cwrap('dot_product', 'number', ['number', 'number', 'number']);
 
-      const result = dot_product(a, b, length);
-      console.log("Dot product:", result);
+        const a = new Float64Array([1, 2, 3]);
+        const b = new Float64Array([4, 5, 6]);
+        const bytes = a.length * Float64Array.BYTES_PER_ELEMENT;
+
+        const ptrA = Module._malloc(bytes);
+        const ptrB = Module._malloc(bytes);
+        try {
+          // HEAPF64 is indexed in 8-byte elements, so divide the byte offset by 8.
+          Module.HEAPF64.set(a, ptrA / 8);
+          Module.HEAPF64.set(b, ptrB / 8);
+          console.log('Dot product:', dotProduct(ptrA, ptrB, a.length));
+        } finally {
+          Module._free(ptrA);
+          Module._free(ptrB);
+        }
+      },
     };
   </script>
+  <script src="dot_product.js"></script>
 </body>
 </html>
 ```
 
-When you open this HTML file in a web browser, you should see the following output in the console:
+Defining `Module` before loading `dot_product.js` lets the glue code pick up the `onRuntimeInitialized` callback, which runs once the Wasm module has been fetched and compiled.
 
+Don't be tempted by `cwrap`'s `'array'` argument type here. It copies a JavaScript array into memory as 8-bit values (for typed arrays it only accepts `Int8Array` or `Uint8Array`), so `[1, 2, 3]` would arrive in C as bytes, not `double`s, and the result would be garbage.
+
+Browsers won't load `.wasm` files from `file://` URLs, so serve the directory over HTTP:
+
+```bash
+python3 -m http.server 8000
 ```
+
+Open `http://localhost:8000/` (or whatever you named the HTML file) and the console shows:
+
+```text
 Dot product: 32
 ```
 
-## Conclusion
+## Limits to know about
 
-In this article, we have seen how WebAssembly can be used for scientific computing tasks. By leveraging the performance, portability, and language support offered by WebAssembly, developers can create efficient and cross-platform scientific applications. In our example, we demonstrated how to compile a simple C program to WebAssembly using Emscripten and interact with the compiled module using JavaScript.
+- **Copying costs.** Data must live in Wasm linear memory. For large arrays, allocate once and write directly into `HEAPF64` rather than copying back and forth on every call. Also re-read `Module.HEAPF64` after anything that might grow memory, because growth replaces the underlying buffer.
+- **Memory size.** Standard 32-bit Wasm addresses at most 4 GiB of linear memory, and browsers may allow less.
+- **SIMD and threads.** Wasm SIMD is fixed at 128 bits, so you won't get AVX-width vectors. Threads need `SharedArrayBuffer`, which browsers only enable on cross-origin-isolated pages (COOP/COEP headers).
+- **No direct GPU access.** GPU compute in the browser goes through WebGPU from JavaScript, not from Wasm itself.
 
-As the WebAssembly ecosystem continues to grow, we can expect to see more use cases in scientific computing and other domains.
+For heavy batch jobs on a workstation or cluster, native builds are still the better choice. Wasm earns its place when you want to put an existing numerical routine in front of users with nothing to install.
+
+## Further reading
+
+- [Emscripten: Interacting with code](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html)
+- [Pyodide](https://pyodide.org/)
+- [MDN: WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly)

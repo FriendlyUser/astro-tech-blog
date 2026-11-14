@@ -1,70 +1,51 @@
 ---
-description: In this article, we will explore **Go-Micro**, a powerful framework for
-  building microservices in Golang
+description: 'Write and call a Go Micro v6 service: handlers, mDNS and Consul service discovery, client-side load balancing, retries and timeouts.'
 imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-25T08:00:17.000Z'
-tags: []
-title: Building Microservices with Go-Micro in Golang
+lastUpdated: 2026-11-14
+tags: ["go", "microservices"]
+title: 'Go Micro basics: writing, discovering and calling services in Go'
 ---
 
-# Building Microservices with Go-Micro in Golang
+:::caution
+The first version of this post used `github.com/asim/go-micro/v3` and the `github.com/micro/go-plugins` repository. Both are out of date: Go Micro now lives at `go-micro.dev`, and plugins such as the Consul registry are part of the main module. The examples below use Go Micro v6 (v6.16.0 when this was checked). The Hystrix wrapper the old post used is gone; the circuit-breaker section has been replaced with the client's built-in retries and timeouts.
+:::
 
-In this article, we will explore **Go-Micro**, a powerful framework for building microservices in Golang. Go-Micro is a pluggable, extensible framework with built-in service discovery, load balancing, and fault tolerance. By the end of this tutorial, you will have a solid understanding of how to build and deploy microservices using Go-Micro.
+[Go Micro](https://go-micro.dev/) is a Go framework for RPC services. You write a struct whose methods are handlers, and Go Micro registers the service in a registry, finds other services by name, picks an instance to call, and encodes requests (JSON by default, protobuf if you use it). Each of those parts (registry, selector, transport, codec, broker) is an interface you can swap.
 
-## Table of Contents
+## Setup
 
-1. [Introduction to Go-Micro](#introduction)
-2. [Setting Up Your Environment](#setup)
-3. [Creating a Simple Microservice](#simple)
-4. [Building a Custom Service Discovery](#discovery)
-5. [Implementing Load Balancing](#balancing)
-6. [Adding Fault Tolerance](#tolerance)
-7. [Conclusion](#conclusion)
-
-<a name="introduction"></a>
-## 1. Introduction to Go-Micro
-
-Go-Micro is an open-source, pluggable microservices framework designed to simplify the process of building and managing microservices in Golang. Some of its key features include:
-
-- **Service Discovery:** Automatic service registration and name resolution.
-- **Load Balancing:** Client-side load balancing for distributing traffic among service instances.
-- **Message Encoding:** Pluggable encoding for sending and receiving messages between services.
-- **Synchronization:** Distributed synchronization and leadership election.
-- **Fault Tolerance:** Built-in circuit breaker, retries, and timeouts for handling failures.
-
-<a name="setup"></a>
-## 2. Setting Up Your Environment
-
-Before we start building our microservices, you will need to install the Golang [toolchain](https://golang.org/doc/install) and set up your workspace. Next, install the Go-Micro framework by running the following command:
+The `micro` CLI's install instructions ask for Go 1.26 or newer.
 
 ```sh
-go get -u github.com/asim/go-micro/v3
+mkdir hello-service && cd hello-service
+go mod init example.com/hello-service
+go get go-micro.dev/v6@latest
+go install go-micro.dev/v6/cmd/micro@latest
 ```
 
-<a name="simple"></a>
-## 3. Creating a Simple Microservice
+## A hello service
 
-Let's create a simple "Hello, World!" microservice using Go-Micro. First, create a new directory for your service and initialize it as a Go module:
-
-```sh
-mkdir hello-service
-cd hello-service
-go mod init github.com/yourusername/hello-service
-```
-
-Next, create a new `main. file and add the following code:
+`main.go`:
 
 ```go
 package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 
-	"github.com/asim/go-micro/v3"
-	"github.com/asim/go-micro/v3/logger"
+	"go-micro.dev/v6"
 )
+
+type HelloRequest struct {
+	Name string `json:"name"`
+}
+
+type HelloResponse struct {
+	Msg string `json:"msg"`
+}
 
 type Greeter struct{}
 
@@ -73,133 +54,122 @@ func (g *Greeter) Hello(ctx context.Context, req *HelloRequest, rsp *HelloRespon
 	return nil
 }
 
-type HelloRequest struct {
-	Name string
-}
-
-type HelloResponse struct {
-	Msg string
-}
-
 func main() {
-	// Create a new service
-	service := micro.NewService(
-		micro.Name("hello.service"),
-	)
-
-	// Initialize the service
+	service := micro.NewService("hello")
 	service.Init()
 
-	// Register the Greeter handler
-	micro.RegisterHandler(service.Server(), new(Greeter))
-
-	// Run the service
+	if err := service.Handle(new(Greeter)); err != nil {
+		log.Fatal(err)
+	}
 	if err := service.Run(); err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 }
 ```
 
-This code defines a simple "Hello, World!" service with a single `Hello` method that returns a greeting message. To start the service, run the following command:
+Each exported method with the shape `(ctx, *Request, *Response) error` becomes an endpoint named `Type.Method`, here `Greeter.Hello`. `service.Init()` also parses command-line flags, so options such as the registry can be set at startup.
+
+Run it, then call it from another terminal:
 
 ```sh
-go run main.go
+go run .
 ```
-
-Your service is now running and listening for requests. You can test it using the `micro` command-line tool:
 
 ```sh
-micro call hello.service Greeter.Hello '{"name": "John"}'
+micro call hello Greeter.Hello '{"name": "John"}'
 ```
 
-If everything is working correctly, you should see the following output:
-
-```
-{
-	"msg": "Hello, John"
-}
+```json
+{"msg": "Hello, John"}
 ```
 
-<a name="discovery"></a>
-## 4. Building a Custom Service Discovery
+## Service discovery
 
-One of the key features of Go-Micro is its pluggable service discovery mechanism. By default, Go-Micro uses the [micro/go-micro/registry/mdns](https://github.com/micro/mdns) package for service discovery, which is based on multicast DNS. However, you can easily replace it with your own implementation or use a third-party package.
-
-To demonstrate this, let's replace the default mDNS-based service discovery with [Consul](https://www.consul.io/), a popular service mesh solution. First, install the `go-micro-plugins/registry/consul/v3` package:
-
-```sh
-go get -u github.com/micro/go-plugins/registry/consul/v3
-```
-
-Next, update your `main. file to use the Consul registry:
+The default registry is multicast DNS (`registry.NewMDNSRegistry()`), which works on a single machine or LAN with no extra infrastructure. It does not work where multicast is blocked, which includes most cloud networks and many container setups. For those, use a shared registry. Consul is one option:
 
 ```go
 import (
-	// ...
-	"github.com/micro/go-plugins/registry/consul/v3"
+	"go-micro.dev/v6"
+	"go-micro.dev/v6/registry"
+	"go-micro.dev/v6/registry/consul"
 )
 
 func main() {
-	// Create a new service
-	service := micro.NewService(
-		micro.Name("hello.service"),
-		micro.Registry(consul.NewRegistry()),
+	service := micro.NewService("hello",
+		micro.Registry(consul.NewConsulRegistry(
+			registry.Addrs("127.0.0.1:8500"),
+		)),
 	)
-
 	// ...
 }
 ```
 
-Now, your service will register itself with a local Consul agent. Make sure you have [Consul installed](https://www.consul.io/docs/install) and running on your machine before starting the service.
+Every service and client that should see each other must use the same registry. A local Consul agent for testing can be started with `consul agent -dev`.
 
-<a name="balancing"></a>
-## 5. Implementing Load Balancing
+## Calling a service from Go
 
-Go-Micro provides client-side load balancing out of the box. By default, it uses a round-robin strategy to distribute requests among available service instances. You can easily swap the default load balancer with your own implementation or use a third-party package.
-
-To demonstrate load balancing, start multiple instances of your `hello.service` and make a few requests using the `micro` command-line tool:
-
-```sh
-micro call hello.service Greeter.Hello '{"name": "John"}'
-```
-
-You will notice that the requests are distributed evenly among the running service instances.
-
-<a name="tolerance"></a>
-## 6. Adding Fault Tolerance
-
-Go-Micro includes built-in support for fault tolerance features such as circuit breakers, retries, and timeouts. To demonstrate this, let's add a simple circuit breaker to our service.
-
-First, install the `go-micro-plugins/wrapper/breaker/hystrix/v3` package:
-
-```sh
-go get -u github.com/micro/go-plugins/wrapper/breaker/hystrix/v3
-```
-
-Next, update your `main. file to use the Hystrix circuit breaker:
+Clients look services up by name, so the caller never needs an address. This client lives in its own module or directory and declares matching request and response types:
 
 ```go
+package main
+
 import (
-	// ...
-	"github.com/micro/go-plugins/wrapper/breaker/hystrix/v3"
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"go-micro.dev/v6"
+	"go-micro.dev/v6/client"
 )
 
-func main() {
-	// Create a new service
-	service := micro.NewService(
-		// ...
-		micro.WrapClient(hystrix.NewClientWrapper()),
-	)
+type HelloRequest struct {
+	Name string `json:"name"`
+}
 
-	// ...
+type HelloResponse struct {
+	Msg string `json:"msg"`
+}
+
+func main() {
+	service := micro.NewService("hello.client")
+	service.Init()
+
+	c := service.Client()
+	req := c.NewRequest("hello", "Greeter.Hello", &HelloRequest{Name: "John"})
+
+	var rsp HelloResponse
+	err := c.Call(context.Background(), req, &rsp,
+		client.WithRetries(3),
+		client.WithRequestTimeout(5*time.Second),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rsp.Msg)
 }
 ```
 
-Now, your service will be protected by a Hystrix circuit breaker. If any of your service instances become unresponsive or slow, the circuit breaker will trip and prevent additional requests from being sent to the faulty instance.
+## Load balancing
 
-<a name="conclusion"></a>
-## 7. Conclusion
+Load balancing is done on the client. For each call, the client's selector gets the list of `hello` instances from the registry and picks one. The default strategy is **random**, not round-robin; `selector.RoundRobin` is available if you build a selector with `selector.SetStrategy(selector.RoundRobin)` and pass it to the client with `client.Selector(...)`.
 
-In this article, we have explored the Go-Micro framework and demonstrated how to build and deploy microservices in Golang. We covered key features such as service discovery, load balancing, and fault tolerance, and showed how to replace the default implementations with custom or third-party solutions.
+To see it, start two or three copies of the service (each picks a free port and registers itself) and call it repeatedly. Calls spread across instances, but with the random strategy not in a strict rotation.
 
-By leveraging Go-Micro, you can significantly reduce the complexity of building and managing microservices, allowing you to focus on writing business logic and delivering value to your users. With its pluggable architecture and ever-growing ecosystem, Go-Micro is a powerful tool for building modern, scalable, and resilient applications in Golang.
+## Retries and timeouts
+
+Instead of a separate circuit-breaker plugin, start with the client's own settings:
+
+- `client.DefaultRetries` is 5 and `client.DefaultRequestTimeout` is 30 seconds.
+- Override them per call with `client.WithRetries` and `client.WithRequestTimeout`, as in the client above, or for the whole client with `client.Retries` and `client.RequestTimeout`.
+- `client.Retry(fn)` sets which errors are retried.
+
+Retries on a call that changes state are only safe if the handler is idempotent.
+
+If you need a real circuit breaker, wrap the client with `micro.WrapClient(...)` and implement the breaker in a `client.Wrapper`, for example around a library such as `sony/gobreaker`.
+
+## Further reading
+
+- [Go Micro docs](https://go-micro.dev/docs/)
+- [Package reference](https://pkg.go.dev/go-micro.dev/v6)
+- [Source and examples](https://github.com/micro/go-micro)

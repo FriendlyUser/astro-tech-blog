@@ -1,133 +1,120 @@
 ---
-title: "Attempting to convert a streamlit app to dash"
-description: Finding out if it's possible to convert a streamlit app to dash completely with AI
+title: "Asking Bing Chat to convert a Streamlit app to Dash"
+description: "I asked Bing Chat to port my Streamlit technical analysis app to Plotly Dash. What it got right, where its code broke, and a working Dash version."
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 12 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/241285989.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-Disclaimer: This article was generated with bing and binggpt, was curious how far bing gpt was willing to go with conversion from dash to streamlit. I'm not sure if this is a good idea, but I'm going to try it out.
+:::caution[Outdated APIs in the original answer]
+Bing Chat (now Microsoft Copilot) suggested `dash_core_components`, `dash_html_components` and `app.run_server()`. The first two were merged into the `dash` package in Dash 2.0, and `run_server` was removed in Dash 3.0 in favour of `app.run()`. The `openbb_terminal` package it imported has been replaced by the [OpenBB Platform](https://docs.openbb.co/). The code below is corrected for current Dash.
+:::
 
+In March 2023 I was curious how far Bing Chat would go in converting my [Streamlit technical analysis app](/posts/stonks/build_dashboard_with_openbb/) to Plotly Dash. I pasted the Streamlit code in and asked for a Dash version. Most of this post was originally Bing's answer; I've kept what it suggested and fixed the code.
 
-Hello, this is Bing. I can help you with converting your streamlit app to use dash instead.😊
+## What Bing suggested
 
-According to ¹, streamlit and dash are two popular Python libraries for building data dashboard web apps. Streamlit focuses on rapid prototyping, while dash focuses on production and enterprise settings. Streamlit is more concise and takes care of more decisions for you, while dash gives you more control and flexibility over your app structure and interactivity.
+It started with a fair summary, taken from Plotly's own [Dash vs Shiny vs Streamlit comparison](https://plotly.com/comparing-dash-shiny-streamlit/): Streamlit is aimed at quick prototypes and makes more decisions for you, while Dash gives you more control over layout and interactivity. The structural changes it listed are right:
 
-To convert your streamlit app to use dash, you will need to make some changes in your code. Here are some general steps:
+- Create the app with `app = Dash(__name__)` instead of calling `st.*` functions at the top level.
+- Describe the page in `app.layout` using `html.*` elements and `dcc.*` components (`dcc.Input`, `dcc.DatePickerRange`, `dcc.Graph`).
+- Replace Streamlit's top-to-bottom rerun with `@app.callback` functions that map `Input` component properties to `Output` properties.
+- Start the server with `app.run()`.
 
-- Import dash and its components instead of streamlit
-- Create a dash app object with `app = dash.Dash(__name__)`
-- Define a layout for your app with `app.layout = html.Div([...])` where you can use html tags or dash components to create your UI elements
-- Use `dcc.Input`, `dcc.DatePickerRange`, `dcc.Graph` etc. to create interactive widgets and graphs
-- Use `@app.callback` decorators to define functions that update your outputs based on user inputs
-- Run your app with `app.run_server()`
-
-For example, here is a possible conversion of the first part of your code:
+The layout it produced was close. With current imports it looks like this:
 
 ```python
-# import streamlit as st # comment out this line
 import datetime
-import pandas as pd
-import requests
-import os
-import sys
-from PIL import Image
-from io import StringIO
 
-# import dash and its components instead of streamlit
-import dash 
-import dash_core_components as dcc 
-import dash_html_components as html 
+from dash import Dash, dcc, html
 
-from openbb_terminal.stocks.stocks_helper import load
-from openbb_terminal.common.technical_analysis.volatility_view import display_bbands, display_donchian
+app = Dash(__name__)
 
-# create a dash app object 
-app = dash.Dash(__name__)
-
-# define a layout for your app 
 app.layout = html.Div([
-    # use html tags or dash components to create UI elements 
     html.H1("Technical Analysis Web Application"),
-    html.P("Leveraging the openbb sdk, we can build a web application to display technical analysis graphs for any stock."),
-    # use dcc.Input to create a text input for ticker 
-    dcc.Input(id="ticker-input", type="text", value="ZIM"),
-    # use dcc.DatePickerRange to create a date range picker for start and end dates 
-    dcc.DatePickerRange(id="date-range-picker", start_date="2020-05-01", end_date=datetime.date.today()),
-    # use dcc.Graph to create an empty graph that will be updated by callbacks later 
+    dcc.Input(id="ticker-input", type="text", value="ZIM", debounce=True),
+    dcc.DatePickerRange(
+        id="date-range-picker",
+        start_date=datetime.date(2020, 5, 1),
+        end_date=datetime.date.today(),
+    ),
     dcc.Graph(id="bbands-graph"),
-    dcc.Graph(id="donchian-graph")
+    dcc.Graph(id="donchian-graph"),
 ])
 ```
 
-Source: Conversation with Bing, 3/16/2023(1) How do Dash, Shiny, and Streamlit compare? - Plotly. https://plotly.com/comparing-dash-shiny-streamlit/ Accessed 3/16/2023.
-(2) Plotly Dash vs Streamlit - Towards Data Science. https://towardsdatascience.com/plotly-dash-vs-streamlit-which-is-the-best-library-for-building-data-dashboard-web-apps-97d7c98b938c Accessed 3/16/2023.
-(3) Convert streamlit to dash · Issue #1 · ds4a-team08/webui. https://github.com/ds4a-team08/webui/issues/1 Accessed 3/16/2023.
+`debounce=True` makes the input fire its callback on Enter or blur instead of on every keystroke, which matters when each update downloads prices.
 
+## Where the callback went wrong
 
-To write the callback functions, you need to use the `@app.callback` decorator above your function definition. The decorator takes two arguments: `Output` and `Input`, which specify the component id and property that you want to update and the component id and property that you want to use as input respectively. You can also use `State` as an additional argument if you want to pass some information that does not trigger a callback.
+Bing's callback for the Bollinger Bands graph had the right decorator shape (`Output("bbands-graph", "figure")` plus three `Input`s), but the body wouldn't work:
 
-For example, here is a possible callback function that updates the bbands-graph based on the ticker-input and date-range-picker values:
+- It called `build_bbands_img`, a helper from my Streamlit app that saved OpenBB's chart to a PNG, then read the PNG with `Image.open(path).tobytes()`. That gives raw pixel bytes, not an encoded image a browser can display.
+- It put those bytes in a trace dict with `"type": "image"` and a `source` key. Plotly's `image` trace expects `source` to be a data URI string such as `data:image/png;base64,...`.
+- It returned a `dcc.Graph` component from a callback whose output is the `figure` property, so Dash would receive a component where it expected a figure.
+
+The bigger point is that a Dash app doesn't need the save-a-PNG workaround at all. `dcc.Graph` renders Plotly figures, so the callback can calculate the indicators and return figures directly.
+
+## A working version
+
+This callback updates both graphs from the same inputs. It uses `yfinance` for prices and pandas for the indicators, since the OpenBB SDK functions in the original are gone. Tested with Dash 4.5 and yfinance 1.8, together with the layout above:
 
 ```python
-# import Input, Output and State from dash.dependencies
-from dash.dependencies import Input, Output, State
+import plotly.graph_objects as go
+import yfinance as yf
+from dash import Input, Output
+from dash.exceptions import PreventUpdate
 
-# use @app.callback decorator 
+
 @app.callback(
-    # specify output component id and property 
     Output("bbands-graph", "figure"),
-    # specify input component ids and properties 
+    Output("donchian-graph", "figure"),
     Input("ticker-input", "value"),
     Input("date-range-picker", "start_date"),
-    Input("date-range-picker", "end_date")
+    Input("date-range-picker", "end_date"),
 )
-# define callback function with input arguments 
-def update_bbands_graph(ticker, start_date, end_date):
-    # load data for ticker and date range 
-    data = load(ticker=ticker,start=start_date,end=end_date)
-    # build bbands image with openbb
-    img_path = build_bbands_img(data=data,symbol=ticker)
-    # read image as bytes
-    img_bytes = Image.open(img_path).tobytes()
-    # create a figure with dash_core_components.Graph
-    fig = dcc.Graph(
-        figure={
-            "data": [
-                {
-                    "type": "image",
-                    "source": img_bytes,
-                    "xref": "x",
-                    "yref": "y",
-                    "x0": 0,
-                    "y0": 0,
-                    "x1": 1,
-                    "y1": 1,
-                }
-            ],
-            # adjust layout to fit image size
-            "layout": {
-                "width": 800,
-                "height": 600,
-                # hide x-axis and y-axis labels
-                'xaxis': {'visible': False},
-                'yaxis': {'visible': False},
-            }
-        }
-    )
-    
-    return fig
+def update_graphs(ticker, start_date, end_date):
+    if not ticker:
+        raise PreventUpdate
+    df = yf.Ticker(ticker).history(start=start_date, end=end_date)
+    close = df["Close"]
+
+    # Bollinger Bands: 15-day SMA +/- 2 standard deviations
+    mid = close.rolling(15).mean()
+    std = close.rolling(15).std()
+    bbands = go.Figure([
+        go.Scatter(x=df.index, y=close, name="Close"),
+        go.Scatter(x=df.index, y=mid + 2 * std, name="Upper band"),
+        go.Scatter(x=df.index, y=mid - 2 * std, name="Lower band"),
+    ])
+    bbands.update_layout(title=f"{ticker.upper()} Bollinger Bands (15, 2)")
+
+    # Donchian Channels: 20-day highest high / lowest low
+    donchian = go.Figure([
+        go.Scatter(x=df.index, y=close, name="Close"),
+        go.Scatter(x=df.index, y=df["High"].rolling(20).max(), name="Upper"),
+        go.Scatter(x=df.index, y=df["Low"].rolling(20).min(), name="Lower"),
+    ])
+    donchian.update_layout(title=f"{ticker.upper()} Donchian Channels (20)")
+    return bbands, donchian
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
 ```
 
-You would need to make a similar function to update the donchian-graph. You can also use the `@app.callback` decorator to create a function that updates multiple outputs based on the same inputs.
+Put the layout and the callback in one `app.py`, run `python app.py`, and open <http://127.0.0.1:8050>.
 
-Overall using AI to convert from streamlit and dash is pretty powerful. Microsoft will not let the AI do all the coding.
+## Verdict
 
-Source: Conversation with Bing, 3/16/2023(1) Part 3. Basic Callbacks | Dash for Python Documentation | Plotly. https://dash.plotly.com/basic-callbacks Accessed 3/16/2023.
-(2) Advanced Callbacks | Dash for Python Documentation | Plotly. https://dash.plotly.com/advanced-callbacks Accessed 3/16/2023.
-(3) Dash - How does the dash call functions - Stack Overflow. https://stackoverflow.com/questions/62672368/dash-how-does-the-dash-call-functions Accessed 3/16/2023.
-(4) Dash Callback inside a Function - Plotly Community Forum. https://community.plotly.com/t/dash-callback-inside-a-function/42772 Accessed 3/16/2023.
-(5) Long Callbacks in Dash Web Apps - Towards Data Science. https://towardsdatascience.com/long-callbacks-in-dash-web-apps-72fd8de25937 Accessed 3/16/2023.
+Using AI to convert from Streamlit to Dash is useful for the boilerplate: the layout and the callback wiring were mostly right. But Microsoft won't let Bing do all the coding: it only converted part of the app, used imports that were already deprecated, and wrote a callback that couldn't have run. You still need to know how Dash callbacks work to finish the job.
+
+## Further reading
+
+- [Dash basic callbacks](https://dash.plotly.com/basic-callbacks)
+- [Dash 3.0 migration guide](https://dash.plotly.com/dash-3-0-migration)
+- [How do Dash, Shiny, and Streamlit compare?](https://plotly.com/comparing-dash-shiny-streamlit/)

@@ -1,61 +1,87 @@
 ---
-title: The Android Support Library A Comprehensive Overview
+title: "The Android Support Library: what it did and how to move to AndroidX"
 pubDate: "2024-05-21T21:09:39.000Z"
-description: "This article delves into the origins, benefits, and core elements of the Android Support Library, offering a clear understanding of its functionality and its importance in the Android development ecosystem."
-tags: []
+lastUpdated: 2026-11-14
+description: "What the Android Support Library provided, how its artifacts map to AndroidX and Material Components, and how to migrate an old project off android.support."
+tags:
+  - android
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3793215953.png
 ---
-# The Android Support Library: A Comprehensive Overview
 
-The Android Support Library is a pivotal tool for Android developers, providing a robust set of components, features, and utilities that simplify the development process and ensure compatibility across a wide range of Android devices. This article delves into the origins, benefits, and core elements of the Android Support Library, offering a clear understanding of its functionality and its importance in the Android development ecosystem.
+:::caution
+The Android Support Library is no longer developed. Its final release was 28.0.0 (2018), and all new work happens in [AndroidX](https://developer.android.com/jetpack/androidx), which shipped alongside Android 9 (API level 28). Use AndroidX in any project you're building or maintaining today. This post explains what the Support Library was and how its pieces map to AndroidX.
+:::
 
-## Introduction to the Android Support Library
+The Support Library was a set of Google libraries, packaged as `android.support.*`, that let apps use newer Android APIs on older versions of the platform. It also shipped widgets that weren't in the framework at all, like `RecyclerView`. You will still see it in older projects, tutorials and Stack Overflow answers, so it's worth knowing how to translate it.
 
-As the Android operating system continues to evolve, each new version introduces new features and improvements that can enhance the user experience. However, these advancements can also create challenges for developers who strive to maintain compatibility across a variety of devices and Android versions.
+## What it provided
 
-To address these issues, Google introduced the Android Support Library, a set of libraries that provide developers with backward-compatible versions of new features, as well as additional components not included in the Android framework. This enables developers to build apps that can accommodate a wide range of devices while still leveraging the latest Android features.
+- **Backward-compatible versions of framework classes.** For example, the support `Fragment` worked on devices older than Android 3.0, and `ActivityCompat` wrapped the runtime-permissions API added in Android 6.0 so the same call worked everywhere.
+- **Widgets and helpers not in the framework**, such as `RecyclerView`, `CardView`, `ViewPager`, `DrawerLayout` and the Palette color-extraction API.
+- **Build and tooling helpers**, such as `support-annotations` for lint checks and `multidex` for apps over the 65,536-method limit.
 
-## Benefits of Using the Android Support Library
+The compatibility classes degrade gracefully: on an old device they may not provide every feature of the newest platform API, so you still need to test on the oldest API level you support.
 
-There are several key advantages to using the Android Support Library in your app development process:
+## Package names and versions
 
-1. **Backward Compatibility**: The Support Library provides backward-compatible implementations of new features, ensuring that your app can run seamlessly on older Android versions.
-2. **Consistent User Interface**: By using Support Library components, you can create a consistent user interface across different devices and Android versions.
-3. **Stability and Quality**: The Support Library is maintained by Google, ensuring high-quality code and regular updates for bug fixes and performance improvements.
-4. **Reduced Development Time**: With the Support Library's robust set of utilities and components, you can streamline the development process and focus on implementing your app's core functionality.
+Artifacts carried suffixes like `-v4`, `-v7` and `-v13`, which originally meant the minimum API level the library supported. From release 26.0.0 (July 2017) the minimum for most packages became API level 14, so the suffix stopped meaning anything. The library's version number (25.x, 27.x, 28.0.0) tracked the platform API it was built against, and all Support Library artifacts in a project had to use the same version. AndroidX dropped both conventions: each library has its own package under `androidx.*` and its own semantic version.
 
-## Key Components of the Android Support Library
+## Support Library to AndroidX mappings
 
-The Android Support Library is composed of several modules, each targeting specific aspects of app development. Some of the most prominent modules include:
+These are the modules people used most. Class names stayed the same; only the package and Maven coordinates changed.
 
-1. **AppCompat**: This library provides backward-compatible versions of UI components and theme support, allowing you to create a consistent look and feel for your app across different Android versions.
-2. **Design**: This library offers a collection of Material Design components, such as the `FloatingActionButton`, `TextInputLayout`, and `Snackbar`, enabling you to implement modern UI designs.
-3. **RecyclerView**: This library provides an efficient and flexible way to display large datasets in a scrollable list or grid, with support for animations and custom layouts.
-4. **CardView**: This library allows you to create cards with rounded corners and shadows, following the Material Design guidelines.
-5. **Palette**: This library enables you to extract and manipulate colors from images, which can be useful for creating dynamic color schemes in your app.
+| Support Library artifact | AndroidX artifact |
+|---|---|
+| `com.android.support:appcompat-v7` | `androidx.appcompat:appcompat` |
+| `com.android.support:design` | `com.google.android.material:material` |
+| `com.android.support:recyclerview-v7` | `androidx.recyclerview:recyclerview` |
+| `com.android.support:cardview-v7` | `androidx.cardview:cardview` |
+| `com.android.support:palette-v7` | `androidx.palette:palette` |
+| `com.android.support:support-compat` | `androidx.core:core` |
+| `com.android.support:support-fragment` | `androidx.fragment:fragment` |
+| `com.android.support.constraint:constraint-layout` | `androidx.constraintlayout:constraintlayout` |
 
-## Using the Android Support Library in Your Projects
+The `design` library is the odd one out: it became Material Components for Android, which is where `FloatingActionButton`, `TextInputLayout` and `Snackbar` live now. Google publishes the [full artifact mapping](https://developer.android.com/jetpack/androidx/migrate/artifact-mappings) and [class mapping](https://developer.android.com/jetpack/androidx/migrate/class-mappings) tables.
 
-To integrate the Android Support Library into your Android Studio project, you'll need to add the appropriate dependencies to your `build.gradle` file. For example, to include the AppCompat library, you would add the following dependency:
+A support-era dependency block such as:
 
 ```groovy
-implementation 'androidx.appcompat:appcompat:1.4.1'
+implementation 'com.android.support:appcompat-v7:28.0.0'
+implementation 'com.android.support:design:28.0.0'
 ```
 
-You can find the latest version numbers and other library modules in the [AndroidX library documentation](https://developer.android.com/jetpack/androidx).
+becomes, in a current `build.gradle.kts`:
 
-## Migrating to AndroidX
+```kotlin
+dependencies {
+    implementation("androidx.appcompat:appcompat:1.8.0")
+    implementation("com.google.android.material:material:1.14.0")
+}
+```
 
-Since 2018, Google has been encouraging developers to migrate their projects to AndroidX, a new set of support libraries that follow a more consistent and predictable naming pattern. AndroidX is now the recommended approach for incorporating support libraries in your Android projects.
+Those were the latest stable releases when this post was updated; check the [AndroidX versions page](https://developer.android.com/jetpack/androidx/versions) for newer ones.
 
-To migrate your existing project to AndroidX, follow these steps in Android Studio:
+## Migrating an old project
 
-1. Ensure that you have the latest version of Android Studio installed.
-2. Backup your project.
-3. Go to `Refactor` > `Migrate to AndroidX`.
-4. Review the changes and apply the migration.
+1. **Update to Support Library 28.0.0 first.** AndroidX 1.0.0 artifacts are binary-equivalent to 28.0.0, so this isolates API changes from the package rename.
+2. **Work on a separate branch** and avoid unrelated refactoring during the migration.
+3. **Run Refactor > Migrate to AndroidX** in Android Studio. It rewrites imports, XML layouts and Gradle dependencies, and sets the AndroidX flags in `gradle.properties`.
+4. **Check whether you need Jetifier.** `android.enableJetifier=true` rewrites third-party libraries that still reference `android.support.*` classes at build time. By late 2021 most libraries supported AndroidX natively, and Jetifier slows builds, so Google advises leaving it off unless a dependency needs it. Android Studio's Build Analyzer has a check that tells you whether a project still does.
 
-## Conclusion
+```properties
+# gradle.properties
+android.useAndroidX=true
+# Only if a dependency still uses android.support.*
+# android.enableJetifier=true
+```
 
-The Android Support Library is an indispensable tool for building modern, high-quality Android apps that can cater to a broad range of devices and Android versions. By leveraging the backward compatibility, consistent UI components, and powerful utilities offered by the Support Library, you can create apps that deliver an exceptional user experience while minimizing development time and effort.
+## Beyond the old Support Library
+
+Once you're on AndroidX, the libraries that grew out of the Support Library (Fragment, RecyclerView, AppCompat) are updated independently. For new UI, Google's recommended toolkit is now Jetpack Compose rather than View-based widgets, though AppCompat and Material Components remain the standard for View-based apps.
+
+## Further reading
+
+- [Support Library overview](https://developer.android.com/topic/libraries/support-library)
+- [Migrating to AndroidX](https://developer.android.com/jetpack/androidx/migrate)
+- [AndroidX overview](https://developer.android.com/jetpack/androidx)

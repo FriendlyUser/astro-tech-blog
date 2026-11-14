@@ -1,157 +1,151 @@
 ---
-title: Using Rustls A Modern TLS Library for Rust
+title: "A TLS server and client in Rust with rustls and tokio-rustls"
 pubDate: "2023-04-20T14:45:32.808Z"
-description: "In this article, we will discuss how to use Rustls in Rust projects."
-tags: ["tags"]
+lastUpdated: 2026-11-14
+description: "Build a small TLS echo server and client in Rust with rustls 0.23 and tokio-rustls, loading PEM certificates and trusting a local CA."
+tags: ["tags", "rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/729981546.png
 ---
-# Using Rustls: A Modern TLS Library for Rust
 
-Rust is a systems programming language with a focus on safety, concurrency, and performance. One critical component in ensuring safety and privacy in network communication is the use of TLS (Transport Layer Security). Rustls is a modern, efficient, and safe TLS library implemented in Rust. In this article, we will discuss how to use Rustls in Rust projects.
+[rustls](https://github.com/rustls/rustls) is a TLS library written in Rust. It's the usual choice when you want TLS in a Rust program without linking OpenSSL: reqwest, hyper-rustls, axum-server and many others build on it. This post builds a small TLS echo server and a client that talks to it, using tokio-rustls for async I/O.
 
-## Overview of Rustls
+The code targets rustls 0.23.46 and tokio-rustls 0.26.6. The rustls API changed a lot between 0.19 (the version the original version of this post used) and 0.23: `ServerConfig::new`, `NoClientAuth`, `internal::pemfile` and `RootCertStore::add_pem_file` are all gone.
 
-Rustls is a pure-Rust implementation of TLS that provides a safe, efficient, and easy-to-use API. It is built on top of *ring* for cryptographic operations and *webpki* for certificate handling. Rustls supports TLS 1.2 and 1.3, and it aims to provide a safer and more efficient alternative to OpenSSL.
+## What rustls is and isn't
 
-Some key features of Rustls include:
+- It supports TLS 1.2 and TLS 1.3 only. SSLv3, TLS 1.0 and TLS 1.1 aren't implemented.
+- The protocol logic is Rust, but the cryptography comes from a pluggable *crypto provider*. The default provider is [aws-lc-rs](https://github.com/aws/aws-lc-rs); [ring](https://github.com/briansmith/ring) is available through the `ring` feature. Both contain C and assembly, so "pure Rust" only describes the TLS layer.
+- Certificate verification is done by [rustls-webpki](https://github.com/rustls/webpki).
 
-- Pure Rust implementation, avoiding common pitfalls of C-based libraries
-- Modern, safe, and efficient cryptographic primitives provided by *ring*
-- Support for TLS 1.2 and 1.3
-- No support for old, insecure protocols (SSLv2, SSLv3, TLS 1.0, TLS 1.1)
-- Clear and concise API
-
-## Getting Started with Rustls
-
-To get started, add Rustls as a dependency in your `Cargo.toml`:
+## Dependencies
 
 ```toml
 [dependencies]
-rustls = "0.19"
-tokio-rustls = "0.23"
+rustls = "0.23.46"
+tokio-rustls = "0.26.6"
+tokio = { version = "1", features = ["full"] }
 ```
 
-The `tokio-rustls` crate provides async support for Rustls when using the Tokio runtime, which is commonly used in Rust-based network applications.
+`tokio-rustls` re-exports `rustls` as `tokio_rustls::rustls`, so you can also skip the direct `rustls` dependency. If you do keep both, make sure they resolve to the same rustls 0.23 release, otherwise the config types won't match.
 
-## Creating a Rustls Server
+PEM parsing is built in through `rustls::pki_types::pem::PemObject`. The separate `rustls-pemfile` crate that older examples use is no longer needed.
 
-Let's create a simple TLS server using Rustls and Tokio. First, we need to import the necessary crates:
+## Getting a certificate for local testing
+
+webpki won't accept a self-signed leaf certificate as its own trust anchor, so you need a CA plus a certificate signed by it. [mkcert](https://github.com/FiloSottile/mkcert) does this in one step:
+
+```sh
+mkcert localhost
+# writes localhost.pem and localhost-key.pem
+cp "$(mkcert -CAROOT)/rootCA.pem" ca.pem
+```
+
+## The server
 
 ```rust
-use rustls::{ServerConfig, NoClientAuth, AllowAnyAuthenticatedClient, internal::pemfile};
+use std::sync::Arc;
+
+use rustls::pki_types::pem::PemObject;
+use rustls::pki_types::{CertificateDer, PrivateKeyDer};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio_rustls::TlsAcceptor;
-use std::sync::Arc;
-use std::fs::File;
-use std::io::BufReader;
-```
 
-Next, we'll create a function to configure the server's TLS settings:
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let certs = CertificateDer::pem_file_iter("localhost.pem")?
+        .collect::<Result<Vec<_>, _>>()?;
+    let key = PrivateKeyDer::from_pem_file("localhost-key.pem")?;
 
-```rust
-fn configure_tls() -> Result<ServerConfig, Box<dyn std::error::Error>> {
-    let mut config = ServerConfig::new(NoClientAuth::new());
+    let config = rustls::ServerConfig::builder()
+        .with_no_client_auth()
+        .with_single_cert(certs, key)?;
+    let acceptor = TlsAcceptor::from(Arc::new(config));
 
-    let cert_file = File::open("cert.pem")?;
-    let key_file = File::open("key.pem")?;
-    let mut cert_reader = BufReader::new(cert_file);
-    let mut key_reader = BufReader::new(key_file);
-
-    let cert_chain = pemfile::certs(&mut cert_reader).unwrap();
-    let mut keys = pemfile::pkcs8_private_keys(&mut key_reader).unwrap();
-
-    config.set_single_cert(cert_chain, keys.remove(0))?;
-
-    Ok(config)
-}
-```
-
-In this function, we create a `ServerConfig` with no client authentication. We then read the server's certificate and private key from PEM files and configure the server to use them.
-
-Now, let's create an async function to start the server:
-
-```rust
-async fn start_server() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "127.0.0.1:8080";
-    let tcp_listener = TcpListener::bind(addr).await?;
-    let tls_config = configure_tls()?;
-    let tls_acceptor = TlsAcceptor::from(Arc::new(tls_config));
-
-    println!("Server is listening on {}", addr);
+    let listener = TcpListener::bind("127.0.0.1:8443").await?;
+    println!("Listening on 127.0.0.1:8443");
 
     loop {
-        let (stream, _) = tcp_listener.accept().await?;
-        let tls_acceptor = tls_acceptor.clone();
+        let (stream, peer) = listener.accept().await?;
+        let acceptor = acceptor.clone();
 
         tokio::spawn(async move {
-            let tls_stream = tls_acceptor.accept(stream).await.unwrap();
-            println!("Client connected");
+            let mut tls = match acceptor.accept(stream).await {
+                Ok(tls) => tls,
+                Err(err) => {
+                    eprintln!("{peer}: handshake failed: {err}");
+                    return;
+                }
+            };
+
+            let mut buf = [0u8; 1024];
+            match tls.read(&mut buf).await {
+                Ok(n) if n > 0 => {
+                    let _ = tls.write_all(&buf[..n]).await;
+                    let _ = tls.shutdown().await; // sends TLS close_notify
+                }
+                Ok(_) => {}
+                Err(err) => eprintln!("{peer}: read failed: {err}"),
+            }
         });
     }
 }
 ```
 
-This function creates a TCP listener on a specified address, configures the TLS settings using the previously defined function, and creates a `TlsAcceptor`. We then accept incoming connections in a loop, spawning a new task to handle each connection.
+`ServerConfig::builder()` uses the default crypto provider and the default protocol versions (TLS 1.2 and 1.3). `with_single_cert` takes the certificate chain (leaf first) and the private key. `PrivateKeyDer::from_pem_file` accepts PKCS#8, PKCS#1 (RSA) and SEC1 (EC) keys.
 
-To run the server, simply call `start_server().await` in your `main` function.
+A failed handshake is logged and only ends that connection's task. The original version of this post called `.unwrap()` there, which would panic the task on any bad client.
 
-## Creating a Rustls Client
-
-Now that we have a server, let's create a client that connects to it. Import the necessary crates:
+## The client
 
 ```rust
-use rustls::{ClientConfig, ProtocolVersion, RootCertStore};
+use std::sync::Arc;
+
+use rustls::pki_types::pem::PemObject;
+use rustls::pki_types::{CertificateDer, ServerName};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio_rustls::TlsConnector;
-use std::sync::Arc;
-use std::fs::File;
-use std::io::BufReader;
-```
 
-Next, create a function to configure the client's TLS settings:
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut roots = rustls::RootCertStore::empty();
+    for cert in CertificateDer::pem_file_iter("ca.pem")? {
+        roots.add(cert?)?;
+    }
 
-```rust
-fn configure_tls() -> Result<ClientConfig, Box<dyn std::error::Error>> {
-    let mut config = ClientConfig::new();
-    config.versions = vec![ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_3];
+    let config = rustls::ClientConfig::builder()
+        .with_root_certificates(roots)
+        .with_no_client_auth();
+    let connector = TlsConnector::from(Arc::new(config));
 
-   let root_cert_file = File::open("ca.pem")?;
-    let mut root_cert_reader = BufReader::new(root_cert_file);
-    let mut root_store = RootCertStore::empty();
-    root_store.add_pem_file(&mut root_cert_reader).unwrap();
+    let stream = TcpStream::connect("127.0.0.1:8443").await?;
+    // The name is checked against the server certificate's subject alt names
+    let domain = ServerName::try_from("localhost")?.to_owned();
+    let mut tls = connector.connect(domain, stream).await?;
 
-    config.root_store = root_store;
+    tls.write_all(b"hello over TLS").await?;
 
-    Ok(config)
+    let mut buf = Vec::new();
+    tls.read_to_end(&mut buf).await?;
+    println!("Server replied: {}", String::from_utf8_lossy(&buf));
+    Ok(())
 }
 ```
 
-In this function, we create a `ClientConfig` and set the supported TLS protocol versions. Then, we read the CA certificate used to sign the server's certificate from the PEM file and add it to the client's root certificate store.
+The client trusts only `ca.pem`. To talk to public servers instead, fill the root store from the [webpki-roots](https://crates.io/crates/webpki-roots) crate (`roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned())`) or use the OS certificate store through [rustls-platform-verifier](https://crates.io/crates/rustls-platform-verifier).
 
-Now, let's create an async function to connect to the server:
+Note that `ServerName` must match a name in the certificate. Connecting to `127.0.0.1` but passing `"localhost"` works here because mkcert put `localhost` in the certificate.
 
-```rust
-async fn connect_to_server() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "127.0.0.1:8080";
-    let tcp_stream = TcpStream::connect(addr).await?;
-    let tls_config = configure_tls()?;
-    let tls_connector = TlsConnector::from(Arc::new(tls_config));
+## Gotchas
 
-    println!("Connecting to {}", addr);
+- **Restricting protocol versions**: to allow TLS 1.3 only, use `ClientConfig::builder_with_protocol_versions(&[&rustls::version::TLS13])` (and the matching `ServerConfig` method) instead of `builder()`.
+- **Crypto provider conflicts**: `builder()` picks the provider from the enabled crate features. If a dependency enables `ring` while rustls also has `aws-lc-rs` enabled, rustls can't choose one and panics. Fix it by calling `rustls::crypto::aws_lc_rs::default_provider().install_default()` (or the `ring` equivalent) at startup, or use `builder_with_provider`.
+- **Closing connections**: call `shutdown()` on the TLS stream so the peer receives `close_notify`. Otherwise the peer sees an unexpected EOF, which rustls reports as an error.
 
-    let tls_stream = tls_connector.connect("localhost", tcp_stream).await?;
-    println!("Connected to server");
+## Further reading
 
-    // Use `tls_stream` to communicate with the server
-}
-```
-
-This function connects to the server using a TCP stream, configures the TLS settings using the previously defined function, and creates a `TlsConnector`. We then use the `TlsConnector` to establish a TLS session with the server.
-
-To connect to the server, simply call `connect_to_server().await` in your `main` function.
-
-## Conclusion
-
-In this article, we have demonstrated how to use Rustls to create a simple TLS server and client in Rust. Rustls provides a modern, safe, and efficient alternative to OpenSSL, making it an excellent choice for Rust-based network applications. By leveraging the power of Rust and its ecosystem, you can build secure and efficient network applications with ease.
-
+- [rustls API docs](https://docs.rs/rustls/latest/rustls/)
+- [tokio-rustls examples](https://github.com/rustls/tokio-rustls/tree/main/examples)
+- [rustls-pki-types PEM support](https://docs.rs/rustls-pki-types/latest/rustls_pki_types/pem/trait.PemObject.html)

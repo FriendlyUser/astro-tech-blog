@@ -1,57 +1,68 @@
 ---
-description: 'In this article, we will explore how to implement gRPC in Go, covering
-  the following topics:'
+description: "Build a gRPC service in Go: define it in Protocol Buffers, generate code with protoc-gen-go and protoc-gen-go-grpc, then write the server and client."
 imgSrc: /imgs/2023/2892583015.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-01T18:40:54.000Z'
-tags: []
-title: Using gRPC in Go A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["go", "microservices"]
+title: "gRPC in Go: define a service, generate code, and write a server and client"
 ---
 
-# Using gRPC in Go: A Comprehensive Guide
+:::caution
+An earlier version of this post used `github.com/golang/protobuf/protoc-gen-go` with `--go_out=plugins=grpc`. That module is deprecated in favour of `google.golang.org/protobuf`, and the `plugins=grpc` option has been removed; gRPC code now comes from a separate `protoc-gen-go-grpc` plugin. `grpc.Dial` and `grpc.WithInsecure` are also deprecated. The steps below use the current tooling.
+:::
 
-gRPC is a modern, open-source, high-performance remote procedure call (RPC) framework that can run in any environment. It efficiently connects services in and across data centers with pluggable support for load balancing, tracing, health checking, and authentication. gRPC is an excellent choice for developing microservices and other distributed systems.
+[gRPC](https://grpc.io/) is an RPC framework: you describe a service and its messages in a `.proto` file, generate client and server code for your language, and call remote methods as if they were local functions. Messages are serialised with Protocol Buffers and sent over HTTP/2, which gives you a compact binary format, a typed contract between services, and streaming in both directions.
 
-In this article, we will explore how to implement gRPC in Go, covering the following topics:
+This post builds a one-method `ExampleService` in Go, with a server and a client.
 
-1. Introduction to gRPC
-2. Setting up the Go environment
-3. Defining the gRPC service using Protocol Buffers
-4. Implementing the gRPC server
-5. Implementing the gRPC client
-6. Running and testing the gRPC service
+## Install the tools
 
-## 1. Introduction to gRPC
-
-gRPC uses Protocol Buffers (protobuf) as the Interface Definition Language (IDL) for describing the service interface and the structure of the payload messages. Protocol Buffers are a language-agnostic binary serialization format that is highly efficient and extensible.
-
-The main components of gRPC are:
-
-- **Service**: The service definition specifies the methods that can be called remotely, their request and response types.
-- **Client**: The client is generated automatically from the service definition and can be used to call the methods defined in the service.
-- **Server**: The server implements the service interface and listens for incoming requests from clients.
-
-## 2. Setting up the Go environment
-
-Before we proceed, ensure that you have the latest version of Go installed on your system. You can download it from the [official website](https://golang.org/dl/).
-
-Next, install the gRPC and protobuf libraries:
+You need Go, the Protocol Buffers compiler `protoc` (download it from the [protobuf releases page](https://github.com/protocolbuffers/protobuf/releases) or your package manager), and the two Go code generators:
 
 ```bash
-$ go get -u google.golang.org/grpc
-$ go get -u github.com/golang/protobuf/protoc-gen-go
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 ```
 
-Also, download the [Protocol Buffer compiler](https://github.com/protocolbuffers/protobuf/releases) and add it to your PATH.
+`protoc` finds plugins on your `PATH`, so make sure Go's bin directory is on it:
 
-## 3. Defining the gRPC service using Protocol Buffers
+```bash
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
 
-Create a new directory for your project and add a file named `example.proto`:
+## Project layout
 
-```proto
+```text
+grpc-demo/
+├── go.mod
+├── example/
+│   └── example.proto
+├── server/
+│   └── main.go
+└── client/
+    └── main.go
+```
+
+Create the module:
+
+```bash
+mkdir grpc-demo && cd grpc-demo
+go mod init example.com/grpc-demo
+```
+
+The server and client each get their own directory because both are `package main`; two `main` functions in one directory won't build together.
+
+## Define the service
+
+`example/example.proto`:
+
+```protobuf
 syntax = "proto3";
 
 package example;
+
+option go_package = "example.com/grpc-demo/example";
 
 service ExampleService {
   rpc SayHello (HelloRequest) returns (HelloResponse);
@@ -66,19 +77,30 @@ message HelloResponse {
 }
 ```
 
-This service definition describes a simple `ExampleService` with a single method `SayHello` that takes a `HelloRequest` message containing a name and returns a `HelloResponse` message with a greeting.
+`go_package` tells the generator the Go import path of the generated code. Current `protoc-gen-go` requires it.
 
-Now, compile the `.proto` file to generate the Go code:
+Generate the code from the project root:
 
 ```bash
-$ protoc -I . --go_out=plugins=grpc:. example.proto
+protoc --go_out=. --go_opt=paths=source_relative \
+  --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+  example/example.proto
 ```
 
-This command generates a `example.pb. file containing the generated service interface, message types, and client code.
+This writes two files next to the `.proto`:
 
-## 4. Implementing the gRPC server
+- `example/example.pb.go`: the message types (`HelloRequest`, `HelloResponse`).
+- `example/example_grpc.pb.go`: the `ExampleServiceServer` interface, `RegisterExampleServiceServer`, and the `ExampleServiceClient`.
 
-Create a new file named `server. and implement the `ExampleServiceServer` interface:
+Then pull in the runtime dependencies:
+
+```bash
+go mod tidy
+```
+
+## Write the server
+
+`server/main.go`:
 
 ```go
 package main
@@ -89,36 +111,41 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
-	"your_project_path/example"
+
+	pb "example.com/grpc-demo/example"
 )
 
-type server struct{}
+type server struct {
+	pb.UnimplementedExampleServiceServer
+}
 
-func (s *server) SayHello(ctx context.Context, req *example.HelloRequest) (*example.HelloResponse, error) {
-	return &example.HelloResponse{Message: "Hello, " + req.Name}, nil
+func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	return &pb.HelloResponse{Message: "Hello, " + req.GetName()}, nil
 }
 
 func main() {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	example.RegisterExampleServiceServer(s, &server{})
+	pb.RegisterExampleServiceServer(s, &server{})
 
-	log.Println("Starting gRPC server on port 50051...")
+	log.Printf("gRPC server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
 ```
 
-This code creates a gRPC server, registers the `ExampleService` implementation, and listens for incoming connections on port 50051.
+Embedding `pb.UnimplementedExampleServiceServer` is required by the generated code. It makes any method you haven't implemented return an `Unimplemented` error, so adding a new RPC to the `.proto` doesn't break the build of existing servers.
 
-## 5. Implementing the gRPC client
+Use the generated getters like `req.GetName()` rather than reading fields directly: they are nil-safe.
 
-Create a new file named `client. and implement a simple client to call the `SayHello` method:
+## Write the client
+
+`client/main.go`:
 
 ```go
 package main
@@ -130,17 +157,20 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	"your_project_path/example"
+	"google.golang.org/grpc/credentials/insecure"
+
+	pb "example.com/grpc-demo/example"
 )
 
 func main() {
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.NewClient("localhost:50051",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Failed to connect: %v", err)
+		log.Fatalf("failed to create client: %v", err)
 	}
 	defer conn.Close()
 
-	client := example.NewExampleServiceClient(conn)
+	client := pb.NewExampleServiceClient(conn)
 
 	name := "World"
 	if len(os.Args) > 1 {
@@ -150,47 +180,47 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := client.SayHello(ctx, &example.HelloRequest{Name: name})
+	resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: name})
 	if err != nil {
-		log.Fatalf("Failedto call SayHello: %v", err)
+		log.Fatalf("SayHello failed: %v", err)
 	}
-
-	log.Printf("Response: %s", resp.Message)
+	log.Printf("Response: %s", resp.GetMessage())
 }
 ```
 
-This code connects to the gRPC server, creates a new `ExampleServiceClient`, and calls the `SayHello` method with the provided name or "World" as a default.
+`grpc.NewClient` does not connect immediately. The connection is made on the first RPC, so a server that isn't running shows up as an error from `SayHello`, not from `NewClient`.
 
-## 6. Running and testing the gRPC service
+`insecure.NewCredentials()` disables TLS, which is fine for local testing. In production, use `credentials.NewTLS` or your platform's credentials instead.
 
-Now it's time to run the server and client to test the gRPC service. Open two terminal windows.
+## Run it
 
-In the first terminal, run the server:
-
-```bash
-$ go run server.go
-```
-
-You should see the following message:
-
-```
-Starting gRPC server on port 50051...
-```
-
-In the second terminal, run the client:
+In one terminal:
 
 ```bash
-$ go run client.go Alice
+go run ./server
 ```
 
-You should see the following message:
+In another:
 
+```bash
+go run ./client Alice
 ```
+
+The client logs (after the timestamp `log` adds):
+
+```text
 Response: Hello, Alice
 ```
 
-Congratulations! You have successfully implemented a gRPC service in Go. You can now extend the service definition, server, and client to meet your specific requirements.
+## Next steps and gotchas
 
-## Conclusion
+- **Deadlines.** Always set a timeout on the client context, as above. Without one, a hung server can block the caller indefinitely.
+- **Errors.** Return errors from handlers with `status.Error(codes.NotFound, "...")` from `google.golang.org/grpc/status` and `google.golang.org/grpc/codes`, so clients get a proper gRPC status code instead of `Unknown`.
+- **Debugging with grpcurl.** Register server reflection with `reflection.Register(s)` from `google.golang.org/grpc/reflection`, then tools like [grpcurl](https://github.com/fullstorydev/grpcurl) can list and call your methods without the `.proto` file.
+- **Browsers.** Browsers can't speak native gRPC directly. Use gRPC-Web or Connect if a web front end needs to call the service.
 
-In this article, we covered the basics of implementing gRPC services in Go. We learned how to define a service using Protocol Buffers, implement the server and client, and test the service using the generated code. gRPC is a powerful, efficient, and flexible framework that simplifies the development of distributed systems and microservices. By using gRPC in Go, you can leverage the performance, simplicity, and strong typing that Go offers, making it a great choice for developing modern applications.
+## Further reading
+
+- [gRPC Go quick start](https://grpc.io/docs/languages/go/quickstart/)
+- [gRPC Go basics tutorial](https://grpc.io/docs/languages/go/basics/)
+- [Protocol Buffers Go generated code guide](https://protobuf.dev/reference/go/go-generated/)

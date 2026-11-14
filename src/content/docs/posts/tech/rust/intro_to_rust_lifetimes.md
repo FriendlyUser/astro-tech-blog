@@ -1,49 +1,124 @@
 ---
-title: "Lifetimes in Rust: Managing Borrowed Data"
-description: "Lifetimes ensure that references to data remain valid as long as the data exists. This article demonstrates Rust lifetimes through an example data structure containing vectors of strings and string references."
+title: "Rust lifetimes: why a struct can't borrow from its own field"
+description: "Rust lifetimes through one example: a struct holding strings and references to them, why it won't compile, and two designs that do."
 pubDate: Saturday, 24 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
 ---
 
+A lifetime in Rust is the region of code where a reference is valid. Lifetime annotations like `'a` don't make anything live longer. They name a relationship between references so the borrow checker can reject code that might leave a reference pointing at freed memory.
 
-# Lifetimes in Rust: Managing Borrowed Data 
-The Rust programming language has a unique system for managing borrowed data through lifetimes. Lifetimes ensure that references to data remain valid as long as the data exists. This article demonstrates Rust lifetimes through an example data structure containing vectors of strings and string references.
+This post uses one example: a struct that owns some strings and also holds references into them. It's a natural first design, it doesn't compile, and the reason why explains most of what lifetimes are for.
 
-We will define a struct called Data that contains two fields: 
-
-- strs: A vector of String 
-- refs: A vector of &str references to the strings in strs 
-
-This structure will only be valid if the refs references always point to valid strings in strs. Rust lifetimes will enforce this constraint.
-
-Here is the code:
+## The struct
 
 ```rust
-struct Data<'a> {  
-    strs: Vec<String>, 
-    refs: Vec<&'a str>, 
-} 
+struct Data<'a> {
+    strs: Vec<String>,
+    refs: Vec<&'a str>,
+}
 ```
 
-The 'a lifetime parameter on the struct specifies that the refs vector contains string slices that live at least as long as the lifetime 'a. We'll see how this connects to the actual lifetimes of the strings in strs shortly.
+`Data<'a>` says: every `&str` in `refs` points at data that stays valid for at least `'a`, so a `Data<'a>` value can't outlive `'a`. Nothing here ties `'a` to `strs`. The compiler doesn't know the references are meant to point into the struct's own vector.
 
-Now we'll create one instance of the Data struct:
+## Trying to build one
 
 ```rust
-{  
-    let strings = vec![String::from("Hello"), String::from("World")]; 
-    let string_slices = strings.iter().map(|s| &s[..]).collect();  
-    let data = Data { strs: strings, refs: string_slices }; 
-} 
+fn main() {
+    let strings = vec![String::from("Hello"), String::from("World")];
+    let string_slices: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
+    let data = Data { strs: strings, refs: string_slices };
+}
 ```
 
-Here, the data structure is valid because:
+This fails:
 
-- The strings vector lives within the scope of the outer curly braces {}. 
-- The string_slices vector contains references to the strings in strings. 
-- The Data struct contains strings and string_slices, so the refs field is valid as long as the Data instance exists. 
-- The Data instance goes out of scope at the end of the block, so all the references in refs become invalid at that point. This satisfies the lifetime constraint we specified.
+```text
+error[E0505]: cannot move out of `strings` because it is borrowed
+```
 
-In summary, Rust's lifetimes ensure data references are always valid and prevent dangling pointers. They lead to safer and more robust Rust code. Through lifetime parameters, the compiler statically verifies that references outlive the data they refer to.
+`string_slices` borrows `strings`, and that borrow is still in use when `strings` is moved into `data.strs`. Rust doesn't allow moving a value while something borrows it.
+
+You could argue the move is harmless here, because the `String` contents live on the heap and don't move. But once `data` exists, nothing stops code from calling `data.strs.clear()` or `data.strs.push(...)`, which can free or reallocate the strings that `data.refs` points at. The type system has no way to say "this field borrows from that sibling field", so it rejects the whole pattern. This is the *self-referential struct* problem.
+
+## Fix 1: keep the owner outside the struct
+
+If the struct only borrows, the lifetime has something real to refer to: the `Vec<String>` that lives in the caller.
+
+```rust
+struct Data<'a> {
+    refs: Vec<&'a str>,
+}
+
+fn main() {
+    let strings = vec![String::from("Hello"), String::from("World")];
+    let data = Data {
+        refs: strings.iter().map(|s| s.as_str()).collect(),
+    };
+    println!("{:?}", data.refs); // ["Hello", "World"]
+}
+```
+
+Now the borrow checker enforces the rule you want. Drop the owner too early and it refuses to compile:
+
+```rust
+struct Data<'a> {
+    refs: Vec<&'a str>,
+}
+
+fn main() {
+    let data;
+    {
+        let strings = vec![String::from("Hello")];
+        data = Data { refs: strings.iter().map(|s| s.as_str()).collect() };
+    } // `strings` is dropped here
+    println!("{:?}", data.refs);
+}
+```
+
+```text
+error[E0597]: `strings` does not live long enough
+```
+
+That error is lifetimes doing their job: `data` would otherwise hold dangling references.
+
+## Fix 2: store indices instead of references
+
+If the struct really does need to own the strings, store positions into the vector rather than references, and hand out borrows from a method:
+
+```rust
+struct Data {
+    strs: Vec<String>,
+    selected: Vec<usize>,
+}
+
+impl Data {
+    fn selected(&self) -> impl Iterator<Item = &str> + '_ {
+        self.selected.iter().map(|&i| self.strs[i].as_str())
+    }
+}
+
+fn main() {
+    let data = Data {
+        strs: vec![String::from("Hello"), String::from("World")],
+        selected: vec![1, 0],
+    };
+    let words: Vec<&str> = data.selected().collect();
+    println!("{words:?}"); // ["World", "Hello"]
+}
+```
+
+`Data` no longer needs a lifetime parameter at all. The references returned by `selected()` borrow `data`, so you can't mutate `strs` while you hold them.
+
+## Gotchas
+
+- Indices can go stale if you remove items from `strs`. If that matters, use ranges into one big `String`, or reference-counted strings (`Rc<str>` / `Arc<str>`) shared between fields.
+- If you genuinely need a self-referential type (for example, a parsed view over a buffer you own), crates such as [`self_cell`](https://crates.io/crates/self_cell) wrap the unsafe code for you. Try the two fixes above first.
+- Most functions need no lifetime annotations: the elision rules fill them in. You usually only write `'a` on structs that hold references and on functions that return a reference derived from more than one input.
+
+## Further reading
+
+- [The Rust Book: Validating References with Lifetimes](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html)
+- [Error index: E0505](https://doc.rust-lang.org/error_codes/E0505.html) and [E0597](https://doc.rust-lang.org/error_codes/E0597.html)

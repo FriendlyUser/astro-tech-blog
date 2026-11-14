@@ -1,102 +1,175 @@
 ---
-title: An Introduction to the Android RxJava Reactive Extensions Library
+title: 'RxJava 3 on Android: observables, operators and threading'
 pubDate: "2024-08-16T07:45:21.000Z"
-description: "In this article , we will discuss the core concepts of RxJava, its advantages over traditional asynchronous programming approaches, and how to add the library to your Android project"
-tags: []
+lastUpdated: 2026-11-14
+description: "How RxJava 3 models async work on Android: Observable, Single and friends, common operators, schedulers, Retrofit integration, and disposing subscriptions."
+tags: ["android", "java"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1836890630.png
 ---
-# An Introduction to the Android RxJava Reactive Extensions Library
 
-RxJava is a popular Java-based library that provides a powerful and expressive way to handle asynchronous programming and data streams in Android applications. Reactive Extensions, or Rx for short, is a family of libraries that implement the Reactive Programming paradigm across different programming languages, including Java, JavaScript, and .NET.
+RxJava is the Java implementation of ReactiveX (Reactive Extensions). It represents asynchronous work, such as a network call, a database query or a stream of click events, as an observable stream that you transform with operators like `map`, `filter` and `flatMap`. On Android it was the standard way to chain background work and hop back to the main thread before Kotlin coroutines took over that role.
 
-In this article, we will discuss the core concepts of RxJava, its advantages over traditional asynchronous programming approaches, and how to add the library to your Android project.
+:::note[Status in November 2026]
+RxJava 3 (current release 3.1.12) is still maintained. RxJava 4 is in development under the new group ID `io.reactivex.rxjava4`, and the project says 3.x will keep receiving support for a year after 4.0 ships. RxJava 1 and 2 are end-of-life. For new Kotlin code, Google's Android guidance recommends coroutines and `Flow` instead, but RxJava remains common in existing Java codebases.
+:::
 
-## Reactive Programming and Observables
+## Adding RxJava to an Android project
 
-Reactive Programming is a declarative programming paradigm that focuses on working with data streams and the propagation of change. It enables developers to express complex, asynchronous operations in a more readable and maintainable way.
+You need two libraries: RxJava itself, and RxAndroid, which provides `AndroidSchedulers.mainThread()`. If you use Retrofit, add its RxJava 3 call adapter too. In `app/build.gradle.kts`:
 
-At the heart of RxJava is the `Observable` class, which represents a stream of data or events. An `Observable` can emit zero or more items and then optionally complete or emit an error. The items emitted by an `Observable` can be anything: data from a network request, user input events, or updates from a database.
+```kotlin
+dependencies {
+    implementation("io.reactivex.rxjava3:rxjava:3.1.12")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
 
-The main advantage of using `Observable` is that it enables the developer to chain together multiple asynchronous operations and transform the data in a declarative manner. This results in code that is easier to read, write, and maintain.
+    // Optional: return RxJava types from Retrofit interfaces
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.retrofit2:adapter-rxjava3:3.0.0")
+}
+```
 
-## Observers and Subscriptions
+RxAndroid 3.0.2 (2022) is still the latest release. It depends on an older RxJava 3.x, so declare RxJava explicitly as above to get the newer version with its bug fixes.
 
-To receive the items emitted by an `Observable`, you need to subscribe to it using an `Observer`. The `Observer` is an interface that defines three methods:
+## The reactive types
 
-1. `onNext(T item)`: Called when the `Observable` emits an item.
-2. `onError(Throwable error)`: Called when the `Observable` encounters an error.
-3. `onComplete()`: Called when the `Observable` finishes emitting items.
+RxJava 3 has five source types. Picking the right one documents what the stream can emit:
 
-When you subscribe an `Observer` to an `Observable`, you create a `Subscription`. This `Subscription` object can be used to control the flow of data and unsubscribe from the `Observable` to prevent memory leaks.
+| Type | Emits | Typical use |
+| --- | --- | --- |
+| `Observable<T>` | 0 to N items, then complete or error | UI events, polling |
+| `Flowable<T>` | 0 to N items, with backpressure | Large or fast streams, such as database change feeds |
+| `Single<T>` | exactly one item or an error | A network request |
+| `Maybe<T>` | one item, nothing, or an error | A cache lookup |
+| `Completable` | no items, just complete or error | A write or delete |
+
+A consumer of an `Observable` implements `Observer`, which has four callbacks:
+
+- `onSubscribe(Disposable d)`: called first, with a handle you can use to cancel.
+- `onNext(T item)`: called for each item.
+- `onError(Throwable e)`: called once if the stream fails. No more items follow.
+- `onComplete()`: called once if the stream finishes normally.
+
+In practice you rarely implement `Observer` by hand. `subscribe(onNext, onError)` takes lambdas and returns a `Disposable`. (RxJava 1 called this handle a `Subscription`; in RxJava 2 and 3 it's `Disposable`.)
 
 ## Operators
 
-One of the most powerful features of RxJava is its rich set of operators that allow you to transform, combine, and manipulate data streams in various ways. Some common operators include:
+Operators return a new stream, so you chain them:
 
-- `map`: Transforms the items emitted by an `Observable` by applying a function to each item.
-- `filter`: Filters the items emitted by an `Observable` based on a predicate function.
-- `merge`: Combines multiple `Observables` into a single `Observable` that emits items from all source `Observables`.
-- `zip`: Combines the emissions of multiple `Observables` together via a specified function and emits single items for each combination based on the results of this function.
+```java
+Observable.just(1, 2, 3, 4, 5)
+        .filter(n -> n % 2 == 1)
+        .map(n -> n * 10)
+        .subscribe(n -> System.out.println(n)); // 10, 30, 50
+```
 
-## Adding RxJava to Your Android Project
+A few you'll use constantly:
 
-To add the RxJava library to your Android project, include the following dependency in your app's `build.gradle` file:
+- `map`: transform each item.
+- `filter`: drop items that don't match a predicate.
+- `flatMap`: turn each item into another stream and merge the results, for example "for each user ID, fetch the user". Use `concatMap` if order matters, or `switchMap` to cancel the previous inner stream when a new item arrives (the classic search-as-you-type case).
+- `Observable.merge(a, b)`: interleave items from several streams as they arrive.
+- `Single.zip(a, b, combiner)`: wait for both, then combine their results.
+- `debounce`: only emit an item after a quiet period, useful for text input.
 
-```groovy
-dependencies {
-    implementation 'io.reactivex.rxjava3:rxjava:3.x.y'
+## Threading with schedulers
+
+By default, a stream runs on the thread that subscribes to it. Two operators change that:
+
+- `subscribeOn(Schedulers.io())` sets the thread the source runs on. Only the first `subscribeOn` in a chain has an effect.
+- `observeOn(AndroidSchedulers.mainThread())` moves everything downstream of it to another thread. You can use it several times in one chain.
+
+`Schedulers.io()` is for blocking I/O such as network and disk. `Schedulers.computation()` is sized to the number of CPU cores and is for CPU-bound work.
+
+## Example: loading posts with Retrofit
+
+Declare the endpoint with a `Single` return type:
+
+```java
+import java.util.List;
+
+import io.reactivex.rxjava3.core.Single;
+import retrofit2.http.GET;
+
+public interface ApiService {
+    @GET("posts")
+    Single<List<Post>> getPosts();
 }
 ```
 
-Replace `3.x.y` with the latest version of the library.
-
-## Example: Fetching Data from a REST API
-
-Let's take a look at an example of how to use RxJava to fetch data from a REST API and display it in an Android app.
-
-First, create an `Observable` that will emit the data from the API:
+Register the RxJava 3 call adapter when building Retrofit:
 
 ```java
-public Observable<List<Post>> getPostsObservable() {
-    return apiService.getPosts()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+ApiService api = new Retrofit.Builder()
+        .baseUrl("https://jsonplaceholder.typicode.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .build()
+        .create(ApiService.class);
+```
+
+`RxJava3CallAdapterFactory.create()` makes the request asynchronously on OkHttp's own threads, so a `subscribeOn` isn't strictly needed. It doesn't hurt, and it keeps the chain correct if you later swap in a source that blocks.
+
+Subscribe in the activity, and keep the `Disposable` so you can cancel it:
+
+```java
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class PostsActivity extends AppCompatActivity {
+    private static final String TAG = "PostsActivity";
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
+    private ApiService api;      // built as shown above
+    private PostAdapter adapter; // your RecyclerView ListAdapter
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // setContentView, RecyclerView and api setup omitted
+
+        disposables.add(
+                api.getPosts()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                posts -> adapter.submitList(posts),
+                                error -> Log.e(TAG, "Failed to load posts", error)
+                        )
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposables.clear();
+        super.onDestroy();
+    }
 }
 ```
 
-In this example, we use the `subscribeOn` and `observeOn` operators to specify the threads on which the network request should be executed and on which the results should be processed.
+`CompositeDisposable.clear()` cancels every subscription it holds. Without it, a request that finishes after the user leaves the screen still runs its callback, which holds a reference to the destroyed activity until then.
 
-Next, subscribe an `Observer` to the `Observable`:
+## Gotchas
 
-```java
-getPostsObservable().subscribe(new Observer<List<Post>>() {
-    @Override
-    public void onSubscribe(@NonNull Disposable d) {
-        // Handle subscription
-    }
+- **Always handle errors.** If you call `subscribe` without an `onError` callback and the stream fails, RxJava routes an `OnErrorNotImplementedException` to `RxJavaPlugins.onError`, which crashes the app by default.
+- **Streams are lazy.** Nothing happens until you subscribe. A Retrofit `Single` that nobody subscribes to never sends a request.
+- **`null` is not allowed.** RxJava 2 and 3 throw a `NullPointerException` if a source emits `null`. Use `Maybe` or `Optional` for "no value".
+- **Put the disposal in the right place.** In a `ViewModel`, keep the `CompositeDisposable` there and clear it in `onCleared()`, so requests survive configuration changes such as rotation.
 
-    @Override
-    public void onNext(@NonNull List<Post> posts) {
-        // Update UI with the fetched data
-    }
+## Further reading
 
-    @Override
-    public void onError(@NonNull Throwable e) {
-        // Handle error
-    }
-
-    @Override
-    public void onComplete() {
-        // Handle completion
-    }
-});
-```
-
-In the `onNext` method, you can update your app's UI with the fetched data.
-
-## Conclusion
-
-RxJava is a powerful library for handling asynchronous programming in Android applications. By leveraging the power of Reactive Programming and the rich set of operators provided by the library, you can write code that is more expressive, readable, and maintainable.
-
-Whether you're working with network requests, user input events, or database updates, RxJava can help you manage and transform data streams in an efficient and elegant way.
+- [RxJava on GitHub](https://github.com/ReactiveX/RxJava), including the wiki and the 3.x/4.x status
+- [RxAndroid](https://github.com/ReactiveX/RxAndroid)
+- [ReactiveX operator reference](https://reactivex.io/documentation/operators.html), with marble diagrams
+- [Kotlin flows on Android](https://developer.android.com/kotlin/flow), if you're starting a new Kotlin project

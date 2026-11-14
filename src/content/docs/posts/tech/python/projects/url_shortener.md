@@ -1,155 +1,137 @@
 ---
 tags: ['python', 'urls']
-title: Url Shortener in Python
-description: Describing how to build a basic URL shortener in Python
+title: Build a simple URL shortener in Python with Flask and SQLite
+description: A single-file Flask app that turns long URLs into six-character codes, stores them in SQLite, and redirects visitors to the original address.
 pubDate: Fri, 14 September 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2851628136.png
 ---
 
-URL shorteners are online tools that allow you to shorten long, complex URLs into shorter, more manageable ones. These shorter URLs can be easier to share and remember, and they can also be useful for tracking clicks and traffic to a particular URL.
+A URL shortener maps a short code to a long URL. When someone visits `/<code>`, the server looks up the code and sends back an HTTP redirect to the original address. That lookup is the whole idea. Hosted services add click analytics, custom domains and abuse filtering on top.
 
-Here's how URL shorteners work:
+Two downsides are worth knowing. Short links hide the real destination, so they are a common way to disguise phishing links. And if the service shuts down, every link it created stops working.
 
-1. You provide the long URL that you want to shorten.
-2. The URL shortener generates a unique, shorter URL.
-3. When someone clicks on the shorter URL, the URL shortener redirects them to the original, longer URL.
+This post builds a minimal version with Flask and SQLite in one file.
 
-URL shorteners can be used for a variety of purposes, such as sharing links on social media, sending links via email, or embedding links in documents or presentations. They can also be used for tracking clicks and traffic to a particular URL, as most URL shorteners provide analytics and metrics on the number of clicks and geographic location of clicks.
+## Install
 
-However, there are some potential downsides to using URL shorteners. For one, they can be used to hide malicious URLs, which can pose a security risk. Additionally, if the URL shortener service goes offline or out of business, any links that were created using that service will no longer work.
+Only Flask needs installing. `sqlite3` is part of Python's standard library, so there is no `pip install sqlite3`.
 
-
-Sure, here is a simple implementation of a URL shortener in Python using Flask and SQLite:
-
-First, we need to install Flask and SQLite:
-
-
-```python
+```bash
 pip install flask
 ```
 
-```python
-pip install sqlite3
-```
-Next, we'll create a `app.py` file and add the following code:
+## The app
 
+Save this as `app.py`. The HTML is inline with `render_template_string`, so you don't need a `templates/` folder.
 
 ```python
-from flask import Flask, render_template, request, redirect
+import secrets
 import sqlite3
 import string
-import random
+
+from flask import Flask, abort, redirect, render_template_string, request, url_for
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
+DB = "url_shortener.db"
+ALPHABET = string.ascii_letters + string.digits
 
-# create database connection
-conn = sqlite3.connect('url_shortener.db')
-c = conn.cursor()
+FORM = """
+<form method="post" action="{{ url_for('shorten_url') }}">
+  <input name="url" type="url" placeholder="https://example.com/a/long/path" required>
+  <button>Shorten</button>
+</form>
+{% if short_url %}<p>Short URL: <a href="{{ short_url }}">{{ short_url }}</a></p>{% endif %}
+"""
 
-# create urls table
-c.execute('''CREATE TABLE IF NOT EXISTS urls
- (id INTEGER PRIMARY KEY AUTOINCREMENT,
- original_url TEXT NOT NULL,
- short_url TEXT NOT NULL UNIQUE)''')
 
-# close database connection
-conn.close()
+def get_db():
+    conn = sqlite3.connect(DB)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS urls (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            original_url TEXT NOT NULL UNIQUE,
+            code         TEXT NOT NULL UNIQUE
+        )
+    """)
+    return conn
 
-# function to generate a random string of length 6
-def generate_short_url():
- chars = string.ascii_letters + string.digits
- return ''.join(random.choice(chars) for _ in range(6))
 
-# home page route
-@app.route('/')
+def generate_code(length=6):
+    return "".join(secrets.choice(ALPHABET) for _ in range(length))
+
+
+@app.route("/")
 def home():
- return render_template('home.html')
+    return render_template_string(FORM, short_url=None)
 
-# shorten url route
-@app.route('/shorten_url', methods=['POST'])
+
+@app.route("/shorten", methods=["POST"])
 def shorten_url():
- # get original url from form
- original_url = request.form['url']
+    original_url = request.form["url"].strip()
+    # Only allow web URLs, so the redirect can't be pointed at javascript: or similar
+    if not original_url.startswith(("http://", "https://")):
+        abort(400, "URL must start with http:// or https://")
 
- # check if url already exists in database
- conn = sqlite3.connect('url_shortener.db')
- c = conn.cursor()
- c.execute('SELECT \* FROM urls WHERE original_url=?', (original_url,))
- existing_url = c.fetchone()
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT code FROM urls WHERE original_url = ?", (original_url,)
+        ).fetchone()
+        if row:
+            code = row[0]
+        else:
+            # Retry if the random code is already taken (unlikely, but possible)
+            while True:
+                code = generate_code()
+                try:
+                    conn.execute(
+                        "INSERT INTO urls (original_url, code) VALUES (?, ?)",
+                        (original_url, code),
+                    )
+                    break
+                except sqlite3.IntegrityError:
+                    continue
 
- if existing_url:
- # if url exists, return existing short url
- short_url = existing_url[2]
- else:
- # if url does not exist, generate new short url
- short_url = generate_short_url()
+    short_url = url_for("redirect_url", code=code, _external=True)
+    return render_template_string(FORM, short_url=short_url)
 
- # insert new url into database
- c.execute('INSERT INTO urls (original_url, short_url) VALUES (?, ?)',
- (original_url, short_url))
- conn.commit()
 
- # close database connection
- conn.close()
+@app.route("/<code>")
+def redirect_url(code):
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT original_url FROM urls WHERE code = ?", (code,)
+        ).fetchone()
+    if row is None:
+        abort(404)
+    return redirect(row[0])
 
- # redirect to success page with short url
- return render_template('success.html', short_url=short_url)
 
-# redirect route
-@app.route('/<short_url>')
-def redirect_url(short_url):
- # get original url from database
- conn = sqlite3.connect('url_shortener.db')
- c = conn.cursor()
- c.execute('SELECT \* FROM urls WHERE short_url=?', (short_url,))
- url = c.fetchone()
-
- # if url exists, redirect to original url
- if url:
- original_url = url[1]
- return redirect(original_url)
-
- # if url does not exist, return error message
- return render_template('error.html')
-
-if __name__ == '__main__':
- app.run()
+if __name__ == "__main__":
+    app.run(debug=True)
 ```
-This code defines a Flask application that has three routes:
 
-* The home page route (`/`) displays a form where users can enter a URL to shorten.
-* The shorten URL route (`/shorten_url`) generates a unique short URL for the entered URL and stores it in a SQLite database.
-* The redirect route (`/<short_url>`) redirects the user to the original URL associated with the provided short URL.
+The app has three routes:
 
-The `generate_short_url` function generates a random string of length 6, which is used as the short URL. The `urls` table in the SQLite database stores the original URL and the corresponding short URL.
+- `/` shows a form for the long URL.
+- `/shorten` (POST) returns the existing code if the URL has been shortened before. Otherwise it generates a new random six-character code and stores it.
+- `/<code>` looks the code up and redirects, or returns 404.
 
-You can run the application by running the `app.py` file in the terminal:
+`with get_db() as conn:` commits the transaction when the block exits without an error. It does not close the connection, which is acceptable for a demo. A real app would open one connection per request and close it in `teardown_appcontext`, as the [Flask SQLite pattern](https://flask.palletsprojects.com/en/stable/patterns/sqlite3/) shows.
 
+The `UNIQUE` constraint on `original_url` makes the duplicate check safe at the database level too. There are 62⁶ (about 57 billion) six-character codes, so collisions are rare. The retry loop still handles them.
 
-```python
+## Run it
+
+```bash
 python app.py
 ```
-This will start a local web server on port 5000. You can access the application by navigating to `http://localhost:5000` in your web browser.
 
-Note: This is just a simple implementation and
+Flask's development server listens on `http://127.0.0.1:5000` by default. `flask --app app run --debug` also works. Don't use `debug=True` or the development server in production. Run the app under a WSGI server such as Gunicorn or Waitress.
 
+## Gaps before using this for real
 
-Flask is a lightweight Python web framework that allows developers to easily create web applications. It's simple, flexible, and easy to use, making it a popular choice for building web applications of all sizes and complexities.
-
-Here are some of the key features and benefits of using Flask:
-
-1. Lightweight: Flask is a lightweight framework that has a small footprint, making it easy to learn and use. It doesn't come with a lot of built-in functionality, which allows developers to add only the features they need.
-2. Flexibility: Flask is very flexible and can be used for a wide range of web applications, from simple one-page websites to complex web applications with multiple pages and features.
-3. Easy to use: Flask is designed to be easy to use and easy to learn, with a simple and intuitive API that makes it easy to get started.
-4. Built-in web server: Flask comes with a built-in web server that allows developers to quickly test and debug their applications without having to set up a separate server.
-5. Large community: Flask has a large and active community of developers who contribute to its development and provide support through forums, chat rooms, and other resources.
-
-Some common use cases for Flask include:
-
-1. Building APIs: Flask is often used to build APIs that can be used by other applications or services. Its lightweight nature and flexible routing system make it well-suited for building APIs.
-2. Prototyping: Flask is great for quickly prototyping web applications, allowing developers to test and iterate on their ideas without having to spend a lot of time setting up a complex web application.
-3. Small to medium-sized web applications: Flask is a good choice for building small to medium-sized web applications that don't require a lot of complexity or advanced features.
-
-Overall, Flask is a great choice for developers who want to quickly build web applications without having to learn a lot of complex frameworks and tools. Its simplicity and flexibility make it easy to use, and its active community provides plenty of resources and support.
+- `redirect()` returns a 302 by default. Use `redirect(url, code=301)` if you want browsers and search engines to treat the short link as permanent. Browsers cache a 301, so later click counts will be lower.
+- Codes are random, so anyone can create unlimited links. Add rate limiting and, ideally, check submitted URLs against a blocklist.
+- There's no click counting. Add a `clicks` column and increment it in `redirect_url` if you want basic stats.

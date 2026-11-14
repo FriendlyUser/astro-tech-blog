@@ -1,39 +1,75 @@
 ---
-title: The Benefits of Using WebAssembly for Web Development
+title: "WebAssembly for web developers: what it's good at and when to skip it"
 pubDate: "2025-07-16T21:21:16.000Z"
-description: "In this article , we will explore the benefits of using WebAssembly for web development and how it can enhance both user experience and development processes"
-tags: []
+lastUpdated: 2026-11-14
+description: "What WebAssembly gives a web app (fast compute, reuse of C, C++ and Rust code, a sandbox) and what it costs, with a minimal module called from JavaScript."
+tags: ["javascript"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1662522246.png
 ---
-# The Benefits of Using WebAssembly for Web Development
 
-WebAssembly (often abbreviated as wasm) is a binary instruction format designed as a low-level virtual machine that runs code at near-native speed. It is a relatively new addition to the world of web development and has been gaining traction as a powerful tool for developers to optimize performance and enable new capabilities in their web applications. In this article, we will explore the benefits of using WebAssembly for web development and how it can enhance both user experience and development processes.
+WebAssembly (Wasm) is a compact binary instruction format that browsers compile to machine code and run next to JavaScript. You don't usually write it by hand. You compile C, C++, Rust, Go or another language to a `.wasm` module and call it from JavaScript. It makes sense when a page has CPU-heavy work (codecs, image processing, physics, parsers) or an existing native library you want to reuse.
 
-## 1. Improved Performance
+## A minimal module
 
-One of the most significant benefits of WebAssembly is its potential to dramatically improve the performance of web applications. WebAssembly code is designed to be compact and fast to decode, which leads to quicker startup times. It also runs at near-native speed, enabling developers to write high-performance code that can rival native applications.
+The smallest useful example is a function that adds two integers. Write it in the WebAssembly text format (`add.wat`):
 
-In contrast, JavaScript, the most commonly used language for web development, is an interpreted language. While modern JavaScript engines have made impressive strides in optimizing and speeding up JavaScript execution, it still cannot match the raw performance of WebAssembly.
+```wasm
+(module
+  (func (export "add") (param i32 i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.add))
+```
 
-## 2. Support for Multiple Languages
+Compile it to binary with `wat2wasm` from the [WebAssembly Binary Toolkit (wabt)](https://github.com/WebAssembly/wabt):
 
-WebAssembly is designed to be a compilation target for various programming languages, including C, C++, Rust, and others. This means that developers can leverage existing codebases and expertise in their preferred languages to build web applications. It also opens the door for new libraries and frameworks to be created in languages other than JavaScript, fostering a more diverse and innovative ecosystem.
+```bash
+wat2wasm add.wat -o add.wasm
+```
 
-## 3. Improved Security
+Then load it from JavaScript:
 
-WebAssembly enforces strict sandboxing and security measures, which help to protect both the user's system and the developer's code. It runs in the same-origin policy sandbox as JavaScript, making it subject to the same security constraints. Additionally, WebAssembly's low-level nature means that it does not have direct access to the DOM or other Web APIs, which can help limit the potential attack surface of an application.
+```js
+const { instance } = await WebAssembly.instantiateStreaming(fetch("add.wasm"));
+console.log(instance.exports.add(2, 3)); // 5
+```
 
-## 4. Parallelism and Concurrency
+`instantiateStreaming` compiles while the file downloads, but the server must send `add.wasm` with the `Content-Type: application/wasm` header. Opening the page from `file://` won't work. In practice a toolchain such as `wasm-bindgen` (Rust) or Emscripten (C/C++) generates the `.wasm` file and the JavaScript glue for you.
 
-WebAssembly is designed with support for parallelism and concurrency in mind. It can take advantage of multi-core processors and enable developers to write high-performance, concurrent applications. This is particularly important as modern hardware continues to embrace multiple cores, and developers seek to build applications that can harness this power effectively.
+## What you get
 
-## 5. Portability and Interoperability
+### Predictable compute performance
 
-WebAssembly modules are portable across different platforms and browsers, as they are designed to be platform-agnostic. This means that developers can be confident that their WebAssembly code will work consistently across different devices and browsers, reducing the need for browser-specific workarounds and ensuring a consistent user experience.
+Modern JavaScript engines are JIT compilers, so JavaScript is not simply "interpreted". But JIT performance depends on type feedback and can drop when the engine deoptimises. Wasm is statically typed and arrives already compiled from an optimising compiler, so the browser can produce fast machine code up front and performance is more consistent.
 
-Furthermore, WebAssembly is designed to interoperate with JavaScript seamlessly. It can be instantiated and called from JavaScript, and it can also call JavaScript functions. This interoperability allows developers to integrate WebAssembly code into their existing JavaScript applications and use the two languages together to create high-performance, feature-rich web applications.
+"Near-native" is a goal, not a guarantee. A 2019 USENIX ATC paper, [Not So Fast: Analyzing the Performance of WebAssembly vs. Native Code](https://www.usenix.org/conference/atc19/presentation/jangda), measured SPEC CPU benchmarks running 45% (Firefox) to 55% (Chrome) slower than native on average. Benchmark your own workload rather than assuming a speed-up over well-written JavaScript.
 
-## Conclusion
+### Reuse of existing code
 
-WebAssembly is a promising technology that enables developers to build faster, more efficient, and more secure web applications. Its benefits, such as improved performance, support for multiple languages, enhanced security, parallelism, and portability, make it a powerful tool for web development. As the WebAssembly ecosystem continues to grow and mature, it is likely to become an indispensable part of modern web development, providing developers with even more options and capabilities to create outstanding web applications.
+Wasm is a compilation target, so libraries written in C, C++ or Rust can run in the browser without a JavaScript rewrite. This is how tools like SQLite, FFmpeg and image codecs end up in web apps.
+
+### A sandbox
+
+Wasm runs inside the same browser sandbox as JavaScript and under the same origin rules. A module can only read and write its own linear memory and can only reach the outside world through functions the host explicitly imports into it. It has no direct access to the DOM or to Web APIs; every call goes through JavaScript. Memory-safety bugs in C or C++ code can still corrupt data *inside* the module's memory, so the sandbox protects the browser, not your program's logic.
+
+### Threads and SIMD
+
+Browsers support Wasm threads built on `SharedArrayBuffer` and Web Workers, plus 128-bit SIMD instructions. Threads only work on pages that are [cross-origin isolated](https://developer.mozilla.org/en-US/docs/Web/API/Window/crossOriginIsolated), which means serving `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers. That can break third-party embeds, so plan for it.
+
+### Portability beyond the browser
+
+The same module format runs outside the browser in runtimes like [Wasmtime](https://wasmtime.dev/) and Node.js, with WASI providing system interfaces. The standard keeps growing: [Wasm 3.0](https://webassembly.org/news/2025-09-17-wasm-3.0/) (September 2025) added 64-bit memories, multiple memories, garbage collection, exception handling and tail calls. Garbage collection makes it more practical to compile languages like Java, Kotlin and Dart to Wasm.
+
+## When not to use it
+
+- **DOM-heavy UI work.** Every DOM call crosses the Wasm–JS boundary. A UI framework in JavaScript will usually be simpler and just as fast.
+- **Chatty interfaces.** Passing strings, objects or arrays between JS and Wasm means copying or encoding them into linear memory. Lots of small calls can cost more than the work they do.
+- **Small, simple logic.** The toolchain, larger downloads and harder debugging aren't worth it for code that already runs fast in JavaScript.
+
+## Further reading
+
+- [WebAssembly on MDN](https://developer.mozilla.org/en-US/docs/WebAssembly)
+- [webassembly.org feature status](https://webassembly.org/features/)
+- [wasm-bindgen guide](https://wasm-bindgen.github.io/wasm-bindgen/)
+- [Emscripten documentation](https://emscripten.org/docs/)

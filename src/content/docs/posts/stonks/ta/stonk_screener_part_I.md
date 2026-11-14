@@ -1,23 +1,23 @@
 ---
-tags: ['python', "stocks"]
-title: How I implemented a stock screener in python part I
-description: A stock screener is a tool that helps you find stocks that meet your criteria. In this post I will show you how I implemented a stock screener in python.
+tags: ['python', "stocks", "pandas"]
+title: 'How I implemented a stock screener in Python, part I: scanner interface and ticker list'
+description: Part I of my Python stock screener, covering a shared scanner interface and a class that loads Canadian and US tickers as Yahoo Finance symbols.
 pubDate: Fri, 11 April 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1231025858.png
 ---
-A stock screener is an important tool for investors and traders because it allows them to quickly filter through thousands of stocks in the market based on specific criteria, such as financial ratios, industry sector, market capitalization, and more. Here are a few reasons why a stock screener is important:
 
-1. Time-saving: A stock screener helps to save time and effort by allowing investors to quickly find potential investment opportunities that meet their specific criteria. Instead of manually sifting through thousands of stocks, a stock screener can narrow down the options to a more manageable list.
-2. Customization: Every investor has unique investment goals and preferences, and a stock screener allows investors to customize their search to find stocks that meet their specific needs. This customization can include filtering by specific financial metrics, like price-to-earnings ratios or dividend yields, or by more qualitative criteria, like industry or growth potential.
-3. Opportunity identification: A stock screener can help investors identify investment opportunities that may have been overlooked otherwise. By allowing investors to filter stocks based on certain criteria, they can find stocks that are undervalued or have potential for future growth.
-4. Risk management: A stock screener can also help investors manage risk by allowing them to filter out stocks that may not meet their risk tolerance level or by identifying stocks that have low volatility or are more defensive in nature.
+A stock screener filters thousands of listings down to a short list that matches your rules, such as price, market cap, industry or recent price action. I wrote my own in Python, with each screen described by a JSON config and matches posted to Discord. The full code is in [FriendlyUser/stock_screener](https://github.com/FriendlyUser/stock_screener/tree/master).
 
-Overall, a stock screener is an essential tool for any investor or trader looking to find potential investment opportunities in the market. It can save time, help with customization, identify investment opportunities, and manage risk.
+This first part covers two pieces: an interface that every scanner implements, and a controller that builds the list of tickers to scan.
 
+## The scanner interface
 
-```python 
- from abc import ABC, abstractmethod
+Every scanner implements the same two methods, so calling code can run any of them without knowing which one it has:
+
+```python
+from abc import ABC, abstractmethod
 
 
 class ScannerInterface(ABC):
@@ -29,101 +29,69 @@ class ScannerInterface(ABC):
 
     @abstractmethod
     def get_match(self, ticker):
-        pass 
- ```
+        pass
+```
 
-This is a Python code defining an abstract base class (ABC) called `ScannerInterface`. The `ScannerInterface` class has two abstract methods: `main_func` and `get_match`. Abstract methods are methods that are declared but do not have an implementation in the base class. They must be implemented by any class that inherits from this base class.
+`main_func` runs the scanner's own workflow, and `get_match(ticker)` decides whether a single ticker passes. Because both are marked `@abstractmethod`, Python raises a `TypeError` if you try to instantiate a subclass that forgets one of them, so a half-written scanner fails at startup instead of halfway through a scan.
 
-The purpose of this code is to define a common interface for different types of scanners, each with its own implementation of the `main_func` and `get_match` methods. By using an abstract base class, the interface can be standardized, making it easier to write code that can work with different types of scanners.
+## Building the ticker list
 
-The `main_func` method is left abstract so that it can be implemented by different types of scanners depending on their specific functionality. The `get_match` method, on the other hand, is a method that all scanner classes must implement to get a match for the ticker they are scanning for.
+The tickers come from my [cad_tickers_list](https://github.com/FriendlyUser/cad_tickers_list) repo, which publishes a CSV of TSX and TSX Venture listings with columns such as `symbol`, `exShortName`, `industry`, `price` and `MarketCap`. Optionally the controller also loads a US ticker CSV and applies price and market cap limits to it.
 
-Note that this code alone does not define a concrete scanner class. Instead, it provides a blueprint that other classes can inherit from to create concrete scanner classes. Any class that inherits from the `ScannerInterface` class must implement both `main_func` and `get_match` methods to be considered a valid implementation of the interface.
+Yahoo Finance needs an exchange suffix for Canadian listings (`.TO` for the TSX, `.V` for the TSX Venture, `.CN` for the CSE). It also writes share classes and trust units with a dash, so `BBD.B` on the TSX becomes `BBD-B.TO`. US listings need no suffix.
 
-
-```python 
- """
-  Grab stocks from cad tickers 
+```python
+"""
+Grab stocks from cad_tickers
 """
 import pandas as pd
 
+CAD_TICKERS_CSV = (
+    "https://raw.githubusercontent.com/FriendlyUser/"
+    "cad_tickers_list/main/static/latest/stocks.csv"
+)
+
 
 class TickerControllerV2:
-    """
-    Grabs cad_tickers dataframes and normalized them
-    """
+    """Loads cad_tickers dataframes and normalizes symbols for Yahoo Finance."""
 
     def __init__(self, cfg: dict):
-        """
-        Extract yahoo finance tickers from website
-
-        Consider using hardcoded csvs sheets for the tickers to
-        increase speed, no need to grab all data dynamically.
-        """
-        self.yf_tickers = []
-        # import csv from github
-        ticker_df = pd.read_csv(
-            "https://raw.githubusercontent.com/FriendlyUser/cad_tickers_list/main/static/latest/stocks.csv"
-        )
-        tickers_config = cfg.get("tickers_config")
+        ticker_df = pd.read_csv(CAD_TICKERS_CSV)
         us_df = pd.DataFrame()
-        if tickers_config != None:
-            industries = tickers_config.get("industries")
-            if industries != None:
-                ticker_df = ticker_df[ticker_df["industry"].isin(industries)]
 
-            us_cfg = tickers_config.get("us_tickers")
-            if us_cfg != None:
-                # apply filters
-                # same format as above
-                us_tickers_url = us_cfg.get("url")
-                us_df =  pd.read_csv(us_tickers_url)
-                # redo filtering if I need more filters,
-                # iterate across object property
-                price_filter = us_cfg.get("price")
-                us_df = us_df[us_df["price"] < price_filter]
-                market_cap_filter = us_cfg.get("market_cap")
-                us_df = us_df[us_df["MarketCap"] < price_filter]
-                if industries != None:
-                    us_df = us_df[us_df["industry"].isin(industries)]
+        tickers_config = cfg.get("tickers_config") or {}
+        industries = tickers_config.get("industries")
+        if industries:
+            ticker_df = ticker_df[ticker_df["industry"].isin(industries)]
 
-        # get symbols from tickers
-        ytickers_series = ticker_df.apply(self.ex_to_yahoo_ex, axis=1)
-        ytickers = ytickers_series.tolist()
-        if us_df.empty == False:
-            us_ytickers_series = us_df.apply(self.ex_to_yahoo_ex, axis=1)
-            us_ytickers = us_ytickers_series.tolist()
-            ytickers = [*ytickers, *us_ytickers]
-        self.yf_tickers = ytickers
+        us_cfg = tickers_config.get("us_tickers")
+        if us_cfg:
+            us_df = pd.read_csv(us_cfg["url"])
+            if "price" in us_cfg:
+                us_df = us_df[us_df["price"] < us_cfg["price"]]
+            if "market_cap" in us_cfg:
+                us_df = us_df[us_df["MarketCap"] < us_cfg["market_cap"]]
+            if industries:
+                us_df = us_df[us_df["industry"].isin(industries)]
 
-    def get_ytickers(self) -> list:
+        frames = [df for df in (ticker_df, us_df) if not df.empty]
+        self.yf_tickers = [
+            self.ex_to_yahoo_ex(row) for df in frames for _, row in df.iterrows()
+        ]
+
+    def get_ytickers(self) -> list[str]:
         return self.yf_tickers
 
     @staticmethod
     def ex_to_yahoo_ex(row: pd.Series) -> str:
-        """
-        Parameters:
-          ticker: ticker from pandas dataframe from cad_tickers
-          exchange: what exchange the ticker is for
-        Returns:
-
-        """
-        ticker = str(row["symbol"])
-        exchange = row["exShortName"]
-        if exchange == "CSE":
-            # strip :CNX from symbol
-            ticker = ticker.replace(":CNX", "")
-        
-        # Missing a exchange code
-        if exchange in ["OTCPK", "NYSE", "NASDAQ", "NYE", "NCM", "NSM", "NGS"]:
-            ticker = ticker.replace(":US", "")
-        ticker = ticker.replace(":US", "")
-        # 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly
-        switcher = {"TSXV": "V", "TSX": "TO", "CSE": "CN"}
-        yahoo_ex = switcher.get(exchange, None)
-        if yahoo_ex != None:
-            return f"{ticker}.{yahoo_ex}"
-        return ticker
+        """Convert a cad_tickers row (symbol + exShortName) to a Yahoo symbol."""
+        ticker = str(row["symbol"]).replace(":CNX", "").replace(":US", "")
+        suffix = {"TSX": "TO", "TSXV": "V", "CSE": "CN"}.get(row["exShortName"])
+        if suffix is None:
+            # US listings need no suffix on Yahoo
+            return ticker
+        # Yahoo writes share classes and units with a dash: BBD.B -> BBD-B.TO
+        return f"{ticker.replace('.', '-')}.{suffix}"
 
 
 if __name__ == "__main__":
@@ -131,131 +99,36 @@ if __name__ == "__main__":
 
     with open("cfg/penny_stocks.json") as file_:
         cfg = json.load(file_)
-        ticker_controller = TickerControllerV2(cfg)
-        ticker_list = ticker_controller.get_ytickers()
-        print(ticker_list)
- 
- ```
+    ticker_list = TickerControllerV2(cfg).get_ytickers()
+    print(ticker_list)
+```
 
-This is a Python code defining a class called `TickerControllerV2`, which is used to retrieve tickers for Canadian and US stocks from a CSV file and normalize them for use in a financial application.
+A config that keeps only Canadian oil and gas producers looks like this. Industry names must match the `industry` column in the CSV exactly:
 
-The `__init__` method initializes an instance of the class by reading a CSV file containing the stock tickers and filtering them based on the configuration provided in the `cfg` parameter. The tickers can be filtered by industry, price, and market capitalization.
+```json
+{
+  "tickers_config": {
+    "industries": ["Oil & Gas Exploration and Production"]
+  }
+}
+```
 
-The `get_ytickers` method returns a list of stock tickers that have been normalized and are ready to be used in a financial application.
+Running the script with that config prints Yahoo-ready symbols:
 
-The `ex_to_yahoo_ex` method is a static method that takes a row from the ticker data frame as input and returns the corresponding ticker symbol in the format required by Yahoo Finance. This method is used to normalize the tickers before they are used in the application.
+```text
+['AAV.TO', 'ARX.TO', 'BTE.TO', 'BNG.TO', 'BIR.TO', ...]
+```
 
-The code includes a main block that loads the configuration from a JSON file and creates an instance of the `TickerControllerV2` class to retrieve the tickers. The tickers are then printed to the console for testing purposes.
+To add US tickers, include a `us_tickers` block with a `url` to a CSV that has `symbol`, `exShortName`, `price`, `MarketCap` and `industry` columns, plus optional `price` and `market_cap` upper limits.
 
-Overall, this code provides a convenient way to retrieve and normalize Canadian and US stock tickers for use in a financial application. It can be easily modified to support other types of tickers or to add additional filters based on other criteria.
+## Fixes since the first version
 
+When I first published this, the US market cap filter compared `MarketCap` against the price limit (`us_df["MarketCap"] < price_filter`), so it dropped nearly every row. The version above fixes that. It also skips a filter when its key is missing from the config (comparing a column against `None` silently returns all `False`, which empties the frame), and it converts dotted share-class symbols to Yahoo's dashed form.
 
-```python 
- """
-  Grab stocks from cad tickers 
-"""
-import pandas as pd
+## Things to watch
 
+- The CSV is downloaded on every run. If you scan often, cache it locally and refresh it daily.
+- `pd.read_csv` on a URL raises on network errors. Wrap it if the screener runs unattended.
+- Yahoo symbols for delisted or recently renamed companies return empty data, so later scanners should treat an empty download as "no match", not as an error.
 
-class TickerControllerV2:
-    """
-    Grabs cad_tickers dataframes and normalized them
-    """
-
-    def __init__(self, cfg: dict):
-        """
-        Extract yahoo finance tickers from website
-
-        Consider using hardcoded csvs sheets for the tickers to
-        increase speed, no need to grab all data dynamically.
-        """
-        self.yf_tickers = []
-        # import csv from github
-        ticker_df = pd.read_csv(
-            "https://raw.githubusercontent.com/FriendlyUser/cad_tickers_list/main/static/latest/stocks.csv"
-        )
-        tickers_config = cfg.get("tickers_config")
-        us_df = pd.DataFrame()
-        if tickers_config != None:
-            industries = tickers_config.get("industries")
-            if industries != None:
-                ticker_df = ticker_df[ticker_df["industry"].isin(industries)]
-
-            us_cfg = tickers_config.get("us_tickers")
-            if us_cfg != None:
-                # apply filters
-                # same format as above
-                us_tickers_url = us_cfg.get("url")
-                us_df =  pd.read_csv(us_tickers_url)
-                # redo filtering if I need more filters,
-                # iterate across object property
-                price_filter = us_cfg.get("price")
-                us_df = us_df[us_df["price"] < price_filter]
-                market_cap_filter = us_cfg.get("market_cap")
-                us_df = us_df[us_df["MarketCap"] < price_filter]
-                if industries != None:
-                    us_df = us_df[us_df["industry"].isin(industries)]
-
-        # get symbols from tickers
-        ytickers_series = ticker_df.apply(self.ex_to_yahoo_ex, axis=1)
-        ytickers = ytickers_series.tolist()
-        if us_df.empty == False:
-            us_ytickers_series = us_df.apply(self.ex_to_yahoo_ex, axis=1)
-            us_ytickers = us_ytickers_series.tolist()
-            ytickers = [*ytickers, *us_ytickers]
-        self.yf_tickers = ytickers
-
-    def get_ytickers(self) -> list:
-        return self.yf_tickers
-
-    @staticmethod
-    def ex_to_yahoo_ex(row: pd.Series) -> str:
-        """
-        Parameters:
-          ticker: ticker from pandas dataframe from cad_tickers
-          exchange: what exchange the ticker is for
-        Returns:
-
-        """
-        ticker = str(row["symbol"])
-        exchange = row["exShortName"]
-        if exchange == "CSE":
-            # strip :CNX from symbol
-            ticker = ticker.replace(":CNX", "")
-        
-        # Missing a exchange code
-        if exchange in ["OTCPK", "NYSE", "NASDAQ", "NYE", "NCM", "NSM", "NGS"]:
-            ticker = ticker.replace(":US", "")
-        ticker = ticker.replace(":US", "")
-        # 1min, 5min, 15min, 30min, 60min, daily, weekly, monthly
-        switcher = {"TSXV": "V", "TSX": "TO", "CSE": "CN"}
-        yahoo_ex = switcher.get(exchange, None)
-        if yahoo_ex != None:
-            return f"{ticker}.{yahoo_ex}"
-        return ticker
-
-
-if __name__ == "__main__":
-    import json
-
-    with open("cfg/penny_stocks.json") as file_:
-        cfg = json.load(file_)
-        ticker_controller = TickerControllerV2(cfg)
-        ticker_list = ticker_controller.get_ytickers()
-        print(ticker_list)
- 
- ```
-
-This code defines a class `TickerControllerV2` that reads stock ticker data from a CSV file and applies some filters to the data based on a configuration file. The resulting tickers are normalized to a format compatible with Yahoo Finance. The main function demonstrates the use of the class by loading a configuration file, creating a `TickerControllerV2` instance, and printing the list of resulting tickers.
-
-The code could be improved in a few ways:
-
-* It would be a good idea to add comments and docstrings to explain what the code is doing and how to use it.
-* The `ex_to_yahoo_ex` function is quite long and complex. It might be worth breaking it down into smaller functions to make it more readable.
-* There is an error in the market cap filtering code for the US tickers. The filter is using the `price_filter` variable instead of `market_cap_filter`.
-* The `if tickers_config != None` statement can be simplified to `if tickers_config:` for readability.
-* It might be a good idea to handle errors that might occur when fetching the CSV file from GitHub.
-
-
-## References
-- https://github.com/FriendlyUser/stock_screener/tree/master
+[Part II](/posts/stonks/ta/stonk_screener_part_II/) covers the scanners themselves.

@@ -1,166 +1,182 @@
 ---
-title: Android Mockito Mocking Framework A Comprehensive Overview
+title: "Mockito for Android unit tests: mocks, stubbing, and verification"
 pubDate: "2024-07-27T15:56:56.000Z"
-description: "In this article , we will discuss the fundamentals of the Mockito framework and demonstrate its usage in Android development"
-tags: []
+lastUpdated: 2026-11-14
+description: "Use Mockito 5 in Android unit tests: create mocks, stub return values, verify calls, use argument matchers and answers, and mock final classes."
+tags: ["android", "java", "testing"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3185275103.png
 ---
-# Android Mockito Mocking Framework: A Comprehensive Overview
 
-## Introduction
+Mockito is an open-source mocking library for Java (and, with some help, Kotlin). A mock stands in for a dependency of the class you're testing, such as a repository, an API client, or an analytics tracker, so the test exercises only that class. You decide what the mock returns, then check how your code called it.
 
-**Mockito** is a popular open-source mocking framework for Java and Android development. It allows developers to create and configure mock objects, which are useful for isolating components under test from external dependencies, such as databases, web services, or other components. Mockito simplifies the process of creating mock objects and provides a clean, easy-to-read syntax to define and configure them. In this article, we will discuss the fundamentals of the Mockito framework and demonstrate its usage in Android development.
+In Android projects, Mockito is most useful in local unit tests (`src/test`) for ViewModels, presenters, repositories, and other classes that you can construct without Android framework objects.
 
-## What is Mocking?
+## Dependencies
 
-In software testing, _mocking_ refers to the practice of creating simulated objects that mimic the behavior of real objects in a controlled manner. Mock objects are typically used when testing a specific component or unit of an application, where the goal is to isolate it from the rest of the system. By using mock objects, developers can ensure that the component under test is not affected by any external factors, making it easier to pinpoint the source of any issues that may arise during testing.
+```kotlin
+dependencies {
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.24.0")
 
-## Mockito Basics
-
-To get started with Mockito, you first need to add the proper dependencies to your Android project. In your `build.gradle` file, add the following lines to the `dependencies` block:
-
-```groovy
-testImplementation 'org.mockito:mockito-core:3.11.2'
-androidTestImplementation 'org.mockito:mockito-android:3.11.2'
+    // Only if you also use Mockito in instrumented tests (src/androidTest)
+    androidTestImplementation("org.mockito:mockito-android:5.24.0")
+}
 ```
 
-_NOTE: Replace the version numbers with the latest available Mockito versions._
+Mockito 5 requires Java 11 or later to run the tests, which any recent Android Gradle Plugin setup already uses.
 
-### Creating Mock Objects
-
-With Mockito, creating a mock object is as simple as calling the `mock()` method:
+## Create a mock
 
 ```java
-MyClass myMock = mock(MyClass.class);
+import static org.mockito.Mockito.mock;
+
+MyRepository repository = mock(MyRepository.class);
 ```
 
-This creates a mock object of type `MyClass`. You can now use this mock object in your tests, just like you would use a real instance of `MyClass`.
+Until you stub them, a mock's methods do nothing and return defaults: `null` for objects, `0` and `false` for primitives, and empty collections for collection return types.
 
-### Stubbing Method Behavior
+## Stub a method
 
-One of the main features of Mockito is the ability to define custom behavior for methods in your mock objects. This is known as _stubbing_. To stub a method, you use the `when()` method, followed by the `thenReturn()` method:
+`when(...).thenReturn(...)` sets the return value for a specific call:
 
 ```java
-when(myMock.myMethod()).thenReturn("Hello, World!");
+when(repository.fetchMessage()).thenReturn("Hello, World!");
 ```
 
-In this example, we're stubbing the `myMethod()` method in `myMock` to return the string `"Hello, World!"` when it's called. You can also use the `doReturn()` method for stubbing:
+There's also a `doReturn(...).when(mock).method()` form. Use `when(...)` by default. The `do...` family (`doReturn`, `doThrow`, `doAnswer`, `doNothing`) is for the cases `when(...)` can't handle:
+
+- **Void methods**, which can't go inside `when(...)`: `doThrow(new IOException()).when(cache).clear();`
+- **Spies**, where `when(spy.get(0))` would call the real method while stubbing.
+- **Re-stubbing** a method that's already stubbed to throw.
+
+## Verify a call
+
+`verify` checks that a method was called on the mock. By default it means "exactly once" with those arguments:
 
 ```java
-doReturn("Hello, World!").when(myMock).myMethod();
+verify(analytics).track("message_shown");
+verify(analytics, never()).track("error");
+verify(repository, times(2)).fetchMessage();
 ```
 
-Both approaches achieve the same result, but the `doReturn()` method is recommended when dealing with void methods or methods that throw exceptions.
+Verify interactions your code is supposed to cause, typically calls to void methods like logging or saving. If a stubbed method's return value already shows up in what you assert, verifying that call as well is usually redundant.
 
-### Verifying Method Calls
+## A complete test
 
-In addition to stubbing methods, Mockito allows you to verify that specific methods were called during the execution of your tests. To do this, you use the `verify()` method:
-
-```java
-verify(myMock).myMethod();
-```
-
-This line verifies that the `myMethod()` method was called exactly once on `myMock`. If the method was not called, or if it was called a different number of times, the test will fail.
-
-## Mockito in Android Development
-
-In Android development, Mockito is particularly useful for testing components such as Presenters, ViewModels, or Repositories, where you may want to isolate them from Android-specific dependencies, such as Context or Services.
-
-To demonstrate Mockito in action, let's consider a simple example of testing a ViewModel. We'll use the following ViewModel class:
+A class that depends on a repository and an analytics tracker:
 
 ```java
-public class MyViewModel {
-    private MyRepository repository;
+public interface MyRepository {
+    String fetchMessage();
+}
 
-    public MyViewModel(MyRepository repository) {
+public interface Analytics {
+    void track(String event);
+}
+
+public class MessageViewModel {
+    private final MyRepository repository;
+    private final Analytics analytics;
+
+    public MessageViewModel(MyRepository repository, Analytics analytics) {
         this.repository = repository;
+        this.analytics = analytics;
     }
 
     public String getMessage() {
-        return repository.fetchMessage();
+        String message = repository.fetchMessage();
+        analytics.track("message_shown");
+        return message;
     }
 }
 ```
 
-In this example, we have a ViewModel that depends on a `MyRepository` object to fetch a message. We want to test the `getMessage()` method in isolation, so we'll create a mock of the `MyRepository` class and stub its `fetchMessage()` method:
+The test in `src/test/java/...`:
 
 ```java
-public class MyViewModelTest {
-    private MyViewModel viewModel;
-    private MyRepository mockRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class MessageViewModelTest {
+    private MyRepository repository;
+    private Analytics analytics;
+    private MessageViewModel viewModel;
 
     @Before
     public void setUp() {
-        mockRepository = mock(MyRepository.class);
-        viewModel = new MyViewModel(mockRepository);
+        repository = mock(MyRepository.class);
+        analytics = mock(Analytics.class);
+        viewModel = new MessageViewModel(repository, analytics);
     }
 
     @Test
-    public void testGetMessage() {
-        // Stub the fetchMessage() method in the mock repository
-        when(mockRepository.fetchMessage()).thenReturn("Hello, World!");
+    public void getMessage_returnsRepositoryMessageAndTracksIt() {
+        when(repository.fetchMessage()).thenReturn("Hello, World!");
 
-        // Call the getMessage() method in the ViewModel
         String message = viewModel.getMessage();
 
-        // Verify that the fetchMessage() method was called on the mock repository
-        verify(mockRepository).fetchMessage();
-
-        // Assert that the getMessage() method returns the expected value
         assertEquals("Hello, World!", message);
+        verify(analytics).track("message_shown");
     }
 }
 ```
 
-In this test, we're using Mockito to create a mock of the `MyRepository` class, stub its `fetchMessage()` method, and verify that it's called when we invoke the `getMessage()` method in the ViewModel. Thisway, we can test the ViewModel's behavior in isolation, without having to worry about the actual implementation of the `MyRepository` class.
+Instead of calling `mock()` in `@Before`, you can annotate fields with `@Mock` and run the class with `@RunWith(MockitoJUnitRunner.class)`. The runner also fails the test when you stub something the test never uses, which catches stale setup code.
 
-## Advanced Mockito Features
+## Argument matchers
 
-In addition to the basic features discussed so far, Mockito offers several advanced features that can help you write more powerful and flexible tests.
-
-### Argument Matchers
-
-Sometimes you may need to stub a method that accepts arguments, but you don't care about the exact values of those arguments. In such cases, you can use argument matchers, which allow you to define a more general condition for the arguments. Mockito provides several built-in argument matchers, such as `any()`, `eq()`, and `isNull()`.
-
-Here's an example of using the `any()` matcher:
+When you don't care about the exact argument, use a matcher from `org.mockito.ArgumentMatchers`:
 
 ```java
-when(myMock.myMethod(any(String.class))).thenReturn("Hello, World!");
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
+when(greeter.greet(anyString())).thenReturn("Hello!");
+when(api.getUser(eq("abc"), any(Options.class))).thenReturn(user);
 ```
 
-In this example, we're stubbing the `myMethod()` method to return the string `"Hello, World!"` when it's called with any `String` argument.
+Two rules trip people up:
 
-### Stubbing with Callbacks
+- `any(String.class)` and `anyString()` don't match `null`. Use `any()` or `isNull()` if a null argument should match.
+- If one argument uses a matcher, all of them must. That's why the second example wraps `"abc"` in `eq(...)`; mixing a raw value with a matcher throws `InvalidUseOfMatchersException`.
 
-If you need more control over the behavior of a stubbed method, you can use the `thenAnswer()` method to provide a custom implementation. This method takes an instance of the `Answer` interface, which defines a single method, `answer()`, that will be called when the stubbed method is invoked.
+## Computed answers
 
-Here's an example of using the `thenAnswer()` method:
+`thenAnswer` runs your code on each call, with access to the arguments:
 
 ```java
-when(myMock.myMethod(any(String.class))).thenAnswer(new Answer<String>() {
-    @Override
-    public String answer(InvocationOnMock invocation) throws Throwable {
-        String arg = (String) invocation.getArguments()[0];
-        return "Hello, " + arg + "!";
-    }
-});
+when(greeter.greet(anyString()))
+        .thenAnswer(invocation -> "Hello, " + invocation.getArgument(0) + "!");
 ```
 
-In this example, we're stubbing the `myMethod()` method to return a custom string based on its input argument. The `answer()` method receives an `InvocationOnMock` object, which provides access to the arguments passed to the stubbed method.
+`invocation.getArgument(0)` is generic, so you don't need to cast.
 
-### Mocking Final Classes and Methods
+## Final classes and methods
 
-By default, Mockito cannot mock final classes or methods. However, you can enable this feature by creating a file named `org.mockito.plugins.MockMaker` in your project's `test/resources/mockito-extensions` directory, and adding the following line:
+Since Mockito 5, `mockito-core` uses the inline mock maker by default, so it can mock final classes and methods (which includes Kotlin classes, since they're final unless marked `open`), as well as static methods with `mockStatic`. You no longer need the separate `mockito-inline` artifact or a `mock-maker-inline` file in `src/test/resources/mockito-extensions`.
 
-```
-mock-maker-inline
-```
+On JDK 21 and later, the inline mock maker attaches a Java agent at runtime, and the JVM prints a warning about dynamically loaded agents. A future JDK is expected to block this by default. The [Mockito documentation](https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html) describes how to add Mockito as a `-javaagent` on the test JVM instead.
 
-With this configuration, Mockito will be able to mock final classes and methods, although doing so may have some limitations and performance implications.
+## Notes for Kotlin
 
-## Conclusion
+- `when` is a reserved word in Kotlin, so you'd write ``Mockito.`when`(...)``. The [mockito-kotlin](https://github.com/mockito/mockito-kotlin) library adds `whenever`, `mock<T>()`, and `any()` helpers that work with Kotlin's null safety.
+- Many Kotlin-first projects use [MockK](https://mockk.io/) instead, which supports coroutines (`coEvery`, `coVerify`) directly.
 
-Mockito is a powerful and flexible mocking framework that significantly simplifies the process of creating and configuring mock objects in your Android tests. By using Mockito, you can write more focused, isolated, and reliable tests, which ultimately leads to a more robust and maintainable application.
+## When not to mock
 
-In this article, we have covered the basics of Mockito, including creating mock objects, stubbing methods, and verifying method calls. We've also discussed some advanced features, such as argument matchers, stubbing with callbacks, and mocking final classes and methods. By incorporating Mockito into your Android testing toolkit, you'll be better equipped to tackle a wide range of testing challenges and ensure the quality of your application.
+- Don't mock types you own that are simple data holders; construct real ones.
+- Don't mock Android framework classes like `Context` to make a test pass. Move the logic out of the framework class, or use Robolectric or an instrumented test.
+- A hand-written fake (for example, an in-memory repository) is often clearer than a mock with many stubs.
+
+## Further reading
+
+- [Mockito Javadoc](https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html)
+- [Build local unit tests (Android Developers)](https://developer.android.com/training/testing/local-tests)
+- [mockito-kotlin](https://github.com/mockito/mockito-kotlin)

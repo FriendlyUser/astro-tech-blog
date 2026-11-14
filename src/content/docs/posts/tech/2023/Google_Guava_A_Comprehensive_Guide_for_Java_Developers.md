@@ -1,246 +1,211 @@
 ---
-description: This article will explore the key features of Guava and provide code
-  samples to help Java developers better understand its benefits.
+description: "What Google Guava still adds to modern Java: immutable collections, Multimap, BiMap, Table, LoadingCache, ListenableFuture and Service, with runnable examples."
 imgSrc: /imgs/2023/3582974242.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-24T12:49:13.000Z'
-tags: []
-title: Google Guava A Comprehensive Guide for Java Developers
+lastUpdated: 2026-11-14
+tags:
+  - java
+title: 'Google Guava for Java developers: collections, caching and concurrency'
 ---
 
-# Google Guava: A Comprehensive Guide for Java Developers
+[Guava](https://github.com/google/guava) is Google's open-source core library for Java (Apache 2.0). Some of what it introduced, such as `Optional`, functional interfaces and `Preconditions.checkNotNull`, now has a JDK equivalent (`java.util.Optional`, `java.util.function`, `Objects.requireNonNull`). The pieces covered here are the ones that are still worth adding the dependency for.
 
-Google Guava is a powerful, open-source Java library developed by Google that provides an array of utility methods and classes. It enhances the Java programming language by offering a more extensive and efficient API for tasks like collections, caching, functional programming, primitives support, and concurrency. This article will explore the key features of Guava and provide code samples to help Java developers better understand its benefits.
+## Adding the dependency
 
-## Table of Contents
-
-1. [What is Google Guava?](#what-is-google-guava)
-2. [Guava Collections](#guava-collections)
-3. [Immutable Collections](#immutable-collections)
-4. [Multimap, BiMap, and Table](#multimap-bimap-and-table)
-5. [Caching](#caching)
-6. [Functional Programming](#functional-programming)
-7. [Concurrency Utilities](#concurrency-utilities)
-8. [Conclusion](#conclusion)
-
-## What is Google Guava? 
-
-Google Guava is a versatile Java library that provides a wealth of features to simplify and streamline common programming tasks. It offers a better alternative to using standard Java libraries, making code more readable, efficient, and less prone to errors. The library is used extensively by Google in many of its projects and is regarded as a reliable and well-maintained library.
-
-## Guava Collections
-
-Guava extends the Java Collections Framework by providing additional collection types and utility methods. Some of these enhancements include:
-
-### Lists
-
-Guava provides a `Lists` utility class to create and manipulate lists. For example, the `Lists.newArrayList` method creates a new `ArrayList` with the given elements:
-
-```java
-import com.google.common.collect.Lists;
-
-List<String> names = Lists.newArrayList("Alice", "Bob", "Charlie");
+```xml
+<dependency>
+  <groupId>com.google.guava</groupId>
+  <artifactId>guava</artifactId>
+  <version>33.8.0-jre</version>
+</dependency>
 ```
 
-### Sets
+Gradle: `implementation("com.google.guava:guava:33.8.0-jre")`. Use the `-jre` flavour for server and desktop Java (8+); the `-android` flavour targets Android.
 
-Similarly, the `Sets` utility class offers methods for creating and manipulating sets. The `Sets.newHashSet` method creates a new `HashSet` with the given elements:
-
-```java
-import com.google.common.collect.Sets;
-
-Set<String> names = Sets.newHashSet("Alice", "Bob", "Charlie");
-```
-
-## Immutable Collections
-
-Immutable collections are collections that cannot be modified after they are created. They are thread-safe and more efficient than their mutable counterparts. Guava provides immutable versions of lists, sets, and maps.
+## Immutable collections
 
 ```java
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 ImmutableList<String> names = ImmutableList.of("Alice", "Bob", "Charlie");
+ImmutableMap<String, Integer> ages = ImmutableMap.of("Alice", 31, "Bob", 27);
+
+names.add("Dave"); // throws UnsupportedOperationException
 ```
 
-## Multimap, BiMap, and Table
+Unlike `Collections.unmodifiableList`, which is only a read-only view of a list someone else can still change, an `ImmutableList` owns a copy of its contents and can never change. That makes it safe to share between threads and to return from getters without defensive copies. Guava's immutable collections reject `null` elements, preserve insertion order, and the type in the signature tells callers it can't be modified.
 
-Guava introduces new collection types like Multimap, BiMap, and Table which address specific use cases:
+Java 9+ has `List.of` and `Map.of`, which cover the simple cases. Guava's versions are still useful for the builders (`ImmutableList.builder()`), `ImmutableSortedSet`/`ImmutableSortedMap`, and the immutable `Multimap` and `Table` types.
+
+## Multimap, BiMap and Table
+
+These are the collection types the JDK doesn't have.
 
 ### Multimap
 
-A `Multimap` is a map where each key can have multiple values. Guava provides several implementations, such as `ArrayListMultimap` and `HashMultimap`.
+A `Multimap` maps a key to several values without you managing a `Map<K, List<V>>`:
 
 ```java
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
+import java.util.List;
 
-Multimap<String, String> multimap = ArrayListMultimap.create();
-multimap.put("Fruits", "Apple");
-multimap.put("Fruits", "Banana");
-multimap.put("Vegetables", "Carrot");
+ListMultimap<String, String> food = ArrayListMultimap.create();
+food.put("fruit", "apple");
+food.put("fruit", "banana");
+food.put("vegetable", "carrot");
+
+List<String> fruit = food.get("fruit"); // [apple, banana]
+List<String> nuts = food.get("nuts");   // [] (never null)
+int size = food.size();                 // 3, counts key-value pairs
 ```
+
+Use `HashMultimap`/`LinkedHashMultimap` if you want set semantics for the values.
 
 ### BiMap
 
-A `BiMap` is a bidirectional map that maintains an inverse view of itself, allowing developers to quickly look up keys based on values and vice versa.
+A `BiMap` keeps keys and values both unique, so you can look up in either direction:
 
 ```java
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-BiMap<String, Integer> biMap = HashBiMap.create();
-biMap.put("One", 1);
-biMap.put("Two", 2);
+BiMap<String, Integer> numbers = HashBiMap.create();
+numbers.put("one", 1);
+numbers.put("two", 2);
 
-// Get the key for value 2
-String key = biMap.inverse().get(2);  // key = "Two"
+String key = numbers.inverse().get(2); // "two"
+numbers.put("uno", 1); // throws IllegalArgumentException: value already present
 ```
+
+Use `forcePut` if you want to replace the existing mapping instead.
 
 ### Table
 
-A `Table` represents a two-dimensional map, where each cell has a row key, a column key, and a value.
+A `Table` is a map keyed by a (row, column) pair:
 
 ```java
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-Table<String, String, Integer> table = HashBasedTable.create();
-table.put("Alice", "Math", 90);
-table.put("Alice", "Science", 85);
-table.put("Bob", "Math", 80);
-table.put("Bob", "Science", 75);
+Table<String, String, Integer> grades = HashBasedTable.create();
+grades.put("Alice", "Math", 90);
+grades.put("Alice", "Science", 85);
+grades.put("Bob", "Math", 80);
+
+grades.get("Alice", "Math"); // 90
+grades.row("Alice");         // {Math=90, Science=85}
+grades.column("Math");       // {Alice=90, Bob=80}
 ```
 
 ## Caching
 
-Guava provides a `Cache` interface for in-memory caching with a flexible and powerful implementation called `LoadingCache`. It supports features like automatic loading, eviction, and time-based expiration.
+`CacheBuilder` builds an in-memory cache with size limits, expiry, and automatic loading:
 
 ```java
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.time.Duration;
 
 LoadingCache<String, String> cache = CacheBuilder.newBuilder()
     .maximumSize(100)
-    .expireAfterAccess(5, TimeUnit.MINUTES)
-    .build(new CacheLoader<String, String>() {
-        @Override
-        public String load(String key) {
-            return fetchDataFromSource(key);
-        }
-    });
+    .expireAfterAccess(Duration.ofMinutes(5))
+    .build(CacheLoader.from(key -> fetchData(key)));
+
+String value = cache.getUnchecked("user:42"); // loads on first call, cached afterwards
 ```
 
-## Functional Programming
+`fetchData` stands in for your own slow lookup. Use `get` instead of `getUnchecked` if the loader can throw checked exceptions; `get` wraps them in `ExecutionException`.
 
-Guava offers limited support for functional programming,including transformations and filtering on collections using `Function` and `Predicate` interfaces:
+For new code, Guava's own `CacheBuilder` Javadoc recommends [Caffeine](https://github.com/ben-manes/caffeine), its successor. Caffeine has an almost identical builder API, better eviction, and async loading.
+
+## Functional utilities: use streams instead
+
+Guava's `Function`, `Predicate`, `Collections2.transform` and `FluentIterable` predate Java 8. The Guava team's own [functional idioms page](https://github.com/google/guava/wiki/FunctionalExplained) says the JDK's `java.util.function` and `java.util.stream` packages supersede them, and warns that overusing them leads to verbose, hard-to-read code. In Java 8+:
 
 ```java
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-
-List<String> names = Lists.newArrayList("Alice", "Bob", "Charlie");
-
-// Define a function to convert names to uppercase
-Function<String, String> toUpperCase = new Function<String, String>() {
-    @Override
-    public String apply(String input) {
-        return input.toUpperCase();
-    }
-};
-
-// Transform a list of names to uppercase
-Collection<String> upperCaseNames = Collections2.transform(names, toUpperCase);
-
-// Define a predicate to filter names starting with 'A'
-Predicate<String> startsWithA = new Predicate<String>() {
-    @Override
-    public boolean apply(String input) {
-        return input.startsWith("A");
-    }
-};
-
-// Filter names starting with 'A'
-Collection<String> filteredNames = Collections2.filter(names, startsWithA);
+List<String> upper = names.stream()
+    .filter(n -> n.startsWith("A"))
+    .map(String::toUpperCase)
+    .collect(ImmutableList.toImmutableList());
 ```
 
-However, Java 8 introduced streams and lambda expressions, which are more powerful tools for functional programming. As a result, Guava's functional programming features are now considered obsolete and not recommended for new projects.
+`ImmutableList.toImmutableList()` is a Guava collector, so the two still work well together.
 
-## Concurrency Utilities
-
-Guava provides concurrency utilities that simplify working with threads, such as `ListenableFuture` and `Service`:
+## Concurrency
 
 ### ListenableFuture
 
-A `ListenableFuture` extends the standard `Future` interface and allows developers to register callbacks to be executed when the future completes.
+A `ListenableFuture` is a `Future` you can attach callbacks to:
 
 ```java
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import java.util.concurrent.Executors;
 
-public class Example {
-    public static void main(String[] args) {
-        // Create an executor for the future
-        ListeningExecutorService executor = MoreExecutors.listeningDecorator(
-            Executors.newSingleThreadExecutor());
+ListeningExecutorService executor =
+    MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+try {
+    ListenableFuture<String> future = executor.submit(() -> fetchData("report"));
 
-        // Submit a task to the executor
-        ListenableFuture<String> future = executor.submit(new Callable<String>() {
-            @Override
-            public String call() {
-                return fetchDataFromSource();
-            }
-        });
+    Futures.addCallback(future, new FutureCallback<String>() {
+        @Override
+        public void onSuccess(String result) {
+            System.out.println("Fetched: " + result);
+        }
 
-        // Add a callback to be executed when the future completes
-        Futures.addCallback(future, new FutureCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("Data fetched: " + result);
-            }
+        @Override
+        public void onFailure(Throwable t) {
+            System.err.println("Failed: " + t);
+        }
+    }, MoreExecutors.directExecutor());
 
-            @Override
-            public void onFailure(Throwable t) {
-                System.err.println("Failed to fetch data: " + t.getMessage());
-            }
-        }, MoreExecutors.directExecutor());
-    }
+    future.get();
+} finally {
+    executor.shutdown(); // otherwise the non-daemon thread keeps the JVM alive
 }
 ```
+
+The executor argument to `addCallback` is required. `directExecutor()` runs the callback on whichever thread completes the future, which is fine for quick work like logging. Pass a real executor for anything slow. If you are starting fresh on Java 8+, `CompletableFuture` covers much of the same ground. `ListenableFuture` is still common in libraries such as gRPC-Java.
 
 ### Service
 
-The `Service` interface provides a uniform way to manage the lifecycle of components that perform background tasks.
+`Service` gives a background component a defined lifecycle (`NEW → STARTING → RUNNING → STOPPING → TERMINATED`, or `FAILED`). The simplest base class is `AbstractExecutionThreadService`, which runs `run()` on its own thread:
 
 ```java
-import com.google.common.util.concurrent.AbstractService;
+import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import java.util.concurrent.TimeUnit;
 
-public class MyService extends AbstractService {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
+class Heartbeat extends AbstractExecutionThreadService {
     @Override
-    protected void doStart() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    performBackgroundTask();
-                    notifyStarted();
-                } catch (Throwable t) {
-                    notifyFailed(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void doStop() {
-        executor.shutdown();
-        notifyStopped();
+    protected void run() throws InterruptedException {
+        while (isRunning()) {
+            System.out.println("tick");
+            Thread.sleep(1_000);
+        }
     }
 }
+
+Heartbeat service = new Heartbeat();
+service.startAsync().awaitRunning();
+// ... later
+service.stopAsync().awaitTerminated(5, TimeUnit.SECONDS);
 ```
 
-## Conclusion
+If `run()` throws, the service moves to `FAILED`, and `awaitTerminated` throws an `IllegalStateException` with the original exception as its cause. `ServiceManager` starts and stops a group of services together.
 
-Google Guava is a powerful, comprehensive library that provides a wide range of utilities for Java developers. Its features enhance the Java programming language, making code more readable, efficient, and less prone to errors. Although some of its functional programming features are now considered obsolete due to Java 8's introduction of streams and lambda expressions, Guava's other features, such as collections, caching, and concurrency utilities, continue to offer significant benefits to developers.
+## When not to bother
+
+Guava is a large dependency, and it is a common source of version conflicts because so many libraries depend on it. If you only need `List.of`, `Optional` or `Objects.requireNonNull`, the JDK already has them. Add Guava when you want the collection types, the immutable builders, or the concurrency utilities above.
+
+## Further reading
+
+- [Guava user guide](https://github.com/google/guava/wiki)
+- [Guava Javadoc](https://guava.dev/releases/snapshot-jre/api/docs/)
+- [Caffeine](https://github.com/ben-manes/caffeine)

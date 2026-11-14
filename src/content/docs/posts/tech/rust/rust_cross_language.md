@@ -1,64 +1,90 @@
 ---
-title: "Cross-Language Interoperability: Exploring Rust's FFI, WebAssembly, and gRPC"
-description:  "In this article, we will explore three techniques for cross-language interoperability: Rust's FFI, WebAssembly, and gRPC."
+title: "Rust and other languages: FFI, WebAssembly, and gRPC compared"
+description: "Three ways to make Rust work with other languages: in-process calls over the C ABI, compiling to WebAssembly, and gRPC services over the network."
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+When Rust has to work with code in another language, there are three common options, and they sit at very different distances from each other:
 
-Cross-Language Interoperability: Exploring Rust's FFI, WebAssembly, and gRPC
+- **FFI**: both languages run in the same process and call each other's functions directly through the C ABI.
+- **WebAssembly**: Rust compiles to a sandboxed module that a host (a browser, Node.js, or a runtime like Wasmtime) loads and calls.
+- **gRPC**: each side is a separate service, and they talk over the network using a shared Protocol Buffers schema.
 
-In today's world of software development, it's not uncommon to encounter projects that involve multiple programming languages. While each language has its strengths and weaknesses, combining multiple languages can provide a more powerful and flexible solution. However, integrating multiple languages can be challenging due to differences in syntax, data types, and memory management. In this article, we will explore three techniques for cross-language interoperability: Rust's FFI, WebAssembly, and gRPC.
+The examples below use Rust edition 2024 (the default for `cargo new` since Rust 1.85), which requires `unsafe extern` blocks and `#[unsafe(no_mangle)]`. Older editions accept the same code without the extra `unsafe`.
 
-Rust's FFI
+## FFI
 
-Rust's Foreign Function Interface (FFI) allows Rust code to call functions defined in other programming languages, such as C or C++. This is accomplished by defining an external function in Rust with a C-compatible function signature, and then dynamically linking to a shared library that contains the function implementation. Here's an example of calling a C function from Rust using FFI:
+Rust's foreign function interface lets Rust call any function that follows the C calling convention, and lets other languages call Rust functions exported with it. You declare the foreign function in an `extern "C"` block:
 
 ```rust
-extern "C" {
+unsafe extern "C" {
     fn my_c_function(arg1: i32, arg2: f64) -> f64;
 }
 
 fn main() {
     let result = unsafe { my_c_function(42, 3.14) };
-    println!("Result: {}", result);
+    println!("Result: {result}");
 }
 ```
 
-While Rust's FFI is powerful and flexible, it does require some knowledge of low-level programming concepts, such as pointers and memory management. Additionally, it only supports communication between languages that can produce C-compatible object code.
+This compiles, but it only links if `my_c_function` is actually provided, either by a static or shared library named with `#[link(name = "...")]` or by C code compiled in a build script (the [`cc`](https://crates.io/crates/cc) crate is the usual way). Calls are `unsafe` because the compiler can't check that the declaration matches the real function or that the C code upholds Rust's rules.
 
-WebAssembly
+The C ABI is the common denominator. C++ code needs `extern "C"` wrapper functions (or the [`cxx`](https://cxx.rs/) crate), and most "Rust from language X" tools are built on it, such as [PyO3](https://pyo3.rs/) for Python and [napi-rs](https://napi.rs/) for Node.js.
 
-WebAssembly is a binary format for executing code on the web, designed to be a low-level target for programming languages. It provides a portable and efficient way to run code in a web browser, and can also be used outside of the web as a standalone platform. WebAssembly is designed to be compatible with multiple programming languages, including Rust, C++, and JavaScript.
+Trade-offs: calls are as cheap as a normal function call, but you handle memory ownership, string encoding, and error codes by hand at the boundary, and a bug on the C side can crash the whole process.
 
-To use WebAssembly, a program is compiled to WebAssembly bytecode, which can then be executed in a virtual machine. The bytecode can be generated from various programming languages using compilers, such as Rust's wasm-pack. Here's an example of calling a Rust function from JavaScript using WebAssembly:
+## WebAssembly
+
+WebAssembly (Wasm) is a portable bytecode format. Browsers run it, and so do standalone runtimes such as Wasmtime and Wasmer. Rust can compile to it directly.
+
+A minimal exported function:
 
 ```rust
-#[no_mangle]
-pub fn add(a: i32, b: i32) -> i32 {
+// src/lib.rs
+#[unsafe(no_mangle)]
+pub extern "C" fn add(a: i32, b: i32) -> i32 {
     a + b
 }
 ```
+
+The crate must be built as a `cdylib`:
+
+```toml
+# Cargo.toml
+[lib]
+crate-type = ["cdylib"]
+```
+
+```sh
+rustup target add wasm32-unknown-unknown
+cargo build --release --target wasm32-unknown-unknown
+# output: target/wasm32-unknown-unknown/release/<crate_name>.wasm
+```
+
+Load it from JavaScript (after renaming or serving the output as `add.wasm`):
 
 ```javascript
 fetch('add.wasm')
   .then(response => response.arrayBuffer())
   .then(bytes => WebAssembly.instantiate(bytes))
-  .then(results => {
-    const add = results.instance.exports.add;
-    console.log(add(2, 3)); // Output: 5
+  .then(({ instance }) => {
+    console.log(instance.exports.add(2, 3)); // 5
   });
 ```
 
-WebAssembly provides a high degree of portability and security, as the code runs in a sandboxed environment with restricted access to the host system. However, it does have some limitations, such as limited access to the browser's APIs and the inability to directly access the host system's file system.
+Raw Wasm exports only pass numbers. To pass strings, structs, or JavaScript objects, use [`wasm-bindgen`](https://wasm-bindgen.github.io/wasm-bindgen/), which generates the JavaScript glue code. `wasm-pack` is a build tool that runs `cargo` and `wasm-bindgen` together and packages the result for npm.
 
-gRPC
+Trade-offs: Wasm runs in a sandbox. In the browser it can't touch the DOM or network directly and has to call imported JavaScript functions for that. Outside the browser, WASI runtimes only grant file system or network access you explicitly allow. That isolation is the point, but crossing the boundary with anything other than numbers costs copying and glue code.
 
-gRPC is a high-performance, open-source framework for building remote procedure call (RPC) systems. It allows communication between services written in different programming languages using a language-agnostic protocol called Protocol Buffers. gRPC supports multiple programming languages, including Rust, C++, Java, and Python, among others.
+## gRPC
 
-To use gRPC, a service is defined using Protocol Buffers, which describes the data structures and methods that can be called remotely. A client and server can then be generated from the service definition, which can communicate with each other using the gRPC protocol. Here's an example of defining a gRPC service in Rust:
+gRPC is an RPC framework where services are defined in a Protocol Buffers (`.proto`) file. Code generators turn that file into client and server code for each language, and messages travel over HTTP/2 in protobuf's binary encoding.
+
+The schema is language-neutral. This one defines a `Greeter` service any language can implement or call:
 
 ```protobuf
 syntax = "proto3";
@@ -78,8 +104,19 @@ message HelloReply {
 }
 ```
 
-gRPC provides a high degree of flexibility and performance, as it uses a binary protocol that is optimized for low latency and high throughput. Additionally, it provides features such as authentication, load balancing, and error handling out of the box. However, it does require some setup and configuration to get started, and may not be suitable for all use cases.
+In Rust, the usual implementation is [`tonic`](https://github.com/hyperium/tonic), which uses `prost` for the protobuf types. A build script generates a `Greeter` trait for the server and a `GreeterClient` for callers from the `.proto` file; you implement the trait and run it on a Tokio runtime. A Python or Go client generated from the same file can then call your Rust server.
 
-Conclusion
+Trade-offs: each call is a network round trip with serialization, so it's far slower than an in-process call. In return, the services are fully isolated, can be deployed and scaled separately, and the schema gives you typed contracts with rules for evolving them. Browsers can't speak gRPC directly; they need gRPC-Web and a proxy.
 
-Cross-language interoperability is an important aspect of modern software development, as it allows different programming languages to work together to create more powerful and flexible solutions. Rust's FFI, WebAssembly, and gRPC are just a few examples of techniques and technologies that can be used for cross-language communication. By understanding these tools, developers can leverage the strengths of multiple languages to create better software.
+## Which to pick
+
+- Calling an existing C or C++ library, or speeding up a hot path in Python or Node: **FFI**.
+- Running Rust in the browser, or running untrusted plugins in a sandbox: **WebAssembly**.
+- Separate services owned by different teams or deployed independently: **gRPC**.
+
+## Further reading
+
+- [The Rustonomicon: FFI](https://doc.rust-lang.org/nomicon/ffi.html)
+- [wasm-bindgen guide](https://wasm-bindgen.github.io/wasm-bindgen/)
+- [gRPC documentation](https://grpc.io/docs/)
+- [tonic](https://docs.rs/tonic)

@@ -1,157 +1,131 @@
 ---
 tags: ['typst']
-title: What is Typst.
-description: Typst is a new markup-based typesetting system for the sciences that is designed to be an alternative both to advanced tools like LaTeX and simpler tools like Word and Google Docs..
+title: "Typst basics: building a resume template with grid and pad"
+description: An introduction to Typst, a markup-based typesetting system, by building a reusable resume template and filling it with data from a separate file.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1900267581.png
 ---
 
-Typst is a new markup-based typesetting system for the sciences that is designed to be an alternative both to advanced tools like LaTeX and simpler tools like Word and Google Docs. Its focus lies on the intersection of simplicity and power². It is written in Rust and compiles to pdf. It is designed to be used in the browser, but can also be used as a command-line tool.
+Typst is a markup-based typesetting system aimed at the same documents as LaTeX (papers, theses, resumes) but with simpler syntax, readable error messages and near-instant recompiles. It's written in Rust and compiles to PDF. You can use the collaborative web app at [typst.app](https://typst.app/) or the open-source command-line compiler:
 
-Typst was born out of frustration with LaTeX. After four years of development, it is almost ready to launch¹. It is funded by the Technical University of Berlin, the State of Berlin, and the European Union (through the European Social Funds)³.
+```bash
+typst compile main.typ   # writes main.pdf
+typst watch main.typ     # recompiles on every save
+```
 
-In Typst, grids are used to create layouts with rows and columns. The `grid` function is used to create a grid and takes several parameters such as `columns`, `gutter`, `column-gutter`, and `row-gutter`.
+The example below was written against early Typst and has been updated for the current release (0.15 at the time of writing).
 
-The `columns` parameter specifies the number of columns in the grid and their widths. For example, setting `columns: (1fr)` creates a single column grid where the column takes up all available space.
+## Grids
 
-The `gutter` parameter specifies the amount of space between rows and columns. The `column-gutter` and `row-gutter` parameters can be used to specify different amounts of space between columns and rows.
+`grid` lays content out in rows and columns. The main parameters:
 
-Inside the grid function, you can add content to the grid by specifying an array of elements. Each element in the array represents a cell in the grid. You can use functions such as `align`, `block`, and `pad` to format the content inside each cell.
+- `columns`: the number of columns, or an array of widths. `(1fr)` is one column taking all available space; `2` is two auto-sized columns.
+- `gutter`: space between rows and columns. `column-gutter` and `row-gutter` override it for one direction.
+- The positional arguments are the cells, filled left to right, top to bottom.
 
-For example:
+In markup you prefix a function call with `#`:
 
-```rust
-grid(
+```typst
+#let location = "Vancouver, BC"
+#let postalCode = "V5Y 1V4"
+
+#grid(
   columns: (1fr),
   gutter: 0.15em,
-  align(center, location + ", "+ postalCode),
+  align(center, location + ", " + postalCode),
 )
 ```
 
-This code creates a single column grid with a gutter of 0.15em between rows. The content inside the cell is centered using the `align` function.
+This makes a single-column grid with one centered cell. Functions like `align`, `block` and `pad` format what goes inside each cell.
 
-Putting it into practise, we can generate a simple resume using typst:
+## A resume template
 
-We are going to seperate the core resume into a template and the data into a resume file. The template will be a typst file and the resume will be a typst file.
+To make a resume, I split the layout and the data into two files. `template.typ` defines a `resume` function that takes the data as named arguments and returns the formatted page:
 
-```rust
-// The project function defines how your document looks.
-// It takes your content and some metadata and formats it.
-// Go ahead and customize it to your liking!
+```typst
+// template.typ
 #let resume(
   title: "", location: "", postalCode: "", phoneNumber: "", email: "",
-  authors: (), experiences: (), education: (), body) = {
-  // Set the document's basic properties.
+  authors: (), experiences: (), education: (), body,
+) = {
   set document(author: authors, title: title)
-  // set page(numbering: "1", number-align: center)
-  set text(font: "Linux Libertine", lang: "en")
+  set text(font: "Libertinus Serif", lang: "en")
 
-  // Title row.
+  // Name, centered at the top.
   align(center)[
-    #block(text(weight: 700, 2em, title))
+    #block(text(weight: 700, size: 2em, title))
   ]
 
-  pad(
-    top: 0.05em,
-    bottom: 0.05em,
-    x: 1em,
-    grid(
-      columns: (1fr),
-      gutter: 0.15em,
-      align(center, location + ", "+ postalCode),
+  // Contact details.
+  pad(top: 0.05em, bottom: 0.05em, x: 1em,
+    grid(columns: (1fr), gutter: 0.15em,
+      align(center, location + ", " + postalCode),
     ),
   )
-  pad(
-    top: 0.1em,
-    bottom: 0.1em,
-    x: 1em,
-    grid(
-      columns: (1fr),
-      gutter: 0.05em,
-      align(center, phoneNumber + " - "+ email),
+  pad(top: 0.1em, bottom: 0.1em, x: 1em,
+    grid(columns: (1fr), gutter: 0.05em,
+      align(center, phoneNumber + " - " + email),
     ),
   )
   line(length: 100%)
 
-  let count = experiences.len()
-  let nrows = calc.min(count, 1)
+  // One block per job.
   grid(
-    column-gutter: 0pt,
     row-gutter: 35pt,
     ..experiences.map(experience => [
-      #block( text(weight: 700, 1.5em, spacing: 50%, experience.employee))
+      #block(text(weight: 700, size: 1.5em, experience.employee))
       #block(above: 0pt, below: 0pt, text(experience.jobTitle))
-      #pad(
-        y: -0.25em,
-        grid(
-          columns: 2,
-          gutter: 0.05em,
-          column-gutter: 0pt,
-          row-gutter: 0pt,
-          experience.startDate + " - " + experience.endDate + " ", " " + experience.location
+      #pad(y: -0.25em,
+        grid(columns: 2, gutter: 0.05em,
+          experience.startDate + " - " + experience.endDate + " ",
+          " " + experience.location,
         ),
-      ),
-      #pad(
-        x: 1em,
-        y: -0.75em,
-        list(..experience.points.map(point => point))
       )
+      #pad(x: 1em, y: -0.75em, list(..experience.points))
     ]),
   )
   line(length: 100%)
+
+  // Education.
   pad(y: 2em,
-    grid(
-      columns: 1,
-      gutter: 0.05em,
-      column-gutter: 0pt,
-      row-gutter: 10pt,
-      block(above: 2pt, below: 2pt, text(weight: 700, 1.5em, spacing: 50%, education.name)),
+    grid(columns: 1, row-gutter: 10pt,
+      block(above: 2pt, below: 2pt, text(weight: 700, size: 1.5em, education.name)),
       block(above: 0pt, below: 0pt, text(education.degree)),
-      grid(
-          columns: 2,
-          gutter: 0.05em,
-          column-gutter: 0pt,
-          row-gutter: 0pt,
-          education.startDate + " - " + education.endDate + " ", " | " + education.location,
+      grid(columns: 2, gutter: 0.05em,
+        education.startDate + " - " + education.endDate + " ",
+        " | " + education.location,
       ),
-      pad(
-          x: 1em,
-          list(..education.points.map(point => point))
-      )
-    )
+      pad(x: 1em, list(..education.points)),
+    ),
   )
   line(length: 100%)
-  text(weight: 700, 1.5em, "References")
-  pad(y:1em, text("Available on Request"))
-  // Main body.
-  set par(justify: true)
 
+  text(weight: 700, size: 1.5em, "References")
+  pad(y: 1em, text("Available on Request"))
+
+  // Anything written after the show rule in main.typ goes here.
+  set par(justify: true)
+  body
 }
 ```
 
-This Typst template code appears to be for a document that includes information about a resume. The template has several major sections:
+A few things worth noting:
 
-1. **Resume function definition**: The `resume` function is defined at the beginning of the template with several parameters such as `title`, `location`, `postalCode`, `phoneNumber`, `email`, `authors`, `experiences`, and `education`.
+- `set` rules inside the function (`set document`, `set text`) only apply to the content the function returns, so the template doesn't leak styles elsewhere.
+- `..experiences.map(...)` spreads an array into separate arguments, so each job becomes one grid cell. Inside the `[...]` content block you're back in markup mode, which is why the calls there need `#`.
+- `list(..experience.points)` turns an array of strings into a bulleted list.
+- The `body` parameter receives the rest of the document when the template is applied with a show rule (below). The original version of this template never placed `body`, so anything written after the show rule silently disappeared.
 
-2. **Document properties**: The basic properties of the document are set using the `set` keyword. This includes setting the author and title of the document.
+## Filling in the data
 
-3. **Title row**: A title row is created using the `align` and `block` functions to center and format the title text.
+`main.typ` imports the template and applies it to the whole document with `#show: resume.with(...)`. `.with` pre-fills the named arguments and returns a new function that only needs `body`:
 
-4. **Location and contact information**: The location and contact information are displayed in two separate rows using the `pad` and `grid` functions.
-
-5. **Experiences**: A grid is created to display information about experiences using the `grid` function. Each experience includes information such as employee name, job title, start date, end date, location, and points.
-
-6. **Education**: Information about education is displayed in a similar manner to experiences using a grid created with the `grid` function.
-
-
-To generate a resume, we can create a resume file that contains the data for the resume. The resume file will be a typst file.
-
-```rust
+```typst
+// main.typ
 #import "template.typ": *
 
-// Take a look at the file `template.typ` in the file panel
-// to customize this template and discover how it works.
 #show: resume.with(
   title: "New Grad Resume",
   location: "Vancouver, BC",
@@ -166,19 +140,11 @@ To generate a resume, we can create a resume file that contains the data for the
       endDate: "Current",
       location: "BC, Canada",
       points: (
-        (
-          "Implementing web app for a website with html css and javascript"
-        ),
-        (
-          "Implementing mobile app all by myself"
-        ),
-        (
-          "Releasing untested code"
-        ),
-        (
-          "Buggy software development"
-        )
-      )
+        "Implementing web app for a website with html css and javascript",
+        "Implementing mobile app all by myself",
+        "Releasing untested code",
+        "Buggy software development",
+      ),
     ),
     (
       employee: "Small Company",
@@ -187,14 +153,10 @@ To generate a resume, we can create a resume file that contains the data for the
       endDate: "March 2020",
       location: "BC, Canada",
       points: (
-        ("Quality Assurance for mobile app"),
-        (
-          "Unit Testing for mobile app"
-        ),
-        (
-          "Gaining credit for coop"
-        )
-      )
+        "Quality Assurance for mobile app",
+        "Unit Testing for mobile app",
+        "Gaining credit for coop",
+      ),
     ),
   ),
   education: (
@@ -203,35 +165,20 @@ To generate a resume, we can create a resume file that contains the data for the
     endDate: "December 2019",
     degree: "Computer Engineering",
     location: "Victoria, BC",
-    points: (
-      (
-        "Good At Math"
-      ), 
-      (
-        "Good at Coding"
-      )
-    )
-  )
+    points: ("Good At Math", "Good at Coding"),
+  ),
 )
 ```
 
-This Typst code appears to be for a document that displays a resume using a template. The code has several sections:
+Each job is a dictionary, `experiences` is an array of them, and `education` is a single dictionary. One gotcha: an array with a single element needs a trailing comma, `("only item",)`, otherwise Typst reads the parentheses as grouping and you get a plain string.
 
-1. **Importing the template**: The `import` keyword is used to import the `template.typ` file which contains the definition of the `resume` function.
+Run `typst compile main.typ` and you get `main.pdf`.
 
-2. **Customizing the template**: The `resume.with` function is used to customize the template by passing in values for parameters such as `title`, `location`, `postalCode`, `phoneNumber`, and `email`.
+The full example is at [github.com/FriendlyUser/IntroductionToTypst](https://github.com/FriendlyUser/IntroductionToTypst), with the generated PDF at [main.pdf](https://github.com/FriendlyUser/IntroductionToTypst/blob/main/main.pdf).
 
-3. **Experiences**: An array of experiences is passed to the `experiences` parameter of the `resume.with` function. Each experience includes information such as employee name, job title, start date, end date, location, and points.
+## Further reading
 
-4. **Education**: Information about education is passed to the `education` parameter of the `resume.with` function.
-
-The first line of code uses the `show` keyword to display the customized resume using the imported template.
-
-You can view an example at https://github.com/FriendlyUser/IntroductionToTypst 
-
-and the pdf is accessible at https://github.com/FriendlyUser/IntroductionToTypst/blob/main/main.pdf
-
-## References
-(1) Typst Documentation. https://typst.app/docs/ Accessed 3/23/2023.
-(2) Typst: Compose papers faster. https://typst.app/ Accessed 3/23/2023.
-(3) Has anyone tried Typst? : r/LaTeX - reddit.com. https://www.reddit.com/r/LaTeX/comments/zyuyfc/has_anyone_tried_typst/ Accessed 3/23/2023.
+- [Typst documentation](https://typst.app/docs/)
+- [`grid` reference](https://typst.app/docs/reference/layout/grid/)
+- [Making a template (tutorial)](https://typst.app/docs/tutorial/making-a-template/)
+- [Typst on GitHub](https://github.com/typst/typst)

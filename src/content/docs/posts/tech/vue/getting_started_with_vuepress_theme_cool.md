@@ -1,123 +1,123 @@
 ---
-title: Getting Started with Vuepress Theme Cool and Vuepress
-description: Vuepress is a static site generator based on Vue.js that allows you to easily create documentation websites or any other kind of website that requires structured content. It features a built-in Markdown editor, support for custom themes, and plugins that extend its functionality.
+title: Setting up a VuePress 1 site with vuepress-theme-cool
+description: Install VuePress 1 and vuepress-theme-cool, configure KaTeX, PlantUML and admonition plugins, and run a local documentation site.
 pubDate: Thursday, 16 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["vue", "vuepress"]
 projects: ["vuepress-theme-cool"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/3531615326.png'
 ---
 
-## Getting Started with Vuepress Theme Cool and Vuepress
+:::caution
+VuePress 1 is deprecated: its last release was 1.9.10 (August 2023), and the Vue team now recommends [VitePress](https://vitepress.dev/) as its static site generator. VuePress 2 is maintained by a community team. vuepress-theme-cool only targets VuePress 1 (its latest release is 1.3.1, from August 2020) and won't work with VuePress 2 or VitePress. Use this post for existing VuePress 1 sites; start new projects on VitePress.
+:::
 
-Vuepress is a static site generator based on Vue.js that allows you to easily create documentation websites or any other kind of website that requires structured content. It features a built-in Markdown editor, support for custom themes, and plugins that extend its functionality.
+[VuePress](https://v1.vuepress.vuejs.org/) is a Vue-powered static site generator aimed at documentation: you write Markdown, and it builds a single-page app with a sidebar, search and pre-rendered HTML for each page. [vuepress-theme-cool](https://github.com/FriendlyUser/vuepress-theme-cool) extends the default VuePress 1 theme and adds Markdown-based diagrams (PlantUML, Mermaid), math via KaTeX, sortable/filterable tables (vue-good-table) and charts (Chart.js via vue-chartkick).
 
-Vuepress Theme Cool is a custom theme for Vuepress that provides libraries for markdown-based diagramming tools, sortable/filterable table components and chartjs. It also inherits from the base Vuepress theme and supports all its features.
+This post sets up a minimal site with the theme.
 
-In this article, we will show you how to set up a simple website using Vuepress Theme Cool and Vuepress.
+## Prerequisites
 
-### Prerequisites
+- Node.js and Yarn 1 (classic). npm works too; swap `yarn add -D` for `npm install -D`.
 
-To follow this tutorial, you will need:
+## Install
 
-- Node.js version 10 or higher installed on your machine
-- Yarn package manager installed on your machine
-- A code editor of your choice (we recommend Visual Studio Code)
-
-### Installing Vuepress and Vuepress Theme Cool
-
-First, we need to install Vuepress globally using Yarn:
-
-```bash
-yarn global add vuepress@next
-```
-
-We use the `@next` tag to install the latest version of Vuepress (v1.x), which is compatible with Vuepress Theme Cool.
-
-Next, we need to create a new folder for our project and initialize it as a Node.js project:
+Create a project and install VuePress 1, the theme, and the markdown-it plugins the config below loads:
 
 ```bash
 mkdir vuepress-cool-demo
 cd vuepress-cool-demo
 yarn init -y
+yarn add -D vuepress@1 vuepress-theme-cool markdown-it-katex markdown-it-plantuml markdown-it-admonition
 ```
 
-This will create a `package.json` file with some default values.
+Pin `vuepress@1`. Older guides (including the theme's README) say `vuepress@next`, but that tag now points to VuePress 2, which this theme doesn't support.
 
-Then, we need to install Vuepress Theme Cool as a development dependency:
+Add scripts to `package.json`:
 
-```bash
-yarn add -D vuepress-theme-cool
+```json
+{
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  }
+}
 ```
 
-This will download the theme package and add it to our `package.json` file.
+## Configure
 
-### Configuring Vuepress
-
-Now that we have installed the necessary packages, we need to configure Vuepress to use our theme and enable some features.
-
-To do that, we need to create a `.vuepress` folder inside our project folder and add a `config.js` file inside it. This file will contain our main configuration options for Vuepress.
-
-A minimal setup for our config file is:
+VuePress looks for its config in `<source dir>/.vuepress/config.js`. Since the source directory is `docs`, create `docs/.vuepress/config.js`:
 
 ```js
-// .vuepress/config.js
-
-// this represents the minimal configuration
+// docs/.vuepress/config.js
 module.exports = {
-  // specify the theme name
+  // 'cool' resolves to the vuepress-theme-cool package
   theme: 'cool',
-  // enable some markdown extensions
   markdown: {
     extendMarkdown: (md) => {
-      // enable HTML tags in markdown source
+      // allow raw HTML in Markdown
       md.set({ html: true });
-      // enable KaTeX for math expressions
+      // $...$ and $$...$$ math
       md.use(require('markdown-it-katex'));
-      // enable PlantUML for diagrams
+      // @startuml ... @enduml blocks
       md.use(require('markdown-it-plantuml'));
-      // enable Admonition for callouts
+      // !!! note ... !!! callouts
       md.use(require('markdown-it-admonition'));
     },
   },
 };
 ```
 
-As you can see, we specify the theme name as `'cool'`, which tells Vuepress to use our custom theme. We also enable some markdown extensions that allow us to use HTML tags, KaTeX math expressions, PlantUML diagrams and Admonition callouts in our markdown files.
+The theme includes the KaTeX stylesheet in its layout, so math renders without extra CSS. Mermaid doesn't need a markdown-it plugin; the theme README shows how to add a small `<mermaid>` component instead.
 
-### Creating Content
+## Add content
 
-Now that we have configured Vuepress, we can start creating some content for our website.
+Create `docs/README.md`, which becomes the home page:
 
-To do that, we need to create a `docs` folder inside our project folder and add some markdown files inside it. These files will represent our pages on the website.
+````md
+# Welcome to my website
 
-For example, let's create an `index.md` file inside the `docs` folder with this content:
+This is an example site using [VuePress](https://v1.vuepress.vuejs.org/) and
+[vuepress-theme-cool](https://github.com/FriendlyUser/vuepress-theme-cool).
 
-```md
-# Welcome to my website!
+Raw HTML: <span style="color:red">This is red</span>
 
-This is an example website using [VuePress](https://vuepres.vuejs.org) and [VuePress Theme Cool](https://github.com/FriendlyUser/vuepress-theme-cool).
+Math with KaTeX: $E=mc^2$
 
-You can write any content here using **Markdown** syntax.
+A PlantUML diagram:
 
-You can also use some **extensions** like:
+@startuml
+Alice -> Bob : hello
+@enduml
 
-- HTML tags: <span style="color:red">This is red</span>
-- KaTeX math expressions: $E=mc^2$
-- PlantUML diagrams:
-@startuml 
-Alice -> Bob : hello 
-@enduml 
-- Admonition callouts:
-::: tip Tip 
-This is a tip 
+An admonition from markdown-it-admonition:
+
+!!! note A note
+This is the body of the note.
+!!!
+
+VuePress's built-in custom container:
+
+::: tip
+This is a tip
 :::
-```
+````
 
-This file will be rendered as the homepage of our website. You can see how it looks like by running this command in your terminal:
+The `::: tip` / `::: warning` / `::: danger` containers are built into VuePress itself; `markdown-it-admonition` adds the `!!! type Title` syntax on top. markdown-it-plantuml turns each `@startuml` block into an image rendered by a PlantUML server (the public plantuml.com one by default), so diagrams need network access to display.
+
+## Run it
 
 ```bash
-vuepress dev docs/
+yarn docs:dev
 ```
 
-This will start a local development server at http://localhost:8080/ where you can preview your website live.
+This starts a dev server at `http://localhost:8080/` with hot reload. `yarn docs:build` writes the static site to `docs/.vuepress/dist`.
+
+VuePress 1 is built on webpack 4. If the dev server fails on a recent Node.js with `ERR_OSSL_EVP_UNSUPPORTED`, set `NODE_OPTIONS=--openssl-legacy-provider` before running it, or use an older Node.js LTS.
+
+## Further reading
+
+- [VuePress 1 guide](https://v1.vuepress.vuejs.org/guide/)
+- [vuepress-theme-cool README](https://github.com/FriendlyUser/vuepress-theme-cool) (Mermaid, timeline and chart examples)
+- [Vuepress Theme Cool Starter](https://friendlyuser.github.io/vuepress-theme-cool-starter) (demo site)

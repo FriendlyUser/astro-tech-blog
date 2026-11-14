@@ -1,135 +1,150 @@
 ---
-title: Best practices for writing PowerShell scripts
-description: Explains best practises for writing powershell scripts
+title: "PowerShell script best practices: functions, error handling, modules and execution policy"
+description: "Practical habits for PowerShell scripts: advanced functions with validated parameters and help, try/catch that actually catches, debugging, modules and execution policy."
 pubDate: Saturday, 14 May 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["powershell"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the window at a tree.png'
 ---
 
-Here are some best practices for writing PowerShell scripts:
+Most PowerShell scripts start as a few lines pasted into a console and grow from there. These are the habits that make them easier to read, debug and share once they do. Everything below works in both Windows PowerShell 5.1 and PowerShell 7.
 
-1. Use clear and descriptive variable names
+## Write advanced functions
 
-When writing PowerShell scripts, it's important to use clear and descriptive variable names that reflect their purpose. This helps improve the readability of the script and makes it easier to understand and maintain.
+Wrap reusable logic in functions with `[CmdletBinding()]` and a typed `param()` block. That gets you parameter validation, tab completion, `-Verbose`/`-Debug` support and `Get-Help` output without extra code.
 
-2. Use comments to explain the code
+```powershell
+Set-StrictMode -Version Latest
 
-Comments are an essential part of any programming language, and PowerShell is no exception. Use comments to explain the code and provide additional context to the reader. This can be especially helpful when working on larger scripts or when collaborating with others.
+function Get-AppSetting {
+    <#
+    .SYNOPSIS
+    Reads one setting from a JSON config file.
 
-3. Use error handling and exception handling
+    .PARAMETER Path
+    Path to the JSON config file.
 
-PowerShell provides built-in error and exception handling mechanisms that can help prevent your script from failing unexpectedly. Use try-catch blocks and other error handling techniques to handle errors gracefully and provide feedback to the user.
+    .PARAMETER Name
+    Name of the top-level setting to return.
 
-4. Use parameters to make scripts more flexible
+    .EXAMPLE
+    Get-AppSetting -Path .\appsettings.json -Name LogLevel
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
+        [string]$Path,
 
-Parameters allow you to make your PowerShell scripts more flexible and customizable. By adding parameters to your scripts, you can enable users to specify options and values at runtime, rather than hardcoding them into the script itself.
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name
+    )
 
-5. Use functions to modularize your code
+    Write-Verbose "Reading $Path"
+    try {
+        $config = Get-Content -Path $Path -Raw -ErrorAction Stop |
+            ConvertFrom-Json -ErrorAction Stop
+    }
+    catch {
+        throw "Could not read config file '$Path': $($_.Exception.Message)"
+    }
 
-Functions are a powerful tool in PowerShell that allow you to modularize your code and make it more reusable. By breaking your script down into functions, you can create more flexible and maintainable code that can be used in other scripts or projects.
+    if (-not $config.PSObject.Properties[$Name]) {
+        Write-Warning "Setting '$Name' not found in $Path"
+        return
+    }
 
-6. Use version control to manage your scripts
+    $config.$Name
+}
+```
 
-Version control is an important part of software development and can be extremely helpful when writing PowerShell scripts. By using version control tools like Git or SVN, you can track changes to your scripts, collaborate with others, and revert to previous versions if necessary.
+```text
+PS> Get-AppSetting -Path .\appsettings.json -Name Port -Verbose
+VERBOSE: Reading .\appsettings.json
+8080
+PS> Get-AppSetting -Path .\appsettings.json -Name Missing
+WARNING: Setting 'Missing' not found in .\appsettings.json
+```
 
-7. Use best practices for security
+What this shows:
 
-PowerShell scripts can be a potential security risk if not properly secured. Follow best practices for securing your scripts, such as limiting script execution to trusted sources, using signed scripts, and avoiding hardcoding sensitive data.
+- **Verb-Noun names using approved verbs.** Run `Get-Verb` for the list. Unapproved verbs trigger a warning when the function is imported as part of a module.
+- **Validation attributes** (`Mandatory`, `ValidateScript`, `ValidateNotNullOrEmpty`, `ValidateSet`, `ValidateRange`) reject bad input before your code runs, with a consistent error message.
+- **Comment-based help.** The `<# .SYNOPSIS ... #>` block is what `Get-Help Get-AppSetting -Examples` displays.
+- **`Set-StrictMode -Version Latest`** turns typos such as reading an undefined variable or a non-existent property into errors instead of silent `$null`s.
+- **Output objects, not text.** The function returns the value itself, so callers can pipe it, compare it, or format it however they like. Use `Write-Verbose`, `Write-Warning` and `Write-Error` for messages, not `Write-Host`.
 
-By following these best practices, you can write more effective and efficient PowerShell scripts that are easier to understand, maintain, and secure.
+Avoid hard-coded values (paths, server names, credentials) in the body; make them parameters with sensible defaults.
 
+## Make `try`/`catch` actually catch
 
-Debugging and troubleshooting PowerShell scripts is an essential part of the scripting process. Here are some tips and best practices to help you debug and troubleshoot your PowerShell scripts:
+The most common PowerShell error-handling bug: `catch` only runs for *terminating* errors, and most cmdlet failures are *non-terminating*. They print red text and the script carries on.
 
-1. Use the PowerShell Integrated Scripting Environment (ISE)
+```powershell
+try { Get-Item C:\does-not-exist } catch { "never runs" }
 
-The PowerShell Integrated Scripting Environment (ISE) provides a graphical interface for writing and running PowerShell scripts. The ISE also includes debugging tools, such as breakpoints and the ability to step through code line by line, which can help you identify and resolve issues.
+try { Get-Item C:\does-not-exist -ErrorAction Stop } catch { "caught: $($_.Exception.Message)" }
+```
 
-2. Use Write-Debug to output debugging information
+Add `-ErrorAction Stop` to the calls you want to handle, as in the example above, or set `$ErrorActionPreference = 'Stop'` at the top of a script so every error is terminating. Inside `catch`, `$_` is the `ErrorRecord`; `$_.Exception.Message` is usually what you want to log.
 
-The Write-Debug cmdlet allows you to output debugging information to the console. By strategically placing Write-Debug statements in your script, you can track the progress of your script and identify issues.
+Use `throw` (or `$PSCmdlet.ThrowTerminatingError()` in advanced functions) when the caller can't sensibly continue, and `Write-Error` when the failure only affects one item in a pipeline.
 
-3. Use try-catch blocks to handle errors
+## Debugging
 
-Try-catch blocks are a powerful tool for handling errors in PowerShell scripts. By wrapping potentially error-prone code in a try-catch block, you can gracefully handle errors and prevent your script from failing unexpectedly.
+- **Use VS Code with the PowerShell extension.** It has breakpoints, stepping, a variables pane and an integrated console. The Windows PowerShell ISE is still available on Windows but is no longer in active feature development and doesn't support PowerShell 7, so Microsoft recommends VS Code instead.
+- **`Write-Verbose` and `Write-Debug` are silent by default.** They only print when the caller passes `-Verbose` / `-Debug` (which `[CmdletBinding()]` enables) or sets `$VerbosePreference` / `$DebugPreference`. That makes them safe to leave in production code.
+- **`Set-PSBreakpoint`** sets breakpoints from the console, on a line, a command, or whenever a variable is read or written.
+- **`Get-Help <cmdlet> -Full`** and `Get-Command -Syntax <cmdlet>` show parameters and parameter sets. Run `Update-Help` once to download the full help content.
 
-4. Use Write-Error to output error information
+## Lint and test
 
-The Write-Error cmdlet allows you to output error information to the console. By using Write-Error to output meaningful error messages, you can help users identify and resolve issues with your script.
+- [PSScriptAnalyzer](https://learn.microsoft.com/powershell/utility-modules/psscriptanalyzer/overview) (`Install-Module PSScriptAnalyzer`, then `Invoke-ScriptAnalyzer -Path .\script.ps1`) flags unapproved verbs, aliases in scripts, unused parameters, plain-text password parameters and more. The VS Code extension runs it as you type.
+- [Pester](https://pester.dev/) is the standard test framework for PowerShell. Functions like `Get-AppSetting` that take input as parameters and return objects are easy to test with it.
 
-5. Use verbose and warning messages to provide additional information
+## Organise functions into modules
 
-The verbose and warning messages are another way to provide additional information to the user. By using Write-Verbose and Write-Warning cmdlets, you can provide users with more context and help them understand what is happening in your script.
+Once you have a handful of related functions, move them into a module instead of dot-sourcing script files:
 
-6. Use the Get-Help cmdlet to access cmdlet documentation
+1. Put the functions in a `.psm1` file, e.g. `AppTools\AppTools.psm1`.
+2. Generate a manifest with `New-ModuleManifest -Path .\AppTools\AppTools.psd1 -RootModule AppTools.psm1`, and list the public functions in `FunctionsToExport` so helpers stay private.
+3. Put the folder on a path in `$env:PSModulePath` and `Import-Module AppTools`, or let module auto-loading pick it up.
 
-The Get-Help cmdlet allows you to access cmdlet documentation from the console. By using Get-Help to research cmdlets and their parameters, you can better understand how to use them and avoid errors.
+To share a module publicly, publish it to the [PowerShell Gallery](https://www.powershellgallery.com/) with `Publish-PSResource` (PSResourceGet, included with PowerShell 7.4 and later) or the older `Publish-Module` from PowerShellGet.
 
-7. Use online resources to find solutions
+Keep scripts and modules in Git like any other code.
 
-PowerShell has a large and active community, and there are many online resources available for finding solutions to common issues. Some popular resources include the Microsoft TechNet forums, Stack Overflow, and the PowerShell Gallery.
+## Execution policy
 
-By following these best practices, you can more effectively debug and troubleshoot your PowerShell scripts, and create more reliable and efficient code.
+The execution policy controls whether PowerShell will run script files (`.ps1`, `.psm1`, profiles). It is enforced only on Windows; on Linux and macOS it is always `Unrestricted`. Microsoft describes it as a safety feature rather than a security boundary: it stops users running scripts by accident, but anyone can bypass it.
 
+The policies are `Restricted` (no scripts), `AllSigned`, `RemoteSigned`, `Unrestricted`, `Bypass`, plus `Default` and `Undefined`. If nothing is set in any scope, Windows clients behave as `Restricted` and Windows Server as `RemoteSigned`.
 
-Creating reusable functions and modules is a best practice in PowerShell scripting, as it makes your code more modular, reusable, and maintainable. Here are some tips and best practices for creating reusable functions and modules in PowerShell:
+```powershell
+# See the policy in every scope, highest precedence first
+Get-ExecutionPolicy -List
 
-1. Plan your functions and modules
+# Allow local scripts and signed downloaded scripts, for your account only (no admin needed)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-Before you start writing your functions and modules, it's important to plan and design them. Identify the tasks or problems you want to solve, and break them down into smaller, more manageable parts. Think about how you can create functions that are easy to understand, flexible, and reusable.
+# Run one script with a different policy, without changing any saved setting
+pwsh -ExecutionPolicy Bypass -File .\script.ps1      # PowerShell 7
+powershell -ExecutionPolicy Bypass -File .\script.ps1  # Windows PowerShell 5.1
+```
 
-2. Use verb-noun naming conventions for functions
+Things to know:
 
-PowerShell has a naming convention for functions that is based on the verb-noun structure. The verb describes the action that the function performs, while the noun describes the item or resource the action is performed on. For example, Get-Process or Set-Item.
+- **Scope precedence.** Group Policy (`MachinePolicy`, `UserPolicy`) wins over everything, then `Process`, `CurrentUser`, `LocalMachine`. A `Set-ExecutionPolicy` call can succeed and still have no effect if a higher scope overrides it. In a domain, administrators set it with the **Turn on Script Execution** Group Policy setting.
+- **Downloaded files are marked.** Browsers and email clients add a "from the internet" marker (an alternate data stream) to downloaded files. Under `RemoteSigned`, PowerShell refuses to run those unless they're signed. After reviewing a script, `Unblock-File .\script.ps1` removes the marker. Files fetched with `Invoke-WebRequest` or `curl.exe` may not be marked at all, so `RemoteSigned` is no substitute for reading what you run.
+- **Signing.** For scripts you distribute inside an organisation, sign them with `Set-AuthenticodeSignature` and use `AllSigned`.
+- **Secrets.** Don't put passwords or tokens in scripts. Take a `[PSCredential]` parameter, or use the [SecretManagement](https://learn.microsoft.com/powershell/utility-modules/secretmanagement/overview) module to read them from a vault.
 
-3. Write functions that do one thing well
+## Further reading
 
-Functions should be designed to do one thing well. This makes them easier to understand, test, and maintain. When writing a function, try to keep it focused on a specific task or problem.
-
-4. Use parameters to make functions more flexible
-
-Parameters allow you to make your functions more flexible and customizable. By adding parameters to your functions, you can enable users to specify options and values at runtime, rather than hardcoding them into the function itself.
-
-5. Use comment-based help to document your functions
-
-Comment-based help is a PowerShell feature that allows you to include help documentation directly in your functions. By using comment-based help, you can provide users with useful information about how to use your function, including examples and parameter descriptions.
-
-6. Use modules to organize your functions
-
-Modules are collections of related functions that can be easily shared and reused. By organizing your functions into modules, you can create more flexible and maintainable code that can be used in other scripts or projects.
-
-7. Publish your modules to the PowerShell Gallery
-
-The PowerShell Gallery is a community-driven repository of PowerShell modules and scripts. By publishing your modules to the PowerShell Gallery, you can share your code with others and benefit from feedback and contributions.
-
-By following these best practices, you can create more effective and efficient PowerShell functions and modules that are easier to understand, maintain, and share.
-
-
-PowerShell script execution policies are a security feature that determines whether scripts can be run on a machine. By default, PowerShell script execution is disabled to prevent accidental or malicious execution of scripts. However, there may be situations where you need to change the execution policy to allow scripts to run. Here are some tips and best practices for managing PowerShell script execution policies:
-
-1. Understand the execution policy levels
-
-PowerShell has several execution policy levels, each with different levels of restriction. The execution policy levels are: Restricted, AllSigned, RemoteSigned, Unrestricted, and Bypass. It's important to understand the differences between these levels and choose the appropriate level for your needs.
-
-2. Set the execution policy for your user account or for all users
-
-You can set the execution policy for your user account or for all users on a machine. To set the execution policy for your user account, use the Set-ExecutionPolicy cmdlet with the -Scope parameter set to CurrentUser. To set the execution policy for all users on a machine, use the Set-ExecutionPolicy cmdlet with the -Scope parameter set to LocalMachine.
-
-3. Use the Get-ExecutionPolicy cmdlet to check the current policy
-
-The Get-ExecutionPolicy cmdlet allows you to check the current execution policy level for your user account or for all users on a machine.
-
-4. Use the Unblock-File cmdlet to unblock scripts
-
-If you download a script from the internet or copy a script from another machine, it may be blocked by Windows to prevent the execution of potentially malicious scripts. You can use the Unblock-File cmdlet to remove the block and allow the script to run.
-
-5. Use the -ExecutionPolicy parameter to bypass the execution policy
-
-If you need to run a script that is blocked by the execution policy, you can use the -ExecutionPolicy parameter with the powershell.exe or powershell\_ise.exe command to bypass the policy for the current session.
-
-6. Use Group Policy to set the execution policy for a domain
-
-If you need to set the execution policy for a domain, you can use Group Policy to apply the policy to all machines in the domain.
-
-By following these best practices, you can effectively manage PowerShell script execution policies and ensure that scripts are executed safely and securely on your machines.
+- [about_Functions_Advanced](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_functions_advanced)
+- [about_Try_Catch_Finally](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_try_catch_finally)
+- [about_Comment_Based_Help](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_comment_based_help)
+- [about_Execution_Policies](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies)
+- [Strongly encouraged development guidelines](https://learn.microsoft.com/powershell/scripting/developer/cmdlet/strongly-encouraged-development-guidelines)

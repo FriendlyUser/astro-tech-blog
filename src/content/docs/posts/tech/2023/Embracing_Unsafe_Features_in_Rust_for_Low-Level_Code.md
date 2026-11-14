@@ -1,119 +1,165 @@
 ---
-title: Embracing Unsafe Features in Rust for Low-Level Code
+title: "Unsafe Rust basics: raw pointers, unsafe traits, and calling C"
 pubDate: "2024-06-24T02:12:29.000Z"
-description: "In this article , we will explore Rust's `unsafe` features and how they can be used in low-level programming while still maintaining safety and correctness"
-tags: []
+lastUpdated: 2026-11-14
+description: "What `unsafe` actually allows in Rust, how unsafe functions and traits differ, how to wrap unsafe code in a safe API, and how to call a C function over FFI."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2223533571.png
 ---
-# Embracing Unsafe Features in Rust for Low-Level Code
 
-When it comes to systems programming, Rust has become a popular choice for many developers due to its strong safety guarantees and emphasis on performance. However, there are situations where adhering to Rust's strict safety rules can result in suboptimal performance or even limit the ability to interface with low-level systems. In these cases, Rust provides `unsafe` features that allow developers to write low-level code with more control over memory and performance.
+`unsafe` in Rust doesn't turn off the borrow checker or type system. It unlocks a small set of extra operations that the compiler can't verify, and makes you responsible for upholding the rules those operations could break. You need it for FFI, for writing data structures the borrow checker can't express, and occasionally to skip a check you've already proven unnecessary (for example `get_unchecked` instead of indexed access).
 
-In this article, we will explore Rust's `unsafe` features and how they can be used in low-level programming while still maintaining safety and correctness.
+## What `unsafe` lets you do
 
-## Understanding Unsafe Code
+Inside an `unsafe` block or function you can:
 
-In Rust, `unsafe` code is a way to opt-out of the language's strict safety guarantees. Unsafe code can perform actions that are not checked by the compiler, such as dereferencing raw pointers and calling functions with arbitrary memory addresses. However, these features come with a trade-off: the programmer is responsible for ensuring that the code is safe and correct.
+1. Dereference a raw pointer (`*const T` / `*mut T`).
+2. Call an `unsafe` function, including foreign functions declared in an `extern` block.
+3. Access or modify a mutable `static`.
+4. Implement an `unsafe` trait.
+5. Read fields of a `union`.
 
-To work with `unsafe`, one must understand the fundamental concepts behind it:
+Everything else is checked as normal. Creating a raw pointer is safe; only dereferencing it is not.
 
-1. **Unsafe functions**: Functions that contain unsafe operations must be marked with the `unsafe` keyword. This informs the compiler that the function has potentially dangerous code.
+## Unsafe functions
 
-2. **Unsafe blocks**: To call an unsafe function or perform unsafe operations, you must use an `unsafe` block. This signals to the compiler that you are aware of the potential dangers and accept responsibility for the code within the block.
-
-3. **Unsafe traits**: Traits that contain unsafe methods must be marked as `unsafe`. Implementing an unsafe trait requires that the implementation also be marked as `unsafe`.
-
-## Working with Unsafe Code
-
-Let's dive deeper into each of the unsafe features and see how they can be used in low-level code.
-
-### Unsafe Functions
-
-Unsafe functions are declared with the `unsafe` keyword. They can contain operations that are not checked by the compiler, such as dereferencing raw pointers, calling functions through function pointers, or accessing mutable statics.
+An `unsafe fn` means *the caller* must uphold some contract the compiler can't check. Document that contract in a `# Safety` section:
 
 ```rust
+/// # Safety
+///
+/// `ptr` must be non-null, aligned, and point to an initialized `i32`.
 unsafe fn dangerous_operation(ptr: *const i32) -> i32 {
-    // Dereference a raw pointer
-    *ptr
+    // SAFETY: the caller guarantees `ptr` is valid for reads.
+    unsafe { *ptr }
 }
 ```
 
-### Unsafe Blocks
+In the 2024 edition, the body of an `unsafe fn` is no longer implicitly an unsafe block: the `unsafe_op_in_unsafe_fn` lint warns unless you wrap unsafe operations in their own `unsafe { }`. That keeps each unsafe operation visible and gives you a place for a `// SAFETY:` comment.
 
-When calling an unsafe function or performing an unsafe operation, you must use an `unsafe` block. This is a way of telling the compiler that you are aware of the potential risks and take responsibility for ensuring the code is safe.
+## Unsafe blocks
+
+Calling the function requires an `unsafe` block, which is where you assert the contract holds:
 
 ```rust
 fn main() {
     let value = 42;
     let value_ptr = &value as *const i32;
 
+    // SAFETY: `value_ptr` points to a live, initialized local.
     let result = unsafe { dangerous_operation(value_ptr) };
     println!("The result is: {}", result);
 }
 ```
 
-### Unsafe Traits
+## Unsafe traits
 
-If a trait contains an unsafe method, the trait itself must be marked as `unsafe`. When implementing an unsafe trait, the implementation must also be marked as `unsafe`.
+An `unsafe trait` is one whose *implementors* must uphold an invariant that other code relies on for memory safety. `Send` and `Sync` are the standard examples. Having unsafe methods does not make a trait unsafe, and implementing an unsafe trait does not require its methods to be unsafe; the `unsafe` goes on the `impl`:
 
 ```rust
-unsafe trait UnsafeTrait {
-    unsafe fn unsafe_method(&self);
-}
-
-unsafe impl UnsafeTrait for i32 {
-    unsafe fn unsafe_method(&self) {
-        println!("This is an unsafe method on i32: {}", *self);
+/// # Safety
+///
+/// Implementors must be valid when every byte is zero.
+unsafe trait Zeroable: Sized {
+    fn zeroed() -> Self {
+        // SAFETY: the trait contract guarantees all-zero bytes are a valid `Self`.
+        unsafe { std::mem::zeroed() }
     }
 }
-```
 
-## Real-World Example: Interfacing with C Libraries
+// SAFETY: 0 is a valid u32.
+unsafe impl Zeroable for u32 {}
 
-One common use case for unsafe code is interfacing with C libraries. Rust's FFI (Foreign Function Interface) allows you to call functions written in other languages, such as C. However, working with raw pointers and memory management in C libraries often requires the use of unsafe code.
-
-For example, consider a simple C library that provides a function for adding two integers:
-
-```c
-// adder.h
-int add(int a, int b);
-```
-
-To interface with this library in Rust, you can use the `libc` crate and define an external function:
-
-```rust
-extern "C" {
-    fn add(a: libc::c_int, b: libc::c_int) -> libc::c_int;
+fn main() {
+    println!("{}", u32::zeroed()); // 0
 }
 ```
 
-You can then call this function in an `unsafe` block:
+Implementing `Zeroable` for a reference type like `&u8` would be undefined behaviour, which is exactly why the trait is `unsafe` to implement.
+
+## Wrapping unsafe code in a safe API
+
+Most unsafe code should sit behind a safe function that checks its own preconditions. The standard example (from the Rust Book) is splitting one mutable slice into two. The borrow checker can't prove the halves don't overlap, but we can:
 
 ```rust
-fn main() {
-    let a = 3;
-    let b = 4;
+use std::slice;
 
+fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let len = values.len();
+    let ptr = values.as_mut_ptr();
+
+    assert!(mid <= len);
+
+    // SAFETY: `mid <= len`, so both ranges are in bounds and don't overlap.
+    unsafe {
+        (
+            slice::from_raw_parts_mut(ptr, mid),
+            slice::from_raw_parts_mut(ptr.add(mid), len - mid),
+        )
+    }
+}
+
+fn main() {
+    let mut v = [1, 2, 3, 4, 5];
+    let (a, b) = split_at_mut(&mut v, 2);
+    a[0] = 10;
+    b[0] = 30;
+    println!("{:?}", v); // [10, 2, 30, 4, 5]
+}
+```
+
+The `assert!` is what makes the function safe: callers can't pass a `mid` that would read out of bounds.
+
+## Calling a C function
+
+FFI is the most common reason to write `unsafe`. Given a small C file:
+
+```c
+// src/adder.c
+int add(int a, int b) { return a + b; }
+```
+
+Compile and link it with the [`cc`](https://crates.io/crates/cc) crate from a build script (`cargo add --build cc`):
+
+```rust
+// build.rs
+fn main() {
+    cc::Build::new().file("src/adder.c").compile("adder");
+}
+```
+
+Then declare the function and call it. The C integer types live in `std::ffi`, so you don't need the `libc` crate for this:
+
+```rust
+// src/main.rs
+use std::ffi::c_int;
+
+unsafe extern "C" {
+    fn add(a: c_int, b: c_int) -> c_int;
+}
+
+fn main() {
+    let (a, b) = (3, 4);
+    // SAFETY: `add` takes two ints by value and has no other preconditions.
     let result = unsafe { add(a, b) };
     println!("The sum of {} and {} is {}", a, b, result);
 }
 ```
 
-## Best Practices for Unsafe Code
+The 2024 edition requires `unsafe extern` on the block, because declaring a foreign signature is itself a promise the compiler can't check. If a foreign function has no preconditions, you can declare it as `safe fn add(...)` inside the block and call it without `unsafe`.
 
-While Rust's `unsafe` features can be powerful, they should be used judiciously. Here are some best practices to follow when working with unsafe code:
+The `libc` crate is useful for platform types and functions (`size_t`, `open`, `mmap`), but it is raw bindings, not a safe wrapper. Every call through it is still `unsafe`.
 
-1. **Minimize unsafe code**: Keep the amount of unsafe code to a minimum. Isolate unsafe code in small, well-documented functions and modules.
+## Guidelines
 
-2. **Use abstractions**: When possible, encapsulate unsafe code within safe abstractions. This allows you to maintain Rust's safety guarantees while still benefiting from the performance and flexibility of unsafe code.
+- Keep unsafe blocks small, and put a `// SAFETY:` comment on each one explaining why it's sound.
+- Document every `unsafe fn` and `unsafe trait` with a `# Safety` section listing the caller's or implementor's obligations.
+- Run tests under [Miri](https://github.com/rust-lang/miri) (`cargo +nightly miri test`). It catches many kinds of undefined behaviour, such as out-of-bounds reads and invalid aliasing, that normal tests miss.
+- Prefer an existing safe wrapper crate over writing your own bindings when one exists.
 
-3. **Verify correctness**: Carefully review unsafe code to ensure it is correct and safe. Use assertions, tests, and formal methods to verify that the code adheres to Rust's safety rules.
+## Further reading
 
-4. **Document assumptions**:Document the assumptions and invariants of your unsafe code. This helps other developers understand the reasoning behind the code and ensures that these invariants are maintained as the code evolves.
-
-5. **Leverage safe wrappers**: When interfacing with external libraries, consider using existing safe wrappers (e.g., the `libc` crate for C libraries). These wrappers often provide a safe abstraction over the low-level details, reducing the need to write unsafe code yourself.
-
-## Conclusion
-
-Rust's `unsafe` features provide a powerful way to write low-level code and interface with external systems when performance and control are essential. By understanding the concepts behind unsafe code and following best practices, you can harness the power of unsafe features while still maintaining the safety and correctness that Rust is known for.
+- [The Rust Book: Unsafe Rust](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html)
+- [The Rustonomicon](https://doc.rust-lang.org/nomicon/)
+- [Rust 2024 edition guide: unsafe extern blocks](https://doc.rust-lang.org/edition-guide/rust-2024/unsafe-extern.html)

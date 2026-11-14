@@ -1,53 +1,37 @@
 ---
-title: An Introduction to NLog in dottnet
+title: "Getting started with NLog in .NET: configuration, targets and ASP.NET Core"
 pubDate: "2023-05-03T14:16:44.586Z"
-description: "In this article, we will explore the basics of NLog, how to set it up in a C# project, and how to configure and use it for various logging scenarios."
-tags: ["dotnet"]
+lastUpdated: 2026-11-14
+description: "Install NLog, write an NLog.config with file and console targets, log from C#, add layouts and filters, and plug NLog into ASP.NET Core logging."
+tags: ["dotnet", "csharp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3292707171.png
 ---
-# An Introduction to NLog in dottnet
+[NLog](https://nlog-project.org/) is a logging library for .NET. You write log calls in code, and a config file decides where each message goes (files, the console, databases, and other *targets*) and in what format. Changing where logs go doesn't require a recompile. This post was revised against NLog 6.x (6.2.2 on NuGet at the time of writing).
 
-NLog is a powerful and flexible logging library for .NET applications. It provides a simple, yet highly configurable way to log messages from your C# application. In this article, we will explore the basics of NLog, how to set it up in a C# project, and how to configure and use it for various logging scenarios.
-
-## Table of Contents
-
-1. [Why Use NLog?](#why-use-nlog)
-2. [Getting Started with NLog](#getting-started-with-nlog)
-3. [Basic Configuration of NLog](#basic-configuration-of-nlog)
-4. [Logging in Your C# Application](#logging-in-your-csharp-application)
-5. [Advanced Configuration and Usage](#advanced-configuration-and-usage)
-6. [Conclusion](#conclusion)
-
-## Why Use NLog? <a name="why-use-nlog"></a>
-
-Logging is an essential part of any application. It helps developers understand the internal workings of the application, track errors and exceptions, and monitor the overall health of the application. NLog stands out as a powerful logging solution for .NET applications due to its:
-
-- Flexibility: NLog allows you to configure multiple log targets, including files, databases, email, and more.
-- Performance: NLog is designed to be fast and have minimal impact on application performance.
-- Easy integration: NLog is easy to integrate with various .NET applications and frameworks, such as ASP.NET Core, WPF, and Xamarin.
-
-## Getting Started with NLog <a name="getting-started-with-nlog"></a>
-
-To get started with NLog in your C# project, you need to install the NLog NuGet package. You can do this using the Package Manager Console, the .NET CLI, or by adding the package via the NuGet Package Manager in Visual Studio.
-
-**Package Manager Console:**
-
-```powershell
-Install-Package NLog
-```
-
-**.NET CLI:**
+## Installing
 
 ```bash
 dotnet add package NLog
 ```
 
-Once the package is installed, you can start using NLog in your application.
+Or from the Package Manager Console in Visual Studio:
 
-## Basic Configuration of NLog <a name="basic-configuration-of-nlog"></a>
+```powershell
+Install-Package NLog
+```
 
-NLog requires a configuration file to define its logging targets, rules, and layout. The most common way to configure NLog is using an XML file named `NLog.config`. Create this file in the root of your project and set its "Copy to Output Directory" property to "Copy if newer". The contents of the file should look like this:
+## A minimal NLog.config
+
+NLog looks for a file named `NLog.config` next to your application's executable. Add it to the project root and set it to copy to the output directory, either through Visual Studio's "Copy to Output Directory: Copy if newer" setting or in the `.csproj`:
+
+```xml
+<ItemGroup>
+  <None Update="NLog.config" CopyToOutputDirectory="PreserveNewest" />
+</ItemGroup>
+```
+
+The file itself:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -55,7 +39,7 @@ NLog requires a configuration file to define its logging targets, rules, and lay
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <targets>
-    <target name="logfile" xsi:type="File" fileName="file.txt" />
+    <target name="logfile" xsi:type="File" fileName="${basedir}/logs/app.log" />
   </targets>
 
   <rules>
@@ -65,13 +49,12 @@ NLog requires a configuration file to define its logging targets, rules, and lay
 </nlog>
 ```
 
-In this example, we define a single target named "logfile" that writes log entries to a file called "file.txt". We also set up a rule for all loggers to write log entries with a minimum level of "Info" to the "logfile" target.
+`<targets>` defines where messages can go; `<rules>` decides which messages go where. This rule sends everything at `Info` or above from every logger (`name="*"`) to the file. `${basedir}` is the application's base directory, so the log ends up under `bin/.../logs/` rather than wherever the process happened to be started from.
 
-## Logging in Your C# Application <a name="logging-in-your-csharp-application"></a>
-
-Now that NLog is configured, you can start using it in your C# code. To do this, create an instance of the `NLog.Logger` class and use its methods to log messages:
+## Logging from C#
 
 ```csharp
+using System;
 using NLog;
 
 public class Program
@@ -80,33 +63,42 @@ public class Program
 
     public static void Main(string[] args)
     {
-        Logger.Info("Application started.");
+        Logger.Info("Application started");
 
         try
         {
+            var orderId = 42;
+            Logger.Debug("Processing order {OrderId}", orderId);
             // Your application logic here
         }
         catch (Exception ex)
         {
-            Logger.Error(ex, "An error occurred.");
+            Logger.Error(ex, "Processing failed");
         }
-
-        Logger.Info("Application stopped.");
+        finally
+        {
+            Logger.Info("Application stopped");
+            LogManager.Shutdown(); // flush buffered targets before exit
+        }
     }
 }
 ```
 
-The `Logger` class provides various methods for logging messages with different severity levels, such as `Trace`, `Debug`, `Info`, `Warn`, `Error`, and `Fatal`.
+A few things to note:
 
-## Advanced Configuration and Usage <a name="advanced-configuration-and-usage"></a>
+- `GetCurrentClassLogger()` names the logger after the class (`Program` here), which is what `name="..."` in a rule matches against.
+- The levels, from lowest to highest, are `Trace`, `Debug`, `Info`, `Warn`, `Error` and `Fatal`. With the config above, the `Debug` call is dropped.
+- `{OrderId}` is a message template placeholder, not string interpolation. NLog keeps `OrderId` as a named property, which structured targets (JSON layouts, Seq, and so on) can store separately.
+- Pass the exception as the first argument to `Error` rather than concatenating `ex.Message`, so the layout can include the full stack trace.
+- `LogManager.Shutdown()` flushes and closes targets. Without it, a short-lived console app can exit before the last messages are written.
 
-NLog offers many advanced configuration options and features, such as multiple targets, custom layouts, filtering, and more. Here are some examples:
+## Multiple targets
 
-**Multiple Targets:**
+Rules are evaluated independently, so one message can go to several targets:
 
 ```xml
 <targets>
-  <target name="logfile" xsi:type="File" fileName="file.txt" />
+  <target name="logfile" xsi:type="File" fileName="${basedir}/logs/app.log" />
   <target name="console" xsi:type="Console" />
 </targets>
 
@@ -116,55 +108,74 @@ NLog offers many advanced configuration options and features, such as multiple t
 </rules>
 ```
 
-This configuration sends log entries with a minimum level of "Info" to afile, and log entries with a minimum level of "Debug" to the console.
+Here `Debug` messages show up in the console only, while `Info` and above go to both.
 
-**Custom Layout:**
+## Custom layouts
+
+The `layout` attribute controls the format of each line:
 
 ```xml
-<targets>
-  <target name="logfile" xsi:type="File" fileName="file.txt">
-    <layout>${longdate} | ${logger} | ${uppercase:${level}} | ${message} ${exception:format=ToString}</layout>
-  </target>
-</targets>
+<target name="logfile" xsi:type="File"
+        fileName="${basedir}/logs/app.log"
+        layout="${longdate} | ${logger} | ${uppercase:${level}} | ${message} ${exception:format=ToString}" />
 ```
 
-This configuration sets a custom log message layout that includes the date, logger name, log level, message, and exception information.
+That produces lines like `2026-11-14 10:15:02.1234 | Program | INFO | Application started`. The [layout renderers list](https://nlog-project.org/config/?tab=layout-renderers) has everything you can put inside `${...}`.
 
-**Filtering:**
+## Filtering
+
+Filters let a rule drop specific messages:
 
 ```xml
 <rules>
   <logger name="*" minlevel="Info" writeTo="logfile">
-    <filters>
-      <when condition="contains('${message}','FilterMeOut')" action="Ignore" />
+    <filters defaultAction="Log">
+      <when condition="contains('${message}', 'FilterMeOut')" action="Ignore" />
     </filters>
   </logger>
 </rules>
 ```
 
-This configuration adds a filter that ignores log messages containing the text "FilterMeOut".
+Set `defaultAction="Log"` explicitly. Since NLog 5.0, the default is `Ignore`, so a `<filters>` block without it discards every message that no condition explicitly logs. The original version of this example left it out, which on current NLog silently drops all output for that rule.
 
-**Using NLog with Dependency Injection (ASP.NET Core):**
+## Using NLog with ASP.NET Core
 
-```csharp
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddLogging(loggingBuilder =>
-        {
-            loggingBuilder.ClearProviders();
-            loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-            loggingBuilder.AddNLog("nlog.config");
-        });
+For ASP.NET Core, install the integration package, which brings in NLog and the `Microsoft.Extensions.Logging` provider:
 
-        // Other service registrations...
-    }
-}
+```bash
+dotnet add package NLog.Web.AspNetCore
 ```
 
-This code snippet configures NLog to work with the built-in logging system in ASP.NET Core using dependency injection.
+Then register it in `Program.cs`:
 
-## Conclusion <a name="conclusion"></a>
+```csharp
+using NLog.Web;
 
-NLog is a powerful and flexible logging library that can greatly enhance your C# application's logging capabilities. With its easy integration, rich configuration options, and support for various .NET platforms, NLog is an excellent choice for developers looking to improve their application's logging infrastructure. Start using NLog in your C# projects today and experience the benefits of a modern, high-performance logging library.
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
+var app = builder.Build();
+
+app.MapGet("/", (ILogger<Program> logger) =>
+{
+    logger.LogInformation("Hello endpoint called");
+    return "Hello";
+});
+
+app.Run();
+```
+
+`ClearProviders()` removes the default console and debug providers so messages aren't written twice. Your code keeps using the standard `ILogger<T>` interface; NLog only decides where the output goes. Since NLog 5, the `Logging:LogLevel` filters in `appsettings.json` are ignored by default and your NLog rules decide what gets written. If you'd rather keep filtering in `appsettings.json`, set the `RemoveLoggerFactoryFilter` provider option to `false`.
+
+## Gotchas
+
+- NLog 6 changed the File target: archiving options such as `ArchiveNumbering` and `ConcurrentWrites` were removed. If you're upgrading an older config, read the [NLog 6.0 major changes](https://nlog-project.org/2025/04/29/nlog-6-0-major-changes.html) post first.
+- By default NLog doesn't throw when something is wrong with the config or a target; you just get no output. Set `internalLogFile="c:\temp\nlog-internal.log" internalLogLevel="Warn"` on the `<nlog>` element to see why.
+
+## Further reading
+
+- [NLog configuration file reference](https://github.com/NLog/NLog/wiki/Configuration-file)
+- [Getting started with ASP.NET Core](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-6)
+- [When filter reference](https://github.com/NLog/NLog/wiki/When-Filter)

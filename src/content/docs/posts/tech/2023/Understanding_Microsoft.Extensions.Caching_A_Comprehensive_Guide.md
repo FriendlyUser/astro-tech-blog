@@ -1,219 +1,186 @@
 ---
-description: 'In this article, we will discuss:'
+description: How to cache data in .NET with IMemoryCache, IDistributedCache and Redis, and HybridCache, including expiration, size limits and tag-based invalidation.
 imgSrc: /imgs/2023/549017699.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-16T12:11:06.000Z'
-tags: []
-title: Understanding Microsoft.Extensions.Caching A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["dotnet", "csharp"]
+title: Caching in .NET with IMemoryCache, IDistributedCache and HybridCache
 ---
 
-# Understanding Microsoft.Extensions.Caching: A Comprehensive Guide
+The `Microsoft.Extensions.Caching.*` packages give .NET apps three caching abstractions:
 
-Microsoft.Extensions.Caching is a set of libraries used for caching in .NET applications. It provides various in-memory and distributed cache implementations that can be used with any .NET application, regardless of whether it's an ASP.NET Core web application, console application, or any other type of application built with .NET.
+- **`IMemoryCache`** stores objects in the process's memory. It's fast and needs no serialization, but each server has its own copy and it's lost on restart.
+- **`IDistributedCache`** stores `byte[]` values in an external store (Redis, SQL Server, Postgres) so every instance of the app sees the same data.
+- **`HybridCache`** (package `Microsoft.Extensions.Caching.Hybrid`) combines the two: an in-memory primary cache, an optional `IDistributedCache` as the secondary cache, stampede protection, and tags.
 
-In this article, we will discuss:
+They work in any .NET app that uses the generic host or `Microsoft.Extensions.DependencyInjection`, not only ASP.NET Core.
 
-1. The importance of caching
-2. Microsoft.Extensions.Caching components
-3. In-memory caching with MemoryCache
-4. Distributed caching with IDistributedCache
-5. Cache eviction policies and expiration
-6. Cache tagging and versioning
+## In-memory caching with IMemoryCache
 
-## 1. The Importance of Caching
+Register the cache, then inject `IMemoryCache`. In an ASP.NET Core app the package is already part of the shared framework; in other apps add `Microsoft.Extensions.Caching.Memory`.
 
-Caching is a technique used to store and retrieve frequently accessed data more efficiently. By temporarily storing a copy of the data in a cache, applications can avoid redundant and time-consuming operations, such as database queries or complex calculations. Caching can significantly enhance the performance and responsiveness of an application.
+```csharp
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ProductService>();
+```
 
-## 2. Microsoft.Extensions.Caching Components
-
-Microsoft.Extensions.Caching consists of two main components:
-
-- **MemoryCache**: an in-memory cache implementation that stores the data within the application's memory space. It's ideal for single-instance applications or small-scale scenarios where data doesn't need to be shared among multiple instances.
-- **IDistributedCache**: an interface for distributed cache implementations that store data across multiple servers, allowing for data sharing among multiple instances of an application. This is particularly useful for large-scale or distributed applications.
-
-## 3. In-memory Caching with MemoryCache
-
-The `MemoryCache` class provides an in-memory cache implementation. To use it, you first need to install the `Microsoft.Extensions.Caching.Memory` NuGet package.
-
-Here's an example of how to use `MemoryCache` in a .NET application:
+`GetOrCreateAsync` returns the cached value or runs the factory and stores the result:
 
 ```csharp
 using Microsoft.Extensions.Caching.Memory;
-using System;
 
-public class CacheService
+public class ProductService
 {
     private readonly IMemoryCache _cache;
 
-    public CacheService(IMemoryCache cache)
-    {
-        _cache = cache;
-    }
+    public ProductService(IMemoryCache cache) => _cache = cache;
 
-    public string GetCachedData(string key)
+    public async Task<string?> GetProductNameAsync(int id)
     {
-        string data;
-        if (!_cache.TryGetValue(key, out data))
+        return await _cache.GetOrCreateAsync($"product:{id}", async entry =>
         {
-            data = GetDataFromExpensiveOperation();
-            _cache.Set(key, data, new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-            });
-        }
-
-        return data;
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+            entry.SlidingExpiration = TimeSpan.FromMinutes(10);
+            return await LoadFromDatabaseAsync(id);
+        });
     }
 
-    private string GetDataFromExpensiveOperation()
+    private static async Task<string> LoadFromDatabaseAsync(int id)
     {
-        // Simulate an expensive operation.
-        return "Expensive data";
+        await Task.Delay(100); // stand-in for a real query
+        return $"Product {id}";
     }
 }
 ```
 
-## 4. Distributed Caching with IDistributedCache
+`GetOrCreateAsync` does not lock: if several requests miss the same key at once, the factory runs several times. If that matters, use `HybridCache` (below), which runs the factory once per key.
 
-`IDistributedCache` is an interface for distributed cache implementations. Some popular implementations include:
+## Distributed caching with IDistributedCache and Redis
 
-- `DistributedMemoryCache` (for testing purposes)
-- `DistributedRedisCache` (using Redis as the cache store)
-- `DistributedSqlServerCache` (using SQL Server as the cache store)
+Each `IDistributedCache` implementation lives in its own package and has its own registration method:
 
-To use `IDistributedCache`, you will need to install the appropriate NuGet package for the chosen implementation, such as `Microsoft.Extensions.Caching.StackExchangeRedis` for Redis.
+| Store | Package | Registration |
+| --- | --- | --- |
+| In-process (tests, local dev) | `Microsoft.Extensions.Caching.Memory` | `AddDistributedMemoryCache()` |
+| Redis | `Microsoft.Extensions.Caching.StackExchangeRedis` | `AddStackExchangeRedisCache(...)` |
+| SQL Server | `Microsoft.Extensions.Caching.SqlServer` | `AddDistributedSqlServerCache(...)` |
 
-Here's an example of how to use `IDistributedCache` with Redis in an ASP.NET Core application:
+Register Redis in `Program.cs`:
 
 ```csharp
-// Startup.cs
-
-using Microsoft.Extensions.Caching.StackExchangeRedis;
-
-public void ConfigureServices(IServiceCollection services)
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = "localhost";
-        options.InstanceName = "SampleInstance";
-    });
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "SampleApp:";
+});
 
-    services.AddScoped<CacheService>();
-}
+builder.Services.AddScoped<ReportCache>();
 ```
 
+`IDistributedCache` only stores bytes. The `GetStringAsync`/`SetStringAsync` extension methods handle UTF-8 strings; anything else you serialize yourself:
+
 ```csharp
-// CacheService.cs
-
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text;
 
-public class CacheService
+public record Report(int Id, string Title);
+
+public class ReportCache
 {
     private readonly IDistributedCache _cache;
 
-    public CacheService(IDistributedCache cache)
-    {
-        _cache = cache;
-    }
+    public ReportCache(IDistributedCache cache) => _cache = cache;
 
-    public async Task<string> GetCachedDataAsync(string key)
+    public async Task<Report> GetReportAsync(int id, CancellationToken ct = default)
     {
-        var data = await _cache.GetStringAsync(key);
-        if (data == null)
+        string key = $"report:{id}";
+
+        string? json = await _cache.GetStringAsync(key, ct);
+        if (json is not null)
         {
-            data = GetDataFromExpensiveOperation();
-            await _cache.SetStringAsync(key, data, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-            });
+            return JsonSerializer.Deserialize<Report>(json)!;
         }
 
-        return data;
-    }
+        var report = new Report(id, $"Report {id}"); // stand-in for an expensive query
+        await _cache.SetStringAsync(key, JsonSerializer.Serialize(report),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+            }, ct);
 
-    private string GetDataFromExpensiveOperation()
-    {
-        // Simulate an expensive operation.
-        return "Expensive data";
+        return report;
     }
 }
 ```
 
-## 5. Cache Eviction Policies and Expiration
+## Expiration, size limits and eviction
 
-Microsoft.Extensions.Caching supports the following cache eviction policies:
+Both `MemoryCacheEntryOptions` and `DistributedCacheEntryOptions` support:
 
-- **Absolute expiration**: The cached item will be evicted after a specific duration from the time it was added to the cache.
-- **Sliding expiration**: The cached item will be evicted if it hasn't been accessed for a specific duration.
-- **Priority-based expiration**: Items can be assigned a priority, which influences the order in which they are evicted when the cache is under memory pressure.
+- **Absolute expiration**: the entry expires at a fixed time (`AbsoluteExpiration`) or after a fixed duration (`AbsoluteExpirationRelativeToNow`).
+- **Sliding expiration**: the entry expires if it isn't read for a given duration. Combine it with an absolute expiration, otherwise a frequently read entry never refreshes.
 
-Cache entries can also be evicted by a `CancellationToken` or by using a `PostEvictionCallback` delegate to handle custom eviction scenarios.
+`IMemoryCache` has a few more options:
 
-## 6. Cache Tagging and Versioning
+- **Size limits.** The cache does not shrink itself under memory pressure. Set `SizeLimit` in `AddMemoryCache(o => o.SizeLimit = 1024)` and give every entry a `Size`; once the limit is reached, new entries aren't added and the cache compacts in the background.
+- **Priority.** `CacheItemPriority` (`Low`, `Normal`, `High`, `NeverRemove`) decides which entries are removed first during compaction.
+- **Expiration tokens and callbacks.** `AddExpirationToken` evicts an entry when an `IChangeToken` fires (for example a `CancellationChangeToken`), and `RegisterPostEvictionCallback` runs code after an entry is removed.
 
-Cache tagging and versioning are useful techniques for managing cache dependencies and invalidation. Tags allow you to associate one or more labels with a cached item, making it easier to invalidate multiple items at once. Versioning involves appending a version number to the cache key to ensure that the latest data is being retrieved.
+Expired entries aren't removed by a timer. The cache scans for them when it is accessed, so an expired item may sit in memory until the next read or write.
 
-Here's an example of how to implement cache tagging and versioning with `MemoryCache`:
+## Invalidating groups of entries with tags
+
+Neither `IMemoryCache` nor `IDistributedCache` has tags. The old workaround was to put a version number in each key and bump it to invalidate a group. `HybridCache` now supports tags directly:
 
 ```csharp
-public class CacheService
+builder.Services.AddHybridCache();
+```
+
+```csharp
+using Microsoft.Extensions.Caching.Hybrid;
+
+public class CatalogService
 {
-    private readonly IMemoryCache _cache;
-    private const string VersionKey = "CacheVersion";
+    private readonly HybridCache _cache;
 
-    public CacheService(IMemoryCache cache)
+    public CatalogService(HybridCache cache) => _cache = cache;
+
+    public async Task<string> GetProductAsync(string category, int id, CancellationToken ct = default)
     {
-        _cache = cache;
-    }
-
-    public string GetCachedData(string key, string tag)
-    {
-        string versionedKey = GetVersionedKey(key, tag);
-
-        string data;
-        if (!_cache.TryGetValue(versionedKey, out data))
-        {
-            data = GetDataFromExpensiveOperation();
-            _cache.Set(versionedKey, data, new MemoryCacheEntryOptions
+        return await _cache.GetOrCreateAsync(
+            $"product:{id}",
+            async cancel => await LoadProductAsync(id, cancel),
+            new HybridCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-            });
-        }
-
-        return data;
+                Expiration = TimeSpan.FromHours(1),
+                LocalCacheExpiration = TimeSpan.FromMinutes(5)
+            },
+            tags: [$"category:{category}"],
+            cancellationToken: ct);
     }
 
-    public void InvalidateCacheByTag(string tag)
+    public async Task InvalidateCategoryAsync(string category, CancellationToken ct = default)
     {
-        int currentVersion = _cache.GetOrCreate<int>(tag, entry =>
-        {
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(30);
-            return 0;
-        });
-
-        _cache.Set(tag, currentVersion + 1, new MemoryCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(30)
-        });
+        await _cache.RemoveByTagAsync($"category:{category}", ct);
     }
 
-    private string GetVersionedKey(string key, string tag)
+    private static async Task<string> LoadProductAsync(int id, CancellationToken ct)
     {
-        int version = _cache.Get<int>(tag);
-        return $"{key}|{tag}|{version}";
-    }
-
-    private string GetDataFromExpensiveOperation()
-    {
-        // Simulate an expensive operation.
-        return "Expensive data";
+        await Task.Delay(100, ct); // stand-in for a real query
+        return $"Product {id}";
     }
 }
 ```
 
-In this example, we've implemented a method `GetVersionedKey` that appends the current version number to the cache key. The `InvalidateCacheByTag` method increments the version number, effectively invalidating all cache entries with the specified tag.
+If an `IDistributedCache` such as Redis is registered, `HybridCache` uses it as the secondary cache automatically. A few things to know:
 
-## Conclusion
+- `RemoveByTagAsync` is a logical invalidation. Old values stay in memory and in Redis until they expire; `HybridCache` just treats anything created before the invalidation as a miss.
+- Invalidation affects the current server and the distributed cache, but not the in-memory cache on other servers. Keep `LocalCacheExpiration` short if instances must agree quickly.
+- Values sent to the secondary cache are serialized with `System.Text.Json` by default, so cached types must be serializable.
 
-Microsoft.Extensions.Caching provides a versatile and extensible solution for caching in .NET applications. With in-memory caching using `MemoryCache`, distributed caching using `IDistributedCache`, and support for cache eviction policies, tagging, and versioning, it offers a comprehensive set of tools to help developers optimize their applications' performance and responsiveness.
+## Further reading
+
+- [Cache in-memory in ASP.NET Core](https://learn.microsoft.com/aspnet/core/performance/caching/memory)
+- [Distributed caching in ASP.NET Core](https://learn.microsoft.com/aspnet/core/performance/caching/distributed)
+- [HybridCache library in ASP.NET Core](https://learn.microsoft.com/aspnet/core/performance/caching/hybrid)

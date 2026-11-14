@@ -1,34 +1,30 @@
 ---
-description: In this article, we will delve into the details of the Log4j logging
-  framework, its components, and how to use it effectively in a Java application
+description: How Log4j 2 loggers, appenders and layouts fit together, with a minimal
+  log4j2.xml, the Maven dependency, and logging from Java code.
 imgSrc: /imgs/2023/945555918.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-17T08:06:29.000Z'
-tags: []
-title: Introduction to Log4j A Powerful Java Logging Framework
+lastUpdated: 2026-11-14
+tags:
+  - java
+title: "Log4j 2 basics: configuring loggers, appenders and layouts in Java"
 ---
 
-# Introduction to Log4j: A Powerful Java Logging Framework
+Apache Log4j 2 is a logging library for Java maintained by the Apache Logging Services project. You call a logger from your code, and a configuration file decides which messages are kept, how they are formatted, and where they go. This post covers Log4j 2; Log4j 1.x reached end of life in 2015 and should not be used.
 
-Logging is an essential part of any software application, as it helps developers to track and understand the application's behavior. For Java applications, Log4j is one of the most popular and widely-used logging frameworks. Apache Log4j is an open-source project under the Apache Software Foundation and is part of the Apache Logging Services Project.
+## Loggers, appenders and layouts
 
-In this article, we will delve into the details of the Log4j logging framework, its components, and how to use it effectively in a Java application.
+Log4j 2 has three main pieces:
 
-## Log4j Components
+- **Logger**: what your code calls. Loggers are named (usually after the class) and form a hierarchy by dot-separated name, so `com.example.db` inherits settings from `com.example` unless you override them. The root logger sits at the top.
+- **Appender**: where a log event is written, for example the console, a file, a rolling file, or a socket. A logger can send events to several appenders.
+- **Layout**: how an event is turned into text or bytes before an appender writes it. `PatternLayout` is the common one; `JsonTemplateLayout` is the recommended choice for structured JSON logs.
 
-Log4j is built on three main components, which work together to provide a flexible and extensible logging solution:
+## Configuration
 
-1. Logger: The central component of Log4j is the Logger, which is responsible for capturing log messages from your application code. Loggers are named entities and are organized in a hierarchical fashion.
+Log4j 2 reads its configuration from XML, JSON, YAML or properties files. On startup it looks for a file such as `log4j2.xml` on the classpath, so in a Maven or Gradle project put it in `src/main/resources`. If no configuration is found, Log4j falls back to a default that only prints `ERROR` and above to the console.
 
-2. Appender: An Appender is responsible for publishing log messages to a specific destination, such as a file, console, or a database. Log4j supports multiple Appenders, which allows you to log messages to multiple destinations simultaneously.
-
-3. Layout: A Layout is responsible for formatting log messages before they are published by an Appender. Log4j provides various Layouts, such as PatternLayout, JSONLayout, and XMLLayout, to format log messages according to your requirements.
-
-## Log4j Configuration
-
-Log4j offers multiple ways to configure its components, including XML, JSON, YAML, and properties files. The configuration file defines how Loggers, Appenders, and Layouts interact with each other.
-
-Here's an example of a basic Log4j configuration in XML format:
+A minimal `log4j2.xml`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -46,21 +42,27 @@ Here's an example of a basic Log4j configuration in XML format:
 </Configuration>
 ```
 
-In this example, we define a Console Appender with a PatternLayout to format log messages. The Root Logger is configured to capture log messages at the "info" level and above and send them to the Console Appender.
+This defines one console appender with a `PatternLayout` and attaches it to the root logger at `info` level. `status="WARN"` controls Log4j's own internal logging, not your application's.
 
-## Using Log4j in Java Code
+## Adding the dependency
 
-To use Log4j in your Java application, you need to add the Log4j library to your project dependencies. For example, using Maven, add the following to your `pom.xml` file:
+With Maven:
 
 ```xml
 <dependency>
   <groupId>org.apache.logging.log4j</groupId>
   <artifactId>log4j-core</artifactId>
-  <version>2.14.1</version>
+  <version>2.26.1</version>
 </dependency>
 ```
 
-Now you can create a Logger instance in your Java code and log messages using various logging levels:
+`log4j-core` pulls in `log4j-api` transitively. 2.26.1 was the latest 2.x release on Maven Central when this post was updated; the 3.0 line is still in beta.
+
+:::caution
+The original version of this post used Log4j 2.14.1, which is vulnerable to Log4Shell (CVE-2021-44228) and related CVEs. Use 2.17.1 or later, and preferably the current 2.x release.
+:::
+
+## Logging from Java
 
 ```java
 import org.apache.logging.log4j.LogManager;
@@ -77,12 +79,23 @@ public class MyApplication {
     LOGGER.warn("This is a WARN level message");
     LOGGER.error("This is an ERROR level message");
     LOGGER.fatal("This is a FATAL level message");
+
+    String user = "alice";
+    LOGGER.info("User {} logged in", user);
   }
 }
 ```
 
-When you run this code, you will see the log messages on the console, as per the configuration defined in the previous section.
+With the configuration above, only the `INFO`, `WARN`, `ERROR` and `FATAL` lines are printed, because the root logger is set to `info`. Change it to `level="trace"` to see everything.
 
-## Conclusion
+## Gotchas
 
-Log4j is a powerful and flexible logging framework that is widely used in Java applications. It provides a rich set of features for logging, including support for multiple Appenders, Layouts, and configuration options. By using Log4j effectively, developers can gain better insights into their applications' behavior and simplify the debugging process.
+- Use `{}` placeholders (`LOGGER.info("User {} logged in", user)`) rather than string concatenation. The message is only formatted if the level is enabled.
+- If your project also uses SLF4J or `java.util.logging`, add the matching bridge (`log4j-slf4j2-impl`, `log4j-jul`) so all logging goes through one configuration. Only one SLF4J binding should be on the classpath.
+- Don't log untrusted input without thinking about what ends up in the log file. Log4Shell was triggered by attacker-controlled strings in log messages.
+
+## Further reading
+
+- [Log4j 2 manual](https://logging.apache.org/log4j/2.x/manual/index.html)
+- [Configuration file reference](https://logging.apache.org/log4j/2.x/manual/configuration.html)
+- [Log4j security page](https://logging.apache.org/security.html)

@@ -1,140 +1,156 @@
 ---
-description: In this article, we'll explore the basics of FastAPI, including how to
-  set up a FastAPI project, define API endpoints, and use FastAPI's powerful features
-  such as dependency injection and validation
+description: Build a small FastAPI app in Python, covering path and query parameters,
+  Pydantic request validation, and dependencies with yield for resource cleanup.
 imgSrc: /imgs/2023/1899250612.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-05T02:02:13.000Z'
-tags: []
-title: Building Fast and Efficient Web APIs with FastAPI in Python
+lastUpdated: 2026-11-14
+tags: ["fastapi", "python"]
+title: 'FastAPI basics: routes, validation, and dependencies in Python'
 ---
 
-# Building Fast and Efficient Web APIs with FastAPI in Python
+FastAPI is a Python web framework for building HTTP APIs. It is built on Starlette (the ASGI layer) and Pydantic (data validation). You declare parameters and request bodies with ordinary type hints, and FastAPI uses those hints to parse and validate requests, serialize responses, and generate an OpenAPI schema with interactive docs at `/docs`.
 
-FastAPI is a modern, fast, and efficient web framework for building APIs in Python. It is built on top of the Starlette framework and Pydantic, leveraging the latest features of the Python programming language. FastAPI is easy to use and provides automatic validation, serialization, and documentation for your API, making it a powerful and developer-friendly choice for building web applications.
+The examples below use Pydantic 2 and the current FastAPI release (0.162 at the time of writing). That release requires Python 3.11 or later.
 
-In this article, we'll explore the basics of FastAPI, including how to set up a FastAPI project, define API endpoints, and use FastAPI's powerful features such as dependency injection and validation.
+## Install and run
 
-## Setting Up a FastAPI Project
-
-To start using FastAPI, first, you need to install it. You can do this using `pip`:
+Install FastAPI with the `standard` extra. It pulls in Uvicorn (the ASGI server) and the `fastapi` CLI:
 
 ```bash
-pip install fastapi
+pip install "fastapi[standard]"
 ```
 
-You'll also need an ASGI server such as `uvicorn` to run your FastAPI application. Install it with:
-
-```bash
-pip install uvicorn
-```
-
-Now, let's create a simple FastAPI application. Create a new Python file called `main.py`, and add the following code:
+Create `main.py`:
 
 ```python
 from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 ```
 
-In this example, we import FastAPI, create a new app instance, and define a single route using the `@app.get` decorator. This route listens for GET requests at the root path ("/") and returns a JSON response.
-
-To run the application, open a terminal and navigate to the directory containing `main.py`. Then, execute the following command:
+Run it in development mode, which turns on auto-reload:
 
 ```bash
-uvicorn main:app --reload
+fastapi dev main.py
 ```
 
-This command tells `uvicorn` to run the FastAPI app instance defined in `main.py`. The `--reload` flag enables auto-reloading of the application whenever you make changes to the code.
+Running `uvicorn main:app --reload` also works. `fastapi dev` is a wrapper around the same server.
 
-Open your browser and navigate to `http://127.0.0.1:8000/`. You should see the JSON response `{"Hello": "World"}`.
+Open `http://127.0.0.1:8000/` to see `{"Hello": "World"}`, and `http://127.0.0.1:8000/docs` for the generated Swagger UI. In production, use `fastapi run main.py` instead, which turns reload off.
 
-## Defining API Endpoints
+## Path and query parameters
 
-To create more complex APIs, you can define additional routes using FastAPI's route decorators, such as `@app.get`, `@app.post`, `@app.put`, and `@app.delete`. You can also use path parameters and query parameters to capture values from the request.
-
-For example, let's create a new route to retrieve an item by its ID:
+A function argument that matches a `{placeholder}` in the path becomes a path parameter. Any other simple-typed argument becomes a query parameter:
 
 ```python
-from typing import Optional
-
 @app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
+def read_item(item_id: int, q: str | None = None):
     return {"item_id": item_id, "q": q}
 ```
 
-In this example, we define a new route for GET requests to `/items/{item_id}`, where `item_id` is a path parameter. FastAPI automatically converts the path parameter to the specified type (in this case, an integer). We also define a query parameter `q` with a default value of `None`.
+`GET /items/5?q=hammer` returns `{"item_id": 5, "q": "hammer"}`. `GET /items/abc` returns a 422 error, because `abc` can't be converted to `int`. `q` is optional because it has a default of `None`. Without a default, it would be required.
 
-## Using FastAPI's Powerful Features
+## Request bodies with Pydantic
 
-FastAPI offers many powerful features, such as automatic validation and serialization, dependency injection, and more.
-
-### Validation and Serialization
-
-FastAPI uses Pydantic to automatically validate request and response data and convert it to and from JSON. To define a Pydantic model, create a new class that inherits from `BaseModel` and define its attributes.
-
-For example, let's create a simple model for an item:
+A parameter whose type is a Pydantic model is read from the JSON request body:
 
 ```python
 from pydantic import BaseModel
 
+
 class Item(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     price: float
-    tax: Optional[float] = None
-```
+    tax: float | None = None
 
-You can then use this model in your route functions to automatically validate the request data and serialize the response data:
 
-```python
-@app.post("/items/")
-def create_item(item: Item):
+@app.post("/items/", status_code=201)
+def create_item(item: Item) -> Item:
     return item
 ```
 
-### Dependency Injection
+If the body is missing `name` or sends `"price": "cheap"`, FastAPI returns a 422 error before your function runs. The error body lists each failing field, for example `["body", "price"]`. The `-> Item` return annotation tells FastAPI to validate the response against `Item` and to use that model in the OpenAPI schema.
 
-FastAPI also provides a powerful dependency injection system, allowing you to easily manage and share resources across your application.
+## Dependencies with `yield`
 
-For example, let's create a simple database connection manager:
+`Depends` lets a route declare something it needs, such as a database session, the current user or settings, without creating it itself. If the dependency function uses `yield`, the code after `yield` runs after the request is handled. That is the standard place to close connections.
+
+Here is a complete `main.py` that uses a dependency for a fake in-memory database:
 
 ```python
-from fastapi import Depends
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
 
 class Database:
-    def connect(self):
-        ## Connect to the database
-        pass
+    """Stand-in for a real connection or session."""
 
-    def disconnect(self):
-        ## Disconnect from the database
-        pass
+    def __init__(self, items: dict[int, Item]) -> None:
+        self.items = items
+
+    def close(self) -> None:
+        print("connection closed")
+
+
+ITEMS: dict[int, Item] = {}
+
 
 def get_db():
-    db = Database()
-    db.connect()
+    db = Database(ITEMS)
     try:
         yield db
     finally:
-        db.disconnect()
-```
+        db.close()
 
-You can then use the `Depends` function in your route functions to automatically manage the database connection:
 
-```python
+DbDep = Annotated[Database, Depends(get_db)]
+
+
+@app.post("/items/{item_id}", status_code=201)
+def create_item(item_id: int, item: Item, db: DbDep) -> Item:
+    if item_id in db.items:
+        raise HTTPException(status_code=409, detail="Item already exists")
+    db.items[item_id] = item
+    return item
+
+
 @app.get("/items/{item_id}")
-def read_item(item_id: int, db: Database = Depends(get_db)):
-    ## Use the database connection to retrieve the item
-    pass
+def read_item(item_id: int, db: DbDep) -> Item:
+    item = db.items.get(item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item
 ```
 
-## Conclusion
+Every request to these routes gets its own `Database` from `get_db`, and `close()` runs once the request is done, even if the handler raises. The `Annotated[..., Depends(...)]` alias is the form the FastAPI docs now recommend. The older `db: Database = Depends(get_db)` form still works.
 
-FastAPI is a powerful and flexible web framework for building APIs in Python. Its automatic validation, serialization, and dependency injection features make it easy to build robust and efficient web applications. With FastAPI, you can quickly build high-performance web APIs thatare easy to maintain and scale.
+## Gotchas
 
-In this article, we've covered the basics of setting up a FastAPI project, defining API endpoints, and using some of FastAPI's powerful features. As you continue to develop your application, you can explore more advanced features such as OAuth2 authentication, WebSocket support, and custom exception handlers.
+- **Duplicate routes don't raise an error.** If you register `GET /items/{item_id}` twice, the first registration handles every request and the second is never called. An earlier version of this post had exactly this bug.
+- **`def` vs `async def`.** FastAPI runs plain `def` handlers in a thread pool, so blocking calls are fine there. Inside an `async def` handler, a blocking call (such as a synchronous database driver or `time.sleep`) blocks the whole event loop. Only use `async def` when everything you await is async.
+- **Don't swallow exceptions in a `yield` dependency.** If you catch an exception after `yield`, re-raise it or raise an `HTTPException`. Otherwise the client gets a 500 and nothing is logged.
+- **Pydantic 2.** Older tutorials use Pydantic 1 methods like `.dict()` and `.json()`. Pydantic 2 deprecates these in favour of `.model_dump()` and `.model_dump_json()`.
+
+## Further reading
+
+- [FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/)
+- [Dependencies with yield](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)
+- [FastAPI release notes](https://fastapi.tiangolo.com/release-notes/)

@@ -1,90 +1,83 @@
 ---
-description: In this article, we will discuss the key features of Scikit-learn and
-  demonstrate how to use it for various machine learning tasks, such as classification,
-  regression, and clustering
+description: Train and evaluate a k-nearest neighbours classifier on the Iris dataset
+  with scikit-learn, then use a pipeline and cross-validation for a more honest score.
 imgSrc: /imgs/2023/3072838870.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-02T15:09:55.000Z'
-tags: []
-title: Introduction to Scikit-learn A Powerful Python Library for Machine Learning
+lastUpdated: 2026-11-14
+tags:
+  - python
+title: "Scikit-learn basics: training and evaluating a classifier in Python"
 ---
 
-# Introduction to Scikit-learn: A Powerful Python Library for Machine Learning
-
-Scikit-learn is an open-source Python library that simplifies the process of implementing machine learning algorithms. It offers a wide variety of tools for preprocessing, model selection, evaluation, and visualization, making it an excellent choice for both beginners and experienced practitioners in the field of machine learning.
-
-In this article, we will discuss the key features of Scikit-learn and demonstrate how to use it for various machine learning tasks, such as classification, regression, and clustering.
+Scikit-learn is an open-source Python library for classical machine learning: linear models, tree ensembles, nearest neighbours, clustering, preprocessing and model evaluation. Every model uses the same `fit` / `predict` / `score` interface, so once you have trained one estimator you know how to train the rest. This post walks through a small classification example.
 
 ## Installation
-
-Before getting started, you need to have Python installed on your system. Scikit-learn requires Python 3.7 or above. You can install Scikit-learn using pip:
 
 ```bash
 pip install -U scikit-learn
 ```
 
-## Key Features
+Scikit-learn 1.9.1, the current release on PyPI when this post was updated, requires Python 3.11 or later. It pulls in NumPy and SciPy; install Matplotlib separately if you want plots.
 
-Scikit-learn offers a variety of tools and algorithms for machine learning. Some of its key features include:
+## Classifying the Iris dataset
 
-1. Simple and consistent API: Scikit-learn provides a consistent interface for all its functions, making it easy to learn and use.
-2. Comprehensive documentation: The library is well-documented, with clear explanations and examples for each algorithm and function.
-3. Preprocessing tools: Scikit-learn offers tools for data preprocessing, including feature scaling, encoding categorical variables, and dimensionality reduction.
-4. Model selection and evaluation: The library provides methods for model selection and evaluation, such as cross-validation and performance metrics.
-5. Visualization: Scikit-learn integrates with Matplotlib for visualizing data and model results.
-
-## Example: Classification with Scikit-learn
-
-Let's dive into an example of using Scikit-learn for a classification task. We will use the famous Iris dataset, which contains information about the sepal and petal dimensions of three different species of iris flowers.
-
-### Loading the Dataset
-
-First, let's import the necessary libraries and load the Iris dataset:
+The Iris dataset ships with scikit-learn. It has 150 samples of three iris species, each with four measurements (sepal and petal length and width).
 
 ```python
-from sklearn import datasets
-
-iris = datasets.load_iris()
-X = iris.data
-y = iris.target
-```
-
-### Splitting the Data
-
-Next, we need to split the data into training and testing sets. Scikit-learn provides a convenient function for this purpose:
-
-```python
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-```
-
-### Data Preprocessing
-
-In this example, we will skip data preprocessing since the Iris dataset is already clean and well-prepared. However, in real-world applications, you might need to perform preprocessing steps such as scaling, encoding, or dimensionality reduction.
-
-### Training a Classifier
-
-Now, let's train a classifier using the k-Nearest Neighbors (kNN) algorithm:
-
-```python
 from sklearn.neighbors import KNeighborsClassifier
+
+X, y = load_iris(return_X_y=True)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 knn = KNeighborsClassifier(n_neighbors=3)
 knn.fit(X_train, y_train)
+
+print(f"Accuracy: {knn.score(X_test, y_test):.2f}")
 ```
 
-### Evaluating the Model
+This prints `Accuracy: 1.00`. `score` on a classifier returns mean accuracy on the data you pass it.
 
-Once the model is trained, we can evaluate its performance on the test set using the `score` method:
+## Getting a more honest score
+
+A perfect score on 30 test samples mostly tells you that this particular split was easy. Two changes make the evaluation more trustworthy:
+
+- **Scale the features.** k-NN uses distances, so a feature measured on a larger scale dominates the others. `StandardScaler` puts every feature on the same scale.
+- **Cross-validate.** `cross_val_score` trains and tests on several different splits and reports each score.
+
+Wrapping the scaler and the model in a pipeline means the scaler is fitted only on the training part of each fold, so no information leaks from the test fold.
 
 ```python
-accuracy = knn.score(X_test, y_test)
-print("Accuracy: {:.2f}".format(accuracy))
+from sklearn.datasets import load_iris
+from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+X, y = load_iris(return_X_y=True)
+
+model = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=3))
+scores = cross_val_score(model, X, y, cv=5)
+
+print(f"Accuracy: {scores.mean():.2f} +/- {scores.std():.2f}")
 ```
 
-This should output an accuracy value close to 1.0, indicating that our model is performing well on this classification task.
+This prints `Accuracy: 0.95 +/- 0.03`, which is a better estimate of how the model will do on new flowers than the single 1.00.
 
-## Conclusion
+## Next steps
 
-Scikit-learn is a powerful and versatile Python library for machine learning. It offers a wide range of algorithms and tools for data preprocessing, model selection, and evaluation. In this article, we demonstrated how to use Scikit-learn for a simple classification task. With its simple and consistent API, comprehensive documentation, and extensive functionality, Scikit-learn is an invaluable tool for any machine learning practitioner.
+- Swap `KNeighborsClassifier` for `LogisticRegression` or `RandomForestClassifier`; the rest of the code stays the same.
+- Use `GridSearchCV` to tune `n_neighbors` instead of picking 3 by hand.
+- `sklearn.metrics.classification_report` and `ConfusionMatrixDisplay` show per-class results, which matters once classes are imbalanced.
+- Scikit-learn is not a deep learning library and does not use GPUs. For neural networks on images, text or audio, use PyTorch or similar.
+
+## Further reading
+
+- [Scikit-learn getting started](https://scikit-learn.org/stable/getting_started.html)
+- [User guide: cross-validation](https://scikit-learn.org/stable/modules/cross_validation.html)
+- [User guide: pipelines](https://scikit-learn.org/stable/modules/compose.html)

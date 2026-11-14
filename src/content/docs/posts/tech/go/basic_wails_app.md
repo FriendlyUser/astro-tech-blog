@@ -1,167 +1,169 @@
 ---
-tags: ['go', 'wails']
-title: Basic wails app to call the donald trump api
-description: Barebones wails app to call the donald trump api
+tags: ['go', 'wails', 'vue']
+title: A basic Wails app that fetches quotes from the Tronald Dump API
+description: Build a small Wails desktop app with a Vue frontend that fetches a random quote, either from the frontend with fetch or from a bound Go method.
 pubDate: Fri, 10 January 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1246994641.png"
 ---
 
+:::caution
+The first version of this post used Wails v1 (`wails.CreateApp`, `mewn`, `window.backend`), which is no longer supported. The code below uses the Wails v2 API. Wails v3 is now the latest major version and changes the binding API again; see the [Wails docs](https://wails.io/) if you're starting fresh.
 
-# Bails wails apap
+The Tronald Dump API (`api.tronalddump.io`) also appears to be offline. The code works the same against any JSON API; swap in another URL to try it.
+:::
 
-1. Install Wails by following the instructions on their website: https://wails.app/.
-2. Open your terminal and navigate to the directory where you want to create your project.
-3. Run wails init to create a new project.
-4. When prompted, choose Vue as your front-end template. Or use https://github.com/misitebao/wails-template-vue
+[Wails](https://wails.io/) builds desktop apps with a Go backend and a web frontend rendered in the OS webview. This app has one button that fetches a random quote and shows it. There are two places you can make the HTTP call: in the frontend JavaScript, or in Go with the result passed to the frontend. I'll show both.
 
-Next we have choices on how we can call the api. We can either use the go backend to call the api, or we can use the front end to call the api. I will show both ways.
+## Create the project
 
-## Front-end only integration
-5. Navigate to the frontend/src/components directory of your project and open the Hello.vue file.
-6. In the `<script>` section of the file, import Axios with import axios from 'axios'.
-7. In the methods object of your Vue component, add a new method that uses Axios to make an HTTP GET request to the https://www.tronalddump.io/ API to retrieve a quote. For example:
+Install the Wails CLI and check your system has what it needs (Go, Node.js and, on Linux, the WebKitGTK libraries):
 
-```jsx
-methods: {
-  getQuote() {
-    axios.get('https://api.tronalddump.io/random/quote')
-      .then(response => {
-        this.quote = response.data.value;
-      });
-  }
-}
+```sh
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
+wails doctor
 ```
 
+Then create a project from the Vue template:
 
-In the `<template>` section of your Vue component, add an element that displays the retrieved quote using double curly braces ({{ }}) syntax.
+```sh
+wails init -n quoteapp -t vue
+cd quoteapp
+```
 
-```jsx
+## Option 1: call the API from the frontend
+
+Replace `frontend/src/components/HelloWorld.vue` with:
+
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const quote = ref('')
+
+async function getQuote() {
+  const response = await fetch('https://api.tronalddump.io/random/quote')
+  const data = await response.json()
+  quote.value = data.value
+}
+</script>
+
 <template>
   <div>
+    <button @click="getQuote">Get quote</button>
     <p>{{ quote }}</p>
   </div>
 </template>
 ```
 
+This request comes from the webview, so the API has to allow cross-origin requests. If it doesn't, the browser blocks the response and you need option 2.
 
-## Using go as a backend
+## Option 2: call the API from Go
 
-
-In your Wails project directory, navigate to the backend directory and open the main.go file.
-Import the net/http package at the top of the file with import "net/http".
-In your main function, create a new function that makes an HTTP GET request to the ‘https://api.tronalddump.io/random/quote’ API using the http.Get() method. For example:
-
-```go
-func getQuote() string {
-  resp, err := http.Get("https://api.tronalddump.io/random/quote")
-  if err != nil {
-    // handle error
-  }
-  defer resp.Body.Close()
-  body, err := ioutil.ReadAll(resp.Body)
-  if err != nil {
-    // handle error
-  }
-  return string(body)
-}
-```
-
-### Complete version
+Wails exposes the public methods of any struct you pass to `Bind`. The Vue template already binds an `App` struct in `app.go`; add a `GetQuote` method to it:
 
 ```go
 package main
 
 import (
-  "github.com/leaanthony/mewn"
-  "github.com/wailsapp/wails"
-  "net/http"
-  "io/ioutil"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 )
 
-func basic() string {
-  return "Hello World!"
+type App struct {
+	ctx context.Context
 }
 
-func getQuote() string {
-  resp, err := http.Get("https://api.tronalddump.io/random/quote")
-  if err != nil {
-    // handle error
-  }
-  defer resp.Body.Close()
-  body, err := ioutil.ReadAll(resp.Body)
-  if err != nil {
-    // handle error
-  }
-  return string(body)
+func NewApp() *App {
+	return &App{}
 }
 
-func main() {
+func (a *App) startup(ctx context.Context) {
+	a.ctx = ctx
+}
 
-  js := mewn.String("./frontend/dist/app.js")
-  css := mewn.String("./frontend/dist/app.css")
+// GetQuote is callable from the frontend because it is exported.
+func (a *App) GetQuote() (string, error) {
+	req, err := http.NewRequestWithContext(a.ctx, http.MethodGet, "https://api.tronalddump.io/random/quote", nil)
+	if err != nil {
+		return "", err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
 
-  app := wails.CreateApp(&wails.AppConfig{
-    Width:     1024,
-    Height:    768,
-    Title:     "test",
-    JS:        js,
-    CSS:       css,
-    Colour:    "#131313",
-    Resizable: true,
-})
-app.Bind(basic)
-app.Bind(getQuote)
-app.Run()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("quote API returned %s", resp.Status)
+	}
+
+	var body struct {
+		Value string `json:"value"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return "", err
+	}
+	return body.Value, nil
 }
 ```
 
-And here’s an example of what your Hello.vue file in the frontend/src/components directory of your Wails project could look like:
+`main.go` from the template stays as it is. The part that matters is the `Bind` option:
+
+```go
+err := wails.Run(&options.App{
+	Title:  "quoteapp",
+	Width:  1024,
+	Height: 768,
+	AssetServer: &assetserver.Options{
+		Assets: assets,
+	},
+	OnStartup: app.startup,
+	Bind: []interface{}{
+		app,
+	},
+})
+```
+
+When you run `wails dev`, Wails generates JavaScript wrappers for bound methods under `frontend/wailsjs/go/main/App.js`. Each wrapper returns a promise; if the Go method returns a non-nil error, the promise rejects. Use it from the component:
 
 ```vue
-<template>
-<div>
-<h1>{{ message }}</h1>
-<button @click="getQuote">Get Quote</button>
-<p>{{ quote }}</p>
-</div>
-</template>
+<script setup>
+import { ref } from 'vue'
+import { GetQuote } from '../../wailsjs/go/main/App'
 
-<script>
-import axios from 'axios';
+const quote = ref('')
+const error = ref('')
 
-export default {
-name: 'Hello',
-data() {
-return {
-message: 'Hello from Vue!',
-quote: ''
-}
-},
-methods: {
-getQuote() {
-window.backend.getQuote().then(result => this.quote = result);
-}
-}
+async function getQuote() {
+  try {
+    quote.value = await GetQuote()
+    error.value = ''
+  } catch (err) {
+    error.value = String(err)
+  }
 }
 </script>
 
-<style scoped>
-
-</style>
+<template>
+  <div>
+    <button @click="getQuote">Get quote</button>
+    <p>{{ quote }}</p>
+    <p v-if="error">{{ error }}</p>
+  </div>
+</template>
 ```
 
-### To run the app
+Going through Go avoids CORS entirely and keeps any API keys out of the frontend bundle.
 
-To run your Wails app, follow these steps:
+## Run and build
 
-Open your terminal and navigate to the root directory of your Wails project.
-Run the command wails build to build your project. This will create an executable file for your app in the build directory of your project.
-To run your app, navigate to the build directory and run the executable file.
-For example, on macOS or Linux you can run the command ./myapp where myapp is the name of your executable file.
+```sh
+wails dev    # live-reloading development build
+wails build  # production build
+```
 
-On Windows, you can double-click on the .exe file to run it.
-
-I hope this helps! Let me know if you have any further questions.
-
-Received message. To run your Wails app, follow these steps: 1. Open your terminal and navigate to the root directory of your Wails project. 2. Run the command `wails build` to build your project. This will create an executable file for your app in the `build` directory of your project. 3. To run your app, navigate to the `build` directory and run the executable file. For example, on macOS or Linux you can run the command `./myapp` where `myapp` is the name of your executable file. On Windows, you can double-click on the `.exe` file to run it. I hope this helps! Let me know if you have any further questions.
+`wails build` writes the executable to `build/bin`. On Linux run `./build/bin/quoteapp`; on macOS it's an app bundle (`quoteapp.app`); on Windows, double-click `quoteapp.exe`.

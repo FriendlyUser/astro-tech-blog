@@ -1,64 +1,140 @@
 ---
-description: In this article, we'll explore the fundamentals of JUnit, its key features,
-  and some best practices for using it effectively
+description: Write and run JUnit Jupiter tests in Java, covering the Maven dependency,
+  lifecycle annotations, assertions, parameterized tests and what changed in JUnit 6.
 imgSrc: /imgs/2023/3053072516.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-10-10T12:54:08.000Z'
-tags: []
-title: JUnit Testing Framework An Introduction
+lastUpdated: 2026-11-14
+tags:
+  - java
+  - testing
+title: "JUnit basics: writing and running unit tests in Java"
 ---
 
-# JUnit Testing Framework: An Introduction
+JUnit is the standard unit testing framework for Java. You write test methods annotated with `@Test`, use assertions to check results, and a build tool or IDE runs them and reports failures. It was started by Kent Beck and Erich Gamma in 1997 and is now maintained by the JUnit team.
 
-JUnit is a widely-used testing framework for Java applications. Designed to encourage developers to write clean, reliable code, JUnit streamlines the process of creating, executing, and analyzing unit tests. In this article, we'll explore the fundamentals of JUnit, its key features, and some best practices for using it effectively.
+## JUnit 4, 5 and 6
 
-## What is JUnit?
+- **JUnit 4** used a single jar and annotations in `org.junit` (`@Before`, `@After`).
+- **JUnit 5** split JUnit into the *JUnit Platform* (which launches tests), *JUnit Jupiter* (the API you write tests against, in `org.junit.jupiter.api`) and *JUnit Vintage* (runs old JUnit 4 tests on the Platform).
+- **JUnit 6**, released in September 2025, keeps the Jupiter API but requires Java 17, uses one version number for Platform, Jupiter and Vintage, and deprecates Vintage. Most JUnit 5 test code runs unchanged.
 
-JUnit is an open-source framework that helps Java developers write and run unit tests for their code. Unit tests are small, focused tests that verify the functionality of individual units, or components, within a software system. By running these tests, developers can quickly identify and fix errors, ensuring the application's overall stability and reliability.
+The examples below use the Jupiter API, which is the same in JUnit 5 and 6.
 
-JUnit was created by Erich Gamma and Kent Beck in 1997 and has since become a critical tool in the Java development ecosystem. The project is now maintained by the JUnit Team and has evolved through various iterations, with JUnit 5 being the latest major release.
+## Setup
 
-## Key Features of JUnit
+With Maven, add the `junit-jupiter` aggregate artifact, which includes the API, the engine and parameterized test support:
 
-### 1. Annotations
+```xml
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>6.1.3</version>
+  <scope>test</scope>
+</dependency>
+```
 
-JUnit uses annotations to define and configure test methods. Some commonly used annotations include:
+6.1.3 was the latest release on Maven Central when this post was updated. Maven Surefire 3.x detects the JUnit Platform automatically, so `mvn test` runs the tests. If you're on Java 8 or 11, use the latest JUnit 5.x instead.
 
-- `@Test`: Marks a method as a test method. JUnit executes this method when running tests.
-- `@BeforeEach`: Indicates that a method should be executed before each test method in the current test class.
-- `@AfterEach`: Indicates that a method should be executed after each test method in the current test class.
-- `@BeforeAll`: Indicates that a method should be executed once before all test methods in the current test class.
-- `@AfterAll`: Indicates that a method should be executed once after all test methods in the current test class.
+With Gradle (Kotlin DSL):
 
-### 2. Assertions
+```kotlin
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
 
-JUnit provides a variety of assertion methods that allow developers to compare expected and actual results. If an assertion fails, the test is considered a failure. Some common assertion methods include:
+tasks.test {
+    useJUnitPlatform()
+}
+```
 
-- `assertEquals`: Asserts that two values are equal.
-- `assertNotEquals`: Asserts that two values are not equal.
-- `assertTrue`: Asserts that a condition is true.
-- `assertFalse`: Asserts that a condition is false.
-- `assertNull`: Asserts that an object is null.
-- `assertNotNull`: Asserts that an object is not null.
+## A first test
 
-### 3. Test Suites
+Code under test, in `src/main/java`:
 
-JUnit allows you to group and organize multiple test classes into a test suite. This is useful for running a collection of related tests together or for organizing tests based on their functionality.
+```java
+public class Calculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
 
-### 4. Test Runners
+    public int divide(int a, int b) {
+        return a / b;
+    }
+}
+```
 
-JUnit provides a test runner that executes the tests and reports the results. The default test runner is the `ConsoleLauncher`, which runs tests and displays the results in the console. You can also use other test runners, such as the one integrated into popular IDEs like IntelliJ IDEA and Eclipse.
+Tests, in `src/test/java`:
 
-## Best Practices for JUnit Testing
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-To get the most out of JUnit, consider following these best practices:
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-1. **Write small, focused tests**: Unit tests should focus on a single piece of functionality. This makes it easier to identify the cause of a failure and fix it quickly.
-2. **Use descriptive test method names**: Test method names should clearly indicate the functionality being tested. This makes it easier for other developers to understand the purpose of the test.
-3. **Keep test code separate from production code**: Store your test code in a separate directory structure from your production code. This helps keep your codebase organized and prevents accidental inclusion of test code in production builds.
-4. **Ensure tests are independent**: Each test should be able to run independently of the others, without relying on the output of previous tests. This allows tests to be run in any order and makes it easier to isolate failures.
-5. **Use the appropriate assertions**: Choose the right assertion method for each test to ensure that the results are accurate and meaningful.
+class CalculatorTest {
 
-## Conclusion
+    private Calculator calculator;
 
-JUnit is a powerful framework that simplifies the process of writing and running unit tests for Java applications. By using JUnit effectively, developers can create more reliable, maintainable code and quickly identify and resolve issues. By following best practices and leveraging the features of JUnit, you can improve the overall quality of your Java projects.
+    @BeforeEach
+    void setUp() {
+        calculator = new Calculator();
+    }
+
+    @Test
+    void addsTwoNumbers() {
+        assertEquals(5, calculator.add(2, 3));
+    }
+
+    @Test
+    void divideByZeroThrows() {
+        assertThrows(ArithmeticException.class, () -> calculator.divide(1, 0));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1, 1, 2", "2, 3, 5", "-1, 1, 0"})
+    void addsPairs(int a, int b, int expected) {
+        assertEquals(expected, calculator.add(a, b));
+    }
+}
+```
+
+Test classes and methods don't need to be `public` in Jupiter. Note the argument order in `assertEquals(expected, actual)`; swapping them produces confusing failure messages.
+
+## Lifecycle annotations
+
+- `@BeforeEach` / `@AfterEach`: run before and after every test method.
+- `@BeforeAll` / `@AfterAll`: run once per class. They must be `static` unless the class is annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
+- `@Disabled`: skip a test, ideally with a reason string.
+- `@DisplayName`: a readable name for reports.
+
+JUnit creates a new instance of the test class for every test method by default, so instance fields are not shared between tests.
+
+## Assertions
+
+`org.junit.jupiter.api.Assertions` has the usual `assertEquals`, `assertNotEquals`, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull`, plus two worth knowing:
+
+- `assertThrows` returns the thrown exception so you can check its message.
+- `assertAll` runs several assertions and reports every failure, instead of stopping at the first.
+
+Many teams use AssertJ alongside JUnit for more readable fluent assertions.
+
+## Running tests
+
+Most people run tests through Maven, Gradle or the IDE (IntelliJ IDEA, Eclipse and VS Code all support the JUnit Platform). There is also a standalone Console Launcher for running tests from the command line without a build tool. To group test classes into a suite, add `junit-platform-suite` and use `@Suite` with `@SelectPackages` or `@SelectClasses`.
+
+## Habits that keep tests useful
+
+- Test one behaviour per method and name the method after it (`divideByZeroThrows`, not `test2`).
+- Keep tests independent. JUnit doesn't guarantee method order, and a test that depends on another breaks when run alone.
+- Keep tests fast and free of network or database calls; put those in separate integration tests.
+
+## Further reading
+
+- [JUnit user guide](https://docs.junit.org/current/user-guide/)
+- [JUnit release notes](https://docs.junit.org/current/release-notes/)

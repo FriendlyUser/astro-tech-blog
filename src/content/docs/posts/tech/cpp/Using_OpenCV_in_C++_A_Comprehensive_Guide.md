@@ -1,207 +1,188 @@
 ---
-title: Using OpenCV in C++ A Comprehensive Guide
+title: "OpenCV in C++: images, video, and object detection with the dnn module"
 pubDate: "2023-05-03T14:16:44.846Z"
-description: "In this article, we will discuss how to use OpenCV in C++ to perform various computer vision tasks."
-tags: ["opencv"]
+lastUpdated: 2026-11-14
+description: "Set up OpenCV with CMake, then load, resize, crop and rotate images, play video with VideoCapture, and run a MobileNet-SSD detector in C++."
+tags: ["opencv", "cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2125743054.png
 ---
-# Using OpenCV in C++: A Comprehensive Guide
 
-OpenCV (Open Source Computer Vision) is an open-source computer vision and machine learning software library. It provides a collection of powerful tools and functions for image and video processing, feature extraction, and object detection. In this article, we will discuss how to use OpenCV in C++ to perform various computer vision tasks.
+OpenCV is an open-source computer vision library written in C++. The core type is `cv::Mat`, an n-dimensional array that holds images, and the library adds image processing, video I/O, a simple GUI (`highgui`) for debugging, and a `dnn` module that runs trained neural networks.
 
-## Table of Contents
-1. [Setting Up OpenCV in C++](#setting-up-opencv)
-2. [Reading and Displaying Images](#reading-displaying-images)
-3. [Manipulating Images](#manipulating-images)
-4. [Working with Videos](#working-with-videos)
-5. [Object Detection](#object-detection)
-6. [Conclusion](#conclusion)
+This post walks through the basics in C++: building against OpenCV, reading and displaying images, a few common transforms, reading video, and running an object detector.
 
-<a name="setting-up-opencv"></a>
-## 1. Setting Up OpenCV in C++
+## Setup
 
-Before we dive into using OpenCV with C++, we first need to set up the development environment. This includes installing OpenCV and configuring it for use with C++.
+Building OpenCV from source is rarely necessary. Use a package manager:
 
-### 1.1 Installing OpenCV
+```sh
+# Debian/Ubuntu
+sudo apt install libopencv-dev
 
-To install OpenCV, follow these steps:
+# macOS
+brew install opencv
 
-1. Download the OpenCV source code from the [official repository](https://github.com/opencv/opencv) or the [releases page](https://github.com/opencv/opencv/releases).
-2. Extract the downloaded archive.
-3. Follow the [official guide for building OpenCV](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) from the source. Make sure to enable the `BUILD_EXAMPLES` and `BUILD_opencv_world` options during the CMake configuration.
+# Windows (or any platform)
+vcpkg install opencv
+```
 
-### 1.2 Configuring OpenCV with C++
+If you need extra modules (`opencv_contrib`) or CUDA, follow the [official build guide](https://docs.opencv.org/4.x/d7/d9f/tutorial_linux_install.html).
 
-To configure OpenCV with C++, we need to link the OpenCV library to our C++ project. The process varies depending on the IDE or build system you are using. For instance, if you are using CMake, you can include the following lines in your `CMakeLists.txt` file:
+A minimal `CMakeLists.txt`:
 
 ```cmake
+cmake_minimum_required(VERSION 3.16)
+project(opencv_demo CXX)
+
+set(CMAKE_CXX_STANDARD 17)
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(your_target_name ${OpenCV_LIBS})
+
+add_executable(opencv_demo main.cpp)
+target_include_directories(opencv_demo PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(opencv_demo PRIVATE ${OpenCV_LIBS})
 ```
 
-<a name="reading-displaying-images"></a>
-## 2. Reading and Displaying Images
+OpenCV 5 requires C++17, so set that even if you're on 4.x today.
 
-Now that we have OpenCV set up, let's start by loading and displaying an image using the library. To do this, we need to include the necessary OpenCV headers and use the `cv::imread()` and `cv::imshow()` functions.
+## Reading and displaying an image
+
+`cv::imread` returns an empty `Mat` instead of throwing when the file can't be read, so always check `empty()`. Note that colour images are loaded in **BGR** order, not RGB.
 
 ```cpp
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 int main() {
-    // Read the image
-    cv::Mat img = cv::imread("path/to/your/image.jpg", cv::IMREAD_COLOR);
-
-    // Check if the image is loaded successfully
+    cv::Mat img = cv::imread("image.jpg", cv::IMREAD_COLOR);
     if (img.empty()) {
-        std::cerr << "Error: Could not load the image.\n";
+        std::cerr << "Could not load image.jpg\n";
         return 1;
     }
 
-    // Display the image
     cv::imshow("My Image", img);
-    
-    // Wait for a key press and close the window
-    cv::waitKey(0);
+    cv::waitKey(0);  // wait for a key press
     cv::destroyAllWindows();
-
     return 0;
 }
 ```
 
-<a name="manipulating-images"></a>
-## 3. Manipulating Images
+`imshow` needs a build with a GUI backend (GTK, Qt, Cocoa or Win32). On a headless server, write results with `cv::imwrite` instead.
 
-OpenCV provides a variety of functions to manipulate images, such as resizing, cropping, and rotating. Let's take a look at a few examples.
+## Resizing, cropping and rotating
 
-### 3.1 Resizing Images
-
-To resize an image, use the `cv::resize()` function.
+These snippets assume `img` was loaded as above.
 
 ```cpp
+// Resize to a fixed size. INTER_AREA is a good choice when shrinking.
 cv::Mat resized;
-int new_width = 300;
-int new_height = 200;
-cv::resize(img, resized, cv::Size(new_width, new_height));
-```
+cv::resize(img, resized, cv::Size(300, 200), 0, 0, cv::INTER_AREA);
 
-### 3.2 Cropping Images
+// Crop: a Rect ROI is a view into the same pixel data, not a copy.
+cv::Rect roi(100, 50, 200, 150);
+cv::Mat cropped = img(roi & cv::Rect(0, 0, img.cols, img.rows)).clone();
 
-To crop an image, simply create a new `cv::Mat` object referencing the region of interest (ROI).
-
-```cpp
-int x = 100, y = 50, width = 200, height = 150;
-cv::Mat cropped = img(cv::Rect(x, y, width, height));
-```
-
-### 3.3 Rotating Images
-
-To rotate an image, use the `cv::getRotationMatrix2D()` and `cv::warpAffine()` functions.
-
-```cpp
-double angle = 45.0;
-cv::Point2f center(img.cols / 2.0, img.rows / 2.0);
-cv::Mat rotation_matrix = cv::getRotationMatrix2D(center, angle, 1.0);
+// Rotate 45 degrees around the centre.
+cv::Point2f center(img.cols / 2.0f, img.rows / 2.0f);
+cv::Mat rotation = cv::getRotationMatrix2D(center, 45.0, 1.0);
 cv::Mat rotated;
-cv::warpAffine(img, rotated, rotation_matrix, img.size());
+cv::warpAffine(img, rotated, rotation, img.size());
 ```
 
-<a name="working-with-videos"></a>
-## 4. Working with Videos
+Two gotchas: indexing a ROI that extends past the image throws an exception, which is why the crop intersects it with the image bounds first (`&`); and without `.clone()`, writing to `cropped` modifies `img`. `warpAffine` with the original size also cuts off the corners of the rotated image. For exact 90-degree rotations, `cv::rotate` is simpler and lossless.
 
-OpenCV also provides tools for working with videos. To read and display a video, we use the `cv::VideoCapture` class and loop through the frames.
+## Reading video
+
+`cv::VideoCapture` reads files, image sequences, network streams and cameras (pass an integer device index such as `0` for a webcam).
 
 ```cpp
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 int main() {
-    // Open the video file
-    cv::VideoCapture video("path/to/your/video.mp4");
-
-    // Check if the video is opened successfully
+    cv::VideoCapture video("video.mp4");
     if (!video.isOpened()) {
-        std::cerr << "Error: Could not open the video.\n";
+        std::cerr << "Could not open video.mp4\n";
         return 1;
     }
 
-    // Loop through the frames
+    double fps = video.get(cv::CAP_PROP_FPS);
+    int delay_ms = fps > 0 ? static_cast<int>(1000 / fps) : 25;
+
     cv::Mat frame;
     while (video.read(frame)) {
-        // Display the frame
         cv::imshow("My Video", frame);
-
-        // Exit the loop if 'q' is pressed
-        if (cv::waitKey(25) == 'q') {
-            break;
-        }
+        if (cv::waitKey(delay_ms) == 'q') break;
     }
 
-    // Release the video and close the window
-    video.release();
     cv::destroyAllWindows();
-
-    return 0;
+    return 0;  // VideoCapture releases itself in its destructor
 }
 ```
 
-<a name="object-detection"></a>
-## 5. Object Detection
+Video decoding relies on a backend such as FFmpeg or GStreamer. If `isOpened()` fails on a file you know is valid, check `cv::getBuildInformation()` for the "Video I/O" section.
 
-One of the most common applications of computer vision is object detection. OpenCV provides pre-trained models and tools to perform object detection using deep learning algorithms like YOLO, SSD, and Faster R-CNN. In this example, we'll use the MobileNet-SSD model.
+## Object detection with MobileNet-SSD
+
+The `dnn` module runs networks trained in other frameworks; OpenCV doesn't train them itself. This example uses the Caffe version of MobileNet-SSD, trained on the 20 PASCAL VOC classes. The `.prototxt` and `.caffemodel` files come from the [chuanqi305/MobileNet-SSD](https://github.com/chuanqi305/MobileNet-SSD) repository.
+
+:::caution
+`cv::dnn::readNetFromCaffe()` is available in OpenCV 4.x but was removed in OpenCV 5, along with the Darknet importer. On OpenCV 5, convert the model to ONNX and load it with `cv::dnn::readNetFromONNX()`. The output layout then depends on the exported model.
+:::
+
+The network's output is a 4-D blob of shape `[1, 1, N, 7]`, where each of the N rows is `[image_id, class_id, confidence, x1, y1, x2, y2]` with coordinates normalised to 0–1. `cv::Mat::at` has no four-index overload, so wrap the last two dimensions in a 2-D `Mat` header before reading it.
 
 ```cpp
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn/dnn.hpp>
+#include <opencv2/dnn.hpp>
 
 int main() {
-    // Load the pre-trained model
-    cv::dnn::Net net = cv::dnn::readNetFromCaffe("path/to/MobileNetSSD_deploy.prototxt",
-                                                 "path/to/MobileNetSSD_deploy.caffemodel");
+    cv::dnn::Net net = cv::dnn::readNetFromCaffe("MobileNetSSD_deploy.prototxt",
+                                                 "MobileNetSSD_deploy.caffemodel");
 
-    // Load the image
-    cv::Mat img = cv::imread("path/to/your/image.jpg", cv::IMREAD_COLOR);
-
-    // Prepare the input for the neural network
-    cv::Mat blob = cv::dnn::blobFromImage(img, 0.007843, cv::Size(300, 300), cv::Scalar(127.5, 127.5, 127.5), false, false);
-    net.setInput(blob);
-
-    // Perform the forward pass (object detection)
-    cv::Mat detections = net.forward();
-
-    // Process the detections
-    int num_detections = detections.size[2];
-    float confidence_threshold = 0.5;
-    for (int i = 0; i < num_detections; ++i) {
-        float confidence = detections.at<float>(0, 0, i, 2);
-
-        if (confidence > confidence_threshold) {
-            int object_class = static_cast<int>(detections.at<float>(0, 0, i, 1));
-
-            // Get the bounding box coordinates
-            int x1 = static_cast<int>(detections.at<float>(0, 0, i, 3) * img.cols);
-            int y1 = static_cast<int>(detections.at<float>(0, 0, i, 4) * img.rows);
-            int x2 = static_cast<int>(detections.at<float>(0, 0, i, 5) * img.cols);
-            int y2 = static_cast<int>(detections.at<float>(0, 0, i, 6) * img.rows);
-
-            // Draw the bounding box on the image
-            cv::rectangle(img, cv::Point(x1, y1), cv::Point(x2, y2), cv::Scalar(0, 255, 0), 2);
-        }
+    cv::Mat img = cv::imread("image.jpg", cv::IMREAD_COLOR);
+    if (img.empty()) {
+        std::cerr << "Could not load image.jpg\n";
+        return 1;
     }
 
-    // Display the image with the bounding boxes
+    // This model expects 300x300 input, scaled to [-1, 1]: (pixel - 127.5) / 127.5.
+    cv::Mat blob = cv::dnn::blobFromImage(img, 1.0 / 127.5, cv::Size(300, 300),
+                                          cv::Scalar(127.5, 127.5, 127.5),
+                                          /*swapRB=*/false, /*crop=*/false);
+    net.setInput(blob);
+    cv::Mat output = net.forward();
+
+    // View the [1, 1, N, 7] output as an N x 7 matrix (no copy).
+    cv::Mat detections(output.size[2], output.size[3], CV_32F, output.ptr<float>());
+
+    const float confidence_threshold = 0.5f;
+    for (int i = 0; i < detections.rows; ++i) {
+        float confidence = detections.at<float>(i, 2);
+        if (confidence < confidence_threshold) continue;
+
+        int class_id = static_cast<int>(detections.at<float>(i, 1));
+        int x1 = static_cast<int>(detections.at<float>(i, 3) * img.cols);
+        int y1 = static_cast<int>(detections.at<float>(i, 4) * img.rows);
+        int x2 = static_cast<int>(detections.at<float>(i, 5) * img.cols);
+        int y2 = static_cast<int>(detections.at<float>(i, 6) * img.rows);
+
+        cv::rectangle(img, cv::Point(x1, y1), cv::Point(x2, y2), cv::Scalar(0, 255, 0), 2);
+        cv::putText(img, std::to_string(class_id), cv::Point(x1, y1 - 5),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 1);
+    }
+
     cv::imshow("Object Detection", img);
     cv::waitKey(0);
-    cv::destroyAllWindows();
-
     return 0;
 }
 ```
 
-<a name="conclusion"></a>
-## 6. Conclusion
+`class_id` indexes the VOC label list used by that model (0 is background, 15 is person). MobileNet-SSD is small and fast on a CPU but not very accurate by current standards; for new work, export a recent detector to ONNX and load it with `readNetFromONNX`, which works in both 4.x and 5.x.
 
-In this article, we covered the basics of using OpenCV in C++ for various computer vision tasks, such as reading and displaying images, manipulating images, working with videos, and performing object detection. OpenCV provides a wealth of functionality for computer vision applications, and this guide only scratches the surface. We encourage you to explore the [official OpenCV documentation](https://docs.opencv.org/master/) to discover more capabilities and tailor them to your specific needs.
+## Further reading
+
+- [OpenCV documentation](https://docs.opencv.org/4.x/)
+- [Deep Learning in OpenCV (wiki)](https://github.com/opencv/opencv/wiki/Deep-Learning-in-OpenCV)
+- [OpenCV 4 to 5 migration guide](https://github.com/opencv/opencv/wiki/OpenCV-4-to-5-migration)

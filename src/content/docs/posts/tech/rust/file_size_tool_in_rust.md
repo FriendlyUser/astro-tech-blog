@@ -1,103 +1,107 @@
 ---
 tags: ['rust']
-title: Building a File Size Tool in Rust
-description: In this tutorial, we will build a system tool in Rust that determines the size of files in a directory and outputs them nicely to the console. This tool will be similar to the `du` command in Linux.
+title: Building a du-style directory size tool in Rust with clap, walkdir and humansize
+description: A small Rust CLI that adds up the size of every file under a directory, with an optional depth limit, using clap, walkdir and humansize.
 pubDate: Fri, 14 June 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/4039349639.png
 ---
 
-Building a File Size Tool in Rust
+:::caution
+The original version of this post used `structopt` for argument parsing. `structopt` is in maintenance mode: its derive API was merged into `clap` 3, so new code should use `clap`'s `derive` feature instead. The code below has been updated to `clap` 4 and `humansize` 2.
+:::
 
-In this tutorial, we will build a system tool in Rust that determines the size of files in a directory and outputs them nicely to the console. This tool will be similar to the `du` command in Linux.
+This post builds a small command-line tool that walks a directory tree, adds up the size of every file in it, and prints the total in human-readable units, roughly like `du -sh --apparent-size`. It uses three crates:
 
-Step 1: Setup
+- [`clap`](https://crates.io/crates/clap) to parse command-line arguments,
+- [`walkdir`](https://crates.io/crates/walkdir) to traverse the directory tree,
+- [`humansize`](https://crates.io/crates/humansize) to format byte counts.
 
-The first step is to set up a new Rust project. We will be using the `structopt` library for parsing command-line arguments. Add the following lines to your `Cargo.toml` file:
+## Set up the project
+
+```bash
+cargo new dirsize
+cd dirsize
+```
+
+Add the dependencies to `Cargo.toml` (all under a single `[dependencies]` table):
 
 ```toml
 [dependencies]
-structopt = "0.3.21"
+clap = { version = "4.6", features = ["derive"] }
+walkdir = "2.5"
+humansize = "2.1"
 ```
 
-The `structopt` library provides a convenient way to define and parse command-line arguments. It is similar to the `argparse` library in Python.
+These are the current releases at the time of writing (clap 4.6.7, walkdir 2.5.0, humansize 2.1.3).
 
-Step 2: Define the Command-Line Arguments
+## The code
 
-Next, we need to define the command-line arguments for our tool. We will define a single argument, which is the path to the directory whose files we want to measure. We will also define an optional argument to specify the depth of the directory tree to traverse. Here is the code to define the arguments using the `structopt` library:
+Put this in `src/main.rs`:
 
 ```rust
-use structopt::StructOpt;
+use std::path::{Path, PathBuf};
 
-#[derive(StructOpt)]
+use clap::Parser;
+use humansize::{format_size, BINARY};
+use walkdir::WalkDir;
+
+/// Print the total size of the files under a directory.
+#[derive(Parser)]
 struct Cli {
-    #[structopt(parse(from_os_str))]
-    path: std::path::PathBuf,
+    /// Directory to measure
+    path: PathBuf,
 
-    #[structopt(short = "d", long = "depth")]
+    /// How many directory levels to descend (default: unlimited)
+    #[arg(short, long)]
     depth: Option<usize>,
 }
-```
 
-Step 3: Traverse the Directory Tree and Measure File Sizes
-
-Next, we need to traverse the directory tree and measure the sizes of the files. We will use the `walkdir` library for this. Add the following line to your `Cargo.toml` file:
-
-```toml
-[dependencies]
-walkdir = "2.3.2"
-```
-
-The `walkdir` library provides a convenient way to traverse directory trees. Here is the code to traverse the directory tree and measure the sizes of the files:
-
-```rust
-use walkdir::{DirEntry, WalkDir};
-
-fn measure_file(entry: &DirEntry) -> u64 {
-    entry.metadata().map(|m| m.len()).unwrap_or(0)
-}
-
-fn measure_dir(path: &std::path::Path, depth: Option<usize>) -> u64 {
+fn measure_dir(path: &Path, depth: Option<usize>) -> u64 {
     WalkDir::new(path)
-        .max_depth(depth.unwrap_or(std::usize::MAX))
+        .max_depth(depth.unwrap_or(usize::MAX))
         .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_file())
-        .map(|e| measure_file(&e))
+        .filter_map(|entry| entry.ok()) // skip entries we can't read
+        .filter(|entry| entry.file_type().is_file())
+        .filter_map(|entry| entry.metadata().ok())
+        .map(|metadata| metadata.len())
         .sum()
 }
-```
-
-The `measure_file` function measures the size of a single file. The `measure_dir` function uses `WalkDir` to traverse the directory tree and measure the sizes of the files. We use the `max_depth` method to limit the depth of the directory tree traversal.
-
-Step 4: Output the Results
-
-Finally, we need to output the results of our measurements to the console. We will use the `humansize` library to format the file sizes in a human-readable format. Add the following line to your `Cargo.toml` file:
-
-```toml
-[dependencies]
-humansize = "1.1.0"
-```
-
-The `humansize` library provides a convenient way to format file sizes in a human-readable format. Here is the code to output the results to the console:
-
-```rust
-use humansize::{file_size_opts as options, FileSize};
 
 fn main() {
-    let args = Cli::from_args();
-    let total_size = measure_dir(&args.path, args.depth);
-
-    println!(
-        "{} {}",
-        total_size.file_size(options::CONVENTIONAL).unwrap(),
-        args.path.display()
-    );
+    let args = Cli::parse();
+    let total = measure_dir(&args.path, args.depth);
+    println!("{}\t{}", format_size(total, BINARY), args.path.display());
 }
 ```
 
-We use `Cli::from_args()` to parse the command-line arguments. We then call `measure_dir` to measure the sizes of the files in the directory tree. Finally, we use `file_size` from the `humansize` library to format the total size of the files in a human-readable format.
+How it fits together:
 
-Conclusion
+- `#[derive(Parser)]` generates the argument parser from the struct. The field without an attribute becomes a required positional argument; `#[arg(short, long)]` creates `-d` / `--depth`. The doc comments become the `--help` text.
+- `WalkDir::new(path)` yields every entry under `path`. `max_depth(0)` means only the starting path itself, `max_depth(1)` adds its direct children, and so on.
+- Entries that error (for example, permission denied) are skipped by `filter_map(|entry| entry.ok())`. Directories are filtered out because their own metadata size isn't the size of their contents.
+- `format_size(total, BINARY)` formats with powers of 1024 and IEC units (`KiB`, `MiB`). Use `DECIMAL` for powers of 1000 (`MB`, `GB`).
 
-In this tutorial, we have built a system tool in Rust that determines the size of files in a directory and outputs them nicely to the console. We have used the `structopt`, `walkdir`, and `humansize` libraries to define and parse command-line arguments, traverse the directory tree, and format file sizes in a human-readable format. With this knowledge, you can build powerful system tools in Rust for a variety of tasks.
+## Run it
+
+```bash
+cargo run -- ~/projects
+cargo run -- ~/projects --depth 1
+cargo run -- --help
+```
+
+The first command prints something like `1.42 GiB	/home/you/projects`. With `--depth 1`, only files directly inside the directory are counted.
+
+## How it differs from `du`
+
+- **Apparent size vs disk usage.** `metadata.len()` is the file's length in bytes. `du` by default reports allocated disk blocks, which is larger for many small files and smaller for sparse files. That's why this tool matches `du --apparent-size` rather than plain `du`.
+- **Symlinks.** `walkdir` doesn't follow symbolic links by default, and a symlink's `file_type()` isn't a file, so links aren't counted. Call `.follow_links(true)` if you want to follow them (walkdir detects loops).
+- **Hard links** are counted once per path, so a file with two hard links is counted twice. `du` counts it once.
+- **Errors are silent.** A real tool should report skipped entries to stderr instead of dropping them.
+
+## Further reading
+
+- [clap derive tutorial](https://docs.rs/clap/latest/clap/_derive/_tutorial/index.html)
+- [walkdir documentation](https://docs.rs/walkdir)
+- [humansize documentation](https://docs.rs/humansize)

@@ -1,89 +1,83 @@
 ---
-tags: ['python', 'tortoise_tts']
-title: "Tortoise TTS: A Multi-Voice Text-to-Speech System"
-description: Text-to-speech (TTS) is a technology that converts text into natural-sounding speech using natural language processing (NLP) and speech synthesis techniques.
+tags: ['python', 'tortoise_tts', 'tortoise-tts']
+title: "Tortoise TTS: how it works and how to generate speech in a cloned voice"
+description: How the Tortoise text-to-speech model turns text and a few reference clips into speech, and how to run it from the command line or Python.
 pubDate: Fri, 15 April 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3750534419.png"
 ---
 
-# Tortoise TTS: A Multi-Voice Text-to-Speech System
+[Tortoise](https://github.com/neonbjb/tortoise-tts) is an open-source text-to-speech model by James Betker. It can speak in many voices: you give it a few short clips of a speaker, and it generates new speech that imitates that voice. It's known for natural prosody and intonation, and for being slow (hence the name).
 
-Text-to-speech (TTS) is a technology that converts text into natural-sounding speech using natural language processing (NLP) and speech synthesis techniques. TTS can have various applications, such as:
+## How it works
 
-- Enhancing accessibility for people with visual impairments or reading difficulties
-- Providing voice assistance for smart devices or chatbots
-- Creating audio content for podcasts, audiobooks, or videos
-- Generating realistic voices for animation, gaming, or entertainment
+Tortoise chains several models together:
 
-However, most TTS systems are limited by their single-voice capability, meaning that they can only produce speech in one predefined voice. This can be problematic for scenarios where multiple voices are needed or desired, such as:
+1. **Conditioning.** The reference clips are turned into mel spectrograms and encoded into a single conditioning vector that describes the voice.
+2. **Autoregressive transformer.** A GPT-style model takes the text and the voice conditioning, and samples many candidate sequences of discrete speech tokens.
+3. **CLVP reranking.** CLVP is a contrastive model trained on text and speech tokens, similar to CLIP for images. It scores how well each candidate matches the text, and only the best few are kept. A second model, CVVP, can also influence the choice through the `cvvp_amount` parameter.
+4. **Diffusion decoder.** For each kept candidate, a diffusion model turns the transformer's latents into a mel spectrogram.
+5. **Vocoder.** UnivNet converts the mel spectrogram into a 24 kHz waveform.
 
-- Expressing different emotions or personalities
-- Adapting to different languages or accents
-- Mimicking specific speakers or celebrities
-- Personalizing voice preferences or styles
+Sampling many candidates and then running diffusion is what makes Tortoise sound good and also what makes it slow. The presets trade the two off by changing the number of autoregressive samples and diffusion steps:
 
-To address this challenge, tortoise_tts is a project that aims to create a multi-voice TTS system that can generate speech in various voices based on a small set of voice samples. The project is hosted on GitHub at https://github.com/neonbjb/tortoise-tts.
+| Preset | Autoregressive samples | Diffusion iterations |
+| --- | --- | --- |
+| `ultra_fast` | 16 | 30 |
+| `fast` | 96 | 80 |
+| `standard` | 256 | 200 |
+| `high_quality` | 256 | 400 |
 
-## Project Overview
+## Running it
 
-The project is developed by James Betker, a researcher and developer who specializes in speech-related technologies. The project's goal is to create a TTS system that can achieve strong multi-voice capabilities and highly realistic prosody and intonation.
+Install the package (a CUDA-capable GPU is strongly recommended):
 
-The system leverages two main components: an autoregressive decoder and a diffusion decoder. The autoregressive decoder is responsible for generating mel-spectrograms from text using an attention-based sequence-to-sequence model. The diffusion decoder is responsible for converting mel-spectrograms into raw audio waveforms using a denoising diffusion probabilistic model.
+```bash
+pip install tortoise-tts
+```
 
-The system also uses two auxiliary models: a conditioning latent vector predictor (CLVP) and a conditioning latent vector perturbator (CVVP). The CLVP is responsible for generating conditioning latent vectors from voice samples using an encoder-decoder model. The conditioning latent vectors are used to guide the autoregressive decoder to produce mel-spectrograms in different voices. The CVVP is responsible for perturbing conditioning latent vectors using an adversarial network. The perturbed conditioning latent vectors are used to introduce variations in pitch,
-tone,
-and timbre of the generated speech.
+The repo includes a CLI script. `--voice` takes the name of a voice folder, or `random` for a randomly generated voice:
 
-The system allows users to customize their speech output by choosing different options such as:
+```bash
+python tortoise/do_tts.py --text "I'm going to speak this" --voice random --preset fast
+```
 
-- Text: The input text to be converted into speech
-- Voice: The reference voice samples to be used for voice cloning
-- Preset: The speed-quality trade-off of the generation process (fast,
-medium,
-or slow)
-- Format: The output format of the generated speech (wav,
-mp3,
-or ogg)
+From Python, load a voice's reference clips and generate audio with a preset:
 
-## Project Examples
+```python
+import torchaudio
+from tortoise.api import TextToSpeech
+from tortoise.utils.audio import load_voice
 
-Here are some examples of tortoise_tts's output using different texts and voices: The sample clips may not work at this time of writing.
+tts = TextToSpeech()
 
-Text: "Hello world! This is tortoise tts speaking."
-Voice: Random
-Preset: Fast
-Format: Wav
+# "geralt" is one of the voices bundled in tortoise/voices
+voice_samples, conditioning_latents = load_voice("geralt")
 
-[Listen here](https://huggingface.co/spaces/mdnestor/tortoise?audio=hello-world-random-fast.wav)
+gen = tts.tts_with_preset(
+    "Hello world! This is Tortoise speaking.",
+    voice_samples=voice_samples,
+    conditioning_latents=conditioning_latents,
+    preset="fast",
+)
+torchaudio.save("generated.wav", gen.squeeze(0).cpu(), 24000)
+```
 
-Text: "I'm sorry Dave, I'm afraid I can't do that."
-Voice: HAL 9000 from 2001: A Space Odyssey
-Preset: Medium
-Format: Mp3
+The model weights are downloaded the first time you create `TextToSpeech()`. Output is a 24 kHz WAV file.
 
-[Listen here](https://huggingface.co/spaces/mdnestor/tortoise?audio=hal9000-medium.mp3)
+To use your own voice, add a folder of short, clean WAV clips of one speaker under `tortoise/voices/<name>/`, or pass extra folders with the `extra_voice_dirs` argument of `load_voice`. Then use `<name>` as the voice.
 
-Text: "To be, or not to be? That is the question."
-Voice: William Shakespeare from Eleven Labs Voice Cloning Demo
-Preset: Slow
-Format: Ogg
+## Limitations
 
-[Listen here](https://huggingface.co/spaces/mdnestor/tortoise?audio=shakespeare-slow.ogg)
+- **Speed.** Even the `ultra_fast` preset samples many candidates and runs diffusion. It's far slower than single-pass TTS models, so it suits pre-rendered audio better than real-time use.
+- **Hardware.** It's practical on a GPU. On a CPU, generation is very slow.
+- **Quality varies with the reference clips.** Noisy or very short clips, or clips that mix speakers, produce worse voices.
+- **Packaging.** The latest PyPI release of `tortoise-tts` is 3.0.0, from October 2023. If you run into dependency problems with current PyTorch versions, install from the GitHub repo instead.
+- **Misuse.** Voice cloning can be used to impersonate people. Only clone voices you have permission to use.
 
-## Project Limitations
+## Further reading
 
-Tortoise tts is still a work in progress and has some limitations, such as:
-
-- Slow generation speed due to the use of both autoregressive and diffusion decoders
-- High computational cost due to the use of large models and multiple components
-- Variable quality depending on the input text and voice samples
-
-
-This blog post was generated with bing gpt.
-
-Source: Conversation with Bing, 3/16/2023(1) GitHub - neonbjb/tortoise-tts: A multi-voice TTS system trained with an .... https://github.com/neonbjb/tortoise-tts Accessed 3/16/2023.
-(2) ken2ki/tortoise · Hugging Face. https://huggingface.co/ken2ki/tortoise Accessed 3/16/2023.
-(3) jbetker/tortoise-tts-v2 · Hugging Face. https://huggingface.co/jbetker/tortoise-tts-v2 Accessed 3/16/2023.
-(4) GitHub - Fictiverse/tortoise-tts-Windows: A multi-voice TTS system .... https://github.com/Fictiverse/tortoise-tts-Windows Accessed 3/16/2023.
-(5) Tortoise TTS - a Hugging Face Space by mdnestor. https://huggingface.co/spaces/mdnestor/tortoise Accessed 3/16/2023.
+- [tortoise-tts on GitHub](https://github.com/neonbjb/tortoise-tts) (README and `voice_customization_guide.md`)
+- [Better speech synthesis through scaling](https://arxiv.org/abs/2305.07243), the paper describing the model
+- [Hugging Face Spaces demo](https://huggingface.co/spaces/Manmay/tortoise-tts) linked from the README

@@ -1,92 +1,78 @@
 ---
-title: Using Cleanenv for Configuration Management in Golang
+title: Loading Go configuration from YAML and environment variables with cleanenv
 pubDate: "2023-05-30T19:37:46.229Z"
-description: "Cleanenv is a lightweight and easy-to-use configuration management library."
+lastUpdated: 2026-11-14
+description: "How to load a Go app's config from a YAML file with environment variable overrides and defaults using cleanenv's ReadConfig and struct tags."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
-# Using Cleanenv in Golang
+[cleanenv](https://github.com/ilyakaznacheev/cleanenv) is a small Go library that fills a config struct from a file, environment variables, and defaults declared in struct tags. It reads YAML, JSON, TOML, EDN and `.env` files (picked by file extension), so you can keep sensible values in a file and override them per environment without code changes. The examples use v1.5.0, the latest release at the time of writing.
 
-Cleanenv is a lightweight and easy-to-use configuration management library for Golang applications. It allows developers to manage application configuration through environment variables and configuration files, making it easier to maintain different configurations for different environments. This article will discuss how to use Cleanenv in your Golang projects, covering installation, usage, and best practices.
-
-## Installation
-
-To install Cleanenv, use the `go get` command to fetch the latest version of the library:
+## Install
 
 ```sh
-go get -u github.com/ilyakaznacheev/cleanenv
+go get github.com/ilyakaznacheev/cleanenv
 ```
 
-## Configuration Struct
+## The config struct
 
-Before diving into Cleanenv, let's define a configuration struct for our application. This struct will hold all the necessary configuration values and will be populated by Cleanenv.
+Tag each field with its key in the file (`yaml:"..."`) and the environment variable that can override it (`env:"..."`). `env-default` supplies a value when neither the file nor the environment has one, and `env-required` makes loading fail if the field ends up empty.
 
 ```go
 package config
 
 type AppConfig struct {
 	Database struct {
-		Host     string `yaml:"host" env:"DB_HOST"`
-		Port     int    `yaml:"port" env:"DB_PORT"`
+		Host     string `yaml:"host" env:"DB_HOST" env-default:"localhost"`
+		Port     int    `yaml:"port" env:"DB_PORT" env-default:"5432"`
 		User     string `yaml:"user" env:"DB_USER"`
-		Password string `yaml:"password" env:"DB_PASSWORD"`
+		Password string `yaml:"password" env:"DB_PASSWORD" env-required:"true"`
 		Name     string `yaml:"name" env:"DB_NAME"`
 	} `yaml:"database"`
 	Server struct {
-		Address string `yaml:"address" env:"SERVER_ADDRESS"`
-		Port    int    `yaml:"port" env:"SERVER_PORT"`
+		Address string `yaml:"address" env:"SERVER_ADDRESS" env-default:"0.0.0.0"`
+		Port    int    `yaml:"port" env:"SERVER_PORT" env-default:"8080"`
 	} `yaml:"server"`
 }
 ```
 
-In this example, the `AppConfig` struct holds two nested structs for database and server configurations. The struct fields are tagged with `yaml` and `env` to indicate the corresponding YAML keys and environment variable names.
+## Loading it
 
-## Reading Configuration
-
-To read the configuration values from a YAML file and environment variables, we'll create a function in the `config` package called `LoadConfig`.
+`cleanenv.ReadConfig` reads the file into the struct, then overwrites fields with any matching environment variables that are set, then fills remaining empty fields from `env-default`.
 
 ```go
 package config
 
-import (
-	"github.com/ilyakaznacheev/cleanenv"
-)
+import "github.com/ilyakaznacheev/cleanenv"
 
-func LoadConfig(configPath string) (*AppConfig, error) {
-	cfg := &AppConfig{}
-
-	err := cleanenv.ReadConfig(configPath, cfg)
-	if err != nil {
+func LoadConfig(path string) (*AppConfig, error) {
+	var cfg AppConfig
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		return nil, err
 	}
-
-	return cfg, nil
+	return &cfg, nil
 }
 ```
 
-`LoadConfig` takes a `configPath` string as an argument, which is the path to the YAML configuration file. It creates a new `AppConfig` struct and uses `cleanenv.ReadConfig` to populate the struct with values from the configuration file and environment variables. If there's an error, the function returns it; otherwise, it returns the populated `AppConfig` struct.
+`ReadConfig` returns an error if the file is missing, can't be parsed, or a required field is empty.
 
-## Usage
+## Using it
 
-Now that we have our configuration management functions set up, let's see how to use them in a Golang application.
-
-First, create a YAML configuration file called `config.yaml` with the following content:
+A `config.yaml` with no password in it:
 
 ```yaml
 database:
   host: localhost
   port: 5432
   user: dbuser
-  password: dbpassword
   name: dbname
 server:
-  address: 0.0.0.0
   port: 8080
 ```
 
-Next, create a `main. file with the following code:
+And `main.go` (replace `example.com/myapp` with your module path):
 
 ```go
 package main
@@ -94,35 +80,48 @@ package main
 import (
 	"fmt"
 	"log"
-	"your_project/config"
+
+	"example.com/myapp/config"
 )
 
 func main() {
 	cfg, err := config.LoadConfig("config.yaml")
 	if err != nil {
-		log.Fatalf("Cannot load config: %v", err)
+		log.Fatalf("cannot load config: %v", err)
 	}
 
-	fmt.Printf("Database configuration: %+v\n", cfg.Database)
-	fmt.Printf("Server configuration: %+v\n", cfg.Server)
+	fmt.Printf("database: %s@%s:%d/%s\n",
+		cfg.Database.User, cfg.Database.Host, cfg.Database.Port, cfg.Database.Name)
+	fmt.Printf("server: %s:%d\n", cfg.Server.Address, cfg.Server.Port)
 }
 ```
 
-Here, we import the `config` package and call the `LoadConfig` function, passing the path to our configuration file. If there's an error loading the configuration, we log it and exit. Otherwise, we print out the loaded configuration values.
+Run it with the password and a port override in the environment:
 
-When you run the application, it should output the following:
-
-```
-Database configuration: {Host:localhost Port:5432 User:dbuser Password:dbpassword Name:dbname}
-Server configuration: {Address:0.0.0.0 Port:8080}
+```sh
+DB_PASSWORD=secret SERVER_PORT=9090 go run .
 ```
 
-## Best Practices
+```text
+database: dbuser@localhost:5432/dbname
+server: 0.0.0.0:9090
+```
 
-- Store sensitive data such as passwords and API keys in environment variables to avoid accidentally committing them to your code repository.
-- Use a separate configuration file for each environment (e.g., `config.development.yaml`, `config.production.yaml`). This makes it easier to manage different configurations for different environments.
-- When deploying your application, make sure to include all necessary configuration files and environment variables.
+`SERVER_PORT` from the environment wins over `port: 8080` in the file, and `Server.Address` comes from its `env-default` because the file doesn't set it. Without `DB_PASSWORD`, `LoadConfig` returns an error instead of starting with an empty password.
 
-## Conclusion
+## Other useful pieces
 
-Cleanenv is a powerful and easy-to-use library for managing configuration in Golang applications. By using Cleanenv, you can keep your application's configuration organized, easy to maintain, and secure. Give it a try in your next Golang project and see how it can simplify your configuration management process.
+- `cleanenv.ReadEnv(&cfg)` skips the file and reads only environment variables and defaults, which suits containers configured purely through the environment.
+- `env-description:"..."` documents a variable, and `cleanenv.GetDescription(&cfg, nil)` returns a list of every variable with its description, handy for a `--help` message.
+- `env-prefix:"DB_"` on a nested struct field prefixes the variable names of the fields inside it.
+
+## Gotchas
+
+- Keep secrets out of the YAML file and the repository. Supply them through environment variables (or your platform's secret store) and mark them `env-required`.
+- Don't log the whole config struct with `%+v`; it will print passwords and tokens.
+- Loading a `.env` file with `ReadConfig` sets those values in the process environment, overriding variables that are already set.
+
+## Further reading
+
+- [cleanenv README](https://github.com/ilyakaznacheev/cleanenv)
+- [Package docs on pkg.go.dev](https://pkg.go.dev/github.com/ilyakaznacheev/cleanenv)

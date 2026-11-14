@@ -1,36 +1,18 @@
 ---
-title: Using Dictionary in GoLang with Maps
+title: "Dictionaries in Go: creating, reading, deleting and iterating over maps"
 pubDate: "2023-05-30T19:37:46.314Z"
-description: "In GoLang, dictionaries are implemented using the built-in data structure called `maps`. A map is a collection of key-value pairs, where each key is unique and maps to a single value."
+lastUpdated: 2026-11-14
+description: "How Go's built-in map type works as a dictionary: creating maps, adding and reading keys, the comma-ok check, deleting, iterating in sorted order, and common gotchas."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using Dictionary in GoLang with Maps
 
-In GoLang, dictionaries are implemented using the built-in data structure called `maps`. A map is a collection of key-value pairs, where each key is unique and maps to a single value. This article will guide you through the basics of using dictionaries in GoLang with the help of maps, including creation, modification, and deletion of key-value pairs.
+Go doesn't have a type called "dictionary"; its built-in `map` type fills that role. A `map[K]V` stores values of type `V` under unique keys of type `K`, where `K` can be any comparable type (strings, numbers, booleans, pointers, structs of comparable fields, and so on). Lookups, inserts and deletes are average constant time because maps are hash tables.
 
-## Creating a Map
+## Creating a map
 
-To create a map in GoLang, use the `make` function with the `map` keyword, followed by the types of both the key and the value enclosed in square brackets. Here's an example that demonstrates how to create a map with string keys and integer values:
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-    // Create a map with string keys and integer values
-    myDict := make(map[string]int)
-
-    // Print the map
-    fmt.Println(myDict)
-}
-```
-
-## Adding Key-Value Pairs to the Map
-
-To add a key-value pair to the map, use the assignment operator (`=`) after specifying the key in square brackets. For example:
+Use a map literal when you know some entries up front, or `make` for an empty map:
 
 ```go
 package main
@@ -38,21 +20,25 @@ package main
 import "fmt"
 
 func main() {
-    myDict := make(map[string]int)
+	stock := map[string]int{
+		"apple":  5,
+		"banana": 8,
+	}
 
-    // Add key-value pairs to the map
-    myDict["apple"] = 5
-    myDict["banana"] = 8
-    myDict["orange"] = 12
+	empty := make(map[string]int)
+	sized := make(map[string]int, 100) // hint: room for ~100 entries before growing
 
-    // Print the map
-    fmt.Println(myDict)
+	fmt.Println(stock, empty, sized, len(stock))
 }
 ```
 
-## Retrieving Values from the Map
+`len(m)` returns the number of entries. `fmt` prints maps with keys sorted, so the output is stable: `map[apple:5 banana:8] map[] map[] 2`.
 
-To retrieve a value from the map, use the key in square brackets. If the key is not present in the map, it will return the zero value for the value type. Here's an example:
+Don't declare a map with `var m map[string]int` and then write to it. That gives you a nil map: reading from it is fine (you get zero values), but assigning to it panics with `assignment to entry in nil map`.
+
+## Adding, updating and reading values
+
+Assignment adds a key or overwrites its value. Reading a missing key returns the zero value of the value type:
 
 ```go
 package main
@@ -60,21 +46,19 @@ package main
 import "fmt"
 
 func main() {
-    myDict := make(map[string]int)
-    myDict["apple"] = 5
-    myDict["banana"] = 8
+	stock := make(map[string]int)
+	stock["apple"] = 5
+	stock["banana"] = 8
+	stock["apple"] += 1 // update in place
 
-    // Retrieve the value for the key "apple"
-    value := myDict["apple"]
-    fmt.Println("Value for apple:", value)
-
-    // Retrieve the value for a non-existent key
-    value = myDict["orange"]
-    fmt.Println("Value for orange:", value)
+	fmt.Println("apple:", stock["apple"])   // apple: 6
+	fmt.Println("orange:", stock["orange"]) // orange: 0
 }
 ```
 
-To check if a key exists in the map, use the `, ok` syntax in the assignment:
+## Checking whether a key exists
+
+Because a missing key and a key stored with the zero value both read as `0`, use the two-value "comma ok" form when the difference matters:
 
 ```go
 package main
@@ -82,30 +66,23 @@ package main
 import "fmt"
 
 func main() {
-    myDict := make(map[string]int)
-    myDict["apple"] = 5
+	stock := map[string]int{"apple": 5, "pear": 0}
 
-    // Check if the key "apple" exists in the map
-    value, ok := myDict["apple"]
-    if ok {
-        fmt.Println("Value for apple:", value)
-    } else {
-        fmt.Println("Key 'apple' not found")
-    }
-
-    // Check if the key "orange" exists in the map
-    value, ok = myDict["orange"]
-    if ok {
-        fmt.Println("Value for orange:", value)
-    } else {
-        fmt.Println("Key 'orange' not found")
-    }
+	for _, fruit := range []string{"apple", "pear", "orange"} {
+		if n, ok := stock[fruit]; ok {
+			fmt.Printf("%s: %d in stock\n", fruit, n)
+		} else {
+			fmt.Printf("%s: not tracked\n", fruit)
+		}
+	}
 }
 ```
 
-## Deleting Key-Value Pairs from the Map
+`pear` is found with a count of 0; `orange` reports "not tracked".
 
-To remove a key-value pair from the map, use the `delete` built-in function with the map and the key as arguments:
+## Deleting keys
+
+`delete(m, key)` removes an entry. Deleting a key that isn't there is a no-op, not an error. Since Go 1.21, `clear(m)` removes every entry.
 
 ```go
 package main
@@ -113,38 +90,56 @@ package main
 import "fmt"
 
 func main() {
-    myDict := make(map[string]int)
-    myDict["apple"] = 5
-    myDict["banana"] = 8
+	stock := map[string]int{"apple": 5, "banana": 8}
 
-    // Delete the key-value pair with the key "apple"
-    delete(myDict, "apple")
+	delete(stock, "apple")
+	delete(stock, "orange") // no-op
+	fmt.Println(stock)      // map[banana:8]
 
-    // Print the map
-    fmt.Println(myDict)
+	clear(stock)
+	fmt.Println(len(stock)) // 0
 }
 ```
 
-## Iterating Over a Map
+## Iterating
 
-To iterate over a map, use the `range` keyword in a `for` loop. The `range` keyword returns both the key and value for each entry in the map:
+`for key, value := range m` visits every entry. The order is unspecified and deliberately varies between runs, so never depend on it. When you need a stable order, sort the keys first. With Go 1.23 or later, the standard `maps` and `slices` packages do this in one line:
 
 ```go
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"maps"
+	"slices"
+)
 
 func main() {
-    myDict := make(map[string]int)
-    myDict["apple"] = 5
-    myDict["banana"] = 8
-    myDict["orange"] = 12
+	stock := map[string]int{"orange": 12, "apple": 5, "banana": 8}
 
-    // Iterate over the map and print each key-value pair
-    for key, value := range myDict {
-        fmt.Printf("Key: %s, Value: %d\n", key, value)
-    }
+	// Random order
+	for fruit, n := range stock {
+		fmt.Printf("%s: %d\n", fruit, n)
+	}
+
+	// Sorted by key
+	for _, fruit := range slices.Sorted(maps.Keys(stock)) {
+		fmt.Printf("%s: %d\n", fruit, stock[fruit])
+	}
 }
 ```
 
-In conclusion, maps in GoLang provide a convenient and efficient way to implement dictionaries. By using the built-in `make`, `delete`, and `range` functions along with the assignment and retrieval operations, you can easily create, modify, and iterate over dictionaries in GoLang.
+It's safe to delete entries from a map while ranging over it.
+
+## Gotchas
+
+- **Maps are references.** Assigning a map to another variable or passing it to a function doesn't copy it; both names refer to the same data. Use `maps.Clone(m)` (Go 1.21+) for a shallow copy.
+- **Not safe for concurrent writes.** Reading and writing the same map from multiple goroutines without a lock is a data race, and the runtime may crash with `concurrent map writes`. Protect it with a `sync.Mutex` or `sync.RWMutex`, or use `sync.Map` for the specific cases its docs describe.
+- **You can't take the address of a map element**, so `&m["apple"]` doesn't compile, and with struct values `m["apple"].Count++` doesn't either. Read the struct, modify it, and assign it back, or store pointers.
+- **Slices, maps and functions can't be keys**, because they aren't comparable.
+
+## Further reading
+
+- [Go maps in action](https://go.dev/blog/maps) (Go blog)
+- [Map types in the language spec](https://go.dev/ref/spec#Map_types)
+- [`maps` package](https://pkg.go.dev/maps)

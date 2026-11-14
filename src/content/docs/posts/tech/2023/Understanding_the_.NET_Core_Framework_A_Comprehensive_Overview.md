@@ -1,68 +1,77 @@
 ---
-description: In this article, we will delve into the core components of the
+description: "What .NET (formerly .NET Core) is made of, how releases and support work, how to build and publish an app, and which app types it supports."
 imgSrc: /imgs/2023/1938616315.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-20T11:47:23.000Z'
-tags: []
-title: Understanding the .NET Core Framework A Comprehensive Overview
+lastUpdated: 2026-11-14
+tags: ["dotnet", "csharp"]
+title: ".NET Core overview: runtime, SDK, release cycle and app types"
 ---
 
-# Understanding the .NET Core Framework: A Comprehensive Overview
+:::caution
+The ".NET Core" name was retired after .NET Core 3.1, which went out of support in December 2022. From .NET 5 onward the product is just called **.NET**. This post covers that same platform under its current name; ".NET Framework" is the older, Windows-only runtime.
+:::
 
-.NET Core is a versatile, high-performance, open-source framework developed by Microsoft to build modern, cross-platform applications. It is a modular and lightweight framework that can be used for developing applications on Windows, macOS, and Linux platforms. In this article, we will delve into the core components of the .NET Core framework, its advantages, and real-world applications.
+.NET is Microsoft's open-source, cross-platform runtime and SDK for building apps in C#, F#, and Visual Basic. It runs on Windows, macOS, and Linux, and it replaced the Windows-only .NET Framework as the place where new features land. .NET Framework 4.8.x is still supported on Windows, but it only gets fixes.
 
-## What is .NET Core?
+## What's in the box
 
-.NET Core is a successor to the .NET Framework, designed to address the limitations of its predecessor, such as the inability to run cross-platform and the monolithic nature of the framework. With .NET Core, Microsoft introduced a new, lean, and modular framework that supports the development of a wide range of application types, from web applications to console applications, and even IoT (Internet of Things) and AI (Artificial Intelligence) applications.
+- **Runtime (CoreCLR).** Loads your compiled IL, JIT-compiles it to machine code, and provides garbage collection, exception handling, and threading.
+- **Base class libraries.** Collections, I/O, networking, `System.Text.Json`, LINQ, async/await support, and so on.
+- **ASP.NET Core runtime.** A separate shared framework for web apps and APIs.
+- **SDK and `dotnet` CLI.** Compilers, MSBuild, NuGet, project templates, and the `dotnet` command that drives them.
 
-.NET Core is built on the following key components:
+## Releases and support
 
-1. **Runtime:** Provides a type-safe and memory-safe programming environment. It is responsible for managing memory, handling exceptions, and providing core services such as garbage collection.
+A new major version ships every November. Even-numbered releases are Long Term Support (LTS, three years of support); odd-numbered releases are Standard Term Support (STS, two years). At the time of writing, .NET 10 (November 2025) is the current LTS release and .NET 11 (November 2026) is the current STS release. Check the [support policy page](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) before choosing a version, since end-of-support dates are fixed in advance.
 
-2. **Base Class Libraries (BCL):** A collection of reusable classes, interfaces, and value types that provide essential functionality, such as file I/O, string manipulation, and collections.
+## Build, run and publish
 
-3. **SDK (Software Development Kit):** A set of tools, libraries, and templates that help developers build, test, and deploy .NET Core applications.
+The CLI is the same on every OS:
 
-4. **CLI (Command-Line Interface):** A set of command-line tools for creating, building, testing, and running .NET Core applications.
+```bash
+dotnet new console -o HelloDotnet
+cd HelloDotnet
+dotnet run
+```
 
-## Advantages of .NET Core
+`dotnet new console` generates a `Program.cs` with top-level statements:
 
-Several benefits make .NET Core a popular choice for modern application development:
+```csharp
+Console.WriteLine("Hello, World!");
+```
 
-1. **Cross-platform:** .NET Core enables developers to build applications that can run on multiple platforms, including Windows, macOS, and Linux. This cross-platform capability allows for greater flexibility and code reusability, reducing the overall development time and effort.
+When you publish, you choose how the app ships:
 
-2. **Performance:** .NET Core is designed for high-performance scenarios and has been optimized for both throughput and response time. It also benefits from the Just-In-Time (JIT) compilation and Ahead-of-Time (AOT) compilation, which improve application startup time and runtime performance.
+```bash
+# Framework-dependent: small output, needs the .NET runtime installed on the target
+dotnet publish -c Release
 
-3. **Modularity:** .NET Core is modular, which means developers can include only the necessary NuGet packages for their application, reducing the size of the deployed application and improving performance.
+# Self-contained: bundles the runtime for one platform, no install needed
+dotnet publish -c Release -r linux-x64 --self-contained
 
-4. **Open-source:** .NET Core is open-source and has a growing community of contributors, allowing for continuous improvements and rapid adoption of new features and technologies.
+# Native AOT: compiles ahead of time to a single native executable
+dotnet publish -c Release -r linux-x64 -p:PublishAot=true
+```
 
-5. **Flexible deployment:** .NET Core supports multiple deployment options, including framework-dependent deployment and self-contained deployment, providing flexibility in distributing applications.
+Native AOT (available since .NET 7) gives faster startup and lower memory use, which helps for CLI tools and serverless functions. The trade-off is that code relying on runtime reflection or dynamic code generation may not work; the compiler reports trimming and AOT warnings when it finds such code.
 
-## Application types supported by .NET Core
+## What you can build
 
-.NET Core supports a wide range of application types, including:
+- **Web apps and APIs** with ASP.NET Core: MVC, Razor Pages, minimal APIs, Blazor, SignalR, and gRPC.
+- **Console apps and background services** using the generic host (`Host.CreateApplicationBuilder`) and the Worker Service template.
+- **Desktop apps.** WPF and Windows Forms run on .NET but only on Windows. For cross-platform UI, the options are .NET MAUI (Microsoft's successor to Xamarin.Forms, whose support ended in May 2024), or third-party frameworks such as Avalonia and Uno Platform.
+- **Mobile apps** for Android and iOS through .NET MAUI or the underlying .NET for Android / .NET for iOS workloads.
+- **Machine learning and IoT**, through ML.NET and the `System.Device.Gpio` and `Iot.Device.Bindings` packages for GPIO, I2C, and SPI devices.
+- **Games**, mostly through engines: Godot supports C# on .NET, while Unity has historically run C# on Mono and IL2CPP and is in the middle of moving to CoreCLR.
 
-1. **Web applications:** .NET Core includes ASP.NET Core, a high-performance and modular framework for building web applications, APIs, and real-time web applications using C#, Razor, and Blazor.
+## When it might not fit
 
-2. **Console applications:** .NET Core allows developers to build cross-platform command-line applications that can run on Windows, macOS, and Linux.
+- You maintain a large .NET Framework app that depends on Web Forms, WCF server, or other APIs that weren't ported. Migration is possible but can be a real project; see Microsoft's [porting guide](https://learn.microsoft.com/dotnet/core/porting/). (The older .NET Upgrade Assistant tool is deprecated in favour of the GitHub Copilot modernization agent in Visual Studio.)
+- You need a cross-platform desktop UI that Microsoft supports on Linux. .NET MAUI doesn't target Linux, so you'd rely on Avalonia or Uno.
 
-3. **Desktop applications:** With .NET Core, developers can build cross-platform desktop applications using frameworks like Avalonia, Uno Platform, and Xamarin.Forms.
+## Further reading
 
-4. **Microservices:** .NET Core's modularity and performance make it an ideal choice for building microservices, which are small, focused, and independent services that work together to form a larger application.
-
-5. **IoT and AI applications:** .NET Core supports IoT and AI development through libraries like the ML.NET (Machine Learning) and IoT.Device.Bindings (Internet of Things) libraries.
-
-## Real-world applications of .NET Core
-
-Some notable real-world applications and use cases of .NET Core include:
-
-1. **E-commerce platforms:** Companies like Alibaba and Walmart have used .NET Core to build high-performance, scalable e-commerce platforms.
-
-2. **Content management systems (CMS):** Popular CMS solutions like Orchard Core and Piranha CMS are built on .NET Core, offering cross-platform capabilities and high performance.
-
-3. **Financial and banking applications:** Large financial institutions like Goldman Sachs and Bank of America have adopted .NET Core for their trading and risk management platforms.
-
-4. **Gaming platforms:** The Unity game engine, one of the most popular game engines globally, relies on .NET Core for its scripting capabilities.
-
-In conclusion, .NET Core is a powerful framework that enables developers to build modern, high-performance, and cross-platform applications. Its modularity, performance, and open-source nature have made it a popular choice for various application types, from web applications to IoT and AI applications. As the .NET ecosystem continues to evolve, we can expect even more innovative applications built on this versatile framework.
+- [.NET documentation](https://learn.microsoft.com/dotnet/)
+- [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)
+- [Native AOT deployment](https://learn.microsoft.com/dotnet/core/deploying/native-aot/)

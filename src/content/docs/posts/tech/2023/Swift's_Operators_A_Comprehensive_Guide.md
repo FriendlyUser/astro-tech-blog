@@ -1,184 +1,153 @@
 ---
-description: In this article, we'll dive into the details of Swift's operators, exploring
-  their syntax, usage, and key features
+description: Swift's arithmetic, comparison, logical, bitwise, range and assignment operators, the overflow and nil-coalescing operators, and how to define a custom operator.
 imgSrc: /imgs/2023/1460588698.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-21T05:13:03.000Z'
-tags: []
-title: Swift's Operators A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift operators: arithmetic, bitwise, ranges and custom operators"
 ---
 
-# Swift's Operators: A Comprehensive Guide
+Most of Swift's operators look like C's, but a few behave differently in ways that catch people out: integer overflow crashes instead of wrapping, `=` doesn't return a value, and there is no `++`. This post goes through each group with those differences called out.
 
-Swift, Apple's powerful and expressive programming language, offers a wide range of operators that allow developers to perform various operations like arithmetic, comparison, and logical operations. In this article, we'll dive into the details of Swift's operators, exploring their syntax, usage, and key features.
+## Arithmetic
 
-## Overview
-
-Swift operators can be broadly categorized into the following groups:
-
-1. Arithmetic operators
-2. Comparison operators
-3. Logical operators
-4. Bitwise operators
-5. Range operators
-6. Assignment operators
-7. Custom operators
-
-We'll examine each category in more detail below.
-
-## 1. Arithmetic Operators
-
-Arithmetic operators perform basic mathematical operations like addition, subtraction, multiplication, and division.
-
-### 1.1 Basic Arithmetic Operators
-
-- Addition (`+`): Adds two numbers.
-- Subtraction (`-`): Subtracts the second number from the first.
-- Multiplication (`*`): Multiplies two numbers.
-- Division (`/`): Divides the first number by the second.
+`+`, `-`, `*`, `/` and `%` work as you'd expect, with a few rules:
 
 ```swift
 let a = 10
-let b = 5
+let b = 3
 
-let sum = a + b // 15
-let difference = a - b // 5
-let product = a * b // 50
-let quotient = a / b // 2
+let sum = a + b         // 13
+let difference = a - b  // 7
+let product = a * b     // 30
+let quotient = a / b    // 3, integer division truncates toward zero
+let remainder = a % b   // 1
+let negative = -9 % 4   // -1, the sign follows the left operand
+
+let negated = -a        // -10
+let same = +a           // 10
 ```
 
-### 1.2 Remainder Operator
+- Both operands must be the same type. `a + 2.5` doesn't compile when `a` is an `Int`; convert explicitly with `Double(a) + 2.5`.
+- `%` only works on integers. For floating-point remainders use `truncatingRemainder(dividingBy:)`.
+- There is no `++` or `--`; they were removed in Swift 3. Use `+= 1`.
 
-- Remainder (`%`): Calculates the remainder after dividing the first number by the second.
+### Overflow
+
+Integer arithmetic that overflows is a runtime error, not silent wraparound:
 
 ```swift
-let remainder = a % b // 0
+let big = Int8.max      // 127
+// let boom = big + 1   // crashes at runtime (or a compile error, since this is a constant)
+let wrapped = big &+ 1  // -128
 ```
 
-### 1.3 Unary Minus Operator
+The overflow operators `&+`, `&-` and `&*` wrap explicitly, which is what you want for things like hashing.
 
-- Unary minus (`-`): Changes the sign of a number.
+## Comparison
+
+`==`, `!=`, `<`, `>`, `<=` and `>=` return a `Bool`. Your own types get `==` by conforming to `Equatable` and the ordering operators by conforming to `Comparable`. Tuples of up to six comparable elements can also be compared, element by element:
 
 ```swift
-let c = -a // -10
+(1, "zebra") < (2, "apple")   // true, the first elements decide
 ```
 
-### 1.4 Unary Plus Operator
+For class instances, `===` and `!==` check whether two references point to the same object, which is different from `==`.
 
-- Unary plus (`+`): Returns the value unchanged.
+## Logical
+
+`!`, `&&` and `||` work on `Bool` only; there's no truthiness for integers or optionals. `&&` and `||` short-circuit, so the right side isn't evaluated if the left side decides the result:
 
 ```swift
-let d = +a // 10
+let items: [Int] = []
+if !items.isEmpty && items[0] > 0 {   // items[0] never runs
+    print("first item is positive")
+}
 ```
 
-## 2. Comparison Operators
+## Bitwise
 
-Comparison operators are used to compare two values and return a boolean result (`true` or `false`).
-
-- Equal to (`==`): Checks if two values are equal.
-- Not equal to (`!=`): Checks if two values are not equal.
-- Greater than (`>`): Checks if the first value is greater than the second.
-- Less than (`<`): Checks if the first value is less than the second.
-- Greater than or equal to (`>=`): Checks if the first value is greater than or equal to the second.
-- Less than or equal to (`<=`): Checks if the first value is less than or equal to the second.
+Bitwise operators work on the bits of integer types. Using a fixed-width unsigned type makes the results easy to read:
 
 ```swift
-let e = 10
-let f = 5
+let i: UInt8 = 0b0000_1100
+let j: UInt8 = 0b0000_1010
 
-let isEqual = e == f // false
-let isNotEqual = e != f // true
-let isGreater = e > f // true
-let isLess = e < f // false
-let isGreaterOrEqual = e >= f // true
-let isLessOrEqual = e <= f // false
+let bitwiseNot = ~i      // 0b1111_0011
+let bitwiseAnd = i & j   // 0b0000_1000
+let bitwiseOr  = i | j   // 0b0000_1110
+let bitwiseXor = i ^ j   // 0b0000_0110
+let leftShift  = i << 1  // 0b0001_1000
+let rightShift = i >> 1  // 0b0000_0110
 ```
 
-## 3. Logical Operators
+With a signed `Int`, `~12` is `-13` (two's complement), not `0b0011`. Right-shifting a negative signed integer fills with the sign bit.
 
-Logical operators are used to combine multiple conditions and return a boolean result (`true` or `false`).
-
-- Logical NOT (`!`): Negates the truth value of a condition.
-- Logical AND (`&&`): Returns `true` if both conditions are true.
-- Logical OR (`||`): Returns `true` if at least one condition is true.
+## Ranges
 
 ```swift
-let g = true
-let h = false
+let closed = 1...5      // 1, 2, 3, 4, 5
+let halfOpen = 1..<5    // 1, 2, 3, 4
 
-let notG = !g // false
-let andResult = g && h // false
-let orResult = g || h // true
+let names = ["Ana", "Ben", "Cy", "Dee"]
+names[2...]             // ["Cy", "Dee"]
+names[..<2]             // ["Ana", "Ben"]
 ```
 
-## 4. Bitwise Operators
+The half-open range is the one you want for indices (`0..<array.count`). One-sided ranges (`2...`, `..<2`) are handy for slicing.
 
-Bitwise operators perform operations on the individual bits of integer values.
-
-- Bitwise NOT (`~`): Flips the bits of a number.
-- Bitwise AND (`&`): Sets each bit to 1 if both bits are 1.
-- Bitwise OR (`|`): Sets each bit to 1 if either bit is 1.
-- Bitwise XOR (`^`): Sets each bit to 1 if the bits are different.
-- Bitwise Left Shift (`<<`): Shifts bits to the left by a specified number of positions.
-- Bitwise Right Shift (`>>`): Shifts bits to the right by a specified number of positions.
-
-```swift
-let i = 0b1100
-let j = 0b1010
-
-let bitwiseNot = ~i // 0b0011
-let bitwiseAnd = i & j // 0b1000
-let bitwiseOr = i | j // 0b1110
-let bitwiseXor = i ^ j // 0b0110
-let leftShift = i << 1 // 0b11000
-let rightShift = i >> 1 // 0b0110
-```
-
-## 5. Range Operators
-
-Range operators are used to represent a range of values.
-
-- Closed Range Operator (`...`): Includes both the start and end values.
-- Half-Open Range Operator (`..<`): Includes the start value but not the end value.
-
-```swift
-let closedRange = 1...5 // 1, 2, 3, 4, 5
-let halfOpenRange = 1..<5 // 1, 2, 3, 4
-```
-
-## 6. Assignment Operators
-
-Assignment operators are used to assign a value to a variable or constant.
-
-- Simple assignment operator (`=`): Assigns a value to a variable.
-- Compound assignment operators (e.g., `+=`, `-=`, `*=`, `/=`): Performs an operation and assigns the result to a variable.
+## Assignment
 
 ```swift
 var k = 10
-k = 5 // Assigns the value 5 to k
-
-k += 5 // Adds 5 to k and assigns the result to k (k = 10)
-k -= 3 // Subtracts 3 from k and assigns the result to k (k = 7)
-k *= 2 // Multiplies k by 2 and assigns the result to k (k = 14)
-k /= 2 // Divides k by 2 and assigns the result to k (k = 7)
+k += 5   // 15
+k -= 3   // 12
+k *= 2   // 24
+k /= 4   // 6
 ```
 
-## 7. Custom Operators
+Unlike C, `=` doesn't return a value, so `if x = y { ... }` is a compile error instead of a silent bug.
 
-Swift allows developers to define custom operators with unique symbols and precedence. This can make code more expressive and easier to read.
-
-To create a custom operator, use the `operator` keyword followed by the operator's symbol and precedence group.
+## Ternary and nil-coalescing
 
 ```swift
-infix operator **: MultiplicationPrecedence // Declare a custom exponentiation operator
+let score = 72
+let grade = score >= 50 ? "pass" : "fail"   // "pass"
 
-func **(base: Double, exponent: Double) -> Double {
-    return pow(base, exponent)
-}
-
-let l = 2.0 ** 3.0 // 8
+let nickname: String? = nil
+let displayName = nickname ?? "Anonymous"    // "Anonymous"
 ```
 
-## Conclusion
+`??` unwraps an optional or falls back to a default, and only evaluates the default if needed.
 
-Swift offers a rich set of operators that make it a powerful and expressive programming language. By understanding how to use these operators effectively, developers can write more efficient and maintainable code. The different types of operators, such as arithmetic, comparison, logical, bitwise, range, assignment, and custom operators, provide a wide range of functionality to perform various operations and manipulate data in Swift.
+## Custom operators
+
+You declare a new operator at file scope, give it a precedence group, then implement it as a function. Here is an exponentiation operator. Exponentiation should bind tighter than `*` and be right-associative (`2 ** 3 ** 2` means `2 ** (3 ** 2)`), so it gets its own precedence group:
+
+```swift
+import Foundation
+
+precedencegroup ExponentiationPrecedence {
+    higherThan: MultiplicationPrecedence
+    associativity: right
+}
+
+infix operator **: ExponentiationPrecedence
+
+func ** (base: Double, exponent: Double) -> Double {
+    pow(base, exponent)
+}
+
+let l = 2.0 ** 3.0        // 8.0
+let m = 2.0 * 2.0 ** 3.0  // 16.0
+let n = 2.0 ** 3.0 ** 2.0 // 512.0
+```
+
+Use custom operators sparingly. Anyone reading the code has to look up what they do, and a well-named method is usually clearer. They earn their place in domains with established notation, like vector maths.
+
+## Further reading
+
+- [Basic Operators](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/basicoperators/)
+- [Advanced Operators](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/advancedoperators/)
+- [Operator declarations in the standard library](https://developer.apple.com/documentation/swift/operator-declarations)

@@ -1,93 +1,105 @@
 ---
-description: In this article, we will explore the core elements of Swift's standard
-  library, including its data types, collections, and utility functions
+description: "A tour of Swift's standard library: integer and floating-point types, String and Character, Array, Set and Dictionary, and sorted, filter, map and reduce."
 imgSrc: /imgs/2023/117117315.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-12T16:20:28.000Z'
-tags: []
-title: Swift's Standard Library A Deep Dive
+lastUpdated: 2026-11-14
+tags:
+  - swift
+title: "Swift standard library basics: numbers, strings, collections and algorithms"
 ---
 
-# Swift's Standard Library: A Deep Dive
+The Swift standard library is the set of types and functions every Swift program gets without an import: numbers, strings, optionals, collections, and the algorithms that work on them. It is separate from Foundation, which adds things like `Date`, `URL` and `JSONDecoder` and has to be imported. This post covers the parts you use every day.
 
-Swift is a powerful and intuitive programming language developed by Apple for iOS, macOS, watchOS, tvOS, and beyond. It is designed to be easy to read and write while still being fast and efficient. One of the key components of Swift's power and flexibility is its comprehensive standard library. In this article, we will explore the core elements of Swift's standard library, including its data types, collections, and utility functions.
+## Basic types
 
-## Overview
+- **Integers**: `Int` and `UInt` are the platform word size (64 bits on Macs, iPhones and other 64-bit targets; 32 bits on Apple Watch's `arm64_32`). Fixed-width types are `Int8`, `Int16`, `Int32`, `Int64` and the matching `UInt` types. Use `Int` unless you need a specific size. Overflow traps at runtime instead of wrapping; use `&+`, `&-` and `&*` when you want wrapping arithmetic.
+- **Floating point**: `Float` is 32-bit and `Double` is 64-bit. A literal like `3.14` is inferred as `Double`.
+- **`Bool`**: `true` or `false`. Swift does not convert integers to `Bool`, so `if 1 { }` doesn't compile.
+- **`Character`**: one extended grapheme cluster, which is what a user sees as a single character. `"é"` and `"🇨🇦"` are each one `Character`, even though they are made of more than one Unicode scalar.
+- **`String`**: a Unicode-correct sequence of `Character` values. Because characters have variable width, you can't index a string with an `Int`; you use `String.Index`.
 
-The Swift standard library provides a wide range of functionality that is essential for building high-quality software. It includes foundational data types, such as numbers and strings, as well as more complex data structures, like arrays and dictionaries. Additionally, it offers a variety of utility functions for tasks like sorting, filtering, and mapping data.
+```swift
+let flag = "🇨🇦"
+print(flag.count)                // 1 (one Character)
+print(flag.unicodeScalars.count) // 2 (two regional indicator scalars)
 
-## Basic Data Types
+let greeting = "Hello, Swift"
+let comma = greeting.firstIndex(of: ",")!
+let hello = greeting[..<comma]   // Substring "Hello"
+print(String(hello))
+```
 
-Swift's standard library includes several basic data types that are used throughout the language. Some of the most important ones are:
+Slicing a `String` gives you a `Substring`, which shares storage with the original. Convert it with `String(...)` if you keep it around, so the original string's memory can be released.
 
-1. **Int**: Represents an integer value. Integers can be signed (positive, negative, or zero) or unsigned (positive or zero). Swift provides several integer types with different bit widths, such as `Int8`, `Int16`, `Int32`, `Int64`, and their unsigned counterparts `UInt8`, `UInt16`, `UInt32`, `UInt64`.
+## Collections
 
-2. **Float** and **Double**: Represent floating-point numbers, which are numbers with a decimal point. `Float` has a 32-bit representation, while `Double` has a 64-bit representation, providing more precision.
+`Array`, `Set` and `Dictionary` are all value types with copy-on-write storage: assigning one to another variable is cheap, and the buffer is only copied when one of the copies is mutated. Whether a collection can be changed depends on whether you declare it with `let` or `var`.
 
-3. **Bool**: Represents a boolean value, which can be either `true` or `false`.
+### Array
 
-4. **Character**: Represents a single Unicode character.
+An ordered, zero-indexed collection. Indexing out of bounds is a runtime trap, not an optional.
 
-5. **String**: Represents a sequence of characters, or a text. Swift strings are Unicode compliant and support a variety of operations such as concatenation, slicing, and more.
+```swift
+var numbers = [1, 2, 3, 4, 5]
+numbers.append(6)          // [1, 2, 3, 4, 5, 6]
+numbers.insert(0, at: 0)   // [0, 1, 2, 3, 4, 5, 6]
+print(numbers.first ?? -1) // 0; first and last return optionals
+```
 
-## Collection Types
+### Set
 
-Collections are fundamental data structures that allow you to group and organize values. Swift's standard library offers several collection types:
+An unordered collection of unique `Hashable` elements, with fast membership checks and set algebra.
 
-1. **Array**: Represents an ordered collection of elements. Arrays in Swift are zero-indexed and can store elements of any type, including other arrays. Arrays are mutable, so you can add, remove, and modify elements after they are created.
+```swift
+var colors: Set<String> = ["red", "green", "blue"]
+colors.insert("yellow")
+let warm: Set = ["red", "orange", "yellow"]
+print(colors.intersection(warm)) // ["red", "yellow"] in some order
+```
 
-   Example:
-   ````swift
-   var numbers = [1, 2, 3, 4, 5]
-   numbers.append(6) // numbers is now [1, 2, 3, 4, 5, 6]
-   ```
+### Dictionary
 
-2. **Set**: Represents an unordered collection of unique elements. Sets are useful when you need to ensure that each element appears only once in a collection.
+An unordered collection of key-value pairs with unique `Hashable` keys. Subscripting returns an optional, because the key might not be there.
 
-   Example:
-   ````swift
-   var colors: Set<String> = ["red", "green", "blue"]
-   colors.insert("yellow") // colors now contains "yellow"
-   ```
+```swift
+var ages: [String: Int] = ["Alice": 30, "Bob": 25, "Charlie": 22]
+ages["David"] = 28
+print(ages["Eve"] ?? 0)          // 0, key not present
+print(ages["Zoe", default: 0])   // 0, using the default subscript
+ages["Bob"] = nil                // removes "Bob"
+```
 
-3. **Dictionary**: Represents an unordered collection of key-value pairs. Each key in a dictionary is unique, and each key has an associated value.
+## Algorithms on sequences
 
-   Example:
-   ````swift
-   var ages: [String: Int] = ["Alice": 30, "Bob": 25, "Charlie": 22]
-   ages["David"] = 28 // ages now contains a new key-value pair: "David": 28
-   ```
+Most algorithms are defined on the `Sequence` and `Collection` protocols, so they work on arrays, sets, dictionaries, ranges and strings alike.
 
-## Utility Functions
+```swift
+let numbers = [3, 1, 4, 1, 5, 9, 2, 6, 5]
 
-Swift's standard library also includes numerous utility functions and algorithms that simplify common tasks. Some of these include:
+let ascending = numbers.sorted()          // [1, 1, 2, 3, 4, 5, 5, 6, 9]
+let descending = numbers.sorted(by: >)    // [9, 6, 5, 5, 4, 3, 2, 1, 1]
+let evens = numbers.filter { $0 % 2 == 0 } // [4, 2, 6]
+let squares = numbers.map { $0 * $0 }      // [9, 1, 16, 1, 25, 81, 4, 36, 25]
+let total = numbers.reduce(0, +)           // 36
+let firstBig = numbers.first { $0 > 4 }    // Optional(5)
+```
 
-1. **Sorting**: The `sorted()` function allows you to sort collections in ascending or descending order. You can also provide a custom comparator to define the sorting order.
+`sorted()` returns a new array; `sort()` sorts a `var` array in place. `compactMap` is `map` that drops `nil` results, which is handy for parsing:
 
-   Example:
-   ````swift
-   let numbers = [3, 1, 4, 1, 5, 9, 2, 6, 5]
-   let sortedNumbers = numbers.sorted() // [1, 1, 2, 3, 4, 5, 5, 6, 9]
-   ```
+```swift
+let raw = ["1", "two", "3"]
+let parsed = raw.compactMap { Int($0) } // [1, 3]
+```
 
-2. **Filtering**: The `filter()` function allows you to create a new collection containing only the elements that satisfy a given condition.
+## Gotchas
 
-   Example:
-   ````swift
-   let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-   let evenNumbers = numbers.filter { $0 % 2 == 0 } // [2, 4, 6, 8]
-   ```
+- `map`, `filter` and friends on an `Array` are eager and allocate a new array each time. For long chains over large data, use `.lazy` to avoid the intermediate arrays.
+- `Dictionary` and `Set` iteration order is not stable between runs, so don't rely on it in tests or output.
+- `String.count` is O(n) because it has to walk grapheme clusters. Use `isEmpty` instead of `count == 0`.
 
-3. **Mapping**: The `map()` function allows you to create a new collection by applying a transformation to each element of an existing collection.
+## Further reading
 
-   Example:
-   ````swift
-   let numbers = [1, 2, 3, 4, 5]
-   let squaredNumbers = numbers.map { $0 * $0 } // [1, 4, 9, 16, 25]
-   ```
-
-## Conclusion
-
-Swift's standard library is a powerful and essential part of the language, providing awide range of data types, collection types, and utility functions. These tools enable developers to build robust, efficient, and expressive applications for Apple platforms and beyond. By understanding the core components of the standard library and how to use them effectively, you can unlock the full potential of Swift as a programming language.
-
-To further explore Swift's standard library and dive deeper into its features, check out the official Swift documentation on [Apple's Developer website](https://developer.apple.com/documentation/swift/swift_standard_library). The more you familiarize yourself with the standard library, the more efficient and powerful your Swift code will become.
+- [Swift standard library reference](https://developer.apple.com/documentation/swift)
+- [The Swift Programming Language: Collection Types](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/collectiontypes/)
+- [The Swift Programming Language: Strings and Characters](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/stringsandcharacters/)

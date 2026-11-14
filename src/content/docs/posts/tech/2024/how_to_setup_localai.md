@@ -1,131 +1,120 @@
 ---
-title: "The Importance of Large Language Models and Privacy with Local AI (On-Device)"
+title: "On-device chat in the browser with Chrome's Prompt API and nlux"
 pubDate: "2024-07-06T12:00:00.000Z"
-description: "Explore the benefits of on-device AI for privacy-first applications using the nlux library and Google's built-in AI features. Learn how to leverage local AI capabilities for enhanced privacy, performance, and offline functionality."
+lastUpdated: 2026-11-14
+description: "Why running an LLM on the user's device helps privacy, and how to build a React chat UI with nlux that streams replies from Gemini Nano in Chrome."
 tags: ["AI", "On-Device AI", "Large Language Models", "Privacy", "nlux", "Google Gemini Nano", "Web Development", "Machine Learning", "Data Security", "Local AI"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://images.unsplash.com/photo-1525338078858-d762b5e32f2c"
 ---
 
-## The Importance of Large Language Models and Privacy with Local AI (On-Device)
+:::caution
+When this post was first written, Chrome's built-in model was only reachable through an experimental `window.ai` API (`window.ai.createTextSession()`) in Chrome Dev. That API is gone. Its replacement is the Prompt API's `LanguageModel` global, which the code below uses.
+:::
 
-## Introduction
+Most LLM features send the user's text to a server. That's fine for many apps, but not when the text is private (medical notes, internal documents, messages), when the user is offline, or when you don't want to pay per token. An on-device model avoids all three: the prompt never leaves the machine, it works without a network once the model is downloaded, and inference is free to you.
 
-Large Language Models (LLMs) have revolutionized the field of artificial intelligence by enabling machines to understand and generate human-like text. These models, like OpenAI's GPT-4, offer a wide array of applications, from content generation to complex problem-solving. However, the deployment of these models often raises concerns about privacy and data security, especially when they rely on server-side processing. This article explores the importance of LLMs, the benefits of on-device AI, and provides a practical guide to building privacy-first AI applications using the nlux library and Google’s built-in AI features.
+The trade-off is model size. Gemini Nano, the model Chrome ships, is far smaller than hosted models like GPT-4-class or Gemini Pro. It handles summarising, rewriting, classification and short chat well, and it's weaker at long reasoning and factual recall.
 
-### The Role of Large Language Models
+This post wires Chrome's Prompt API into [nlux](https://docs.nlkit.com/nlux), a React chat UI library, so you get a streaming chat window where every token is generated locally.
 
-LLMs are at the forefront of AI advancements, enabling applications across various domains such as healthcare, finance, education, and customer service. Their ability to understand context, generate coherent responses, and perform intricate tasks makes them invaluable. However, deploying these models typically requires significant computational resources, often hosted on powerful servers. This server-side approach, while effective, comes with several drawbacks:
+## Chrome's built-in AI APIs
 
-- **Privacy Concerns**: Sensitive data transmitted to servers can be vulnerable to breaches.
-- **Latency**: Round-trip times to and from the server can introduce delays.
-- **Internet Dependency**: Server-side models require a reliable internet connection.
+Chrome downloads Gemini Nano once and shares it across sites, so each web app doesn't have to ship its own model. Several task APIs sit on top of it. As of this update:
 
-### Advantages of On-Device AI
+- **Translator, Language Detector and Summarizer APIs**: stable since Chrome 138, for web pages and extensions.
+- **Prompt API** (free-form prompts, which is what a chat needs): available to web pages from Chrome 148 and to extensions from Chrome 138.
+- **Writer, Rewriter and Proofreader APIs**: developer trial.
 
-On-device AI, or local AI, mitigates these issues by processing data directly on the user's device. This approach offers several key benefits:
+The model has hardware requirements: desktop Chrome on Windows 10/11, macOS 13+, Linux or a Chromebook Plus. You also need at least 22 GB free disk space, and either a GPU with more than 4 GB of VRAM or a CPU with 16 GB of RAM and 4 cores. Chrome on Android and iOS isn't supported yet, so plan a fallback.
 
-- **Enhanced Privacy**: Data remains on the device, reducing the risk of breaches.
-- **Improved Performance**: Local processing can reduce latency and provide faster responses.
-- **Offline Capabilities**: AI functionalities remain available even without internet access.
-
-### Getting Started with nlux
-
-The nlux library simplifies the integration of on-device AI into web applications. It provides tools to leverage local AI capabilities, ensuring data privacy and efficient performance. Here’s a step-by-step guide to get started with nlux and implement AI-powered features in your application.
-
-#### Installation
-
-First, install the nlux library and its dependencies:
+## Install nlux
 
 ```bash
-npm install @nlux/react
-npm install @nlux/themes
+npm install @nlux/react @nlux/themes
 ```
 
-#### Setting Up the Chat Component
+These examples use nlux 2.17.1. Its React package declares a peer dependency on React 18. For TypeScript types for `LanguageModel`, also install `@types/dom-chromium-ai` as a dev dependency.
 
-Create a new React component to integrate the AI chat functionality using nlux.
+## A streaming adapter for Gemini Nano
 
-```javascript
-import { useMemo } from 'react';
-import { AiChat } from '@nlux/react';
+nlux talks to any backend through an adapter. For streaming, the adapter receives the user's message and an observer. You call `observer.next()` for each chunk of text, then `observer.complete()` or `observer.error()`.
+
+```ts
+// geminiNano.ts
+import type { StreamingAdapterObserver } from '@nlux/react';
+
+let session: LanguageModel | undefined;
+
+export async function streamFromGeminiNano(
+  message: string,
+  observer: StreamingAdapterObserver<string>,
+) {
+  try {
+    if (!('LanguageModel' in self)) {
+      throw new Error('This browser does not support the Prompt API.');
+    }
+    if ((await LanguageModel.availability()) === 'unavailable') {
+      throw new Error('Gemini Nano is not available on this device.');
+    }
+
+    // One session for the whole conversation, so the model keeps context
+    // between messages. The first create() may trigger the model download.
+    session ??= await LanguageModel.create();
+
+    for await (const chunk of session.promptStreaming(message)) {
+      observer.next(chunk);
+    }
+    observer.complete();
+  } catch (err) {
+    observer.error(err instanceof Error ? err : new Error(String(err)));
+  }
+}
+```
+
+`LanguageModel.availability()` returns `"unavailable"`, `"downloadable"`, `"downloading"` or `"available"`. If it's `"downloadable"`, the first `create()` call starts a multi-gigabyte download. Chrome requires a user gesture for that, which a click on the chat's send button provides. `create()` also accepts a `monitor` callback for showing download progress.
+
+## The chat component
+
+`useAsStreamAdapter` turns that function into an nlux adapter:
+
+```tsx
+// Chat.tsx
+import { AiChat, useAsStreamAdapter } from '@nlux/react';
 import '@nlux/themes/nova.css';
-import { streamAdapter } from '../../utils/adapter';
-import { personas } from '../persona';
-import withAI from './withAi';
+import { streamFromGeminiNano } from './geminiNano';
 
-function Chat() {
-  const adapter = useMemo(() => streamAdapter, []);
+export default function Chat() {
+  const adapter = useAsStreamAdapter(streamFromGeminiNano, []);
 
   return (
     <AiChat
       adapter={adapter}
-      personaOptions={personas}
+      personaOptions={{
+        assistant: {
+          name: 'Gemini Nano',
+          avatar: 'https://example.com/assistant-avatar.png',
+          tagline: 'Runs entirely on your device',
+        },
+      }}
       displayOptions={{ colorScheme: 'dark' }}
     />
   );
 }
-
-export default withAI(Chat);
 ```
 
-#### Streaming AI Responses with window.ai
+My demo of this used to live at localai.space; that site is no longer online.
 
-To enable streaming AI responses, integrate `window.ai` within the nlux chat adapter.
+## Gotchas
 
-```javascript
-import { ChatAdapter, StreamingAdapterObserver } from '@nlux/react';
+- **Feature-detect and fall back.** Most visitors won't have a supported browser and device. Decide up front whether the fallback is a server-side model (and tell the user their text will leave the device) or simply hiding the feature.
+- **"Local" is only as private as the rest of your app.** The prompt stays on the device, but if you log conversations to your analytics or sync chat history to a server, you've undone the benefit.
+- **The context window is small.** A long conversation in one session will eventually exceed it. Call `session.destroy()` and start a new session when that happens, or when the user starts a new chat.
+- **Expect different output from hosted models.** Prompts tuned for a large hosted model often need rewriting for a small one. Keep requests short and specific.
 
-export const streamAdapter: ChatAdapter = {
-    streamText: async (
-        prompt: string,
-        observer: StreamingAdapterObserver,
-    ) => {
-        const canCreate = await window.ai.canCreateTextSession();
+## Further reading
 
-        if (canCreate !== "no") {
-            const session = await window.ai.createTextSession();
-            const stream = session.promptStreaming(prompt);
-            for await (const chunk of stream) {
-                observer.next(chunk);
-            }
-        }
-
-        observer.complete();
-    },
-};
-```
-
-To use this code, you will need to install a version of chrome that has Google Gemini Nano enabled (at this time of writing you will need chrome dev). To preview this logic you can go to [https://localai.space/chat](localai.space).
-
-### Exploring Google’s Built-In AI
-
-Google is developing web platform APIs and browser features to integrate AI models directly into browsers, including the Gemini Nano model. This approach aims to make AI tasks more accessible and efficient by leveraging local device capabilities.
-
-#### Benefits of Built-In AI
-
-1. **Ease of Deployment**: The browser manages model updates and optimizations, reducing developer overhead.
-2. **Hardware Acceleration**: The AI runtime optimizes performance using available hardware, such as GPUs or NPUs.
-3. **Local Processing**: Sensitive data is processed locally, enhancing privacy.
-4. **Snappy User Experience**: On-device AI reduces latency, providing near-instant results.
-5. **Offline AI Usage**: AI functionalities remain available even without internet connectivity.
-
-### Implementing Google’s Built-In AI
-
-To utilize Google's built-in AI features, developers can access task APIs for various AI-powered functionalities, such as summarization and translation. These APIs are designed to run inference against Gemini Nano, a highly efficient LLM optimized for local execution.
-
-#### Early Preview and Feedback
-
-Google offers an early preview program to gather feedback and refine these APIs. Developers are encouraged to join this program to test in-progress features and contribute to the standardization process.
-
-### Conclusion
-
-The shift towards on-device AI represents a significant advancement in addressing privacy concerns and improving user experience. By leveraging libraries like nlux and upcoming browser-integrated AI features from Google, developers can build powerful, privacy-first AI applications that operate efficiently on local devices. Embracing these technologies ensures that AI continues to evolve in a manner that prioritizes user data security and accessibility.
-
-### Additional Resources
-
-- [nlux Documentation](https://nlux.dev/docs)
-- [Google AI JavaScript SDK](https://developers.google.com/ai/javascript)
-- [Join the Chrome AI Developer Public Announcements Group](https://groups.google.com/a/chromium.org/g/chrome-ai-developer-public)
-
-By integrating these tools and approaches, developers can harness the power of LLMs while maintaining a strong commitment to privacy and user experience.
+- [Built-in AI APIs and their status](https://developer.chrome.com/docs/ai/built-in-apis) (Chrome for Developers)
+- [The Prompt API](https://developer.chrome.com/docs/ai/prompt-api)
+- [nlux documentation](https://docs.nlkit.com/nlux)
+- [Chrome AI developer public announcements group](https://groups.google.com/a/chromium.org/g/chrome-ai-developer-public)

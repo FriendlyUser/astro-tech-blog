@@ -1,204 +1,121 @@
 ---
-tags: ['python', 'tortoise-tts', 'ffmpeg']
-title: Using python to generate audio files from youtube
-description: A simple demonstrating how to use ffmpeg and ytp-dl to generate audio clips from youtube videos
+tags: ['python', 'tortoise-tts', 'ffmpeg', 'youtube']
+title: Cutting voice clips from YouTube videos with yt-dlp and ffmpeg
+description: A Python script that downloads a YouTube video's audio with yt-dlp and cuts it into short WAV clips with ffmpeg, for use as Tortoise TTS voice samples.
 pubDate: Fri, 29 November 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1693067648.png
 ---
-Training data is crucial in machine learning as it is used to train models to make accurate predictions on new, unseen data. The quality and quantity of the training data directly affect the performance of the machine learning model.
+Voice-cloning models like [Tortoise TTS](https://github.com/neonbjb/tortoise-tts) need a few short, clean recordings of the target voice. Its [voice customization guide](https://github.com/neonbjb/tortoise-tts/blob/main/voice_customization_guide.md) asks for at least three clips of about 10 seconds each, saved as floating-point WAV at 22,050 Hz. This script builds those clips from a YouTube video: it downloads the audio with yt-dlp, then cuts the time ranges listed in a JSON config with ffmpeg.
 
-Machine learning algorithms learn from patterns in data, and the more data they have to learn from, the better they can recognize and adapt to patterns. The training data must be representative of the real-world scenarios that the model will encounter so that the model can learn to make accurate predictions on new, unseen data.
+The original version (adapted from the [YoutubeDownloaderSubber](https://huggingface.co/spaces/FriendlyUser/YoutubeDownloaderSubber/blob/main/app.py) Space) picked a video format by hard-coded YouTube format IDs, streamed it through the `ffmpeg-python` wrapper, then cut clips. It had a few bugs:
 
-Moreover, training data should be labeled with the correct outcomes to enable supervised learning, which is a popular type of machine learning where the algorithm learns from labeled data to make predictions. In unsupervised learning, where the algorithm learns from unlabeled data to identify patterns and relationships, the training data is still important to create an accurate model.
+- `parse_metadata()` could hit `UnboundLocalError` when no format matched, and it picked the *lowest* matching format ID rather than the best quality.
+- Hard-coded format IDs break whenever YouTube changes the formats it serves.
+- Clips were cut with `-t end`, but `-t` is a *duration*, so a clip from 30 s to 40 s came out 40 seconds long.
+- The cleanup loop at the end had an empty `if` body, which is a syntax error.
 
-In summary, high-quality and representative training data is essential for creating accurate and reliable machine learning models.
+The version below asks yt-dlp for the best audio stream and converts it to WAV in one step, then calls the `ffmpeg` CLI directly with `subprocess`.
 
+## Setup
 
-```python 
- # Copied from https://huggingface.co/spaces/FriendlyUser/YoutubeDownloaderSubber/blob/main/app.py
-import ffmpeg
-from yt_dlp import YoutubeDL
+You need ffmpeg on your `PATH` and a recent yt-dlp. Since yt-dlp 2025.11.12, YouTube downloads also expect an external JavaScript runtime; [Deno](https://deno.com/) is the one yt-dlp enables by default. The `default` extra installs the `yt-dlp-ejs` component that talks to the runtime:
+
+```bash
+pip install -U "yt-dlp[default]"
+```
+
+## Config
+
+Each clip has a start and end time in seconds:
+
+```json
+{
+  "url": "https://www.youtube.com/watch?v=21X5lGlDOfg",
+  "name": "speaker",
+  "clips": [
+    { "start": 30, "end": 40, "name": "speaker" },
+    { "start": 95, "end": 105, "name": "speaker" },
+    { "start": 210, "end": 220, "name": "speaker" }
+  ]
+}
+```
+
+## Script
+
+```python
 import argparse
 import json
-import os
-from subprocess import PIPE, run
+import subprocess
+from pathlib import Path
 
-audio_folder = "audio"
-youtube_livestream_codes = [
-    91,
-    92,
-    93,
-    94,
-    95,
-    96,
-    300,
-    301,
-]
-youtube_mp4_codes = [
-    298,
-    18,
-    22,
-    140,
-    133,
-    134
-]
-
-def second_to_timecode(x: float) -> str:
-    hour, x = divmod(x, 3600)
-    minute, x = divmod(x, 60)
-    second, x = divmod(x, 1)
-    millisecond = int(x * 1000.)
-
-    return '%.2d:%.2d:%.2d,%.3d' % (hour, minute, second, millisecond) 
- ```
-
-This code defines a function `second_to_timecode()` that takes a floating-point number `x` as input and returns a string representing the time in the format `hh:mm:ss,mmm`. The function breaks down the input `x` into hours, minutes, seconds, and milliseconds and formats them as a timecode. The purpose of this function is likely to convert timestamps used in video/audio files into a human-readable timecode format.
+from yt_dlp import YoutubeDL
 
 
-```python 
- # format float in 00:00:30 format
-def format_timecode(x: float) -> str:
-    hour, x = divmod(x, 3600)
-    minute, x = divmod(x, 60)
-    second, x = divmod(x, 1)
-    millisecond = int(x * 1000.)
-
-    return '%.2d:%.2d:%.2d' % (hour, minute, second)
-
-
-def get_video_metadata(video_url: str = "https://www.youtube.com/watch?v=21X5lGlDOfg&ab_channel=NASA")-> dict:
-    with YoutubeDL({'outtmpl': '%(id)s.%(ext)s'}) as ydl:
-        info_dict = ydl.extract_info(video_url, download=False)
-        video_title = info_dict.get('title', None)
-        uploader_id = info_dict.get('uploader_id', None)
-        print(f"[youtube] {video_title}: {uploader_id}")
-    return info_dict
+def download_audio(url: str, name: str, workdir: Path) -> Path:
+    """Download the best audio stream and convert it to WAV."""
+    opts = {
+        "format": "bestaudio/best",
+        "outtmpl": str(workdir / f"{name}.%(ext)s"),
+        "postprocessors": [
+            {"key": "FFmpegExtractAudio", "preferredcodec": "wav"},
+        ],
+    }
+    with YoutubeDL(opts) as ydl:
+        ydl.download([url])
+    return workdir / f"{name}.wav"
 
 
-def parse_metadata(metadata) -> str:
-    """
-    Parse metadata and send to discord.
-    After a video is done recording, 
-    it will have both the livestream format and the mp4 format.
-    """
-    # send metadata to discord
-    formats = metadata.get("formats", [])
-    # filter for ext = mp4
-    mp4_formats = [f for f in formats if f.get("ext", "") == "mp4"]
-    try:
-        format_ids = [int(f.get("format_id", 0)) for f in mp4_formats]
-        video_entries = sorted(set(format_ids).intersection(youtube_mp4_codes))
-
-        if len(video_entries) > 0:
-            # use video format id over livestream id if available
-            selected_id = video_entries[0]
-    except Exception as e:
-        print(e)
-        selected_id = mp4_formats[0].get("format_id")
-
-
-    return selected_id 
- ```
-
-This code defines three functions:
-
-1. `format_timecode()` which takes a floating-point number `x` as input and returns a string representing the time in the format `hh:mm:ss`.
-2. `get_video_metadata()` which takes a YouTube video URL as input and returns a dictionary containing various metadata information about the video such as the video title and uploader ID.
-3. `parse_metadata()` which takes the metadata dictionary as input, filters for mp4 formats, and returns the format ID of the mp4 video format to be used. If there are multiple mp4 format options available, the function selects the one with the highest quality. The purpose of this function is likely to retrieve the necessary information from the metadata dictionary to download the desired mp4 format of the YouTube video.
-
-```python 
- def get_video(url: str, config: dict):
-    """
-    Get video from start time.
-    """
-    # result = subprocess.run()
-    # could delay start time by a few seconds to just sync up and capture the full video length
-    # but would need to time how long it takes to fetch the video using youtube-dl and other adjustments and start a bit before
-    filename = config.get("filename", "livestream01.mp4")
-    end = config.get("end", "00:15:00")
-    overlay_file = ffmpeg.input(filename)
-    (
-        ffmpeg
-        .input(url, t=end)
-        .output(filename)
-        .run()
+def cut_clip(source: Path, start: float, end: float, out: Path) -> None:
+    """Cut [start, end) seconds into a mono, 22.05 kHz, 32-bit float WAV."""
+    subprocess.run(
+        [
+            "ffmpeg", "-y",
+            "-i", str(source),
+            "-ss", str(start),
+            "-to", str(end),
+            "-ac", "1",
+            "-ar", "22050",
+            "-c:a", "pcm_f32le",
+            str(out),
+        ],
+        check=True,
     )
 
-def get_file_from_yurl(data: dict):
-    for f in os.listdir():
-        if f.endswith(".mp4"):
-            os.remove(f)
-    url = data.get("url", "https://www.youtube.com/watch?v=f0UB06v7yLY&ab_channel=CNN")
-    metadata = get_video_metadata(url)
-    print(metadata)
-    selected_id = parse_metadata(metadata)
-    formats = metadata.get("formats", [])
-    selected_format = [f for f in formats if f.get("format_id", "") == str(selected_id)][0]
-    format_url = selected_format.get("url", "")
-    filename = data.get("name", "trump") + ".mp4"
-    get_video(format_url, {"filename": f"{filename}"})
-    return filename
 
-# make clips from videos
- 
- ```
+def main(cfg: dict) -> None:
+    out_dir = Path("audio")
+    out_dir.mkdir(exist_ok=True)
 
-This code defines two functions:
+    source = download_audio(cfg["url"], cfg.get("name", "source"), Path("."))
+    try:
+        for index, clip in enumerate(cfg.get("clips", [])):
+            out = out_dir / f"{clip.get('name', 'clip')}_{index}.wav"
+            cut_clip(source, clip["start"], clip["end"], out)
+    finally:
+        source.unlink(missing_ok=True)
 
-1. `get_video()` which takes a YouTube video URL and a dictionary containing configuration information as input. The function uses `ffmpeg` to download the video starting from the beginning and ending at the specified time in the configuration dictionary. The resulting video is saved under the filename specified in the configuration dictionary.
-2. `get_file_from_yurl()` which takes a dictionary containing information about a YouTube video as input. The function retrieves the necessary metadata information about the video using `get_video_metadata()` and selects the appropriate mp4 format using `parse_metadata()`. The function then downloads the video using `get_video()` and returns the filename of the resulting video file.
-
-The purpose of these functions is likely to retrieve specific clips from YouTube videos based on user input and save them as mp4 files.
-
-
-```python 
- def main(args):
-    filename = get_file_from_yurl(args)
-    # perform clipping with ffmpeg
-    # ffmpeg -i input.mp4 -ss 00:00:30 -to 00:00:40 -c copy output.mp4
-    # remove all .mp4 in root directory
-    # iterate across clips
-    clips = args.get("clips", [])
-    for index, clip in enumerate(clips):
-        start = clip.get("start", 0)
-        end = clip.get("end", 10)
-        name = clip.get("name", "clip")
-        #  ffmpeg -i input.mp4 -ss 00:05:20 -t 00:10:00 -c:v copy -c:a copy output1.mp4
-        trim_result = run(["ffmpeg", "-i", filename, "-ss", format_timecode(start), "-t", format_timecode(end), "-c:v", "copy", "-c:a", "copy", f"{name}_{index}.mp4"])
-        # convert to mp3
-        # use subprocess to run ffmpeg
-        # ffmpeg -i video.mp4 -b:a 192K -vn music.mp3
-        result = run(["ffmpeg", "-i", f"{name}_{index}.mp4", "-ac", "2", "-f", "wav", f"{name}_{index}.wav"])
 
 if __name__ == "__main__":
-    # argparser to get url
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cfg", type=str, help="Youtube URL", default="cfg/trump.json")
+    parser = argparse.ArgumentParser(description="Cut WAV clips from a YouTube video")
+    parser.add_argument("--cfg", default="cfg/clips.json", help="Path to the JSON config")
     args = parser.parse_args()
-    # read file from args.cfg
-    with open (args.cfg, "r") as f:
-        cfg = json.load(f)
-    main(cfg)
 
-    for f in os.listdir():
-        if f.endswith(".mp4"):
-            os.remove(f)
-        if f.endswith(".wav"):
-            # move to audio 
- ```
+    with open(args.cfg, "r", encoding="utf-8") as f:
+        main(json.load(f))
+```
 
-It looks like the code is defining the `main()` function, which is responsible for downloading and processing a YouTube video, splitting it into clips, and converting them to WAV format.
+Run it with `python make_clips.py --cfg cfg/clips.json`. The clips end up in `audio/` as `speaker_0.wav`, `speaker_1.wav`, and so on.
 
-The `main()` function takes a single argument `args`, which is a dictionary containing various configuration options such as the URL of the YouTube video to download and clip information.
+## Notes
 
-The `get_file_from_yurl()` function is called to download the video from the URL specified in the configuration file. The `parse_metadata()` function is used to select the best video format for downloading, and `get_video()` function is called to download the video. The downloaded video is then used to generate the clips using `ffmpeg`.
-
-After generating the clips, each clip is converted to WAV format using `ffmpeg`. The resulting WAV files are saved to the current working directory.
-
-Finally, all the temporary `.mp4` and `.wav` files generated during the process are deleted.
-
-
+- `-ss` and `-to` are placed after `-i`, so ffmpeg decodes from the start and cuts exactly at the requested times. For a long video, moving both `-ss` and `-to` before `-i` seeks faster.
+- Pick ranges where only the target speaker is talking, with no music or crowd noise.
+- Check that you're allowed to download the video under YouTube's terms and that you have the speaker's consent to clone their voice.
 
 ## References
+
 - https://github.com/FriendlyUser/Pirates-Game/tree/master
+- https://github.com/yt-dlp/yt-dlp
+- https://github.com/neonbjb/tortoise-tts/blob/main/voice_customization_guide.md

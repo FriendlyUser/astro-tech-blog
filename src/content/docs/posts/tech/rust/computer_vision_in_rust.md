@@ -1,141 +1,118 @@
 ---
-title: "Jumpstarting Computer Vision in Rust: A Beginner's Guide"
-description: Computer vision is important because it allows machines to interpret and understand visual information in a way that is similar to how humans do. In this article we explore how to use OpenCV in Rust.
+title: "Computer vision in Rust: Canny edge detection with the opencv crate"
+description: Install OpenCV and the opencv crate, load an image, and run Gaussian blur and Canny edge detection from Rust, with notes on how the bindings map OpenCV's API.
 pubDate: Saturday, 24 November 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/235824961.png'
 ---
 
+Computer vision is about getting structured information out of images: where the edges are, which
+pixels belong to an object, whether a face is present. [OpenCV](https://opencv.org/) is the
+standard C++ library for it, and the [`opencv`](https://crates.io/crates/opencv) crate provides
+Rust bindings generated from OpenCV's headers. This post sets the crate up and uses it for Canny
+edge detection.
 
-Computer vision is important because it allows machines to interpret and understand visual information in a way that is similar to how humans do. With the increasing availability of digital cameras and sensors, there is an abundance of visual data being generated every day. Computer vision enables machines to automatically analyze and make sense of this data, which has numerous practical applications in various industries. For example, computer vision is used in healthcare for medical image analysis, in autonomous vehicles for object detection and recognition, in security and surveillance for facial recognition, and in manufacturing for quality control and inspection. Overall, computer vision is a crucial tool for enabling machines to understand and interact with the visual world in a way that is useful and beneficial to humans.
+## Installing OpenCV and the crate
 
+The crate does not bundle OpenCV. You need OpenCV 4.x (or 5.x) installed, plus Clang, which the
+crate uses to generate bindings at build time. From the crate's
+[install guide](https://github.com/twistedfall/opencv-rust/blob/master/INSTALL.md):
 
-Here are the basic steps to use OpenCV in Rust:
+```sh
+# Debian / Ubuntu
+sudo apt install libopencv-dev clang libclang-dev
 
-1. Install OpenCV. This can be done through:
+# macOS
+brew install opencv
 
-- Your system's package manager (apt, brew, etc.)
-- Building from source
-- Using a wrapper like opencv-rust which builds OpenCV for you
+# Windows (Chocolatey); also set OPENCV_LINK_LIBS, OPENCV_LINK_PATHS and OPENCV_INCLUDE_PATHS
+choco install llvm opencv
+```
 
-2. Install the opencv crate which provides Rust bindings to OpenCV. You can add it to your Cargo.toml:
+Then add the crate. The examples were checked against version 0.102.0:
 
 ```toml
 [dependencies]
-opencv = "0.11.2"
+opencv = "0.102"
 ```
 
-3. Add OpenCV to your crate by importing it:
+The first build is slow because the bindings are generated for whatever OpenCV version is installed.
+
+## How the bindings map OpenCV
+
+- OpenCV modules become Rust modules: `cv::imread` is `opencv::imgcodecs::imread`,
+  `cv::GaussianBlur` is `opencv::imgproc::gaussian_blur`, `cv::Canny` is `opencv::imgproc::canny`.
+- Function names are converted to snake_case. Every call returns `opencv::Result<T>`, so C++
+  exceptions become `Err` values you handle with `?`.
+- C++ default arguments don't exist in Rust. Each function with defaults also has a `_def` variant
+  that takes only the required arguments (`canny_def`, `gaussian_blur_def`, `imwrite_def`). The `_def`
+  variants also keep your code compiling when newer OpenCV versions add optional parameters.
+- Methods on `Mat` and other classes come from traits, so `use opencv::prelude::*;` is needed.
+- Core types live in `opencv::core`: `Mat` (images and matrices), `Size`, `Point`, `Rect`
+  (with public `x`, `y`, `width`, `height` fields) and `Scalar` (four `f64` values, used for colours
+  in BGR order, e.g. `Scalar::new(0.0, 255.0, 0.0, 0.0)` for green).
+
+## Canny edge detection
+
+The Canny algorithm (John F. Canny, 1986) finds edges in four steps:
+
+1. Smooth the image with a Gaussian filter to suppress noise.
+2. Compute the intensity gradient (magnitude and direction) with Sobel filters.
+3. Apply non-maximum suppression, keeping only pixels that are local maxima along the gradient
+   direction, which thins edges to one pixel.
+4. Apply hysteresis thresholding: pixels above the high threshold are strong edges, pixels below
+   the low threshold are discarded, and pixels in between are kept only if they connect to a strong
+   edge.
+
+OpenCV's `Canny` function does steps 2 to 4 internally, so you only blur the image first and pick
+the two thresholds:
 
 ```rust
-extern crate opencv;
-```
+use opencv::{core::Size, imgcodecs, imgproc, prelude::*};
 
-4. Load the OpenCV library. This is done with:
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // imread returns an empty Mat (not an Err) if the file can't be read
+    let img = imgcodecs::imread("input.jpg", imgcodecs::IMREAD_GRAYSCALE)?;
+    if img.empty() {
+        return Err("could not read input.jpg".into());
+    }
 
-```rust
-opencv::init().unwrap(); 
-```
+    // 1. Smooth with a 5x5 Gaussian kernel (sigma derived from the kernel size)
+    let mut blurred = Mat::default();
+    imgproc::gaussian_blur_def(&img, &mut blurred, Size::new(5, 5), 0.0)?;
 
-5. You can now call OpenCV functions. For example, to load an image:
+    // 2-4. Gradients, non-maximum suppression and hysteresis thresholding
+    let mut edges = Mat::default();
+    imgproc::canny_def(&blurred, &mut edges, 50.0, 150.0)?;
 
-```rust
-let mut img = cv::imread("path/to/image.jpg", cv::IMREAD_COLOR).unwrap();
-```
-
-6. OpenCV functions operate on OpenCV types like:
-
-- Mat for images
-- Rect for rectangles 
-- Point for points 
-- Scalar for colors
-
-These can be created from Rust types and vice versa. For example:
-
-```rust
-let rect = Rect::new(10, 20, 100, 50); // OpenCV Rect
-let rust_rect = rect.to_rust(); // Rust (i32, i32, u32, u32) 
-
-let scalar = Scalar::new(0.0, 255.0, 0.0, 0.0); // OpenCV color
-let (b, g, r, a) = scalar.to_rust(); // Rust (f64, f64, f64, f64)
-```
-
-7. You can now perform OpenCV operations on these types like image filtering, drawing shapes, face detection, etc.
-
-
-For example we can implement the canny edge detection algorithm in Rust:
-
-Canny edge detection is a computer vision algorithm used to detect edges in images. It was developed by John F. Canny in 1986 and is widely used in various applications such as object recognition, image segmentation, and feature extraction.
-
-The canny edge detection algorithm works by first applying a Gaussian filter to the image to smooth out any noise. Then, the gradient of the image is calculated to determine the regions of the image where the intensity changes the most. These regions are likely to be edges.
-
-After the gradient is calculated, non-maximum suppression is applied to thin out the edges to a single pixel width. This helps to remove any noise and makes the edges more precise.
-
-The final step is to apply hysteresis thresholding to the image. This involves setting two threshold values: a high threshold and a low threshold. Any edges above the high threshold are considered strong edges, while any edges below the low threshold are considered weak edges. Any weak edges that are adjacent to strong edges are then included in the final edge map.
-
-```rust
-extern crate opencv;
-
-fn main() {
-    // Load the OpenCV library 
-    opencv::init().unwrap();
-
-    // Read the input image
-    let mut img = cv::imread("input.jpg", cv::IMREAD_GRAYSCALE).unwrap();
-
-    // Apply Gaussian blur to smooth the image and remove noise
-    let mut blurred = img.clone();
-    cv::GaussianBlur(&mut blurred, &mut blurred, (5, 5), 0.0).unwrap();
-
-    // Find the intensity gradients of the image
-    let mut grad_x = Mat::default();
-    let mut grad_y = Mat::default();
-    cv::Scharr(&blurred, &mut grad_x, ddepth, 1, 0, src_type, 1, 0, border_type);
-    cv::Scharr(&blurred, &mut grad_y, ddepth, 0, 1, src_type, 1, 0, border_type);
-
-    // Calculate the gradient magnitude and direction
-    let mut grad_mag = Mat::default();
-    let mut grad_dir = Mat::default();
-    cv::cartToPolar(&grad_x, &grad_y, &mut grad_mag, &mut grad_dir, true);
-
-    // Apply non-maximum suppression to the gradient magnitude
-    let mut suppressed = Mat::default();
-    cv::Canny(&grad_mag,
-               &mut suppressed,           
-               grad_thresholds.low_threshold, 
-               grad_thresholds.high_threshold,
-               aperture_sz, 
-               L2gradient);
-
-    // Apply double thresholding to gradients
-    let mut contours = Mat::default();
-    cv::Canny(&suppressed, 
-               &mut contours, 
-               grad_thresholds.low_threshold,
-               grad_thresholds.high_threshold);
-              
-    // Find contours and draw edges            
-    let mut hierarchy = Mat::default();
-    let contours = contours.to_vec().unwrap();
-    cv::findContours(&contours, &mut hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
-    cv::drawContours(&img, contours, -1, Scalar::new(255.0, 0.0, 0.0, 0.0), 2, 8, &hierarchy, 100, Point::default());
-
-    // Show the result
-    cv::imshow("Edges", &img).unwrap();
-    cv::waitKey(0).unwrap();
+    imgcodecs::imwrite_def("edges.png", &edges)?;
+    println!("wrote edges.png ({}x{})", edges.cols(), edges.rows());
+    Ok(())
 }
 ```
 
-Explanation:
+Put an `input.jpg` in the project directory and run `cargo run`. The output is a black image with
+white one-pixel edges.
 
-1. Load and smooth the input image using Gaussian blur
-2. Calculate the intensity gradients of the image using Scharr operators. This gives us the gradient magnitude and direction.
-3. Apply non-maximum suppression to the gradient magnitude to thin out edges 
-4. Apply double thresholding to the gradient magnitude to detect edge contours
-5. Find contours and draw them on the original image to get the final result
-6. Display the output image
+`canny_def` uses OpenCV's defaults: a 3x3 Sobel aperture and the L1 gradient norm. Call
+`imgproc::canny` instead to set `aperture_size` or `l2_gradient`.
 
+## Tuning and next steps
 
+- **Thresholds.** The 50/150 pair is a starting point; a high-to-low ratio of 2:1 to 3:1 is the
+  usual advice. Raise both for fewer, stronger edges; lower them to pick up faint ones.
+- **Viewing results.** `opencv::highgui::imshow("Edges", &edges)?` followed by
+  `highgui::wait_key(0)?` opens a window, if your OpenCV build includes the highgui module.
+- **Outlines.** To turn edges into shapes, pass the edge image to `imgproc::find_contours` and draw
+  them with `imgproc::draw_contours`.
+- **Build problems.** Most failures are the crate not finding OpenCV or libclang; the
+  [troubleshooting guide](https://github.com/twistedfall/opencv-rust/blob/master/TROUBLESHOOTING.md)
+  covers the common ones.
 
-Overall, canny edge detection is a powerful tool for detecting edges in images, and it is widely used in various computer vision applications.
+## Further reading
+
+- [opencv crate on docs.rs](https://docs.rs/opencv)
+- [opencv-rust examples](https://github.com/twistedfall/opencv-rust/tree/master/examples)
+- [OpenCV Canny tutorial](https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html)

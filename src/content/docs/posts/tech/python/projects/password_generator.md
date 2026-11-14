@@ -1,72 +1,99 @@
 ---
 tags: ['python', 'tortoise_tts']
-title: "How to Create a Password Generator in Python"
-description: Creating a password generator is a useful programming exercise that can teach you about random number generation, string manipulation, and graphical user interface (GUI) design. In this article, we'll go through the steps to create a password generator in Python and then show you how to create a simple GUI using the tkinter library.
+title: Build a password generator in Python with secrets and tkinter
+description: Generate random passwords with Python's secrets module, then wrap the generator in a small tkinter window with a length field and a button.
 pubDate: Fri, 15 April 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3750534419.png"
 ---
 
+A password generator is a small project that covers two things: picking random characters securely, and building a basic GUI. Everything here uses the standard library. On some Linux distributions, tkinter is a separate package (for example `python3-tk` on Debian/Ubuntu).
 
-Creating a password generator is a useful programming exercise that can teach you about random number generation, string manipulation, and graphical user interface (GUI) design. In this article, we'll go through the steps to create a password generator in Python and then show you how to create a simple GUI using the tkinter library.
+## Generate a random password
 
-## Step 1: Generating a Random Password
-The first step in creating a password generator is to write a function that can generate a random password. Here is an example function that generates a password of a specified length:
+Use the `secrets` module, not `random`, for anything security-related. `random` is a predictable pseudo-random generator meant for simulations. The [Python docs](https://docs.python.org/3/library/random.html) warn against using it for security. `secrets.choice` draws from the operating system's cryptographically secure source.
 
 ```python
-import random
+import secrets
 import string
 
-def generate_password(length):
+
+def generate_password(length: int) -> str:
     chars = string.ascii_letters + string.digits + string.punctuation
-    password = ''.join(random.choice(chars) for i in range(length))
-    return password
+    return "".join(secrets.choice(chars) for _ in range(length))
+
+
+print(generate_password(16))
 ```
 
-This function first creates a string called chars that contains all the characters that can be used in a password. It then generates a password by selecting length random characters from this string using the random.choice function. Finally, it returns the password as a string.
+`string.punctuation` includes characters such as quotes and backslashes, which some sites reject. Remove it from `chars` if that is a problem.
 
-## Step 2: Creating a GUI
-Now that we have a function to generate passwords, we can create a GUI that allows users to specify the length of the password and generate a new password with the click of a button. To do this, we'll use the tkinter library, which is included with Python.
-
-Here's an example GUI that includes a label, a text entry widget, a button, and another label to display the generated password:
+This picks each character independently, so a short password might have no digits or no symbols. If a site requires at least one of each, regenerate until the password meets the rule. The `secrets` docs show this pattern:
 
 ```python
+def generate_strong_password(length: int = 16) -> str:
+    chars = string.ascii_letters + string.digits + string.punctuation
+    while True:
+        password = "".join(secrets.choice(chars) for _ in range(length))
+        if (any(c.islower() for c in password)
+                and any(c.isupper() for c in password)
+                and any(c.isdigit() for c in password)
+                and any(c in string.punctuation for c in password)):
+            return password
+```
+
+## Add a tkinter GUI
+
+The window has an entry for the length, a button, and a label that shows the result. The button handler needs its own name, `on_generate`. If you named it `generate_password`, it would replace the function above and call itself forever.
+
+```python
+import secrets
+import string
 import tkinter as tk
 
-def generate_password():
-    length = int(length_entry.get())
-    password = generate_password(length)
-    password_label.config(text=password)
 
-# Create the main window
+def generate_password(length: int) -> str:
+    chars = string.ascii_letters + string.digits + string.punctuation
+    return "".join(secrets.choice(chars) for _ in range(length))
+
+
+def on_generate():
+    try:
+        length = int(length_entry.get())
+    except ValueError:
+        password_var.set("Enter a whole number")
+        return
+    if length < 1:
+        password_var.set("Length must be at least 1")
+        return
+    password_var.set(generate_password(length))
+
+
 window = tk.Tk()
 window.title("Password Generator")
 
-# Create the label for the password length
-length_label = tk.Label(window, text="Password length:")
-length_label.pack()
+tk.Label(window, text="Password length:").pack()
 
-# Create the text entry widget for the password length
 length_entry = tk.Entry(window)
+length_entry.insert(0, "16")
 length_entry.pack()
 
-# Create the button to generate a new password
-generate_button = tk.Button(window, text="Generate", command=generate_password)
-generate_button.pack()
+tk.Button(window, text="Generate", command=on_generate).pack()
 
-# Create the label to display the generated password
-password_label = tk.Label(window, text="")
-password_label.pack()
+# A read-only Entry instead of a Label, so the password can be selected and copied
+password_var = tk.StringVar()
+tk.Entry(window, textvariable=password_var, state="readonly", width=40).pack()
 
-# Start the main event loop
 window.mainloop()
 ```
 
-In this code, we first define the generate_password function as before. We then create a main window using the Tk class from tkinter and set its title to "Password Generator".
+`password_var` is a `StringVar`. When it changes, the read-only entry updates, and the user can select the text and copy it. A plain `Label` would display the password but wouldn't let the user select it.
 
-Next, we create a label and a text entry widget to allow the user to specify the length of the password. We also create a button that calls the generate_password function when clicked.
+## Next steps
 
-Finally, we create another label that displays the generated password, and we start the main event loop using the mainloop method of the window object.
+- Add checkboxes (`tk.Checkbutton` with `tk.BooleanVar`) to include or exclude digits and symbols.
+- Add a "Copy" button that calls `window.clipboard_clear()` and `window.clipboard_append(password)`.
+- Use a password manager for real accounts. This is a learning project.
 
-## Conclusion
-In this article, we've shown you how to create a password generator in Python and how to create a simple GUI using the tkinter library. You can use this code as a starting point to create more complex password generators or to add more features to the GUI. Happy coding!
+Further reading: [`secrets`](https://docs.python.org/3/library/secrets.html), [`tkinter`](https://docs.python.org/3/library/tkinter.html).

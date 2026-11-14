@@ -1,102 +1,94 @@
 ---
-tags: ['bash']
-title: How to rank software engineers using bash
-description: Using simple bash scripts to rank engineers
+tags: ['bash', 'git']
+title: Ranking engineers by commits and lines of code with Git and Bash
+description: "Four Bash scripts that use git log, git shortlog and git blame to count each author's commits, touched files, changed lines and surviving lines in a repository."
 pubDate: Fri, 7 November 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2627778103.png
 ---
-To rank software engineers, companies use a variety of metrics to assess their performance, including code quality, productivity, and collaboration with team members. In this blog post, we will explore how companies can use scripts to automate the ranking process and save time and effort.
 
-Are you ready to proceed?
+Commit counts and lines of code are the easiest engineering metrics to compute: Git already records who changed what, and a few lines of Bash turn that history into a ranking. This post shows four scripts that do it.
 
+Be clear about what the numbers mean before you use them. They measure activity, not value. They're cheap and repeatable, but they're easy to game (split commits, reformat files, commit generated code) and they penalise work that removes code or happens outside the repository: reviews, design, debugging, mentoring. Use them as a conversation starter alongside code quality, bug fixing and collaboration, not as a score.
 
-Measuring software engineers' performance by the lines of code written and number of commits is a common practice in many companies, especially those with large engineering teams. Here are some reasons why:
+## Files each author changed most, by extension
 
-1. **Quantifiable metric:** Lines of code and number of commits are easy to measure and quantify. It provides a tangible metric to assess a developer's output and contribution to the codebase.
-2. **Objective assessment:** By measuring objective metrics like lines of code and commits, companies can assess an engineer's performance without any biases or subjectivity. It eliminates the possibility of personal preference or favoritism influencing the assessment.
-3. **Consistency across teams:** Measuring lines of code and commits is consistent across all teams, regardless of the project or programming language being used. It allows for comparison between different teams and engineers, making it easier to identify areas of strength and weakness.
+```bash
+#!/usr/bin/env bash
+# Usage: ./files_by_author.sh /path/to/repository
+cd "${1:-.}" || exit 1
 
-However, it's important to note that using lines of code and commits alone does not provide a complete picture of an engineer's performance. Other factors like code quality, bug fixing, and collaboration with team members should also be taken into consideration.
-
-
-```go 
- #!/bin/bash
-
-# Change to the directory of the Git repository
-cd /path/to/repository
-
-# Get a list of all authors in the repository
-AUTHORS=$(git log --format='%ae' | sort -u)
-
-# Set the list of file extensions to search for
+# File extensions to report on
 EXTENSIONS=("html" "scss" "tsx" "ts")
 
-# Loop through the authors and file extensions and search for changes
-for author in $AUTHORS; do
+git log --format='%ae' | sort -u | while read -r author; do
     for extension in "${EXTENSIONS[@]}"; do
         echo "Changes made by $author to .$extension files:"
-        git log --author="$author" --oneline --name-only --pretty=format: | grep "\.$extension$" | sort | uniq -c | sort -rn | head -n 10
+        git log --no-merges --fixed-strings --author="$author" --name-only --pretty=format: \
+            | grep "\.$extension$" | sort | uniq -c | sort -rn | head -n 10
     done
-done 
- ```
+done
+```
 
-This is a Bash script that can be used to search for changes made by each author to specific file extensions in a Git repository. Here's how it works:
+For each author email in the history and each extension, this lists the 10 files that author touched in the most commits:
 
-1. The script changes the current working directory to the location of the Git repository.
-2. The `git log` command is used to get a list of all authors in the repository, and the `sort` command is used to remove duplicates and sort the list alphabetically.
-3. An array of file extensions to search for is defined using the `EXTENSIONS` variable.
-4. Two nested `for` loops are used to loop through each author and file extension. For each combination of author and extension, the script runs the `git log` command again, this time with the `--author` option to filter by the current author and the `--name-only` option to only show the names of the files that were changed.
-5. The output of the `git log` command is piped to the `grep` command to filter only files with the current extension. The output is then piped to the `sort` and `uniq` commands to count the number of changes made to each file and remove duplicates.
-6. The output is then sorted by the number of changes in descending order using the `sort -rn` command and the top 10 files with the most changes are displayed using the `head -n 10` command.
+- `git log --format='%ae' | sort -u` lists every distinct author email.
+- `--author` matches against the author's name and email; `--fixed-strings` stops characters like `.` and `+` in an email being read as a regex.
+- `--name-only --pretty=format:` prints only the changed file paths for each commit, and `--no-merges` skips merge commits, which would otherwise repeat files.
+- `grep` keeps paths with the current extension, `sort | uniq -c` counts how many commits touched each file, and `sort -rn | head -n 10` keeps the top 10.
 
-Overall, this script can be used to quickly assess each author's contributions to specific file types in a Git repository.
+## Commits per author
 
+```bash
+#!/usr/bin/env bash
+cd "${1:-.}" || exit 1
 
-```go 
-#!/bin/bash
-
-## Change to the directory of the Git repository
-
-cd /path/to/repository
-
-## Use Git to list all the authors and their commit counts
-
-git shortlog -s -n --all | while read count author; do
+git shortlog -s -n --no-merges --all | while read -r count author; do
     echo "$author: $count"
-done 
- ```
+done
+```
 
-This is a Bash script that uses Git to list all the authors and their commit counts in a Git repository. Here's how it works:
+`git shortlog` groups commits by author. `-s` prints only the count, `-n` sorts by count (highest first), and `--all` counts commits reachable from every branch and tag, each commit once. Without a revision such as `--all` or `HEAD`, `git shortlog` reads a log from standard input when it isn't run in a terminal, so keep one in scripts. Add `-e` to show email addresses if two people share a name.
 
-1. The script changes the current working directory to the location of the Git repository.
-2. The `git shortlog` command is used to list all the authors and their commit counts. The `-s` option tells Git to only show the number of commits for each author, and the `-n` option tells Git to sort the authors by the number of commits in descending order. The `--all` option tells Git to include all branches in the count.
-3. The output of the `git shortlog` command is piped to a `while` loop that reads the count and author fields from each line of output. The loop then echoes the author and count fields separated by a colon.
+## Lines added and removed per author
 
-Overall, this script can be used to quickly see which authors have made the most commits to a Git repository, providing insight into their level of contribution to the project.
+```bash
+#!/usr/bin/env bash
+cd "${1:-.}" || exit 1
 
+git log --no-merges --numstat --format='@%aN' \
+    | awk '/^@/ { author = substr($0, 2); next }
+           $1 ~ /^[0-9]+$/ { added[author] += $1; removed[author] += $2 }
+           END { for (a in added) printf "%d\t%d\t%s\n", added[a], removed[a], a }' \
+    | sort -rn
+```
 
-```go 
- #!/bin/bash
+`--numstat` prints `added<TAB>removed<TAB>path` for each file in each commit, and the `@%aN` format line marks which author the following numbers belong to. Binary files show `-` instead of numbers and are skipped. The output columns are lines added, lines removed and author name, sorted by lines added.
 
-cd /path/to/repository
+## Lines each author owns today
 
-## Use Git to list all the authors and their line counts
+```bash
+#!/usr/bin/env bash
+cd "${1:-.}" || exit 1
 
-git ls-files | xargs -n1 git blame --line-porcelain | grep "^author " | sort | uniq -c | sort -nr | while read count author; do
-    echo "$author: $count"
-done 
- ```
+git ls-files -z | xargs -0 -n1 git blame --line-porcelain 2>/dev/null \
+    | sed -n 's/^author //p' | sort | uniq -c | sort -rn \
+    | while read -r count author; do
+        echo "$author: $count"
+    done
+```
 
-This is a Bash script that uses Git to list all the authors and their line counts in a Git repository. Here's how it works:
+This counts the lines in the current checkout that `git blame` attributes to each author, so it measures code that survived rather than code written:
 
-1. The script changes the current working directory to the location of the Git repository.
-2. The `git ls-files` command is used to list all the files in the repository, and the output is piped to the `xargs` command. The `-n1` option tells `xargs` to pass each file name to the `git blame` command one at a time.
-3. The `git blame` command is used to annotate each line of the file with the author who last modified it. The `--line-porcelain` option tells `git blame` to output each line in a format that's easy to parse.
-4. The output of the `git blame` command is piped to the `grep` command to filter out all lines that don't start with "author ".
-5. The output of the `grep` command is piped to the `sort` and `uniq` commands to count the number of lines attributed to each author.
-6. The output of the `sort` and `uniq` commands is piped to another `sort` command with the `-nr` options to sort the authors by the number of lines attributed to them in descending order.
-7. Finally, the output of the `sort` command is piped to a `while` loop that reads the count and author fields from each line of output. The loop then echoes the author and count fields separated by a colon.
+- `git ls-files -z | xargs -0 -n1` passes each tracked file to `git blame` one at a time; the NUL separators keep file names with spaces intact.
+- `--line-porcelain` repeats the full commit header for every line, including an `author <name>` line, which `sed` extracts.
+- `2>/dev/null` hides errors from paths `git blame` can't annotate, such as submodules.
 
-Overall, this script can be used to quickly see which authors have contributed the most lines of code to a Git repository, providing insight into their level of contribution to the project.
+It runs `git blame` once per file, so expect it to be slow on large repositories. Restrict it to source files with a pathspec, for example `git ls-files -z -- '*.ts' '*.tsx'`.
 
+## Gotchas
+
+- The same person often commits under several names or emails (work laptop, GitHub web UI). Add a [`.mailmap`](https://git-scm.com/docs/gitmailmap) file to merge them; `git shortlog`, `%aN` and `git blame` respect it.
+- Bots, formatters, lockfiles and vendored or generated code inflate line counts. Exclude them with pathspecs such as `':!package-lock.json'` or by filtering author names.
+- Commit counts depend on the merge strategy: a squash merge turns a pull request of many commits into one, so teams that squash and teams that don't can't be compared by commit count.

@@ -1,61 +1,92 @@
 ---
 tags: ['python', 'pandas']
-title: Scraping HTML Tables with Pandas
-description: Here's an example of a blog post explaining how to scrape HTML tables using Pandas and read_html() method, along with a section on accessing class attributes in HTML elements.
+title: Scraping HTML tables with pandas read_html and BeautifulSoup
+description: Pull an HTML table into a DataFrame with pandas.read_html, pick the right table with match=, and use BeautifulSoup for data held in class attributes.
 pubDate: Mon, 20 November 2023
+lastUpdated: 2026-11-14
 imgSrc: /imgs/2023/4046799380_Scrapping_oil_off_a_painting.png
 layout: '@/templates/BasePost.astro'
 ---
 
-Here's an example of a blog post explaining how to scrape HTML tables using Pandas and read_html() method, along with a section on accessing class attributes in HTML elements:
+`pandas.read_html()` finds every `<table>` in a page and returns each one as a DataFrame. For well-formed tables it's the quickest way to get data out of a web page. When the data you want lives in attributes (an image URL, a CSS class) rather than in cell text, use BeautifulSoup alongside it.
 
-Scraping HTML Tables with Pandas and read_html
-Pandas is a powerful data analysis and manipulation library in Python, and one of its great features is the ability to easily extract data from HTML tables and transform them into DataFrames. One of the quickest ways to do this is using the read_html() method, which automatically converts HTML tables into a list of DataFrames.
+The examples below were run with pandas 3.0, requests 2.32 and beautifulsoup4 4.14. `read_html` needs a parser installed:
 
-Here's an example of how to use read_html() to extract data from a simple HTML table:
-
-```python
-import pandas as pd
-
-# Scrape the table from a webpage
-tables = pd.read_html("https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States")
-
-# The first table in the list is our desired table
-df = tables[0]
-
-# Display the first five rows of the DataFrame
-print(df.head())
+```bash
+pip install pandas lxml beautifulsoup4 requests
 ```
 
-The read_html() method will search for all tables in the HTML content and return them as a list of DataFrames. In this example, we only want the first table, so we extract it using tables[0]. The resulting DataFrame will contain the data from the HTML table, with each row corresponding to a row in the HTML table and each column corresponding to a table cell.
-
-Accessing Class Attributes in HTML Elements
-
-In addition to extracting data from HTML tables, you may also want to extract information from specific HTML elements based on their class attributes. To do this, you can use a library such as BeautifulSoup, which provides a way to parse HTML and extract specific elements based on their attributes.
-
-Here's an example of how to use BeautifulSoup to extract information from a table based on the class attribute of its cells:
+## Reading a table with read_html
 
 ```python
+from io import StringIO
+
+import pandas as pd
 import requests
+
+URL = "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States"
+# Wikipedia returns 403 Forbidden to clients without a descriptive User-Agent
+HEADERS = {"User-Agent": "table-scraper-example/1.0 (contact: you@example.com)"}
+
+resp = requests.get(URL, headers=HEADERS, timeout=30)
+resp.raise_for_status()
+
+# match= keeps only tables whose text matches this regex
+tables = pd.read_html(StringIO(resp.text), match="Largest")
+states = tables[0]
+print(states.shape)   # (50, 10)
+print(states.head())
+```
+
+A few things here that trip people up:
+
+- **Don't pass the URL straight to `read_html` for Wikipedia.** pandas fetches it with urllib's default User-Agent, and Wikipedia now rejects that with HTTP 403. Fetch the page yourself with a proper `User-Agent` header.
+- **Wrap HTML strings in `StringIO`.** Passing literal HTML to `read_html` was deprecated in pandas 2.1; it expects a URL, path or file-like object.
+- **`tables[0]` is often not the table you want.** On this page the first `<table>` is the navigation sidebar, so `read_html(...)[0]` returns a 14-row, single-column frame of links. Use `match=` (text in the table) or `attrs=` (an exact attribute match, e.g. `attrs={"id": "..."}`) to select the right one.
+- Tables with two header rows come back with a `MultiIndex` on the columns. Flatten them with `states.columns = [" ".join(dict.fromkeys(c)) for c in states.columns]` or pass `header=` to choose a row.
+
+## Reading attributes with BeautifulSoup
+
+`read_html` only keeps cell text, so anything stored in attributes is lost. In this table each state's flag is an `<img>` inside a `<span class="flagicon">`, and the cell text is empty. To get the flag image URLs, parse the HTML with BeautifulSoup:
+
+```python
+from urllib.parse import urljoin
+
 from bs4 import BeautifulSoup
 
-# Request the page
-response = requests.get("https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States")
+soup = BeautifulSoup(resp.text, "html.parser")
 
-# Parse the HTML content
-soup = BeautifulSoup(response.content, "html.parser")
+# CSS selector: the first <table> whose class list includes "wikitable"
+table = soup.select_one("table.wikitable")
+print(table["class"])  # ['wikitable', 'sortable', ...] - class is a list in bs4
 
-# Find the table cells with the class attribute "flagicon"
-flag_cells = soup.find_all("td", class_="flagicon")
+flags = {}
+for row in table.find_all("tr"):
+    name_cell = row.find("th", scope="row")
+    flag = row.find("span", class_="flagicon")
+    if name_cell is None or flag is None:
+        continue
+    img = flag.find("img")
+    flags[name_cell.get_text(" ", strip=True)] = urljoin(URL, img["src"])
 
-# Extract the text from each cell
-flags = [cell.text for cell in flag_cells]
-
-# Print the extracted flags
-print(flags)
-
+print(len(flags))  # 50
+print(next(iter(flags.items())))  # ('Alabama', 'https://...Flag_of_Alabama.svg...png...')
 ```
 
-In this example, we use requests.get() to retrieve the content of the webpage, and then parse it using BeautifulSoup. Next, we use the soup.find_all() method to find all td elements with a class attribute of "flagicon". Finally, we extract the text from each of these cells and store it in the flags list.
+Notes on class attributes in BeautifulSoup:
 
-In conclusion, with Pandas and BeautifulSoup, you can easily extract data from HTML tables and specific elements based on their class attributes. These tools are incredibly useful for data analysis and manipulation, and with a bit of Python knowledge, you can quickly extract the information you need from webpages.
+- `class` is multi-valued in HTML, so `tag["class"]` returns a list, not a string.
+- `find_all("span", class_="flagicon")` matches if *any* of the element's classes is `flagicon`. `select("table.wikitable")` does the same with CSS selector syntax.
+- Use `tag.get("class")` instead of `tag["class"]` when the attribute may be missing; it returns `None` instead of raising `KeyError`.
+
+## When this breaks
+
+- Pages that build tables with JavaScript return no `<table>` in the raw HTML. Look for the JSON endpoint the page calls (browser dev tools, Network tab) or use a headless browser.
+- Wikipedia layouts change. Selecting by heading text (`match=`) is more robust than relying on table order.
+- For Wikipedia data in bulk, the [MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page) is more reliable than scraping rendered pages.
+
+## Further reading
+
+- [pandas.read_html](https://pandas.pydata.org/docs/reference/api/pandas.read_html.html)
+- [Beautiful Soup documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+- [Wikimedia User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy)

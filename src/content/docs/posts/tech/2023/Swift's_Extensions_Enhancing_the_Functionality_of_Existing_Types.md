@@ -1,89 +1,127 @@
 ---
-description: In this article, we'll explore the concept of extensions in Swift, illustrate
-  how and when to use them, and provide examples to enhance your understanding
+description: How Swift extensions add methods, computed properties, initializers and protocol conformances to existing types, plus what they can't do.
 imgSrc: /imgs/2023/2966567085.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-15T23:38:52.000Z'
-tags: []
-title: Swift's Extensions Enhancing the Functionality of Existing Types
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Swift extensions: adding methods, properties and protocol conformances to existing types"
 ---
 
-# Swift's Extensions: Enhancing the Functionality of Existing Types
+An extension adds functionality to a type you already have, including types you don't own like `String` or `Double`, without subclassing it or editing its source. Extensions work on classes, structs, enums and protocols, and they're used constantly in Swift code: to add helpers, to add protocol conformances, and to split a large type into readable sections.
 
-Swift is a powerful and versatile programming language designed for iOS, macOS, watchOS, and tvOS application development. One of its most remarkable features is extensions, which allow developers to add new functionality to existing types without the need to subclass or modify the original code.
+An extension can add:
 
-In this article, we'll explore the concept of extensions in Swift, illustrate how and when to use them, and provide examples to enhance your understanding.
+- methods (instance and static) and subscripts
+- computed properties
+- initializers
+- protocol conformances
+- nested types
 
-## Understanding Swift Extensions
-
-Extensions enable developers to add new properties, methods, subscripts, initializers, or even conform to protocols on existing types, such as classes, structures, and enumerations. This feature is particularly useful for making code more readable, modular, and easier to maintain.
-
-Here are some use cases for extensions:
-
-1. **Adding functionality**: Add new methods or computed properties to existing types, making them more feature-rich and versatile.
-2. **Conforming to protocols**: Conform an existing type to a protocol, enabling it to be used in a generic context or as a type constraint.
-3. **Code organization**: Separate implementations of related functionality into separate extensions for better code organization and readability.
-
-## Syntax
-
-To declare an extension, you use the `extension` keyword, followed by the type you want to extend and the new functionality you want to add. Here's a simple example:
+## Adding a method
 
 ```swift
 extension String {
     func isPalindrome() -> Bool {
-        let normalizedString = self.lowercased().filter { $0.isLetter }
-        return normalizedString == String(normalizedString.reversed())
+        let normalized = self.lowercased().filter { $0.isLetter }
+        return normalized == String(normalized.reversed())
     }
 }
+
+"A man, a plan, a canal: Panama".isPalindrome() // true
 ```
 
-In this example, we've added a new `isPalindrome()` method to the `String` type, which checks if the string is a palindrome (ignoring case and non-letter characters).
+The new method is available on every `String` in the module (and in other modules that import it, if you mark it `public`).
 
-## Adding Computed Properties
+## Adding computed properties
 
-Extensions can also add computed properties (but not stored properties) to existing types. Let's extend the `Double` type to provide temperature conversions between Celsius and Fahrenheit:
+Extensions can add computed properties but not stored ones, because they can't change a type's memory layout.
 
 ```swift
 extension Double {
     var celsiusToFahrenheit: Double {
-        return (self * 9/5) + 32
+        self * 9 / 5 + 32
     }
-    
+
     var fahrenheitToCelsius: Double {
-        return (self - 32) * 5/9
+        (self - 32) * 5 / 9
     }
 }
 
-let celsius = 100.0
-let fahrenheit = celsius.celsiusToFahrenheit // 212.0
+let fahrenheit = 100.0.celsiusToFahrenheit // 212.0
 ```
 
-In the example above, we've added two computed properties, `celsiusToFahrenheit` and `fahrenheitToCelsius`, to convert temperature values between Celsius and Fahrenheit.
+## Adding initializers
 
-## Conforming to Protocols
-
-Extensions can be used to conform existing types to new protocols. Let's say we have a `Sortable` protocol and an existing `Person` struct. We can use an extension to conform `Person` to the `Sortable` protocol:
+If you add an initializer to a struct in an extension, the struct keeps its synthesized memberwise initializer. Declaring the same initializer inside the struct body would remove it.
 
 ```swift
-protocol Sortable {
-    func isBefore(_ other: Self) -> Bool
-}
-
 struct Person {
     let firstName: String
     let lastName: String
 }
 
-extension Person: Sortable {
-    func isBefore(_ other: Person) -> Bool {
-        return lastName < other.lastName ||
-            (lastName == other.lastName && firstName < other.firstName)
+extension Person {
+    init(fullName: String) {
+        let parts = fullName.split(separator: " ", maxSplits: 1).map(String.init)
+        self.init(firstName: parts.first ?? "", lastName: parts.count > 1 ? parts[1] : "")
     }
 }
+
+let a = Person(firstName: "Ada", lastName: "Lovelace") // memberwise init still works
+let b = Person(fullName: "Grace Hopper")
 ```
 
-Now, `Person` conforms to the `Sortable` protocol, and we can use the `isBefore(_:)` method to compare two `Person` instances.
+For classes, extensions can add convenience initializers but not designated initializers or deinitializers.
 
-## Conclusion
+## Conforming to a protocol
 
-Swift's extensions are a powerful feature that allows developers to enhance existing types with new functionality, conform to protocols, and improve code organization. By leveraging extensions effectively, you can write cleaner, more modular, and maintainable code in your Swift projects.
+Adding a conformance in an extension keeps that code in one place. Conforming `Person` to the standard library's `Comparable` makes `sorted()`, `min()` and `max()` work on arrays of people:
+
+```swift
+extension Person: Comparable {
+    static func < (lhs: Person, rhs: Person) -> Bool {
+        (lhs.lastName, lhs.firstName) < (rhs.lastName, rhs.firstName)
+    }
+}
+
+let people = [
+    Person(firstName: "Grace", lastName: "Hopper"),
+    Person(firstName: "Ada", lastName: "Lovelace"),
+    Person(firstName: "Alan", lastName: "Hopper"),
+]
+let sortedPeople = people.sorted() // Alan Hopper, Grace Hopper, Ada Lovelace
+```
+
+`Comparable` also requires `Equatable`. The compiler synthesizes `==` here because all the stored properties are `Equatable` and the extension is in the same file as the struct. Comparing tuples gives last-name-then-first-name ordering in one line.
+
+## Constrained and protocol extensions
+
+A `where` clause limits an extension to types that meet a constraint:
+
+```swift
+extension Array where Element: Numeric {
+    func sum() -> Element {
+        reduce(0, +)
+    }
+}
+
+[1, 2, 3].sum()       // 6
+[1.5, 2.5].sum()      // 4.0
+// ["a", "b"].sum()   // doesn't compile: String isn't Numeric
+```
+
+Extending a protocol gives every conforming type a default implementation. This is how much of the standard library is built: `filter`, `reduce` and `contains` are implemented in extensions on `Sequence` rather than separately on each collection type.
+
+## What extensions can't do
+
+- Add stored properties. If you need per-instance state on a type you don't own, wrap it in your own type instead.
+- Override existing methods. Redeclaring a method in the same module is a compile error. For a type from another module, a same-named method in your extension only shadows the original in code that sees your extension; it isn't dynamically dispatched like an override, so avoid doing it.
+- Add designated initializers or deinitializers to classes.
+
+Also watch for name collisions. If two modules add a method with the same name to `String`, calls become ambiguous. A short, specific name, or a wrapper type, avoids this in shared libraries.
+
+## Further reading
+
+- [The Swift Programming Language: Extensions](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/extensions/)
+- [The Swift Programming Language: Protocols (protocol extensions)](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/)

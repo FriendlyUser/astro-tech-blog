@@ -1,102 +1,115 @@
 ---
-description: This article provides a comprehensive understanding of virtual functions
-  and polymorphism in C++, their use cases, and best practices.
+description: "How virtual functions give C++ runtime polymorphism, why base classes need virtual destructors, abstract classes, and traps like slicing."
 imgSrc: /imgs/2023/326029388.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-04T17:45:10.000Z'
-tags: []
-title: C++ Virtual Functions and Polymorphism A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: "C++ virtual functions and runtime polymorphism"
 ---
 
-# C++ Virtual Functions and Polymorphism: A Comprehensive Guide
+Polymorphism lets you call the same function on different types and get type-specific behaviour. C++ has two kinds. Overloading and templates are **compile-time** polymorphism: the compiler picks the function. Virtual functions are **runtime** polymorphism: the call is resolved from the object's actual (dynamic) type when the program runs, even if you only hold a pointer or reference to the base class.
 
-## Introduction
+## Virtual functions
 
-Polymorphism is a fundamental concept in object-oriented programming (OOP) that enables programmers to work with different data types and objects through a unified interface. C++ embraces polymorphism through the use of virtual functions, which play an essential role in implementing dynamic (runtime) polymorphism. This article provides a comprehensive understanding of virtual functions and polymorphism in C++, their use cases, and best practices.
-
-## Polymorphism in C++
-
-Polymorphism in C++ comes in two flavors: compile-time (static) polymorphism and runtime (dynamic) polymorphism. Function overloading and templates are examples of compile-time polymorphism, while virtual functions are the primary mechanism for runtime polymorphism.
-
-### Virtual Functions
-
-A virtual function is a member function of a class that can be overridden in derived classes. When a derived class provides a new implementation for a virtual function, it is said to be "overridden." The keyword `virtual` is used to declare virtual functions in the base class.
-
-Virtual functions enable the correct function call to be resolved at runtime based on the object's dynamic type, rather than its static type. This behavior is known as dynamic binding or late binding.
-
-Consider a simple example to understand the concept of virtual functions:
+Mark a member function `virtual` in the base class, and derived classes can override it:
 
 ```cpp
 #include <iostream>
+#include <memory>
 
 class Shape {
 public:
-    virtual void draw() {
-        std::cout << "Drawing a shape" << std::endl;
-    }
+    virtual ~Shape() = default;
+    virtual void draw() const { std::cout << "Drawing a shape\n"; }
 };
 
 class Circle : public Shape {
 public:
-    void draw() override {
-        std::cout << "Drawing a circle" << std::endl;
-    }
+    void draw() const override { std::cout << "Drawing a circle\n"; }
 };
 
 int main() {
-    Shape *shape = new Circle();
-    shape->draw(); // Output: Drawing a circle
-    delete shape;
-    return 0;
+    std::unique_ptr<Shape> shape = std::make_unique<Circle>();
+    shape->draw();  // Drawing a circle
 }
 ```
 
-In this example, the `draw` function is declared as virtual in the base class `Shape`. The derived class `Circle` overrides the `draw` function. When we create a `Circle` object and assign it to a `Shape` pointer, the correct `draw` function is called, even though the pointer is of type `Shape*`.
+The pointer's static type is `Shape`, but the object is a `Circle`, so `Circle::draw` runs. Without `virtual`, the call would be bound at compile time and print "Drawing a shape".
 
-### Pure Virtual Functions and Abstract Classes
+Compilers typically implement this with a *vtable*: each polymorphic class has a table of function pointers, and each object carries a hidden pointer to its class's table. A virtual call loads that pointer and calls through the table, which is a little slower than a direct call and usually prevents inlining.
 
-In some cases, it doesn't make sense to provide a default implementation for a virtual function in the base class. In such situations, we can declare the function as a pure virtual function using the `= 0` syntax:
+### Why the virtual destructor matters
 
-```cpp
-virtual void draw() = 0;
-```
+`unique_ptr<Shape>` deletes the object through a `Shape*`. If `Shape`'s destructor isn't virtual, deleting a `Circle` through a `Shape*` is undefined behaviour; in practice `Circle`'s destructor usually doesn't run, so anything it owns leaks. The C++ Core Guidelines rule (C.35) is that a base class destructor should be either public and virtual, or protected and non-virtual.
 
-A class containing at least one pure virtual function is called an abstract class. It cannot be instantiated. Instead, it serves as a base class for other classes that provide concrete implementations of the pure virtual functions.
+## Pure virtual functions and abstract classes
+
+When the base class has no sensible default, declare the function pure virtual with `= 0`. A class with at least one pure virtual function is abstract and can't be instantiated; derived classes must implement the function to become concrete.
 
 ```cpp
 #include <iostream>
+#include <memory>
+#include <numbers>
+#include <vector>
 
 class Shape {
 public:
-    virtual void draw() = 0;
+    virtual ~Shape() = default;
+    virtual double area() const = 0;
+    virtual const char* name() const = 0;
 };
 
-class Circle : public Shape {
+class Circle final : public Shape {
 public:
-    void draw() override {
-        std::cout << "Drawing a circle" << std::endl;
-    }
+    explicit Circle(double r) : r_(r) {}
+    double area() const override { return std::numbers::pi * r_ * r_; }
+    const char* name() const override { return "circle"; }
+private:
+    double r_;
+};
+
+class Square final : public Shape {
+public:
+    explicit Square(double side) : side_(side) {}
+    double area() const override { return side_ * side_; }
+    const char* name() const override { return "square"; }
+private:
+    double side_;
 };
 
 int main() {
-    // Shape shape; // Error: Cannot instantiate an abstract class
-    Shape *shape = new Circle();
-    shape->draw(); // Output: Drawing a circle
-    delete shape;
-    return 0;
+    // Shape s;  // error: Shape is abstract
+
+    std::vector<std::unique_ptr<Shape>> shapes;
+    shapes.push_back(std::make_unique<Circle>(1.0));
+    shapes.push_back(std::make_unique<Square>(2.0));
+
+    for (const auto& s : shapes) {
+        std::cout << s->name() << ": " << s->area() << '\n';
+    }
 }
 ```
 
-## Best Practices
+Output (`std::numbers::pi` needs C++20):
 
-1. **Always declare destructors virtual in base classes**: Ensuring that the base class destructor is virtual helps avoid potential issues when deleting objects through base class pointers.
+```text
+circle: 3.14159
+square: 4
+```
 
-2. **Use the `override` keyword**: Using the `override` keyword when overriding a virtual function in a derived class makes the code more readable and helps catch errors during compilation if the base class function signature changes.
+`final` on a class stops further derivation, and on a function stops further overriding. It also lets the compiler call those functions directly when it knows the exact type.
 
-3. **Prefer interfaces over implementation inheritance**: When there is no shared implementation between classes, use pure virtual functions to define an interface that the derived classes must implement. This promotes code reusability and flexibility.
+## Gotchas
 
-4. **Avoid deep inheritance hierarchies**: Deep inheritance hierarchies can lead to increased complexity and potential issues with maintainability. When possible, prefer composition over inheritance.
+- **Use `override`.** If the derived signature doesn't match the base exactly (for example, missing `const`), you've declared a new function that hides the base one, and the virtual call silently goes to the base. With `override`, that mistake is a compile error.
+- **Slicing.** Copying a derived object into a base object by value keeps only the base part: `Shape s = Circle{}; s.draw();` (using the first, non-abstract `Shape`) prints "Drawing a shape". Pass polymorphic objects by reference or pointer.
+- **No virtual dispatch in constructors and destructors.** While `Shape`'s constructor runs, the object is still a `Shape`, so a virtual call there goes to `Shape`'s version (and calling a pure virtual function there is undefined behaviour).
+- **Default arguments are static.** A default argument on a virtual function comes from the static type of the pointer, not the overriding function. Avoid giving overrides different defaults.
+- **Prefer shallow hierarchies.** Use pure virtual interfaces when classes share no implementation, and favour composition over deep inheritance chains.
 
-## Conclusion
+## Further reading
 
-C++ virtual functions and polymorphism are powerful tools for creating flexible and maintainable object-oriented software. Understanding their purpose and best practices is essential for any C++ developer. As you continue to explore C++ and OOP concepts, remember to use these features wisely and adhere to best practices for the best possible results.
+- [Virtual function specifier on cppreference](https://en.cppreference.com/w/cpp/language/virtual)
+- [Abstract classes](https://en.cppreference.com/w/cpp/language/abstract_class)
+- [C++ Core Guidelines: class hierarchies](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-hier)

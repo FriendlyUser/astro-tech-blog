@@ -1,82 +1,96 @@
 ---
-tags: ['googleNews', 'dotnet']
-title: Scrapping in C#
-description: Introduction to scrapping with dotnet.
+tags: ['googleNews', 'dotnet', 'csharp', 'web scraping']
+title: Web scraping in C# with HttpClient and HtmlAgilityPack
+description: Fetch a page with HttpClient and pull data out of the HTML with HtmlAgilityPack and XPath, with the null check and selector gotchas that trip people up.
 pubDate: Tues, 21 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/4067359065.png'
 ---
 
-Web scraping is a technique used to extract data from websites. It can be done manually by a user or automatically by a program. In this post, we'll explore how to perform web scraping using C#.
+Web scraping means fetching a page's HTML from code and extracting the data you want from it. In C# that takes two pieces: `HttpClient` to download the page, and an HTML parser to query it. This post uses [HtmlAgilityPack](https://html-agility-pack.net/), which parses messy real-world HTML into a DOM you can query with XPath.
 
-First, let's understand the basics of web scraping. When we visit a website, our web browser sends a request to the server hosting the website. The server responds with the HTML, CSS, and JavaScript files that make up the website. Our web browser then renders the website based on these files.
+It only sees the HTML the server returns. If the content is rendered by JavaScript after page load, you'll need a headless browser such as Playwright, or the JSON API the page itself calls.
 
-Web scraping works in a similar way. Instead of a web browser, we use a program to send a request to the server and receive the response. We can then parse the HTML to extract the data we need.
+## Setup
 
-In C#, we can use the `HttpClient` class to send HTTP requests and receive responses. Here's an example of how to send a GET request to a website and receive the response:
-
-```csharp
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace WebScrapingExample
-{
-    public static async Task<string> GetWebsiteContentAsync(string url)
-    {
-        using (var client = new HttpClient())
-        {
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
-        }
-    }
-}
+```bash
+dotnet new console -n WebScrapingExample
+cd WebScrapingExample
+dotnet add package HtmlAgilityPack
 ```
 
-In this example, we create an instance of the HttpClient class and use its GetAsync method to send a GET request to the specified URL. We then use the EnsureSuccessStatusCode method to ensure that the response was successful. Finally, we use the ReadAsStringAsync method to read the response content as a string.
+This was checked against HtmlAgilityPack 1.13.1.
 
-Once we have the HTML content of the website, we can use an HTML parser to extract the data we need. There are several HTML parsers available for C#, such as HtmlAgilityPack and AngleSharp.
+## Fetching and parsing a page
 
-### HtmlAgilityPack
-HtmlAgilityPack is an open-source HTML parser library for .NET that allows developers to parse, manipulate, and extract information from HTML documents. It provides a set of classes and methods that enable developers to easily traverse the HTML document structure, access and modify the HTML elements and attributes, and extract data from the document.
-
-HtmlAgilityPack can be used in a wide range of applications, including web scraping, web development, and data analysis. It supports various HTML versions, including HTML 5, and provides a range of features for working with malformed or poorly structured HTML documents.
-
-Some of the key features of HtmlAgilityPack include:
-
-DOM traversal and manipulation: HtmlAgilityPack provides a rich set of classes and methods for traversing and manipulating the HTML document's structure. It allows developers to access and modify HTML elements and attributes, and to add, remove, or modify nodes in the document.
-
-XPath support: HtmlAgilityPack provides XPath support, which allows developers to query the HTML document using XPath expressions. This makes it easy to locate specific elements or attributes in the document and extract the information needed.
-
-HTML validation: HtmlAgilityPack includes a built-in HTML validator that can be used to check whether an HTML document is well-formed and meets certain standards.
-
-Character encoding support: HtmlAgilityPack supports various character encodings and can automatically detect the encoding of an HTML document.
-
-Here’s an example of how to use HtmlAgilityPack to extract the titles of the articles on the front page of a news website:
+`Program.cs`:
 
 ```csharp
 using HtmlAgilityPack;
 
-namespace WebScrapingExample
+string html = await Scraper.GetWebsiteContentAsync("https://example.com/news");
+foreach (string title in Scraper.GetArticleTitles(html))
 {
+    Console.WriteLine(title);
+}
+
+public static class Scraper
+{
+    // Reuse one HttpClient; creating one per request can exhaust sockets
+    private static readonly HttpClient Client = CreateClient();
+
+    private static HttpClient CreateClient()
+    {
+        var client = new HttpClient();
+        // Some sites reject requests without a User-Agent
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("WebScrapingExample/1.0");
+        return client;
+    }
+
+    public static async Task<string> GetWebsiteContentAsync(string url)
+    {
+        using HttpResponseMessage response = await Client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
     public static List<string> GetArticleTitles(string html)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
-        var titles = new List<string>();
-        foreach (var node in doc.DocumentNode.SelectNodes("//h2[@class='title']/a"))
+        // <a> elements inside <h2 class="title">
+        HtmlNodeCollection? nodes = doc.DocumentNode.SelectNodes("//h2[@class='title']/a");
+
+        // SelectNodes returns null, not an empty collection, when nothing matches
+        if (nodes is null)
         {
-            titles.Add(node.InnerText);
+            return [];
         }
 
-        return titles;
+        return nodes
+            .Select(node => HtmlEntity.DeEntitize(node.InnerText).Trim())
+            .ToList();
     }
 }
 ```
 
-In this example, we create an instance of the HtmlDocument class and use its LoadHtml method to load the HTML content. We then use the SelectNodes method to select the nodes that match the specified XPath expression. In this case, we’re selecting all a elements that are children of h2 elements with a class attribute of title. We then use the InnerText property to get the text content of each node and add it to a list.
+`EnsureSuccessStatusCode` throws `HttpRequestException` on a 4xx or 5xx response, so you don't end up parsing an error page. `InnerText` can return text with HTML entities still encoded (`&amp;`, `&#39;`), so `HtmlEntity.DeEntitize` decodes them.
 
-That’s the basics of web scraping in C#! Of course, there’s a lot more to it, such as handling pagination, dealing with AJAX content, and respecting the website’s terms of service and robots.txt file. But this should give you a good starting point for your own web scraping projects.
+The URL and XPath are placeholders: open the target page in your browser's dev tools, find the elements you want, and write the XPath to match.
 
-Overall, LINQ is a powerful tool for web scraping that can be used to extract, transform, and analyze data in a flexible and efficient manner. Its ability to work with different data sources makes it a valuable tool for developers who need to extract data from web pages for further analysis or use.
+## XPath gotchas
+
+- `[@class='title']` only matches when the class attribute is exactly `title`. An element with `class="title featured"` won't match. Use `[contains(concat(' ', normalize-space(@class), ' '), ' title ')]` to match one class among several.
+- `SelectSingleNode` returns `null` when nothing matches, the same as `SelectNodes`. Check before dereferencing.
+- Browser dev tools show the DOM *after* JavaScript has run. If your XPath works in the browser but not in code, compare it with the raw HTML (view source).
+
+## Alternatives
+
+- [AngleSharp](https://anglesharp.github.io/) parses HTML following the HTML5 spec and lets you query with CSS selectors (`QuerySelectorAll("h2.title > a")`). That's often easier to write than XPath.
+- HtmlAgilityPack's `HtmlWeb.Load(url)` downloads and parses in one call, but it's synchronous. `HttpClient` gives you async, timeouts and headers.
+
+## Before you scrape
+
+Check the site's terms of service and `robots.txt`, keep request rates low, and cache pages while you develop your selectors so you aren't fetching the same page over and over. Pagination usually means finding the "next" link with another XPath and looping until it disappears.

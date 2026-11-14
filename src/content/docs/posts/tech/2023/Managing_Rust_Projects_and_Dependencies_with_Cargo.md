@@ -1,77 +1,110 @@
 ---
-title: Managing Rust Projects and Dependencies with Cargo
+title: "Cargo basics: creating Rust projects and managing dependencies"
 pubDate: "2025-05-17T10:03:29.000Z"
-description: "In this article , we'll explore the basics of using Cargo to manage Rust projects and dependencies"
-tags: []
+lastUpdated: 2026-11-14
+description: Create a Rust project with Cargo, add crates with cargo add, understand Cargo.toml version requirements and Cargo.lock, and the commands you use daily.
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2861854918.png
 ---
-# Managing Rust Projects and Dependencies with Cargo
 
-Rust is a modern systems programming language that emphasizes safety, performance, and concurrency. One of the key components of its ecosystem is Cargo, the default package manager and build tool for Rust projects. Cargo helps manage dependencies, build and test your Rust projects, and much more.
+Cargo is Rust's build tool and package manager. It creates projects, downloads dependencies from [crates.io](https://crates.io), compiles, runs tests and builds documentation. It's installed alongside the compiler when you install Rust with [rustup](https://www.rust-lang.org/tools/install); check it with `cargo --version`.
 
-In this article, we'll explore the basics of using Cargo to manage Rust projects and dependencies. We'll discuss creating new projects, adding and managing dependencies, and using some essential Cargo commands.
-
-## Getting Started with Cargo
-
-To use Cargo, you must have Rust installed on your system. You can download Rust and install it using the Rustup tool by following the instructions on the [official Rust website](https://www.rust-lang.org/tools/install). Once Rust is installed, you can verify that Cargo is available by running `cargo --version` in your terminal.
-
-## Creating a New Rust Project
-
-To create a new Rust project, navigate to the desired directory in your terminal and run the following command:
+## Creating a project
 
 ```bash
-cargo new project_name
-```
-
-Replace `project_name` with your desired project name. This command will create a new directory with the same name as your project, containing the required files and directories for a basic Rust project:
-
-- `Cargo.toml`: The manifest file that contains metadata about your project and its dependencies.
-- `src/`: The source directory containing the main entry point of your application (`main.rs`) or library (`lib.rs`).
-
-To build and run the newly created project, navigate to the project directory and run:
-
-```bash
+cargo new hello_cargo
+cd hello_cargo
 cargo run
 ```
 
-This command will compile your project and execute the resulting binary, displaying "Hello, world!" in the terminal.
+`cargo new` creates:
 
-## Adding and Managing Dependencies
+- `Cargo.toml`, the manifest with the package name, version, edition (2024 by default on current Cargo) and dependencies.
+- `src/main.rs`, a "Hello, world!" program. Use `cargo new --lib` for a library with `src/lib.rs` instead.
+- A Git repository and `.gitignore`, unless the directory is already inside a repository.
 
-Rust libraries are called "crates," and you can find them on [crates.io](https://crates.io), the Rust community's package registry. To add a crate as a dependency to your project, you need to include it in your `Cargo.toml` file.
+`cargo run` compiles the project into `target/debug/` and runs it.
 
-For example, let's say you want to include the popular `serde` crate for serialization and deserialization. You would add the following line under the `[dependencies]` section in your `Cargo.toml` file:
+## Adding dependencies
 
-```toml
-serde = "1.0"
-```
-
-The string "1.0" represents the version requirement for the crate. Cargo supports [semantic versioning](https://semver.org/), so you can specify exact versions, version ranges, or even use wildcard patterns.
-
-After adding a dependency, run `cargo build` to download the crate and compile your project with the new dependency. Cargo will create a `Cargo.lock` file, which locks the exact versions of your dependencies and their dependencies. This ensures that your project builds consistently across different environments.
-
-To update your dependencies to their latest compatible versions, run:
+Libraries in Rust are called crates. Add them with `cargo add`, which edits `Cargo.toml` for you:
 
 ```bash
-cargo update
+cargo add serde --features derive
+cargo add serde_json
 ```
 
-This command will update the `Cargo.lock` file with the new versions while respecting the version constraints specified in `Cargo.toml`.
+That produces a `[dependencies]` section like this (`cargo add` writes the latest version number at the time you run it):
 
-## Essential Cargo Commands
+```toml
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+```
 
-Here are some essential Cargo commands you will frequently use while working on Rust projects:
+Now use them in `src/main.rs`:
 
-- `cargo build`: Compiles your project and its dependencies.
-- `cargo run`: Compiles and runs your project.
-- `cargo test`: Runs the test suite for your project.
-- `cargo check`: Quickly checks your code for errors without producing an executable.
-- `cargo doc`: Generates documentation for your project and its dependencies.
-- `cargo publish`: Publishes your crate to [crates.io](https://crates.io).
+```rust
+use serde::{Deserialize, Serialize};
 
-For a complete list of Cargo commands and their usage, run `cargo help`.
+#[derive(Serialize, Deserialize, Debug)]
+struct Config {
+    name: String,
+    retries: u32,
+}
 
-## Conclusion
+fn main() -> Result<(), serde_json::Error> {
+    let config = Config { name: "demo".to_string(), retries: 3 };
 
-Cargo is an indispensable tool for managing Rust projects and their dependencies. It streamlines the process of creating, building, testing, and publishing Rust crates, making it easier to focus on writing safe and efficient code. As you continue to work with Rust, you'll discover more features and best practices for using Cargo effectively.
+    let json = serde_json::to_string(&config)?;
+    println!("{json}");
+
+    let parsed: Config = serde_json::from_str(&json)?;
+    println!("{parsed:?}");
+    Ok(())
+}
+```
+
+`cargo run` downloads and builds the crates, then prints:
+
+```text
+{"name":"demo","retries":3}
+Config { name: "demo", retries: 3 }
+```
+
+## Version requirements and Cargo.lock
+
+A version string in `Cargo.toml` is a requirement, not an exact pin. `"1"` and `"1.0"` both mean "any semver-compatible 1.x release", the same as `^1.0`. Use `"=1.0.100"` for an exact version or `">=1.2, <1.5"` for a range.
+
+The exact versions Cargo picked are recorded in `Cargo.lock`, so every build uses the same dependency tree until you change it. Commit `Cargo.lock` to version control.
+
+To move to newer compatible versions:
+
+```bash
+cargo update            # everything, within the ranges in Cargo.toml
+cargo update -p serde   # just one crate
+```
+
+`cargo update` never crosses a major version. To go from 1.x to 2.x, change the requirement in `Cargo.toml` (or run `cargo add` again).
+
+## Commands you'll use daily
+
+| Command | What it does |
+| --- | --- |
+| `cargo check` | Type-checks without producing a binary. Much faster than `build`, so use it while editing. |
+| `cargo build` | Debug build. Add `--release` for an optimised build in `target/release/`. |
+| `cargo run` | Build and run. Arguments after `--` go to your program. |
+| `cargo test` | Run unit, integration and doc tests. |
+| `cargo fmt` | Format code with rustfmt. |
+| `cargo clippy` | Run the Clippy linter. |
+| `cargo doc --open` | Build HTML docs for your crate and its dependencies and open them. |
+| `cargo tree` | Show the dependency tree, useful for finding why a crate is pulled in. |
+| `cargo publish` | Upload a library to crates.io (needs an API token from `cargo login`). |
+
+`cargo help <command>` shows the options for any of these.
+
+## Further reading
+
+- [The Cargo Book](https://doc.rust-lang.org/cargo/)
+- [Specifying dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html)

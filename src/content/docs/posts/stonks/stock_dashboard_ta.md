@@ -1,161 +1,116 @@
 ---
-title: Building an interactive stock ta app with streamlit and pandas-ta
-description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
+title: 'Stock technical analysis dashboard with Streamlit, yfinance and pandas-ta'
+description: A small Streamlit app that downloads prices with yfinance and charts SMA, EMA, Bollinger Bands, RSI and price-volume using pandas-ta.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 3 January 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-10 21.55.07 - magnifying glass on stonks.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
+:::caution
+The original `pandas-ta` project is effectively gone: its GitHub repository (`twopirllc/pandas-ta`) returns 404, its docs site is offline, and PyPI only carries 0.4.x betas that need Python 3.12+. The code below uses the community fork [`pandas-ta-classic`](https://github.com/xgboosted/pandas-ta-classic), which keeps the same `df.ta` accessor and column names.
+:::
 
-Streamlit is an open-source Python library for building web-based data science and machine learning applications. It allows you to create interactive data visualizations and user interfaces in your web browser using simple Python code. Streamlit provides a simple, intuitive API that makes it easy to build complex, interactive apps quickly and easily. It also comes with built-in support for common data science and machine learning libraries, such as Pandas and TensorFlow, and allows you to use them seamlessly in your apps. Streamlit is designed to be lightweight and fast, so you can quickly prototype and deploy your apps without having to worry about the underlying web infrastructure.
+This is a one-file Streamlit app for eyeballing a stock: pick a ticker and a date range in the sidebar, and it charts moving averages, Bollinger Bands, RSI and price-volume. Streamlit turns a top-to-bottom Python script into a web page and reruns it whenever an input changes, so there is no front-end code. [yfinance](https://github.com/ranaroussi/yfinance) pulls daily prices from Yahoo Finance, and pandas-ta adds indicators as new DataFrame columns.
 
+The first version of this app (2023) stopped working on Streamlit Cloud, and it no longer runs anywhere: it called `yf.pdr_override()` and `st.beta_columns()`, both since removed, and it charted an `adj_close` column that yfinance never returned. The version below was rewritten and tested against Streamlit 1.67, yfinance 1.8, pandas 3.1 and pandas-ta-classic 0.9.
 
-pandas-ta library, which is a Python library for performing technical analysis on stock data using Pandas. This library provides a collection of technical indicators and statistical functions that can be applied to Pandas DataFrames, making it easy to perform technical analysis on stock data in a familiar Pandas interface.
+## Install
 
-If you are looking for a library to perform technical analysis on stock data, you may want to consider using the pandas-ta library, or other libraries such as ta, talib, or alpha_vantage. These libraries provide a range of technical indicators and statistical functions that can help you analyze stock data and make informed investment decisions.
+```bash
+pip install streamlit yfinance pandas-ta-classic
+```
 
+## The app
+
+Save this as `app.py`:
 
 ```python
-import yfinance as yf
-import streamlit as st
 import datetime
-import pandas_ta
-import pandas as pd
-import requests
-yf.pdr_override()
 
-st.write("""
-# Technical Analysis Web Application
-Shown below are the **Moving Average Crossovers**, **Bollinger Bands**, **MACD's**, **Commodity Channel Indexes**, and **Relative Strength Indexes** of any stock!
-""")
+import pandas_ta_classic as ta  # registers the DataFrame.ta accessor
+import streamlit as st
+import yfinance as yf
 
-st.sidebar.header('User Input Parameters')
+st.title("Technical analysis dashboard")
 
-today = datetime.date.today()
-def user_input_features():
-    ticker = st.sidebar.text_input("Ticker", 'IP.CN')
-    start_date = st.sidebar.text_input("Start Date", '2019-01-01')
-    end_date = st.sidebar.text_input("End Date", f'{today}')
-    ta_range = st.sidebar.number_input("TA Range", min_value=1, max_value=50)
-    return ticker, start_date, end_date, ta_range
+st.sidebar.header("Inputs")
+ticker = st.sidebar.text_input("Ticker", "RY.TO")
+start = st.sidebar.date_input("Start date", datetime.date(2019, 1, 1))
+end = st.sidebar.date_input("End date", datetime.date.today())
+length = st.sidebar.number_input("Indicator length", min_value=2, max_value=200, value=20)
 
-symbol, start, end, ta_range = user_input_features()
 
-company_name = symbol
+@st.cache_data(ttl=3600)
+def load(ticker: str, start: datetime.date, end: datetime.date):
+    # multi_level_index=False keeps flat column names (Close, Volume, ...)
+    return yf.download(ticker, start=start, end=end, progress=False, multi_level_index=False)
 
-start = pd.to_datetime(start)
-end = pd.to_datetime(end)
 
-# Read data 
-data = yf.download(symbol,start,end)
-st.write(data)
-# Adjusted Close Price
-st.header(f"Adjusted Close Price\n {company_name}")
-st.line_chart(data["Close"])
+data = load(ticker, start, end)
+if data.empty:
+    st.error(f"No data returned for {ticker}")
+    st.stop()
 
-# ## SMA and EMA
-#Simple Moving Average
-data.ta.sma(length=20, append=True)
+data = data.copy()
+data.ta.sma(length=length, append=True)
+data.ta.ema(length=length, append=True)
+data.ta.bbands(length=length, append=True)
+data.ta.rsi(length=length, append=True)
+data.ta.pvol(append=True)
 
-# Exponential Moving Average
-data.ta.ema(length=20, append=True)
-st.write(data)
-# Plot
-st.header(f"Simple Moving Average vs. Exponential Moving Average\n {company_name}")
-st.line_chart(data[['adj_close','SMA_20','EMA_20']])
+st.header(f"{ticker}: close vs. SMA and EMA")
+st.line_chart(data[["Close", f"SMA_{length}", f"EMA_{length}"]])
 
-# Bollinger Bands
-data.ta.bbands(length=20, append=True)
-# data['upper_band'], data['middle_band'], data['lower_band'] = talib.BBANDS(data['Adj Close'], timeperiod =20)
-# Plot
-st.header(f"Bollinger Bands\n {company_name}")
-st.line_chart(data[['adj_close','BBL_20_2.0','BBM_20_2.0','BBU_20_2.0']])
+st.header("Bollinger Bands")
+st.line_chart(data[["Close", f"BBL_{length}_2.0", f"BBM_{length}_2.0", f"BBU_{length}_2.0"]])
 
-# ## RSI (Relative Strength Index)
-# RSI
-data.ta.rsi(length=20, append=True)
-# Plot
-st.header(f"Relative Strength Index\n {company_name}")
-st.line_chart(data[['RSI_20', 'adj_close']])
+st.header("RSI")
+st.line_chart(data[f"RSI_{length}"])
 
-# ## OBV (On Balance Volume)
-# OBV
-# data['OBV'] = talib.OBV(data['Adj Close'], data['Volume'])/10**6
-data.ta.pvol(length=20, append=True)
-# Plot
-st.header(f"Price-Volume\n {company_name}")
-st.write(data[['adj_close', 'PVOL', 'volume']])
-col1, col2 = st.beta_columns([2, 2])
-col1.line_chart(data[['PVOL']])
-col2.line_chart(data[['volume']])
-# update
+st.header("Price-volume")
+col1, col2 = st.columns(2)
+col1.line_chart(data["PVOL"])
+col2.bar_chart(data["Volume"])
+
+with st.expander("Raw data"):
+    st.dataframe(data)
 ```
 
-Although this code doesnt work on streamlit cloud anymore, it still a good example of how to pull data from streamilit and show it for ta with pandas-ta.
+Run it with:
 
-
-To use pandas ta an example is provided below
-
-```python
-# Import the pandas-ta library
-import pandas_ta as ta
-
-...
-
-# Read the stock data using the yfinance library
-data = yf.download(symbol,start,end)
-
-...
-
-# Use the pandas-ta library to calculate the Simple Moving Average
-data.ta.sma(length=20, append=True)
-
-# Use the pandas-ta library to calculate the Exponential Moving Average
-data.ta.ema(length=20, append=True)
-
-...
-
-# Use the pandas-ta library to calculate the Bollinger Bands
-data.ta.bbands(length=20, append=True)
-
-...
-
-# Use the pandas-ta library to calculate the Relative Strength Index
-data.ta.rsi(length=20, append=True)
+```bash
+streamlit run app.py
 ```
 
-Once you have imported the pandas-ta library and are using it correctly, you should be able to perform technical analysis on stock data using the data.ta methods provided by the library. For example, the following code will calculate the Simple Moving Average and Exponential Moving Average of a stock using the pandas-ta library:
+Yahoo tickers for Canadian listings need an exchange suffix: `.TO` for the TSX, `.V` for the TSX Venture and `.CN` for the CSE. The default here is RBC (`RY.TO`).
 
-```python
-# Import the pandas-ta library
-import pandas_ta as ta
+## How the pandas-ta calls work
 
-...
+Importing the library registers a `.ta` accessor on every DataFrame. Each indicator method finds the `open`/`high`/`low`/`close`/`volume` columns by name (case-insensitive), and `append=True` adds the result to the same frame instead of returning a new one. The new columns are named after the indicator and its parameters:
 
-# Read the stock data using the yfinance library
-data = yf.download(symbol,start,end)
+| Call | Columns added |
+| --- | --- |
+| `ta.sma(length=20)` | `SMA_20` |
+| `ta.ema(length=20)` | `EMA_20` |
+| `ta.bbands(length=20)` | `BBL_20_2.0`, `BBM_20_2.0`, `BBU_20_2.0`, plus bandwidth `BBB_20_2.0` and %B `BBP_20_2.0` |
+| `ta.rsi(length=20)` | `RSI_20` |
+| `ta.pvol()` | `PVOL` (close × volume) |
 
-...
+That naming is why the chart code builds column names with f-strings. If you change a default such as the Bollinger standard deviation (`std=2.5`), the suffix changes too (`BBL_20_2.5`).
 
-# Use the pandas-ta library to calculate the Simple Moving Average
-data.ta.sma(length=20, append=True)
+## Gotchas
 
-# Use the pandas-ta library to calculate the Exponential Moving Average
-data.ta.ema(length=20, append=True)
+- **yfinance column layout.** Current yfinance releases return MultiIndex columns like `('Close', 'RY.TO')` from `yf.download`, even for one ticker. Pass `multi_level_index=False` or every `data["Close"]` lookup returns a DataFrame instead of a Series.
+- **Adjusted prices.** `auto_adjust=True` is now the default in `yf.download`, so `Close` is already split- and dividend-adjusted and there is no `Adj Close` column. Pass `auto_adjust=False` if you want both.
+- **Caching.** Without `@st.cache_data`, every widget change re-downloads the data. Yahoo rate-limits aggressive clients, and that is a common reason these apps break on shared hosting.
+- **Indicator length vs. data range.** A 200-day SMA on six months of data is all `NaN`. Streamlit charts the gaps as blanks rather than raising an error.
 
-```
+## Further reading
 
-
-You can then plot the Simple Moving Average and Exponential Moving Average using the Streamlit line_chart method, as shown below:
-
-```python
-# Plot the Simple Moving Average and Exponential Moving Average
-st.header(f"Simple Moving Average vs. Exponential Moving Average\n {company_name}")
-st.line_chart(data[['adj_close','SMA_20','EMA_20']])
-
-```
-
-You can use similar code to calculate and plot other technical indicators, such as the Bollinger Bands and the Relative Strength Index.
+- [Streamlit API reference](https://docs.streamlit.io/develop/api-reference)
+- [yfinance documentation](https://ranaroussi.github.io/yfinance/)
+- [pandas-ta-classic documentation](https://xgboosted.github.io/pandas-ta-classic/)

@@ -1,141 +1,107 @@
 ---
-tags: ['python', 'introtopython']
-title: Chapter 10 Introduction to data science in python.
-description: For my introductory book on python, data science.
+tags: ['python', 'introtopython', 'pandas']
+title: "Chapter 10: Introduction to data science in Python"
+description: What data science is, how it differs from data analytics, and three starter examples using matplotlib, pandas, and requests.
 pubDate: Fri, 30 September 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1651429035.png
 ---
-Introduction to Data Science
+Data science is the practice of using statistics and programming to answer questions with data. A typical project goes through the same steps: collect the data, clean it, explore it, model or analyze it, and communicate the result. This chapter introduces the idea and then walks through three small Python examples: a chart with matplotlib, a chart from a pandas DataFrame, and loading data from a web API.
 
-Data Science has become a fundamental component of any business or organization. It is the process of extracting insights and knowledge from data. The main goal of Data Science is to use statistical and computational methods to extract valuable insights from data. The insights obtained from the data can be used to make informed decisions in different fields.
+## Where it's used
 
-In today’s world, data science has become an integral part of almost every organization. From healthcare to finance, marketing to sports, data science is playing a significant role in every field. The insights and knowledge derived from data can help businesses improve their products, increase revenue, and optimize their operations.
+- **Healthcare**: flagging patients at higher risk of a disease so they can be screened earlier.
+- **Finance**: spotting fraudulent card transactions that don't match a customer's usual spending pattern.
+- **Marketing and retail**: predicting which customers are likely to buy a product, or testing how price changes affect sales.
 
-In this blog post, we will discuss some real-world examples of how data science is being used and why it is important.
+## Data science vs. data analytics
 
-Importance of Data Science
+The two terms overlap and are often used interchangeably. A rough distinction:
 
-Data science helps in solving complex problems by analyzing large amounts of data. It helps in identifying patterns and trends that may not be visible to the human eye. With data science, we can extract insights and knowledge from data, which can help organizations make informed decisions. The insights obtained from data can help in:
+- **Data analytics** answers specific questions about existing data: "Which region had the highest sales last quarter?" The tools are descriptive statistics, SQL, spreadsheets, and dashboards.
+- **Data science** covers that and also builds models that predict or classify: "Which customers are likely to cancel next month?" It leans more on programming and machine learning.
 
-1. Improving products and services - Data Science can help businesses analyze customer feedback, purchase history, and other data to improve their products and services.
-2. Increasing revenue - Data Science can help businesses analyze customer behavior, optimize pricing strategies, and target customers more effectively to increase revenue.
-3. Optimizing operations - Data Science can help businesses analyze data related to their operations to identify areas of improvement and optimize their processes.
-4. Predicting future trends - Data Science can help businesses predict future trends based on historical data, which can help in planning and decision-making.
+In practice, job titles and team boundaries vary a lot between companies.
 
-Real-world Examples of Data Science
+## Plotting with matplotlib
 
-1. Healthcare - Data Science is being used in healthcare to analyze patient data, develop new drugs, and improve patient outcomes. For example, data science can help in identifying patients who are at risk of developing a certain disease, which can help in early detection and treatment.
-2. Finance - Data Science is being used in finance to analyze customer data, detect fraud, and optimize trading strategies. For example, data science can help in detecting fraudulent transactions by analyzing customer behavior patterns.
-3. Marketing - Data Science is being used in marketing to analyze customer behavior, optimize pricing strategies, and target customers more effectively. For example, data science can help in predicting which customers are more likely to purchase a product, which can help in targeting those customers more effectively.
+Install the libraries used in this chapter first:
 
-Conclusion
+```bash
+pip install matplotlib pandas requests
+```
 
-Data Science is an important field that is being used in various industries. It helps in extracting insights and knowledge from data, which can help organizations make informed decisions. With the increasing amount of data being generated every day, data science is becoming even more important. The insights obtained from data can help organizations improve their products and services, increase revenue, and optimize their operations.
-
-
-Data Science and Data Analytics are two terms that are often used interchangeably, but they have distinct differences.
-
-Data Science is the process of using statistical and computational methods to extract insights and knowledge from data. It involves multiple steps, such as data preparation, data exploration, data analysis, and communication of results. Data Science uses a wide range of tools and techniques, including statistical modeling, machine learning, and data visualization. The insights obtained from data can be used to solve complex problems, make informed decisions, and create predictive models. Data Science typically involves working with large, complex datasets and requires a strong understanding of mathematics and programming.
-
-Data Analytics, on the other hand, is a subset of Data Science. It is focused on analyzing data to extract insights and information that can be used to make informed decisions. Data Analytics involves collecting, cleaning, and transforming data, and then using various analytical techniques to extract insights. The goal of Data Analytics is to answer specific questions or provide insights into a particular problem. It typically involves working with smaller datasets and uses a variety of analytical techniques such as descriptive statistics, visualization, and data mining.
-
-The main difference between Data Science and Data Analytics is the scope of their objectives. Data Science aims to solve complex problems using a broad range of techniques and methods, while Data Analytics focuses on providing insights and answers to specific questions. Data Science involves working with larger, more complex datasets and requires a broad range of skills and knowledge, including statistical modeling, machine learning, and programming. Data Analytics involves working with smaller, more focused datasets and requires a strong understanding of data visualization, data mining, and statistical analysis.
-
-In conclusion, while Data Science and Data Analytics are related fields, they have distinct differences in their objectives, methods, and scope. Both fields are essential for businesses and organizations that want to make informed decisions based on data-driven insights. Data Science can help organizations identify patterns, trends, and insights that may not be visible to the human eye, while Data Analytics can help organizations answer specific questions and provide insights into particular problems.
-
-Using matplotlib to create a bar chart
+A bar chart of monthly sales:
 
 ```python
 import matplotlib.pyplot as plt
 
-# Data
-labels = ['January', 'February', 'March', 'April', 'May', 'June']
-values = [10, 15, 20, 25, 30, 35]
+months = ["January", "February", "March", "April", "May", "June"]
+sales = [10, 15, 20, 25, 30, 35]
 
-# Create a bar chart
-plt.bar(labels, values)
+fig, ax = plt.subplots()
+ax.bar(months, sales)
+ax.set_title("Monthly Sales")
+ax.set_xlabel("Month")
+ax.set_ylabel("Sales ($)")
 
-# Add titles and labels
-plt.title('Monthly Sales')
-plt.xlabel('Month')
-plt.ylabel('Sales ($)')
-
-# Display the chart
 plt.show()
 ```
-This code creates a simple bar chart with monthly sales data. The `labels` list contains the names of each month, while the `values` list contains the sales figures for each month.
 
-The `plt.bar()` function is used to create the bar chart. It takes two arguments: the `labels` list and the `values` list.
+`ax.bar()` takes the category labels for the x-axis and the bar heights. `plt.show()` opens a window with the chart; in a Jupyter notebook the chart appears below the cell.
 
-The `plt.title()`, `plt.xlabel()`, and `plt.ylabel()` functions are used to add a title and labels to the chart.
+## Plotting a pandas DataFrame
 
-Finally, the `plt.show()` function is called to display the chart.
+pandas DataFrames have a `.plot()` method that calls matplotlib for you:
 
+```python
+import matplotlib.pyplot as plt
+import pandas as pd
 
-Sure, here's an example of how to plot a sample dataframe using pandas:
+df = pd.DataFrame({
+    "year": [2016, 2017, 2018, 2019, 2020],
+    "sales": [1000, 1500, 2000, 2500, 3000],
+    "expenses": [800, 1000, 1200, 1500, 1800],
+})
 
+ax = df.plot(x="year", y=["sales", "expenses"], kind="bar")
+ax.set_title("Sales and Expenses by Year")
+ax.set_xlabel("Year")
+ax.set_ylabel("Amount ($)")
+
+plt.show()
+```
+
+The DataFrame has three columns and one row per year. `df.plot()` uses `year` as the x-axis and draws a pair of bars (sales and expenses) for each year. It returns the matplotlib `Axes`, so you can set the title and labels on it directly.
+
+## Loading data from an API
+
+Most real data comes from files, databases, or web APIs. This example fetches sample posts from [JSONPlaceholder](https://jsonplaceholder.typicode.com/), a free fake REST API, and loads them into a DataFrame:
 
 ```python
 import pandas as pd
-import matplotlib.pyplot as plt
-
-# Sample data
-data = {'year': [2016, 2017, 2018, 2019, 2020],
- 'sales': [1000, 1500, 2000, 2500, 3000],
- 'expenses': [800, 1000, 1200, 1500, 1800]}
-
-# Create a pandas DataFrame
-df = pd.DataFrame(data)
-
-# Plot the data
-df.plot(x='year', y=['sales', 'expenses'], kind='bar')
-
-# Add titles and labels
-plt.title('Sales and Expenses by Year')
-plt.xlabel('Year')
-plt.ylabel('Amount ($)')
-
-# Display the chart
-plt.show()
-```
-This code creates a pandas DataFrame with two columns (`sales` and `expenses`) and five rows, each representing a year from 2016 to 2020.
-
-The `df.plot()` function is used to create a bar chart of the `sales` and `expenses` columns, with the `year` column used as the x-axis. The `kind` argument is set to `'bar'` to create a bar chart.
-
-The `plt.title()`, `plt.xlabel()`, and `plt.ylabel()` functions are used to add a title and labels to the chart.
-
-Finally, the `plt.show()` function is called to display the chart.
-
-
-Sure, here's an example of how to use the `requests` library to get data from an API and load it into a pandas DataFrame:
-
-
-```python
 import requests
-import pandas as pd
 
-# API endpoint
-url = 'https://jsonplaceholder.typicode.com/posts'
+url = "https://jsonplaceholder.typicode.com/posts"
 
-# Make a GET request to the API endpoint
-response = requests.get(url)
+response = requests.get(url, timeout=10)
+response.raise_for_status()
 
-# Convert the response to a JSON object
-data = response.json()
-
-# Create a pandas DataFrame from the JSON object
-df = pd.DataFrame(data)
-
-# Display the first five rows of the DataFrame
+df = pd.DataFrame(response.json())
 print(df.head())
+print(df.groupby("userId").size())
 ```
-This code makes a GET request to an API endpoint and stores the response in the `response` variable.
 
-The `response.json()` method is used to convert the response to a JSON object.
+- `timeout=10` stops the request from hanging forever if the server doesn't respond.
+- `raise_for_status()` raises an exception for 4xx and 5xx responses instead of letting you parse an error page.
+- `response.json()` returns a list of dictionaries (one per post with `userId`, `id`, `title`, and `body`), and `pd.DataFrame()` turns each dictionary into a row.
+- `groupby("userId").size()` counts how many posts each user wrote, which is a first small piece of analysis.
 
-The JSON object is then passed to the `pd.DataFrame()` function to create a pandas DataFrame.
+If an API returns nested JSON, `pd.json_normalize()` flattens it into columns.
 
-Finally, the `df.head()` method is used to display the first five rows of the DataFrame.
+## Further reading
 
-Note that the specific API endpoint used in this example returns a list of posts, each with a `userId`, `id`, `title`, and `body` field. Depending on the API you're using, you may need to adjust the code to match the format of the data returned by the API.
+- [pandas getting started tutorials](https://pandas.pydata.org/docs/getting_started/index.html)
+- [matplotlib quick start guide](https://matplotlib.org/stable/users/explain/quick_start.html)
+- [Requests quickstart](https://requests.readthedocs.io/en/latest/user/quickstart/)

@@ -1,211 +1,140 @@
 ---
 tags: ['latex']
-title: Introduction to latex
-description: Getting started with latex
+title: "Getting started with LaTeX: install, compile, commands and environments"
+description: How to install a LaTeX distribution and editor, how a .tex document is structured, and how commands and environments work, with examples that compile.
 pubDate: Fri, 14 December 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2291827528.png
 ---
-# Introduction to LaTeX 
- 
-## What is LaTeX and why use it?
-LaTeX was first developed by Leslie Lamport in the 1980s as a way to simplify the creation of scientific and technical documents. Lamport built on top of Donald Knuth's TeX typesetting system, which was already popular among computer scientists and mathematicians.
 
-LaTeX quickly became popular in academia, particularly in the fields of mathematics, physics, and computer science, due to its ability to handle complex mathematical notation and equations with ease. Today, it remains one of the most widely used document preparation systems for scientific and technical documents.
+LaTeX is a document preparation system: you write plain-text source with markup commands, and a TeX engine turns it into a typeset PDF. It is the standard tool for papers, theses and anything with a lot of mathematics, because its equation typesetting, cross-references and bibliographies are much better than what a word processor gives you.
 
-LaTeX is an open-source project, which means that anyone can contribute to its development. Over the years, countless developers have created packages and extensions that add new features and functionality to the system. The LaTeX community is active and vibrant, with regular updates and improvements being made to the software.
+LaTeX was written by Leslie Lamport in the early 1980s as a set of macros on top of Donald Knuth's TeX. Today it is maintained by the LaTeX Project team and distributed under the LaTeX Project Public License (LPPL). Thousands of add-on packages are published on CTAN, the Comprehensive TeX Archive Network.
 
+## LaTeX compared with Word and Markdown
 
-LaTeX offers several benefits over other document preparation systems. One of the primary advantages is its high-quality typesetting capabilities. LaTeX uses advanced algorithms to automatically format text, images, and equations in a visually pleasing and consistent manner. This makes documents created with LaTeX look professional and polished, which is especially important in scientific and technical fields where precision and accuracy are essential.
+The main difference from Word or Google Docs is that you describe structure ("this is a section", "this is an equation") and LaTeX decides the layout. That has a few practical consequences:
 
-Another advantage of using LaTeX is document consistency. With LaTeX, you can create templates and style files that define the formatting rules for different types of documents. This ensures that every document you create adheres to a consistent set of rules, which can save time and reduce errors. Additionally, LaTeX's ability to automatically generate tables of contents, bibliographies, and other features can also save time and ensure consistency across documents.
+- **Maths.** Equations are written in a compact text syntax (`\frac{a}{b}`, `\sum_{i=1}^n`) and come out properly spaced and numbered.
+- **Consistency.** Numbering, tables of contents, cross-references (`\label`/`\ref`) and bibliographies are generated for you, so they stay correct as the document changes.
+- **Plain text.** Source files work with Git and diff tools, and a large document can be split into several files with `\input` or `\include`.
+- **Learning curve.** You have to compile to see the result, and error messages can be cryptic. For a short memo, a word processor is quicker.
 
-LaTeX is also highly customizable, with a vast array of packages and extensions available that allow you to add new features and functionality to the system. This makes it possible to tailor LaTeX to your specific needs and preferences, whether you are creating a simple memo or a complex technical report.
+Compared with Markdown and HTML, LaTeX targets print-ready PDF rather than the web. It gives you much finer control over typesetting (hyphenation, line breaking, fonts, floats), at the cost of a heavier syntax and toolchain.
 
-Finally, LaTeX is platform-independent, which means that you can create documents on any operating system and share them with others without worrying about compatibility issues. This is particularly useful for collaborative projects and for sharing documents with colleagues or collaborators who may be using different software.
+## Installing a distribution
 
+You need a TeX distribution, which provides the engines (`pdflatex`, `xelatex`, `lualatex`), the build tool `latexmk`, and the packages.
 
-## Comparison of LaTeX with other document preparation systems
-LaTeX differs from traditional word processors like Microsoft Word and Google Docs in several ways.
+- **Windows:** [MiKTeX](https://miktex.org/download) installs missing packages on demand, which keeps the initial install small. [TeX Live](https://tug.org/texlive/) also runs on Windows if you want the same distribution as on Linux.
+- **macOS:** [MacTeX](https://www.tug.org/mactex/) is TeX Live packaged as a `.pkg` installer, plus Mac tools such as TeXShop.
+- **Linux:** use TeX Live from your package manager. On Ubuntu or Debian, `sudo apt install texlive-full` installs everything (several gigabytes). `texlive-latex-extra` is a smaller set that covers most documents.
 
-First, LaTeX is a markup language, which means that you enter commands to tell the system how to format the document rather than using a visual interface to select formatting options. This can take some getting used to, but it allows for more precise and consistent formatting, particularly when dealing with mathematical equations and other technical content.
+If you don't want to install anything, [Overleaf](https://www.overleaf.com/) compiles LaTeX in the browser.
 
-Second, LaTeX is particularly well-suited for handling complex mathematical equations and scientific notation. While traditional word processors can handle basic equations, they often struggle with more complex notation, leading to formatting errors and inconsistencies. LaTeX's advanced algorithms and built-in support for mathematical notation make it much easier to create and format complex equations accurately.
+## Choosing an editor
 
-Third, LaTeX is highly customizable, with a vast array of packages and extensions available that allow you to add new features and functionality to the system. While traditional word processors offer some level of customization, they are generally more limited in terms of what you can do with them.
+Any text editor works, but a LaTeX-aware one gives you a compile button, a PDF preview and autocomplete for commands.
 
-Finally, LaTeX is particularly well-suited for collaborative projects, particularly when multiple authors are involved. With LaTeX, you can split a document into multiple files, with each author responsible for a different section. This makes it easy to collaborate on large documents without worrying about version control or compatibility issues.
+- [TeXstudio](https://www.texstudio.org/): set the compiler under `Options > Configure TeXstudio > Build > Default Compiler`.
+- [Texmaker](https://www.xm1math.net/texmaker/): similar feature set, configured under `Options > Configure Texmaker`.
+- TeXworks: a minimal editor bundled with MiKTeX and TeX Live on Windows.
+- VS Code with the LaTeX Workshop extension, if you already use VS Code.
 
-Overall, while traditional word processors are more accessible and easier to use for basic documents, LaTeX's advanced typesetting capabilities and support for complex notation make it the tool of choice for scientific and technical documents.
+## Structure of a document
 
+A LaTeX file has three parts:
 
-While LaTeX and markup languages like HTML and Markdown share some similarities, there are also several key differences.
+1. **Document class** on the first line, e.g. `\documentclass{article}`. Other common classes are `report`, `book` and `beamer` (slides).
+2. **Preamble**: everything between the class and `\begin{document}`. This is where you load packages with `\usepackage` and set options such as margins.
+3. **Body**: the content between `\begin{document}` and `\end{document}`, organised with `\section`, `\subsection` and so on.
 
-First, LaTeX is designed specifically for creating scientific and technical documents, whereas HTML and Markdown are more general-purpose markup languages. While you can use HTML and Markdown to create technical documents, they are generally less suited to this task than LaTeX.
-
-Second, LaTeX has more advanced typesetting capabilities than HTML and Markdown. While both HTML and Markdown support basic text formatting like bold and italic, LaTeX offers more advanced typesetting features like automatic hyphenation, advanced font control, and support for complex mathematical notation. This makes LaTeX better suited to creating polished and professional-looking scientific and technical documents.
-
-Third, LaTeX is generally more difficult to learn and use than HTML and Markdown, particularly for beginners. While HTML and Markdown use a simpler syntax and are easier to get started with, LaTeX requires a steeper learning curve due to its more complex syntax and advanced typesetting features.
-
-Finally, while HTML and Markdown are typically used for creating documents for the web or for plain text files, LaTeX is more often used for creating PDFs or other types of print-ready documents. While LaTeX can also be used for creating web documents, it is generally less well-suited to this task than HTML or Markdown.
-
-Overall, while LaTeX and markup languages share some similarities, LaTeX's advanced typesetting capabilities and focus on scientific and technical documents set it apart from more general-purpose markup languages like HTML and Markdown.
-
-
-## Installation and setup of LaTeX
-The process for installing LaTeX on Windows, macOS, and Linux can vary slightly depending on the specific operating system and distribution you are using. Here are some general guidelines for each platform:
-
-### Windows
-
-1. Download the MiKTeX distribution from the official website: <https://miktex.org/download>.
-2. Run the installer and follow the on-screen instructions. You can choose to install the basic system or a full system with all packages.
-3. Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.
-
-### macOS
-
-1. Download the MacTeX distribution from the official website: <https://www.tug.org/mactex/mactex-download.html>.
-2. Open the .pkg file and follow the on-screen instructions to install the distribution.
-3. Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.
-
-### Linux
-
-1. Install the LaTeX distribution using your distribution's package manager. For example, on Ubuntu, you can run `sudo apt-get install texlive-full` to install the full LaTeX distribution.
-2. Once the installation is complete, you can use a text editor like TeXworks or TeXstudio to create LaTeX documents.
-
-Note that these are general guidelines and the specific installation process can vary depending on the distribution you are using. Additionally, there are several different LaTeX distributions available, so you may need to choose the one that is best suited for your needs.
-
-
-To create LaTeX documents, you will need a text editor or integrated development environment (IDE) that supports LaTeX. Here are the general steps for installing popular LaTeX editors like TeXstudio and TeXmaker:
-
-### TeXstudio
-
-1. Download the TeXstudio installer from the official website: <https://www.texstudio.org/>.
-2. Run the installer and follow the on-screen instructions.
-3. Once the installation is complete, open TeXstudio and configure the LaTeX distribution you installed earlier. Go to `Options > Configure TeXstudio > Build > Default Compiler` and choose the appropriate compiler for your distribution.
-4. You can now create and edit LaTeX documents in TeXstudio.
-
-### TeXmaker
-
-1. Download the TeXmaker installer from the official website: <https://www.xm1math.net/texmaker/>.
-2. Run the installer and follow the on-screen instructions.
-3. Once the installation is complete, open TeXmaker and configure the LaTeX distribution you installed earlier. Go to `Options > Configure TeXmaker > Commands` and choose the appropriate compiler for your distribution.
-4. You can now create and edit LaTeX documents in TeXmaker.
-
-Note that there are many other LaTeX editors available, and the installation process can vary depending on the editor you choose. Additionally, some LaTeX editors may come bundled with a LaTeX distribution, so you may not need to install a separate distribution if you choose one of these editors.
-
-
-A LaTeX document typically has a specific structure that consists of several components:
-
-1. **Document class:** The first line of a LaTeX document specifies the document class, which determines the overall structure and formatting of the document. For example, `\documentclass{article}` specifies that the document is an article.
-2. **Preamble:** The preamble of a LaTeX document comes after the document class and before the `\begin{document}` command. It contains any necessary commands and packages for the document, such as setting the page margins or including graphics.
-3. **Document content:** The document content comes between the `\begin{document}` and `\end{document}` commands. This is where you write the actual content of the document, such as sections, paragraphs, lists, tables, and figures. You can also include mathematical equations and references.
-4. **Document structure:** The document structure is defined by various commands, such as `\section`, `\subsection`, and `\subsubsection`, which create headings and subheadings for the document. You can also use commands like `\label` and `\ref` to create cross-references within the document.
-
-Here's an example of a minimal LaTeX document that demonstrates the basic structure:
-
+A minimal document:
 
 ```latex
 \documentclass{article}
 
 % Preamble
-\usepackage{lipsum} % Package for generating placeholder text
+\usepackage{lipsum} % generates placeholder text
 
 \begin{document}
 
-% Document content
 \section{Introduction}
+\label{sec:intro}
 \lipsum[1]
 
-\section{Conclusion}
-\lipsum[2]
+\section{Results}
+As described in Section~\ref{sec:intro}, \lipsum[2]
 
 \end{document}
 ```
-In this example, the document class is `article`, the preamble includes the `lipsum` package for generating placeholder text, and the document content consists of two sections with some placeholder text. This is a very basic example, but it demonstrates the key components of a LaTeX document.
 
+Save it as `main.tex` and compile it from your editor, or from the command line:
 
-To compile a LaTeX document, you will need to use a LaTeX distribution like MiKTeX or TeX Live and a LaTeX editor like TeXstudio or TeXmaker. Here are the general steps for compiling a LaTeX document:
-
-1. Open your LaTeX editor and create a new document or open an existing one.
-2. Write your LaTeX code in the editor, following the appropriate structure and syntax.
-3. Save your document with a `.tex` extension.
-4. Click the "Compile" button in your editor, or use the appropriate keyboard shortcut to compile the document. This will generate a PDF output file.
-5. View the PDF output file in your preferred PDF viewer to check the formatting and content of the document.
-
-The process for compiling a LaTeX document can vary slightly depending on the specific LaTeX distribution and editor you are using, but these general steps should work for most setups. Note that some editors may have a built-in viewer that allows you to view the PDF output file directly within the editor.
-
-
-LaTeX commands are used to control the formatting and structure of a document. A LaTeX command is typically made up of a backslash (`\`) followed by a command name, and sometimes additional arguments or parameters enclosed in curly braces (`{ }`).
-
-Here's a simple example of a LaTeX command:
-
-
-```latex
-s\textbf{This text will be bold.}
+```bash
+latexmk -pdf main.tex
 ```
-In this example, `\textbf` is the command name, and the text enclosed in curly braces is the argument or parameter that the command applies to. The result of this command is that the text enclosed in the braces will be bold.
 
-Commands can also have optional arguments, which are enclosed in square brackets (`[ ]`). Here's an example:
+`latexmk` reruns `pdflatex` as many times as needed so that cross-references like `\ref{sec:intro}` resolve, and produces `main.pdf`.
 
+## Commands
+
+A command starts with a backslash, takes mandatory arguments in curly braces and optional arguments in square brackets:
 
 ```latex
-\includegraphics[width=5cm]{image.png}
+\textbf{This text will be bold.}
 ```
-In this example, `\includegraphics` is the command name, and the optional argument `width=5cm` specifies the width of the included image. The mandatory argument `image.png` is the name of the image file.
-
-Backslashes are used to introduce LaTeX commands, and curly braces are used to enclose the arguments or parameters that the command applies to. Backslashes can also be used to insert special characters, such as accents or symbols, into the text of a document.
-
-For example, to include an accent over a letter, you can use the following command:
-
 
 ```latex
-vbnet`\'{e}
+\usepackage{graphicx} % in the preamble
+
+\includegraphics[width=5cm]{image.png} % in the body
 ```
-In this example, `\'` is the command for an acute accent, and `{e}` is the letter that the accent applies to. The result of this command is the letter `é`.
 
-In summary, LaTeX commands are used to control the formatting and structure of a document, and are made up of a backslash followed by a command name and optional arguments or parameters enclosed in curly braces or square brackets.
+Here `width=5cm` is the optional argument and `image.png` is the mandatory one. `\includegraphics` comes from the `graphicx` package, so it fails with "Undefined control sequence" unless the package is loaded.
 
+Commands also produce special characters. `\'{e}` gives é, and characters that LaTeX reserves (`# $ % & _ { }`) are written as `\#`, `\$`, `\%`, `\&`, `\_`, `\{` and `\}`. With a modern distribution and UTF-8 source (the default since 2018), you can usually type accented characters directly.
 
-LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit. An environment is created by using the `\begin` and `\end` commands, with the name of the environment as an argument. The text or code that should be enclosed within the environment is placed between the `\begin` and `\end` commands.
+## Environments
 
-Here's an example of a simple LaTeX environment:
-
+An environment applies to a block of content between `\begin{name}` and `\end{name}`:
 
 ```latex
-s\begin{center}
+\begin{center}
 This text will be centered.
 \end{center}
 ```
-In this example, the `center` environment is used to center the enclosed text. The result of this code is that the text "This text will be centered" will be displayed in the center of the page.
 
-LaTeX environments can be nested within each other, allowing you to create more complex formatting and structures. For example, you can nest the `itemize` environment inside a `description` environment to create a list of labeled items:
-
+Environments nest. Here an `itemize` list sits inside the second item of a `description` list:
 
 ```latex
-sql`\begin{description}
-\item[First Item] This is the first item in the list.
-\item[Second Item] This is the second item in the list.
-\begin{itemize}
-\item This is a bullet point within the second item.
-\item This is another bullet point within the second item.
-\end{itemize}
-\item[Third Item] This is the third item in the list.
+\begin{description}
+  \item[First item] This is the first item in the list.
+  \item[Second item] This is the second item in the list.
+    \begin{itemize}
+      \item A bullet point within the second item.
+      \item Another bullet point within the second item.
+    \end{itemize}
+  \item[Third item] This is the third item in the list.
 \end{description}
 ```
-In this example, the `description` environment is used to create a list of labeled items, and the `itemize` environment is nested within the second item to create a list of bullet points.
 
-Environments can also have optional arguments, which are specified within square brackets immediately following the `\begin` command. For example, the `figure` environment can take an optional argument that specifies the placement of the figure within the document:
-
+Environments can take optional arguments too. For `figure`, the argument is a list of allowed placements: `h` (here), `t` (top of page), `b` (bottom), `p` (separate float page):
 
 ```latex
-\begin{figure}[h]
-\centering
-\includegraphics{example.png}
-\caption{This is a caption for the figure.}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{example.png}
+  \caption{This is a caption for the figure.}
+  \label{fig:example}
 \end{figure}
 ```
-In this example, the optional argument `[h]` tells LaTeX to try to place the figure "here" in the document. The `\centering` command centers the figure horizontally, and the `\includegraphics` command includes the image file `example.png`. The `\caption` command adds a caption to the figure.
 
-In summary, LaTeX environments are a powerful feature of LaTeX that allow you to specify a block of text or code that should be treated as a single unit, and can be used to create complex formatting and structures within a document.
+Figures are floats: LaTeX moves them to where they fit best. Giving only `[h]` is often overridden (LaTeX changes it to `[ht]` and warns you), so allow several placements and refer to the figure with `Figure~\ref{fig:example}` rather than "the figure below".
 
+## Further reading
 
+- [Learn LaTeX](https://www.learnlatex.org/): short official tutorial lessons.
+- [Overleaf documentation](https://www.overleaf.com/learn): reference pages for most common tasks.
+- [CTAN](https://ctan.org/): package documentation.

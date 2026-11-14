@@ -1,124 +1,112 @@
 ---
-tags: ['python', 'selenium', 'bs4']
-title: How to find the status of youtube livestream with web scrapping in python
-description: By leveraging a web browser we can extract the livestream status from a upcoming video from a youtube channel.
+tags: ['python', 'selenium', 'bs4', 'youtube', 'web scraping']
+title: Checking whether a YouTube channel is live with Selenium and BeautifulSoup
+description: A Python script that loads a YouTube channel page in a remote Selenium browser and parses the HTML to tell whether its latest stream is live or upcoming.
 pubDate: Fri, 10 Feb 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3750534419.png"
 ---
-YouTube is a video-sharing website where users can upload, share, and view videos. It was founded in February 2005 and later acquired by Google in November 2006. It has since become one of the largest and most popular websites on the internet, offering a wide variety of content, including music videos, educational videos, movie trailers, and more. Users can also interact with each other by commenting on videos, giving "thumbs up" or "thumbs down" ratings, and subscribing to other users' channels. YouTube is available on various devices, including computers, smartphones, and smart TVs.
 
+This script comes from [fdrtt](https://github.com/dli-invest/fdrtt), a project for transcribing finance livestreams (such as Federal Reserve press conferences) in real time. Before transcribing, it needs to know whether a channel is streaming right now, has a stream scheduled, or neither. YouTube's channel pages are rendered with JavaScript, so a plain `requests.get` doesn't return the video list. The script loads the page in a real browser through Selenium and parses the rendered HTML with BeautifulSoup.
 
-Transcribing Federal Reserve livestreams in real time is important for investors because the statements made by Federal Reserve officials can have a significant impact on financial markets. The Federal Reserve is the central bank of the United States, and its policies and statements on monetary policy, economic conditions, and interest rates can have a major effect on the stock market, the bond market, and the value of the US dollar.
+Install the dependencies:
 
-By transcribing the livestreams in real time, investors can quickly and accurately obtain information and insights from the Federal Reserve's statements. This can help them make informed investment decisions and respond to market changes as they occur. Additionally, real-time transcription allows investors to more effectively analyze and interpret the Federal Reserve's statements, giving them a competitive advantage in a fast-paced and constantly-changing market.
+```bash
+pip install selenium beautifulsoup4 dateparser
+```
 
-In short, transcribing Federal Reserve livestreams in real time is important for investors because it allows them to stay up-to-date on the central bank's statements and respond quickly to market changes, which can have a significant impact on their investments.
+## Parsing the channel page
 
-
-```python 
- """
-author: FriendlyUser
-description: grab livestream data from url using selenium, (need a browser for youtube)
-create database entries to track livestreams, check if livestream is live or upcoming and exclude certain channels with never ending livestreams.
+```python
 """
+Grab livestream data from a YouTube channel page using Selenium
+(a browser is needed because the page is rendered with JavaScript),
+and check whether the latest stream is live or upcoming.
+"""
+import os
+import sys
+import time
 
 import bs4
-import time
-from selenium import webdriver
-import os
 import dateparser
+from selenium import webdriver
 
-def get_livestreams_from_html(data: str):
+
+def get_livestreams_from_html(data: str) -> list[dict]:
     """
-        gets livestream from html from youtube channel and determines if it is live or upcoming.
-        Returns dict:
-          time: time of livestream
-          channel: channel name
-          status: LIVE or UPCOMING or none
+    Find the first video on a channel page and work out whether it is live or upcoming.
+    Returns a list of dicts with keys:
+      date: scheduled time (datetime) for upcoming streams, otherwise None
+      status: the thumbnail overlay label (e.g. "LIVE") or "UPCOMING"
+      watch_url: relative URL of the video, e.g. /watch?v=...
     """
-    # get text data from url using requests
     try:
-
         soup = bs4.BeautifulSoup(data, "html.parser")
-
         livestream_data = []
         first_section = soup.find("ytd-item-section-renderer")
 
+        # The featured video on the channel home page, if there is one
         title_wrapper = first_section.find("ytd-channel-video-player-renderer")
-        if title_wrapper == None:
+        if title_wrapper is None:
             watch_link = first_section.find("a", {"class": "yt-simple-endpoint style-scope ytd-video-renderer"})
-            watch_url = watch_link.get("href")
         else:
-            channel_title = title_wrapper.find("yt-formatted-string")
-            watch_link = channel_title.find("a")
-            watch_url = watch_link.get("href")
-        # get video_id 
-        # sample <a id="thumbnail" class="yt-simple-endpoint inline-block style-scope ytd-thumbnail" aria-hidden="true" tabindex="-1" rel="null" href="/watch?v=wl1p_H6ckt4">
-        # https://www.youtube.com/BloombergTV style-scope ytd-thumbnail-overlay-time-status-renderer
-        ytd_thumbnail_overlay_time_status_renderer = first_section.find("ytd-thumbnail-overlay-time-status-renderer")
-        # try to find ytd-video-renderer and get href
+            watch_link = title_wrapper.find("yt-formatted-string").find("a")
+        watch_url = watch_link.get("href")
 
-        if ytd_thumbnail_overlay_time_status_renderer is None:
-            # try to grab upcoming livestream
-            scheduled_text = first_section.find("ytd-video-meta-block")
-            run_time = scheduled_text.get_text()
-            # parse strings like August 22 at 6:00 AM
-            # remove words like at
-            run_str = run_time.replace("Scheduled for", "").strip()
-            parsed_date =  dateparser.parse(run_str)
-            livestream_data.append({"date": parsed_date, "status": "UPCOMING", "watch_url": watch_url})
+        # Live videos have a time-status overlay on the thumbnail (e.g. "LIVE")
+        overlay = first_section.find("ytd-thumbnail-overlay-time-status-renderer")
+        if overlay is None:
+            # No overlay: look for "Scheduled for August 22 at 6:00 AM"
+            scheduled_text = first_section.find("ytd-video-meta-block").get_text()
+            run_str = scheduled_text.replace("Scheduled for", "").strip()
+            livestream_data.append(
+                {"date": dateparser.parse(run_str), "status": "UPCOMING", "watch_url": watch_url}
+            )
         else:
-            livestream_label = ytd_thumbnail_overlay_time_status_renderer.get_text()
-            if livestream_label is not None:
-                livestream_data.append({"date": None, "status": livestream_label.strip(), "watch_url": watch_url})
+            livestream_data.append(
+                {"date": None, "status": overlay.get_text().strip(), "watch_url": watch_url}
+            )
         return livestream_data
     except Exception as e:
-        print(e)
-        print("Error getting data from url")
-        return [] 
- ```
+        print(f"Error parsing channel page: {e}")
+        return []
+```
 
-This code uses the BeautifulSoup library and Selenium WebDriver to scrape a YouTube channel for live stream data. The function `get_livestreams_from_html` takes in an HTML string as input and returns a list of dictionaries, each representing a live stream event.
+The function looks at the first section of the channel page and finds the URL of the first video. Then it checks the thumbnail:
 
-The function first creates a BeautifulSoup object from the input HTML string and then searches the HTML tree for specific elements that contain information about the live streams. It checks if the live stream is currently happening or if it's scheduled to happen in the future, and if it's live, it checks if it's never ending. If the live stream is never ending, the function does not include that event in the list of live streams.
+- If it has a `ytd-thumbnail-overlay-time-status-renderer` overlay, the overlay text is used as the status. For a live stream this is `LIVE`. For an ordinary video it's the duration (e.g. `12:34`), which the main block treats as "no stream".
+- If it doesn't, the video is treated as upcoming, and `dateparser` turns text like "August 22 at 6:00 AM" into a `datetime`.
 
-The function uses the dateparser library to parse dates from strings, such as "August 22 at 6:00 AM". The live stream events are returned as a list of dictionaries, each containing the date and time of the event, the channel name, and the status of the event (live or upcoming).
+The selectors depend on YouTube's current markup. Any missing element raises an exception, and the function returns an empty list.
 
-This code can be used as a starting point for a more comprehensive script that scrapes live streams from YouTube, but it may need to be adapted to fit the specific needs of the user.
+## Loading the page with a remote browser
 
-
-```python 
- 
+```python
 def get_webdriver():
     remote_url = os.environ.get("REMOTE_SELENIUM_URL")
     if remote_url is None:
-        raise Exception("Missing REMOTE_SELENIUM_URL in env vars")
-    return webdriver.Remote(
-        command_executor=remote_url,
-    )
+        raise RuntimeError("Missing REMOTE_SELENIUM_URL in env vars")
+    # Selenium 4 requires an options object for Remote
+    return webdriver.Remote(command_executor=remote_url, options=webdriver.ChromeOptions())
 
-def get_html_from_url(url: str):
-    """
-        gets html from url
-    """
-    # get text data from url using requests
+
+def get_html_from_url(url: str) -> str:
     driver = get_webdriver()
-    driver.get(url)
-    time.sleep(10)
-    # return html from page source
-    return driver.page_source
+    try:
+        driver.get(url)
+        time.sleep(10)  # give YouTube's JavaScript time to render the video list
+        return driver.page_source
+    finally:
+        driver.quit()
+
 
 if __name__ == "__main__":
-    # TODO expand this to get all channels from config file, probably ini file
-    # html = get_html_from_url("https://www.youtube.com/c/YahooFinance")
+    # TODO: read channels from a config file
     html = get_html_from_url("https://www.youtube.com/c/YahooFinance")
-    # html = get_html_from_url("https://www.youtube.com/BloombergTV")
-    # TODO fix code so it works for upcoming livestreams that arent periodic
     livestream_data = get_livestreams_from_html(html)
 
     base_url = "https://www.youtube.com"
-    # check if LIVE or UPCOMING
     for livestream in livestream_data:
         if livestream["status"] == "LIVE":
             print("LIVE")
@@ -127,18 +115,25 @@ if __name__ == "__main__":
             print(data)
         elif livestream["status"] == "UPCOMING":
             print("UPCOMING")
-            exit(0)
+            sys.exit(0)
         else:
             print("NONE")
-            exit(1) 
- ```
+            sys.exit(1)
+```
 
-This code is using the Selenium WebDriver to automate the web browser and retrieve the HTML content of a YouTube channel. The channel URL is hardcoded as "<https://www.youtube.com/c/YahooFinance>" in the `get_html_from_url` function, but it could be updated to read from a configuration file, as noted in the TODO comment.
+The browser runs on a Selenium Grid or standalone container (for example `selenium/standalone-chrome`), and its URL is read from `REMOTE_SELENIUM_URL`. Since Selenium 4, `webdriver.Remote` needs an `options` object, so the original call without one no longer works. The `finally: driver.quit()` closes the remote session. Without it, every run leaves a browser open on the grid until it times out.
 
-After retrieving the HTML, the code uses the `get_livestreams_from_html` function to extract information about the livestreams on the channel, if any. It then checks the status of each livestream, and if the status is "LIVE", it prints the information, including the URL of the livestream on YouTube and some additional data. If the status is "UPCOMING", the code exits with status code 0. If the status is neither "LIVE" nor "UPCOMING", the code exits with status code 1.
+When the channel is live, the script builds the full watch URL and the data the transcriber needs. The exit codes let a CI job or shell script decide what to do next: 0 if a stream is upcoming, 1 if there is nothing.
 
+## Gotchas
 
+- This is screen scraping. YouTube renames its `ytd-*` elements and reorders channel pages from time to time, and when it does the selectors break. Check them against the live page with your browser's dev tools.
+- A fixed `time.sleep(10)` is slow and can still be too short. A `WebDriverWait` on the `ytd-item-section-renderer` element is more reliable.
+- The function only looks at the first video, so channels that run a never-ending 24/7 stream will always show as `LIVE`.
+- If you have an API key, the YouTube Data API's `search.list` with `channelId`, `type=video` and `eventType=live` (or `upcoming`) gives the same answer without a browser. It uses API quota, though.
 
 ## References
+
 - https://github.com/dli-invest/fdrtt/blob/main/livestream_scrapper.py
 - https://github.com/dli-invest/fdrtt
+- [Selenium: Remote WebDriver](https://www.selenium.dev/documentation/webdriver/drivers/remote_webdriver/)

@@ -1,84 +1,96 @@
 ---
-title: Leveraging Rust's Type System for Safe and Efficient Code
+title: "Using Rust's type system to catch bugs: newtypes, enums and traits"
 pubDate: "2024-10-20T17:44:24.000Z"
-description: "In this article , we will discuss how Rust's type system can be used to create safe and efficient code"
-tags: []
+lastUpdated: 2026-11-14
+description: "Three Rust type-system techniques that turn runtime bugs into compile errors: newtypes for units, enums for errors, and traits for shared behaviour."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2851628136.png
 ---
-# Leveraging Rust's Type System for Safe and Efficient Code
 
-Rust is a system programming language that aims to provide safety, concurrency, and performance. One of the key features that set Rust apart from other languages is its powerful type system. In this article, we will discuss how Rust's type system can be used to create safe and efficient code.
+Rust checks a lot at compile time: types, exhaustive `match` arms, ownership and borrowing, and whether a value can be sent between threads (`Send`/`Sync`). You can push more of your own rules into that checking by choosing types carefully. This post walks through three common techniques.
 
-## Introduction to Rust's Type System
+A note on inference: Rust's type inference is in the Hindley-Milner family, but it works only inside function bodies. Function signatures must spell out their types, which keeps errors local and makes signatures double as documentation.
 
-Rust's type system is based on the Hindley-Milner type system, which is a powerful and expressive way of describing types. The type system enforces many safety guarantees at compile-time, allowing Rust programs to run with minimal runtime overhead. Some of the main features of Rust's type system include:
+## Newtypes for values that shouldn't be mixed
 
-1. **Strong static typing**: Rust enforces strict type checking at compile-time, which helps catch many errors before the code is run.
-
-2. **Algebraic data types**: Rust supports sum types (enums) and product types (structs), which allow developers to create complex data structures with ease.
-
-3. **Pattern matching**: Rust's pattern matching capabilities make it easy to destructure complex data types and perform exhaustive case analysis.
-
-4. **Ownership and borrowing**: Rust's ownership system helps manage memory and prevent data races by enforcing strict rules for accessing and modifying data.
-
-5. **Generics and traits**: Rust's generics and traits allow developers to write reusable and type-safe code.
-
-Let's look at some examples of how Rust's type system can help us create safe and efficient code.
-
-## Example 1: Enforcing Invariants with Newtypes
-
-In Rust, you can create a newtype by wrapping a primitive type in a tuple struct. Newtypes allow you to enforce invariants at the type level, which can help catch errors at compile-time.
-
-For example, suppose you are developing a temperature conversion library. To prevent mixing up Celsius and Fahrenheit values, you can create newtypes for each:
+A newtype is a tuple struct with one field. It wraps an existing type to give it a distinct identity. `Celsius` and `Fahrenheit` are both `f64` underneath, but the compiler treats them as unrelated types:
 
 ```rust
+#[derive(Debug, Clone, Copy)]
 struct Celsius(f64);
+
+#[derive(Debug, Clone, Copy)]
 struct Fahrenheit(f64);
-```
 
-Now, if you try to mix up Celsius and Fahrenheit values, the Rust compiler will catch the error:
+impl From<Fahrenheit> for Celsius {
+    fn from(f: Fahrenheit) -> Self {
+        Celsius((f.0 - 32.0) * 5.0 / 9.0)
+    }
+}
 
-```rust
-fn add_temperatures(c: Celsius, f: Fahrenheit) -> Celsius {
-    // This will not compile because you cannot add a Celsius and a Fahrenheit value directly
-    Celsius(c.0 + f.0)
+fn average(a: Celsius, b: Celsius) -> Celsius {
+    Celsius((a.0 + b.0) / 2.0)
+}
+
+fn main() {
+    let indoor = Celsius(21.0);
+    let outdoor = Fahrenheit(50.0);
+
+    // average(indoor, outdoor);
+    // error[E0308]: mismatched types: expected `Celsius`, found `Fahrenheit`
+
+    let avg = average(indoor, outdoor.into());
+    println!("{avg:?}"); // Celsius(15.5)
 }
 ```
 
-By using newtypes, you can enforce these invariants at the type level and catch errors early in the development process.
+The wrapper usually compiles to the same code as a bare `f64`, so there's no runtime cost. Add `#[repr(transparent)]` if you need the layout to be guaranteed identical, for example across FFI.
 
-## Example 2: Leveraging Enums for Error Handling
+The protection only applies where the types are used. Code that can see the `.0` field can still write `Celsius(c.0 + f.0)`, and that will compile happily. To make the rule hard to break, put the newtype in its own module, keep the field private, and expose only constructors and conversions like the `From` impl above.
 
-In Rust, you can use enums to create custom error types. Enums in Rust are algebraic data types that can hold multiple variants. This makes them ideal for representing different error conditions.
+## Enums for errors
 
-For example, suppose you are implementing a function that reads an integer from a string. You might encounter two types of errors: a parsing error or an out-of-range error. You can represent these errors with an enum:
+An enum lists every way an operation can fail, and `match` forces callers to handle each case:
 
 ```rust
+use std::num::ParseIntError;
+
+#[derive(Debug)]
 enum ReadIntError {
-    ParseError(std::num::ParseIntError),
-    OutOfRange,
+    Parse(ParseIntError),
+    OutOfRange(i32),
 }
 
-fn read_int(s: &str) -> Result<i32, ReadIntError> {
-    let n = s.parse::<i32>().map_err(ReadIntError::ParseError)?;
-    if n < 0 || n > 100 {
-        Err(ReadIntError::OutOfRange)
-    } else {
+fn read_percent(s: &str) -> Result<i32, ReadIntError> {
+    let n = s.trim().parse::<i32>().map_err(ReadIntError::Parse)?;
+    if (0..=100).contains(&n) {
         Ok(n)
+    } else {
+        Err(ReadIntError::OutOfRange(n))
+    }
+}
+
+fn main() {
+    for input in ["42", "250", "abc"] {
+        match read_percent(input) {
+            Ok(n) => println!("{input}: ok ({n})"),
+            Err(ReadIntError::Parse(e)) => println!("{input}: not a number ({e})"),
+            Err(ReadIntError::OutOfRange(n)) => println!("{input}: {n} is outside 0-100"),
+        }
     }
 }
 ```
 
-By using enums for error handling, you can create expressive and type-safe error types that make it easy to handle and propagate errors.
+If you add a variant later, every `match` that doesn't handle it stops compiling. That points you to each call site that needs updating. In a larger codebase, implement `std::fmt::Display` and `std::error::Error` for the enum, or derive them with the [`thiserror`](https://crates.io/crates/thiserror) crate. An `impl From<ParseIntError> for ReadIntError` would also let `?` do the conversion without `map_err`.
 
-## Example 3: Using Traits for Abstraction and Polymorphism
+## Traits for shared behaviour
 
-In Rust, traits are a way to define shared behavior between types. Traits can be used for abstraction and polymorphism, allowing you to write reusable and type-safe code.
-
-For example, suppose you are implementing a function that calculates the area of different geometric shapes. You can define a trait `Area` and implement it for each shape:
+A trait declares behaviour that several types implement. A generic function bounded by that trait accepts any of them, and the compiler checks every call:
 
 ```rust
+use std::f64::consts::PI;
+
 trait Area {
     fn area(&self) -> f64;
 }
@@ -94,7 +106,7 @@ struct Rectangle {
 
 impl Area for Circle {
     fn area(&self) -> f64 {
-        std::f64::consts::PI * self.radius * self.radius
+        PI * self.radius * self.radius
     }
 }
 
@@ -103,20 +115,22 @@ impl Area for Rectangle {
         self.width * self.height
     }
 }
-```
 
-Now, you can write a function that takes any type that implements the `Area` trait and calculates the combined area:
+fn combined_area(a: &impl Area, b: &impl Area) -> f64 {
+    a.area() + b.area()
+}
 
-```rust
-fn combined_area<T: Area, U: Area>(shape1: &T, shape2: &U) -> f64 {
-    shape1.area() + shape2.area()
+fn main() {
+    let c = Circle { radius: 1.0 };
+    let r = Rectangle { width: 2.0, height: 3.0 };
+    println!("{:.3}", combined_area(&c, &r)); // 9.142
 }
 ```
 
-By using traits, you can write generic and type-safe code that works with multiple types.
+Generic functions are monomorphized: the compiler emits a specialized copy for each concrete type, so calls are static and can be inlined. If you need a single collection that holds different shapes, use `Vec<Box<dyn Area>>`, which trades that for a runtime vtable lookup.
 
-## Conclusion
+## Further reading
 
-In this article, we have explored how Rust's type system can be used to create safe and efficient code. By leveraging features like newtypes, enums, and traits, Rust developers can enforce invariantsat the type level, create expressive error handling, and write reusable and type-safe code. The strong static typing, pattern matching, and ownership system further enhance Rust's ability to catch errors at compile-time and minimize runtime overhead.
-
-As a result, Rust's type system plays a crucial role in ensuring that your code is robust, maintainable, and efficient. By understanding and utilizing the features of Rust's type system, you can create high-quality software that stands up to the demands of modern systems programming.
+- [The Rust Book: using the newtype pattern](https://doc.rust-lang.org/book/ch20-02-advanced-traits.html#using-the-newtype-pattern-to-implement-external-traits-on-external-types)
+- [The Rust Book: recoverable errors with `Result`](https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html)
+- [Rust API Guidelines: type safety](https://rust-lang.github.io/api-guidelines/type-safety.html)

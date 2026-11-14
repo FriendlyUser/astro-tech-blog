@@ -1,133 +1,184 @@
 ---
-description: In this article, we'll explore the different access control levels provided
-  in Swift and how to use them effectively
+description: "Swift's six access levels (private, fileprivate, internal, package, public, open), what each one allows, and the defaults and rules that trip people up."
 imgSrc: /imgs/2023/549017699.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-28T21:42:20.000Z'
-tags: []
-title: Understanding Access Control in Swift
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Access control in Swift: private, fileprivate, internal, package, public and open"
 ---
 
-# Understanding Access Control in Swift
+Swift's access control decides which code can see a declaration: the same type, the same file, the same module, the same package, or anyone who imports the module. It's how a framework hides its implementation and exposes a small public API, and inside an app it stops one file from reaching into another type's internals.
 
-Swift's access control mechanism is designed to provide a way to restrict access to parts of your code from other parts of your code, as well as from external codebases. This ensures that internal implementation details remain hidden, creating a clean public API and promoting modularity and encapsulation. In this article, we'll explore the different access control levels provided in Swift and how to use them effectively.
+## The six levels
 
-## Access Control Levels
+From most to least restrictive:
 
-Swift has five access control levels, listed below from the most restrictive to the least restrictive:
+| Level | Visible to |
+| --- | --- |
+| `private` | The enclosing declaration, plus extensions of it in the same file |
+| `fileprivate` | The whole source file |
+| `internal` (default) | The whole module |
+| `package` | Every module in the same Swift package (Swift 5.9+) |
+| `public` | Any module that imports it, but it can't be subclassed or overridden outside the module |
+| `open` | Any module that imports it, and classes and members can be subclassed and overridden there |
 
-1. `private`
-2. `fileprivate`
-3. `internal`
-4. `public`
-5. `open`
+A "module" is one build target: an app, a framework, or a SwiftPM target.
 
-### Private
+### private
 
-`private` access restricts the accessibility of an entity to the enclosing declaration, and to extensions of that declaration within the same file. This access level is the most restrictive, and it is intended for use when an entity should only be available within a specific context.
+`private` limits access to the enclosing type and its extensions in the same file. Extensions have been included since Swift 4. Before that, `private` meant the declaration's scope only.
 
 ```swift
-class MyClass {
-    private var privateVar = "This variable is accessible only within MyClass"
+class Counter {
+    private var count = 0
 
-    func accessPrivateVar() {
-        print(privateVar) // This is OK because we're inside MyClass
+    func increment() {
+        count += 1  // OK: inside Counter
     }
 }
 
-extension MyClass {
-    func anotherAccessToPrivateVar() {
-        print(privateVar) // This is OK because we're in an extension of MyClass within the same file
+extension Counter {
+    func reset() {
+        count = 0   // OK: extension of Counter in the same file
     }
 }
 
-let myInstance = MyClass()
-myInstance.accessPrivateVar() // This will print the value of privateVar
-myInstance.privateVar // This will cause a compile-time error because privateVar is not accessible outside of MyClass
+let counter = Counter()
+counter.increment()
+// counter.count  // error: 'count' is inaccessible due to 'private' protection level
 ```
 
-### Fileprivate
-
-`fileprivate` access restricts the accessibility of an entity to its defining source file. This access level is useful when you want to make an entity available to other types defined within the same file but prevent access from other files.
+A common variant is `private(set)`. It makes the setter private but leaves the getter at the declaration's level:
 
 ```swift
-class MyClass {
-    fileprivate var fileprivateVar = "This variable is accessible only within the same file"
+class Counter {
+    private(set) var count = 0  // anyone can read count; only Counter can change it
+}
+```
+
+### fileprivate
+
+`fileprivate` opens access to everything in the same source file, including other types:
+
+```swift
+class Engine {
+    fileprivate var temperature = 90
 }
 
-class AnotherClassInSameFile {
-    func accessFileprivateVar() {
-        let myInstance = MyClass()
-        print(myInstance.fileprivateVar) // This is OK because we're inside the same file
+class Dashboard {
+    func showTemperature(of engine: Engine) {
+        print(engine.temperature)  // OK: same file
     }
 }
-
-let anotherInstance = AnotherClassInSameFile()
-anotherInstance.accessFileprivateVar() // This will print the value of fileprivateVar
 ```
 
-### Internal
+Use it when two closely related types in one file need to share details. If you reach for it often, the types may belong together.
 
-`internal` access allows an entity to be accessed within the entire module that includes the definition of the entity. This access level is the default if you do not explicitly specify an access level.
+### internal
+
+`internal` is the default. If you don't write an access modifier, the declaration is visible throughout its module and invisible outside it. For app code, that's usually all you need.
 
 ```swift
-// In ModuleA
-class MyClass {
-    internal var internalVar = "This variable is accessible within the same module"
+// Module: Networking
+public class APIClient {
+    public init() {}
+
+    var retryCount = 3        // internal by default
+
+    public func fetch() { /* ... */ }
 }
-
-let myInstance = MyClass()
-print(myInstance.internalVar) // This is OK because we're inside the same module (ModuleA)
-
-// In ModuleB, which imports ModuleA
-import ModuleA
-
-let anotherInstance = MyClass()
-print(anotherInstance.internalVar) // This will cause a compile-time error because internalVar is not accessible outside of ModuleA
 ```
-
-### Public
-
-`public` access allows an entity to be accessed from any source file within the module that includes the definition of the entity, as well as from any external module that imports the module containing the entity. However, subclasses and overrides of `public` entities can only be created within the defining module.
 
 ```swift
-// In ModuleA
-public class MyClass {
-    public var publicVar = "This variable is accessible from any module that imports ModuleA"
-}
+// Module: App
+import Networking
 
-// In ModuleB, which imports ModuleA
-import ModuleA
-
-let myInstance = MyClass()
-print(myInstance.publicVar) // This is OK because publicVar is accessible from any module that imports ModuleA
+let client = APIClient()
+client.fetch()        // OK: public
+// client.retryCount  // error: 'retryCount' is inaccessible due to 'internal' protection level
 ```
 
-### Open
+Note that the class needs a `public init()`. A type's default initialiser is `internal`, so without it the App module could see `APIClient` but not create one.
 
-`open` access is the least restrictive access level, allowing an entity to be accessed from any source file within the module that includes the definition of the entity, as well as from any external module that imports the module containing the entity. Unlike `public` access, `open` access allows subclasses and overrides of the entity to be created in any module that imports the defining module.
+### package
+
+`package`, added in Swift 5.9 ([SE-0386](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0386-package-access-modifier.md)), sits between `internal` and `public`. It makes a declaration visible to other targets in the same Swift package but not to clients of the package. Before it existed, sharing helpers between targets meant making them `public` and hoping nobody used them.
 
 ```swift
-// In ModuleA
-open class MyBaseClass {
-    open var openVar = "This variable is accessible from any module that imports ModuleA and can be subclassed and overridden"
-}
+// Target: Core (in package MyLibrary)
+import Foundation
 
-// In ModuleB, which imports ModuleA
-import ModuleA
-
-class MyDerivedClass: MyBaseClass {
-    override var openVar: String {
-        didSet {
-            print("The value of openVar has changed")
-        }
-    }
-}
-
-let myInstance = MyDerivedClass()
-myInstance.openVar = "New value" // This is OK because openVar is accessible from any module that imports ModuleA and can be subclassed and overridden
+package func makeRequestID() -> String { UUID().uuidString }
 ```
 
-## Conclusion
+```swift
+// Target: Networking (same package)
+import Core
 
-Swift's access control mechanism allows developers to manage the visibility of their code, ensuring that internal implementation details remain hidden and promoting modularity and encapsulation. By understanding the different access control levels and how they interact, you can create more robust and maintainable Swift applications.
+let id = makeRequestID()  // OK: same package
+```
+
+SwiftPM passes the package name to the compiler automatically. If you build outside SwiftPM, you set it with the `-package-name` flag.
+
+### public
+
+`public` makes a declaration usable from other modules. For classes, it doesn't allow subclassing or overriding outside the defining module:
+
+```swift
+// Module: UIKitLite
+public class Button {
+    public init() {}
+    public func tap() { print("tapped") }
+}
+```
+
+```swift
+// Module: App
+import UIKitLite
+
+let button = Button()
+button.tap()  // OK
+
+// class FancyButton: Button {}
+// error: cannot inherit from non-open class 'Button' outside of its defining module
+```
+
+### open
+
+`open` applies only to classes and overridable class members. It's `public` plus permission to subclass and override from other modules. Each member must opt in separately:
+
+```swift
+// Module: UIKitLite
+open class View {
+    public init() {}
+
+    open func draw() { print("View.draw") }   // can be overridden anywhere
+    public func layout() { print("layout") }  // callable anywhere, overridable only here
+}
+```
+
+```swift
+// Module: App
+import UIKitLite
+
+class ChartView: View {
+    override func draw() { print("ChartView.draw") }  // OK: draw() is open
+    // override func layout() {}
+    // error: overriding non-open instance method outside of its defining module
+}
+
+ChartView().draw()  // ChartView.draw
+```
+
+## Rules that trip people up
+
+- **Members of a public type are internal by default.** Marking a type `public` doesn't make its properties, methods or initialiser public; you mark each one.
+- **Nothing can be more visible than the types it uses.** A `public` function can't take or return an `internal` type, and a `public` property can't have a `private` type. The compiler reports these errors.
+- **Overrides can widen access.** A subclass may make an overridden member more accessible than the superclass version.
+- **Tests:** `@testable import MyModule` lets a test target see `internal` declarations, as long as the module was built with testing enabled (Xcode and SwiftPM do this for debug builds by default).
+- **Imports have access levels too.** Since Swift 6.0 ([SE-0409](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0409-access-level-on-imports.md)) you can write `internal import Foo` so a dependency doesn't leak into your module's public interface.
+
+## Further reading
+
+- [Access Control, The Swift Programming Language](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/)

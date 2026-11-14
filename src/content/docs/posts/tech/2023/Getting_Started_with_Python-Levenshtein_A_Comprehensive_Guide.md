@@ -1,103 +1,104 @@
 ---
-description: In this article, we will discuss how to install and use the Python-Levenshtein
-  library in your Python projects
+description: How to install the Levenshtein package (formerly python-Levenshtein) and use distance, ratio, Jaro-Winkler and editops to compare strings in Python.
 imgSrc: /imgs/2023/3708253319.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-08T13:34:49.000Z'
-tags: []
-title: Getting Started with Python-Levenshtein A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags:
+  - python
+title: 'Python Levenshtein: edit distance and string similarity in Python'
 ---
 
-# Getting Started with Python-Levenshtein: A Comprehensive Guide
+The Levenshtein distance between two strings is the minimum number of single-character insertions, deletions and substitutions needed to turn one into the other. `kitten` → `sitting` is 3: substitute k→s, substitute e→i, insert g. The `Levenshtein` package computes this (and a few related similarity measures) in C++, so it is much faster than a pure-Python implementation.
 
-Python-Levenshtein is a fast implementation of the Levenshtein distance algorithm, also known as the edit distance. The Levenshtein distance is a measure of the similarity between two strings, defined as the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one string into the other. In this article, we will discuss how to install and use the Python-Levenshtein library in your Python projects.
+:::note
+The project used to be published as `python-Levenshtein`. It is now maintained under the [rapidfuzz](https://github.com/rapidfuzz/Levenshtein) organisation as `Levenshtein`; `python-Levenshtein` still exists but is only a wrapper that depends on it. Install `Levenshtein` directly. The import name is `Levenshtein` either way.
+:::
 
-## Table of Contents
-
-1. Prerequisites
-2. Installation
-3. Basic Usage
-4. Advanced Usage
-5. Use Cases
-6. Conclusion
-
-## 1. Prerequisites
-
-Before we dive into the installation and usage of Python-Levenshtein, ensure that you have the following installed on your system:
-
-- Python 3.6 or higher
-- pip (Python package manager)
-
-## 2. Installation
-
-To install Python-Levenshtein, simply run the following command in your terminal or command prompt:
+## Installation
 
 ```bash
-pip install python-Levenshtein
+pip install Levenshtein
 ```
 
-This will download and install the library and its dependencies. Once the installation is complete, you can start using Python-Levenshtein in your Python projects.
+Version 0.27.5 (the current release when this was revised) requires Python 3.11 or newer. The package is licensed GPL-2.0-or-later, which matters if you ship it inside proprietary software; [RapidFuzz](https://github.com/rapidfuzz/RapidFuzz), which `Levenshtein` is built on, offers the same metrics under the MIT licence.
 
-## 3. Basic Usage
-
-Here's a simple example demonstrating how to use Python-Levenshtein to calculate the Levenshtein distance between two strings:
+## Distance
 
 ```python
 import Levenshtein
 
-string1 = "kitten"
-string2 = "sitting"
-
-distance = Levenshtein.distance(string1, string2)
-
-print(f"The Levenshtein distance between '{string1}' and '{string2}' is {distance}")
+print(Levenshtein.distance("kitten", "sitting"))  # 3
 ```
 
-Output:
+`distance` also takes a `score_cutoff`. If the real distance is larger than the cutoff, it returns `score_cutoff + 1` and can stop early, which helps when you only care about "close enough" matches:
 
+```python
+print(Levenshtein.distance("kitten", "sitting", score_cutoff=2))  # 3, i.e. "more than 2"
 ```
-The Levenshtein distance between 'kitten' and 'sitting' is 3
-```
 
-## 4. Advanced Usage
+## Ratio and Jaro-Winkler
 
-Python-Levenshtein also provides additional functions for calculating the ratio and the Jaro-Winkler distance between two strings. Here's an example demonstrating their usage:
+Raw distances are hard to compare across strings of different lengths, so the package also gives normalised scores between 0 and 1:
 
 ```python
 import Levenshtein
 
-string1 = "Python"
-string2 = "Pythin"
+a, b = "Python", "Pythin"
 
-## Calculate the Levenshtein distance
-distance = Levenshtein.distance(string1, string2)
-
-## Calculate the similarity ratio
-ratio = Levenshtein.ratio(string1, string2)
-
-## Calculate the Jaro-Winkler distance
-jaro_winkler = Levenshtein.jaro_winkler(string1, string2)
-
-print(f"Distance: {distance}\nRatio: {ratio}\nJaro-Winkler: {jaro_winkler}")
+print(Levenshtein.distance(a, b))      # 1
+print(Levenshtein.ratio(a, b))         # 0.8333333333333334
+print(Levenshtein.jaro(a, b))          # 0.888888888888889
+print(Levenshtein.jaro_winkler(a, b))  # 0.9333333333333333
 ```
 
-Output:
+- `ratio` is `1 - indel_distance / (len(a) + len(b))`, where the indel distance only allows insertions and deletions (a substitution counts as two edits). Here that is 1 − 2/12.
+- `jaro` counts matching characters within a sliding window and penalises transpositions.
+- `jaro_winkler` boosts the Jaro score when the strings share a prefix (up to 4 characters). `Python` and `Pythin` share `Pyth`, so the score rises from 0.889 to 0.933. It works well for short strings such as names.
 
+## Seeing the edits
+
+`editops` and `opcodes` tell you *which* edits make up the distance, which is useful for highlighting differences:
+
+```python
+from Levenshtein import opcodes
+
+for op in opcodes("kitten", "sitting"):
+    print(op)
 ```
-Distance: 1
-Ratio: 0.8333333333333334
-Jaro-Winkler: 0.8666666666666667
+
+```text
+('replace', 0, 1, 0, 1)
+('equal', 1, 4, 1, 4)
+('replace', 4, 5, 4, 5)
+('equal', 5, 6, 5, 6)
+('insert', 6, 6, 6, 7)
 ```
 
-## 5. Use Cases
+Each tuple is `(tag, a_start, a_end, b_start, b_end)`, the same format as `difflib.SequenceMatcher.get_opcodes()`.
 
-Python-Levenshtein can be used in various applications, including:
+## A small spelling suggester
 
-- Spell checking: Identifying and correcting misspelled words based on their similarity to correctly spelled words in a dictionary
-- Text clustering: Grouping similar text documents together, such as in search engines or document management systems
-- Data deduplication: Identifying and removing duplicate records in a dataset based on their similarity
-- Sequence alignment: Comparing DNA or protein sequences in bioinformatics applications
+```python
+from Levenshtein import distance
 
-## 6. Conclusion
+words = ["apple", "apply", "ample", "maple", "angle"]
+typo = "appel"
 
-In this article, we covered the basics of installing and using the Python-Levenshtein library to calculate the Levenshtein distance between strings. We also touched upon some advanced features and potential use cases for the library. Python-Levenshtein provides a fast and efficient way to compare strings and can be a valuable addition to your Python projects.
+ranked = sorted(words, key=lambda w: distance(typo, w))
+print(ranked[:3])  # ['apple', 'apply', 'ample']
+```
+
+This compares the typo against every word, which is fine for a few thousand entries. For large dictionaries or fuzzy matching across big datasets, use `rapidfuzz.process.extract`, which batches the comparisons and supports cutoffs, or an index such as a BK-tree.
+
+## Gotchas
+
+- Comparisons are case- and whitespace-sensitive. Normalise first (`.lower()`, `.strip()`, Unicode normalisation) if that is not what you want.
+- Edit distance measures spelling, not meaning. "car" and "automobile" are far apart.
+- `Levenshtein.ratio` returns 0–1. The `fuzz.ratio` in `thefuzz`/`rapidfuzz` uses the same indel-based measure but scales it to 0–100, so don't mix thresholds between the two.
+
+## Further reading
+
+- [Levenshtein documentation](https://rapidfuzz.github.io/Levenshtein/)
+- [Levenshtein on PyPI](https://pypi.org/project/Levenshtein/)
+- [RapidFuzz documentation](https://rapidfuzz.github.io/RapidFuzz/)

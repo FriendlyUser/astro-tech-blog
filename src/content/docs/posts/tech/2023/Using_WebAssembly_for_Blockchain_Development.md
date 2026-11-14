@@ -1,55 +1,55 @@
 ---
-title: Using WebAssembly for Blockchain Development
+title: "WebAssembly in blockchains: where Wasm runs smart contracts and runtimes"
 pubDate: "2024-07-08T16:04:22.000Z"
-description: "In this article , we will explore the benefits of using WebAssembly for blockchain development, its impact on the industry, and some examples of its implementation"
-tags: []
+lastUpdated: 2026-11-14
+description: "Why some blockchains execute smart contracts or runtimes as WebAssembly, which chains do it (NEAR, CosmWasm, Antelope, Arbitrum Stylus, Polkadot), and the catches."
+tags: ['dapp']
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/DALL?E 2023-01-07 13.46.29 - banana spaceship.png
 ---
-# Using WebAssembly for Blockchain Development
 
-Blockchain technology has made tremendous strides in recent years, with various platforms and programming languages emerging to facilitate decentralized application (dApp) development. One of the most significant advancements in this space has been the introduction of WebAssembly (Wasm) as a compilation target for smart contract languages. In this article, we will explore the benefits of using WebAssembly for blockchain development, its impact on the industry, and some examples of its implementation.
+A blockchain needs a virtual machine that every node runs identically: given the same transaction and state, every node must produce the same result. Ethereum built its own VM (the EVM) for this. Several other chains chose WebAssembly (Wasm) instead, so contracts can be written in general-purpose languages like Rust, C++ or Go and run on an existing, well-specified VM.
 
-## What is WebAssembly?
+## What Wasm brings
 
-WebAssembly is a binary instruction format designed as a portable target for the compilation of high-level languages like C, C++, and Rust, enabling deployment on the web for client and server applications. It is a low-level virtual machine that runs code at near-native speed by taking advantage of common hardware capabilities available on a wide range of platforms. Wasm is designed to be a low-level virtual machine that closely mimics the execution environment of actual hardware.
+Wasm is a compact, typed bytecode format with a formal specification. Compilers for Rust, C/C++, Go (via TinyGo) and AssemblyScript can target it, and several mature engines can execute it (Wasmtime, Wasmer, wasmi). For a chain, that means:
 
-## Benefits of WebAssembly in Blockchain Development
+- **Existing languages and tooling.** Contract authors use Rust or C++ with their usual compilers, test frameworks and libraries, instead of a chain-specific language.
+- **Sandboxing.** A Wasm module can only touch its own linear memory and the host functions the chain explicitly imports into it (read storage, emit an event, call another contract). There's no ambient access to the file system or network.
+- **Validation before execution.** Modules are type-checked when loaded, so malformed bytecode is rejected before it runs.
+- **Speed.** Wasm can be compiled ahead of time or JIT-compiled to machine code, which is usually much faster than interpreting a stack-based VM. Some chains still interpret it (wasmi) because an interpreter is easier to make deterministic and to meter.
 
-There are several benefits to adopting WebAssembly for blockchain development:
+## The catches
 
-### 1. Performance
+Wasm wasn't designed for consensus, so chains have to add things the spec doesn't give them:
 
-WebAssembly is designed for efficient execution, offering near-native performance. This is an essential consideration for blockchain projects, which often require significant computational resources. Wasm's compact binary format allows for faster parsing and execution, reducing the overhead associated with interpreting higher-level languages.
+- **Determinism.** A few Wasm behaviours, notably the bit pattern of floating-point NaN results, are allowed to differ between engines. Chains either forbid floating-point instructions in contracts or configure the engine to canonicalise NaNs.
+- **Gas metering.** Wasm has no notion of gas. Chains typically instrument the bytecode at upload time, inserting counters that charge gas per block of instructions, so that an infinite loop runs out of gas instead of halting the network.
+- **Bounded resources.** Memory growth, stack depth and module size all need hard limits that every node enforces the same way.
+- **Contract size.** Rust compiled to Wasm can be large; projects strip panicking/formatting code and run `wasm-opt` to fit size limits.
 
-### 2. Language Agnosticism
+Wasm also doesn't give you cross-chain interoperability by itself. Two chains that both run Wasm still expose different host functions, storage models and account systems, so a contract written for one won't run on another without porting.
 
-Wasm provides a compilation target for various high-level languages, allowing developers to write smart contracts in their preferred programming language. This flexibility can lead to a more inclusive developer ecosystem, as well as improved code quality and maintainability.
+## Where Wasm is used
 
-### 3. Security
+- **NEAR**: smart contracts are compiled to Wasm, written mainly in Rust or JavaScript/TypeScript using NEAR's SDKs.
+- **CosmWasm**: a Wasm smart-contract module that Cosmos SDK chains can add; contracts are written in Rust.
+- **Antelope (formerly EOSIO)**: the codebase behind EOS and related chains runs contracts written in C++ and compiled to Wasm.
+- **Arbitrum Stylus**: an upgrade to the Arbitrum One and Nova Ethereum layer-2 networks, live on mainnet since September 2024, that runs Wasm contracts (Rust, C, C++) alongside EVM contracts, with the two able to call each other.
+- **Polkadot / Polkadot SDK (formerly Substrate)**: the *runtime* (the chain's state-transition logic) is compiled to Wasm and stored on chain, which is how Polkadot-based chains upgrade without hard forks. Smart contracts are a separate story: the older `pallet-contracts` ran ink! contracts as Wasm, and chains such as Astar still use it, but Polkadot Hub's newer `pallet-revive` runs contracts on PolkaVM, a RISC-V-based VM, instead of Wasm.
 
-WebAssembly offers a sandboxed execution environment, isolating smart contracts from the underlying system. This isolation improves the security of the blockchain platform by limiting potential attack vectors and reducing the impact of potential vulnerabilities. Additionally, Wasm's strong typing and validation mechanisms can help prevent common programming errors.
+### What about Ethereum?
 
-### 4. Interoperability
+Ethereum researched a Wasm-based VM called eWASM in the Ethereum 2.0 era, but it was never adopted. Ethereum mainnet still executes contracts on the EVM, including after the move to proof of stake in 2022. The closest thing to "Wasm on Ethereum" today is a layer 2 such as Arbitrum Stylus.
 
-The adoption of WebAssembly as a standard for smart contract execution enables improved interoperability between different blockchain platforms. By providing a common runtime environment, it becomes easier for developers to create cross-chain applications and services, fostering greater collaboration and innovation across the industry.
+## When Wasm is the wrong choice
 
-## Examples of WebAssembly in Blockchain
+If you're building on Ethereum or any EVM chain, the ecosystem (Solidity, audit tooling, wallets, existing contracts) matters more than the VM, and Wasm doesn't help. Wasm contract platforms make most sense when you want Rust's type system and testing tools for contract code, or when you're building your own chain and want an existing VM rather than designing one.
 
-Several blockchain platforms have adopted WebAssembly as their smart contract execution environment:
+## Further reading
 
-### 1. Ethereum 2.0
-
-Ethereum 2.0 aims to improve the scalability, security, and sustainability of the Ethereum network. One of the key innovations in Ethereum 2.0 is the Ethereum WebAssembly (eWasm) engine, which replaces the Ethereum Virtual Machine (EVM) for executing smart contracts. eWasm offers several performance and security enhancements, enabling Ethereum to better handle the demands of modern decentralized applications.
-
-### 2. Polkadot
-
-Polkadot, a heterogeneous multi-chain platform, uses WebAssembly as its primary smart contract execution environment. Polkadot's Substrate framework allows developers to build custom blockchains with Wasm-based runtime modules, enabling seamless integration with the Polkadot ecosystem.
-
-### 3. EOS.IO
-
-EOS.IO, a high-performance blockchain platform, uses WebAssembly as its smart contract engine. By leveraging Wasm's efficiency and flexibility, the EOS.IO platform aims to provide a scalable and user-friendly environment for dApp development.
-
-## Conclusion
-
-The adoption of WebAssembly for blockchain development has brought significant advancements to the industry. Its performance, security, and language agnosticism have made it an attractive choice for smart contract execution, while its potential for improved interoperability paves the way for greater collaboration and innovation. As more blockchain platforms continue to adopt and integrate WebAssembly, we can expect to see even more powerful and versatile decentralized applications in the future.
+- [WebAssembly specification](https://webassembly.github.io/spec/)
+- [NEAR smart contracts](https://docs.near.org/smart-contracts/what-is)
+- [CosmWasm documentation](https://cosmwasm.github.io/)
+- [Arbitrum Stylus](https://docs.arbitrum.io/stylus/gentle-introduction)
+- [Polkadot smart contracts overview](https://docs.polkadot.com/polkadot-protocol/smart-contract-basics/overview)

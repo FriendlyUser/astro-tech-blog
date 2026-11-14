@@ -1,110 +1,114 @@
 ---
-description: This article outlines several best practices to keep in mind when creating
-  and maintaining Swift packages.
+description: "Practical conventions for Swift packages: naming, layout, access control including package, DocC comments, tests, semantic versioning and a clean Package.swift."
 imgSrc: /imgs/2023/1900267581.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-16T15:57:18.000Z'
-tags: []
-title: Best Practices for Writing Swift Packages
+lastUpdated: 2026-11-14
+tags:
+  - swift
+  - testing
+title: "Swift package conventions: layout, access control, tests and versioning"
 ---
 
-# Best Practices for Writing Swift Packages
+A Swift package is a directory with a `Package.swift` manifest that Swift Package Manager (SwiftPM) and Xcode can build, test and pull in as a dependency. These are the conventions that make a package easy to depend on and easy to maintain.
 
-Swift packages are a powerful tool to modularize and share your code across multiple projects. Following best practices during the development of your Swift packages enables you to create a robust, maintainable, and easy-to-use code base. This article outlines several best practices to keep in mind when creating and maintaining Swift packages.
+## Naming
 
-## 1. Choose a clear and descriptive package name
+Module and product names become `import` statements, so use UpperCamelCase names that say what the code does: `NetworkClient`, `DateParsing`. The repository name is separate and often lowercase with hyphens, as in Apple's `swift-algorithms` repository, which ships the `Algorithms` module. Avoid generic names like `Utils` that are likely to collide with another dependency's module.
 
-Select a name that clearly describes the package's purpose and distinguishes it from other packages. Use camel case for readability and avoid using special characters or spaces.
+## Layout
 
-**Example**: `NetworkManager` or `DateHelper`
+SwiftPM finds targets by convention: sources in `Sources/<TargetName>`, tests in `Tests/<TestTargetName>`. Splitting code into several targets keeps compile times down and lets you keep helper code out of the public product.
 
-## 2. Organize your code
-
-Organize your code into clear, logical modules based on functionality. Use separate folders and files to keep your code clean and easy to navigate. Follow the Swift Package Manager convention of placing your source files in the `Sources` folder and your tests in the `Tests` folder.
-
-```
+```text
 MyPackage
 ├── Package.swift
 ├── Sources
-�?   ├── MyPackage
-�?   �?   ├── Models
-�?   �?   ├── Views
-�?   �?   └── Controllers
-�?   └── MyPackageSupport
+│   ├── MyPackage
+│   │   ├── Models
+│   │   └── Networking
+│   └── MyPackageSupport
 └── Tests
     ├── MyPackageTests
     └── MyPackageSupportTests
 ```
 
-## 3. Use access control
+## Access control
 
-Swift provides five levels of access control, from most restrictive to least restrictive:
+Swift has six access levels, from least to most restrictive:
 
-1. `private`
-2. `fileprivate`
-3. `internal`
-4. `public`
-5. `open`
+1. `open`: visible outside the module and can be subclassed or overridden there
+2. `public`: visible outside the module, but not subclassable or overridable there
+3. `package`: visible to other modules in the same package only (Swift 5.9 and later)
+4. `internal`: the default; visible within the module
+5. `fileprivate`: visible within the source file
+6. `private`: visible within the enclosing declaration (and its extensions in the same file)
 
-Use these access control keywords to encapsulate the implementation details of your package, exposing only the necessary API.
+Anything `public` is part of your API and covered by your version promises, so make the public surface as small as you can. `package` is the level to use when `MyPackageSupport` needs to share helpers with `MyPackage` without exposing them to users of the package.
 
-## 4. Write clear and concise documentation
+## Documentation comments
 
-Good documentation is essential for a maintainable and easy-to-use package. Use inline comments and Markdown-formatted documentation comments to describe the purpose and usage of your code. Provide examples when necessary.
+Write `///` comments in Markdown. Xcode shows them in Quick Help, and DocC builds them into a documentation site.
 
-```swift
-/// Represents a point in a two-dimensional coordinate system.
+````swift
+/// A point in a two-dimensional coordinate system.
 ///
-/// Example usage:
-///
-///     let point = Point(x: 3, y: 4)
-///     print(point.distanceFromOrigin()) // Prints "5.0"
-///
+/// ```swift
+/// let point = Point(x: 3, y: 4)
+/// print(point.distanceFromOrigin()) // Prints "5.0"
+/// ```
 public struct Point {
     public let x: Double
     public let y: Double
 
-    /// Computes the distance between this point and the origin.
-    ///
-    /// - Returns: The distance between this point and the origin.
+    public init(x: Double, y: Double) {
+        self.x = x
+        self.y = y
+    }
+
+    /// Returns the distance between this point and the origin.
     public func distanceFromOrigin() -> Double {
-        return sqrt(x * x + y * y)
+        (x * x + y * y).squareRoot()
     }
 }
-```
+````
 
-## 5. Write thorough unit tests
+Two fixes compared to the earlier version of this example. A `public` struct needs an explicit `public init`, because the memberwise initializer Swift generates is `internal` and other modules can't call it. And `squareRoot()` is in the standard library, while the free function `sqrt` needs `import Foundation`.
 
-Writing tests for your package ensures its functionality and helps prevent regressions when making changes. Aim for high test coverage and use XCTest to write and run your tests.
+## Tests
+
+Test the public API the way a consumer would. With XCTest:
 
 ```swift
 import XCTest
 @testable import MyPackage
 
-final class MyPackageTests: XCTestCase {
-    func testPointDistanceFromOrigin() {
+final class PointTests: XCTestCase {
+    func testDistanceFromOrigin() {
         let point = Point(x: 3, y: 4)
         XCTAssertEqual(point.distanceFromOrigin(), 5.0, accuracy: 0.001)
     }
 }
 ```
 
-## 6. Use semantic versioning
+Run them with `swift test`. Toolchains from Swift 6 on also ship Swift Testing (`import Testing`, `@Test`, `#expect`), which can sit in the same test target as XCTest tests. Drop `@testable` from at least some tests so you catch symbols you forgot to make public.
 
-Adopt [Semantic Versioning](https://semver.org/) for your package, which uses the format `MAJOR.MINOR.PATCH`. Increment the:
+## Semantic versioning
 
-- MAJOR version when you make incompatible API changes,
-- MINOR version when you add functionality in a backward-compatible manner, and
-- PATCH version when you make backward-compatible bug fixes.
+SwiftPM resolves dependencies from Git tags and assumes [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 
-This allows package users to understand the nature of updates and manage dependencies more easily.
+- MAJOR for incompatible API changes
+- MINOR for backward-compatible additions
+- PATCH for backward-compatible fixes
 
-## 7. Keep the `Package.swift` file clean and informative
+A dependency declared with `from: "1.2.0"` accepts anything up to, but not including, `2.0.0`. Removing or renaming a public symbol in a minor release breaks everyone who used that rule. Versions below 1.0.0 make no stability promise, so treat each `0.x` minor bump as potentially breaking.
 
-The `Package.swift` file is the manifest of your package. Keep it clean, well-structured, and provide necessary metadata. Specify package dependencies, targets, and products.
+## Package.swift
+
+Keep the manifest declarative and minimal: products, dependencies, targets, and only the platforms you actually support. The first line sets the minimum SwiftPM version needed to read the manifest. 5.9 is the first that understands `package` access.
 
 ```swift
-// swift-tools-version:5.5
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
@@ -116,24 +120,30 @@ let package = Package(
         .tvOS(.v13),
     ],
     products: [
-        .library(
-            name: "MyPackage",
-            targets: ["MyPackage"]),
+        .library(name: "MyPackage", targets: ["MyPackage"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-algorithms", from: "0.3.0"),
+        .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
     ],
     targets: [
         .target(
             name: "MyPackage",
             dependencies: [
+                "MyPackageSupport",
                 .product(name: "Algorithms", package: "swift-algorithms"),
-            ]),
-        .testTarget(
-            name: "MyPackageTests",
-            dependencies: ["MyPackage"]),
+            ]
+        ),
+        .target(name: "MyPackageSupport"),
+        .testTarget(name: "MyPackageTests", dependencies: ["MyPackage"]),
+        .testTarget(name: "MyPackageSupportTests", dependencies: ["MyPackageSupport"]),
     ]
 )
 ```
 
-By following these best practices in your Swift package development, you can create a robust, maintainable, and easy-to-use code base that greatly benefits the Swift community.
+`swift-algorithms` 1.2.1 is the current release; `from: "1.2.0"` picks it up. Commit `Package.resolved` for apps, but libraries usually leave it out, because consumers resolve versions themselves.
+
+## Further reading
+
+- [Swift Package Manager documentation](https://www.swift.org/documentation/package-manager/)
+- [SE-0386: the `package` access modifier](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0386-package-access-modifier.md)
+- [DocC documentation](https://www.swift.org/documentation/docc/)

@@ -1,67 +1,47 @@
 ---
-description: In this article, we'll explore the key concepts of SPM, how to create
-  a new Swift package, and how to add and manage dependencies in your projects
+description: Create a Swift package from the command line, add a dependency such as Alamofire to Package.swift, and update, pin or remove dependencies with SwiftPM.
 imgSrc: /imgs/2023/3867963691.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-26T13:34:45.000Z'
-tags: []
-title: How to Use the Swift Package Manager
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: 'Swift Package Manager basics: creating a package and managing dependencies'
 ---
 
-# How to Use the Swift Package Manager
+Swift Package Manager (SwiftPM) is the build tool and dependency manager that ships with Swift. It is built into Xcode and the `swift` command-line tool, and it is the default way to share Swift code now that CocoaPods' Trunk repository is going read-only (on 2 December 2026). This post creates a library package, adds a dependency, and covers updating and removing it.
 
-Swift Package Manager (SPM) is a powerful dependency management tool developed by Apple for the Swift programming language. It streamlines the process of adding, updating, and managing dependencies for your Swift projects. In this article, we'll explore the key concepts of SPM, how to create a new Swift package, and how to add and manage dependencies in your projects.
+## Key concepts
 
-## Table of Contents
+- **Package**: a directory with a `Package.swift` manifest at its root, plus sources and tests.
+- **Target**: a module, a set of source files compiled together. Regular targets, executable targets, test targets, plugins and macros are all targets.
+- **Product**: what a package exposes to others, either a library or an executable, built from one or more targets.
+- **Dependency**: another package, declared in the manifest with a URL (or local path) and a version requirement. A target then depends on one of that package's products.
 
-1. [Key Concepts of Swift Package Manager](#key-concepts)
-2. [Creating a New Swift Package](#creating-package)
-3. [Adding Dependencies](#adding-dependencies)
-4. [Updating and Removing Dependencies](#updating-removing)
-5. [Conclusion](#conclusion)
+## Creating a package
 
-<a name="key-concepts"></a>
-## 1. Key Concepts of Swift Package Manager
-
-Before diving into SPM, it's important to understand its key concepts:
-
-- **Package**: A package is a collection of Swift source files organized to provide reusable functionality. It defines a module that can be imported in other Swift projects. A package consists of the source code and a manifest file, `Package.swift`, which describes the package and its dependencies.
-
-- **Target**: A target is a set of source files that are compiled together to create a module. A package can have multiple targets, such as libraries, executables, and test suites.
-
-- **Product**: A product is a library or executable built from one or more targets. Products are what other packages can use as dependencies.
-
-- **Dependency**: A dependency is a package that is required by another package. Dependencies are specified in the package manifest file.
-
-<a name="creating-package"></a>
-## 2. Creating a New Swift Package
-
-To create a new Swift package, open Terminal and navigate to the directory where you want to create the package. Then, run the following command:
-
-```
-swift package init --type library
+```bash
+mkdir MyPackage
+cd MyPackage
+swift package init
 ```
 
-This command creates a new package with a library target. If you want to create an executable package, replace `library` with `executable`.
+`swift package init` creates a library package by default. Use `--type executable` for a command-line program, or `--type tool` for one that uses `swift-argument-parser`. The result looks like this:
 
-The new package will have the following structure:
-
-```
+```text
 MyPackage
 ├── Package.swift
 ├── Sources
-�?   └── MyPackage
-�?       └── MyPackage.swift
+│   └── MyPackage
+│       └── MyPackage.swift
 └── Tests
     └── MyPackageTests
-        ├── MyPackageTests.swift
-        └── XCTestManifests.swift
+        └── MyPackageTests.swift
 ```
 
-Now, open the `Package.swift` file to edit the package manifest. The initial manifest looks like this:
+Recent toolchains generate tests using Swift Testing (`import Testing`, `@Test`) rather than XCTest. The manifest looks like this (the generator adds explanatory comments, removed here):
 
 ```swift
-// swift-tools-version:5.3
+// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
@@ -69,79 +49,100 @@ let package = Package(
     products: [
         .library(
             name: "MyPackage",
-            targets: ["MyPackage"]),
-    ],
-    dependencies: [
+            targets: ["MyPackage"]
+        ),
     ],
     targets: [
         .target(
-            name: "MyPackage",
-            dependencies: []),
+            name: "MyPackage"
+        ),
         .testTarget(
             name: "MyPackageTests",
-            dependencies: ["MyPackage"]),
+            dependencies: ["MyPackage"]
+        ),
     ]
 )
 ```
 
-<a name="adding-dependencies"></a>
-## 3. Adding Dependencies
+The first line is not a plain comment: `swift-tools-version` sets the minimum Swift version that can read the manifest and which `PackageDescription` APIs it may use. `swift package init` writes the version of the toolchain you ran it with.
 
-To add a dependency to your package, update the `dependencies` array in the `Package.swift` file. For example, to add Alamofire, a popular networking library, add the following line to the `dependencies` array:
+Check that everything works:
 
-```swift
-.package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.0")
-```
-
-Next, add the dependency to the targets that need it. In this case, add `"Alamofire"` to the `dependencies` array of the `MyPackage` target:
-
-```swift
-.target(name: "MyPackage", dependencies: ["Alamofire"])
-```
-
-Your updated `Package.swift` should look like this:
-
-```swift
-// swift-tools-version:5.3
-import PackageDescription
-
-let package = Package(
-    name: "MyPackage",
-    products: [
-        .library(
-            name: "MyPackage",
-            targets: ["MyPackage"]),
-    ],
-    dependencies: [
-        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.0"),
-    ],
-    targets: [
-        .target(
-            name: "MyPackage",
-            dependencies: ["Alamofire"]),
-        .testTarget(
-            name: "MyPackageTests",
-            dependencies: ["MyPackage"]),
-    ]
-)
-```
-
-Now, build your project to fetch and compile the dependencies:
-
-```
+```bash
 swift build
+swift test
 ```
 
-<a name="updating-removing"></a>
-## 4. Updating and Removing Dependencies
+## Adding a dependency
 
-To update a dependency, update its version in the `dependencies` array of the package manifest, and then run `swift build` to fetch the new version.
+A dependency is declared in two places: the package-level `dependencies` array says where to fetch the package and which versions are allowed, and each target that uses it lists one of the package's products. Here is the manifest with [Alamofire](https://github.com/Alamofire/Alamofire) added:
 
-To remove a dependency, remove its entry from the `dependencies` array and the `dependencies` array of the targets that use it. Then, run `swift package update` to update the package resolution.
+```swift
+// swift-tools-version: 6.0
+import PackageDescription
 
-<a name="conclusion"></a>
-## 5. Conclusion
+let package = Package(
+    name: "MyPackage",
+    platforms: [.macOS(.v12), .iOS(.v15)],
+    products: [
+        .library(
+            name: "MyPackage",
+            targets: ["MyPackage"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.12.2"),
+    ],
+    targets: [
+        .target(
+            name: "MyPackage",
+            dependencies: [
+                .product(name: "Alamofire", package: "Alamofire"),
+            ]
+        ),
+        .testTarget(
+            name: "MyPackageTests",
+            dependencies: ["MyPackage"]
+        ),
+    ]
+)
+```
 
-In this article, we've covered the basics of using the Swift Package Manager to create a new package, add dependencies, and manage them. SPM streamlines the process of working with dependencies, making it easier to build and maintain Swift projects.
+A few details:
 
-As you become more comfortable with SPM, you can explore more advanced features, such as conditional dependencies and custom build settings. To learn more, refer to the [official Swift Package Manager documentation](https://swift.org/package-manager/).
+- `from: "5.12.2"` means "5.12.2 or newer, below 6.0.0". Use `.upToNextMinor(from:)` for a tighter range, `exact:` to pin one version, or `branch:`/`revision:` for unreleased code.
+- `package:` in `.product(name:package:)` is the package's identity, which is the last path component of the URL without `.git`.
+- `platforms` is there because the manifest Alamofire 5.12 uses with the newest Swift tools version declares a minimum of macOS 12 and iOS 15. If your package's minimum is lower than a dependency's, SwiftPM refuses to build it, so set yours at least as high.
+
+Recent toolchains can make the same edits from the command line. Run `swift package add-dependency --help` to check that your version has it:
+
+```bash
+swift package add-dependency https://github.com/Alamofire/Alamofire.git --from 5.12.2
+swift package add-target-dependency Alamofire MyPackage --package Alamofire
+```
+
+Then `swift build` resolves the dependency, clones it, and writes the exact versions it chose to `Package.resolved`.
+
+In an Xcode app project, which has no `Package.swift`, use **File > Add Package Dependencies…** instead and pick the target to link the product to.
+
+## Updating and removing dependencies
+
+SwiftPM does not move to a newer version on its own once `Package.resolved` exists:
+
+- `swift package update` re-resolves every dependency to the newest version allowed by the manifest and rewrites `Package.resolved`. Pass a package name (`swift package update Alamofire`) to update just one.
+- To allow a new major version, change the requirement in `Package.swift` (for example to `from: "6.0.0"`), then run `swift package update`.
+- `swift package resolve` resolves without updating, using the pinned versions where it can.
+- `swift package show-dependencies` prints the resolved dependency tree.
+
+To remove a dependency, delete its `.package(...)` entry and every `.product(...)` that refers to it, then run `swift package update` so `Package.resolved` drops it.
+
+## Gotchas
+
+- Commit `Package.resolved` for apps and executables, so every machine and CI run builds the same versions. Libraries often leave it out, because consumers resolve versions themselves.
+- If resolution gets stuck after editing the manifest, `swift package reset` clears the `.build` directory's checkouts and state.
+- Version tags must be full semantic versions (`1.2.0`, not `1.2`), or SwiftPM ignores them.
+
+## Further reading
+
+- [Swift Package Manager documentation](https://www.swift.org/documentation/package-manager/)
+- [PackageDescription API reference](https://developer.apple.com/documentation/packagedescription)

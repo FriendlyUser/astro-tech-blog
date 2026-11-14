@@ -1,126 +1,158 @@
 ---
 tags: ['python', 'weather']
-title: Getting started with APIs in Python by building a weather app
-description: Describing how to build a weather app in Python
+title: Build a tkinter weather app in Python with the OpenWeatherMap API
+description: Call the OpenWeatherMap geocoding and current-weather APIs with requests, handle errors, and show temperature, humidity and conditions in a small tkinter window.
 pubDate: Mon, 20 September 2023
+lastUpdated: 2026-11-14
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/3842597075.png'
 ---
 
-APIs (Application Programming Interfaces) are a great way to retrieve data from external sources, such as weather data from weather APIs. Here's an example of how to retrieve weather data using the OpenWeatherMap API with Python:
+A weather app is a good first API project. You send an HTTP request, get JSON back, and pull out a few fields. This post uses the [OpenWeatherMap](https://openweathermap.org/api) free tier and the `requests` library. The first part fetches the weather in a plain script; the second wraps it in a tkinter window.
 
-1. Sign up for an API key: To use the OpenWeatherMap API, you'll need to sign up for an API key on their website.
-2. Install the requests library: The requests library is a popular Python library for making HTTP requests, which you'll need to retrieve data from the OpenWeatherMap API. You can install the requests library using pip:
+## Setup
 
+1. Create a free account on OpenWeatherMap and copy your API key from the account page. New keys can take a while to activate, so a `401` right after sign-up usually just means "wait".
+2. Install `requests`:
+
+   ```bash
+   pip install requests
+   ```
+
+3. Keep the key out of your source code. Set it as an environment variable, for example `export OPENWEATHER_API_KEY=...` on macOS/Linux or `setx OPENWEATHER_API_KEY ...` on Windows. Open a new terminal after `setx`, because it doesn't change the current one.
+
+## Fetch the current weather
+
+OpenWeatherMap has deprecated looking up current weather by city name with `/data/2.5/weather?q=...`. It still works, but the [docs](https://openweathermap.org/current) say it no longer gets fixes. The recommended approach takes two calls. First, the [Geocoding API](https://openweathermap.org/api/geocoding-api) turns the city name into coordinates. Then the current-weather endpoint looks up those coordinates.
 
 ```python
-pip install requests
-```
-3. Send a request to the OpenWeatherMap API: To retrieve weather data, you'll need to send a request to the OpenWeatherMap API with your API key and the location you're interested in. Here's an example:
+import os
 
-
-```python
 import requests
 
-api_key = 'your-api-key'
-city = 'New York'
-url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}'
+API_KEY = os.environ["OPENWEATHER_API_KEY"]
 
-response = requests.get(url)
-weather_data = response.json()
+
+def get_weather(city: str) -> dict:
+    # 1. City name -> latitude/longitude
+    geo = requests.get(
+        "https://api.openweathermap.org/geo/1.0/direct",
+        params={"q": city, "limit": 1, "appid": API_KEY},
+        timeout=10,
+    )
+    geo.raise_for_status()
+    places = geo.json()
+    if not places:
+        raise ValueError(f"City not found: {city}")
+    place = places[0]
+
+    # 2. Coordinates -> current weather, in Celsius
+    resp = requests.get(
+        "https://api.openweathermap.org/data/2.5/weather",
+        params={"lat": place["lat"], "lon": place["lon"], "units": "metric", "appid": API_KEY},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+
+    return {
+        "place": f"{place['name']}, {place['country']}",
+        "temperature": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "description": data["weather"][0]["description"],
+    }
+
+
+if __name__ == "__main__":
+    print(get_weather("New York"))
 ```
-In this example, we're sending a GET request to the OpenWeatherMap API with our API key and the name of the city we're interested in (New York). The API will respond with weather data in JSON format, which we can parse using the `json` method.
 
-4. Extract the weather data: Once we have the weather data, we can extract the relevant information we're interested in. Here's an example:
+Some details worth knowing:
 
+- Without `units`, temperatures come back in Kelvin. `units=metric` returns Celsius and `units=imperial` returns Fahrenheit, so you don't need to subtract 273.15 yourself.
+- Passing `params=` lets `requests` URL-encode the city name. Writing `?q={city}` into an f-string breaks on names with spaces or accents.
+- `raise_for_status()` turns a bad key (401) or other HTTP errors into an exception. Without it, `response.json()` returns an error body and the next `["main"]` lookup fails with a confusing `KeyError`.
+- `timeout=` stops the request from hanging forever on a bad network.
+
+## Add a tkinter window
+
+The GUI is an entry for the city, a button, and one label for the result. Errors appear in the same label instead of crashing the app.
 
 ```python
-description = weather_data['weather'][0]['description']
-temperature = weather_data['main']['temp'] - 273.15
-humidity = weather_data['main']['humidity']
-```
-In this example, we're extracting the weather description, temperature (in Celsius), and humidity from the JSON response.
-
-5. Use the weather data: Once we have the weather data, we can use it to make decisions, such as whether to wear a coat or bring an umbrella. We can also visualize the data using tools such as Matplotlib or Seaborn.
-
-APIs are a powerful tool for retrieving data from external sources, and can be used for a wide variety of applications, such as weather forecasting, stock market analysis, and social media sentiment analysis.
-
-
-Building a weather app using Python's tkinter library is a great way to practice your Python skills and create a useful application. Here's a general outline of the steps involved in building a weather app:
-
-1. Design the user interface: Before you start coding, it's important to design the user interface for your weather app. This will help you understand the layout of your app and the widgets you'll need to implement.
-2. Retrieve weather data: As described in the previous answer, you'll need to retrieve weather data using an API such as OpenWeatherMap. Make sure to store your API key securely and retrieve data using the requests library.
-3. Parse the weather data: Once you have the weather data, you'll need to extract the relevant information such as temperature, humidity, and weather description. You can use the json library to parse the JSON data.
-4. Display the weather data: After you've retrieved and parsed the weather data, you can display it in your app using labels or other widgets. You can also use icons or images to represent weather conditions.
-5. Implement user input: You can add functionality to allow the user to input a city or location, which will update the weather data displayed in the app. You can use entry widgets to allow the user to enter text and buttons to submit the query.
-6. Handle errors: Make sure to handle errors that may occur during the data retrieval and parsing process. You can use try-except blocks to handle exceptions and display error messages to the user.
-7. Add extra features: Once you have the basic functionality of your weather app working, you can add extra features such as multiple city support, unit conversion, or weather alerts.
-
-Here's an example code snippet that demonstrates how to retrieve and parse weather data using the OpenWeatherMap API:
-
-
-```python
-import requests
-import json
-
-api_key = 'your-api-key'
-city = 'New York'
-url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}'
-
-response = requests.get(url)
-weather_data = response.json()
-
-temperature = round(weather_data['main']['temp'] - 273.15, 2)
-humidity = weather_data['main']['humidity']
-description = weather_data['weather'][0]['description']
-```
-In this example, we're retrieving weather data for New York using the OpenWeatherMap API and parsing the temperature, humidity, and weather description from the JSON response. You can use these values to update the labels or other widgets in your weather app.
-
-
-To handle user inputs and display weather information in your weather app, you'll need to use the tkinter library to create widgets and bind them to event handlers. Here's an example code snippet that demonstrates how to create an entry widget and a button that retrieves weather data for a user-specified city:
-
-
-```python
+import os
 import tkinter as tk
+
 import requests
-import json
 
-api_key = 'your-api-key'
+API_KEY = os.environ["OPENWEATHER_API_KEY"]
 
-def get_weather():
- city = city_entry.get()
- url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}'
- response = requests.get(url)
- weather_data = response.json()
- temperature_label.config(text=f'Temperature: {round(weather_data["main"]["temp"] - 273.15, 2)}°C')
- humidity_label.config(text=f'Humidity: {weather_data["main"]["humidity"]}%')
- description_label.config(text=f'Description: {weather_data["weather"][0]["description"]}')
+
+def get_weather(city: str) -> dict:
+    geo = requests.get(
+        "https://api.openweathermap.org/geo/1.0/direct",
+        params={"q": city, "limit": 1, "appid": API_KEY},
+        timeout=10,
+    )
+    geo.raise_for_status()
+    places = geo.json()
+    if not places:
+        raise ValueError(f"City not found: {city}")
+    place = places[0]
+
+    resp = requests.get(
+        "https://api.openweathermap.org/data/2.5/weather",
+        params={"lat": place["lat"], "lon": place["lon"], "units": "metric", "appid": API_KEY},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return {
+        "place": f"{place['name']}, {place['country']}",
+        "temperature": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "description": data["weather"][0]["description"],
+    }
+
+
+def on_get_weather():
+    city = city_entry.get().strip()
+    if not city:
+        result_var.set("Enter a city name.")
+        return
+    try:
+        w = get_weather(city)
+    except (requests.RequestException, ValueError) as exc:
+        result_var.set(f"Error: {exc}")
+        return
+    result_var.set(
+        f"{w['place']}\n"
+        f"Temperature: {w['temperature']:.1f}°C\n"
+        f"Humidity: {w['humidity']}%\n"
+        f"Conditions: {w['description']}"
+    )
+
 
 root = tk.Tk()
-root.title('Weather App')
+root.title("Weather App")
 
-city_label = tk.Label(root, text='City:')
-city_label.grid(row=0, column=0)
-
+tk.Label(root, text="City:").grid(row=0, column=0, padx=5, pady=5)
 city_entry = tk.Entry(root)
-city_entry.grid(row=0, column=1)
+city_entry.grid(row=0, column=1, padx=5, pady=5)
+city_entry.bind("<Return>", lambda event: on_get_weather())
 
-get_weather_button = tk.Button(root, text='Get Weather', command=get_weather)
-get_weather_button.grid(row=1, column=0, columnspan=2)
+tk.Button(root, text="Get Weather", command=on_get_weather).grid(row=1, column=0, columnspan=2)
 
-temperature_label = tk.Label(root, text='Temperature:')
-temperature_label.grid(row=2, column=0)
-
-humidity_label = tk.Label(root, text='Humidity:')
-humidity_label.grid(row=3, column=0)
-
-description_label = tk.Label(root, text='Description:')
-description_label.grid(row=4, column=0)
+result_var = tk.StringVar(value="")
+tk.Label(root, textvariable=result_var, justify="left").grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
 root.mainloop()
 ```
-In this example, we've created an entry widget for the user to enter a city, a button to retrieve weather data, and labels to display the temperature, humidity, and weather description. The `get_weather` function is bound to the button's `command` attribute and retrieves weather data using the OpenWeatherMap API. The retrieved data is then parsed and displayed in the labels using the `config` method.
 
-When the user clicks the "Get Weather" button, the `get_weather` function is called, which retrieves weather data for the city specified in the entry widget. The temperature, humidity, and weather description are then displayed in the corresponding labels.
+Pressing Enter in the city box does the same as clicking the button.
 
-Note that this is just a basic example and you can customize the layout and functionality of your weather app to suit your needs. You can also add error handling and other features to make your app more robust and user-friendly.
+## Gotchas and next steps
+
+- The request runs on the GUI thread, so the window freezes until the API answers. That's fine for one quick call. For anything slower, run the request in a `threading.Thread` and update the label with `root.after(...)`.
+- An ambiguous name like "Springfield" returns the first match. Raise `limit` (up to 5) and let the user pick, or accept `city,state,country` input such as `Springfield,IL,US`.
+- The free tier is rate-limited. Cache results for a few minutes instead of calling the API on every click.
+- Each response includes an icon code in `weather[0]["icon"]`, which you can use to show a weather image next to the text.

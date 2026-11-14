@@ -1,240 +1,190 @@
 ---
-title: "How to create a simple chat server and client using Rust's networking capabilities"
-description: In this article, we will explore how to create a simple chat server and client using Rust's networking capabilities. We will use Rust's standard library to implement basic networking functionality and create a text-based interface for sending and receiving messages between clients.
+title: "Building a TCP chat server and client in Rust with std::net"
+description: "A small multi-client chat program using only Rust's standard library: TcpListener, one thread per client, and a shared map of connections for broadcasting."
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/176625275.png'
 ---
 
+This post builds a line-based chat program with nothing but the Rust standard library. One binary runs either as a server, which accepts connections and rebroadcasts every line it receives, or as a client, which sends what you type and prints what others send.
 
-Introduction
+The design is deliberately simple: one OS thread per connected client, and a `Mutex`-protected `HashMap` of client sockets that every thread can write to.
 
-In this article, we will explore how to create a simple chat server and client using Rust's networking capabilities. We will use Rust's standard library to implement basic networking functionality and create a text-based interface for sending and receiving messages between clients.
+## Project setup
 
-Setting up the Project
-
-To get started, we need to set up a new Rust project. To create a new Rust project, open a terminal window and run the following command:
-
-```
-$ cargo new chat_server
+```sh
+cargo new chat_server
+cd chat_server
 ```
 
-This command will create a new Rust project named `chat_server`. The project will contain a `Cargo.toml` file that describes the project's dependencies and a `src` directory that contains the project's source code.
+No dependencies are needed.
 
-The `Cargo.toml` file will look like this:
+## The shared client list
 
-```toml
-[package]
-name = "chat_server"
-version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
-edition = "2018"
-
-[dependencies]
-```
-
-We will add dependencies to the `Cargo.toml` file as we need them.
-
-Creating the Server
-
-To create the chat server, we will use Rust's standard library to implement basic networking functionality.
-
-We will create a function named `start_server` that will create a TCP listener on a specified port and accept incoming connections.
+Each client thread needs to write to every *other* client, so the sockets live in a map shared between threads:
 
 ```rust
-use std::io::{BufRead, BufReader};
-use std::net::{TcpListener, TcpStream};
+use std::collections::HashMap;
+use std::net::{SocketAddr, TcpStream};
+use std::sync::{Arc, Mutex};
 
-fn start_server(port: u32) {
-    let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).unwrap();
-    println!("Server listening on port {}", port);
-
-    for stream in listener.incoming() {
-        let stream = stream.unwrap();
-        println!("New client connected: {:?}", stream.peer_addr().unwrap());
-    }
-}
+type Clients = Arc<Mutex<HashMap<SocketAddr, TcpStream>>>;
 ```
 
-In this function, we use the `TcpListener` struct to create a TCP listener on the specified port. We then use a `for` loop to accept incoming connections and print a message for each new connection.
+The key is the client's address, which gives us an easy way to skip the sender and to remove a client when it disconnects. (`TcpStream` doesn't implement `PartialEq`, so you can't compare streams directly.)
 
-We will also create a function named `handle_client` that will handle communication with a single client. This function will take a `TcpStream` object as a parameter and read messages from the client.
+## The server
 
-```rust
-fn handle_client(stream: TcpStream) {
-    let mut reader = BufReader::new(&stream);
-
-    loop {
-        let mut buffer = String::new();
-        let bytes_read = reader.read_line(&mut buffer).unwrap();
-
-        if bytes_read == 0 {
-            break;
-        }
-
-        println!("Received message: {:?}", buffer.trim());
-
-        // TODO: Broadcast message to all clients
-    }
-
-    println!("Client disconnected: {:?}", stream.peer_addr().unwrap());
-}
-```
-
-In this function, we use a `BufReader` to read messages from the client. We use a `loop` to read messages continuously until the client disconnects. We print each message to the console and broadcast it to all connected clients (which we will implement later).
-
-Creating the Client
-
-To create the chat client, we will also use Rust's standard library to implement basic networking functionality and create a text-based interface for sending and receiving messages.
-
-We will create a function named `start_client` that will connect to a specified server and port and create a text-based interface for sending and receiving messages.
+`start_server` binds a listener, accepts connections in a loop, stores a clone of each socket in the map, and hands the original to a new thread:
 
 ```rust
-use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
+use std::io::{self, BufRead, BufReader, Write};
+use std::net::TcpListener;
 use std::thread;
 
-fn start_client(server: &str, port: u32) {
-    let mut stream = TcpStream::connect(format!("{}:{}", server, port)).unwrap();
-    println!("Connected to server {}:{}", server, port);
+fn start_server(addr: &str) -> io::Result<()> {
+    let listener = TcpListener::bind(addr)?;
+    println!("Server listening on {addr}");
 
-    let stream_clone = stream.try_clone().unwrap();
-    thread::spawn(move || {
-        handle_server_messages(stream_clone);
-    });
+    let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
-    let mut reader = BufReader::new(std::io::stdin());
+    for stream in listener.incoming() {
+        let stream = match stream {
+            Ok(stream) => stream,
+            Err(e) => {
+                eprintln!("Failed to accept connection: {e}");
+                continue;
+            }
+        };
+        let peer = stream.peer_addr()?;
+        println!("New client connected: {peer}");
 
-    loop {
-        let mut buffer = String::new();
-        reader.read_line(&mut buffer).unwrap();
+        // One handle goes in the shared map for broadcasting,
+        // the other is read by this client's thread.
+        clients.lock().unwrap().insert(peer, stream.try_clone()?);
 
-        if buffer.trim() == "/quit" {
-            break;
-        }
-
-        stream.write_all(buffer.as_bytes()).unwrap();
+        let clients = Arc::clone(&clients);
+        thread::spawn(move || handle_client(stream, peer, clients));
     }
 
+    Ok(())
+}
+```
+
+`try_clone` returns a second handle to the same socket. Reading from one handle while other threads write to the other is fine.
+
+`handle_client` reads lines until the client disconnects, broadcasts each line to everyone else, and removes the client from the map at the end:
+
+```rust
+fn handle_client(stream: TcpStream, peer: SocketAddr, clients: Clients) {
+    let reader = BufReader::new(stream);
+
+    for line in reader.lines() {
+        let Ok(line) = line else { break };
+        println!("{peer}: {line}");
+
+        let message = format!("{peer}: {line}\n");
+        let mut guard = clients.lock().unwrap();
+        for (addr, client) in guard.iter_mut() {
+            if *addr != peer {
+                // A failed write means that client is gone; its own
+                // thread will notice and remove it.
+                let _ = client.write_all(message.as_bytes());
+            }
+        }
+    }
+
+    clients.lock().unwrap().remove(&peer);
+    println!("Client disconnected: {peer}");
+}
+```
+
+`lines()` yields `None` when the client closes the connection and an `Err` on a socket error or invalid UTF-8; both end the loop.
+
+## The client
+
+The client needs to do two things at once: read your keyboard input and print incoming messages. A second thread handles the incoming side:
+
+```rust
+fn start_client(addr: &str) -> io::Result<()> {
+    let mut stream = TcpStream::connect(addr)?;
+    println!("Connected to {addr}. Type /quit to exit.");
+
+    let incoming = stream.try_clone()?;
+    thread::spawn(move || handle_server_messages(incoming));
+
+    for line in io::stdin().lines() {
+        let line = line?;
+        if line.trim() == "/quit" {
+            break;
+        }
+        writeln!(stream, "{line}")?;
+    }
+
+    Ok(())
+}
+
+fn handle_server_messages(stream: TcpStream) {
+    for line in BufReader::new(stream).lines() {
+        match line {
+            Ok(line) => println!("{line}"),
+            Err(_) => break,
+        }
+    }
     println!("Disconnected from server");
 }
 ```
 
-In this function, we use the `TcpStream` struct to connect to the specified server and port. We then create a separate thread to handle incoming messages from the server using the `handle_server_messages` function (which we will implement later).
+Messages are newline-terminated, which is what lets the server use `lines()` to split the byte stream into messages. TCP has no message boundaries of its own.
 
-We use a `BufReader` to read input from the user and send each message to the server using the `write_all` method of the `TcpStream` object. We use a `loop` to read input continuously until the user types `/quit` to disconnect from the server.
+## `main`
 
-Handling Communication
-
-To handle communication between clients, we will use a simple broadcast mechanism. Whenever a client sends a message, the server will broadcast the message to all connected clients.
-
-We will modify the `handle_client` function to take a reference to a vector of `TcpStream` objects as a parameter. This vector will contain all connected clients.
+The first argument picks the mode; the optional second argument is the address:
 
 ```rust
-fn handle_client(stream: TcpStream, clients: &mut Vec<TcpStream>) {
-let mut reader = BufReader::new(&stream);
+use std::env;
 
-  loop {
-      let mut buffer = String::new();
-      let bytes_read = reader.read_line(&mut buffer).unwrap();
+fn main() -> io::Result<()> {
+    let args: Vec<String> = env::args().collect();
+    let addr = args.get(2).map(String::as_str).unwrap_or("127.0.0.1:8080");
 
-      if bytes_read == 0 {
-          break;
-      }
-
-      println!("Received message: {:?}", buffer.trim());
-
-      for client in clients.iter_mut() {
-          if *client != stream {
-              client.write_all(buffer.as_bytes()).unwrap();
-          }
-      }
-  }
-
-  println!("Client disconnected: {:?}", stream.peer_addr().unwrap());
-  clients.retain(|client| *client != stream);
-}
-```
-
-In this modified function, we use a `for` loop to broadcast the message to all connected clients except for the client that sent the message. We use the `write_all` method of the `TcpStream` object to send the message to each client.
-
-We also add the connected client's `TcpStream` object to the vector of connected clients when a new client connects and remove it from the vector when the client disconnects.
-
-We will modify the `start_server` function to keep track of all connected clients using a vector of `TcpStream` objects.
-
-```rust
-fn start_server(port: u32) {
-    let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).unwrap();
-    println!("Server listening on port {}", port);
-
-    let mut clients = Vec::new();
-
-    for stream in listener.incoming() {
-        let stream = stream.unwrap();
-        println!("New client connected: {:?}", stream.peer_addr().unwrap());
-
-        clients.push(stream.try_clone().unwrap());
-
-        let clients_clone = clients.clone();
-        thread::spawn(move || {
-            handle_client(stream, &mut clients_clone);
-        });
-    }
-}
-```
-
-In this modified function, we create a vector of TcpStream objects named clients to keep track of all connected clients. When a new client connects, we push its TcpStream object to the clients vector and create a new thread to handle communication with the client using the handle_client function.
-
-We use the try_clone method of the TcpStream object to create a new TcpStream object for the new thread that represents the same connection. This allows multiple threads to communicate with the same client simultaneously.
-
-Handling Server Messages
-
-To handle incoming messages from the server, we will modify the start_client function to read messages from the server and print them to the console.
-
-```rust
-fn handle_server_messages(mut stream: TcpStream) {
-    let mut reader = BufReader::new(&stream);
-
-    loop {
-        let mut buffer = String::new();
-        let bytes_read = reader.read_line(&mut buffer).unwrap();
-
-        if bytes_read == 0 {
-            break;
+    match args.get(1).map(String::as_str) {
+        Some("server") => start_server(addr),
+        Some("client") => start_client(addr),
+        _ => {
+            eprintln!("usage: chat_server <server|client> [address]");
+            Ok(())
         }
-
-        println!("{}", buffer.trim());
     }
-
-    println!("Disconnected from server");
 }
 ```
 
-In this function, we use a BufReader to read incoming messages from the server and print them to the console using the println macro.
+Put all the snippets in `src/main.rs` (the `use` lines can be merged at the top).
 
-We modify the start_client function to create a separate thread to handle incoming messages from the server using the handle_server_messages function.
+## Running it
 
-Putting it All Together
+Open three terminals:
 
-To run the chat server and client, we can add the following code to the main function in the src/main.rs file of the chat_server project:
+```sh
+# terminal 1
+cargo run -- server
 
-```rust
-use std::thread;
-
-fn main() {
-    let server_port = 8080;
-    let client_port = 8081;
-
-    thread::spawn(move || {
-        start_server(server_port);
-    });
-
-    start_client("127.0.0.1", client_port);
-}
+# terminals 2 and 3
+cargo run -- client
 ```
-In this code, we create a new thread to start the chat server on port 8080 using the start_server function. We then start the chat client on port 8081 using the start_client function.
 
-Conclusion
+Lines typed in one client appear in the other, prefixed with the sender's address.
 
-In this article, we have explored how to create a simple chat server and client using Rust's networking capabilities. We have used Rust's standard library to implement basic networking functionality and create a text-based interface for sending and receiving messages between clients. We have also used Rust's thread support to handle multiple clients simultaneously. With this knowledge, you can now create your own Rust networking applications and explore the full potential of this powerful programming language.
+## Limitations
+
+- **One thread per client.** Fine for a handful of users; for many connections, use an async runtime such as Tokio, where each client is a cheap task.
+- **Writes happen under the lock.** A client that stops reading can make `write_all` block once its socket buffer fills, which stalls every broadcast. A real server would give each client its own outgoing queue (for example an `mpsc` channel drained by a writer thread).
+- **No framing or authentication.** Anyone who can reach the port can connect, and a line without a trailing newline isn't delivered until one arrives.
+- **Binding.** `127.0.0.1` only accepts local connections. Bind to `0.0.0.0:8080` to accept connections from other machines.
+
+## Further reading
+
+- [`std::net::TcpListener`](https://doc.rust-lang.org/std/net/struct.TcpListener.html)
+- [The Rust Book: Building a Multithreaded Web Server](https://doc.rust-lang.org/book/ch21-00-final-project-a-web-server.html)

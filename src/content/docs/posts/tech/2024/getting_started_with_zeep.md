@@ -1,101 +1,148 @@
 ---
-title: "Getting Started with SOAP APIs Using Zeep in Python"
+title: "Calling SOAP APIs from Python with Zeep"
 pubDate: "2024-04-10T10:00:00.000Z"
-description: "An introductory guide to interacting with SOAP APIs using Zeep, a modern Python SOAP client. Learn the basics of SOAP protocol, WSDL, and how to consume SOAP services in Python."
+lastUpdated: 2026-11-14
+description: "How to call a SOAP web service from Python with Zeep: inspect a WSDL, call operations, build complex types, handle faults and log the raw XML."
 tags: ["Zeep", "SOAP APIs", "Python", "Web Services", "XML", "Web Development", "Backend Development", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "https://unsplash.com/photos/a-piece-of-soap-sitting-on-top-of-a-black-plate-nEyRQYS2Jp8"
 ---
 
-# Getting Started with SOAP APIs Using Zeep in Python
+SOAP is older and wordier than REST, but plenty of enterprise, government and banking systems still expose SOAP services. If you have to call one from Python, [Zeep](https://docs.python-zeep.org/) is the client to use. It reads the service's WSDL, builds the XML envelopes for you and parses responses back into Python objects.
 
-In the realm of web services, SOAP (Simple Object Access Protocol) remains a pivotal protocol for exchanging structured information in a decentralized, distributed environment. Although REST APIs have gained prominence for their simplicity and scalability, SOAP APIs are still widely used, particularly in enterprise and financial applications, due to their robustness, security, and standardization. This article will guide you through the basics of interacting with SOAP APIs using Zeep, a modern Python SOAP client.
+The examples below were run against Zeep 4.3.3 (which needs Python 3.10 or later) and a public demo calculator service.
 
-## Understanding SOAP APIs
+## SOAP and WSDL in two paragraphs
 
-SOAP is a protocol or standard for sending and receiving web service requests and responses. SOAP messages are formatted in XML and can be transported via various protocols such as HTTP, SMTP, etc. A key component of a SOAP message is the envelope, which encapsulates the entire message and includes an optional header for transmitting application-specific information and a mandatory body that contains the request or response information.
+A SOAP message is an XML document with an `Envelope` root, an optional `Header` (authentication tokens, transaction IDs and so on) and a `Body` holding the request or response. In practice it almost always travels as an HTTP POST.
 
-WSDL (Web Services Description Language) is an XML-based interface definition language that describes the functionality offered by a web service. It provides a machine-readable description of how the service can be called, what parameters it expects, and what data structures it returns. Zeep uses the WSDL to generate Python classes for the service operations and types.
+The WSDL (Web Services Description Language) file is the service's contract. It lists the operations, the XML types each one accepts and returns, and the endpoint address. Zeep loads the WSDL once and uses it to validate and serialise everything you send.
 
-## Setting Up Your Environment
-
-Before diving into coding, ensure you have Python installed on your system. You will need Python 3.6 or later. You can download Python from the official website. Once Python is set up, install Zeep with pip, Python’s package installer.
+## Install
 
 ```bash
 pip install zeep
 ```
 
-This command installs Zeep along with its dependencies.
+## Inspect the WSDL
 
-## Using Zeep to Consume a SOAP API
+Before writing code, see what the service offers. Zeep ships a command-line dump:
 
-### Step 1: Inspecting the WSDL
+```bash
+python -m zeep http://www.dneonline.com/calculator.asmx?WSDL
+```
 
-The first step is to inspect the WSDL of the SOAP service you intend to use. This document provides the necessary information to understand the available methods, their input parameters, and the expected response structures. Zeep simplifies this process by allowing you to inspect the WSDL directly from your Python code:
+The output lists namespace prefixes, types, and every operation with its signature, for example:
+
+```text
+ns0:Add(intA: xsd:int, intB: xsd:int)
+ns0:AddResponse(AddResult: xsd:int)
+```
+
+You can get the same output from code with `client.wsdl.dump()`.
+
+## Call an operation
 
 ```python
 from zeep import Client
 
-wsdl = 'http://example.com/service?wsdl'
-client = Client(wsdl)
+client = Client("http://www.dneonline.com/calculator.asmx?WSDL")
 
-# Print out a list of available operations
-print(client.service.__dict__)
+print(client.service.Add(intA=2, intB=3))  # 5
+print(client.service.Divide(10, 2))        # positional arguments work too: 5
 ```
 
-### Step 2: Making a Request
+Each operation in the WSDL becomes a method on `client.service`. Simple results come back as plain Python values. Structured results come back as Zeep objects that you can turn into ordinary dicts with `zeep.helpers.serialize_object(result)`.
 
-Once you're familiar with the operations available, you can make requests to the SOAP service. Assume you want to call an operation named `GetUserInfo` that takes a user ID as an argument:
+## Complex types
+
+Real services take nested structures rather than two integers. Zeep accepts a plain dict for a complex parameter, or you can build the type explicitly from the WSDL. Here `UpdateUser` and `ns0:UserInfo` stand in for whatever your WSDL defines (check the names in the `python -m zeep` dump):
 
 ```python
-user_id = 'abc123'
-response = client.service.GetUserInfo(user_id)
-print(response)
+UserInfo = client.get_type("ns0:UserInfo")
+user = UserInfo(name="John Doe", age=30)
+
+client.service.UpdateUser(userId="abc123", user=user)
+# equivalent:
+client.service.UpdateUser(userId="abc123", user={"name": "John Doe", "age": 30})
 ```
 
-Zeep automatically converts the Python data types to the required XML structure for the SOAP request and parses the XML response back into Python objects.
+Building the type explicitly gives you an early error if a field name is wrong, instead of a server-side fault.
 
-### Step 3: Handling Complex Types
+## Timeouts, authentication and headers
 
-SOAP services often involve complex types like structures or lists. Zeep excels in simplifying the interaction with these types by automatically converting them to and from Python native types or objects. If an operation requires a complex type, you can construct it as follows:
+Zeep uses `requests` underneath, so you configure HTTP behaviour through a `requests.Session` passed in a `Transport`:
 
 ```python
-user_info = client.get_type('ns1:UserInfo')(name="John Doe", age=30)
-response = client.service.UpdateUserInfo(user_id, user_info)
-print(response)
+from requests import Session
+from requests.auth import HTTPBasicAuth
+from zeep import Client
+from zeep.transports import Transport
+
+session = Session()
+session.auth = HTTPBasicAuth("user", "password")
+
+client = Client(
+    "http://www.dneonline.com/calculator.asmx?WSDL",
+    transport=Transport(session=session, timeout=10),
+)
 ```
 
-### Step 4: Working with Attachments
+Services that use WS-Security expect the credentials inside the SOAP header instead; pass `wsse=UsernameToken("user", "password")` (from `zeep.wsse.username`) to `Client`. Other SOAP headers go in the `_soapheaders` argument of an operation call. That argument is for SOAP header elements, not HTTP headers.
 
-SOAP messages can include attachments which are typically used to transfer files or binary data. Zeep supports both MTOM (Message Transmission Optimization Mechanism) and SWA (SOAP with Attachments) standards for handling attachments.
+## Attachments
 
-```python
-with open('document.pdf', 'rb') as file:
-    client.service.UploadDocument(user_id, _soapheaders={'Content-Type': 'application/pdf'}, file=file)
-```
+Zeep can read multipart (MTOM / SwA) responses: it returns a `MessagePack` whose `attachments` you can iterate. Its documentation only covers receiving attachments, not sending them. If a service expects you to upload a file, check the WSDL: many services take the file as a `base64Binary` field, which you pass as `bytes`.
 
-### Best Practices and Debugging
+## Handling faults
 
-When working with SOAP APIs, it’s crucial to handle exceptions and errors gracefully. Zeep provides detailed exceptions that can help in debugging issues:
+A SOAP error comes back as a `Fault`. The calculator returns one when you divide by zero:
 
 ```python
 from zeep.exceptions import Fault
 
 try:
-    response = client.service.FaultyOperation()
+    client.service.Divide(intA=1, intB=0)
 except Fault as error:
-    print(error)
+    print(error.code)     # soap:Server
+    print(error.message)  # the server's fault string
 ```
 
-To debug requests and responses, you can enable logging:
+`zeep.exceptions` also has `TransportError` (non-200 HTTP responses that aren't SOAP faults) and `ValidationError` (your arguments don't match the WSDL).
+
+## Seeing the raw XML
+
+When a call fails and you can't tell why, look at what was actually sent. The `zeep.transports` logger writes full requests and responses at DEBUG level:
 
 ```python
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("zeep.transports").setLevel(logging.DEBUG)
 ```
 
-This will log the raw XML of the requests and responses, allowing you to inspect the data being sent and received.
+For programmatic access, use `HistoryPlugin`:
 
-## Conclusion
+```python
+from lxml import etree
+from zeep import Client
+from zeep.plugins import HistoryPlugin
 
-Despite the dominance of RESTful APIs, SOAP remains vital in many sectors due to its standardization, security features, and support for complex transactions. Zeep is a powerful tool for Python developers to interact with SOAP services, abstracting much of the complexity involved in generating and parsing SOAP messages. By following the steps outlined in this article, you can quickly get started with consuming SOAP APIs using Zeep, making your integration tasks more manageable.
+history = HistoryPlugin()
+client = Client("http://www.dneonline.com/calculator.asmx?WSDL", plugins=[history])
+client.service.Add(intA=1, intB=2)
+
+print(etree.tostring(history.last_sent["envelope"], pretty_print=True).decode())
+print(etree.tostring(history.last_received["envelope"], pretty_print=True).decode())
+```
+
+## Gotchas
+
+- Loading a large WSDL (and the schemas it imports) on every run is slow. Pass `Transport(cache=SqliteCache())` from `zeep.cache` to cache the downloads.
+- Some services have WSDLs that don't quite match what the server sends. `Client(wsdl, settings=Settings(strict=False))` relaxes parsing.
+- If the WSDL's endpoint address is wrong (common with internal services behind proxies), use `client.create_service("{http://tempuri.org/}CalculatorSoap", "https://internal-host/calculator.asmx")` to call the same binding (named as `{namespace}BindingName`) at a different URL.
+
+## Further reading
+
+- [Zeep documentation](https://docs.python-zeep.org/)
+- [Zeep on PyPI](https://pypi.org/project/zeep/)

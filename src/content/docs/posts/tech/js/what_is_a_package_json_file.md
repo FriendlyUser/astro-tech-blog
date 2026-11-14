@@ -1,49 +1,43 @@
 ---
-title: What is a package.json file in javascript
-description: package.json file explained
+title: What package.json does in a Node.js project, with an Express example
+description: The main package.json fields (name, version, scripts, dependencies, devDependencies) and how to add a start script for a small Express server.
 alt: my first blog post
-tags: ["javascript","introtojs"]
+tags: ["javascript","introtojs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 6 August 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/DALL·E 2023-01-07 17.07.12 - introductory book.png'
 ---
 
+`package.json` sits in the root of a Node.js project and describes it: its name and version, the commands you run during development, and the packages it depends on. npm, Yarn and pnpm all read it. When you run `npm install`, npm installs what it lists and records the exact resolved versions in `package-lock.json`.
 
-package.json is a file that is used in Node.js projects to define project metadata and specify the dependencies (libraries and tools) that are required by the project. It is typically located in the root directory of a Node.js project, and is used by the npm (Node Package Manager) to manage the project's dependencies.
+## The fields you'll use most
 
-The package.json file is a JSON (JavaScript Object Notation) file that contains a number of properties that define the metadata and configuration of the project. Some of the key properties of the package.json file include:
-\begin{itemize}
-\item name: The name of the project.
-\item version: The version of the project.
-\item scripts: A set of scripts that can be run using the npm run or yarn run command. For example, a start script might be defined to run the main entry point of the project.
-\item dependencies: A list of the dependencies (libraries and tools) that are required by the project. These dependencies will be installed when the npm install or yarn install command is run.
-\item devDependencies: A list of the development dependencies (libraries and tools) that are required by the project, but are only needed in development (not in production). These dependencies will be installed when the npm install or yarn install command is run with the --dev flag.
-\end{itemize}
-In summary, the package.json file is a key file in a Node.js project. It defines the metadata and dependencies of the project, and is used by npm and Yarn to manage the project's dependencies.
-\section{Express}
-Express is a popular web application framework for building back-end applications with Node.js. It provides a simple and flexible way to create web servers and web applications, and includes a variety of features and tools that make it easier to develop and maintain back-end applications.
+- `name`: the package name. It must be lowercase and URL-safe if you ever publish to npm.
+- `version`: the project's version, in semver form (`1.0.0`).
+- `scripts`: named commands you run with `npm run <name>`. `start` and `test` also have shortcuts: `npm start` and `npm test`.
+- `dependencies`: packages the code needs at runtime. `npm install <pkg>` adds an entry here.
+- `devDependencies`: packages only needed during development, such as test runners, linters and bundlers. `npm install -D <pkg>` adds an entry here.
 
-Some of the key features of Express include:
-\begin{itemize}
-\item A simple, lightweight, and flexible core that makes it easy to build web applications
-A routing system that allows you to define different routes for different HTTP methods and URLs
-\item Middleware support, which allows you to define functions that are executed before or after a request is handled by a route
-Built-in support for rendering HTML templates using popular template engines like Pug and EJS
+A plain `npm install` installs both `dependencies` and `devDependencies`. To skip the dev ones, for example in a production image, use `npm install --omit=dev`. Yarn Classic's `yarn install --production` does the same.
 
-\item A large ecosystem of third-party libraries and plugins that can be easily integrated into Express applications.
-\item Express is widely used for building back-end applications because of its simplicity, flexibility, and rich feature set. It provides a solid foundation for building scalable and maintainable back-end applications with Node.js.
-\end{itemize}
+## Example: an Express server
 
+[Express](https://expressjs.com/) is a minimal web framework for Node.js. It handles routing (mapping an HTTP method and path to a handler) and middleware (functions that run on each request before or after your handlers). Template engines such as Pug or EJS are installed separately and then enabled with `app.set('view engine', ...)`.
 
-Here is an example of a simple Express server:
+Create a project and install Express:
 
-\begin{itemize}
-\item In order to test save the file to app.js 
-\item use yarn add express or npm install express, this should create a package.json file to track dependencies.
-\item run node app.js
-\end{itemize}
+```bash
+mkdir my-node-app && cd my-node-app
+npm init -y
+npm install express
+```
 
-\begin{lstlisting}[language=Javascript, caption=Simple Express Server]
+`npm init -y` writes a default `package.json`, and `npm install express` adds Express to its `dependencies`.
+
+Save this as `app.js`:
+
+```js
 const express = require("express");
 
 const app = express();
@@ -55,13 +49,15 @@ app.get("/", (req, res) => {
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
-\end{lstlisting}
+```
 
-In this example, the Express app is created using the express function, and a route is defined for the / path that sends the string "Hello, world!" as a response. The app is then set to listen for incoming requests on port 3000. When a request is received on the / path, the specified response will be sent back to the client.
+`app.get("/")` registers a handler for `GET /` that responds with "Hello, world!", and `app.listen(3000)` starts the server on port 3000.
 
-To add a start command to the package.json file that will run the app.js file, you can add a scripts property to the package.json file, and specify the start command as follows:
+## Adding a start script
 
-\begin{lstlisting}[language=Javascript]
+Add a `start` entry under `scripts` so nobody has to remember the file name:
+
+```json
 {
   "name": "my-node-app",
   "version": "1.0.0",
@@ -69,21 +65,21 @@ To add a start command to the package.json file that will run the app.js file, y
     "start": "node app.js"
   },
   "dependencies": {
-    // Dependencies go here
-    "express": "^5.0.0"
+    "express": "^5.3.0"
   }
 }
-\end{lstlisting}
+```
 
-In this example, the scripts property is added to the package.json file, and the start command is defined as node app.js. This means that when the start script is run (for example, by running npm start or yarn start), the app.js file will be executed using the node command.
+`^5.3.0` means any 5.x release from 5.3.0 up. That was the current Express release when this post was revised, and `npm install` writes whatever is current for you. JSON doesn't allow comments, so don't add any to `package.json`.
 
-Once the scripts property has been added to the package.json file, you can run the start script by using the npm run or yarn run command, followed by the name of the script. For example, to run the start script with npm, you can run the following command:
+Run it with:
 
-\begin{verbatim}
-npm run start
-\end{verbatim}
+```bash
+npm start
+```
 
+`npm start` is short for `npm run start`. Open http://localhost:3000 to see the response.
 
-### Introduction to JS
+## Introduction to JS
 
 This is a snippet from a book I am writing on JS with the assistance of chatgpt.

@@ -1,45 +1,46 @@
 ---
-title: Building an API Server in Rust
-description: Rust is a systems programming language that is known for its performance, safety, and concurrency. It's a great choice for building an API server, as it can handle a large number of requests efficiently and securely.
+title: Build a JSON API in Rust with Rocket 0.5 and connect it to PostgreSQL with Diesel
+description: Create a small Rocket 0.5 web server with JSON GET and POST routes, then open a PostgreSQL connection with Diesel 2 and dotenvy.
 pubDate: Saturday, 24 November 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
 ---
 
-Rust is a systems programming language that is known for its performance, safety, and concurrency. It's a great choice for building an API server, as it can handle a large number of requests efficiently and securely.
+[Rocket](https://rocket.rs) is a Rust web framework built on Tokio. Routes are plain functions annotated with attributes like `#[get("/")]`, and request data (path segments, query strings, JSON bodies) is parsed into typed function arguments for you. This post builds a minimal JSON API with it and then connects to PostgreSQL with [Diesel](https://diesel.rs).
 
-In this post, we'll explore how to build a simple API server using Rust and the popular web framework, Rocket.
+It's written against Rocket 0.5.2 and Diesel 2.4.0, which run on stable Rust. Older tutorials for Rocket 0.4 needed nightly Rust and `#![feature(proc_macro_hygiene, decl_macro)]`; drop that line if you see it.
 
-First, let's set up our project. We'll need to install Rust and its package manager, Cargo, if we haven't already. We can do this by following the instructions on the Rust website.
+## Project setup
 
-Once Rust is installed, we can create a new project by running the following command:
+Install Rust from [rustup.rs](https://rustup.rs) if you haven't, then:
 
-```
+```bash
 cargo new api-server
+cd api-server
 ```
 
-
-This will create a new directory called `api-server` with the basic structure of a Rust project.
-
-Next, we'll need to add Rocket as a dependency. We can do this by adding the following to our `Cargo.toml` file:
+Add Rocket with its `json` feature to `Cargo.toml`. Rocket re-exports Serde, so you don't need a separate `serde` dependency for this:
 
 ```toml
 [dependencies]
-rocket = "0.5.0-rc.1"
+rocket = { version = "0.5.2", features = ["json"] }
 ```
 
-Now we’re ready to start building our API server. Let’s start by defining a simple route that returns a JSON response. We can do this by adding the following to our src/main.rs file:
+## A JSON route
+
+Replace `src/main.rs` with:
 
 ```rust
-#![feature(proc_macro_hygiene, decl_macro)]
-
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 use rocket::serde::json::Json;
-use serde::{Serialize, Deserialize};
+use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
 struct Message {
     content: String,
 }
@@ -51,76 +52,82 @@ fn index() -> Json<Message> {
     })
 }
 
+#[post("/echo", format = "json", data = "<message>")]
+fn echo(message: Json<Message>) -> Json<Message> {
+    message
+}
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build().mount("/", routes![index, echo])
 }
 ```
 
-In this code, we define a Message struct that represents the data we want to return in our JSON response. We derive the Serialize and Deserialize traits from the serde crate to enable serialization and deserialization of our struct.
+What's going on:
 
-We then define a get route for the root path (/) that returns a Json response containing an instance of our Message struct.
+- `#[serde(crate = "rocket::serde")]` tells the derive macros to use Rocket's re-exported Serde instead of a top-level `serde` crate.
+- `index` returns `Json<Message>`, which Rocket serializes and sends with `Content-Type: application/json`.
+- `echo` takes a `Json<Message>` request body. If the body isn't valid JSON for `Message`, Rocket rejects the request with an error status before your function runs.
+- `#[launch]` generates the `main` function and starts the async runtime.
 
-Finally, we define a rocket function that launches our Rocket application and mounts our route.
+Run it:
 
-We can now run our API server by running the following command:
-```
+```bash
 cargo run
 ```
 
-This will start our server and make it available at http://localhost:8000. If we visit this URL in our web browser, we should see a JSON response with the content {"content":"Hello, world!"}.
+Rocket listens on `http://127.0.0.1:8000` by default. Try both routes:
 
-That’s the basics of building an API server using Rust and Rocket! Of course, there’s a lot more we can do, such as adding more routes, handling different HTTP methods, and connecting to a database. But this should give you a good starting point for your own API server projects.
+```bash
+curl http://127.0.0.1:8000/
+# {"content":"Hello, world!"}
 
-## To add a database
+curl -X POST http://127.0.0.1:8000/echo \
+  -H "Content-Type: application/json" \
+  -d '{"content":"ping"}'
+# {"content":"ping"}
+```
 
-First, you’ll need to add the diesel and dotenv crates to your Cargo.toml file:
+The port and address can be changed with `ROCKET_PORT` / `ROCKET_ADDRESS` environment variables or a `Rocket.toml` file.
+
+## Connecting to PostgreSQL with Diesel
+
+Add Diesel with the `postgres` feature, plus [`dotenvy`](https://crates.io/crates/dotenvy) to load a `.env` file. (`dotenvy` is the maintained fork of the `dotenv` crate, which is no longer maintained.) The `postgres` feature links against `libpq`, so you need the PostgreSQL client library installed.
 
 ```toml
 [dependencies]
-diesel = { version = "1.4.7", features = ["postgres"] }
-dotenv = "0.15.0"
+rocket = { version = "0.5.2", features = ["json"] }
+diesel = { version = "2.4.0", features = ["postgres"] }
+dotenvy = "0.15.7"
 ```
 
-Next, you’ll need to create a .env file in the root of your project and add your database URL:
+Create a `.env` file in the project root (and keep it out of version control):
 
-```
+```text
 DATABASE_URL=postgres://user:password@localhost/database_name
 ```
 
-Make sure to replace user, password, localhost, and database_name with your own values.
-
-Now you can use the diesel crate to establish a connection to your database. Here’s an example of how to do this:
-
+Then a function to open a connection:
 
 ```rust
-
-#[macro_use]
-extern crate diesel;
-
-use diesel::prelude::*;
 use diesel::pg::PgConnection;
-use dotenv::dotenv;
+use diesel::prelude::*;
 use std::env;
 
 fn establish_connection() -> PgConnection {
-    dotenv().ok();
+    dotenvy::dotenv().ok();
 
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
-}
-
-fn main() {
-    let connection = establish_connection();
+        .unwrap_or_else(|e| panic!("Error connecting to {database_url}: {e}"))
 }
 ```
 
-In this code, we use the dotenv crate to load the values from our .env file. We then use the env::var function to get the value of the DATABASE_URL environment variable.
+`dotenvy::dotenv()` loads `.env` into the process environment if the file exists (`.ok()` ignores a missing file, so real environment variables still work in production). `PgConnection::establish` comes from the `Connection` trait in `diesel::prelude` and returns a `ConnectionResult`. Diesel 2 query methods take `&mut PgConnection`, so bind the result with `let mut conn = establish_connection();`.
 
-We use the PgConnection::establish method to establish a connection to our PostgreSQL database using the provided database URL. If the connection is successful, we return the connection object.
+A single blocking connection is fine for a script, but don't open one per request inside Rocket's async handlers. Use a connection pool instead; the [Databases section of the Rocket guide](https://rocket.rs/guide/v0.5/state/#databases) covers `rocket_db_pools`, and `rocket_sync_db_pools` for blocking ORMs like Diesel.
 
-That’s it! You can now use the connection object to interact with your database using the diesel crate.
+## Next steps
 
-I hope this helps! Let me know if you have any questions or if there’s anything else I can help with.
+- [Rocket guide](https://rocket.rs/guide/v0.5/): requests, responders, state and testing with `rocket::local::blocking::Client`
+- [Diesel getting started](https://diesel.rs/guides/getting-started): the `diesel` CLI, migrations, and generating `schema.rs`

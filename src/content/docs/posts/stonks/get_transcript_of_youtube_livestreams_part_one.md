@@ -1,460 +1,196 @@
 ---
-title: Get Transcript of youtube livestreams Part I
-description: Transcript of youtube livestreams main overview using whispers
+title: 'Transcribing YouTube livestreams with Whisper, part 1: the transcription loop'
+description: How my fdrtt project records a YouTube livestream in 4.5-minute chunks, transcribes each with Whisper, and posts the text to Discord from GitHub Actions.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 13 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["youtube", "whispers", "python"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-15 20.40.00 - blank transcript.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
+:::caution[Updated in November 2026]
+This project uses `youtube-dl`, whose last PyPI release was 2021.12.17. Use [yt-dlp](https://github.com/yt-dlp/yt-dlp), the maintained fork, instead. Its `YoutubeDL(...).extract_info(url, download=False)` call works the same way. The project also stored transcripts in PlanetScale, which dropped its free Hobby plan in April 2024.
+:::
 
- YouTube live stream is a video that is broadcast in real-time over the internet. Users can watch the video as it is being recorded, and they can also interact with the person who is streaming the video by leaving comments and questions.
+[fdrtt](https://github.com/dli-invest/fdrtt) ("free delayed real-time transcription") is a small tool I wrote to follow finance livestreams, such as Yahoo Finance's daily stream or a Fed press conference, without watching them. It records a livestream in short chunks, transcribes each chunk, stores the text in a MySQL table, and posts it to a Discord channel through a webhook. Everything runs on GitHub Actions, so it costs nothing.
 
+The first version sent audio to Facebook's [wit.ai](https://wit.ai/) dictation API. I switched to OpenAI's [Whisper](https://github.com/openai/whisper) and the transcripts got much better.
 
-Below is a simple script to transcribe a video from a url 
+This post covers the driver code. [Part 2](/posts/stonks/get_transcript_of_youtube_livestreams_part_two/) covers how the audio gets split and transcribed.
+
+## Transcribing a single video
+
+The simplest entry point, `transcribe_video.py`, takes a URL or a local path, transcribes the file, saves the result as JSON, and posts the text to Discord. This is slightly tidied from the repo:
+
 ```python
-
-import os
-import requests
-import json
 import argparse
-from utils import send_discord_msg
-from processing import transcribe_audio_whisper
+import json
 
-def download_file_from_url(url, filename):
-    # open in binary mode
-    if os.path.exists(filename):
-        os.remove(filename)
+import requests
 
+from processing import transcribe_audio_whisper  # fdrtt, see part 2
+from utils import send_discord_msg               # POSTs JSON to the DISCORD_WEBHOOK URL
+
+CHUNK_SIZE = 1900  # Discord rejects message content longer than 2000 characters
+
+
+def download_file_from_url(url: str, filename: str) -> None:
     print("downloading video", url)
-    with open(filename, "wb") as file:
-        # get request
-        response = requests.get(url)
-        # write to file
-        file.write(response.content)
+    with requests.get(url, stream=True, timeout=60) as response:
+        response.raise_for_status()
+        with open(filename, "wb") as file:
+            for block in response.iter_content(chunk_size=1 << 20):
+                file.write(block)
 
 
-def transcribe_video(url: str):
-    # check if url is a local path or a url
+def transcribe_video(url: str) -> None:
     filename = url
     if url.startswith("http"):
-        # get video id
-        download_file_from_url(url, "video.mp4")
         filename = "video.mp4"
+        download_file_from_url(url, filename)
 
     data = transcribe_audio_whisper(filename, False)
-    partial_output = filename.replace(".mp4", ".json")
+    with open(filename.replace(".mp4", ".json"), "w", encoding="utf-8") as f:
+        json.dump(data, f)
 
-    with open(partial_output, "w", encoding="utf-8", errors="ignore") as f:
-        f.write(json.dumps(data, indent=0))
+    text = data.get("text", "")
+    for i in range(0, len(text), CHUNK_SIZE):
+        send_discord_msg({"content": text[i:i + CHUNK_SIZE]})
 
-    ds_data = {
-        "content": data.get("text", "")
-    }
-    CHUNK_SIZE = 1900
-    chunks = [ds_data['content'][i:i+CHUNK_SIZE] for i in range(0, len(ds_data['content']), CHUNK_SIZE)]
-    for chunk in chunks:
-        try:
-            send_discord_msg({
-                "content": chunk,
-            })
-        except Exception as e:
-            return
-    pass
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process video from url')
-    parser.add_argument("--url", help="url where you can download video", default="https://www.dropbox.com/s/jvajeen28clpicy/archive.mp4?dl=1")
-
+    parser = argparse.ArgumentParser(description="Transcribe a video from a URL or local path")
+    parser.add_argument("--url", required=True, help="URL to download, or a local .mp4 path")
     args = parser.parse_args()
-
-    # todo add logging
     transcribe_video(args.url)
 ```
 
-This is a script that allows you to transcribe the audio from a video. It does this by first downloading the video from the specified URL (if the URL is a link) or using a local file (if the URL is a file path). Then, it transcribes the audio from the video using the transcribe_audio_whisper function. The transcription is stored in a JSON file and is also sent in chunks to a Discord channel using the send_discord_msg function.
+The original read the whole download into memory with `requests.get(url).content` and wrapped each Discord call in `try/except`. That `try` did very little: `send_discord_msg` uses `requests.post`, which doesn't raise on HTTP error codes, so a rejected or rate-limited webhook call (HTTP 429) was dropped silently. If you care about every chunk arriving, check `r.status_code` and back off on 429.
 
-The script takes one argument, --url, which specifies the URL or file path of the video to be transcribed. If no value is provided for --url, the default value is set to a specific Dropbox link.
+## The livestream driver
 
-To use the script, you will need to have the necessary dependencies installed, including the requests and argparse libraries. You will also need to define the transcribe_audio_whisper and send_discord_msg functions in the appropriate files.
+The livestream case lives in `transcript_manager.py`, in a class called `FD_RTT`. It's configured mostly through environment variables, because it runs inside a GitHub Actions workflow:
 
-
-Discord can only handle messages up to 2000 characters, so we need to split the message into chunks of 1900 characters. We can do this by using the following code:
-
-```python
-CHUNK_SIZE = 1900
-chunks = [ds_data['content'][i:i+CHUNK_SIZE] for i in range(0, len(ds_data['content']), CHUNK_SIZE)]
-for chunk in chunks:
-    try:
-        send_discord_msg({
-            "content": chunk,
-        })
-    except Exception as e:
-        return
-```
-
-This code is responsible for sending the transcribed audio from the video to a Discord channel. The CHUNK_SIZE variable is set to 1900, which determines the size of each chunk of text that will be sent to Discord.
-
-The chunks variable is a list comprehension that splits the transcription into chunks of size CHUNK_SIZE. It does this by iterating through the transcription text, starting at index 0 and ending at the length of the text, with a step size of CHUNK_SIZE. This creates a list of strings, each of which is a chunk of the transcription text.
-
-The for loop iterates over each chunk in the chunks list and sends it to the Discord channel using the send_discord_msg function. If an exception occurs while sending the message, the loop is exited by returning from the function.
-
-For the fdrtt class, originally the implementation was using facebook's wit ai, but I switched it over to whispers from open ai and got vastly improved performance.
-
+| Variable | Purpose |
+| --- | --- |
+| `DISCORD_WEBHOOK` | Where transcripts are posted |
+| `MAX_ITERATIONS` | Chunks to record per run (default 50; the workflow sets 60) |
+| `ITERATION` | Which run in a chain this is, used to compute elapsed time |
+| `TABLE_NAME` | MySQL table to write to (otherwise derived from the channel name) |
+| `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Database credentials |
 
 ```python
-import os
-import argparse
-from threading import Thread
-import time
-import json
-from operator import itemgetter
-from processing import get_video_from_start, transcribe_audio_wit, transcribe_audio_whisper
-from utils import get_video_id_from_ytube_url, ic, send_discord_msg, format_time, append_to_github_actions
-from yt_utils import get_video_metadata, youtube_livestream_codes, youtube_mp4_codes
-from database import DB_MANAGER
-
-try:
-    MAX_ITERATIONS = os.getenv("MAX_ITERATIONS", "50")
-    MAX_ITERATIONS = int(MAX_ITERATIONS)
-except Exception as e:
-    print(e)
 CHUNK_SIZE = 1900
 VIDEO_CHUNK_LENGTH_IN_SECS = 4 * 60 + 30
+MAX_ITERATIONS = int(os.getenv("MAX_ITERATIONS", "50"))
 ```
 
+### Setup
 
+The constructor calls `get_video_metadata(url)`, which is `youtube_dl.YoutubeDL().extract_info(url, download=False)`. That returns a dict with the title, channel, uploader and a `formats` list containing a direct media URL for each format. It then picks a table name: `TABLE_NAME` if set, otherwise the channel name (with special cases for Yahoo Finance and Bloomberg), otherwise the video ID. It creates the table if needed and records the start time.
 
-This code appears to be part of a class that processes a video and performs transcription on it. The transcribe method takes a dictionary of data as an argument and uses it to transcribe the audio from the video. It does this by calling either the transcribe_audio_whisper or transcribe_audio_wit function, depending on the value of the transcribe_tool attribute.
+### Choosing a format
+
+YouTube exposes livestreams and finished videos under different format IDs. I hard-coded the ones I saw in practice: HLS livestream formats `91`–`96`, `300`, `301`, and regular MP4 formats `18`, `22`, `133`, `134`, `140`, `298`. Once a stream ends and YouTube processes it, the regular formats appear. That's how the script tells a live stream from a finished video.
 
 ```python
-class FD_RTT:
-    def __init__(self, input_args, config):
-        self._config = config
-        self.video_url = input_args.get("url")
-        # times in seconds, iterations should not be greater than max time
-        self.stats = {
-            "run_time": 0,
-            "start_time": time.time(),
-            "iterations": 0,
-            "transcriptions": [],
-        }
-        self.exit_on_video = input_args.get("exit_on_video", True)
-        self.metadata = get_video_metadata(self.video_url)
-        self.curr_errors = 0
-        table_name = os.getenv("TABLE_NAME")
-        if table_name is None:
-            table_name = input_args.get("table_name")
-        if table_name is None:
-            table_name = self.get_channel_from_name().replace(" ", "_")
-        # fallback to video_id
-        if table_name == "" or table_name is None:
-            try:
-                ic("Grabbing table name from video_id")
-                video_id = get_video_id_from_ytube_url(self.video_url)
-                self.video_id = video_id
-            except Exception as e:
-                ic(e)
-                ic("Error getting video id")
-                self.video_id = ""
-        else:
-            ic(f"setting table_name from TABLE_NAME as: {table_name}")
-            self.video_id = table_name
+youtube_livestream_codes = [91, 92, 93, 94, 95, 96, 300, 301]
+youtube_mp4_codes = [298, 18, 22, 140, 133, 134]
 
-        self.db_manager = DB_MANAGER()
-        try:
-            print("Creating table for named: ", self.video_id)
-            # create table if it doesn't exist
-            self.db_manager.create_tables(self.video_id)
-        except Exception as e:
-            print(e)
-            ic("Failed to make table")
-            exit(1)
+def parse_metadata(self) -> dict:
+    formats = self.metadata.get("formats", [])
+    format_ids = {
+        int(f["format_id"])
+        for f in formats
+        if f.get("ext") == "mp4" and str(f.get("format_id", "")).isdigit()
+    }
 
-        global_iteration = os.getenv("ITERATION", "0")
-        try:
-            global_iteration = int(global_iteration)
-        except Exception as e:
-            print(e)
-            global_iteration = 0
+    video_entries = sorted(format_ids & set(youtube_mp4_codes))
+    if video_entries:
+        return {"selected_id": video_entries[0], "is_livestream": False}
 
-        self.global_iteration = global_iteration
+    livestream_entries = sorted(format_ids & set(youtube_livestream_codes))
+    if livestream_entries:
+        return {"selected_id": livestream_entries[0], "is_livestream": True}
 
-        self.save_to_db = input_args.get("save_to_db", True)
-
-        self.transcribe_tool = input_args.get("transcribe_tool", "whisper")
-
-        # add in video format here
-    def get_channel_from_name(self):
-        metadata = self.metadata
-        channel = metadata.get("channel", "")
-        uploader_id = metadata.get("uploader_id", "")
-        uploader = metadata.get("uploader", "")
-        if uploader == "Yahoo Finance":
-            return "YahooFinance"
-        if uploader_id == "Bloomberg":
-            return "Bloomberg"
-        return channel
-
-    def transcribe(self, data: dict):
-        """
-            takes video file and transcribes it
-        """
-        filename = data.get("filename", "")
-        is_livestream = data.get("is_livestream", False)
-        ic(f"Transcribing... {filename}")
-
-        # read config, see if we want to upload to db
-        if self.transcribe_tool == "whisper":
-            data = transcribe_audio_whisper(filename, is_livestream)
-        else:
-            data = transcribe_audio_wit(filename, is_livestream)
-        if data is not None:
-            # save to json file, replace .mp3 with .json
-            partial_output = filename.replace(".mp4", ".json")
-            # adjust all run times here based on runtime
-            curr_run_time = format_time(self.stats['run_time'])
-            if self.global_iteration > 0:
-                curr_total_time = self.global_iteration * MAX_ITERATIONS * VIDEO_CHUNK_LENGTH_IN_SECS + self.stats["run_time"]
-                curr_run_time = format_time(curr_total_time)
-            # adjust times in tokens under data
-            # TODO fix this for the speech section
-            for token in data.get("tokens", []):
-                token["start"] = token["start"] + curr_run_time
-                token["end"] = token["end"] + curr_run_time
-
-            with open(partial_output, "w", encoding="utf-8", errors="ignore") as f:
-                f.write(json.dumps(data, indent=0))
-            # append to transcription
-            self.stats["transcriptions"].append(data)
-            # send_discord_file(filename=partial_output, file=open(partial_output, "rb"))
-            text = data.get("text", "")
-            curr_iteration = self.global_iteration * MAX_ITERATIONS + self.stats["iterations"]
-            self.db_manager.insert_into_db(self.video_id, text, self.video_url, curr_iteration)
-            # make function to convert seconds to human readable time
-            data = {}
-            # adjust runtime based on iteration if available
-            data['content'] = f"**{curr_run_time}**\n{text}"
-            # split data content into chunks of 1900 characters
-            chunks = [data['content'][i:i+CHUNK_SIZE] for i in range(0, len(data['content']), CHUNK_SIZE)]
-            for chunk in chunks:
-                data['content'] = chunk
-                send_discord_msg(data)
-
-
-    def send_metadata_embed(self, metadata: dict, other_data: dict):
-        """
-        Send metadata embed to discord
-        """
-        url = other_data.get("url", "")
-        iteration = os.getenv("ITERATION", "0")
-        embed = {
-            "title": f"{metadata.get('title', '')} - {iteration}",
-            "description": metadata.get("description", "")[:500],
-            "url": url,
-            "thumbnail": {"url": metadata.get("thumbnail", "")},
-            "fields": [
-                {
-                    "name": "Livestream",
-                    "value": other_data.get("is_livestream", ""),
-                    "inline": True,
-                }
-            ],
-        }
-
-        data = {"embeds": [embed]}
-        ic("Sending metadata embed")
-        send_discord_msg(data)
-
-    def parse_metadata(self) -> dict:
-        """
-        Parse metadata and send to discord.
-        After a video is done recording, 
-        it will have both the livestream format and the mp4 format.
-        """
-        # send metadata to discord
-        formats = self.metadata.get("formats", [])
-        # filter for ext = mp4
-        mp4_formats = [f for f in formats if f.get("ext", "") == "mp4"]
-        format_ids = [int(f.get("format_id", 0)) for f in mp4_formats]
-        if livestream_entries := list(
-            set(format_ids).intersection(youtube_livestream_codes)
-        ):
-            # get the first one
-            livestream_entries.sort()
-            selected_id = livestream_entries[0]
-
-        video_entries = sorted(set(format_ids).intersection(youtube_mp4_codes))
-
-        is_livestream = True
-        if len(video_entries) > 0:
-            # use video format id over livestream id if available
-            selected_id = video_entries[0]
-            is_livestream = False
-
-        # TODO use video format if available
-
-
-        return {
-            "selected_id": selected_id,
-            "is_livestream": is_livestream,
-        }
+    raise ValueError("no known mp4 or livestream format found")
 ```
 
-This is the code for a class called FD_RTT (short for "Free-Delayed Real-Time Transcription"). The class has several attributes and methods that are used to process a video and perform transcription on it.
+The repo version left `selected_id` unassigned when neither set matched, which crashed with `UnboundLocalError`. It also called `int()` on every format ID, which fails if an ID isn't a plain number (yt-dlp returns some like that). The version above handles both. Hard-coded IDs are fragile anyway, because YouTube changes which formats it serves. With yt-dlp, a format selector such as `-f "bestaudio/best"` is the sturdier choice.
 
-The __init__ method is the constructor for the class, which is called when an instance of the class is created. It takes two arguments, input_args and config, and uses them to initialize the class's attributes. Some of the attributes include the video_url, stats, metadata, and transcribe_tool.
+### The loop
 
-The get_channel_from_name method is used to determine the name of the channel that uploaded the video. It does this by checking the uploader and uploader_id fields in the metadata attribute. If either of these fields match specific values, the corresponding channel name is returned.
+`process_video` is the main loop. For a finished video it downloads the first 15 minutes once, transcribes, and stops. For a livestream it does this repeatedly:
 
-The transcribe method is used to transcribe the audio from the video. It takes a dictionary of data as an argument and uses it to determine the file to be transcribed and whether the video is a live stream. It then calls either the transcribe_audio_whisper or transcribe_audio_wit function to transcribe the audio, depending on the value of the transcribe_tool attribute. The transcription is then saved to a JSON file and appended to a list of transcriptions stored in the stats attribute.
+1. Record 4 minutes 30 seconds of the stream with ffmpeg (`ffmpeg.input(url, t="0:04:30").output(filename).run()`).
+2. Start a background thread that transcribes that file, writes it to the database, and posts it to Discord.
+3. Go straight back to recording the next chunk while the previous one is being transcribed.
 
-The send_metadata_embed method is used to send metadata about the video to a Discord channel in the form of an embed. It takes two arguments, metadata and other_data, and uses them to create an embed object with the specified fields. It then calls the send_discord_msg function to send the embed to Discord.
-
+Every fifth iteration it calls `parse_metadata()` again, and if the stream now has regular MP4 formats, it posts "LIVESTREAM IS FINISHED" with the total run time and exits.
 
 ```python
-class FD_RTT:
-
-    ... # code omitted for brevity
-    def process_video(self, ytube_url: str = "https://www.youtube.com/watch?v=86YLFOog4GM&ab_channel=SpaceVideos"):
-        """
-        Main function.
-        """
-        metadata = self.metadata
-        # grab raw data from url with mp3 versions
-        formats = metadata.get("formats", [])
-        selected_id, is_livestream = itemgetter('selected_id', 'is_livestream')(self.parse_metadata())
-        if self.exit_on_video is True and is_livestream is False:
-            ic("Exiting on video as it is not a livestream")
-            append_to_github_actions("TERMINATE_LIVESTREAM=TRUE")
-            exit(0)
-        # TODO fix this code so that it can handle non livestreams
-
-        self.send_metadata_embed(metadata, {"format_id": selected_id, "url": ytube_url, "is_livestream": is_livestream})
-        # to prevent link for expiring regrab when possible
-        # loop through data and get first number
-
-        while self.stats.get("iterations", 0) < MAX_ITERATIONS:
-            try:
-                # grab format from formats using format_id
-                selected_format = [f for f in formats if f.get("format_id", "") == str(selected_id)][0]
-                format_url = selected_format.get("url", "")
-                if not is_livestream:
-                    filename = f"{metadata.get('id', '')}.mp4"
-                    filename = filename.replace("-", "")
-                    # get video from start
-                    if not os.path.isfile(filename):
-                           get_video_from_start(format_url, {
-                                "end": "0:15:00",
-                                "filename": filename
-                            })
-
-                    # transcribe audio
-                    self.transcribe({"filename": filename, "is_livestream": is_livestream})
-                    print("ARE YOU EVEN WORKING HERE")
-                    self.stats["iterations"] = MAX_ITERATIONS
-                    break
-                
-                ic(f'Iteration: {self.stats.get("iterations", 0)}')
-                ic(format_url)
-                iterations = self.stats.get("iterations", 0)
-                filename = f"{metadata.get('id', '')}_{iterations}.mp4"
-                filename = filename.replace("-", "")
-
-                get_video_from_start(format_url, {
-                    "end": "0:04:30",
-                    "filename": filename,
-                })
-                background_thread = Thread(target=self.transcribe, args=({"filename": filename, "is_livestream": is_livestream},))
-                background_thread.start()
-            except Exception as ex:
-                # any error, just goes into endless loop
-                ic(ex)
-                self.curr_errors += 1
-                if self.curr_errors > 10:
-                    ic("Too many errors, exiting")
-                    break
-                break
-            finally:
-                self.stats["iterations"] += 1
-                start_time = self.stats["start_time"]
-                self.stats["run_time"] = (time.time() - start_time)
-                ic(self.stats)
-                # every 5 iterations check if we should close
-                if self.stats.get("iterations", 0) % 5 == 0 and is_livestream:
-                    _, still_is_livestream = itemgetter('selected_id', 'is_livestream')(self.parse_metadata())
-                    if still_is_livestream is False:
-                        ic("Exiting since livestream is finished")
-                        print("LIVESTREAM IS FINISHED")
-                        # send message to discord
-                        fmtted_run_time = format_time(self.global_iteration * MAX_ITERATIONS * VIDEO_CHUNK_LENGTH_IN_SECS + self.stats['run_time'])
-                        data = {"content": f"LIVESTREAM IS FINISHED \n Run time: {fmtted_run_time}"}
-                        send_discord_msg(data)
-                        append_to_github_actions("TERMINATE_LIVESTREAM=TRUE")
-                        exit(0)
-                    else:
-                        ic("Livestream is still running")
-
-        if self.global_iteration > 0:
-            fmtted_run_time = format_time(self.global_iteration * MAX_ITERATIONS * VIDEO_CHUNK_LENGTH_IN_SECS + self.stats['run_time'])
-            total_data = {
-                "content": f"**Total Run Time** {fmtted_run_time}",
-            }
-            send_discord_msg(total_data)
-        return None
+while self.stats["iterations"] < MAX_ITERATIONS:
+    try:
+        iterations = self.stats["iterations"]
+        filename = f"{metadata['id']}_{iterations}.mp4".replace("-", "")
+        get_video_from_start(format_url, {"end": "0:04:30", "filename": filename})
+        Thread(
+            target=self.transcribe,
+            args=({"filename": filename, "is_livestream": is_livestream},),
+        ).start()
+    except Exception as ex:
+        ic(ex)
+        break
+    finally:
+        self.stats["iterations"] += 1
+        self.stats["run_time"] = time.time() - self.stats["start_time"]
+        # every 5 iterations: re-check metadata and exit if the stream ended
 ```
 
+Because the timer only advances by wall-clock time, each Discord message is prefixed with the elapsed time (`**0d 0h 9m 2s**`), which is good enough to find the part of a speech you care about.
 
-The process_video function seems to be the main function of the FD_RTT class. It starts by fetching metadata about the video using the parse_metadata method and then sends this metadata to the send_metadata_embed method.
+### Chaining runs
 
-Then, it enters a loop that will run for a maximum of MAX_ITERATIONS iterations. Within the loop, it attempts to download a chunk of the video, transcribe it, and update the stats dictionary. If the video is not a live stream, the loop will only run once and the transcription will be performed on the entire video. If the video is a live stream, the loop will run continuously until the live stream ends or until MAX_ITERATIONS iterations have been reached.
+A GitHub-hosted runner kills a job after 6 hours. With `MAX_ITERATIONS=60` and 4.5-minute chunks, one run covers about 4.5 hours of stream. For longer streams, `dispatch_another_event.py` triggers the same workflow again through the GitHub API with `iteration` incremented. `ITERATION` is then used to offset the timestamps:
 
-Every 5 iterations, the process_video function checks if the live stream has ended using the parse_metadata method. If the live stream has ended, the function sends a message to Discord and exits.
+```python
+total_secs = self.global_iteration * MAX_ITERATIONS * VIDEO_CHUNK_LENGTH_IN_SECS + self.stats["run_time"]
+```
 
-The transcribe method is called with a dictionary containing the filename of the video chunk and a boolean indicating whether the video is a live stream or not. The transcribe method will then transcribe the audio of the video chunk using either the transcribe_audio_whisper or transcribe_audio_wit method, depending on the value of the transcribe_tool attribute.
+When the stream finishes, the script writes `TERMINATE_LIVESTREAM=TRUE` to `$GITHUB_ENV` so later workflow steps know not to dispatch another run.
 
+### Entry point
 
 ```python
 def main(params: dict):
-    ic("Trying to initialize")
     fd_rtt = FD_RTT(params, {})
-    ic("Attempting to run video")
     fd_rtt.process_video(params.get("url"))
 
+
 if __name__ == "__main__":
-    # argparser with one arugment url for youtube videos
-    parser = argparse.ArgumentParser(description='Process livestream or audio for youtube video')
-    # parser.add_argument('--url', '-id', help='video id', default='https://www.youtube.com/watch?v=dp8PhLsUcFE&ab_channel=BloombergQuicktake%3AOriginals')
-    parser.add_argument('--url', '-id', help='video id', default='https://www.youtube.com/watch?v=21X5lGlDOfg&ab_channel=NASA')
-    parser.add_argument('--exit_for_videos', '-efv', help='exit for videos, or non livestreams', default=False)
-    # save_to_db
-    parser.add_argument('--save_to_db', '-stdb', help='save to db', default=True)
-    
+    parser = argparse.ArgumentParser(description="Transcribe a YouTube livestream or video")
+    parser.add_argument("--url", required=True, help="YouTube URL")
+    parser.add_argument("--exit_for_videos", action="store_true",
+                        help="exit immediately if the URL is not a live stream")
     args = parser.parse_args()
-    # ensure WIT_AI_TOKEN is set
-    ic("Running main")
-    if os.environ.get("WIT_AI_TOKEN") is None:
-        print("WIT_AI_TOKEN is not set")
-        exit(1)
-    dict_args = {
-        "url": args.url,
-        "exit_on_video": args.exit_for_videos,
-        "save_to_db": args.save_to_db,
-    }
-    main(dict_args)
+    main({"url": args.url, "exit_on_video": args.exit_for_videos})
 ```
 
-This is the main function of the FD_RTT class. It appears to take an input argument "params" which is a dictionary containing a key "url" with a default value of a YouTube video URL. It creates an instance of the FD_RTT class using the input argument "params" and an empty dictionary as arguments for the class constructor. It then calls the process_video() method of the FD_RTT instance, passing in the "url" value from the "params" dictionary as an argument.
+The repo declares `--exit_for_videos` and `--save_to_db` with `default=False`/`default=True` and no `type`. Anything passed on the command line arrives as a non-empty string, which is always truthy, and the class checks `self.exit_on_video is True`, which a string never is. `action="store_true"` fixes that. An earlier version also exited if `WIT_AI_TOKEN` was unset, even when using Whisper. That check is now commented out in the repo.
 
-The main function also includes an "if" statement that checks if the environment variable "WIT_AI_TOKEN" is set. If it is not set, the script exits with a status code of 1.
+## Known problems
 
-If the script is run as a standalone script, it will use the argparse module to define command line arguments. It defines a single argument "--url" or "-id" with a default value of a YouTube video URL. It also defines an optional argument "--exit_for_videos" or "-efv" with a default value of False and an optional argument "--save_to_db" or "-stdb" with a default value of True. It then creates a dictionary "dict_args" using the values of these command line arguments and passes it to the main() function as an argument.
+Things I'd fix before relying on this again:
 
+- **Gaps between chunks.** Each chunk starts a fresh ffmpeg process on the live URL, so audio can be lost or repeated at the boundaries while ffmpeg reconnects and picks a starting segment. Recording continuously with ffmpeg's segment muxer (`-f segment -segment_time 270`) avoids that.
+- **Errors end the run.** The `except` block breaks out of the loop on the first error, despite a comment saying it retries. A transient network error stops the transcript.
+- **Token timestamps.** `transcribe()` tries to add the elapsed time to `data["tokens"]`, but the elapsed time is a formatted string, so that addition would raise `TypeError`. It never runs, because Whisper's output has `segments`, not `tokens`. Shifting each segment's `start` and `end` by `total_secs` would give real timestamps.
+- **Expiring URLs.** The direct media URLs from `extract_info` expire after a few hours, so a long run should re-fetch metadata before reusing `format_url`.
 
-In the next article we will cover the internal workings of the transcribe_audio_whisper method and the approach I took.
-## References 
+## Source
 
-* https://github.com/dli-invest/fdrtt
-* https://github.com/dli-invest/fdrtt-stream
+- [dli-invest/fdrtt](https://github.com/dli-invest/fdrtt): the transcription scripts and GitHub Actions workflows
+- [dli-invest/fdrtt-stream](https://github.com/dli-invest/fdrtt-stream): a FastAPI server and Astro site for browsing the stored transcripts
+- [Part 2: splitting audio with ffmpeg and transcribing with Whisper](/posts/stonks/get_transcript_of_youtube_livestreams_part_two/)

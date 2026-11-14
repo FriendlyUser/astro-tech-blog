@@ -1,139 +1,159 @@
 ---
 tags: ['bs4', 'dart', 'alfred']
-title: Scrapping the steam top sellers with dart
-description: Adding an endpoint on a dart backend to get the top sellers from steam
+title: Scraping Steam's top sellers with Dart and beautiful_soup_dart
+description: Fetch Steam's top sellers search page with the http package, parse it with beautiful_soup_dart, and serve the results from an Alfred endpoint.
 pubDate: Fri, 28 Feburary 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/986397498.png"
 ---
 
-Web scraping is a technique used to extract data from websites, with the help of a software program. This process involves sending HTTP requests to the URL of a website and then parsing the HTML response to extract data from it. The data that can be scraped from websites includes text, images, videos, and links to other pages. The extracted data can be saved to a local file or a database, or it can be used to perform further analysis and processing.
+This adds a Steam top sellers endpoint to my Dart backend (the same [Alfred server](https://friendlyuser.github.io/posts/tech/flutter/alfred_backend_with_open_food_facts_api/) I used for the Open Food Facts API). The idea is simple: request Steam's search page filtered to top sellers, parse the HTML, and return a list of games as JSON.
 
-Web scraping is commonly used for a variety of purposes, including data mining, data analysis, price comparison, sentiment analysis, and much more. It's an efficient and automated way to collect information from websites, and it can save a significant amount of time compared to manual data collection.
+Scraping only works as long as the page markup stays the same, and Steam has changed it before. Check the store's terms before running anything like this on a schedule, and keep the request rate low.
 
-However, it's important to note that web scraping can be unethical if it is performed without the consent of the website owner or if it violates the website's terms of service. Additionally, some websites may have protections in place to prevent web scraping, such as CAPTCHAs or rate limiting, so it's important to respect the rules of the websites you scrape.
+## Dependencies
 
+```bash
+dart pub add http beautiful_soup_dart alfred
+```
 
-```dart 
- 
+Checked against http 1.6.0, beautiful_soup_dart 0.3.0 and alfred 1.1.3. Note that beautiful_soup_dart hasn't had a release since 2022; it still works, but if it breaks, the `html` package it is built on can do the same job with `querySelector`.
+
+## Fetching and parsing the page
+
+The results live in `div#search_resultsRows`, one `a.search_result_row` per game. Inside each row:
+
+- `span.title` holds the name
+- `div.search_released` holds the release date
+- `div.search_price_discount_combined` has a `data-price-final` attribute with the final price in cents, in the currency of the region you request from
+- `div.discount_pct` (only present on discounted games) holds text like `-20%`
+
+```dart
+import 'package:beautiful_soup_dart/beautiful_soup.dart';
+import 'package:http/http.dart' as http;
+
 Future<List<SteamTopSeller>> findTopSteamSellers() async {
-  var url = Uri.https('store.steampowered.com', 'search/?filter=topsellers');
-  var html = await http.get(url);
-  return parseSteamTopSellers(html.body);
+  final url = Uri.https(
+    'store.steampowered.com',
+    '/search/',
+    {'filter': 'topsellers'},
+  );
+  final response = await http.get(url);
+  if (response.statusCode != 200) {
+    throw http.ClientException(
+        'Steam returned ${response.statusCode}', url);
+  }
+  return parseSteamTopSellers(response.body);
 }
 
-List<SteamTopSeller> parseSteamTopSellers(String rawHTML ) {
-  BeautifulSoup  soup = BeautifulSoup(rawHTML);
-  var searchResultsDiv = soup.find('div', attrs: {'id': 'search_resultsRows'});
-  if (searchResultsDiv == null) {
+List<SteamTopSeller> parseSteamTopSellers(String rawHTML) {
+  final soup = BeautifulSoup(rawHTML);
+  final resultsDiv = soup.find('div', id: 'search_resultsRows');
+  if (resultsDiv == null) {
     return <SteamTopSeller>[];
   }
-  var topSellers = searchResultsDiv.findAll('a');
 
-  if (topSellers.isEmpty) {
-    return <SteamTopSeller>[];
+  final topSellers = <SteamTopSeller>[];
+  for (final row in resultsDiv.findAll('', selector: 'a.search_result_row')) {
+    topSellers.add(SteamTopSeller(
+      imageSrc: row.find('img')?.attributes['src'],
+      title: row.find('', selector: 'span.title')?.text.trim(),
+      publishDate: row.find('', selector: 'div.search_released')?.text.trim(),
+      price: row
+          .find('', selector: 'div.search_price_discount_combined')
+          ?.attributes['data-price-final'],
+      discount: row.find('', selector: 'div.discount_pct')?.text.trim() ?? '',
+    ));
   }
-  var topSellersList = <SteamTopSeller>[];
-  for (var topSeller in topSellers) {
-    var imageDiv = topSeller.find('img');
-    String? imageSrc = '';
-    if (imageDiv != null) {
-      imageSrc = imageDiv.attributes['src'];
-    }
-    var title = topSeller.find('span', attrs: {'class': 'title'})?.text;
-    var publishDate = topSeller.find('div', attrs: {'class': 'col search_released responsive_secondrow'})?.text;
-    // var publishDate = topSeller.find('div', attrs: {'class': 'tab_item_top_tags'}).text;
-    // get data-price-final
-    var price = topSeller.find('div', attrs: {'class': 'search_price_discount_combined'})?.attributes['data-price-final'];
-    var discountDiv = topSeller.find('div', attrs: {'class': 'search_discount'});
-    String discount = "";
-    if (discountDiv != null) {
-      var discountSpan = discountDiv.find("span");
-      if (discountSpan != null) {
-        discount = discountSpan.text;
-      }
-    }
-    topSellersList.add(SteamTopSeller(imageSrc, title, price, publishDate, discount));
-  }
-
-  return topSellersList; 
- ```
-
-This code is a function in Dart that performs web scraping. It uses the `http` library to make a GET request to the Steam store's top sellers page and retrieve its HTML content. Then it uses the `BeautifulSoup` library to parse the HTML and extract information about the top-selling games on Steam.
-
-The `parseSteamTopSellers` function takes the raw HTML as a string as an argument, and uses the `BeautifulSoup` library to create a soup object. It then searches the HTML for the `div` element with an `id` of `search_resultsRows`, which contains the information about the top-selling games. If this `div` element is not found, the function returns an empty list.
-
-Next, the code finds all the `a` elements within the `div` element, which correspond to individual games. For each game, the code extracts information such as the image source, title, publication date, price, and discount. It creates a `SteamTopSeller` object with this information and adds it to a list. Finally, the function returns this list of `SteamTopSeller` objects.
-
-
-```dart 
- class SteamTopSeller {
-  String? imageSrc;
-  String? title;
-  String? price;
-  String? publishDate;
-  String? discount;
-
-
-  SteamTopSeller(this.imageSrc, this.title, this.price, this.publishDate, this.discount);
-
-  fromJson(Map<String, dynamic> json) {
-    this.imageSrc = json['imageSrc'];
-    this.title = json['title'];
-    this.price = json['price'];
-    this.publishDate = json['publishDate'];
-    this.discount = json['discount'];
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'imageSrc': this.imageSrc,
-      'title': this.title,
-      'price': this.price,
-      'publishDate': this.publishDate,
-      'discount': this.discount,
-    };
-  }
+  return topSellers;
 }
- 
- ```
+```
 
-This is a class definition for the `SteamTopSeller` object in Dart. It contains fields for the image source, title, price, publication date, and discount of a top-selling game on the Steam store.
+Two details that are easy to get wrong:
 
-The class has a constructor that takes these fields as arguments and sets them to the instance's fields. It also has a `fromJson` method that creates a `SteamTopSeller` object from a JSON map and a `toJson` method that returns a JSON map representation of the object. These methods can be used for serializing and deserializing the `SteamTopSeller` object to and from JSON data, respectively.
+- Build the query string with the third argument of `Uri.https`. Passing `'search/?filter=topsellers'` as the path percent-encodes the `?`, so Steam receives a different URL.
+- Matching on the full `class` attribute (for example `attrs: {'class': 'col search_released responsive_secondrow'}`) breaks as soon as Steam adds or removes a class, which is exactly what happened to the original version of this code. CSS selectors on a single class name are more forgiving.
 
-For alfred classes, we require a `fromJson` and `toJson` method to be defined. This is because the `alfred` library uses the method  serialize and deserialize objects to and from JSON data. The `alfred` package requires that a `fromJson` and `toJson` method be defined for each class that needs to be serialized and deserialized.
+## The model class
 
+```dart
+class SteamTopSeller {
+  final String? imageSrc;
+  final String? title;
+  final String? price;
+  final String? publishDate;
+  final String? discount;
 
-```dart 
- // load sample.html and run findTopSteamSellers, expect list of top steam sellers
+  SteamTopSeller({
+    this.imageSrc,
+    this.title,
+    this.price,
+    this.publishDate,
+    this.discount,
+  });
+
+  factory SteamTopSeller.fromJson(Map<String, dynamic> json) => SteamTopSeller(
+        imageSrc: json['imageSrc'] as String?,
+        title: json['title'] as String?,
+        price: json['price'] as String?,
+        publishDate: json['publishDate'] as String?,
+        discount: json['discount'] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'imageSrc': imageSrc,
+        'title': title,
+        'price': price,
+        'publishDate': publishDate,
+        'discount': discount,
+      };
+}
+```
+
+Alfred only needs `toJson`: when a route returns an object with a `toJson` (or `toJSON`) method, Alfred calls it and sends the result as JSON. Returning a list works too, because `jsonEncode` calls `toJson` on each item. `fromJson` isn't required by Alfred; it's there for clients (such as a Flutter app) that decode the response.
+
+## The endpoint
+
+```dart
+import 'package:alfred/alfred.dart';
+
+void main() async {
+  final app = Alfred();
+  app.get('/steam/topsellers', (req, res) => findTopSteamSellers());
+  await app.listen(8080);
+}
+```
+
+## Testing against a saved page
+
+Hitting Steam in a unit test is slow and flaky, so save a copy of the search page to `test/sample.html` and test the parser against that:
+
+```dart
 import 'dart:io';
+
+import 'package:dart_off_server/core.dart' as core;
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-import "package:dart_off_server/core.dart" as core;
-import "package:path/path.dart" as p;
 
 void main() {
-  test('calculate', () {
-      var rawHTMLPath = p.join(p.current, 'test', 'sample.html');
-      // load rawHTML from rawHTMLPath
-      File file = File(rawHTMLPath);
-      var rawHTML = file.readAsStringSync();
-      var steamSellers = core.parseSteamTopSellers(rawHTML);
-      // greater than 5
-      expect(steamSellers.length, greaterThan(5));
+  test('parses top sellers from a saved Steam page', () {
+    final rawHTMLPath = p.join(p.current, 'test', 'sample.html');
+    final rawHTML = File(rawHTMLPath).readAsStringSync();
+
+    final steamSellers = core.parseSteamTopSellers(rawHTML);
+
+    expect(steamSellers.length, greaterThan(5));
+    expect(steamSellers.first.title, isNotEmpty);
   });
 }
- 
- ```
+```
 
-This is a test case for the `parseSteamTopSellers` function, which is defined in the `core.dart` file. The test case is written using the `test` function from the `test` package.
-
-The test case starts by loading the sample HTML file, `sample.html`, into a string, `rawHTML`, using the `readAsStringSync` method of the `File` class. The `rawHTML` string is then passed to the `parseSteamTopSellers` function, which returns a list of `SteamTopSeller` objects.
-
-The test case then uses the `expect` function to check that the length of the list of top sellers is greater than 5. This is just a simple example to verify that the `parseSteamTopSellers` function is correctly parsing the HTML and returning a list of `SteamTopSeller` objects. In a real scenario, you might want to write more tests to check the contents of the list, as well as edge cases where the HTML is not in the expected format.
-
-
+`path` and `test` need to be in `pubspec.yaml` (`dart pub add path` and `dart pub add dev:test`). A test against a saved file won't notice when Steam changes its markup, so it's worth also checking the live endpoint by hand now and then.
 
 ## References
+
 - https://friendlyuser.github.io/posts/tech/flutter/alfred_backend_with_open_food_facts_api/
 - https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main
+- [beautiful_soup_dart API docs](https://pub.dev/documentation/beautiful_soup_dart/latest/)
+- [Alfred on pub.dev](https://pub.dev/packages/alfred)

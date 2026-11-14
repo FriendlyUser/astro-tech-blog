@@ -1,209 +1,214 @@
 ---
-title: Using OpenSSL in C++ A Comprehensive Guide
+title: "OpenSSL 3 in C++: RSA keys, signatures, and AES-256-GCM encryption"
 pubDate: "2023-05-03T14:16:44.725Z"
-description: "In this article, we will explore how to use OpenSSL in C++ to perform various cryptographic tasks, such as generating public and private key pairs, encrypting and decrypting data, and signing and verifying messages."
+lastUpdated: 2026-11-14
+description: "Use OpenSSL 3's EVP API from C++ to generate an RSA key, sign and verify a message with SHA-256, and encrypt data with AES-256-GCM, tag check included."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2378078723.png
 ---
-# Using OpenSSL in C++: A Comprehensive Guide
 
-OpenSSL is a widely used, open-source toolkit that provides a full suite of cryptographic libraries and functions. It is commonly used for implementing security protocols such as SSL/TLS and a variety of other cryptographic operations. In this article, we will explore how to use OpenSSL in C++ to perform various cryptographic tasks, such as generating public and private key pairs, encrypting and decrypting data, and signing and verifying messages.
+OpenSSL is two libraries: `libssl` implements TLS, and `libcrypto` provides the primitives underneath it (hashes, ciphers, public-key algorithms, random numbers). For signing and encrypting data in your own program you only need `libcrypto`, through its high-level **EVP** interface.
 
-## Prerequisites
+This post builds one small program that generates an RSA key, signs and verifies a message, and encrypts and decrypts data with AES-256-GCM. It targets OpenSSL 3.x (the 1.1.1 series is end-of-life) and avoids APIs that OpenSSL 4.0 removed.
 
-Before diving into the code, make sure you have the following prerequisites:
+## Setup
 
-1. A basic understanding of C++ programming.
-2. OpenSSL library installed on your system. If you haven't installed it yet, you can follow the [official installation guide](https://www.openssl.org/source/).
-3. A C++ compiler that supports C++11 or later (e.g., GCC, Clang, or MSVC).
+Install the development package (`libssl-dev` on Debian/Ubuntu, `openssl-devel` on Fedora, `brew install openssl@3` on macOS, or `vcpkg install openssl`). Then compile and link against `libcrypto`:
 
-## Integrating OpenSSL with C++
+```sh
+g++ -std=c++17 crypto_demo.cpp -o crypto_demo -lcrypto
+```
 
-To integrate OpenSSL into your C++ project, you'll need to include the necessary header files and link against the OpenSSL libraries. In your C++ source files, include the appropriate OpenSSL header files with:
+With CMake, `find_package(OpenSSL REQUIRED)` and link `OpenSSL::Crypto`. Add `-lssl` / `OpenSSL::SSL` only if you use TLS.
+
+The examples manage OpenSSL objects with `std::unique_ptr` and the matching `*_free` function, so nothing leaks on early returns. When a call fails, `ERR_print_errors_fp(stderr)` prints OpenSSL's error queue, which is far more useful than a generic "failed" message.
+
+## Generating an RSA key pair
+
+OpenSSL 3.0 added `EVP_RSA_gen()`, a one-call shortcut:
 
 ```cpp
-#include <openssl/ssl.h>
+#include <openssl/evp.h>
+#include <openssl/rsa.h>
+
+EVP_PKEY* key = EVP_RSA_gen(2048);  // nullptr on failure; free with EVP_PKEY_free
+```
+
+The longer form, which also works on 1.1.1 and lets you set more options, is `EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)` → `EVP_PKEY_keygen_init()` → `EVP_PKEY_CTX_set_rsa_keygen_bits()` → `EVP_PKEY_keygen()`.
+
+The resulting `EVP_PKEY` holds both halves of the pair. To share the public key, write it out with `PEM_write_bio_PUBKEY()` and load it elsewhere with `PEM_read_bio_PUBKEY()`.
+
+## Signing and verifying
+
+`EVP_DigestSign()` hashes and signs in one call. Calling it first with a null output buffer returns the maximum signature size, so you can size the buffer correctly. Note that the length parameter is a `size_t*`, not an `unsigned int`.
+
+```cpp
+using MdCtx = std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)>;
+
+std::vector<unsigned char> sign(EVP_PKEY* key, const std::string& msg) {
+    MdCtx ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
+    auto data = reinterpret_cast<const unsigned char*>(msg.data());
+    size_t sig_len = 0;
+
+    if (!ctx ||
+        EVP_DigestSignInit(ctx.get(), nullptr, EVP_sha256(), nullptr, key) != 1 ||
+        EVP_DigestSign(ctx.get(), nullptr, &sig_len, data, msg.size()) != 1) {
+        return {};
+    }
+
+    std::vector<unsigned char> sig(sig_len);
+    if (EVP_DigestSign(ctx.get(), sig.data(), &sig_len, data, msg.size()) != 1) {
+        return {};
+    }
+    sig.resize(sig_len);
+    return sig;
+}
+
+bool verify(EVP_PKEY* key, const std::string& msg, const std::vector<unsigned char>& sig) {
+    MdCtx ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
+    auto data = reinterpret_cast<const unsigned char*>(msg.data());
+
+    // EVP_DigestVerify returns 1 for a valid signature, 0 for an invalid one,
+    // and a negative value for other errors.
+    return ctx &&
+           EVP_DigestVerifyInit(ctx.get(), nullptr, EVP_sha256(), nullptr, key) == 1 &&
+           EVP_DigestVerify(ctx.get(), sig.data(), sig.size(), data, msg.size()) == 1;
+}
+```
+
+With an RSA key and no extra options this produces PKCS#1 v1.5 signatures. For RSA-PSS, set `EVP_PKEY_CTX_set_rsa_padding(pctx, RSA_PKCS1_PSS_PADDING)` on the `EVP_PKEY_CTX` returned through the second argument of the init calls.
+
+## Encrypting and decrypting with AES-256-GCM
+
+GCM is an authenticated mode: encryption produces a ciphertext *and* a 16-byte tag, and decryption must check that tag. If you skip `EVP_EncryptFinal_ex` / `EVP_DecryptFinal_ex` and the tag handling, you get unauthenticated ciphertext and lose the reason for choosing GCM.
+
+The rules that matter:
+
+- The key is 32 random bytes. Use `RAND_bytes`, never `rand()`.
+- The IV (nonce) is 12 bytes, GCM's default length, and must **never** be reused with the same key. A fresh random IV per message is fine; store it next to the ciphertext. It isn't secret.
+- Decryption only succeeds if `EVP_DecryptFinal_ex` returns 1. Otherwise discard the output, because the data or tag was tampered with.
+
+```cpp
+using CipherCtx = std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)>;
+constexpr int kTagLen = 16;
+
+bool aes_gcm_encrypt(const std::vector<unsigned char>& plaintext,
+                     const unsigned char* key, const unsigned char* iv,
+                     std::vector<unsigned char>& ciphertext, unsigned char* tag) {
+    CipherCtx ctx(EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
+    if (!ctx) return false;
+    if (EVP_EncryptInit_ex(ctx.get(), EVP_aes_256_gcm(), nullptr, key, iv) != 1) return false;
+
+    ciphertext.resize(plaintext.size());
+    int len = 0;
+    if (EVP_EncryptUpdate(ctx.get(), ciphertext.data(), &len,
+                          plaintext.data(), static_cast<int>(plaintext.size())) != 1) return false;
+    int total = len;
+
+    if (EVP_EncryptFinal_ex(ctx.get(), ciphertext.data() + total, &len) != 1) return false;
+    total += len;
+    ciphertext.resize(total);
+
+    return EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_GET_TAG, kTagLen, tag) == 1;
+}
+
+bool aes_gcm_decrypt(const std::vector<unsigned char>& ciphertext,
+                     const unsigned char* key, const unsigned char* iv,
+                     const unsigned char* tag, std::vector<unsigned char>& plaintext) {
+    CipherCtx ctx(EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
+    if (!ctx) return false;
+    if (EVP_DecryptInit_ex(ctx.get(), EVP_aes_256_gcm(), nullptr, key, iv) != 1) return false;
+
+    plaintext.resize(ciphertext.size());
+    int len = 0;
+    if (EVP_DecryptUpdate(ctx.get(), plaintext.data(), &len,
+                          ciphertext.data(), static_cast<int>(ciphertext.size())) != 1) return false;
+    int total = len;
+
+    // The expected tag must be set before the final call.
+    if (EVP_CIPHER_CTX_ctrl(ctx.get(), EVP_CTRL_GCM_SET_TAG, kTagLen,
+                            const_cast<unsigned char*>(tag)) != 1) return false;
+
+    if (EVP_DecryptFinal_ex(ctx.get(), plaintext.data() + total, &len) != 1) {
+        plaintext.clear();  // authentication failed
+        return false;
+    }
+    plaintext.resize(total + len);
+    return true;
+}
+```
+
+To authenticate unencrypted metadata as well (a header, a record ID), pass it as additional authenticated data with an `EVP_EncryptUpdate` / `EVP_DecryptUpdate` call that has a null output buffer, before the first real update.
+
+## Putting it together
+
+Paste the `sign`, `verify`, `aes_gcm_encrypt` and `aes_gcm_decrypt` functions above `main` in one file:
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <openssl/err.h>
-#include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
-```
+#include <openssl/rsa.h>
 
-When compiling your program, you'll need to link against the OpenSSL libraries. If you're using GCC or Clang, you can do this by adding `-lssl -lcrypto` to your compiler command line. For example:
+// ... sign, verify, aes_gcm_encrypt, aes_gcm_decrypt from above ...
 
-```
-g++ your_program.cpp -o your_program -lssl -lcrypto
-```
-
-## Generating Key Pairs
-
-To generate a public and private key pair using OpenSSL, you can use the `EVP_PKEY` API. Here's an example of generating an RSA key pair:
-
-```cpp
-#include <iostream>
-#include <openssl/evp.h>
-
-EVP_PKEY *generate_key_pair() {
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr);
-    if (!ctx) {
-        std::cerr << "Failed to create EVP_PKEY_CTX" << std::endl;
-        return nullptr;
+int main() {
+    // Signatures
+    std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> key(EVP_RSA_gen(2048), EVP_PKEY_free);
+    if (!key) {
+        ERR_print_errors_fp(stderr);
+        return 1;
     }
 
-    if (EVP_PKEY_keygen_init(ctx) <= 0) {
-        std::cerr << "Failed to initialize keygen" << std::endl;
-        EVP_PKEY_CTX_free(ctx);
-        return nullptr;
+    const std::string message = "transfer 100 to alice";
+    auto sig = sign(key.get(), message);
+    std::cout << "signature bytes: " << sig.size() << '\n';
+    std::cout << "valid: " << verify(key.get(), message, sig) << '\n';
+    std::cout << "tampered valid: " << verify(key.get(), message + "!", sig) << '\n';
+
+    // Authenticated encryption
+    unsigned char aes_key[32], iv[12], tag[kTagLen];
+    if (RAND_bytes(aes_key, sizeof(aes_key)) != 1 || RAND_bytes(iv, sizeof(iv)) != 1) {
+        ERR_print_errors_fp(stderr);
+        return 1;
     }
 
-    if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048) <= 0) {
-        std::cerr << "Failed to set key length" << std::endl;
-        EVP_PKEY_CTX_free(ctx);
-        return nullptr;
-    }
+    std::vector<unsigned char> plaintext(message.begin(), message.end());
+    std::vector<unsigned char> ciphertext, decrypted;
 
-    EVP_PKEY *key = nullptr;
-    if (EVP_PKEY_keygen(ctx, &key) <= 0) {
-        std::cerr << "Failed to generate key pair" << std::endl;
-        EVP_PKEY_CTX_free(ctx);
-        return nullptr;
+    if (!aes_gcm_encrypt(plaintext, aes_key, iv, ciphertext, tag)) {
+        ERR_print_errors_fp(stderr);
+        return 1;
     }
+    bool ok = aes_gcm_decrypt(ciphertext, aes_key, iv, tag, decrypted);
+    std::cout << "decrypted: " << (ok ? std::string(decrypted.begin(), decrypted.end()) : "<auth failed>")
+              << '\n';
 
-    EVP_PKEY_CTX_free(ctx);
-    return key;
+    ciphertext[0] ^= 1;  // flip one bit
+    std::cout << "tampered decrypt ok: " << aes_gcm_decrypt(ciphertext, aes_key, iv, tag, decrypted)
+              << '\n';
+    return 0;
 }
 ```
 
-This function initializes an `EVP_PKEY_CTX` for RSA key generation, sets the desired key length (2048 bits, in this case), and then generates the key pair. The function returns the generated key pair as an `EVP_PKEY` pointer, which can be used for various cryptographic operations.
+Expected output: a 256-byte signature, `valid: 1`, `tampered valid: 0`, the original message, and `tampered decrypt ok: 0`. The tampered verification may also leave entries on OpenSSL's error queue; call `ERR_clear_error()` if you check the queue afterwards.
 
-## Encrypting and Decrypting Data
+## Gotchas
 
-To encrypt and decrypt data using OpenSSL, you can use the `EVP_CIPHER` API. Here's an example of symmetric encryption using AES-256-GCM:
+- Older code uses `EVP_MD_CTX_create` / `EVP_MD_CTX_destroy`; these are legacy aliases for `EVP_MD_CTX_new` / `EVP_MD_CTX_free`.
+- Low-level APIs such as `RSA_new`, `RSA_generate_key_ex`, `AES_encrypt` and `SHA256_Init` are deprecated since OpenSSL 3.0. Stick to EVP so the same code works with providers (including the FIPS provider).
+- OpenSSL 4.0 removed the ENGINE API and custom `EVP_CIPHER`/`EVP_MD`/`EVP_PKEY` method creation. Nothing in this post uses them.
+- Don't invent your own protocol on top of these primitives if a standard one fits. For encrypting data between services, TLS or a library like libsodium is harder to misuse.
 
-```cpp
-#include <iostream>
-#include <openssl/evp.h>
+## Further reading
 
-bool encrypt(const unsigned char *plaintext, int plaintext_len, const unsigned char *key, const unsigned char *iv, unsigned char *ciphertext, int &ciphertext_len) {
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        std::cerr << "Failed to create EVP_CIPHER_CTX" << std::endl;
-        return false;
-    }
-
-    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, key, iv) != 1) {
-        std::cerr << "Failed to initialize encryption" << std::endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return false;
-    }
-
-    if (EVP_EncryptUpdate(ctx, ciphertext, &ciphertext_len, plaintext, plaintext_len) != 1) {
-        std::cerr << "Failed to encrypt data" << std::endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return false;
-    }
-
-    EVP_CIPHER_CTX_free(ctx);
-    return true;
-}
-
-bool decrypt(const unsigned char *ciphertext, int ciphertext_len, const unsigned char *key, const unsigned char *iv, unsigned char *plaintext, int &plaintext_len) {
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        std::cerr << "Failed to create EVP_CIPHER_CTX" << std::endl;
-        return false;
-    }
-
-    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, key, iv) != 1) {
-        std::cerr << "Failed to initialize decryption" << std::endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return false;
-    }
-
-    if (EVP_DecryptUpdate(ctx, plaintext, &plaintext_len, ciphertext, ciphertext_len) != 1) {
-        std::cerr << "Failed to decrypt data" << std::endl;
-        EVP_CIPHER_CTX_free(ctx);
-        return false;
-    }
-
-    EVP_CIPHER_CTX_free(ctx);
-    return true;
-}
-```
-
-These functions take in the plaintext (or ciphertext), its length, the key, and the initialization vector (IV) as input, and perform the corresponding encryption (or decryption) operation. The resulting ciphertext (or plaintext) and its length are output as parameters.
-
-## Signing and Verifying Messages
-
-To sign and verify messages using OpenSSL, you can use the `EVP_DigestSign` and `EVP_DigestVerify` APIs. Here's an example of signing and verifying a message using SHA-256 and an RSA key pair:
-
-```cpp
-#include <iostream>
-#include <openssl/evp.h>
-
-bool sign(EVP_PKEY *private_key, const unsigned char *message, int message_len, unsigned char *signature, unsigned int &signature_len) {
-    EVP_MD_CTX *ctx = EVP_MD_CTX_create();
-    if (!ctx) {
-        std::cerr << "Failed to create EVP_MD_CTX" << std::endl;
-        return false;
-    }
-
-    if (EVP_DigestSignInit(ctx, nullptr, EVP_sha256(), nullptr, private_key) != 1) {
-        std::cerr << "Failed to initialize signing" << std::endl;
-        EVP_MD_CTX_destroy(ctx);
-        return false;
-    }
-
-    if (EVP_DigestSignUpdate(ctx, message, message_len) != 1) {
-        std::cerr << "Failed to update signing" << std::endl;
-        EVP_MD_CTX_destroy(ctx);
-        return false;
-    }
-
-    if (EVP_DigestSignFinal(ctx, signature, &signature_len) != 1) {
-        std::cerr << "Failed to finalize signing" << std::endl;
-        EVP_MD_CTX_destroy(ctx);
-        return false;
-    }
-
-    EVP_MD_CTX_destroy(ctx);
-    return true;
-}
-
-bool verify(EVP_PKEY *public_key, const unsigned char *message, int message_len, const unsigned char *signature, unsigned int signature_len) {
-    EVP_MD_CTX *ctx = EVP_MD_CTX_create();
-    if (!ctx) {
-        std::cerr << "Failed to create EVP_MD_CTX" << std::endl;
-        return false;
-    }
-
-    if (EVP_DigestVerifyInit(ctx, nullptr, EVP_sha256(), nullptr, public_key) != 1) {
-        std::cerr << "Failed to initialize verification" << std::endl;
-        EVP_MD_CTX_destroy(ctx);
-        return false;
-    }
-
-    if (EVP_DigestVerifyUpdate(ctx, message, message_len) != 1) {
-        std::cerr << "Failed to update verification" << std::endl;
-        EVP_MD_CTX_destroy(ctx);
-        return false;
-    }
-
-    int result = EVP_DigestVerifyFinal(ctx, signature, signature_len);
-    EVP_MD_CTX_destroy(ctx);
-
-    if (result != 1) {
-        std::cerr << "Failed to finalize verification" << std::endl;
-        return false;
-    }
-
-    return true;
-}
-```
-
-These functions take in the message and its length, as well as the private (or public) key, and perform the corresponding signing (or verification) operation. The resulting signature and its length are output as parameters in the `sign` function.
-
-## Conclusion
-
-In this article, we've explored how to use OpenSSL in C++ to perform various cryptographic tasks, such as generating key pairs, encrypting and decrypting data, and signing and verifying messages. By integrating OpenSSL into your C++ projects, you can take advantage of its powerful cryptographic capabilities to secure your applications and protect sensitive data.
+- [OpenSSL 3 documentation](https://docs.openssl.org/3.0/)
+- [EVP_EncryptInit(3)](https://docs.openssl.org/3.0/man3/EVP_EncryptInit/), including the AEAD/GCM notes
+- [EVP_DigestSignInit(3)](https://docs.openssl.org/3.0/man3/EVP_DigestSignInit/)
+- [APIs removed in OpenSSL 4.0](https://docs.openssl.org/4.0/man7/ossl-removed-api/)

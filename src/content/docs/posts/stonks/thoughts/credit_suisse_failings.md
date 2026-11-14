@@ -1,37 +1,55 @@
 ---
-title: "Credit Suisse Crisis: How a European Bank's Troubles Threaten Global Markets"
-description:  Credit Suisse Group AG, one of Europe's largest banks, is facing a severe liquidity crisis that has sent its shares plunging to record lows and raised fears of a broader bank deposit crisis.
+title: "Credit Suisse's March 2023 crisis: why one bank's troubles worried global markets"
+description: "How Archegos, Greensill and a run on deposits pushed Credit Suisse to a Swiss central bank loan in March 2023, and why markets feared contagion."
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 13 April 2023
+lastUpdated: 2026-11-14
 tags: ["investing"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/sample.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-# Credit Suisse Crisis: How a European Bank's Troubles Threaten Global Markets
+:::note[Update]
+This was written on 15 March 2023, mid-crisis. Four days later, on 19 March, UBS agreed to take over Credit Suisse for about CHF 3 billion in an emergency deal arranged by the Swiss government. Swiss regulator FINMA wrote about CHF 16 billion of Credit Suisse's Additional Tier 1 (AT1) bonds down to zero. The takeover closed on 12 June 2023.
+:::
 
-Credit Suisse Group AG, one of Europe's largest banks, is facing a severe liquidity crisis that has sent its shares plunging to record lows and raised fears of a broader bank deposit crisis.
+Credit Suisse, one of Europe's largest banks, hit a liquidity crisis in March 2023 that sent its shares to record lows and raised fears that the run on US regional banks was spreading.
 
-The Swiss bank has been struggling for years with legal troubles, regulatory fines and poor performance. Its woes were compounded by its exposure to two major scandals: the collapse of Archegos Capital Management, a US hedge fund that defaulted on billions of dollars of margin calls last year; and the fraud case of Greensill Capital, a UK-based supply chain finance company that filed for bankruptcy this month.
+## How it got here
 
-Credit Suisse was one of the main lenders to both Archegos and Greensill, and suffered heavy losses when they imploded. The bank has estimated that it will take a $4.7 billion hit from Archegos alone, wiping out its first-quarter profit and forcing it to raise capital.
+The bank had been struggling for years with legal problems, regulatory fines and weak results. Two blow-ups in March 2021 did the most damage:
 
-The bank's troubles have spooked investors and customers alike, who have been withdrawing their deposits and selling their shares. Credit Suisse's stock price has fallen by nearly 30% since March 1st, reaching an all-time low on Wednesday.
+- **Archegos Capital Management.** Credit Suisse was a prime broker to Bill Hwang's family office, which defaulted on margin calls. Credit Suisse lost more than $5 billion, more than any other bank involved, and swung to a loss in the first quarter of 2021.
+- **Greensill Capital.** Credit Suisse ran about $10 billion of supply-chain finance funds that invested in notes from Greensill. It froze those funds in early March 2021, and Greensill went into insolvency days later, leaving the bank's clients exposed.
 
-To calm market fears and shore up its liquidity position, Credit Suisse announced on Thursday that it was taking "decisive action" by borrowing up to $54 billion from the Swiss National Bank (SNB), the country's central bank. The SNB said it was providing an emergency loan facility to Credit Suisse as part of its mandate to ensure financial stability.
+Customers pulled money out through 2022. On 14 March 2023 the bank said it had found "material weaknesses" in its financial reporting controls for 2021 and 2022. The next day, its largest shareholder, Saudi National Bank, said it couldn't put in more money because that would take its stake above 10%. Credit Suisse shares fell as much as 30% that day to an all-time low.
 
-The SNB's intervention is seen as a last-resort measure to prevent Credit Suisse from collapsing or needing a government bailout. However, some analysts have questioned whether it will be enough to restore confidence in the bank and whether it will come with strings attached.
+## The Swiss National Bank steps in
 
-Meanwhile, Credit Suisse's crisis has also raised concerns about the health of other banks around the world, especially those with exposure to Archegos or Greensill. Several regional US banks have failed in recent weeks due to customer withdrawals triggered by social media posts and banking apps. Among them was Silicon Valley Bank (SVB), a California-based lender that served startups and technology companies.
+On Thursday 16 March, Credit Suisse said it would borrow up to CHF 50 billion (about $54 billion) from the Swiss National Bank to shore up its liquidity. The central bank had said the day before that it would provide liquidity if needed.
 
-The Federal Reserve acted swiftly to seize SVB and other failed banks and promised to make customers whole even if their deposits exceeded the insured limit of $250,000. The Fed said it was acting to ensure that bank customers had access to money without bailing out the banks themselves.
+It looked like a last resort to avoid a collapse or a government bailout, and analysts questioned whether it would restore confidence. It didn't: the UBS deal in the note above came that weekend.
 
-However, some economists have warned that more banks could face liquidity problems as interest rates rise after a decade or more of low or negative rates. Higher interest rates increase borrowing costs for banks and reduce their profitability. They also make their assets less valuable and increase their risk of default.
+## The US side
 
-Credit Suisse's crisis could be a harbinger of more trouble ahead for global banking system if interest rates continue to rise or if more scandals emerge. The stability of financial markets depends on trust in banks' ability to meet their obligations and safeguard deposits. If that trust erodes further, it could trigger more panic withdrawals, contagion effects and systemic risks.
+Credit Suisse's crisis landed in the middle of a US banking scare, though the causes were different. Silicon Valley Bank (SVB), which served startups and tech companies, was closed by California regulators on 10 March 2023 after depositors, many of them coordinating over social media and moving money through banking apps, withdrew billions in a day. New York regulators closed Signature Bank on 12 March.
 
-Source: Conversation with Bing, 3/15/2023(1) Banks suffer crisis of coincidence | CNN Politics. https://www.cnn.com/2023/03/15/politics/bank-collapse-credit-suisse-what-matters/index.html Accessed 3/15/2023.
-(2) Credit Suisse Could Be Too Big to Bail Out, Nouriel Roubini Says .... https://www.bloomberg.com/news/articles/2023-03-15/nouriel-roubini-credit-suisse-might-be-too-big-to-be-saved Accessed 3/15/2023.
-(3) Credit Suisse To Borrow Up To $54 Billion In Bid To Calm Investor Fears. https://www.ndtv.com/world-news/credit-suisse-to-borrow-up-to-54-billion-in-bid-to-calm-investor-fears-3865089 Accessed 3/15/2023.
-(4) Credit Suisse Crisis: CS stock plunges 29%, causing widespread equity .... https://www.fxstreet.com/news/credit-suisse-crisis-cs-stock-plunges-29-causing-widespread-equity-market-worries-202303151310 Accessed 3/15/2023.
+SVB wasn't exposed to Archegos or Greensill. Its problem was interest rates: it had put deposits into long-dated bonds that lost value as rates rose, and selling them to meet withdrawals locked in the losses.
+
+The FDIC, Federal Reserve and Treasury jointly announced that all depositors at both banks would be paid in full, including balances above the $250,000 insurance limit. Shareholders and some creditors were not protected, and the cost to the deposit insurance fund is recovered through a special assessment on banks. The Fed also opened a new lending facility so banks could borrow against their bonds at face value instead of selling them at a loss.
+
+## Why I think it matters
+
+Higher rates after more than a decade of low or negative rates hurt banks in two ways. Their funding costs go up as depositors demand more interest, and the fixed-rate bonds and loans they already hold lose value. A bank that has to sell those assets to cover withdrawals turns paper losses into real ones.
+
+Credit Suisse could be a sign of more trouble ahead if rates keep rising or more scandals come out. Markets depend on trust that banks can meet their obligations and keep deposits safe. If that trust erodes further, it could set off more panic withdrawals and contagion between banks.
+
+## Sources
+
+I first drafted this from a Bing chat summary of the articles below on 15 March 2023. Facts were rechecked in November 2026.
+
+1. [Banks suffer crisis of coincidence](https://www.cnn.com/2023/03/15/politics/bank-collapse-credit-suisse-what-matters/index.html), CNN Politics
+2. [Credit Suisse Could Be Too Big to Bail Out, Nouriel Roubini Says](https://www.bloomberg.com/news/articles/2023-03-15/nouriel-roubini-credit-suisse-might-be-too-big-to-be-saved), Bloomberg
+3. [Credit Suisse To Borrow Up To $54 Billion In Bid To Calm Investor Fears](https://www.ndtv.com/world-news/credit-suisse-to-borrow-up-to-54-billion-in-bid-to-calm-investor-fears-3865089), NDTV
+4. [Credit Suisse Crisis: CS stock plunges 29%, causing widespread equity market worries](https://www.fxstreet.com/news/credit-suisse-crisis-cs-stock-plunges-29-causing-widespread-equity-market-worries-202303151310), FXStreet

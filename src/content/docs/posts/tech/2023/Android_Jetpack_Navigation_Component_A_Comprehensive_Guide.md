@@ -1,98 +1,70 @@
 ---
-title: Android Jetpack Navigation Component A Comprehensive Guide
+title: "Jetpack Navigation for fragments: nav graphs, Safe Args, and deep links"
 pubDate: "2024-04-12T15:48:04.000Z"
-description: "This article will provide a comprehensive guide on this key component, covering its importance, basic concepts, and how to implement it in your project"
-tags: []
+lastUpdated: 2026-11-14
+description: "Set up the Jetpack Navigation component in a fragment-based Android app: a navigation graph, a NavHostFragment, type-safe arguments with Safe Args, and deep links."
+tags: ["android", "kotlin"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/DALL?E 2023-01-07 13.46.29 - banana spaceship.png
 ---
-# Android Jetpack Navigation Component: A Comprehensive Guide
 
-The Android Jetpack Navigation Component is a powerful and versatile library that simplifies setting up and managing navigation within your Android application. This article will provide a comprehensive guide on this key component, covering its importance, basic concepts, and how to implement it in your project.
+The Jetpack Navigation component (`androidx.navigation`) handles moving between screens in an Android app. You describe your screens and the paths between them in a navigation graph, and a `NavController` performs the fragment transactions, manages the back stack, wires up the Up button, and resolves deep links for you.
 
-## Table of Contents
-1. [Introduction to Android Jetpack](#introduction-to-android-jetpack)
-2. [Why Use the Navigation Component?](#why-use-the-navigation-component)
-3. [Basic Concepts](#basic-concepts)
-4. [Getting Started](#getting-started)
-5. [Implementing Navigation Component](#implementing-navigation-component)
-6. [Advanced Topics](#advanced-topics)
-7. [Conclusion](#conclusion)
+This post covers the XML-graph, fragment-based setup with Navigation 2.10.2. If you're building with Jetpack Compose, use `navigation-compose` with type-safe `@Serializable` routes (stable since 2.8.0), or look at [Navigation 3](https://developer.android.com/guide/navigation/navigation-3), a separate Compose-only library (`androidx.navigation3`).
 
-<a name="introduction-to-android-jetpack"></a>
-## 1. Introduction to Android Jetpack
+## The pieces
 
-Android Jetpack is a suite of libraries, tools, and best practices designed to help developers build high-quality apps while simplifying common tasks. Jetpack is modular, so you can use only the components you need, and it is backward-compatible, making it easy to integrate into existing projects. Some of the key components include ViewModel, LiveData, Room, WorkManager, and, of course, the Navigation Component.
+- **Navigation graph**: an XML resource in `res/navigation/` listing destinations and the actions between them.
+- **Destination**: a screen you can navigate to, usually a fragment.
+- **Action**: a named, reusable path from one destination to another.
+- **NavHost**: the container that swaps destinations in and out. For fragments this is a `NavHostFragment` inside a `FragmentContainerView`.
+- **NavController**: the object you call `navigate()` on. Each `NavHost` has one.
 
-<a name="why-use-the-navigation-component"></a>
-## 2. Why Use the Navigation Component?
+## Add the dependencies
 
-Implementing navigation in Android apps used to be a complex and error-prone task. It involved managing the back stack, handling fragment transactions, and implementing deep linking, among other things. The Navigation Component simplifies this process by providing a consistent way to handle all aspects of navigation, making it easier to visualize and manage your app's navigation flow.
+In the module's `build.gradle.kts`:
 
-Some advantages of using the Navigation Component include:
-
-- Simplified navigation setup
-- Type-safe argument passing between destinations
-- Automatic handling of fragment transactions
-- Easy implementation of deep links
-- Integration with other Jetpack components
-
-<a name="basic-concepts"></a>
-## 3. Basic Concepts
-
-Before diving into the implementation, let's get familiar with some basic concepts:
-
-- **Navigation graph**: An XML resource file that defines your app's navigation, including destinations and actions.
-- **Destination**: A screen or content area in your app that users can navigate to, such as fragments or activities.
-- **Action**: A connection between destinations that defines a navigation path, represented by a visual arrow in the navigation graph.
-- **NavController**: An object that manages app navigation within a NavHost.
-- **NavHost**: A container for navigation content, usually implemented as a `FragmentContainerView` or `NavHostFragment`.
-
-<a name="getting-started"></a>
-## 4. Getting Started
-
-### 4.1 Adding Dependencies
-
-To start using the Navigation Component, you need to add the following dependencies to your app's `build.gradle` file:
-
-```groovy
+```kotlin
 dependencies {
-    def nav_version = "2.4.0-alpha10" // Replace with the latest version
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    val navVersion = "2.10.2"
+    implementation("androidx.navigation:navigation-fragment:$navVersion")
+    implementation("androidx.navigation:navigation-ui:$navVersion")
 }
 ```
 
-### 4.2 Creating the Navigation Graph
+Older guides use `navigation-fragment-ktx` and `navigation-ui-ktx`. Those artifacts still get published, but they're empty: the Kotlin extensions (`findNavController()`, `navArgs()`, and so on) now live in the main artifacts.
 
-Next, create a new Android resource file in your `res` folder, with a resource type of "Navigation" and name it `nav_graph`. This will generate an empty navigation graph that you can start adding destinations and actions to.
+## Create the graph
 
-<a name="implementing-navigation-component"></a>
-## 5. Implementing Navigation Component
-
-### 5.1 Adding Destinations
-
-In the `nav_graph.xml` file, add your fragments as destinations:
+Create `res/navigation/nav_graph.xml` (in Android Studio: **New > Android Resource File**, resource type **Navigation**). A minimal graph with two fragments and one action:
 
 ```xml
-<fragment
-    android:id="@+id/firstFragment"
-    android:name="com.example.app.FirstFragment"
-    tools:layout="@layout/fragment_first" >
-    <action
-        android:id="@+id/action_firstFragment_to_secondFragment"
-        app:destination="@id/secondFragment" />
-</fragment>
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/firstFragment">
 
-<fragment
-    android:id="@+id/secondFragment"
-    android:name="com.example.app.SecondFragment"
-    tools:layout="@layout/fragment_second" />
+    <fragment
+        android:id="@+id/firstFragment"
+        android:name="com.example.app.FirstFragment"
+        tools:layout="@layout/fragment_first">
+        <action
+            android:id="@+id/action_firstFragment_to_secondFragment"
+            app:destination="@id/secondFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.example.app.SecondFragment"
+        tools:layout="@layout/fragment_second" />
+</navigation>
 ```
 
-### 5.2 Setting Up the NavHost
+## Add the NavHost
 
-Add a `NavHostFragment` to your main activity's layout file:
+Put a `FragmentContainerView` hosting a `NavHostFragment` in the activity layout:
 
 ```xml
 <androidx.fragment.app.FragmentContainerView
@@ -100,99 +72,129 @@ Add a `NavHostFragment` to your main activity's layout file:
     android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:defaultNavHost="true"
     app:navGraph="@navigation/nav_graph" />
 ```
 
-### 5.3 Navigating with Actions
+`app:defaultNavHost="true"` makes this host intercept the system Back button.
 
-To navigate between destinations, use the `navigate` method provided by the `NavController`:
+## Navigate
+
+From inside a fragment, navigate by action ID:
 
 ```kotlin
-val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment()
-findNavController().navigate(action)
-```
+import androidx.navigation.fragment.findNavController
 
-<a name="advanced-topics"></a>
-## 6. Advanced Topics
-
-### 6.1 Passing Arguments
-
-Topass data between destinations, define arguments in the navigation graph and use the `safeArgs` plugin to generate type-safe code:
-
-1. Add the `safeArgs` plugin to your project's `build.gradle` file:
-
-```groovy
-buildscript {
-    dependencies {
-        def nav_version = "2.4.0-alpha10" // Replace with the latest version
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
-    }
+binding.nextButton.setOnClickListener {
+    findNavController().navigate(R.id.action_firstFragment_to_secondFragment)
 }
 ```
 
-2. Apply the `safeArgs` plugin in your app's `build.gradle` file:
+## Pass arguments with Safe Args
 
-```groovy
-apply plugin: 'androidx.navigation.safeargs.kotlin'
-```
+Safe Args is a Gradle plugin that generates a `Directions` class per source destination and an `Args` class per destination with arguments, so argument names and types are checked at compile time.
 
-3. Define arguments in the navigation graph:
+1. Add the plugin to the top-level `build.gradle.kts`:
+
+   ```kotlin
+   buildscript {
+       repositories {
+           google()
+       }
+       dependencies {
+           classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.10.2")
+       }
+   }
+   ```
+
+2. Apply it in the app module. Use `androidx.navigation.safeargs.kotlin` for Kotlin-only modules and `androidx.navigation.safeargs` for Java or mixed modules:
+
+   ```kotlin
+   plugins {
+       id("androidx.navigation.safeargs.kotlin")
+   }
+   ```
+
+3. Declare the argument on the destination:
+
+   ```xml
+   <fragment
+       android:id="@+id/secondFragment"
+       android:name="com.example.app.SecondFragment"
+       tools:layout="@layout/fragment_second">
+       <argument
+           android:name="exampleArg"
+           app:argType="string" />
+   </fragment>
+   ```
+
+4. Navigate with the generated `Directions` class. Because `exampleArg` has no default, it becomes a required parameter:
+
+   ```kotlin
+   val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(exampleArg = "Hello, World!")
+   findNavController().navigate(action)
+   ```
+
+5. Read it in the destination with the `navArgs()` delegate:
+
+   ```kotlin
+   import androidx.navigation.fragment.navArgs
+
+   class SecondFragment : Fragment(R.layout.fragment_second) {
+       private val args: SecondFragmentArgs by navArgs()
+
+       override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+           super.onViewCreated(view, savedInstanceState)
+           val exampleArg = args.exampleArg
+       }
+   }
+   ```
+
+## Deep links
+
+An *implicit* deep link lets a URI open a destination directly. Add a `<deepLink>` to the destination; placeholders in `{braces}` are matched to the destination's declared arguments:
 
 ```xml
 <fragment
     android:id="@+id/secondFragment"
     android:name="com.example.app.SecondFragment"
-    tools:layout="@layout/fragment_second" >
+    tools:layout="@layout/fragment_second">
     <argument
         android:name="exampleArg"
         app:argType="string" />
+    <deepLink app:uri="example://second?exampleArg={exampleArg}" />
 </fragment>
 ```
 
-4. Pass arguments using the generated `Directions` class:
-
-```kotlin
-val exampleArg = "Hello, World!"
-val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(exampleArg)
-findNavController().navigate(action)
-```
-
-5. Retrieve arguments in the destination fragment:
-
-```kotlin
-val args: SecondFragmentArgs by navArgs()
-val exampleArg = args.exampleArg
-```
-
-### 6.2 Deep Links
-
-To support deep links, define them in your navigation graph and add the `NavDeepLinkBuilder` to your app's manifest:
-
-1. Define deep links in the navigation graph:
+Then point the activity that hosts the graph at it in `AndroidManifest.xml`. At build time, Navigation replaces `<nav-graph>` with the matching `<intent-filter>` elements:
 
 ```xml
-<fragment
-    android:id="@+id/secondFragment"
-    android:name="com.example.app.SecondFragment"
-    tools:layout="@layout/fragment_second" >
-    <deepLink
-        app:uri="example://secondFragment?exampleArg={exampleArg}"
-        app:argType="string" />
-</fragment>
-```
-
-2. Add the `NavDeepLinkBuilder` to your app's manifest:
-
-```xml
-<activity
-    android:name=".MainActivity"
-    android:launchMode="singleTop" >
+<activity android:name=".MainActivity" android:exported="true">
     <nav-graph android:value="@navigation/nav_graph" />
 </activity>
 ```
 
-<a name="conclusion"></a>
-## 7. Conclusion
+Leave the activity on the default `standard` launch mode. With `singleTop`, Navigation doesn't handle the deep link automatically when the activity is reused, so you'd have to call `navController.handleDeepLink(intent)` yourself in `onNewIntent()`.
 
-The Android Jetpack Navigation Component simplifies the process of setting up and managing navigation within your Android application. By providing a consistent way to handle all aspects of navigation, it reduces complexity and makes it easier to visualize and manage your app's navigation flow. In this article, we covered the importance of the Navigation Component, its basic concepts, and how to implement it in your project. We also discussed advanced topics such as passing arguments and deep linking. By incorporating the Navigation Component into your app, you can create a more seamless and intuitive user experience.
+For an *explicit* deep link, for example from a notification, build a `PendingIntent` with `NavDeepLinkBuilder`:
 
+```kotlin
+val pendingIntent = NavDeepLinkBuilder(context)
+    .setGraph(R.navigation.nav_graph)
+    .setDestination(R.id.secondFragment)
+    .setArguments(bundleOf("exampleArg" to "from-notification"))
+    .createPendingIntent()
+```
+
+## Gotchas
+
+- Calling `navigate()` twice quickly (a double tap) can throw `IllegalArgumentException` because the second call runs from a destination that no longer has that action. Debounce the click, or check `findNavController().currentDestination?.id` first.
+- Safe Args only generates code for XML graphs. If you build the graph in Kotlin (the Kotlin DSL or Compose), use `@Serializable` route classes instead.
+- To connect a `Toolbar`, `BottomNavigationView`, or `NavigationView` to the graph, use the helpers in `navigation-ui` (`setupWithNavController`).
+
+## Further reading
+
+- [Navigation overview](https://developer.android.com/guide/navigation)
+- [Pass data between destinations](https://developer.android.com/guide/navigation/use-graph/pass-data)
+- [Create a deep link for a destination](https://developer.android.com/guide/navigation/design/deep-link)
+- [Navigation release notes](https://developer.android.com/jetpack/androidx/releases/navigation)

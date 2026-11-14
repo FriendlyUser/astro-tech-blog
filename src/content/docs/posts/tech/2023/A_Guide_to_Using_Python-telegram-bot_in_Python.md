@@ -1,132 +1,115 @@
 ---
-description: In this article, we will walk through the process of setting up a bot,
-  handling messages, and implementing custom commands
+description: Build a working Telegram echo bot with python-telegram-bot v22, using its asyncio Application API, command handlers and message filters.
 imgSrc: /imgs/2023/945555918.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-17T13:13:00.000Z'
-tags: []
-title: A Guide to Using Python-telegram-bot in Python
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: "python-telegram-bot: build an echo bot with commands"
 ---
 
-# A Guide to Using Python-telegram-bot in Python
+:::caution
+This post originally used the `Updater` / `dispatcher` / `Filters` API from python-telegram-bot v13. Version 20 (January 2023) rewrote the library around `asyncio`, and that API no longer exists. The code below targets the current v22 release.
+:::
 
-Python-telegram-bot is a powerful library that allows you to create and manage Telegram bots using Python. In this article, we will walk through the process of setting up a bot, handling messages, and implementing custom commands. By the end of this guide, you will have a functional Telegram bot that can interact with users.
+[python-telegram-bot](https://python-telegram-bot.org/) is a Python wrapper around the Telegram Bot API. It handles long polling or webhooks, parses incoming updates, and routes them to handler functions you write. This post builds a small bot that answers `/start` and `/help` and echoes any other text message back.
 
-## Table of Contents
+## Install
 
-1. [Introduction to Telegram Bots](#introduction-to-telegram-bots)
-2. [Setting Up Your Environment](#setting-up-your-environment)
-3. [Creating a New Bot](#creating-a-new-bot)
-4. [Handling Messages and Commands](#handling-messages-and-commands)
-5. [Advanced Features](#advanced-features)
-6. [Conclusion](#conclusion)
+The current release (22.8 at the time of writing) requires Python 3.10 or newer:
 
-## Introduction to Telegram Bots
-
-Telegram bots are special accounts that can interact with users, groups, and channels. They can be used to send messages, images, videos, documents, and more. Bots can also be used to create custom tools, notifications, and games. The Python-telegram-bot library makes it easy to create and manage bots using Python.
-
-## Setting Up Your Environment
-
-Before we get started, you will need to install the Python-telegram-bot library using pip.
-
-```
-pip install python-telegram-bot
+```bash
+pip install "python-telegram-bot==22.*"
 ```
 
-This will install the latest version of the library and its dependencies.
+## Get a bot token
 
-## Creating a New Bot
+Bots are created through Telegram's own [BotFather](https://core.telegram.org/bots/features#botfather) bot:
 
-To create a new bot, you will need a Bot Token from the [BotFather](https://core.telegram.org/bots#botfather). Follow these steps to obtain a token:
+1. In Telegram, open a chat with `@BotFather`.
+2. Send `/newbot`.
+3. Choose a display name, then a username. The username must end in `bot` (for example `my_test_bot`).
+4. BotFather replies with a token. Anyone holding it can control your bot, so keep it out of source control.
 
-1. Open the Telegram app and search for the `BotFather` bot.
-2. Start a chat and send the command `/newbot`.
-3. Provide a name and username for your bot. The username must end with the word `bot` (e.g., `my_test_bot`).
-4. The BotFather will provide you with a token. Save this token, as you will need it later.
+The example reads the token from an environment variable:
 
-Now you can create a Python script to set up your bot. First, import the necessary modules:
+```bash
+export TELEGRAM_BOT_TOKEN="123456:ABC..."
+```
+
+## The bot
+
+Handlers are `async` functions that receive an `Update` and a context object. You register them on an `Application`, then start polling:
 
 ```python
+import logging
+import os
+
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-```
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
-Next, create a function to handle the `/start` command, which is sent when a user starts interacting with your bot:
+logging.basicConfig(level=logging.INFO)
 
-```python
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text('Hello! I am your Telegram bot.')
-```
 
-Now, set up the `main` function to configure the bot and register handlers for commands and messages:
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Hello! I am your Telegram bot.")
 
-```python
-def main():
-    ## Replace YOUR_TOKEN with the token you received from BotFather
-    token = "YOUR_TOKEN"
-    updater = Updater(token)
 
-    ## Get the dispatcher to register handlers
-    dp = updater.dispatcher
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Send me a message and I will echo it back to you.")
 
-    ## Register command handlers
-    dp.add_handler(CommandHandler("start", start))
 
-    ## Start the bot
-    updater.start_polling()
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(update.message.text)
 
-    ## Run the bot until Ctrl-C is pressed or the process receives SIGINT,
-    ## SIGTERM or SIGABRT
-    updater.idle()
-```
 
-Finally, call the `main` function when the script is executed:
+def main() -> None:
+    application = Application.builder().token(os.environ["TELEGRAM_BOT_TOKEN"]).build()
 
-```python
-if __name__ == '__main__':
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help_command))
+    # Any text message that isn't a /command
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    # Blocks until Ctrl-C; handles startup and shutdown of the bot for you.
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+
+if __name__ == "__main__":
     main()
 ```
 
-Now, run your script and your bot should be online. Send the `/start` command to your bot in a conversation and it should reply with "Hello! I am your Telegram bot."
+Run it with `python bot.py`, open a chat with your bot, and send `/start`, `/help`, then any text.
 
-## Handling Messages and Commands
+## What changed from the v13 API
 
-To handle messages and commands sent by users, you can create custom handlers. For example, let's create a handler that echoes the user's message:
+If you are porting an older bot, these are the renames you will hit most:
 
-```python
-def echo(update: Update, context: CallbackContext):
-    update.message.reply_text(update.message.text)
-```
+| v13 | v20+ |
+| --- | --- |
+| `Updater(token)` + `updater.dispatcher` | `Application.builder().token(token).build()` |
+| `dp.add_handler(...)` | `application.add_handler(...)` |
+| `updater.start_polling()` + `updater.idle()` | `application.run_polling()` |
+| `Filters.text`, `Filters.command` | `filters.TEXT`, `filters.COMMAND` |
+| `CallbackContext` | `ContextTypes.DEFAULT_TYPE` |
+| `def handler(...)`: `update.message.reply_text(...)` | `async def handler(...)`: `await update.message.reply_text(...)` |
 
-Now, register the message handler in the `main` function:
+Every Bot API call is now a coroutine, so forgetting `await` is the usual mistake: the call silently does nothing and Python warns that a coroutine was never awaited.
 
-```python
-dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
-```
+## Gotchas
 
-This line tells the bot to handle any text message that is not a command (e.g., `/start`). Restart your bot and send it a message. The bot should now echo your message.
+- **Group chats and privacy mode.** By default a bot in a group only sees commands and replies to its own messages. Turn privacy mode off with BotFather's `/setprivacy` if the echo handler should see every message.
+- **Blocking work.** A slow synchronous call (a `requests.get`, a heavy computation) inside a handler stalls the whole bot. Use an async HTTP client or `asyncio.to_thread`.
+- **Polling vs webhooks.** `run_polling()` is fine for development and small bots. For a deployed bot behind HTTPS, `run_webhook()` avoids the constant polling connection.
 
-You can also create custom command handlers. For example, let's create a `/help` command:
+## Further reading
 
-```python
-def help_command(update: Update, context: CallbackContext):
-    update.message.reply_text('Send me a message and I will echo it back to you.')
-```
-
-Register the command handler in the `main` function:
-
-```python
-dp.add_handler(CommandHandler("help", help_command))
-```
-
-Restart your bot and send the `/help` command. The bot should reply with instructions on how to use it.
-
-## Advanced Features
-
-The Python-telegram-bot library supports many advanced features, such as inline keyboards, custom keyboards, and more. You can find examples and documentation on the [official GitHub repository](https://github.com/python-telegram-bot/python-telegram-bot).
-
-## Conclusion
-
-In this article, we covered the basics of creating a Telegram bot using the Python-telegram-bot library. By following these steps, you can create a functional bot that can interact with users and respond to messages and commands.
-
-As you become more familiar with the library, you can explore its advanced features and build more complex bots tailored to your needs. The possibilities are endless, and Python-telegram-bot provides a flexible and powerful platform for creating custom Telegram bots. Happy bot building!
+- [python-telegram-bot documentation](https://docs.python-telegram-bot.org/)
+- [Examples in the GitHub repository](https://github.com/python-telegram-bot/python-telegram-bot/tree/master/examples), including inline keyboards and conversation handlers
+- [Telegram Bot API reference](https://core.telegram.org/bots/api)

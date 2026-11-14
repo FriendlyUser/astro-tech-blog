@@ -3,6 +3,7 @@ title: "Generating email templates with Claude Code"
 description: "How the YellowSheet free-demo email campaign was rebuilt as email-safe HTML with an AI coding agent, and what it took to ship it on a legacy PHP stack."
 tags: ["Claude Code", "Email", "HTML", "PHP", "AI", "Mailpit"]
 pubDate: "2023-11-01T16:00:00.000Z"
+lastUpdated: 2026-11-14
 ---
 
 I rebuilt the YellowSheet free-demo email campaign. The old emails were plain, the schedule had a step nobody needed, and the sending code dates from the `mysql_*` era of PHP. I used Claude Code to turn the new email designs into HTML that survives real email clients, then wired the result into the existing cron and signup code myself.
@@ -59,6 +60,8 @@ echo 'sendmail_path = "/usr/local/bin/mhsendmail --smtp-addr=mailpit:1025"' >> /
 ```
 
 Every email the app sends then shows up in Mailpit's web inbox, where I could check the layout before anything went out.
+
+`mhsendmail` comes from the MailHog project and its last release (v0.2.0) dates from 2016. It still works with Mailpit, but Mailpit also ships its own sendmail command, so if the `mailpit` binary is available in the PHP container you can use `sendmail_path = "/usr/local/bin/mailpit sendmail -S mailpit:1025"` instead. See [Mailpit's sendmail docs](https://mailpit.axllent.org/docs/install/sendmail/).
 
 ## Follow-ups
 

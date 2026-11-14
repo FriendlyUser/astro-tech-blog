@@ -1,170 +1,90 @@
 ---
 tags: ['python', 'selenium', 'opencv']
-title: Getting started in opencv with python
-description: Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos. 
+title: Getting started with OpenCV in Python by building a cartoon filter
+description: Install OpenCV for Python, see which beginner projects it suits, and build a working cartoon filter from blurring, adaptive thresholding and a bilateral filter.
 pubDate: Fri, 10 Feb 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/3750534419.png"
 ---
 
-Getting Started with Computer Vision
+[OpenCV](https://opencv.org/) is an open-source computer vision library written in C++ with Python bindings. It covers the classic image-processing toolbox (filtering, edge detection, contours, geometric transforms, camera calibration, video I/O) plus a `dnn` module for running pre-trained neural networks. In Python, images are plain NumPy arrays, so OpenCV works well alongside NumPy and the rest of the scientific stack.
 
-Computer vision is the field of artificial intelligence that focuses on teaching computers to identify and process images in the same way that humans do. Computer vision algorithms allow machines to identify objects, scenes, faces, text, and more in digital images and videos. 
+Install it from PyPI:
 
-If you're new to computer vision, here are some steps to get started:
+```bash
+pip install opencv-python
+```
 
-1. Pick a computer vision library or framework. The most popular options are OpenCV, TensorFlow, Keras, and PyTorch. These libraries have simplified computer vision and made algorithms more accessible to developers. OpenCV is a great option for beginners with its easy-to-use C++ and Python interfaces. 
+Use `opencv-python-headless` instead on servers or in Docker images without a display. The headless build has no `cv2.imshow` or other GUI functions.
 
-2. Learn the basics. Some fundamental concepts in computer vision include object detection, image classification, facial recognition, optical character recognition, and image segmentation. Read up on how these techniques work and see examples of them in practice. 
+## Beginner project ideas
 
-3. Start with some simple projects. Good beginner projects include image classification, where you train an algorithm to identify objects in images, and facial detection, where you can build a system to detect faces in images or videos. These projects require limited code and can be completed quickly. 
+These all use functions in the core OpenCV package:
 
-4. Explore pre-trained image classification models. Many libraries offer pre-trained models, such as ResNet, VGGNet, and Inception, that can classify thousands of objects in images. You can simply load the model and retrain it on your own dataset. This is an easy way to get into image classification without building a model from scratch.
+- **Color detection**: convert to HSV with `cv2.cvtColor` and keep a color range with `cv2.inRange` (e.g. to track a red ball).
+- **Shape detection**: run `cv2.Canny` edge detection, then `cv2.findContours` and `cv2.approxPolyDP` to count each shape's corners.
+- **Face detection**: use the Haar cascade files that ship with the package (`cv2.data.haarcascades`) with `cv2.CascadeClassifier`.
+- **Motion detection**: subtract the background with `cv2.createBackgroundSubtractorMOG2` and look for large changed regions between frames.
+- **Document scanner**: find the four corners of a page, then flatten it with `cv2.getPerspectiveTransform` and `cv2.warpPerspective`.
+- **Image classification**: load a pre-trained ONNX model with `cv2.dnn.readNet` and run it on your own photos.
 
-5. Keep practicing and building more complex models. Take on more advanced projects like object detection, semantic segmentation, pose estimation, and image generation. Continue learning about deeper neural network architectures and training techniques. Stay up-to-date with the latest research in the field. 
+For reading text from images, OpenCV is usually paired with an OCR engine such as Tesseract. OpenCV handles cleanup (thresholding, deskewing) and the OCR engine does the recognition.
 
-With time and consistent practice, you can become proficient in computer vision. But be prepared—it is a fast-moving field with constant innovations and advancements. Keep learning and building projects to strengthen your skills. Before you know it, you'll be crunching pixels with the best of them!
+## Building a cartoon filter
 
-Here are some good beginner OpenCV projects to do in Python:
-
-•Image recognition - Load an image classification model like ResNet or VGGNet and recognize objects in your own images. OpenCV makes it easy to do image classification with these pre-trained models.
-
-•Face detection - Detect faces in images or videos using the Haar cascade classifier. You can draw bounding boxes around the faces and extract facial landmarks. 
-
-•Optical character recognition - Take a photo of text and convert it into digital text you can edit and search. Use OpenCV's OCR techniques to recognize text in images.
-
-•Color detection - Detect a specific color in an image or video. You can track a red ball, detect green foliage, or find blue objects, for example. Use inRange() to filter out colors.
-
-•Shape detection - Detect basic shapes like circles, rectangles, triangles, etc. in images. Use edge detection and contour analysis to detect and highlight shapes. 
-
-•Motion detection - Detect movement in a video using background subtraction techniques. See if there is a change in the scene by comparing frames and determining moving objects.
-
-•Image segmentation - Separate objects from the background in an image. Segmentation allows you to extract objects, count pixels, or create transparency. Use algorithms like contour detection or watershed segmentation.
-
-•Face swapping - Detect faces in two images and swap them, placing one face onto the other image. This uses face detection, facial landmark detection, and seamless cloning.
-
-•Perspective correction - Take a photo of a document or scene at an angle and fix the perspective distortion. Use OpenCV's warpPerspective() function to transform the perspective.
-
-•Camera calibration - Calibrate your camera to correct for lens distortion and other imperfections. Allows you to measure real-world distances and perform accurate augmented reality.
-
-•Cartoonizer - Turn an image into a cartoon! Simplify an image using techniques like median blurring, adaptive thresholding, and edge detection.
-
-These are just a few ideas, but OpenCV is capable of accomplishing many computer vision tasks. The best way to learn is to pick a project that interests you and start coding! Let me know if you have any other questions.
-
-
-Here is a basic process to cartoonize an image using OpenCV in Python:
-
-1. Import OpenCV and NumPy libraries 
-import cv2 
-import numpy as np 
-
-2. Read the input image 
-image = cv2.imread('input.jpg') 
-
-3. Convert to grayscale 
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
-
-4. Apply Gaussian blur to smooth the image 
-blur = cv2.medianBlur(gray, 9)
-
-5. Detect edges using the Canny edge detector 
-edges = cv2.Canny(blur, threshold1=100, threshold2=200) 
-
-6. Create a mask image filled with zeroes 
-mask = np.zeros_like(edges)
-
-7. Create contour lines using edged image 
-contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE, 
-                                       cv2.CHAIN_APPROX_NONE) 
-
-8. Fill the contours with white color on the mask image 
-cv2.drawContours(mask, contours, -1, 255, 1)
-
-9. Dilate the masked image to get bold lines 
-mask = cv2.dilate(mask, None, iterations=2) 
-
-10. Bitwise AND between input image and mask 
-result = cv2.seamlessClone(np.uint8(mask), image, (0,0), (image.shape[1], 
-                                                    image.shape[0]), 
-                                                    cv2.NORMAL_CLONE) 
-
-11. Show the output cartoonized image 
-cv2.imshow('Cartoonized Image', result) 
-cv2.waitKey(0) 
-
-This is a high-level overview of the cartoonization process. Let me know if you have any questions regarding the specific functions used! I can provide more details.
-
+A cartoon effect has two parts: bold dark outlines, and flat areas of color. OpenCV can produce both, and you combine them with a mask.
 
 ```python
 import cv2
-import numpy as np
 
-# Read the input image
-image = cv2.imread('input.jpg')
+image = cv2.imread("input.jpg")
+if image is None:
+    raise FileNotFoundError("input.jpg not found or not a readable image")
 
-# Convert to grayscale
+# 1. Edges: grayscale, median blur to remove noise, then adaptive threshold.
+#    Adaptive thresholding picks a threshold per neighbourhood, so lines
+#    stay visible in both light and dark parts of the photo.
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.medianBlur(gray, 7)
+edges = cv2.adaptiveThreshold(
+    gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, blockSize=9, C=2
+)
 
-# Apply Gaussian blur to smooth the image
-blur = cv2.medianBlur(gray, 9)
+# 2. Color: a bilateral filter smooths flat regions but keeps edges sharp.
+#    Running it a few times gives the flat "painted" look.
+color = image
+for _ in range(3):
+    color = cv2.bilateralFilter(color, d=9, sigmaColor=75, sigmaSpace=75)
 
-# Detect edges using the Canny edge detector
-edges = cv2.Canny(blur, threshold1=100, threshold2=200)
+# 3. Combine: edges is white (255) everywhere except the outlines (0),
+#    so using it as a mask paints the outlines black.
+cartoon = cv2.bitwise_and(color, color, mask=edges)
 
-# Create a mask image filled with zeroes
-mask = np.zeros_like(edges)
-
-# Create contour lines using edged image
-contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE,
-cv2.CHAIN_APPROX_NONE)
-
-# Fill the contours with white color on the mask image
-cv2.drawContours(mask, contours, -1, 255, 1)
-
-# Dilate the masked image to get bold lines
-mask = cv2.dilate(mask, None, iterations=2)
-
-# Bitwise AND between input image and mask
-result = cv2.seamlessClone(np.uint8(mask), image, (0,0), (image.shape[1],
-image.shape[0]),
-cv2.NORMAL_CLONE)
-
-# Show the output cartoonized image
-cv2.imshow('Cartoonized Image', result)
-cv2.waitKey(0)import cv2
-import numpy as np
-
-# Read the input image
-image = cv2.imread('input.jpg')
-
-# Convert to grayscale
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-# Apply Gaussian blur to smooth the image
-blur = cv2.medianBlur(gray, 9)
-
-# Detect edges using the Canny edge detector
-edges = cv2.Canny(blur, threshold1=100, threshold2=200)
-
-# Create a mask image filled with zeroes
-mask = np.zeros_like(edges)
-
-# Create contour lines using edged image
-contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE,
-cv2.CHAIN_APPROX_NONE)
-
-# Fill the contours with white color on the mask image
-cv2.drawContours(mask, contours, -1, 255, 1)
-
-# Dilate the masked image to get bold lines
-mask = cv2.dilate(mask, None, iterations=2)
-
-# Bitwise AND between input image and mask
-result = cv2.seamlessClone(np.uint8(mask), image, (0,0), (image.shape[1],
-image.shape[0]),
-cv2.NORMAL_CLONE)
-
-# Show the output cartoonized image
-cv2.imshow('Cartoonized Image', result)
-cv2.waitKey(0)
+cv2.imwrite("cartoon.jpg", cartoon)
 ```
+
+Run it with an `input.jpg` in the same directory, and it writes `cartoon.jpg`. To view the result in a window instead (not available with the headless package), use:
+
+```python
+cv2.imshow("Cartoon", cartoon)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+```
+
+Parameters worth tuning:
+
+- `medianBlur` kernel size (odd number): larger values give fewer, cleaner outlines.
+- `blockSize` and `C` in `adaptiveThreshold`: larger `C` gives thinner lines and less noise.
+- Number of bilateral filter passes, and `d`: more passes give flatter color but are slow on large images. Resize big photos first with `cv2.resize`.
+
+## Gotchas
+
+- `cv2.imread` returns `None` instead of raising an error when the path is wrong. Always check it.
+- OpenCV stores color images as **BGR**, not RGB. Convert with `cv2.cvtColor(img, cv2.COLOR_BGR2RGB)` before you display them with Matplotlib or pass them to other libraries.
+- Install only one of the `opencv-python*` packages in an environment. They all provide the same `cv2` module and conflict with each other.
+
+## Further reading
+
+- [OpenCV-Python tutorials](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)
+- [opencv-python on PyPI](https://pypi.org/project/opencv-python/) (explains the four package variants)

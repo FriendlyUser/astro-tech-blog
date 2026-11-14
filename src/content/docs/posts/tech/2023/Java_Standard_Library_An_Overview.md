@@ -1,84 +1,108 @@
 ---
-description: This article provides an overview of the Java Standard Library, its primary
-  packages, and how it can be used to streamline development.
+description: "A tour of the core Java standard library packages (java.lang, java.util, java.time, java.io, java.nio.file, java.net) and what each one is for, with a runnable example."
 imgSrc: /imgs/2023/1924742632.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-08T15:20:34.000Z'
-tags: []
-title: Java Standard Library An Overview
+lastUpdated: 2026-11-14
+tags: ["java"]
+title: "Java standard library overview: the core packages and what they're for"
 ---
 
-# Java Standard Library: An Overview
+The Java standard library (the Java Class Library, or "the JDK APIs") is the set of classes that ships with every JDK. Before reaching for a third-party dependency, it's worth knowing what's already there: collections, dates and times, file I/O, networking, an HTTP client and concurrency utilities are all built in.
 
-The Java Standard Library, also known as Java Class Library or Java API, is a collection of pre-built classes and methods that developers can utilize to perform common programming tasks. The library is bundled with the Java Development Kit (JDK) and serves as a foundation for building Java applications. This article provides an overview of the Java Standard Library, its primary packages, and how it can be used to streamline development.
+Since Java 9 the library is split into modules. The packages below all live in the `java.base` module, except `java.net.http`, which is in `java.net.http`. Both are available by default in a normal JDK.
 
-## What is the Java Standard Library?
+## `java.lang`
 
-The Java Standard Library is a collection of classes, interfaces, and methods that come with the JDK. These classes and methods are grouped into packages, which can be imported into a Java application. The standard library is designed to provide a wide range of functionality, from basic operations like reading and writing files, to more advanced features like multithreading and network communication.
+Imported automatically into every source file. The classes you use without thinking about it:
 
-## Key Packages in the Java Standard Library
+- `Object`: the root of the class hierarchy (`equals`, `hashCode`, `toString`).
+- `String`: an immutable sequence of characters.
+- `StringBuilder`: a mutable buffer for building strings in a loop. `StringBuffer` does the same but synchronizes every method, so prefer `StringBuilder` unless several threads share one buffer.
+- `Math`: static methods such as `Math.max`, `Math.sqrt` and `Math.floorMod`.
+- `System`: standard streams (`System.out`, `System.err`, `System.in`), environment variables and `System.nanoTime()` for timing.
+- Wrapper types (`Integer`, `Long`, `Double`, ...) and `Thread`.
 
-The Java Standard Library contains numerous packages, each focusing on specific functionality. Some of the key packages include:
+## `java.util`
 
-### 1. `java.lang`
+Collections and general utilities:
 
-This package is automatically imported into every Java application and provides fundamental classes that are essential to the language. Some notable classes include:
+- Lists, sets and maps: `ArrayList`, `LinkedList`, `HashSet`, `TreeSet`, `HashMap`, `TreeMap`. The `Tree*` variants keep their elements sorted.
+- `Collections` and `Arrays`: static helpers for sorting, searching and wrapping collections.
+- `Optional`, `Random`, `Objects`, `Scanner`.
+- `java.util.stream`: the Streams API (`map`, `filter`, `collect`).
+- `java.util.concurrent`: thread pools (`ExecutorService`), `ConcurrentHashMap`, `CompletableFuture`.
 
-- `Object`: The superclass of all Java classes.
-- `String`: Represents a sequence of characters.
-- `StringBuilder` and `StringBuffer`: Provide mutable versions of strings for efficient concatenation and manipulation.
-- `Math`: Contains methods for performing basic mathematical operations.
-- `System`: Provides access to system-related information and resources, such as the standard input, output, and error streams.
+`java.util.Date`, `Calendar` and `TimeZone` are still here, but they are legacy. For new code use `java.time`.
 
-### 2. `java.util`
+## `java.time`
 
-This package contains useful utility classes and interfaces for handling data structures, collections, and algorithms. Some of the key classes and interfaces include:
+Added in Java 8 to replace `Date` and `Calendar`. The types are immutable and say what they mean: `LocalDate` (a date with no time zone), `LocalDateTime`, `ZonedDateTime`, `Instant` (a point on the UTC timeline), `Duration` and `Period`. `DateTimeFormatter` handles parsing and formatting.
 
-- `ArrayList`, `LinkedList`, `HashSet`, `TreeSet`, `HashMap`, and `TreeMap`: Implementations of common data structures like lists, sets, and maps.
-- `Collections`: Contains static methods for operating on collections, such as sorting, searching, and reversing.
-- `Date`, `Calendar`, and `TimeZone`: Classes for working with dates and times.
-- `Random`: A class for generating pseudo-random numbers.
+## `java.io`
 
-### 3. `java.io`
+The original stream-based I/O API:
 
-The `java.io` package provides classes and interfaces for handling input and output operations, such as reading from and writing to files or interacting with network sockets. Some notable classes include:
+- `InputStream` / `OutputStream` for bytes and `Reader` / `Writer` for characters.
+- `BufferedReader`, `BufferedWriter`, `FileReader`, `FileWriter` and friends that wrap them.
+- `File`: a file or directory path. It still works, but `java.nio.file.Path` is the better choice for new code.
 
-- `File`: Represents a file or directory in the file system.
-- `FileReader`, `FileWriter`, `BufferedReader`, and `BufferedWriter`: Classes for reading and writing text files.
-- `InputStream`, `OutputStream`, `Reader`, and `Writer`: Abstract classes for handling byte and character streams.
+Sockets in `java.net` also expose their data as `java.io` streams.
 
-### 4. `java.nio`
+## `java.nio` and `java.nio.file`
 
-This package provides classes and interfaces for non-blocking I/O operations, which can improve the performance of applications with high I/O demands. It includes:
+NIO stands for "New I/O". The `java.nio` package itself holds the buffer classes (`ByteBuffer`, `CharBuffer`, `IntBuffer` and so on). Related packages:
 
-- `ByteBuffer`, `CharBuffer`, `ShortBuffer`, `IntBuffer`, `LongBuffer`, `FloatBuffer`, and `DoubleBuffer`: Buffer classes for storing and manipulating primitive data types.
-- `Channels`: A utility class that defines static methods for working with channels, which are used for reading and writing data from buffers.
-- `Path`, `Paths`, and `Files`: Classes for working with file paths and file operations in a more modern and efficient way than the `java.io.File` class.
+- `java.nio.channels`: channels, which read and write buffers, plus `Selector` for non-blocking socket I/O.
+- `java.nio.file`: `Path`, `Paths` and `Files`. This is the modern file API, with one-liners like `Files.readString`, `Files.lines` and `Files.walk`, and exceptions that say why an operation failed (`File.delete()` only returns `false`).
 
-### 5. `java.net`
+## `java.net` and `java.net.http`
 
-The `java.net` package provides classes and interfaces for networking, including support for TCP and UDP sockets, URL handling, and HTTP connections. Some important classes include:
+`java.net` has `URI`, `URL`, `Socket`, `ServerSocket` and `DatagramSocket` for TCP and UDP. For HTTP, use `java.net.http.HttpClient` (Java 11+) rather than the older `HttpURLConnection`. It supports HTTP/2 and has both synchronous `send` and asynchronous `sendAsync`.
 
-- `URL`: Represents a Uniform Resource Locator.
-- `URLConnection`: Provides a means to communicate with a URL resource.
-- `Socket`, `ServerSocket`, and `DatagramSocket`: Classes for creating and managing TCP and UDP sockets.
+## A small example
 
-## Using the Java Standard Library
-
-To use a class or method from the Java Standard Library, simply import the package containing the desired functionality. For example, to use the `ArrayList` class from the `java.util` package, include the following import statement at the beginning of your Java source file:
+You import individual classes (or a whole package with `*`), not the library as a whole. This program counts the words in a text file using `java.nio.file`, `java.util` and `java.time`:
 
 ```java
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class WordCount {
+    public static void main(String[] args) throws IOException {
+        Path file = Path.of(args.length > 0 ? args[0] : "notes.txt");
+        List<String> lines = Files.readAllLines(file);
+
+        Map<String, Integer> counts = new TreeMap<>();
+        for (String line : lines) {
+            for (String word : line.toLowerCase().split("\\W+")) {
+                if (!word.isEmpty()) {
+                    counts.merge(word, 1, Integer::sum);
+                }
+            }
+        }
+
+        System.out.println("Word counts for " + file + " on " + LocalDate.now());
+        counts.forEach((word, n) -> System.out.println(word + ": " + n));
+    }
+}
 ```
 
-After importing the package, you can create an instance of the `ArrayList` class and utilize its methods:
+On Java 11 or later you can run a single source file directly, without compiling it first:
 
-```java
-ArrayList<String> myList = new ArrayList<>();
-myList.add("Hello");
-myList.add("World");
+```sh
+java WordCount.java notes.txt
 ```
 
-## Conclusion
+`TreeMap` keeps the words in alphabetical order. Swap it for `HashMap` if order doesn't matter.
 
-The Java Standard Library is a powerful resource that provides developers with pre-built functionality for common programming tasks. By leveraging the classes and methods in the Java Standard Library, developers can save time, reduce code complexity, and improve the overall quality of their applications.
+## Further reading
+
+- [Java SE API documentation](https://docs.oracle.com/en/java/javase/21/docs/api/index.html), organized by module
+- [The `java.time` package](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/package-summary.html)
+- [`java.net.http.HttpClient`](https://docs.oracle.com/en/java/javase/21/docs/api/java.net.http/java/net/http/HttpClient.html)

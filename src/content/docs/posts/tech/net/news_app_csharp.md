@@ -1,223 +1,132 @@
 ---
-tags: ['googleNews', 'dotnet']
-title: Searching for news with google news rss feeds
-description: Here we'll look at how to use google news rss feeds to create custom news rss feeds.
+tags: ['googleNews', 'dotnet', 'csharp']
+title: News alerts in C# with Google News RSS search feeds and Discord
+description: A C# console app that polls Google News RSS search feeds for keywords, skips stories it has already seen, and posts new ones to a Discord webhook.
 pubDate: Tues, 7 December 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/4067359065.png'
 ---
-Google News is a news aggregator and personalized news service developed by Google. It was launched in 2002 and has since become one of the largest news aggregators on the web. The service collects news articles from thousands of sources, including national and international news organizations, as well as local and regional publishers, and presents them in a format that makes it easy to quickly find and read the news that interests you. Google News uses algorithms to analyze and rank news articles, ensuring that the most relevant and up-to-date articles are displayed first. The service is free and can be accessed through a web browser or mobile app.
 
+:::caution
+The original version of this app used `HttpWebRequest` and the `Elasticsearch.Net` low-level client. `HttpWebRequest` is obsolete in .NET 6+ (warning `SYSLIB0014`), and `Elasticsearch.Net` is marked legacy on NuGet in favour of `Elastic.Clients.Elasticsearch`. The code below uses `HttpClient` for everything, including the Elasticsearch calls, so it doesn't depend on either.
+:::
 
-You can use the Google News RSS (Really Simple Syndication) feed to find news articles based on a custom search query. The basic format for using the Google News RSS feed is as follows:
+The goal: a feed of recent news on a handful of market-related keywords, pushed to a Discord channel, so there's no need to check a news site every day. Google News has an RSS search endpoint that does most of the work.
 
-<https://news.google.com/rss/search?q=SEARCH_QUERY>
+## Google News RSS search
 
-Replace "SEARCH\_QUERY" with the keyword or phrase you want to search for, and include it in the URL. For example, if you want to find news articles about technology, you can use the following URL:
+Put your search terms in the `q` parameter:
 
-<https://news.google.com/rss/search?q=technology>
+```text
+https://news.google.com/rss/search?q=technology
+```
 
-You can use this URL to subscribe to the RSS feed using a news reader or aggregator, or you can access the feed directly in your web browser to see a list of news articles related to your search query.
+The response is an RSS 2.0 feed. Each `<item>` has a `title` (headline followed by " - Publisher"), a `link` to a Google News redirect URL, a `guid`, and a `pubDate` in RFC 822 format, such as `Fri, 13 Nov 2026 22:57:09 GMT`. You can subscribe to that URL in any feed reader, or fetch it from code as below.
 
-Note that the Google News RSS feed is subject to change and may not be available in all countries. Also, be aware that the terms of service for Google News state that you may not use the service to scrape or display its content on another website or application without permission.
+Google doesn't document this endpoint as a public API, so the format could change without notice. Check Google's terms before republishing its content anywhere.
 
+## How the app works
 
-For the full source code please view
+For each search term, the app:
 
-https://github.com/FriendlyUser/news-alert/blob/master/News.cs
+1. Fetches the RSS feed.
+2. Looks at the first five items and skips anything older than two days.
+3. Checks Elasticsearch for a document with the item's `guid`. If one exists, the story has already been sent.
+4. Otherwise, posts the title, date and link to a Discord webhook, then stores the `guid` in Elasticsearch.
 
-```csharp 
- using System;
-//Request library
-using System.Net;
-using System.IO;
-using System.Web;
+Elasticsearch is overkill for "have I seen this ID before?", and SQLite or a text file would do the same job. I used it because I already had a hosted cluster. Using the `guid` as the document ID makes the check an exact lookup rather than a search.
+
+The full original source is at <https://github.com/FriendlyUser/news-alert/blob/master/News.cs>. The repo also has a `checkPrices` stub for stock price alerts that never got past printing the ticker, so it's left out here.
+
+## The code
+
+This is a .NET 8+ console app (`dotnet new console`) with no extra packages. Set `DISCORD_WEBHOOK` to a Discord webhook URL and `ES_INSTANCE` to the Elasticsearch base URL.
+
+```csharp
+using System.Net.Http.Json;
 using System.Xml;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Elasticsearch.Net;
-using System.Net.Http;
-namespace news_alert
+
+var http = new HttpClient();
+
+string? webhook = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK");
+string? esInstance = Environment.GetEnvironmentVariable("ES_INSTANCE");
+if (webhook is null || esInstance is null)
 {
-    public class News
+    Console.WriteLine("Set DISCORD_WEBHOOK and ES_INSTANCE first.");
+    return;
+}
+
+string[] searchItems = ["hydrogen", "analyticGPT", "natural gas", "recession", "Tech layoffs", "Bard AI"];
+
+foreach (string searchText in searchItems)
+{
+    string url = $"https://news.google.com/rss/search?q={Uri.EscapeDataString(searchText)}";
+    string xml;
+    try
     {
-        public static readonly HttpClient client = new HttpClient();
-    
-        static public void SendItemToDiscord(XmlNode item) {
-            // set discord webhook as private env
-            string webhook = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK");
-            string esInstance = Environment.GetEnvironmentVariable("ES_INSTANCE");
-            if (webhook == null) {
-                Console.WriteLine("GET A DISCORD WEBHOOK");
-                return;
-            }
-            var request = (HttpWebRequest)WebRequest.Create(webhook);
-            request.ContentType = "application/json";
-            request.Method = "POST";
-            DateTime pubDate = Convert.ToDateTime(item["pubDate"].InnerText);
-            string postLink = item["link"].InnerText;
-            string discordTemplate = "{0} \n {1} \n {2} ";
-            string discordMessage = string.Format(discordTemplate, item["title"].InnerText,
-                item["pubDate"].InnerText, postLink);
-            // write message of data sent to discord
-            var w = new WebhookData() { content = discordMessage };
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-            {
-                streamWriter.Write(JsonSerializer.Serialize<WebhookData>(w));
-            }
-            var httpResponse = (HttpWebResponse)request.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-            {
-                var result = streamReader.ReadToEnd();
-            }
-            // send data to es instance
-            var settings = new ConnectionConfiguration(new Uri(esInstance))
-                .RequestTimeout(TimeSpan.FromMinutes(2));
-            var lowlevelClient = new ElasticLowLevelClient(settings);
-            var post = new Post
-            {
-                guid = item["guid"].InnerText
-            };
-            var asyncIndexResponse = lowlevelClient.Index<StringResponse>("post", PostData.Serializable(post)); 
-            string responseString = asyncIndexResponse.Body;
-            Console.WriteLine(responseString);
-        }
+        xml = await http.GetStringAsync(url);
+    }
+    catch (HttpRequestException e)
+    {
+        Console.WriteLine($"{searchText}: {e.Message}");
+        continue;
+    }
 
-        static async Task Main(string[] args)
+    var doc = new XmlDocument();
+    doc.LoadXml(xml);
+    XmlNodeList items = doc.GetElementsByTagName("item");
+
+    for (int i = 0; i < Math.Min(5, items.Count); i++)
+    {
+        XmlNode item = items[i]!;
+        string? title = item["title"]?.InnerText;
+        string? link = item["link"]?.InnerText;
+        string? guid = item["guid"]?.InnerText;
+        string? pubDateText = item["pubDate"]?.InnerText;
+        if (title is null || link is null || guid is null || pubDateText is null)
         {
-            await checkNews();
-            await Task.Run(() => checkPrices());
+            continue;
         }
-        static async public Task checkPrices() {
-            string stockUrl = Environment.GetEnvironmentVariable("STOCK_URL");
-            if (stockUrl == null) {
-                Console.WriteLine("GET A Stock URL WEBHOOK");
-                return;
-            }
-            List<StockData> stocks = new List<StockData>();
-            stocks.Add(new StockData() {ticker="NEXCF", targetPrice=1.60});
-            foreach (StockData stock in stocks)
-            {
-                Console.WriteLine(stock.ticker);
-                // query api
-            }
-            // either return a completed Task, or await for it (there is a difference!
-            await Task.CompletedTask;
-        }
-        static async public Task checkNews() {
-            var searchItems = new List<string> { "hydrogen",
-                "analyticGPT", "natural gas", "recession",
-                "Tech layoffs", "Bard AI"
-            };
-            foreach (string searchText in searchItems)
-            {
-                // line of items of cli list
-                string xml = await FetchData(searchText);
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xml);
-                // only print the first few elements
-                XmlNodeList items = doc.GetElementsByTagName("item");
-                DateTime utcDate = DateTime.UtcNow;
-                for (int i=0; i < 5; i++)
-                {   string pubDateStr = "";
-                    try {
-                        pubDateStr = items[i]["pubDate"].InnerText;
-                    } catch (NullReferenceException e) {
-                        Console.WriteLine("\nException Caught!");	
-                        Console.WriteLine("Message :{0} ",e.Message);
-                        continue;
-                    }
-                    DateTime pubDate = Convert.ToDateTime(pubDateStr);
-                    // Console.WriteLine(pubDate);
-                    if (utcDate.Subtract(pubDate).TotalHours < 24 * 2) {
-                        Console.WriteLine("Within 2 days");
-                        // check if id is in db
-                        string esInstance = Environment.GetEnvironmentVariable("ES_INSTANCE");
-                        var settings = new ConnectionConfiguration(new Uri(esInstance))
-                            .RequestTimeout(TimeSpan.FromMinutes(2));
-                        var lowlevelClient = new ElasticLowLevelClient(settings);
-                        var searchResponse = lowlevelClient.Search<StringResponse>("post", PostData.Serializable(new
-                        {
-                            query = new
-                            {
-                                match = new
-                                {
-                                    guid = items[i]["guid"].InnerText// items[i]["guid"].InnerText
-                                }
-                            }
-                        }));
-                        var successful = searchResponse.Success;
-                        var responseJson = searchResponse.Body;
-                        SearchResult searchResult = JsonSerializer.Deserialize<SearchResult>(responseJson);
-                        if (searchResult.hits.total.value == 0) {
-                            SendItemToDiscord(items[i]);
-                        } else {
-                            Console.WriteLine("Match Already in DB, not going to print");
-                        }
-                    }
-                }
-            }
-            await Task.CompletedTask;
-        }
-        static async public Task<string> FetchData(string searchText) {
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query["q"] = searchText;
-            string queryString = query.ToString();
 
-            string htmlData = string.Empty;
-            string urlTemplate = @"https://news.google.com/rss/search?{0}";
-            string url = string.Format(urlTemplate, queryString);
-            try	
-            {
-              string responseBody = await client.GetStringAsync(url);
-
-              Console.WriteLine(responseBody);
-              return await Task.FromResult(responseBody);
-            }
-            catch(HttpRequestException e)
-            {
-              Console.WriteLine("\nException Caught!");	
-              Console.WriteLine("Message :{0} ",e.Message);
-            }
-            return await Task.FromResult("");
+        // DateTimeOffset keeps the GMT offset; DateTime.Parse would convert to local time
+        DateTimeOffset pubDate = DateTimeOffset.Parse(pubDateText);
+        if (DateTimeOffset.UtcNow - pubDate > TimeSpan.FromDays(2))
+        {
+            continue;
         }
+
+        // GET returns 404 if the document (or the index) doesn't exist yet
+        string docUrl = $"{esInstance.TrimEnd('/')}/post/_doc/{Uri.EscapeDataString(guid)}";
+        using var existing = await http.GetAsync(docUrl);
+        if (existing.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Already sent: {title}");
+            continue;
+        }
+
+        string message = $"{title}\n{pubDateText}\n{link}";
+        using var sent = await http.PostAsJsonAsync(webhook, new { content = message });
+        sent.EnsureSuccessStatusCode();
+
+        // PUT creates the "post" index on first use if auto-create is enabled
+        using var indexed = await http.PutAsJsonAsync(docUrl, new { guid, title, link });
+        indexed.EnsureSuccessStatusCode();
     }
 }
- 
- ```
+```
 
-This code is a .NET Core console application that performs two main functions: checking for news articles and checking for stock prices. The news checking function fetches the latest news articles from an API and sends a summary of the latest articles that contain keywords from a predefined list of search terms to a Discord channel. The function also sends the information to an Elasticsearch instance for tracking. The stock price checking function queries a stock API to get the latest stock prices of a predefined list of stocks and logs the results.
+If your cluster needs authentication, set `http.DefaultRequestHeaders.Authorization` (basic auth or an API key) rather than relying on credentials embedded in `ES_INSTANCE`.
 
-Here's a high-level overview of the code:
+## Gotchas
 
-1. The "News" class contains the main logic for the application.
-2. The "SendItemToDiscord" method sends a summary of a news article to a Discord channel. The method uses the Discord webhook URL, which is stored as an environment variable, to post a message to a specific Discord channel. The method also uses the Elasticsearch instance URL, stored as another environment variable, to index the article for tracking purposes.
-3. The "checkNews" method checks for the latest news articles that contain the keywords from a predefined list of search terms. The method calls the "FetchData" method to retrieve the latest news articles in XML format and parses the XML to extract the article summaries. The method then sends the latest articles to the Discord channel using the "SendItemToDiscord" method.
-4. The "checkPrices" method checks for the latest stock prices of a predefined list of stocks. The method uses the stock API URL, stored as an environment variable, to retrieve the latest stock prices. The method logs the results of the stock prices.
-5. The "Main" method is the entry point of the application and calls the "checkNews" and "checkPrices" methods. The "checkNews" and "checkPrices" methods are executed as asynchronous tasks.
+- The old version read `items[i]` for `i < 5` without checking how many items came back. Feeds for niche terms can return fewer than five, so the loop is now capped at `items.Count`.
+- The old version parsed `pubDate` with `Convert.ToDateTime`, which returns local time, and compared it with `DateTime.UtcNow`. On a machine outside UTC the two-day window was off by the timezone offset.
+- Discord webhooks are rate limited. A run that finds dozens of new stories at once can get `429` responses, so add a delay between posts if you widen the search list.
+- Google News links are redirects, not the publisher's URL. If you need the real article URL, follow the redirect or use the `<source>` element for the publisher's site.
 
-Using RSS feeds as a news source for investing purposes can be a useful way to stay up to date on the latest financial news and market developments. This can be especially useful for investors who are interested in a particular sector or industry, as they can subscribe to RSS feeds from news sources that specialize in that area.
+## Further reading
 
-By subscribing to these feeds, investors can receive notifications as soon as new articles or reports are published, which can provide them with valuable insights and information about the market and specific investments. Additionally, investors can use RSS feeds to track the latest news on companies they are interested in, which can help them stay informed about important developments and trends.
-
-However, it is important for investors to keep in mind that not all news sources are created equal. Some sources may have biases or agendas, and it is important to be critical and evaluate the information being presented. It is also important to seek out multiple sources of information, as relying solely on one source may lead to a skewed or incomplete view of the market and individual investments.
-
-
-Elasticsearch is a search engine based on the Lucene library. It provides a distributed, multitenant-capable full-text search engine with a RESTful web interface and schema-free JSON documents. It is used for various purposes, including:
-
-1. Full-Text Search: Elasticsearch is particularly useful for full-text search queries, with its ability to search through large volumes of data quickly and efficiently.
-2. Analytics and Business Intelligence: Elasticsearch can be used to gather insights from data and to perform advanced analytics tasks, such as aggregations and data analysis.
-3. Log Management and Analysis: Elasticsearch is widely used for log management and analysis, making it possible to quickly search through large amounts of log data to identify patterns and troubleshoot issues.
-4. Application Performance Monitoring: Elasticsearch can be used to monitor the performance of applications, as well as to store and analyze log data, providing real-time visibility into the health of the application and its components.
-5. Geospatial Data: Elasticsearch has built-in support for geospatial data, making it possible to search, filter and aggregate data based on location.
-6. E-commerce: Elasticsearch can be used to power search and recommendations in e-commerce applications, helping users find the products they are looking for quickly and easily.
-7. Security Information and Event Management (SIEM): Elasticsearch can be used as part of a SIEM solution to collect, store, and analyze security-related data from various sources, such as network devices and applications.
-
-These are just a few of the many use cases for Elasticsearch, and it is a highly versatile technology that can be used in a wide range of applications and industries.
-
-
-Yes, Bonsai.io is one of the providers that offer free hosting for Elasticsearch. With their free plan, you can host a single cluster with up to 3GB of storage and 20GB of bandwidth per month. However, it's worth noting that the free plan is intended for experimentation and learning, and may not be suitable for production-level workloads. Bonsai.io also offers paid plans with more advanced features, higher storage, and better performance.
-
-
+- [Discord webhook resource](https://discord.com/developers/docs/resources/webhook)
+- [Elasticsearch index and get document APIs](https://www.elastic.co/docs/api/doc/elasticsearch/group/endpoint-document)
+- [`HttpClient` guidelines](https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines)

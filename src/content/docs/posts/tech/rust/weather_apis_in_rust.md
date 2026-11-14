@@ -1,49 +1,61 @@
 ---
-title: "Weather APIs in Rust"
-description:  In this article, we will explore how to create a simple command-line weather forecast application in Rust. We will use the reqwest crate for making HTTP requests and the serde crate for handling JSON data.
+title: "Build a command-line weather app in Rust with reqwest and OpenWeatherMap"
+description: "A small Rust CLI that looks up current weather by city name from the OpenWeatherMap API, using reqwest's blocking client and serde for JSON."
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/251520990.png'
 ---
 
+This post builds a small interactive CLI in Rust: type a city name, get the current temperature and conditions from the [OpenWeatherMap current weather API](https://openweathermap.org/current). It uses [`reqwest`](https://crates.io/crates/reqwest) for HTTP and [`serde`](https://serde.rs/) to deserialize the JSON response into structs.
 
-Introduction
+You'll need a free OpenWeatherMap account and API key. New keys can take a while to activate, so create one before you start.
 
-Weather forecasting is an essential aspect of our daily lives. With the rise of technology, it is now possible to access weather forecasts with a single click. In this article, we will explore how to create a simple command-line weather forecast application in Rust. We will use the reqwest crate for making HTTP requests and the serde crate for handling JSON data.
+## Set up the project
 
-Setting up the Project
-
-Before we get started, we need to set up a new Rust project. To create a new Rust project, open a terminal window and run the following command:
-
+```sh
+cargo new weather_forecast_cli
+cd weather_forecast_cli
+cargo add reqwest --features blocking,json,query
+cargo add serde --features derive
 ```
-$ cargo new weather_forecast_cli
-```
 
-This command will create a new Rust project named `weather_forecast_cli`. The project will contain a `Cargo.toml` file that describes the project's dependencies and a `src` directory that contains the project's source code.
-
-The `Cargo.toml` file will look like this:
+At the time of this update that produced:
 
 ```toml
-[package]
-name = "weather_forecast_cli"
-version = "0.1.0"
-authors = ["Your Name <your.email@example.com>"]
-edition = "2018"
-
 [dependencies]
+reqwest = { version = "0.13.5", features = ["blocking", "json", "query"] }
+serde = { version = "1.0.229", features = ["derive"] }
 ```
 
-We will add dependencies to the `Cargo.toml` file as we need them.
+The features matter:
 
-Making HTTP Requests
+- `blocking` enables `reqwest::blocking`, a synchronous client, so you don't need an async runtime for a simple CLI.
+- `json` enables `.json::<T>()` on responses.
+- `query` enables `.query(...)` on requests, which URL-encodes parameters for you. In reqwest 0.13 this is an opt-in feature.
+- `derive` on `serde` enables `#[derive(Deserialize)]`.
 
-To fetch weather data from an API, we will use the reqwest crate. The reqwest crate provides a simple and convenient API for making HTTP requests.
+## Model the response
 
-We will create a function named `fetch_weather_data` that will make an HTTP request to the OpenWeatherMap API and return the weather data for a given location. The function will take the location as a parameter and use it to construct the API URL.
+The current weather endpoint returns a lot of fields. You only need to declare the ones you use; serde ignores the rest.
+
+```json
+{
+  "name": "Toronto",
+  "main": { "temp": 4.2, "feels_like": 0.9, ... },
+  "weather": [{ "description": "light rain", ... }],
+  ...
+}
+```
+
+## The full program
+
+Replace `src/main.rs` with:
 
 ```rust
 use serde::Deserialize;
+use std::io::{self, Write};
 
 #[derive(Debug, Deserialize)]
 struct WeatherData {
@@ -63,78 +75,93 @@ struct Weather {
     description: String,
 }
 
-fn fetch_weather_data(location: &str) -> Result<WeatherData, reqwest::Error> {
-    let api_key = "YOUR_API_KEY";
-    let url = format!("https://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}", location, api_key);
+const API_URL: &str = "https://api.openweathermap.org/data/2.5/weather";
 
-    let response = reqwest::blocking::get(&url)?.json::<WeatherData>()?;
-
-    Ok(response)
+fn fetch_weather_data(
+    client: &reqwest::blocking::Client,
+    api_key: &str,
+    location: &str,
+) -> Result<WeatherData, reqwest::Error> {
+    client
+        .get(API_URL)
+        .query(&[("q", location), ("units", "metric"), ("appid", api_key)])
+        .send()?
+        .error_for_status()?
+        .json::<WeatherData>()
 }
-```
 
-In this function, we define a Rust struct named `WeatherData` that corresponds to the JSON data returned by the OpenWeatherMap API. We also define two nested structs, `Main` and `Weather`, to represent the `main` and `weather` objects in the JSON data.
+fn display_weather_data(data: &WeatherData) {
+    println!("Current weather for {}:", data.name);
+    println!("  Temperature: {:.1} °C", data.main.temp);
+    println!("  Feels like:  {:.1} °C", data.main.feels_like);
+    if let Some(weather) = data.weather.first() {
+        println!("  Conditions:  {}", weather.description);
+    }
+}
 
-We use the serde crate's `Deserialize` trait to automatically deserialize the JSON data into the `WeatherData` struct. We construct the API URL using the location parameter and our API key. We make an HTTP GET request to the API URL using the `reqwest::blocking::get()` function and deserialize the JSON data using the `json::<WeatherData>()?` method.
+fn main() {
+    let api_key = std::env::var("OPENWEATHER_API_KEY")
+        .expect("set the OPENWEATHER_API_KEY environment variable");
+    let client = reqwest::blocking::Client::new();
 
-Handling User Input
-
-Now that we can fetch weather data from the API, we need to handle the user's input. We will create a function named `run` that will handle the user's input and output.
-
-```rust
-use std::io;
-
-fn run() {
     loop {
-        let mut input = String::new();
-
-        print!("Enter location: ");
+        print!("Enter location (or 'quit'): ");
         io::stdout().flush().unwrap();
 
-        io::stdin().read_line(&mut input).unwrap();
-        let location = input.trim();
+        let mut input = String::new();
+        if io::stdin().read_line(&mut input).unwrap() == 0 {
+            break; // EOF (Ctrl+D / Ctrl+Z)
+        }
 
+        let location = input.trim();
+        if location.is_empty() {
+            continue;
+        }
         if location == "quit" {
             break;
         }
 
-        match fetch_weather_data(location) {
-            Ok(weather_data) => display_weather_data(weather_data),
-            Err(error) => println!("Error fetching weather data: {}", error),
+        match fetch_weather_data(&client, &api_key, location) {
+            Ok(data) => display_weather_data(&data),
+            // without_url() keeps the API key (part of the URL) out of the error message.
+            Err(err) => println!("Error fetching weather data: {}", err.without_url()),
         }
     }
 }
 ```
 
-In this function, we use the `std::io` module's `stdout()` function to prompt the user to enter a location. We use the `read_line()` function to read a line of text from the user.
+A few things worth pointing out:
 
-We match the user's input to the `quit` command to exit the application. If the user enters a valid location, we call the `fetch_weather_data` function to fetch the weather data for that location. If the weather data is successfully fetched, we call the `display_weather_data` function to display the weather data to the user. If an error occurs while fetching the weather data, we print an error message to the console.
+- `units=metric` returns Celsius. The default (`standard`) is Kelvin, and `imperial` is Fahrenheit.
+- `.error_for_status()` turns a 401 (bad or not-yet-active key) or 404 (unknown city) into an `Err`. Without it, reqwest would try to parse the error body as `WeatherData` and you'd get a confusing deserialization error instead.
+- The API key comes from an environment variable instead of being hard-coded, so it doesn't end up in your Git history.
+- `weather` is an array; `.first()` avoids a panic if it's ever empty, which indexing with `[0]` would not.
 
-Displaying the Weather Data
+## Run it
 
-Now that we can fetch and handle weather data, we need to display it to the user. We will create a function named `display_weather_data` that will display the current weather conditions and forecast for a given location.
-
-```rust
-fn display_weather_data(weather_data: WeatherData) {
-    println!("Current weather conditions for {}:"In this article, weather_data.name);
-    println!("Temperature: {:.1} °C"In this article, weather_data.main.temp);
-    println!("Feels like: {:.1} °C"In this article, weather_data.main.feels_like);
-    println!("Description: {}"In this article, weather_data.weather[0].description);
-}
+```sh
+export OPENWEATHER_API_KEY=your_key_here   # PowerShell: $env:OPENWEATHER_API_KEY = "your_key_here"
+cargo run
 ```
 
-In this function, we use the `println!()` macro to display the name of the location, the current temperature, the feels-like temperature, and the weather description.
-
-Testing the Application
-
-Now that we have implemented the weather forecast application, we can test it by running the `run` function. To run the application, open a terminal window, navigate to the project directory, and run the following command:
-
-```bash
-$ cargo run
+```text
+Enter location (or 'quit'): Toronto
+Current weather for Toronto:
+  Temperature: 4.2 °C
+  Feels like:  0.9 °C
+  Conditions:  light rain
 ```
 
-This command will compile and run the weather forecast application. The application will prompt the user to enter a location. The user can enter a city, state, or country name. The application will display the current weather conditions and forecast for the specified location.
+The `q` parameter takes a city name, optionally followed by a country code (`London,GB`), or for US locations a state and country code (`Portland,OR,US`). Adding the country code avoids getting the wrong city when names collide.
 
-Conclusion
+## Gotchas and next steps
 
-In this article, we have explored how to create a simple command-line weather forecast application in Rust. We have used the reqwest crate for making HTTP requests to the OpenWeatherMap API and the serde crate for handling JSON data. We have also used Rust's strong type system and memory safety features to create a robust and efficient application. With this knowledge, you can now create your own Rust applications that interact with external APIs and explore the full potential of this powerful programming language.
+- **City-name lookup is deprecated.** OpenWeatherMap's docs say requests by city name, ZIP code and city ID are deprecated: they still work but no longer get fixes. The recommended approach is to resolve the name to coordinates with the [Geocoding API](https://openweathermap.org/api/geocoding-api) and then call the weather endpoint with `lat` and `lon`.
+- **This only shows current conditions.** For forecasts, look at the [5 day / 3 hour forecast API](https://openweathermap.org/forecast5), which uses the same response style.
+- **Don't use `reqwest::blocking` inside async code.** If you later move this into a Tokio application, switch to the async `reqwest::Client`; the blocking client panics if called from within an async runtime.
+
+## Further reading
+
+- [reqwest docs](https://docs.rs/reqwest)
+- [serde docs](https://serde.rs/)
+- [OpenWeatherMap current weather API](https://openweathermap.org/current)

@@ -1,193 +1,196 @@
 ---
-title: Using Go-Flags in Golang A Comprehensive Guide
+title: "Parsing command-line flags in Go with go-flags"
 pubDate: "2023-05-30T19:37:46.189Z"
-description: "This versatile and powerful package is designed to parse command-line arguments in Go applications, making it easy to define and use flags."
+lastUpdated: 2026-11-14
+description: "Define CLI options as struct tags with jessevdk/go-flags, parse them, add subcommands, and handle --help and parse errors correctly."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
-# Using GoFlags in Golang
+[go-flags](https://github.com/jessevdk/go-flags) is a command-line parser for Go that reads
+option definitions from struct tags. Compared with the standard library's `flag` package it
+gives you short and long forms (`-p` / `--port`), defaults, required options, subcommands
+and a generated `--help` page, without writing any registration code. The examples below were
+checked against v1.6.1, the latest release at the time of writing.
 
-Go, also known as Golang, is a statically-typed, compiled language developed by Google. One of the many reasons developers love Go is its simplicity and ease of use. When it comes to command-line tools and applications, argument parsing is an important aspect to consider. That's where the `go-flags` library comes in. This versatile and powerful package is designed to parse command-line arguments in Go applications, making it easy to define and use flags.
-
-In this article, we will explore the `go-flags` library, how to install it, and how to use it effectively in your Go programs.
-
-## Table of Contents
-1. [Installing go-flags](#installing-go-flags)
-2. [Defining Flags](#defining-flags)
-3. [Parsing Flags](#parsing-flags)
-4. [Nested Commands](#nested-commands)
-5. [Error Handling](#error-handling)
-6. [Help Messages](#help-messages)
-7. [Conclusion](#conclusion)
-
-## Installing go-flags
-
-To get started, you'll need to install the `go-flags` package. You can do this by running the following command:
+## Installing
 
 ```bash
-go get -u github.com/jessevdk/go-flags
+go get github.com/jessevdk/go-flags@latest
 ```
 
-This will download and install the `go-flags` package in your Go workspace.
+## Defining options
 
-## Defining Flags
-
-Before you can use `go-flags`, you must define your flags. Flags are defined using Go's struct tags. To define a flag, create a struct field with the appropriate type and add a `short` and/or `long` tag with the desired flag name. You can also provide a `description` tag for documentation purposes.
-
-Here's an example of a struct with some flags defined:
+Each exported struct field becomes an option. The `short` and `long` tags give its names,
+`description` feeds the help text, and `default` sets the value used when the flag is absent.
 
 ```go
-import "github.com/jessevdk/go-flags"
-
 type Options struct {
-    Verbose bool `short:"v" long:"verbose" description:"Show verbose debug information"`
-    Port    int  `short:"p" long:"port" description:"Port to listen on" default:"8080"`
-    Config  string `short:"c" long:"config" description:"Path to the configuration file"`
+	Verbose bool   `short:"v" long:"verbose" description:"Show verbose debug information"`
+	Port    int    `short:"p" long:"port" description:"Port to listen on" default:"8080"`
+	Config  string `short:"c" long:"config" description:"Path to the configuration file"`
 }
 ```
 
-In this example, we've defined three flags: `verbose`, `port`, and `config`. The `verbose` flag is a boolean, while `port` is an integer, and `config` is a string.
+Other useful tags include `required:"true"`, `choice:"..."` (repeatable, restricts the
+allowed values) and `env:"PORT"` to fall back to an environment variable.
 
-## Parsing Flags
+## Parsing
 
-After defining your flags, you can now parse the command-line arguments using the `flags.Parse` function. Here's an example of how you can parse flags and use them in your program:
+`flags.Parse` fills the struct and returns any arguments it didn't consume.
 
 ```go
 package main
 
 import (
-    "fmt"
-    "github.com/jessevdk/go-flags"
+	"fmt"
+	"os"
+
+	"github.com/jessevdk/go-flags"
 )
 
-func main() {
-    var opts Options
-    _, err := flags.Parse(&opts)
-    if err != nil {
-        // Handle error
-        fmt.Println(err)
-        return
-    }
+type Options struct {
+	Verbose bool   `short:"v" long:"verbose" description:"Show verbose debug information"`
+	Port    int    `short:"p" long:"port" description:"Port to listen on" default:"8080"`
+	Config  string `short:"c" long:"config" description:"Path to the configuration file"`
+}
 
-    fmt.Printf("Verbose: %v\n", opts.Verbose)
-    fmt.Printf("Port: %d\n", opts.Port)
-    fmt.Printf("Config: %s\n", opts.Config)
+func main() {
+	var opts Options
+	args, err := flags.Parse(&opts)
+	if err != nil {
+		if flags.WroteHelp(err) {
+			os.Exit(0) // --help was requested and has already been printed
+		}
+		os.Exit(1) // the parse error has already been printed to stderr
+	}
+
+	fmt.Printf("Verbose: %v\n", opts.Verbose)
+	fmt.Printf("Port: %d\n", opts.Port)
+	fmt.Printf("Config: %s\n", opts.Config)
+	fmt.Printf("Remaining args: %v\n", args)
 }
 ```
 
-If you run this program with the following command:
+Running `./myprog -v -p 9000 --config=config.toml` prints:
 
-```bash
-./myprog -v -p 9000 --config=config.toml
-```
-
-The output will be:
-
-```
+```text
 Verbose: true
 Port: 9000
 Config: config.toml
+Remaining args: []
 ```
 
-## Nested Commands
+## Errors and help
 
-`go-flags` also supports nested commands. This is useful when building complex command-line tools that have multiple subcommands. To define a nested command, you create a struct field with the `command` tag and the desired command name.
+`flags.Parse` uses the `flags.Default` options, which are `HelpFlag | PrintErrors |
+PassDoubleDash`. That means:
 
-Here's an example of a program with two nested commands, `serve` and `version`:
+- `-h` / `--help` is added for you, and the help text is printed automatically.
+- Parse errors (an unknown flag, a non-integer for `--port`) are also printed automatically.
+- Everything after `--` is passed through as a positional argument.
+
+So your code shouldn't print the error again. It only needs to decide the exit code, which
+is what `flags.WroteHelp(err)` (added in v1.5.0) is for. If you need to inspect the error
+yourself, it's a `*flags.Error` with a `Type` field:
 
 ```go
+var flagsErr *flags.Error
+if errors.As(err, &flagsErr) && flagsErr.Type == flags.ErrUnknownFlag {
+	// ...
+}
+```
+
+If you'd rather print errors yourself, create the parser with
+`flags.NewParser(&opts, flags.HelpFlag|flags.PassDoubleDash)` and handle the error from
+`parser.Parse()`.
+
+The generated help for the `Options` struct above looks like this:
+
+```text
+Usage:
+  myprog [OPTIONS]
+
+Application Options:
+  -v, --verbose  Show verbose debug information
+  -p, --port=    Port to listen on (default: 8080)
+  -c, --config=  Path to the configuration file
+
+Help Options:
+  -h, --help     Show this help message
+```
+
+## Subcommands
+
+A struct field tagged with `command` becomes a subcommand with its own options. The neatest
+way to run them is to implement the `flags.Commander` interface (`Execute(args []string)
+error`); the parser calls `Execute` on the command the user picked.
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/jessevdk/go-flags"
+)
+
 type ServeCommand struct {
 	Port int `short:"p" long:"port" description:"Port to listen on" default:"8080"`
+}
+
+func (c *ServeCommand) Execute(args []string) error {
+	fmt.Printf("Starting server on port %d\n", c.Port)
+	return nil
 }
 
 type VersionCommand struct {
 	Revision bool `short:"r" long:"revision" description:"Show revision number"`
 }
 
+func (c *VersionCommand) Execute(args []string) error {
+	fmt.Println("Version 1.0")
+	if c.Revision {
+		fmt.Println("Revision: 12345")
+	}
+	return nil
+}
+
 type Options struct {
 	Serve   ServeCommand   `command:"serve" description:"Start the server"`
 	Version VersionCommand `command:"version" description:"Show version information"`
 }
-```
 
-To handle the execution of the nested commands, you can use the `flags.Command` struct and `flags.Parse` function:
-
-```go
 func main() {
 	var opts Options
 	parser := flags.NewParser(&opts, flags.Default)
-
-	cmd, err := parser.Parse()
-	if err != nil {
-		// Handle error
-		return
-	}
-
-	switch cmd.Name {
-	case "serve":
-		fmt.Printf("Starting server on port %d\n", opts.Serve.Port)
-	case "version":
-		fmt.Println("Version 1.0")
-		if opts.Version.Revision {
-			fmt.Println("Revision: 12345")
+	if _, err := parser.Parse(); err != nil {
+		if flags.WroteHelp(err) {
+			os.Exit(0)
 		}
+		os.Exit(1)
 	}
 }
 ```
 
-## Error Handling
+`./myprog serve -p 9000` prints `Starting server on port 9000`. Running `./myprog` with no
+command is an error ("Please specify one command of: serve or version") unless you set
+`parser.SubcommandsOptional = true`.
 
-When parsing flags, `go-flags` returns an error if the user provides invalid or unexpected input. It's important to handle these errors appropriately in your program.
+If you don't want `Execute` methods, skip them and check which command ran after parsing:
+`parser.Active` is the active `*flags.Command` (or `nil`), so `parser.Active.Name` tells you
+whether it was `serve` or `version`.
 
-Here's an example of how to handle errors when parsing flags:
+## When to use something else
 
-```go
-func main() {
-    var opts Options
-    _, err := flags.Parse(&opts)
-    if err != nil {
-        // Check the specific error type
-        if flagsErr, ok := err.(*flags.Error); ok {
-            // If it's a help request, print the help message and exit gracefully
-            if flagsErr.Type == flags.ErrHelp {
-                fmt.Println(err)
-                return
-            }
-        }
-        // For other errors, print the error message and exit with a non-zero status
-        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-        os.Exit(1)
-    }
-}
-```
+- For a handful of flags, the standard library's `flag` package is enough and has no
+  dependency.
+- For large CLIs with nested command trees, shell completion and generated docs,
+  [cobra](https://github.com/spf13/cobra) is the more common choice in the Go ecosystem.
 
-In this example, we check if the error is of type `flags.Error`. If it's a help request (e.g., the user typed `-h` or `--help`), we print the help message and exit gracefully. For other errors, we print the error message and exit with a non-zero status to indicate that an error occurred.
+## Further reading
 
-## Help Messages
-
-One of the great features of `go-flags` is that it automatically generates help messages based on your flag definitions. By default, when the user types `-h` or `--help`, `go-flags` will display a help message and return a `flags.ErrHelp` error.
-
-The help message includes the flag names, their types, default values, and descriptions. You can customize the help message by providing a `description` tag for each flag, as shown in the examples above.
-
-Here's an example of a generated help message:
-
-```
-Usage:
-  myprog [OPTIONS]
-
-Application Options:
-  -v, --verbose  Show verbose debug information
-  -p, --port     Port to listen on (default: 8080)
-  -c, --config   Path to the configuration file
-
-Help Options:
-  -h, --help     Show this help message
-```
-
-## Conclusion
-
-In this article, we've explored the `go-flags` library and how to use it effectively in your Go programs. We've seen how to define and parse flags, handle nested commands, manage errors, and leverage the built-in help messages.
-
-By using `go-flags`, you can make your command-line tools and applications more user-friendly and maintainable. Give it a try in your next Go project, and you'll quickly appreciate the power and flexibility it offers.
+- [go-flags API docs](https://pkg.go.dev/github.com/jessevdk/go-flags)
+- [go-flags on GitHub](https://github.com/jessevdk/go-flags)

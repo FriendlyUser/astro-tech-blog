@@ -1,96 +1,134 @@
 ---
-title: How to use Rust's Foreign Function Interface
-description: Rust's Foreign Function Interface (FFI) allows Rust code to interact with code written in other programming languages, such as C. In this article, we will explore Rust's FFI capabilities by building a program that interfaces with a C library using Rust's FFI. Specifically, we will use Rust to call a C library function that computes the sum of two integers.
+title: Calling C functions from Rust with FFI and the cc crate
+description: Compile a small C file with a Cargo build script, declare it in an unsafe extern block, and call it from Rust, including passing strings with CString.
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+Rust's foreign function interface (FFI) lets Rust call functions that follow the C ABI, which covers C libraries and anything else that exports C-compatible symbols. This post compiles a small C file as part of a Cargo build, then calls two functions from it: one that adds two integers and one that takes a string.
 
-Rust's Foreign Function Interface (FFI) allows Rust code to interact with code written in other programming languages, such as C. In this article, we will explore Rust's FFI capabilities by building a program that interfaces with a C library using Rust's FFI. Specifically, we will use Rust to call a C library function that computes the sum of two integers.
+## Project layout
 
-Let's start by creating a new Rust project using the cargo tool. Open a terminal window and run the following command:
-
-```rust
-cargo new ffi
+```bash
+cargo new ffi_demo
+cd ffi_demo
+cargo add --build cc
 ```
 
-This will create a new Rust project called ffi in a directory with the same name. Next, we will create a C source file called sum.c that defines a function that computes the sum of two integers. Here's what sum.c should look like:
+```text
+ffi_demo/
+├── Cargo.toml
+├── build.rs
+└── src/
+    ├── main.rs
+    └── sum.c
+```
 
-```rust
-#include <stdio.h>
+`cargo add --build cc` adds the [`cc`](https://docs.rs/cc) crate under `[build-dependencies]`:
+
+```toml
+[build-dependencies]
+cc = "1"
+```
+
+## The C code
+
+`src/sum.c`:
+
+```c
+#include <stddef.h>
 
 int sum(int x, int y) {
     return x + y;
 }
+
+size_t count_vowels(const char *s) {
+    size_t n = 0;
+    for (; *s != '\0'; s++) {
+        switch (*s) {
+            case 'a': case 'e': case 'i': case 'o': case 'u':
+            case 'A': case 'E': case 'I': case 'O': case 'U':
+                n++;
+        }
+    }
+    return n;
+}
 ```
 
-This code defines a simple function called sum that takes two integer arguments and returns their sum. We will use Rust to call this function using FFI.
+## Building the C code with Cargo
 
-Next, we need to create a Rust source file that will use FFI to call the sum function. Create a new file called src/main.rs and add the following code:
+`build.rs` runs before your crate is compiled. `cc::Build` finds the platform's C compiler (gcc, clang or MSVC), compiles the file into a static library, and tells Cargo to link it:
 
 ```rust
-use std::os::raw::c_int;
-use std::ffi::CString;
+fn main() {
+    println!("cargo:rerun-if-changed=src/sum.c");
+    cc::Build::new().file("src/sum.c").compile("sum");
+}
+```
 
-#[link(name = "sum")]
-extern "C" {
+Because the library is linked statically, there's no `.so`/`.dll` to install or find at runtime, and the same setup works on Linux, macOS and Windows. You still need a C compiler installed.
+
+## Declaring and calling the functions
+
+`src/main.rs`:
+
+```rust
+use std::ffi::{c_char, c_int, CString};
+
+unsafe extern "C" {
     fn sum(x: c_int, y: c_int) -> c_int;
+    fn count_vowels(s: *const c_char) -> usize;
 }
 
 fn main() {
     let x = 1;
     let y = 2;
-
     let result = unsafe { sum(x, y) };
+    println!("The sum of {x} and {y} is {result}.");
 
-    println!("The sum of {} and {} is {}.", x, y, result);
+    let text = CString::new("Hello from Rust").expect("no interior NUL bytes");
+    let vowels = unsafe { count_vowels(text.as_ptr()) };
+    println!("{vowels} vowels");
 }
 ```
-Let's go over this code and explain how Rust's FFI capabilities work.
-
-The use statements at the beginning of the file import the c_int type from the std::os::raw module and the CString type from the std::ffi module. The c_int type is used to represent C int types in Rust, and the CString type is used to create null-terminated C-style strings from Rust strings.
-
-Next, we use the #[link] attribute to link to the sum C library. The name argument specifies the name of the library, which is sum in this case. The extern "C" block declares the sum function as an external C function that takes two c_int arguments and returns a c_int result.
-
-Inside the main function, we define two variables x and y that represent the integers to be added. We then call the sum function using the unsafe keyword, which is required when calling external functions using FFI. The result of the function call is stored in the result variable.
-
-Finally, we use the println! macro to print the result of the computation.
-
-To compile and run the program, we need to first compile the sum.c file into a shared library that can be linked to by Rust. Open a terminal window and run the following commands:
 
 ```bash
-gcc -c -fPIC sum.c
-gcc -shared -o libsum.so sum.o
-```
-
-The first command compiles sum.c into an object file (sum.o) with position-independent code (-fPIC). The second command links the object file into a shared library (libsum.so) that can be used by Rust.
-
-Next, we can build and run the Rust program using the cargo tool. Open a terminal window and run the following commands:
-
-```rust
-cargo build
 cargo run
 ```
 
-The output of the program should be:
-
-
-```bash
+```text
 The sum of 1 and 2 is 3.
+4 vowels
 ```
 
-This demonstrates how Rust can use FFI to call a C library function.
+### What the pieces mean
 
-Now let's examine the code in more detail.
+- **`extern "C"`** declares functions that use the C calling convention. The Rust compiler can't see their bodies, so it trusts that the signatures you write match the C ones. A mismatch (say, `i64` where C has `int`) compiles fine and produces garbage or crashes at runtime.
+- **`unsafe extern`**: since the 2024 edition (the default for new `cargo new` projects), extern blocks must be marked `unsafe`, as a reminder that the declarations themselves are a promise you're making. On the 2021 edition, plain `extern "C" { ... }` still compiles.
+- **`unsafe { ... }` at the call site**: calling a foreign function is unsafe because Rust can't check what it does with pointers or memory. If a function really is safe to call with any arguments, you can declare it with `safe fn` inside the `unsafe extern` block (Rust 1.82+) and call it without `unsafe`. That's a promise, not a check, and `sum` doesn't quite qualify: signed integer overflow is undefined behaviour in C, so `sum(c_int::MAX, 1)` is UB.
+- **`c_int`, `c_char`** are aliases for whatever C's `int` and `char` are on the target platform. `size_t` maps to `usize` on all mainstream platforms.
+- **`CString`** owns a NUL-terminated copy of a Rust string. Rust `&str` is not NUL-terminated, so it can't be passed to C directly. `CString::new` fails if the string contains an interior `\0`. Keep the `CString` alive while C uses the pointer: `CString::new("...").unwrap().as_ptr()` in a single expression creates a dangling pointer, because the temporary is dropped at the end of the statement.
+- No `#[link]` attribute is needed here, because `cc` emits the `cargo:rustc-link-lib` instruction for the library it built.
 
-The #[link] attribute is used to link to a C library. In this case, we link to the sum library, which is defined in the sum.c file. The extern "C" block declares the sum function as an external C function that takes two c_int arguments and returns a c_int result. The c_int type is defined in the std::os::raw module and represents a C int type.
+## Linking a prebuilt library instead
 
-The main function defines two integer variables x and y. The unsafe keyword is used to call the sum function, which is an external C function. The result of the function call is stored in the result variable.
+If the C library is already built (a system library, or a `.so`/`.dylib`/`.dll` you ship), skip `cc` and tell Cargo where it is from `build.rs`:
 
-It's important to note that the unsafe keyword is used because FFI involves calling code that is outside the control of the Rust compiler. This means that the Rust compiler cannot ensure the safety of the code at compile time, so it requires the programmer to explicitly mark FFI calls as unsafe.
+```rust
+fn main() {
+    println!("cargo:rustc-link-search=native=/path/to/lib");
+    println!("cargo:rustc-link-lib=dylib=sum");
+}
+```
 
-The CString type is used to create a null-terminated C-style string from a Rust string. This is necessary because C functions often expect null-terminated strings as arguments.
+With a shared library, the OS also has to find it at runtime, for example via `LD_LIBRARY_PATH` on Linux, `DYLD_LIBRARY_PATH` on macOS, or by putting the DLL next to the executable on Windows.
 
-Overall, Rust's FFI capabilities provide a powerful way to interface with C and other programming languages. By using FFI, Rust programs can leverage existing C libraries and take advantage of the performance benefits of low-level languages. While FFI requires the use of unsafe code, Rust's strong type system and memory safety guarantees help to minimize the risk of bugs and security vulnerabilities.
+## Next steps
+
+- For a real C library with many functions and structs, generate the `extern` declarations from its header with [bindgen](https://rust-lang.github.io/rust-bindgen/) instead of writing them by hand.
+- Wrap the raw `unsafe` functions in a small safe Rust API (taking `&str`, returning `Result`) so the rest of your code never touches raw pointers.
+- [FFI chapter of the Rustonomicon](https://doc.rust-lang.org/nomicon/ffi.html)
+- [Using `extern` functions to call external code, The Rust Programming Language](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html#using-extern-functions-to-call-external-code)

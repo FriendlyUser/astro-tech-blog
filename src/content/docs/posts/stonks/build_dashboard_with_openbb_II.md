@@ -1,98 +1,94 @@
 ---
-title: Streamlining Technical Analysis with OpenBB and Streamlit II
-description: This post highlights the recent changes made to the stocks ta app, which provides users with an easy-to-use interface for conducting technical analysis on financial data. The article explains how the addition of the Donchian channel indicator and the cache_data decorator, along with other updates, have improved the app's functionality and user experience. Readers will learn how these changes enable users to quickly generate and view technical analysis graphs and export them for further analysis.
+title: "Streamlit and OpenBB part II: Donchian Channels and st.cache_data"
+description: "Adding a Donchian Channels chart to my Streamlit technical analysis app, moving from st.cache to st.cache_data, and a caching bug in the file-cleanup decorator."
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 20 March 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/sample.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
-In this article, we will be exploring the changes made to the stocks ta app using the git diff provided. The stocks ta app is a web application used for technical analysis of stocks. View the first article at [Streamlining Technical Analysis with OpenBB and Streamlit](./build_dashboard_with_openbb).
+:::caution[OpenBB SDK is retired]
+This app uses the `openbb-terminal` package (OpenBB SDK v3), which OpenBB has replaced with the [OpenBB Platform](https://docs.openbb.co/) (`pip install openbb`, `from openbb import obb`). The `openbb_terminal` imports below won't install on a current setup. [Part I](/posts/stonks/build_dashboard_with_openbb/) ends with a version of the app that uses yfinance and pandas instead.
+:::
 
-## Introduction to the stocks ta app
-The stocks ta app is a user-friendly web application that provides technical analysis of stocks using OpenBB SDK. 
+This is a follow-up to [Building a Bollinger Bands web app with Streamlit and the OpenBB SDK](/posts/stonks/build_dashboard_with_openbb/). The second round of changes to the app added a Donchian Channels chart, moved the shared file-handling code into a decorator, and replaced `st.cache` with `st.cache_data`.
 
-Changes to the stocks ta app include the addition of a new feature that allows users to view Donchian channels. Refactoring to make the code more streamlined and readable was also done. Updating to the latest version of OpenBB SDK was also done to ensure that the app is compatible latest version of streamlit.
+## Donchian Channels
 
-In finance, a Donchian Channel is a technical indicator used to identify the current price trend, volatility, and potential price breakouts. It is a channel created by plotting the highest high and lowest low over a specified period of time. The channel is then used to identify potential buy or sell signals based on whether the price is trading above or below the channel. The Donchian Channel is named after its creator, Richard Donchian, who is considered to be one of the pioneers of modern trend following strategies in the financial markets.
+A Donchian Channel plots the highest high and the lowest low over the last N periods (20 by default), with a middle line halfway between them. When price closes at a new N-period high it touches the upper band, which trend followers treat as a breakout signal; a new low touches the lower band. The width of the channel gives a rough read on volatility. It's named after Richard Donchian, an early systematic trend follower.
 
-
-The application allows users to input a stock symbol and date range, and provides information on the adjusted close price, Bollinger Bands, and Donchian channels.
-
-Changes Made to the stocks ta app
-The git diff provided shows the changes made to the app.py file of the stocks ta app. Let's go through the changes line by line to understand what was added, removed, or modified.
-```
-diff --git a/app.py b/app.py
-```
-
-```diff
-@@ -3,10 +3,11 @@ import datetime
- import pandas as pd
- import requests
- import os
-+import sys
- from PIL import Image
-+from io import StringIO
- from openbb_terminal.stocks.stocks_helper import load
--from openbb_terminal.common.technical_analysis.volatility_model import bbands
--from openbb_terminal.common.technical_analysis.volatility_view import display_bbands
-+from openbb_terminal.common.technical_analysis.volatility_view import display_bbands, display_donchian
-```
-
-In this section, two new imports were added. import sys was added to import the sys module, and from io import StringIO was added to import the StringIO class from the io module.
-
-In addition, the import for display_bbands was modified to include display_donchian. The display_donchian function is used to display Donchian channels, which is a new feature that was added to the stocks ta app.
-
-```diff
- st.write("""
- # Technical Analysis Web Application
- """)
-
-@@ -27,22 +28,37 @@ def user_input_features():
- symbol, start, end = user_input_features()
-```
-
-```diff
--@st.cache  # 👈 Added this
--def build_bbands_img(data, symbol, file_name="sample.png"):
--    stream = os.popen('cd ~ && pwd')
--    root_dir = stream.read()
--    sample_dir = root_dir.strip()
--    # remove /home/codespace/OpenBBUserData/exports/bbands.png already
--    temp_image = os.path.join(sample_dir, "OpenBBUserData", "exports", file_name)
--    # if exists erase
--    if os.path.exists(temp_image):
--        os.remove(temp_image)
--    display_bbands(data, symbol, 15, 2, export=file_name)
--    # root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
--    temp_image = os.path.join(sample_dir, "OpenBBUserData", "exports", file_name)
--    # image = Image.open(temp_image)
--    return temp_image
-```
-
-These lines show that the build_bbands_img function was modified. The function now uses a new decorator remove_existing_file that checks if the file already exists and removes it before creating a new one. This ensures that only the latest version of the file is used.
-
-In addition, the cache decorator was replaced with the cache_data decorator, which is a newer version of cache. This was updated a recent change to the streamlit sdk.
+OpenBB had a view function for it next to the Bollinger Bands one, so the import changed to:
 
 ```python
+from openbb_terminal.common.technical_analysis.volatility_view import display_bbands, display_donchian
+```
+
+## A decorator for the exported image
+
+Both charts work the same way: the OpenBB view function writes a PNG to `~/OpenBBUserData/exports/<name>.png` and the app shows that file. Instead of repeating the path handling, I moved it into a decorator that deletes any old export, runs the chart function, and returns the file path if a new image was written:
+
+```python
+import os
+import sys
+from io import StringIO
+
+def remove_existing_file(func):
+    def wrapper(*args, **kwargs):
+        old_stdin = sys.stdin
+        sys.stdin = StringIO("y")
+        root_dir = os.popen("cd ~ && pwd").read().strip()
+        export = args[-1]  # the export file name is passed as the last positional argument
+        temp_image = os.path.join(root_dir, "OpenBBUserData", "exports", export)
+        if os.path.exists(temp_image):
+            os.remove(temp_image)
+        func(*args, **kwargs)
+        sys.stdin = old_stdin
+        if os.path.exists(temp_image):
+            return temp_image
+        return None
+    return wrapper
+
+
+@remove_existing_file
+@st.cache_data
+def build_bbands_img(data, symbol, window=15, n_std=2, export="bbands.png"):
+    return display_bbands(data, symbol, window, n_std, export=export)
+
+
 @remove_existing_file
 @st.cache_data
 def build_donchian_img(data, symbol, export="donchian.png"):
     return display_donchian(data, symbol, export=export)
-
 ```
 
-This code defines a function named build_donchian_img, which takes in three arguments: data, symbol, and export.
+The `sys.stdin` swap feeds a `"y"` to any confirmation prompt OpenBB shows while exporting, so the Streamlit script doesn't block waiting for input. The functions are called with every argument positional, for example `build_donchian_img(data, symbol, "donchian.png")`, because the wrapper reads the file name from `args[-1]`.
 
-The @remove_existing_file decorator is used to remove any existing image file with the same name as the export argument, which is the name of the image file to be saved. This decorator wraps the function and performs the file removal before executing the function.
+`st.cache_data` arrived in Streamlit 1.18 (February 2023) together with `st.cache_resource`, and the old `st.cache` was deprecated in favour of them. `st.cache_data` hashes the arguments (including the DataFrame) and returns a copy of the cached return value when they match.
 
-The @st.cache_data decorator is used to cache the function's output based on the input arguments. This means that if the function is called again with the same input arguments, the previously cached output will be returned instead of recomputing the function.
+## Gotcha: the decorator order breaks reruns
 
-The function calls another function named display_donchian, passing in the data, symbol, and export arguments. The display_donchian function creates a donchian chart using the data and symbol arguments and saves it as an image file with the filename specified by the export argument.
+With `@remove_existing_file` on the outside, the wrapper runs on every Streamlit rerun, but the inner cached function only runs on a cache miss. So on the second run with the same inputs, the wrapper deletes the PNG, the cached function returns without calling OpenBB, the file is never recreated, and the wrapper returns `None`. The chart disappears after the first rerun.
 
-The build_donchian_img function returns the path of the saved image file, which can be used to display the image in the Streamlit app using the st.image() function.
+A simpler shape is to do the file work inside the cached function and cache the image bytes, which `st.image` accepts directly:
 
-### References
-- https://friendlyuser-stonk-ta-app-app-fhrcso.streamlit.app/
+```python
+from pathlib import Path
+
+@st.cache_data
+def build_donchian_img(data, symbol, export="donchian.png"):
+    path = Path.home() / "OpenBBUserData" / "exports" / export
+    path.unlink(missing_ok=True)
+    display_donchian(data, symbol, export=export)
+    return path.read_bytes() if path.exists() else None
+```
+
+Now a cache hit returns the image without touching the disk, and the export folder no longer has to survive between reruns.
+
+## Further reading
+
+- [Source code on GitHub](https://github.com/FriendlyUser/stonk_ta_app)
+- [Streamlit caching overview](https://docs.streamlit.io/develop/concepts/architecture/caching)
+- The app was hosted at <https://friendlyuser-stonk-ta-app-app-fhrcso.streamlit.app/>; it still depends on `openbb-terminal`, so it may no longer load.

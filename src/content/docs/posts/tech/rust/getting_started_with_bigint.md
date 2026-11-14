@@ -1,52 +1,56 @@
 ---
 tags: ['rust', 'num-bigint']
-title: Working with Large Integers in Rust using the num-bigint Library
-description:  In this article, we'll explore how to use num-bigint to perform various operations on large integers.
+title: Arbitrary-precision integers in Rust with num-bigint
+description: How to create, parse, compare and do arithmetic on arbitrarily large integers in Rust with num-bigint's BigInt and BigUint types.
 pubDate: Fri, 14 September 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3563897667.png
 ---
 
-# Working with Large Integers in Rust using the `num-bigint` Library
+Rust's primitive integers top out at 128 bits (`i128`/`u128`), and overflowing them panics in debug builds and wraps in release builds. When you need integers of any size, such as for cryptography, exact factorials, or parsing huge numeric strings, the standard crate is [`num-bigint`](https://crates.io/crates/num-bigint). It provides `BigInt` (signed) and `BigUint` (unsigned), which grow their storage as needed.
 
-When working with integers in Rust, we usually use primitive types like `i32`, `i64`, or `u64`. However, these types have limitations when it comes to representing very large integers, as they can only store fixed-size values. If you need to work with arbitrarily large integers, the `num-bigint` library comes in handy. In this article, we'll explore how to use `num-bigint` to perform various operations on large integers.
+The examples were written against num-bigint 0.5.1, num-traits 0.2.19 and num-integer 0.1.47.
 
-## Setting up the Environment
-
-First, let's add the `num-bigint` and `num-traits` crates to our project. Add the following dependencies to your `Cargo.toml` file:
+## Dependencies
 
 ```toml
 [dependencies]
-num-bigint = "0.4.4"
-num-traits = "0.2.18"
+num-bigint = "0.5"
+num-traits = "0.2"
+num-integer = "0.1"
 ```
 
-Now, you can use the `BigInt` and `BigUint` types in your Rust code, as well as various traits provided by `num-traits`.
+`num-traits` provides traits such as `Zero`, `One` and `FromPrimitive`; `num-integer` provides the `Integer` trait with `gcd`, `lcm` and friends. The 0.5 release of num-bigint only changed the optional `rand` integration, so the code below also works on 0.4.
 
-## Creating and Initializing BigInt and BigUint
-
-`BigInt` represents a signed arbitrary precision integer, while `BigUint` represents an unsigned arbitrary precision integer. To create and initialize these types, we can use the following methods:
+## Creating values
 
 ```rust
 use num_bigint::{BigInt, BigUint};
 use num_traits::FromPrimitive;
 
 fn main() {
-    let a: BigInt = 100.into();
-    let b: BigInt = BigInt::from(200);
-    let c: BigInt = BigInt::from_i64(300).unwrap();
+    // From primitive integers via the From trait
+    let a = BigInt::from(-100);
+    let b: BigInt = 200i64.into();
+    let c = BigUint::from(3000u32);
 
-    let d: BigUint = 1000.into();
-    let e: BigUint = BigUint::from(2000);
-    let f: BigUint = BigUint::from_u64(3000).unwrap();
+    // FromPrimitive returns an Option (None for negative values into BigUint)
+    let d = BigUint::from_i64(3000).unwrap();
+    let e = BigUint::from_i64(-1); // None
+
+    // From a decimal string
+    let f: BigInt = "-123456789012345678901234567890".parse().unwrap();
+
+    println!("{a} {b} {c} {d} {e:?} {f}");
 }
 ```
 
-Here, we're using the `From` trait to convert primitive integers to `BigInt` and `BigUint` values. The `FromPrimitive` trait provides methods for converting primitive types to `BigInt` and `BigUint` and returns an `Option` that needs to be unwrapped.
+`BigUint` only implements `From` for unsigned primitives, so an unsuffixed literal like `BigUint::from(3000)` fails to compile: Rust falls back to `i32` for the literal, and there's no `From<i32>` for `BigUint`. Add a suffix (`3000u32`) or use `FromPrimitive`.
 
-## Arithmetic Operations
+## Arithmetic
 
-`num-bigint` supports various arithmetic operations like addition, subtraction, multiplication, and division. Here's an example of how you can perform these operations:
+The usual operators work on owned values and on references. Using references (`&a + &b`) avoids moving or cloning the operands:
 
 ```rust
 use num_bigint::BigInt;
@@ -56,34 +60,41 @@ fn main() {
     let a: BigInt = "12345678901234567890".parse().unwrap();
     let b: BigInt = "98765432109876543210".parse().unwrap();
 
-    let sum = &a + &b; // Use references for arithmetic operations
+    let sum = &a + &b;
     let difference = &b - &a;
     let product = &a * &b;
 
-    // Ensure b is not zero before dividing
-    let quotient = if !b.is_zero() {
-        Some(&a / &b)
-    } else {
-        None
-    };
+    // Division by zero panics, just like with primitive integers
+    let quotient = if b.is_zero() { None } else { Some(&b / &a) };
 
-    println!("Sum: {}", sum);
-    println!("Difference: {}", difference);
-    println!("Product: {}", product);
-    println!("Quotient: {:?}", quotient);
+    println!("Sum: {sum}");
+    println!("Difference: {difference}");
+    println!("Product: {product}");
+    println!("Quotient: {quotient:?}");
 }
 ```
 
+Output:
+
+```text
+Sum: 111111111011111111100
+Difference: 86419753208641975320
+Product: 1219326311370217952237463801111263526900
+Quotient: Some(8)
+```
+
+Division truncates toward zero, as it does for `i64`. Use `a.div_rem(&b)` from `num_integer::Integer` to get the quotient and remainder together.
+
 ## Comparisons
 
-You can compare `BigInt` and `BigUint` values using standard comparison operators, such as `<`, `>`, `==`, `!=`, `<=`, and `>=`. For example:
+`BigInt` and `BigUint` implement `PartialOrd`, `Ord` and `Eq`, so `<`, `>`, `==` and `sort()` work as expected:
 
 ```rust
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigInt;
 
 fn main() {
-    let a: BigInt = 100.into();
-    let b: BigInt = 200.into();
+    let a = BigInt::from(100);
+    let b = BigInt::from(200);
 
     if a < b {
         println!("a is less than b");
@@ -95,33 +106,50 @@ fn main() {
 }
 ```
 
-## Other Operations
-
-`num-bigint` also provides methods for other mathematical operations, such as modulo, exponentiation, and greatest common divisor (GCD).
+## Remainder, GCD and powers
 
 ```rust
 use num_bigint::{BigInt, BigUint};
-use num_traits::One;
 use num_integer::Integer;
-
+use num_traits::One;
 
 fn main() {
-    let a: BigInt = BigInt::from(12345); // Explicitly creating BigInt from integer
-    let b: BigInt = BigInt::from(67890); // Explicitly creating BigInt from integer
+    let a = BigInt::from(12345);
+    let b = BigInt::from(67890);
 
-    let modulo = &a % &b; // No changes needed here
-    let gcd = a.gcd(&b); // No changes needed here
-    let exp = BigUint::one() << 100; // This calculates 2^100 correctly
+    let remainder = &a % &b;          // sign follows the dividend, like `%` on i64
+    let gcd = a.gcd(&b);              // from num_integer::Integer
+    let shifted = BigUint::one() << 100; // 2^100 via a bit shift
+    let power = BigUint::from(2u32).pow(100); // the same value via pow
+    let modpow = BigUint::from(4u32).modpow(&BigUint::from(13u32), &BigUint::from(497u32));
 
-    println!("Modulo: {}", modulo);
-    println!("GCD: {}", gcd);
-    println!("2^100: {}", exp);
+    println!("Remainder: {remainder}");
+    println!("GCD: {gcd}");
+    println!("2^100: {shifted}");
+    println!("equal: {}", shifted == power);
+    println!("4^13 mod 497: {modpow}");
 }
-
 ```
 
-In this example, we're using the `%` operator to calculate the modulo, the `gcd` method to find the greatest common divisor, and bit-shifting to calculate 2 raised to the power of 100.
+Output:
 
-## Conclusion
+```text
+Remainder: 12345
+GCD: 15
+2^100: 1267650600228229401496703205376
+equal: true
+4^13 mod 497: 445
+```
 
-The `num-bigint` library provides an easy-to-use and efficient way to work with arbitrarily large integers in Rust. With support for a wide range of operations, from basic arithmetic to advanced mathematical functions, it's an invaluable tool for any Rust developer who needs to handle large numbers.
+`modpow` computes `(base ^ exponent) % modulus` without building the full power first, which is what you want for RSA-style arithmetic.
+
+## Things to know
+
+- **Performance.** Every operation allocates, so `BigInt` is much slower than primitive integers. Use it only where values can actually exceed 128 bits. If you need the fastest possible big-number arithmetic, [`rug`](https://crates.io/crates/rug) wraps GMP, at the cost of a C dependency and an LGPL licence.
+- **Not constant-time.** num-bigint's operations take time that depends on the values, so don't use it for production cryptography with secret data. Use a dedicated crate such as [`crypto-bigint`](https://crates.io/crates/crypto-bigint).
+- **Random numbers.** The `rand` integration moved behind versioned features in 0.5 (`rand_0_9`, `rand_0_10`); check the [release notes](https://github.com/rust-num/num-bigint/blob/master/RELEASES.md) if you're upgrading from 0.4.
+
+## Further reading
+
+- [num-bigint documentation](https://docs.rs/num-bigint)
+- [num-integer `Integer` trait](https://docs.rs/num-integer/latest/num_integer/trait.Integer.html)

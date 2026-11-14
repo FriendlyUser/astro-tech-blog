@@ -1,86 +1,107 @@
 ---
-description: In this article, we'll explore the Deno standard library and how it contributes
-  to the overall Deno ecosystem
+description: What the Deno standard library is, how to install its @std packages from JSR, and examples from @std/fs, @std/http, @std/datetime and @std/uuid.
 imgSrc: /imgs/2023/2785394646.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-18T14:25:14.000Z'
-tags: []
-title: Demystifying the Deno Standard Library
+lastUpdated: 2026-11-14
+tags: ["deno", "typescript"]
+title: "The Deno standard library: using @std packages from JSR"
 ---
 
-# Demystifying the Deno Standard Library
+:::caution[The standard library moved to JSR]
+The original version of this post imported from `https://deno.land/std/...`. After version 0.224.0, new standard library releases are published to [JSR](https://jsr.io/@std) as separate `@std/*` packages, and deno.land/std no longer gets regular updates. Several APIs shown in older tutorials, including the old version of this post, no longer exist: `readFileStr` (use `Deno.readTextFile`), the `serve` async iterator from `std/http/server.ts` (use `Deno.serve`), and `v4.generate()` from the uuid module (use `crypto.randomUUID()`). The examples below use the current packages.
+:::
 
-Deno, a secure runtime for JavaScript and TypeScript, has been gaining traction in recent years due to its focus on security, developer-friendly features, and modern tooling. One of the key components of Deno is its standard library, which offers a collection of high-quality, well-maintained modules that come with the runtime itself. In this article, we'll explore the Deno standard library and how it contributes to the overall Deno ecosystem.
+The Deno standard library is a set of TypeScript packages maintained by the Deno team. It isn't built into the runtime: you install the packages you need like any other dependency. It covers things the runtime APIs leave out, such as recursive directory walking, file serving, date formatting, CSV and YAML parsing, and test assertions.
 
-## What is the Deno Standard Library?
+## How it's organised
 
-The Deno standard library is a curated set of modules that are designed to work seamlessly with the Deno runtime. These modules are written in TypeScript and cover a wide range of functionalities, from basic utilities to more complex modules handling file systems, networking, and more.
+Each module is its own package under the `@std` scope on JSR, for example `@std/fs`, `@std/path` or `@std/assert`, and each is versioned independently. Most packages are stable (1.x) and follow semantic versioning. Some, such as `@std/datetime`, are still marked unstable, which means their API can change in a minor release. The packages have no third-party dependencies; they only depend on each other.
 
-The primary goal of the standard library is to provide developers with a reliable, performant, and well-documented set of tools to build applications in Deno. The standard library is hosted on Deno's official GitHub repository and can be found [here](https://deno.land/std).
+Add packages to a project with `deno add`, which records them in `deno.json` so you can import them by bare name:
 
-## Key Features
-
-Some of the key features of the Deno standard library include:
-
-1. **Quality Assurance**: The standard library modules are thoroughly tested and reviewed before being included in the library, ensuring that developers can rely on their quality and stability.
-
-2. **TypeScript Support**: All modules in the standard library are written in TypeScript, providing type safety and better development experience when using these modules in TypeScript projects.
-
-3. **No Dependencies**: The modules in the standard library do not rely on external dependencies, reducing the risk of dependency-related issues and improving the overall security.
-
-4. **Versioning**: The standard library follows a strict versioning policy, making it easy for developers to manage dependencies and ensure compatibility between different versions of their projects.
-
-## Exploring the Modules
-
-The Deno standard library offers a wide range of modules to cater to various development needs. Some of the popular modules include:
-
-### 1. `fs` (File System)
-
-The `fs` module provides a set of functions to work with the file system, including reading, writing, and manipulating files and directories. This module offers a promise-based API, making it easy to work with asynchronous file system operations.
-
-```typescript
-import { readFileStr } from "https://deno.land/std/fs/mod.ts";
-
-const content = await readFileStr("./example.txt");
-console.log(content);
+```sh
+deno add jsr:@std/fs jsr:@std/http
 ```
 
-### 2. `http` (HTTP)
+```typescript
+import { walk } from "@std/fs";
+```
 
-The `http` module offers a collection of utilities for working with HTTP, including an HTTP server and client. It simplifies the process of creating and managing HTTP servers and provides a powerful yet easy-to-use API for handling HTTP requests and responses.
+For a single script you can skip `deno.json` and import with a `jsr:` specifier, as the examples below do.
+
+## `@std/fs`: file system helpers
+
+Reading and writing files is a runtime API (`Deno.readTextFile`, `Deno.writeTextFile`), not part of the standard library. `@std/fs` adds the higher-level operations: `walk`, `expandGlob`, `ensureDir`, `copy`, `move`, `emptyDir` and `exists`.
+
+This lists every TypeScript file under the current directory:
 
 ```typescript
-import { serve } from "https://deno.land/std/http/server.ts";
+import { walk } from "jsr:@std/fs@^1/walk";
 
-const server = serve({ port: 8000 });
-
-for await (const req of server) {
-  req.respond({ body: "Hello, world!\n" });
+for await (const entry of walk(".", { exts: [".ts"], includeDirs: false })) {
+  console.log(entry.path);
 }
 ```
 
-### 3. `datetime` (Date and Time)
+Run it with `deno run --allow-read list.ts`.
 
-The `datetime` module provides a set of utilities for working with dates and times. It offers several functions for parsing, formatting, and manipulating date and time values, making it easier to handle time-related tasks.
+## `@std/http`: utilities around `Deno.serve`
+
+The HTTP server itself is built into the runtime as `Deno.serve`. `@std/http` provides helpers on top of it: static file serving, cookies, status code constants, content negotiation and user-agent parsing.
+
+This server answers `/static/...` from the `public` directory and everything else with a plain response:
 
 ```typescript
-import { parse, format } from "https://deno.land/std/datetime/mod.ts";
+import { serveDir } from "jsr:@std/http@^1/file-server";
+
+Deno.serve({ port: 8000 }, (req) => {
+  const { pathname } = new URL(req.url);
+  if (pathname.startsWith("/static")) {
+    return serveDir(req, { fsRoot: "public", urlRoot: "static" });
+  }
+  return new Response("Hello, world!\n");
+});
+```
+
+Run it with `deno run --allow-net --allow-read server.ts`. A request to `/static/logo.png` is served from `./public/logo.png`.
+
+## `@std/datetime`: parsing and formatting dates
+
+`parse` and `format` take format strings built from tokens like `yyyy`, `MM`, `dd`, `HH` and `mm`. This package is still unstable (0.x), so pin the version you tested with:
+
+```typescript
+import { format, parse } from "jsr:@std/datetime@^0.225";
 
 const date = parse("2023-05-07", "yyyy-MM-dd");
-console.log(format(date, "dd/MM/yyyy")); // Output: 07/05/2023
+console.log(format(date, "dd/MM/yyyy")); // 07/05/2023
 ```
 
-### 4. `uuid` (Universally Unique Identifier)
+`parse` interprets the string in the local time zone. `format` accepts `{ timeZone: "UTC" }` as a third argument if you want UTC output.
 
-The `uuid` module offers a simple way to generate and validate UUIDs (Universally Unique Identifiers). It supports various UUID versions, including v1, v3, v4, and v5.
+## `@std/uuid`: generating and validating UUIDs
+
+For random (v4) UUIDs you don't need the standard library at all: `crypto.randomUUID()` is built in. `@std/uuid` adds validation and the other versions, such as name-based v5 UUIDs, which always produce the same ID for the same namespace and name:
 
 ```typescript
-import { v4 } from "https://deno.land/std/uuid/mod.ts";
+import { NAMESPACE_URL, v4, v5 } from "jsr:@std/uuid@^1";
 
-const myUuid = v4.generate();
-console.log(myUuid);
+const random = crypto.randomUUID();
+console.log(v4.validate(random)); // true
+
+const data = new TextEncoder().encode("https://example.com/users/42");
+const stable = await v5.generate(NAMESPACE_URL, data);
+console.log(stable); // same value every run
 ```
 
-## Conclusion
+## Gotchas
 
-The Deno standard library is a powerful collection of modules that simplifies common development tasks and serves as a solid foundation for building applications with the Deno runtime. With its focus on quality, security, and ease of use, the standard library is an indispensable resource for Deno developers.
+- Old code with unversioned `https://deno.land/std/...` imports is fragile. If you can't migrate yet, pin a version (`https://deno.land/std@0.224.0/...`), then move to the matching `jsr:@std/*` packages.
+- Check the package page for a stability label before depending on a 0.x package such as `@std/datetime` in production code.
+- Some packages also run outside Deno. JSR shows runtime compatibility on each package page: `@std/uuid`, for example, is listed for Node.js, Bun and browsers, while `@std/fs` is Deno-only.
+
+## Further reading
+
+- [Deno docs: Standard library](https://docs.deno.com/runtime/fundamentals/standard_library/)
+- [`@std` packages on JSR](https://jsr.io/@std)
+- [Deno docs: Writing an HTTP server](https://docs.deno.com/runtime/fundamentals/http_server/)

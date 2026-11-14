@@ -1,66 +1,57 @@
 ---
-title: "Building Web Applications with Rocket for Rust"
-description: In this tutorial, we'll explore how to build a web application using the Rocket web framework for the Rust programming language. Rocket is a fast, type-safe, and easy-to-use framework that allows us to build web applications quickly, leveraging the power and safety of the Rust language.
+title: "Getting started with Rocket 0.5: routes, catchers and Tera templates"
+description: "Set up a Rocket 0.5 web app in Rust on stable: define routes, add a custom 404 catcher, and render HTML with rocket_dyn_templates and Tera."
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/251520990.png'
 ---
 
+[Rocket](https://rocket.rs) is a Rust web framework built around attribute macros: you write ordinary functions, annotate them with `#[get("/path")]`, and Rocket generates the routing and request parsing. Since 0.5 it runs on stable Rust and is async, built on Tokio.
 
-# Building Web Applications with Rocket for Rust
+This post sets up a small app with two routes, a custom 404 page, and HTML templates rendered with Tera.
 
-In this tutorial, we'll explore how to build a web application using the Rocket web framework for the Rust programming language. Rocket is a fast, type-safe, and easy-to-use framework that allows us to build web applications quickly, leveraging the power and safety of the Rust language.
+## Create the project
 
-## Setting up the Environment
-
-Before we start, make sure you have the following prerequisites installed:
-
-- Rust: You can install Rust using rustup by following the instructions on the [official Rust website](https://www.rust-lang.org/tools/install).
-- Cargo: Cargo is the Rust package manager, and it is included in the Rust installation.
-
-## Creating a New Project
-
-To create a new Rocket project, we'll first create a new Rust binary project using Cargo. Open a terminal and run the following command:
+You need a Rust toolchain from [rustup](https://www.rust-lang.org/tools/install), which includes Cargo.
 
 ```sh
-cargo new rocket_example --bin
-```
-
-This command creates a new binary project named `rocket_example`. Change into the project directory using:
-
-```sh
+cargo new rocket_example
 cd rocket_example
 ```
 
-## Adding Dependencies
+## Dependencies
 
-To use Rocket, we need to add it as a dependency in our `Cargo.toml` file. Open `Cargo.toml` and add the following lines under `[dependencies]`:
+Add to `Cargo.toml`:
 
 ```toml
-rocket = "0.5"
-rocket_dyn_templates = "0.5"
-serde = { version = "1.0", features = ["derive"] }
+[dependencies]
+rocket = "0.5.2"
+rocket_dyn_templates = { version = "0.2.0", features = ["tera"] }
 ```
 
-Here, we're adding the `rocket`, `rocket_dyn_templates`, and `serde` dependencies. `rocket_dyn_templates` is a dynamic template rendering engine, while `serde` is a serialization and deserialization library.
+Note that `rocket_dyn_templates` has its own version numbering (0.2.x pairs with Rocket 0.5), and you have to enable at least one template engine as a feature: `tera`, `handlebars`, or `minijinja`.
 
-## Writing a Simple Web Application
+## The application
 
-Now that we have our dependencies set up, let's build a simple web application. Open `src/main.rs` and replace its contents with the following code:
+Replace `src/main.rs` with:
 
 ```rust
-#![feature(proc_macro_hygiene, decl_macro)]
-
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 use rocket::Request;
-use rocket_dyn_templates::Template;
+use rocket_dyn_templates::{context, Template};
 
 #[get("/")]
 fn index() -> Template {
-    let context = std::collections::HashMap::<String, String>::new();
-    Template::render("index", &context)
+    Template::render("index", context! { title: "Rocket Example" })
+}
+
+#[get("/hello/<name>")]
+fn hello(name: &str) -> Template {
+    Template::render("hello", context! { name: name })
 }
 
 #[catch(404)]
@@ -71,61 +62,80 @@ fn not_found(req: &Request) -> String {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
+        .mount("/", routes![index, hello])
         .register("/", catchers![not_found])
         .attach(Template::fairing())
 }
 ```
 
-In this code, we:
+What each piece does:
 
-1. Enable the required features: `proc_macro_hygiene` and `decl_macro`.
-2. Import the necessary types and macros from the `rocket` and `rocket_dyn_templates` crates.
-3. Define an `index` function that returns a `Template` and is decorated with the `#[get("/")]` attribute, which associates the function with the root path ("/").
-4. Define a `not_found` function that returns a custom 404 error message.
-5. Define the `rocket` function, which launches our Rocket application, mounts the index route, registers the 404 catcher, and attaches the template fairing.
+- `#[macro_use] extern crate rocket;` imports Rocket's macros (`get`, `catch`, `launch`, `routes!`, `catchers!`) crate-wide. You can import them individually with `use rocket::{get, routes, ...}` instead.
+- `#[get("/hello/<name>")]` declares a dynamic path segment. Rocket parses the segment into the function parameter with the same name; here it's a `&str`, but it could be a `u32`, in which case a non-numeric segment would not match the route.
+- `context!` builds a serializable map for the template without defining a struct. For larger pages, pass any type that implements `serde::Serialize`.
+- `#[catch(404)]` handles requests that no route matched. `register("/", ...)` applies the catcher to every path under `/`.
+- `#[launch]` generates the `main` function and the async runtime. The function returns `Rocket<Build>`; the `_` return type lets the macro fill that in.
+- `Template::fairing()` loads and compiles the templates when the app starts. If a template has a syntax error, Rocket logs it and refuses to launch.
 
-## Creating a Template
+Older Rocket tutorials start with `#![feature(proc_macro_hygiene, decl_macro)]` and `rocket::ignite()`. Those are from Rocket 0.4, which required nightly Rust; neither is used in 0.5.
 
-Now, let's create an `index` template. In your project's root directory, create a new folder named `templates`. Inside the `templates` folder, create a new file named `index.html.tera` with the following content:
+## Templates
+
+Templates live in a `templates/` directory in the project root by default (configurable with `template_dir`). The file name must end in the engine's extension, and you refer to it without the last two extensions, so `index.html.tera` is rendered as `"index"`.
+
+`templates/index.html.tera`:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket Example</title>
+    <title>{{ title }}</title>
 </head>
 <body>
-    <h1>Welcome to the Rocket Example!</h1>
+    <h1>Welcome to the {{ title }}!</h1>
+    <p>Try <a href="/hello/rustacean">/hello/rustacean</a>.</p>
 </body>
 </html>
 ```
 
-This simple HTML file will be used as our template when rendering the index route.
+`templates/hello.html.tera`:
 
-## Running the Application
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+</head>
+<body>
+    <h1>Hello, {{ name }}!</h1>
+</body>
+</html>
+```
 
-To run the application, open a terminal in the project's root directory and execute the following command:
+Tera auto-escapes variables in `.html` templates, so a name like `<script>` in the URL is rendered as text rather than executed.
+
+## Run it
 
 ```sh
 cargo run
 ```
 
-This command compiles and runs our web application. You should see output similar to the following:
+In debug builds Rocket listens on `127.0.0.1:8000` and logs its configuration, the mounted routes, and the address once it has launched. Open:
 
-```
-🔧 Configured for development.
-    => address: localhost
-    => port: 8000
-🛰  Mounting /:
-    => GET / (index)
-🚀 Rocket has launched from http://localhost:8000
-```
+- `http://127.0.0.1:8000/` for the index page
+- `http://127.0.0.1:8000/hello/ferris` for the greeting
+- `http://127.0.0.1:8000/nope` for the custom 404 message
 
-Open a web browser and navigate to `http://localhost:8000`. You should see our "Welcome to the Rocket Example!" message.
+## Gotchas
 
-## Conclusion
+- **Templates are read from disk at runtime**, relative to where you run the binary. Ship the `templates/` directory alongside the binary when you deploy, or set `template_dir` to an absolute path.
+- **Port and address** come from `Rocket.toml` or environment variables such as `ROCKET_PORT=8080` and `ROCKET_ADDRESS=0.0.0.0`. Inside a container you need `0.0.0.0`, or the app won't be reachable from outside.
+- **Template edits reload automatically in debug builds**; in release builds they are loaded once at startup.
 
-In this tutorial, we have learned how to set up a simple web application using the Rocket framework for Rust. We've seen how to create routes, catchers, and use templates to render HTML. You can now use these basic concepts to build more complex web applications with Rocket and Rust.
+## Further reading
+
+- [Rocket v0.5 guide](https://rocket.rs/guide/v0.5/)
+- [`rocket_dyn_templates` docs](https://docs.rs/rocket_dyn_templates)
+- [Tera documentation](https://keats.github.io/tera/)

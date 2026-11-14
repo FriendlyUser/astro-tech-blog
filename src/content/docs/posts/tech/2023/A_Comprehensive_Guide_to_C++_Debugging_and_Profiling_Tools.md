@@ -1,94 +1,130 @@
 ---
-title: A Comprehensive Guide to C++ Debugging and Profiling Tools
+title: "C++ debugging and profiling tools: GDB, LLDB, sanitizers, Valgrind, perf and VTune"
 pubDate: "2023-09-16T19:17:25.000Z"
-description: "In this article, we will explore some of the most popular and effective C++ debugging and profiling tools that can help you diagnose and resolve issues in your codebase"
-tags: []
+lastUpdated: 2026-11-14
+description: "Which C++ debuggers and profilers to reach for on Linux, macOS and Windows, what each is good at, and the commands to get started with them."
+tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/14447351.png
 ---
-# A Comprehensive Guide to C++ Debugging and Profiling Tools
 
-As a C++ developer, you must be familiar with bugs and performance issues in your code. Debugging and profiling tools are essential for finding and fixing these problems. In this article, we will explore some of the most popular and effective C++ debugging and profiling tools that can help you diagnose and resolve issues in your codebase.
+Debuggers answer "why is this value wrong?" and profilers answer "where is the time going?". Which tools you can use depends mostly on your platform and compiler, so this post groups them that way and shows the commands to get started with each.
 
-## Debugging Tools
+All the examples use this small program with an off-by-one bug:
 
-### 1. GDB (GNU Debugger)
+```cpp
+// overflow.cpp
+#include <vector>
 
-[GDB](https://www.gnu.org/software/gdb/) is the most widely used debugger for C++ on Linux and macOS. It supports a variety of features, such as breakpoints, watchpoints, and single-stepping through code. GDB can be used both as a command-line tool and through a graphical interface like [DDD](https://www.gnu.org/software/ddd/) or [Eclipse](https://www.eclipse.org/).
+int main() {
+    std::vector<int> v(10);
+    for (int i = 0; i <= 10; ++i)  // off by one: writes v[10]
+        v[i] = i;
+    return v[0];
+}
+```
 
-#### Key Features
-- Set and remove breakpoints
-- Step through code execution
-- Inspect variables and memory
-- Modify variables during debugging
-- Call stack inspection
+## Debuggers
 
-### 2. LLDB
+All three debuggers below do the basics: breakpoints, stepping, inspecting and changing variables, watchpoints, and walking the call stack. Build with `-g` (or `/Zi` on MSVC) and, while debugging, `-O0` so variables aren't optimised away.
 
-[LLDB](https://lldb.llvm.org/) is the debugger component of the LLVM project. It provides a similar feature set to GDB but is designed to work more seamlessly with the Clang compiler. LLDB is available on Linux, macOS, and Windows.
+### GDB
 
-#### Key Features
-- Set and remove breakpoints
-- Step through code execution
-- Inspect variables and memory
-- Modify variables during debugging
-- Call stack inspection
-- Integration with LLVM and Clang tools
+[GDB](https://www.gnu.org/software/gdb/) is the standard debugger on Linux and works with both GCC and Clang output. It also runs on Windows through MinGW. On macOS it only works on Intel Macs and needs code-signing first; it doesn't support Apple Silicon, so use LLDB there.
 
-### 3. Visual Studio Debugger
+```bash
+g++ -g -O0 overflow.cpp -o overflow
+gdb ./overflow
+(gdb) break main
+(gdb) run
+(gdb) next
+(gdb) print v        # libstdc++ pretty-printers show the vector's contents
+(gdb) backtrace
+```
 
-The [Visual Studio Debugger](https://docs.microsoft.com/en-us/visualstudio/debugger/) is a powerful Windows-only debugger integrated with the Visual Studio IDE. It supports native C++, C#, and other languages.
+Most people use GDB through an editor (VS Code, CLion, Eclipse CDT) rather than the bare CLI, but the CLI is handy over SSH and in CI.
 
-#### Key Features
-- Set and remove breakpoints
-- Step through code execution
-- Inspect variables and memory
-- Modify variables during debugging
-- Call stack inspection
-- Integration with Visual Studio and its features
+### LLDB
 
-## Profiling Tools
+[LLDB](https://lldb.llvm.org/) is the LLVM project's debugger. It is the default on macOS (Xcode uses it) and also runs on Linux and Windows. It reuses Clang's parser to evaluate C++ expressions, so it tends to cope well with templates in Clang-built code. Commands differ from GDB's but map closely; the [GDB to LLDB command map](https://lldb.llvm.org/use/map.html) is worth bookmarking.
 
-### 1. Valgrind
+```bash
+clang++ -g -O0 overflow.cpp -o overflow
+lldb ./overflow
+(lldb) breakpoint set --name main
+(lldb) run
+(lldb) frame variable v
+(lldb) thread backtrace
+```
 
-[Valgrind](https://www.valgrind.org/) is an open-source instrumentation framework that provides a suite of tools for debugging and profiling C++ programs on Linux and macOS systems. Valgrind's primary tool is Memcheck, which detects memory leaks and memory management issues.
+### Visual Studio debugger
 
-#### Key Features
-- Memory leak detection
-- Detection of uninitialized memory reads
-- Detection of incorrect memory management (double-free, etc.)
-- Cache and branch prediction profiling with Cachegrind and Branchgrind
-- Call-graph profiling with Callgrind
+On Windows with MSVC, the [Visual Studio debugger](https://learn.microsoft.com/en-us/visualstudio/debugger/) is the default choice. It reads PDB symbols, supports native and mixed native/.NET debugging, and has data breakpoints, conditional breakpoints and a memory view. VS Code uses the same engine via the C/C++ extension's `cppvsdbg` configuration.
 
-### 2. gprof
+## Sanitizers: catch memory bugs at the point they happen
 
-[gprof](https://sourceware.org/binutils/docs/gprof/) is a performance analysis tool for C++ programs. It is part of the GNU Binutils and is available on Linux and macOS. gprof provides information on the time spent in each function, call count, and call graph.
+A debugger only helps once you know where to look. Sanitizers instrument the binary at compile time and stop with a report on the first invalid access. AddressSanitizer (ASan) is supported by GCC, Clang and MSVC (`/fsanitize=address`), and its typical slowdown is about 2x, which is cheap enough to leave on for test builds.
 
-#### Key Features
-- Flat profile with time spent in each function
-- Call graph profile
-- Annotated source code listing with execution counts
+```bash
+g++ -g -O1 -fsanitize=address overflow.cpp -o overflow
+./overflow
+# ERROR: AddressSanitizer: heap-buffer-overflow ... WRITE of size 4
+#     #0 0x... in main overflow.cpp:7
+```
 
-### 3. Perf
+UndefinedBehaviorSanitizer (`-fsanitize=undefined`) catches signed overflow, misaligned access and similar, and ThreadSanitizer (`-fsanitize=thread`) finds data races. TSan can't be combined with ASan in the same build.
 
-[Perf](https://perf.wiki.kernel.org/index.php/Main_Page) is a powerful Linux-only profiler that provides system-wide and per-process profiling using hardware performance counters. It is part of the Linux kernel and provides detailed information about CPU events, cache misses, and branch mispredictions.
+## Profilers and memory checkers
 
-#### Key Features
-- System-wide and per-process profiling
-- Sampling-based profiling
-- Event counting
-- Cache and branch misprediction analysis
-- Support for hardware performance counters
+### Valgrind
 
-### 4. Intel VTune Profiler
+[Valgrind](https://valgrind.org/) runs your unmodified binary on a synthetic CPU, so no recompiling is needed beyond `-g` for line numbers. It's a toolkit:
 
-[Intel VTune Profiler](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/vtune-profiler.html) is a commercial performance analysis tool for C++ programs running on Intel processors. It provides deep insights into CPU and GPU performance, memory access patterns, and threading issues.
+- **Memcheck** (default): invalid reads/writes, use of uninitialised memory, double frees and leaks.
+- **Cachegrind**: simulates the cache hierarchy; add `--branch-sim=yes` for branch prediction.
+- **Callgrind**: call-graph profile, viewable in KCachegrind.
+- **Helgrind** and **DRD**: thread errors; **Massif**: heap usage over time.
 
-#### Key Features
-- CPU and GPU performance analysis
-- Threading and synchronization analysis
-- Memory access pattern analysis
-- Support for hardware performance counters
-- Integration with popular IDEs
+```bash
+valgrind --leak-check=full ./overflow
+valgrind --tool=callgrind ./overflow
+callgrind_annotate callgrind.out.<pid>
+```
 
-In conclusion, having a solid understanding of debugging and profiling tools is crucial for any C++ developer. Whether you are working on a small project or a large-scale application, these tools can help you diagnose and resolve issues in your codebase efficiently. By mastering these tools, you will be able to write more stable and performant C++ programs.
+Expect Memcheck to run your program 20 to 30 times slower. Valgrind is mainly a Linux tool: upstream supports macOS only up to 13 (Ventura) on Intel, and there is no Windows port. On those platforms, use ASan instead.
+
+### gprof
+
+[gprof](https://sourceware.org/binutils/docs/gprof/) is part of GNU Binutils. You compile with `-pg`, run the program to produce `gmon.out`, and gprof turns that into a flat profile (time per function), a call graph, and with `-A` an annotated source listing.
+
+```bash
+g++ -O2 -g -pg app.cpp -o app
+./app
+gprof ./app gmon.out > profile.txt
+```
+
+It's simple but dated: it doesn't profile shared libraries, handles multithreaded programs poorly, and isn't usable with Apple's toolchain. On Linux, `perf` has largely replaced it.
+
+### perf
+
+[perf](https://perf.wiki.kernel.org/) is a sampling profiler that lives in the Linux kernel source tree (`tools/perf`) and ships as `linux-tools` or `linux-perf` on most distros. It reads hardware performance counters (cycles, cache misses, branch mispredictions) and can profile one process or the whole system without recompiling.
+
+```bash
+perf stat ./app            # counters: cycles, instructions, branch-misses...
+perf record -g ./app       # sample with call stacks
+perf report                # interactive breakdown by function
+```
+
+Build with `-fno-omit-frame-pointer` (or use `perf record --call-graph dwarf`) to get usable call stacks. Pipe the output into [FlameGraph](https://github.com/brendangregg/FlameGraph) scripts for flame graphs. perf is Linux-only.
+
+### Intel VTune Profiler
+
+[Intel VTune Profiler](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html) is a proprietary but free profiler, available standalone or as part of the oneAPI Base Toolkit. It runs on Linux and Windows and covers hotspots, threading and lock contention, memory-access patterns and GPU offload, with a GUI and Visual Studio integration. Basic hotspot analysis works on AMD CPUs too, but the hardware event-based sampling analyses need an Intel processor.
+
+## Which to pick
+
+- **Linux:** GDB, ASan/UBSan in test builds, perf for CPU time, Valgrind when you can't recompile or want Cachegrind/Massif.
+- **macOS:** LLDB, sanitizers, and Xcode's Instruments for profiling.
+- **Windows:** the Visual Studio debugger and profiler, MSVC's ASan, and VTune if you need hardware counters.
+
+Profile an optimised build (`-O2 -g`), not a debug build. Debug builds spend their time in places that disappear once the optimiser runs, so the profile points you at the wrong code.

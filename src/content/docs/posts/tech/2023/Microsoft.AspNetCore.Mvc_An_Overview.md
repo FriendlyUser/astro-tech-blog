@@ -1,55 +1,160 @@
 ---
-title: Microsoft.AspNetCore.Mvc An Overview
+title: "ASP.NET Core MVC overview: controllers, views, model binding and validation"
 pubDate: "2024-01-15T08:31:21.000Z"
-description: "This article will provide an overview of the MVC framework, discuss its main components, and explore some of its key features.g"
-tags: []
+lastUpdated: 2026-11-14
+description: "A short tour of ASP.NET Core MVC: how models, views and controllers fit together, with a working controller showing routing, model binding and validation."
+tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/4161054396.png
 ---
-# Microsoft.AspNetCore.Mvc: An Overview
 
-## Introduction
+`Microsoft.AspNetCore.Mvc` is ASP.NET Core's Model-View-Controller framework. Controllers handle HTTP requests, models carry data and validation rules, and Razor views render HTML. It's a good fit for server-rendered sites with many pages and forms; for JSON-only APIs you can use the same controllers without views, or minimal APIs.
 
-Microsoft.AspNetCore.Mvc is a framework for building web applications using a Model-View-Controller (MVC) pattern. It is part of the ASP.NET Core framework, which provides a platform for building high-performance, cross-platform web applications. This article will provide an overview of the MVC framework, discuss its main components, and explore some of its key features.
+Since ASP.NET Core 3.0, MVC is part of the shared framework. A project using `Microsoft.NET.Sdk.Web` already has it, so don't add the old `Microsoft.AspNetCore.Mvc` 2.x NuGet package.
 
-## What is Model-View-Controller (MVC)?
+## Model, view, controller
 
-The Model-View-Controller (MVC) pattern is a software design pattern that separates an application into three main components: the model, the view, and the controller. The model represents the application's data and business logic, the view is responsible for displaying the data, and the controller manages the flow of data between the model and the view. By separating these concerns, the MVC pattern promotes a modular and maintainable codebase.
+- **Model** – plain C# classes holding the data a page works with, plus validation attributes. Data access usually lives in separate services that the controller calls.
+- **View** – a `.cshtml` Razor file that mixes HTML with C# to render a model. Views live under `Views/<ControllerName>/<ActionName>.cshtml` by convention.
+- **Controller** – a class deriving from `Controller` (or `ControllerBase` for APIs without views). Its public methods are *actions*, each handling a request and returning an `IActionResult` such as `View()`, `NotFound()` or `RedirectToAction()`.
 
-### Model
+## Wiring it up
 
-The model represents the data and the business logic of the application. It is responsible for retrieving and storing data, as well as processing and validating it. In an ASP.NET Core MVC application, the model is usually implemented as a set of classes that represent the application's domain entities and data access logic.
+`Program.cs` registers MVC and a conventional route:
 
-### View
+```csharp
+var builder = WebApplication.CreateBuilder(args);
 
-The view is responsible for displaying the data provided by the model. In an ASP.NET Core MVC application, views are typically implemented using the Razor view engine, which allows developers to create dynamic HTML pages using a mixture of C# and HTML markup. Views are responsible for rendering the user interface and can use data from the model to display information to the user.
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
 
-### Controller
+var app = builder.Build();
 
-The controller is responsible for managing the flow of data between the model and the view. In an ASP.NET Core MVC application, controllers are classes that inherit from the `Controller` base class and contain methods called action methods, which handle incoming HTTP requests. These action methods use the model to perform operations and update the view accordingly.
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
 
-## Key Features of Microsoft.AspNetCore.Mvc
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-### Routing
+app.Run();
+```
 
-ASP.NET Core MVC uses a powerful and flexible routing system that allows developers to define URL patterns for their application's actions. This enables clean, SEO-friendly URLs and makes it easy to generate links to specific actions within the application.
+The route template maps `/Products/Details/5` to `ProductsController.Details(int id)` with `id = 5`. You can also put routes on the actions themselves with attributes such as `[Route("products/{id:int}")]` or `[HttpGet("...")]`.
 
-### Model Binding
+## A controller with model binding and validation
 
-Model binding is the process of converting incoming HTTP request data into .NET objects that can be used by the action methods in the controller. ASP.NET Core MVC provides a robust model binding system that automatically maps request data to action method parameters and model properties, making it easy to work with form data and query strings.
+The model declares its rules with data annotations:
 
-### Model Validation
+```csharp
+using System.ComponentModel.DataAnnotations;
 
-ASP.NET Core MVC includes built-in support for validating models, ensuring that the data provided by users is correct and complete before it is passed to the controller's action methods. This is achieved using data annotation attributes, which can be applied to model properties to specify validation rules.
+public class Product
+{
+    public int Id { get; set; }
 
-### Dependency Injection
+    [Required, StringLength(100)]
+    public string Name { get; set; } = "";
 
-ASP.NET Core includes a built-in dependency injection (DI) container that enables developers to register and resolve dependencies within their applications. This makes it easy to create loosely coupled, testable, and maintainable code. The MVC framework integrates seamlessly with the DI container, allowing developers to inject services directly into their controllers and other components.
+    [Range(0.01, 10_000)]
+    public decimal Price { get; set; }
+}
 
-### View Components
+public interface IProductRepository
+{
+    Product? Find(int id);
+    void Add(Product product);
+}
 
-View components are a powerful feature in ASP.NET Core MVC that allows developers to create reusable chunks of UI and logic. They can be easily embedded into views and are a great way to encapsulate complex UI logic or create reusable widgets.
+public class InMemoryProductRepository : IProductRepository
+{
+    private readonly List<Product> _products = new();
 
-## Conclusion
+    public Product? Find(int id) => _products.FirstOrDefault(p => p.Id == id);
 
-Microsoft.AspNetCore.Mvc is a powerful and flexible framework for building web applications using the Model-View-Controller pattern. It offers a range of features that make it easy to create maintainable, testable, and high-performance web applications. By leveraging the power of ASP.NET Core and the MVC pattern, developers can create robust and scalable web applications that are easy to maintain and extend.
+    public void Add(Product product)
+    {
+        product.Id = _products.Count + 1;
+        _products.Add(product);
+    }
+}
+```
+
+The controller gets the repository through constructor injection, the DI container built into ASP.NET Core:
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+
+public class ProductsController : Controller
+{
+    private readonly IProductRepository _products;
+
+    public ProductsController(IProductRepository products)
+    {
+        _products = products;
+    }
+
+    // GET /Products/Details/5
+    public IActionResult Details(int id)
+    {
+        var product = _products.Find(id);
+        if (product is null)
+        {
+            return NotFound();
+        }
+        return View(product);
+    }
+
+    // GET /Products/Create
+    public IActionResult Create() => View();
+
+    // POST /Products/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(Product product)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(product); // redisplay the form with error messages
+        }
+
+        _products.Add(product);
+        return RedirectToAction(nameof(Details), new { id = product.Id });
+    }
+}
+```
+
+**Model binding** fills the `id` and `product` parameters from route values, the query string and posted form fields by matching names. **Validation** runs during binding: the results land in `ModelState`, and the action decides what to do. In MVC controllers you must check `ModelState.IsValid` yourself. Controllers marked `[ApiController]` return a 400 response automatically instead.
+
+The view would use tag helpers such as `<input asp-for="Name" />` and `<span asp-validation-for="Name"></span>` to render fields and their error messages.
+
+(This sample was compiled against .NET 9 with the SDK's default implicit usings; add the matching `Views/Products/*.cshtml` files to run it.)
+
+## View components
+
+A view component is a reusable piece of UI with its own logic, like a cart summary or a sidebar, that you can drop into any view. Unlike a partial view, it can take parameters and call services.
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+
+public class CartSummaryViewComponent : ViewComponent
+{
+    public IViewComponentResult Invoke(int itemCount) => View(itemCount);
+}
+```
+
+Render it from a view with `@await Component.InvokeAsync("CartSummary", new { itemCount = 3 })`. Its view goes in `Views/Shared/Components/CartSummary/Default.cshtml`.
+
+## When to use something else
+
+- **Razor Pages** (`AddRazorPages()`) put the handler and the markup for one page side by side, which is often simpler for page-focused apps. It's built on the same MVC infrastructure.
+- **Minimal APIs** (`app.MapGet(...)`) are lighter than controllers for small JSON APIs.
+- **Blazor** is the option if you want interactive components written in C# instead of JavaScript.
+
+## Further reading
+
+- [Overview of ASP.NET Core MVC](https://learn.microsoft.com/aspnet/core/mvc/overview)
+- [Model binding](https://learn.microsoft.com/aspnet/core/mvc/models/model-binding)
+- [Model validation](https://learn.microsoft.com/aspnet/core/mvc/models/validation)
+- [View components](https://learn.microsoft.com/aspnet/core/mvc/views/view-components)

@@ -1,80 +1,99 @@
 ---
-title: Simple collapsible component
-description: Describes a simple collapsible component for react
+title: A simple collapsible component in React and TypeScript
+description: A small React function component that shows or hides its content when you click the header, with a CSS-only caret and no icon library.
 alt: Screenshot utilty for mobile apps
 layout: '@/templates/BasePost.astro'
 pubDate: Wed, 21 May 2023
-tags: ["bit", "javascript"]
+lastUpdated: 2026-11-14
+tags: ["bit", "javascript", "react", "typescript"]
 imgSrc: '/imgs/2023/man_on_horse.png'
 imgAlt: 'Image post 6'
 ---
 
-In this example, the Collapsible component is a class-based component that uses the React.Component base class. It maintains a state variable called collapsed that determines whether the collapsible content is currently visible or hidden. The component also has a toggleCollapsed method that updates the collapsed state variable when the header is clicked.
+This is a collapsible section for React: a header that is always visible, and content underneath that toggles when you click the header. It's a function component with one piece of state and no dependencies beyond React; the caret is drawn with CSS borders instead of an icon library.
 
-The component uses the FontAwesomeIcon component from the @fortawesome/react-fontawesome package to display the caret icon. The icon is determined by the value of the collapsed state variable, with a downward-facing caret icon being displayed when the content is collapsed and an upward-facing caret icon being displayed when the content is expanded.
+```tsx
+import { useState, type ReactNode } from 'react';
 
-When the component is rendered, the header and caret icon are always visible, but the content element is only visible if the collapsed state variable is false. This allows the user to click the header to toggle the visibility of the collapsible content.
-
-```js
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
-
-// header children react prop types
 export interface CollapsibleProps {
-  header?: JSX.Element;
-  children: any;
+  header?: ReactNode;
+  children: ReactNode;
+  defaultCollapsed?: boolean;
 }
 
-export function Collapsible(props: CollapsibleProps) {
-  const [collapsed, setCollapsed] = useState<boolean>(true);
-
-  function toggleCollapsed() {
-    setCollapsed(prevState => !prevState);
-  }
-
-  const { header, children } = props;
+export function Collapsible({ header, children, defaultCollapsed = true }: CollapsibleProps) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
   return (
-    <div style={{
-      width: "100%",
-    }}>
-      <div onClick={toggleCollapsed} style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "row",
-      }}>
-        {header}
-        <div style={{
-            display: "inlineBlock",
-            width: "0",
-            height: "0",
-            marginLeft: "5px",
-            verticalAlign: "middle",
-            borderTop: "solid 5px black",
-            borderRight: "solid 5px transparent",
-            borderLeft: "solid 5px transparent",
-            transform: `rotate(${collapsed ? '0' : '180'}deg)`,
-            transition: 'transform 0.25s ease-in-out',
+    <div style={{ width: '100%' }}>
+      <button
+        type="button"
+        onClick={() => setCollapsed(prev => !prev)}
+        aria-expanded={!collapsed}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          padding: 0,
+          border: 'none',
+          background: 'none',
+          font: 'inherit',
+          textAlign: 'left',
+          cursor: 'pointer',
         }}
+      >
+        {header}
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'inline-block',
+            width: 0,
+            height: 0,
+            marginLeft: '5px',
+            borderTop: 'solid 5px currentColor',
+            borderRight: 'solid 5px transparent',
+            borderLeft: 'solid 5px transparent',
+            transform: `rotate(${collapsed ? 0 : 180}deg)`,
+            transition: 'transform 0.25s ease-in-out',
+          }}
         />
-      </div>
+      </button>
       {!collapsed && <div>{children}</div>}
     </div>
   );
 }
 ```
 
-This is a functional component in React that allows you to render some content in a collapsible manner. The component takes two props:
+Usage:
 
-header: This is a JSX element that will be displayed as the header of the collapsible component. It is optional, so you don't have to provide it if you don't want to.
+```tsx
+<Collapsible header={<strong>Shipping details</strong>}>
+  <p>Orders ship within two business days.</p>
+</Collapsible>
+```
 
-children: This prop represents the content that will be displayed when the collapsible component is expanded. It can be any valid React element, such as a string, a JSX element, or an array of elements.
+## How it works
 
-The component uses the useState hook to manage its state. The collapsed state variable is initialized to true, which means the component will be collapsed by default. The toggleCollapsed function is used to toggle the value of collapsed between true and false when the header is clicked.
+- **Props.** `header` is whatever you want in the clickable row and is optional. Because it sits inside a `<button>`, keep it to inline content (text, `<strong>`, an icon), not headings or block elements. `children` is the content that appears when expanded. Both are typed as `ReactNode`, so strings, elements and arrays all work. `defaultCollapsed` (default `true`) sets the initial state.
+- **State.** `useState` holds `collapsed`. The click handler uses the functional updater (`prev => !prev`) so rapid clicks always toggle from the latest value.
+- **Caret.** A zero-size element with a coloured top border and transparent left and right borders renders as a downward-pointing triangle. Rotating it 180° when expanded makes it point up, and the `transition` animates the turn. `currentColor` makes it follow the text colour.
+- **Rendering.** When collapsed, the content isn't rendered at all (`{!collapsed && ...}`), so any state inside `children` resets each time it closes. If you need to keep that state, render it always and hide it with `hidden={collapsed}` instead.
 
-The component renders the header and an SVG arrow that points down when the component is collapsed, and points up when it is expanded. When the component is expanded, it also renders the children prop.
+## Changes from the original version
+
+The first version of this component used a `<div onClick>` as the header, typed `children` as `any`, and set `display: "inlineBlock"`, which isn't a valid CSS value (it's `inline-block`), so the browser ignored it. A `<button>` with `aria-expanded` makes the header reachable with the keyboard and tells screen readers whether the section is open; the inline style resets keep it looking like plain text.
+
+## When you don't need a component
+
+If you don't need to control the open state from React, the native `<details>` and `<summary>` elements do the same thing with built-in keyboard and screen reader support:
+
+```html
+<details>
+  <summary>Shipping details</summary>
+  <p>Orders ship within two business days.</p>
+</details>
+```
 
 ## References
 

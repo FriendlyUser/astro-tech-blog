@@ -1,98 +1,87 @@
 ---
-title: Getting started with react-spring
-description: React-spring is a popular animation library for React applications.
+title: "Getting started with react-spring: useSpring and useTrail examples"
+description: "Three small react-spring examples (a fade-in, a slide and a staggered trail) using the current @react-spring/web package and the .to() API."
 pubDate: Saturday, 7 November 2024 13:00:00 GMT
-tags: ["react", "reactspring"]
+lastUpdated: 2026-11-14
+tags: ["react", "reactspring", "js"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/powell_ANGRY.png'
 ---
-React-spring is a popular animation library for React applications. It allows developers to create smooth and natural animations using physics-based models. The library provides a wide range of animation options and can be used to animate various elements such as text, images, and even entire components.
+react-spring animates React components with spring physics instead of fixed durations and easing curves. You describe the values you want (`opacity: 1`, `x: 100`) and the library moves towards them using a spring defined by mass, tension and friction. Values are updated on animated components directly, outside React's render cycle, so a running animation doesn't re-render your component every frame.
 
-One of the key features of react-spring is its ability to create complex animations with ease. The library provides a simple API that allows developers to define animations using intuitive spring-based models. This makes it easy to create realistic animations that mimic real-world physics.
+The examples below use `@react-spring/web` 10.1.2, which supports React 16.8 through 19:
 
-Another advantage of react-spring is its performance. The library uses efficient algorithms and techniques to ensure that animations run smoothly even on low-end devices. This makes it an ideal choice for developers looking to create high-performance applications.
+```bash
+npm install @react-spring/web
+```
 
-In conclusion, react-spring is a powerful animation library that offers a wide range of features and benefits. Its intuitive API and efficient performance make it an excellent choice for developers looking to add smooth and natural animations to their React applications.
+Older tutorials (including the first version of this post) import from `react-spring` and call `.interpolate()`. That method was removed in v9; use `.to()` instead.
 
+## Fade in with useSpring
 
-```js
-import {useSpring, animated} from 'react-spring'
+```jsx
+import { useSpring, animated } from '@react-spring/web'
 
-function FadeIn() {
-  const props = useSpring({opacity: 1, from: {opacity: 0}})
-  return <animated.div style={props}>I will fade in</animated.div>
+export function FadeIn() {
+  const styles = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } })
+  return <animated.div style={styles}>I will fade in</animated.div>
 }
 ```
 
+`useSpring` returns animated values, and `animated.div` is a `div` that knows how to apply them. Any HTML or SVG element is available as `animated.<tag>`.
 
-In this example, we use the useSpring hook to define an animation that transitions the opacity of an element from 0 to 1. We then apply this animation to a div element using the animated.div component provided by react-spring.
+## Slide to the right
 
-This is just one simple example of what you can do with react-spring. The library provides many other hooks and components that allow you to create complex animations with ease.
+```jsx
+import { useSpring, animated } from '@react-spring/web'
 
-```js
-import {useSpring, animated} from 'react-spring'
+export function SlideRight() {
+  const { x } = useSpring({ from: { x: 0 }, to: { x: 100 } })
 
-function SpringAnimation() {
-  const props = useSpring({x: 100, from: {x: 0}})
   return (
-    <animated.div
-      style={{
-        transform: props.x.interpolate(x => `translate3d(${x}px,0,0)`)
-      }}
-    >
+    <animated.div style={{ transform: x.to((v) => `translate3d(${v}px, 0, 0)`) }}>
       I will move to the right
     </animated.div>
   )
 }
 ```
 
-In this example, we use the useSpring hook to define an animation that transitions the x property of an element from 0 to 100. We then apply this animation to a div element using the animated.div component and the transform CSS property.
+`x.to()` maps the spring value to whatever string the style needs. For plain translations `@react-spring/web` also accepts the `x`, `y` and `z` shorthands directly, so `style={{ x }}` does the same thing as the `transform` above.
 
-This is another simple example of what you can do with react-spring. The library provides many other hooks and components that allow you to create complex animations with ease.
+## Staggered list with useTrail
 
+`useTrail` creates one spring per item, and each spring follows the one before it, which gives a staggered effect.
 
-```js
-import {useTrail, animated} from 'react-spring'
+```jsx
+import { useState } from 'react'
+import { useTrail, animated } from '@react-spring/web'
 
 const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
-const config = {mass: 5, tension: 2000, friction: 200}
 
-function TrailAnimation() {
-  const [toggle, set] = useState(true)
+export function TrailAnimation() {
+  const [open, setOpen] = useState(true)
   const trail = useTrail(items.length, {
-    config,
-    opacity: toggle ? 1 : 0,
-    x: toggle ? 0 : 20,
-    height: toggle ? 80 : 0,
-    from: {opacity: 0, x: 20, height: 0},
+    config: { mass: 5, tension: 2000, friction: 200 },
+    opacity: open ? 1 : 0,
+    y: open ? 0 : 20,
+    height: open ? 80 : 0,
+    from: { opacity: 0, y: 20, height: 0 },
   })
 
-return (
+  return (
     <div>
-      <button onClick={() => set(state => !state)}>Toggle</button>
-      <div>
-        {trail.map(({x, height, ...rest}, index) => (
-          <animated.div
-            key={items[index]}
-            className="trails-text"
-            style={{...rest}}
-          >
-            <animated.div style={{transform: x.interpolate(x => `translate3d(0,${x}px,0)`)}}>
-              {items[index]}
-            </animated.div>
-          </animated.div>
-        ))}
-      </div>
+      <button onClick={() => setOpen((value) => !value)}>Toggle</button>
+      {trail.map(({ height, ...style }, index) => (
+        <animated.div key={items[index]} className="trails-text" style={style}>
+          <animated.div style={{ height }}>{items[index]}</animated.div>
+        </animated.div>
+      ))}
     </div>
-   )
+  )
 }
 ```
 
-In this example we use the useTrail hook to create a trail animation that animates multiple elements at once. We define an array of items and pass it to the useTrail hook along with a configuration object that specifies the mass, tension and friction of the animation.
-
-We then use the trail array returned by the useTrail hook to render each item in our list. We apply the animation to each item using the animated.div component and various CSS properties such as opacity, height, and transform.
-
-This is a more complex example that shows some of the advanced features of react-spring. The library provides many other hooks and components that allow you to create even more complex animations with ease.
+The `config` object sets the spring physics: higher `tension` makes it faster, higher `friction` damps the bounce, and `mass` adds inertia. The outer `div` gets the opacity and vertical offset, and the inner one animates its height so the items collapse when toggled.
 
 <iframe src="https://codesandbox.io/embed/youthful-chatelet-9tyow5?fontsize=14&hidenavigation=1&theme=dark"
      style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
@@ -101,6 +90,8 @@ This is a more complex example that shows some of the advanced features of react
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 
-## References
+## Further reading
 
-- https://codesandbox.io/s/youthful-chatelet-9tyow5?file=/src/App.js
+- [react-spring getting started](https://react-spring.dev/docs/getting-started)
+- [useTrail reference](https://react-spring.dev/hooks/use-trail)
+- [CodeSandbox for this post](https://codesandbox.io/s/youthful-chatelet-9tyow5?file=/src/App.js)

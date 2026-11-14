@@ -1,34 +1,36 @@
 ---
-tags: ["dart", "flutter", "huggingspace"]
-title: How I deployed a dart alfred server to hugging space
-description: This blog post covers how to deploy a dart space to hugging space using docker spaces.
+tags: ["dart", "flutter", "huggingspace", "docker"]
+title: How I deployed a Dart Alfred server to a Hugging Face Docker Space
+description: Compiling a Dart Alfred HTTP server to a native executable and running it on a Hugging Face Docker Space with a multi-stage Dockerfile.
 pubDate: Mon, 13 November 2023
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/656417929.png'
 layout: '@/templates/BasePost.astro'
 ---
-Docker is useful for deployments because it provides a consistent and reproducible environment for applications to run in, regardless of the host operating system. This makes it easier to deploy, test, and run applications in a variety of environments, from local development machines to production servers. Docker containers encapsulate an application and its dependencies, allowing for easy and reliable deployment, as well as efficient resource utilization. Additionally, Docker images can be stored in a central repository, making it easier to share and distribute applications.
 
+Hugging Face Spaces can run any Docker image, not only Gradio and Streamlit apps, which makes them
+a free place to host a small HTTP server. I used one to host a Dart server built with
+[Alfred](https://pub.dev/packages/alfred), a small Express-style web framework.
 
-Dart is a programming language developed by Google and it allows compiling Dart code into a single binary executable. This is achieved using the Dart SDK and the "dart2native" command-line tool, which compiles Dart code into machine code for a specific platform. The resulting binary is standalone and does not require a Dart runtime or interpreter to be installed on the target system. This makes it easy to distribute the application and eliminates the need for users to install any additional dependencies. Additionally, compiling to a single binary can result in faster startup times and improved performance compared to running the application in a Dart runtime.
+Dart suits this well because `dart compile exe` produces a self-contained native executable. The
+Dart runtime is bundled into the binary, so the final image doesn't need the Dart SDK, and an
+ahead-of-time compiled binary starts much faster than running the source on the VM.
 
+## The server
 
-```dart 
- import 'package:dart_off_server/core.dart' as cli;
-import 'package:alfred/alfred.dart';
+```dart
 import 'dart:io';
 
-void main(List<String> arguments) async  {
-  // get port from arguments
-  var port = 7860;
-  if (arguments.isEmpty) {
-    print('Please provide a port number');
-  } else {
-    port = int.tryParse(arguments.first) ?? 6565;
-  }
-  final app = Alfred();
+import 'package:alfred/alfred.dart';
 
-  // print line
-  // print('Starting up server: on port $port');
+void main(List<String> arguments) async {
+  // Hugging Face routes traffic to port 7860 unless the Space sets app_port.
+  var port = 7860;
+  if (arguments.isNotEmpty) {
+    port = int.tryParse(arguments.first) ?? port;
+  }
+
+  final app = Alfred();
 
   app.get('/', (req, res) => {'json_response': true});
   app.get('/text', (req, res) => 'Text response');
@@ -39,91 +41,92 @@ void main(List<String> arguments) async  {
     res.json({'type': 'traditional_json_response'});
   });
 
-  app.get('/file', (req, res) => File('test/files/image.jpg'));
-
   app.get('/html', (req, res) {
     res.headers.contentType = ContentType.html;
     return '<html><body><h1>Test HTML</h1></body></html>';
   });
-   app.post('/post-route', (req, res) async {
-    final body = await req.body; //JSON body
-    body != null; //true
+
+  app.post('/post-route', (req, res) async {
+    final body = await req.body; // parsed JSON body
+    return {'received': body};
   });
 
-  await app.listen(port); //Listening on port 6565
+  await app.listen(port);
 }
- 
- ```
-
-This code is a Dart program that sets up an HTTP server using the "alfred" package. The server listens on a specified port and provides several routes for handling HTTP requests. The routes include handling GET requests for JSON and HTML responses, serving a file, and handling a POST request. The port number is specified as the first argument when running the program, and if no argument is provided, the default port number is 6565. If an invalid argument is provided, the port number will be set to 6565. The code uses the Dart "async" keyword to indicate that the "listen" function is asynchronous and can run concurrently with other parts of the code.
-
-
-Docker multi-stage builds are a feature in Docker that allow optimizing the size of the final Docker image by only including the necessary components and dependencies for production. Multi-stage builds involve using multiple "FROM" statements in the Dockerfile to create multiple intermediate images, each of which can be used as a temporary build environment.
-
-For example, you can use one stage to build your application and its dependencies, and then use another stage to copy only the necessary files (e.g. the compiled binary) into a smaller, minimal base image, such as a runtime-only image. This reduces the size of the final image and minimizes the attack surface by eliminating unnecessary components.
-
-Here's an example of a multi-stage build in a Dockerfile:
-
-
-```dockerfile
-bash`# Build stage
-FROM dart AS build
-WORKDIR /app
-COPY . .
-RUN pub get && dart2native main.dart -o myapp
-
-# Production stage
-FROM alpine
-WORKDIR /app
-COPY --from=build /app/myapp /app
-CMD ["./myapp"]
 ```
 
-In this example, the first stage uses the `dart` image as the build environment and compiles the Dart code into a standalone binary. The second stage uses the `alpine` image as a minimal base image and copies only the compiled binary from the build stage into the final image. The final image only includes the necessary components to run the application, resulting in a smaller and more secure image.
+Alfred turns whatever a handler returns into the response: a `String` becomes text, a `Map` or
+`List` becomes JSON. A handler that returns `null` without closing the response falls through to
+the next route, so the `/post-route` handler has to return something or the client gets a 404.
 
+The port defaults to 7860, the port Hugging Face sends traffic to, and can be overridden with the
+first command-line argument. `app.listen` binds to `0.0.0.0` by default, which is what you want
+inside a container.
 
-```dockerfile 
- FROM dart:2.19.1 as builder
+The full server in the Space also has routes that search Open Food Facts and scrape top Steam
+sellers; I've left those out here.
+
+## The Dockerfile
+
+A multi-stage build compiles the server in the full Dart SDK image, then copies only the
+executable into a small runtime image:
+
+```dockerfile
+FROM dart:2.19.1 AS builder
 WORKDIR /app
 COPY pubspec.yaml pubspec.lock ./
-RUN dart pub get 
+RUN dart pub get
 COPY . .
-RUN dart compile exe bin/cli.dart -o /app/dart_off_server
+RUN dart compile exe bin/dart_off_server.dart -o /app/dart_off_server
 
-# copy server file to basic image to run the app
+# Copy the compiled server into a small image to run it
 FROM ubuntu:latest
 WORKDIR /app
-# RUN apk add --no-cache bash
 COPY --from=builder /app/dart_off_server /app/dart_off_server
-RUN ls -la
-RUN pwd
 CMD ["/app/dart_off_server"]
- 
- ```
+```
 
-This Dockerfile creates two Docker images: a build environment image and a final image.
+Copying `pubspec.yaml` and `pubspec.lock` before the rest of the source means Docker can reuse the
+cached `dart pub get` layer when only the code changes.
 
-The first stage uses the `dart:2.19.1` image as the base for the build environment and sets the working directory to `/app`. It then copies the `pubspec.yaml` and `pubspec.lock` files and runs `dart pub get` to install the dependencies. It then copies the rest of the application files and compiles the Dart code into an executable binary using the `dart compile exe` command. The resulting binary is saved as `dart_off_server` in the `/app` directory.
+The project was written against Dart 2.19 (its `pubspec.yaml` has `sdk: '>=2.17.5 <3.0.0'`), so the
+image is pinned to `dart:2.19.1`. For a new project, use `dart:stable` and a Dart 3 SDK constraint.
 
-The second stage uses the `ubuntu:latest` image as the base for the final image and sets the working directory to `/app`. It then copies the `dart_off_server` binary from the build environment using the `COPY --from=builder` command. The final image only includes the necessary components to run the application, resulting in a smaller and more secure image.
+The runtime image only contains the binary. Anything the server reads from disk at runtime, such as
+static files, has to be copied in as well.
 
-The final step in the Dockerfile sets the command to run the application by executing the `dart_off_server` binary.
+## Why Ubuntu and not scratch
 
+Ideally I would have used `scratch` or something equally small, but I couldn't get that to work on
+Hugging Face. Ubuntu is about 30 MB compressed, so it's not too bad.
 
-Ideally I would be able to use scratch of equivalent, but that didnt seem to work for hugging space, possibly for security reasons or image verification. Luckily ubuntu is about 30 MB so it is not too bad.
-Dart is a modern, open-source, general-purpose programming language used for both front-end and back-end development. The advantages of using Dart for back-end development include:
+A likely reason: `dart compile exe` output is dynamically linked against the system C library, so
+it can't run in an empty image on its own. The official
+[`dart` image](https://hub.docker.com/_/dart) ships the files those binaries need under `/runtime/`,
+and its README shows a `FROM scratch` stage that starts with `COPY --from=build /runtime/ /` before
+copying the executable. That's worth trying if image size matters.
 
-1. Strong Typing: Dart has a strong type system, making it easier to write reliable code and catch bugs early in the development process.
-2. Speed: Dart compiles to machine code, making it faster than some other interpreted languages. This can result in improved performance for back-end applications.
-3. Scalability: Dart is designed for scalability, with features like isolate-based concurrency, making it well-suited for large-scale server-side applications.
-4. Interoperability: Dart can interface with other technologies and platforms, such as C++ and JavaScript, making it possible to integrate with existing systems and technologies.
-5. Ecosystem: Dart has a growing ecosystem of packages and tools, making it easier to find solutions to common back-end development problems.
-6. Easy to Learn: Dart is a relatively new language and has a simple, straightforward syntax that makes it easy for developers to learn and start using it quickly.
-7. Improved Developer Productivity: With its strong typing and other features, Dart can help developers write code faster and with fewer bugs, resulting in improved productivity and time-to-market for back-end applications.
+## Space configuration
+
+A Docker Space needs `sdk: docker` in the YAML block at the top of its `README.md`. To use a port
+other than 7860, set `app_port`:
+
+```yaml
+---
+title: Dart Off Server
+sdk: docker
+app_port: 7860
+---
+```
+
+Spaces run the container as user ID 1000. This server doesn't write to disk, so that didn't matter
+here, but a server that does will need a user and writable directory set up in the Dockerfile (see
+the [Docker Spaces docs](https://huggingface.co/docs/hub/spaces-sdks-docker#permissions)).
 
 ## References
 
-To view the code base
+As of this update the Space reports a build error, so the live URL may not respond. The code is
+still in the repository.
 
 * https://friendlyuser-dart-off-server.hf.space/
 * https://huggingface.co/spaces/FriendlyUser/dart_off_server/tree/main

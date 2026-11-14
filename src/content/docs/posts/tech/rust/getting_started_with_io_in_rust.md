@@ -1,32 +1,35 @@
 ---
-title: "Rust's IO: Build a program that reads in a CSV file and performs operations such as sorting and filtering on the data."
-description: In this article, we'll explore how to build a program in Rust that reads in a CSV file, performs operations such as sorting and filtering on the data, and writes the results to a new file..
+title: "Reading, filtering, sorting and writing CSV files in Rust"
+description: "Use the csv and serde crates to read a CSV file into Rust structs, filter and sort the rows, and write the result to a new CSV file."
 pubDate: Saturday, 26 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/2886495853.png'
 ---
 
+This post builds a small Rust program that reads a CSV file, keeps only the rows above an age threshold, sorts them by age, and writes them to a new CSV file. It uses the [`csv`](https://docs.rs/csv) crate for parsing and writing, and [`serde`](https://serde.rs/) to map each row onto a struct so you work with typed fields instead of strings.
 
-# Rust's I/O: Reading and Manipulating CSV Data
+## Dependencies
 
-Rust is a systems programming language that focuses on safety, performance, and concurrency. It provides excellent support for working with files and handling I/O operations. In this article, we'll explore how to build a program in Rust that reads in a CSV file, performs operations such as sorting and filtering on the data, and writes the results to a new file.
+```sh
+cargo new csv_example
+cd csv_example
+```
 
-## Introducing CSV in Rust
-
-To work with CSV files in Rust, we'll use the `csv` crate, which provides a fast and flexible interface for reading and writing CSV data. In addition, we'll use the `serde` crate for deserializing the CSV data into Rust structs. To include these crates in your project, add them to your `Cargo.toml`:
+Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-csv = "1.1"
-serde = { version = "1.0", features = ["derive"] }
+csv = "1.4"
+serde = { version = "1", features = ["derive"] }
 ```
 
-## The CSV Data
+## Input data
 
-For this example, let's assume that we have a CSV file named `data.csv` with the following content:
+Save this as `data.csv` in the project root (next to `Cargo.toml`, since `cargo run` uses that as the working directory):
 
-```
+```csv
 id,name,age
 1,Alice,30
 2,Bob,25
@@ -35,127 +38,95 @@ id,name,age
 5,Eve,35
 ```
 
-We'll build a Rust program that reads this CSV file, filters the records based on a given age threshold, sorts the results by the age column, and writes the output to a new CSV file.
+## The program
 
-## Defining the Data Structure
-
-First, we need to define a struct to represent the data in our CSV file:
+Here is the whole `src/main.rs`. The sections below walk through each function.
 
 ```rust
-use serde::Deserialize;
+use std::error::Error;
+use std::path::Path;
 
-#[derive(Debug, Deserialize)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
 struct Person {
     id: u32,
     name: String,
     age: u32,
 }
 
-impl Person {
-    fn from_record(record: csv::StringRecord) -> Result<Self, csv::Error> {
-        let person: Person = record.deserialize(None)?;
-        Ok(person)
-    }
-}
-```
-
-In this code, we define a `Person` struct with fields for `id`, `name`, and `age`. We derive the `Deserialize` trait from the `serde` crate, which allows us to deserialize CSV records directly into `Person` instances.
-
-## Reading the CSV File
-
-Next, let's create a function to read the CSV file and return a `Vec<Person>`:
-
-```rust
-use std::error::Error;
-use std::fs::File;
-use std::path::Path;
-
 fn read_csv<P: AsRef<Path>>(path: P) -> Result<Vec<Person>, Box<dyn Error>> {
-    let file = File::open(path)?;
-    let mut reader = csv::Reader::from_reader(file);
+    let mut reader = csv::Reader::from_path(path)?;
+    let mut persons = Vec::new();
 
-    let mut persons: Vec<Person> = Vec::new();
-
-    for result in reader.records() {
-        let record = result?;
-        let person = Person::from_record(record)?;
+    for result in reader.deserialize() {
+        let person: Person = result?;
         persons.push(person);
     }
 
     Ok(persons)
 }
-```
 
-This function opens the given file, creates a `csv::Reader` to read the contents, and iterates over the records to deserialize them into `Person` instances. The function returns a `Result<Vec<Person>, Box<dyn Error>>`, allowing the caller to handle any errors that may occur.
-
-## Sorting and Filtering the Data
-
-Now that we can read the CSV data into a `Vec<Person>`, we can implement the sorting and filtering operations. Let's define a function that takes a slice of `Person`, an age threshold, and returns a new, sorted `Vec<Person>` that only includes people older than the given age:
-
-```rust
-fn filter_and_sort(persons: &[Person], age_threshold: u32) -> Vec<Person> {
-    let mut filtered_persons: Vec<Person> = persons
-        .iter()
+fn filter_and_sort(persons: Vec<Person>, age_threshold: u32) -> Vec<Person> {
+    let mut filtered: Vec<Person> = persons
+        .into_iter()
         .filter(|person| person.age > age_threshold)
-        .cloned()
         .collect();
 
-    filtered_persons.sort_by_key(|person| person.age);
-
-    filtered_persons
+    filtered.sort_by_key(|person| person.age);
+    filtered
 }
-```
-
-This function uses Rust's iterator methods to filter and sort the data. The `filter` method removes any `Person` with an age less than or equal to the age threshold, and the `sort_by_key` method sorts the remaining records by age.
-
-## Writing the Output CSV
-
-Finally, let's create a function to write the filtered and sorted data to a new CSV file:
-
-```rust
-use std::io::Write;
 
 fn write_csv<P: AsRef<Path>>(persons: &[Person], path: P) -> Result<(), Box<dyn Error>> {
-    let file = File::create(path)?;
-    let mut writer = csv::Writer::from_writer(file);
+    let mut writer = csv::Writer::from_path(path)?;
 
     for person in persons {
         writer.serialize(person)?;
     }
 
     writer.flush()?;
-
     Ok(())
-}
-```
-
-This function creates a new CSV file, initializes a `csv::Writer`, and serializes the `Person` instances to the writer. It then flushes the writer to ensure that all data is written to disk.
-
-## Bringing It All Together
-
-With all the necessary functions defined, we can now bring everything together in a main function to read in the CSV data, filter and sort it, and write the output to a new file:
-```rust
-use std::error::Error;
-use std::fs::File;
-use std::path::Path;
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-struct Person {
-    name: String,
-    age: u32,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let filename = "input.csv";
-    let age_threshold = 30;
+    let age_threshold = 25;
 
-    let persons = read_csv(filename)?;
-    let filtered_persons = filter_and_sort(&persons, age_threshold);
-    write_csv(&filtered_persons, "output.csv")?;
+    let persons = read_csv("data.csv")?;
+    let filtered = filter_and_sort(persons, age_threshold);
+    write_csv(&filtered, "output.csv")?;
 
+    println!("Wrote {} rows to output.csv", filtered.len());
     Ok(())
 }
 ```
-This main function reads in the input CSV file, filters and sorts the data using the filter_and_sort function, and writes the output to a new CSV file using the write_csv function. It uses Rust's error handling mechanisms to propagate any errors that occur during the execution of the program.
 
-In summary, we have implemented a simple program in Rust to read in CSV data, filter and sort it based on a given age threshold, and write the output to a new CSV file. By using Rust's strong type system and functional programming features, we can write concise and efficient code that is easy to reason about and maintain.
+## Reading
+
+`csv::Reader::from_path` opens the file and treats the first row as headers by default. `reader.deserialize()` returns an iterator of `Result<Person, csv::Error>`, matching columns to struct fields by header name, so the column order in the file doesn't have to match the struct. A row with a non-numeric `age` produces an error that names the line, and `?` passes it up to `main`.
+
+If your file has no header row, build the reader with `csv::ReaderBuilder::new().has_headers(false).from_path(path)` and fields are matched by position instead.
+
+## Filtering and sorting
+
+`filter_and_sort` takes the `Vec` by value and uses `into_iter()`, so the kept rows are moved rather than cloned. `sort_by_key` is a stable sort, so people with the same age keep their original order. To sort by something that isn't `Copy`, such as the name, use `sort_by(|a, b| a.name.cmp(&b.name))` to avoid cloning each key.
+
+## Writing
+
+`csv::Writer::from_path` creates (or truncates) the output file. Because `Person` derives `Serialize`, `writer.serialize` writes a header row automatically before the first record. The writer buffers its output, so call `flush()` at the end. Dropping it also flushes, but any error during that flush is silently ignored.
+
+## Result
+
+With a threshold of 25, `cargo run` writes this `output.csv`:
+
+```csv
+id,name,age
+3,Carol,27
+1,Alice,30
+5,Eve,35
+```
+
+## Notes
+
+- This loads the whole file into memory, which is fine for files up to a few hundred MB. For larger files, filter while reading and write each matching row immediately. Sorting still needs all the kept rows in memory, though.
+- For anything more than filter-and-sort (joins, group-by, aggregations), a dataframe library like [Polars](https://docs.rs/polars) will save you code.
+- The [csv crate tutorial](https://docs.rs/csv/latest/csv/tutorial/index.html) covers delimiters, quoting, and borrowing records to avoid allocations.

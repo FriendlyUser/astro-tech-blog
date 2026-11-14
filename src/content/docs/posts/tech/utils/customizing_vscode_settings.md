@@ -1,53 +1,99 @@
 ---
-tags: []
-title: How to customize vscode settings
-description: In this post I will show you how to customize visual studio code settings.
+tags: ['vscode']
+title: Customizing VS Code with settings.json
+description: How VS Code user, workspace and language-specific settings work, where settings.json lives, and how to share settings and extension recommendations with a team.
 pubDate: Fri, 22 May 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1834084038_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
 ---
 
-**Introduction:**
+Everything you change in VS Code's Settings screen ends up as a key in a JSON file. Knowing where those files are and how they override each other lets you keep per-project settings in git, set different rules for different languages, and copy your setup between machines.
 
-Visual Studio Code (VSCode) is a lightweight and popular code editor that is widely used by developers. It's an open-source, cross-platform editor that is designed to provide an intuitive and customizable interface for coding. In this article, we'll explore the basics of using VSCode, including what it is, how to customize settings, how to install extensions, and how to use debugging.
+## Opening settings
 
-**What is VSCode?**
+- **Settings UI:** `Ctrl+,` (Windows/Linux) or `Cmd+,` (macOS). Search for a setting by name and change it. There's no save button; changes apply immediately. (When you edit `settings.json` directly, changes apply when you save the file.)
+- **settings.json:** open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **Preferences: Open User Settings (JSON)**. You can also click the "Open Settings (JSON)" icon at the top right of the Settings UI.
 
-VSCode is a free and open-source code editor that was developed by Microsoft. It's a versatile tool that can be used for various programming languages, including JavaScript, Python, Java, and many more. It offers features like syntax highlighting, auto-completion, and code formatting, among others, to help developers write code more efficiently.
+## User vs workspace settings
 
-**What is the settings.json file?**
+VS Code has two main scopes:
 
-The settings.json file is a configuration file in VSCode that stores the user's custom settings. These settings include things like the font size, the color theme, and other preferences that make the code editor personalized and easier to use.
+| Scope | File | Applies to |
+| --- | --- | --- |
+| User | `%APPDATA%\Code\User\settings.json` (Windows), `~/Library/Application Support/Code/User/settings.json` (macOS), `~/.config/Code/User/settings.json` (Linux) | Every folder you open |
+| Workspace | `.vscode/settings.json` in the project | Only that project |
 
-**How to Customize VSCode Settings?**
+Workspace settings override user settings. That makes `.vscode/settings.json` the place for project rules you want everyone to share, such as formatter and tab size, and the user file the place for personal taste like font and theme.
 
-Customizing VSCode settings is easy and straightforward. Follow these simple steps:
+A user `settings.json` might look like this:
 
-1. Open the Settings menu in VSCode by pressing `Ctrl + ,` on Windows or `Cmd + ,` on Mac.
-2. In the search bar, type in the name of the setting you want to change.
-3. Click on the edit icon next to the setting you want to change, and type in your preferred value.
-4. Save your changes by clicking the "Save" button in the top right corner of the window.
+```json
+{
+  "editor.fontSize": 14,
+  "editor.rulers": [80, 120],
+  "files.autoSave": "onFocusChange",
+  "workbench.colorTheme": "Default Dark Modern"
+}
+```
 
-**How to Install Extensions?**
+And a project's `.vscode/settings.json`:
 
-Extensions are add-ons that enhance the functionality of VSCode. There are hundreds of extensions available in the Visual Studio Marketplace, and installing them is a breeze. Here's how to do it:
+```json
+{
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}
+```
 
-1. Open the Extensions panel in VSCode by pressing `Ctrl + Shift + X` on Windows or `Cmd + Shift + X` on Mac.
-2. Browse the extensions available, or search for a specific extension.
-3. Click on the "Install" button next to the extension you want to install.
-4. Wait for the installation process to complete.
+The file is JSON with comments (JSONC), so `//` comments are allowed.
 
-**Debugging in VSCode**
+## Language-specific settings
 
-Debugging in VSCode is an essential feature that allows developers to identify and fix errors in their code. Follow these simple steps to use the debugging feature:
+Wrap settings in a `"[languageId]"` key to apply them to one language only:
 
-1. Add a breakpoint to the code by clicking on the gutter next to the line number.
-2. Click on the "Debug" icon in the left-hand panel.
-3. In the Debug panel, click on the "Start Debugging" button.
-4. The code will run until it reaches the breakpoint, and the debugging feature will allow you to inspect the variables and other components of the code.
+```json
+{
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  }
+}
+```
 
-**Conclusion:**
+The language ID is shown in the status bar's language picker. You can also run **Preferences: Configure Language Specific Settings...** from the Command Palette.
 
-Visual Studio Code is a powerful and versatile code editor that offers a range of features to make coding more efficient and enjoyable. In this article, we've covered the basics of using VSCode, including what it is, how to customize settings, how to install extensions, and how to use the debugging feature. Whether you're a seasoned developer or a beginner, VSCode is an excellent tool that can help you streamline your coding workflow.
+## Extensions
 
+Open the Extensions view with `Ctrl+Shift+X` (`Cmd+Shift+X` on macOS), search, and click **Install**. Most extensions add their own settings, which show up in the Settings UI under the extension's name.
 
+To suggest extensions to everyone working on a repository, add `.vscode/extensions.json`:
+
+```json
+{
+  "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+}
+```
+
+VS Code prompts people to install these when they open the folder. The ID is shown on each extension's Marketplace page.
+
+## Debugging
+
+Click in the gutter left of a line number to set a breakpoint, then open **Run and Debug** (`Ctrl+Shift+D` / `Cmd+Shift+D`) and press `F5`. For anything beyond running the current file, click "create a launch.json file"; the debug configurations are stored in `.vscode/launch.json`, which can be committed alongside `settings.json`.
+
+## Syncing between machines
+
+**Settings Sync** (the account icon in the bottom left, or **Settings Sync: Turn On...** in the Command Palette) syncs your user settings, keybindings, snippets and extensions through a GitHub or Microsoft account. Workspace settings aren't synced, since they live in the project.
+
+## Further reading
+
+- [User and workspace settings](https://code.visualstudio.com/docs/configure/settings)
+- [Debugging in VS Code](https://code.visualstudio.com/docs/debugtest/debugging)
+- [Settings Sync](https://code.visualstudio.com/docs/configure/settings-sync)

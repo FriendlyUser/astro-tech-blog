@@ -1,203 +1,153 @@
 ---
-title: "C and C++ Interoperability in Rust: Exploring FFI"
-description: In this article, we will explore Rust's FFI and demonstrate how to call functions from C and C++ libraries in Rust, allowing you to leverage the power of these languages while enjoying the benefits of Rust.
+title: Calling C and C++ code from Rust with FFI and the cc crate
+description: Compile C and C++ sources with the cc crate, declare them in Rust with extern "C", pass strings safely with CString, and wrap C++ classes in C functions.
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+Plenty of useful code is written in C and C++: SQLite, zlib, OpenCV, and probably some of your own company's libraries. Rust's foreign function interface (FFI) lets you call that code directly, in the same process, with no more overhead than a normal function call.
 
-# C and C++ Interoperability in Rust: Exploring FFI
+This post builds a small project that compiles C and C++ sources as part of `cargo build` and calls them from Rust.
 
-Rust has gained popularity for its safety, performance, and concurrency features. However, in the real world, there are many existing C and C++ libraries that developers need to interface with. Thankfully, Rust provides an easy way to achieve interoperability between Rust and C or C++ code using its Foreign Function Interface (FFI).
+## How Rust's FFI works
 
-In this article, we will explore Rust's FFI and demonstrate how to call functions from C and C++ libraries in Rust, allowing you to leverage the power of these languages while enjoying the benefits of Rust.
+- You declare foreign functions in an `extern "C"` block. Rust then calls them using the platform's C calling convention.
+- Rust has no C++ ABI support. There is no `extern "C++"`: C++ functions must be exposed through `extern "C"` wrappers (or generated bindings, see the end of this post).
+- Calling a foreign function is `unsafe`, because the compiler can't check that your declaration matches the real signature or that the foreign code is memory-safe.
+- Use the C type aliases from `std::ffi` (`c_int`, `c_char`, `c_double`, ...) so the Rust declaration matches the C one on every platform.
+- The foreign code has to be compiled and linked. The [`cc`](https://crates.io/crates/cc) crate does this from a build script, using whatever C/C++ compiler is installed (GCC, Clang, or MSVC).
 
-## Table of Contents
+The examples use Rust edition 2024 (Rust 1.85+), where extern blocks are written `unsafe extern "C"`. In older editions, drop the leading `unsafe`.
 
-1. [Introduction to Rust's FFI](#introduction-to-rusts-ffi)
-2. [Calling C Functions in Rust](#calling-c-functions-in-rust)
-3. [Calling C++ Functions in Rust](#calling-c-functions-in-rust)
-4. [Conclusion](#conclusion)
+## Project layout
 
-## Introduction to Rust's FFI
-
-Foreign Function Interface (FFI) is a mechanism that allows code written in one language to call functions written in another language. Rust provides a simple and safe FFI, which enables developers to integrate C and C++ libraries with Rust code seamlessly.
-
-Rust's FFI is based on the C Application Binary Interface (ABI), which means that it is compatible with C and other languages that follow the C ABI. This compatibility allows Rust to interface with a wide range of libraries and languages, including C and C++.
-
-Here is a draft technical article on C and C++ interoperability with Rust:
-
-C and C++ Interoperability with Rust 
-Rust has excellent support for interfacing with C and C++ code through its Foreign Function Interface (FFI). The FFI allows Rust code to call into C/C++ libraries and C/C++ code to call into Rust libraries. This interoperability is important for several reasons:
-
-1. Existing C/C++ libraries. There are countless high-quality C/C++ libraries already in existence. The Rust FFI allows you to leverage these libraries in your Rust programs. Some examples are SQLite, OpenGL, OpenCV, etc. 
-
-2. Transitioning C/C++ codebases. If you have an existing C/C++ codebase, you can gradually introduce Rust by rewriting parts of it while still using existing C/C++ components. The Rust FFI enables this incremental transition.
-
-3. Performance sensitive code. For the highest performance requirements, you may choose to write some components in C/C++ and interface with Rust. The ultra-low overhead of calls across the FFI boundary makes this feasible.
-
-4. Wrapping C libraries. You can wrap a low-level C library in a safer Rust interface, providing useful abstractions and safety while still leveraging the C code under the hood. Many crates on crates.io do exactly this.
-
-Using the FFI 
-Here are the main steps to use the FFI in Rust:
-
-1. Add extern blocks to specify C/C++ functions and types. You indicate which language the block targets with either extern "C" { } or extern "C++" { }. 
-
-2. Use the correct calling conventions for the target language: 
-
-- C uses the default cdecl calling convention. 
-- C++ uses the C++ calling convention, which you indicate using extern "C++" 
-
-3. Properly handle ownership and lifetimes. Rust's ownership rules do not apply across the FFI boundary. You must be explicit about how memory is handled.
-
-4. Translate basic types between Rust and C/C++. The types int, char, float, etc. have defined sizes and alignments in C/C++ but not Rust. Use type aliases to map between them.
-
-5. Manage error handling. C and C++ typically use error codes returned from functions, whereas Rust uses the type system. You need to properly handle and translate errors. 
-
-6. Name mangling. C++ performs name mangling which changes the names of functions. Use extern "C++" to tell the Rust compiler to apply C++ name mangling rules.
-
-Examples 
-Here are a few examples of using the FFI:
-
-```rust
-•Calling C code from Rust: 
-extern "C" { 
-    fn c_add(a: i32, b: i32) -> i32; 
-}
-
-fn call_c() { 
-    let sum = unsafe { c_add(5, 10) }; 
-    println!("Sum in C: {}", sum); 
-} 
-
-•Calling Rust code from C++: 
-extern "Rust" { 
-    fn rust_add(a: i32, b: i32) -> i32; 
-} 
-
-int main() { 
-    auto sum = rust_add(5, 10); 
-    std::cout << "Sum from Rust: " << sum << '\n'; 
-} 
-
-•Wrapping a C library in Rust: 
-extern "C" { 
-    fn open(filename: *const c_char) -> i32; 
-    fn read(fd: i32, buf: *mut c_char, count: isize) -> isize; 
-} 
-
-pub struct File { 
-    fd: i32, 
-} 
-
-impl File { 
-    pub fn open(filename: &str) -> io::Result<File> { 
-        // Wrap C's open() in a safe interface 
-        let fd = unsafe { open(filename.as_ptr()) }; 
-        if fd < 0 { 
-            return Err(io::Error::last_os_error()); 
-        } 
-        Ok(File { fd }) 
-    }
-
-    // Other methods... 
-}
+```text
+rust_ffi_example/
+├── Cargo.toml
+├── build.rs
+├── c_src/
+│   ├── sum.c
+│   └── vowels.c
+├── cpp_src/
+│   ├── product.h
+│   ├── product.cpp
+│   ├── product_wrapper.h
+│   └── product_wrapper.cpp
+└── src/
+    └── main.rs
 ```
 
-## Calling C Functions in Rust
+```toml
+# Cargo.toml
+[package]
+name = "rust_ffi_example"
+version = "0.1.0"
+edition = "2024"
 
-To call a C function in Rust, you need to do the following:
-
-1. Declare the C function in Rust using the `extern` keyword.
-2. Link the C library to your Rust project.
-3. Call the C function from Rust code.
-
-### Example: Calling a C Function in Rust
-
-Let's consider a simple example where we have a C function that calculates the sum of two integers:
-
-```c
-// sum.h
-int sum(int a, int b);
+[build-dependencies]
+cc = "1"
 ```
 
-```c
-// sum.c
-#include "sum.h"
+:::note
+An earlier version of this post used the `gcc` build crate. That crate is deprecated and was renamed to `cc`; the API is the same `Build` builder.
+:::
 
+## Calling a C function
+
+The C side:
+
+```c
+// c_src/sum.c
 int sum(int a, int b) {
     return a + b;
 }
 ```
 
-To call this function from Rust, we will perform the following steps:
-
-1. Create a Rust project:
-
-```
-$ cargo new rust_ffi_example
-$ cd rust_ffi_example
-```
-
-2. Declare the C function in Rust:
+The build script compiles it into a static library and tells Cargo to link it:
 
 ```rust
-// src/lib.rs
-#[no_mangle]
-pub extern "C" fn sum(a: i32, b: i32) -> i32 {
-    a + b
+// build.rs
+fn main() {
+    cc::Build::new()
+        .file("c_src/sum.c")
+        .file("c_src/vowels.c")
+        .compile("cfuncs");
+
+    println!("cargo::rerun-if-changed=c_src");
 }
 ```
 
-3. Build the C library and link it to the Rust project:
+`compile("cfuncs")` produces `libcfuncs.a` (or `cfuncs.lib` on MSVC) in Cargo's output directory and emits the linker flags for it, so you don't need `#[link]` attributes or any `.cargo/config.toml` changes. The `rerun-if-changed` line makes Cargo rerun the build script whenever a file under `c_src` changes.
 
-```
-$ gcc -c sum.c -o sum.o
-$ ar rcs libsum.a sum.o
-$ mkdir .cargo
-$ echo 'rustflags = ["-L", "path/to/libsum.a"]' > .cargo/config.toml
-```
-
-4. Call the C function from Rust code:
+The Rust side declares the function and calls it:
 
 ```rust
-// src/main.rs
-extern "C" {
-    fn sum(a: i32, b: i32) -> i32;
+use std::ffi::c_int;
+
+unsafe extern "C" {
+    fn sum(a: c_int, b: c_int) -> c_int;
 }
 
 fn main() {
-    let a = 10;
-    let b = 20;
+    let (a, b) = (10, 20);
+    // SAFETY: `sum` takes two ints by value and has no preconditions.
     let result = unsafe { sum(a, b) };
-    println!("The sum of {} and {} is {}", a, b, result);
+    println!("The sum of {a} and {b} is {result}");
 }
 ```
 
-Now, you can build and run the Rust project:
+Since Rust 1.82 you can mark a declaration that has no preconditions as `pub safe fn sum(...)` inside the `unsafe extern` block, and then call it without an `unsafe` block.
 
+## Passing strings to C
+
+C strings are NUL-terminated byte arrays. A Rust `&str` is not NUL-terminated, so passing `my_str.as_ptr()` to C is a bug: C will read past the end of the string. Convert with `CString` first.
+
+```c
+// c_src/vowels.c
+#include <stddef.h>
+
+size_t count_vowels(const char *s) {
+    size_t n = 0;
+    for (; *s; s++) {
+        switch (*s) {
+            case 'a': case 'e': case 'i': case 'o': case 'u':
+            case 'A': case 'E': case 'I': case 'O': case 'U':
+                n++;
+        }
+    }
+    return n;
+}
 ```
-$ cargo build
-$ cargo run
+
+```rust
+use std::ffi::{c_char, CString, NulError};
+
+unsafe extern "C" {
+    fn count_vowels(s: *const c_char) -> usize;
+}
+
+/// Safe wrapper: callers never touch raw pointers.
+pub fn vowels(s: &str) -> Result<usize, NulError> {
+    let c_string = CString::new(s)?; // fails if `s` contains an interior NUL byte
+    // SAFETY: `c_string` is a valid NUL-terminated string that outlives the call,
+    // and `count_vowels` only reads from it.
+    Ok(unsafe { count_vowels(c_string.as_ptr()) })
+}
 ```
 
-## Calling C++ Functions in Rust
+This is the usual shape of an FFI binding: a private `unsafe` declaration plus a public safe function that does the conversions and checks. Rust's `usize` matches C's `size_t` on the platforms Rust supports.
 
-Calling C++ functions from Rust is slightly more involved than calling C functions, mainly because of C++'s name mangling and classes. However, you can still achieve this interoperability by following these steps:
+## Calling C++ code
 
-1. Create a C-compatible wrapper for the C++ functions.
-2. Declare the C-compatible functions in Rust using the `extern` keyword.
-3. Link the C++ library to your Rust project.
-4. Call the C++ functions from Rust code using the C-compatible wrapper.
+C++ mangles function names and has classes, overloads and exceptions, none of which Rust can call directly. The fix is a thin `extern "C"` layer on the C++ side.
 
-### Example: Calling a C++ Function in Rust
-
-Let's consider a simple example where we have a C++ function that calculates the product of two integers:
+The C++ class:
 
 ```cpp
-// product.h
+// cpp_src/product.h
 class Product {
 public:
     int multiply(int a, int b);
@@ -205,7 +155,7 @@ public:
 ```
 
 ```cpp
-// product.cpp
+// cpp_src/product.cpp
 #include "product.h"
 
 int Product::multiply(int a, int b) {
@@ -213,12 +163,10 @@ int Product::multiply(int a, int b) {
 }
 ```
 
-To call this function from Rust, we will perform the following steps:
-
-1. Create a C-compatible wrapper for the C++ function:
+A C-compatible wrapper:
 
 ```cpp
-// product_wrapper.h
+// cpp_src/product_wrapper.h
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -231,7 +179,7 @@ int multiply(int a, int b);
 ```
 
 ```cpp
-// product_wrapper.cpp
+// cpp_src/product_wrapper.cpp
 #include "product_wrapper.h"
 #include "product.h"
 
@@ -241,61 +189,52 @@ int multiply(int a, int b) {
 }
 ```
 
-2. Build the C++ library and link it to our Rust project.
-
-Assuming we have built the C++ library libproduct.a using the following command:
-
-g++ -c product.cpp -o product.o
-ar rcs libproduct.a product.o
-We can link it to our Rust project by adding the following lines to our Cargo.toml file:
+Add a second `cc::Build` to `build.rs` for the C++ files. Both `product.cpp` and the wrapper must be compiled; `.cpp(true)` switches to the C++ compiler and links the C++ standard library:
 
 ```rust
-[dependencies]
-libc = "0.2"
-
-[build-dependencies]
-gcc = "0.3"
-
-[package]
-build = "build.rs"
-```
-
-The libc crate provides Rust bindings for C standard library functions, while the gcc crate is used to compile and link our C++ code.
-
-We also need to create a build.rs file in the root of our project with the following contents:
-
-```rust
-extern crate gcc;
-
+// build.rs
 fn main() {
-    gcc::Build::new()
+    cc::Build::new()
+        .file("c_src/sum.c")
+        .file("c_src/vowels.c")
+        .compile("cfuncs");
+
+    cc::Build::new()
         .cpp(true)
-        .file("src/product_wrapper.cpp")
-        .compile("libproduct.a");
+        .file("cpp_src/product.cpp")
+        .file("cpp_src/product_wrapper.cpp")
+        .compile("product");
+
+    println!("cargo::rerun-if-changed=c_src");
+    println!("cargo::rerun-if-changed=cpp_src");
 }
 ```
 
-This will instruct Rust to compile our product_wrapper.cpp file and link it to our Rust project.
-
-Finally, we can call the C++ function from Rust by using the libc crate to load the C++ library and call the multiply function:
-extern crate libc;
+From Rust, the wrapper looks like any other C function:
 
 ```rust
-#[link(name = "product")]
-extern "C" {
-    fn multiply(a: libc::c_int, b: libc::c_int) -> libc::c_int;
+use std::ffi::c_int;
+
+unsafe extern "C" {
+    fn multiply(a: c_int, b: c_int) -> c_int;
 }
 
 fn main() {
+    // SAFETY: `multiply` takes two ints by value and has no preconditions.
     let result = unsafe { multiply(3, 4) };
-    println!("Result: {}", result);
+    println!("Result: {result}"); // Result: 12
 }
 ```
 
-This code declares the multiply function with the same signature as in the C++ code and links it to our Rust project using the #[link(name = "product")] attribute. We can then call the multiply function from Rust by using the unsafe keyword, as we are making a foreign function call.
+## Gotchas
 
-When we run this code, we should see the following output:
+- **Exceptions must not cross the boundary.** If C++ code can throw, catch everything in the `extern "C"` wrapper and return an error code. Letting an exception unwind into Rust through an `extern "C"` function is undefined behaviour.
+- **Ownership is manual.** Memory allocated by C must be freed by C (expose a `free_*` function), and memory allocated by Rust must be freed by Rust. Rust's borrow checker can't see across the boundary.
+- **Declarations aren't checked.** If your `extern` signature doesn't match the C header, the code still compiles and links, then misbehaves at runtime. For anything bigger than a few functions, generate the declarations.
 
-Result: 12
+## Going further
 
-This confirms that we have successfully called a C++ function from Rust.
+- [`bindgen`](https://rust-lang.github.io/rust-bindgen/) generates Rust `extern` declarations from C headers (and some C++).
+- [`cxx`](https://cxx.rs/) generates a safe bridge between Rust and C++ on both sides, including `std::string`, `std::vector` and `std::unique_ptr`.
+- To call Rust from C or C++, export functions with `#[unsafe(no_mangle)] pub extern "C" fn ...`, build the crate as a `staticlib` or `cdylib`, and use [`cbindgen`](https://github.com/mozilla/cbindgen) to generate the header.
+- [The Rustonomicon: FFI](https://doc.rust-lang.org/nomicon/ffi.html) and the [`cc` docs](https://docs.rs/cc).

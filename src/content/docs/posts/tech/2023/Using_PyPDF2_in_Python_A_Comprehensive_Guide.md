@@ -1,111 +1,123 @@
 ---
-description: In this article, we'll explore the PyPDF2 library, its features, and
-  demonstrate its usage through practical examples
+description: Read, extract text from, merge, watermark and encrypt PDFs in Python. PyPDF2 is now pypdf, so the examples use the current pypdf API.
 imgSrc: /imgs/2023/pokedex_types.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-24T12:44:35.000Z'
-tags: []
-title: Using PyPDF2 in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["python", "pypdf2"]
+title: "PyPDF2 (now pypdf): reading, merging and watermarking PDFs in Python"
 ---
 
-# Using PyPDF2 in Python: A Comprehensive Guide
+:::caution[PyPDF2 is deprecated; use pypdf]
+PyPDF2 3.0.x was the last PyPDF2 release. Development moved back to the original package name, [`pypdf`](https://pypi.org/project/pypdf/), maintained by the same [py-pdf](https://github.com/py-pdf/pypdf) team. The old camelCase API from earlier versions of this post (`PdfFileReader`, `PdfFileMerger`, `numPages`, `getPage()`, `extractText()`) was removed in PyPDF2 3.0.0 and raises `DeprecationError`. The examples below use pypdf and were run against pypdf 7.1.0.
+:::
 
-PyPDF2 is a popular Python library for working with PDF files. It allows you to extract text, metadata, and images from PDF files or manipulate and combine them to create new PDFs. In this article, we'll explore the PyPDF2 library, its features, and demonstrate its usage through practical examples.
+PyPDF2, and now pypdf, is a pure-Python library for working with existing PDF files: reading pages and metadata, extracting text, splitting and merging documents, overlaying one page on another, rotating and cropping, and encrypting. It doesn't need any compiled dependencies for the basics, which makes it easy to drop into a script. It isn't a tool for laying out new PDFs from scratch; use something like ReportLab for that.
 
 ## Installation
 
-Before we get started, you need to have Python installed on your system. You can install Python from the [official Python website](https://www.python.org/downloads/). Once Python is installed, you can install PyPDF2 using `pip`:
+```bash
+pip install pypdf
+```
+
+AES encryption and decryption need the `cryptography` package, which you can pull in with the `crypto` extra:
 
 ```bash
-pip install pypdf2
+pip install "pypdf[crypto]"
 ```
 
-## Overview of PyPDF2
+## Reading a PDF
 
-PyPDF2 provides a comprehensive set of tools for working with PDF files, including the ability to:
-
-- Extract text and metadata from PDF files
-- Merge, split, and reorder pages
-- Add watermarks and overlays
-- Encrypt and decrypt PDF files
-- Rotate, scale, and crop pages
-
-Let's explore some of these features using practical examples.
-
-## Reading PDF Files
-
-To read a PDF file, we first need to import the PyPDF2 library and open the file using the `PdfFileReader` object:
+`PdfReader` accepts a path or a binary file object. Pages are exposed as a list-like `reader.pages`:
 
 ```python
-import PyPDF2
+from pypdf import PdfReader
 
-with open('example.pdf', 'rb') as file:
-    pdf_reader = PyPDF2.PdfFileReader(file)
-    print(f"Number of pages: {pdf_reader.numPages}")
+reader = PdfReader("example.pdf")
+print(f"Number of pages: {len(reader.pages)}")
+print(reader.metadata)
 ```
 
-Keep in mind that we need to open the file in binary mode (`'rb'`) since we're working with a binary file format.
+`reader.metadata` is a dictionary-like object with entries such as `/Title`, `/Author` and `/Producer`, or `None` if the file has no document info.
 
-## Extracting Text from PDF Files
-
-To extract text from a PDF file, we loop through each page and call the `extractText()` method on the page object:
+## Extracting text
 
 ```python
-import PyPDF2
+from pypdf import PdfReader
 
-with open('example.pdf', 'rb') as file:
-    pdf_reader = PyPDF2.PdfFileReader(file)
-    text = ""
-
-    for i in range(pdf_reader.numPages):
-        page = pdf_reader.getPage(i)
-        text += page.extractText()
-
+reader = PdfReader("example.pdf")
+text = "\n".join(page.extract_text() for page in reader.pages)
 print(text)
 ```
 
-## Merging PDF Files
+`extract_text()` reads the text operators in the page content stream. It works well on PDFs generated from Word, LaTeX or a browser, but returns little or nothing for scanned documents, because those pages are just images. For those you need OCR, for example [Tesseract](https://tesseract-ocr.github.io/). If you need finer control over layout, [pdfminer.six](https://pdfminersix.readthedocs.io/en/latest/) exposes character positions.
 
-Merging PDF files is simple, as we only need to create a `PdfFileMerger` object, append the pages from each PDF file, and then write the result to a new file:
+## Merging PDFs
 
-```python
-import PyPDF2
-
-pdf_merger = PyPDF2.PdfFileMerger()
-
-pdf_files = ['example1.pdf', 'example2.pdf']
-
-for pdf_file in pdf_files:
-    with open(pdf_file, 'rb') as file:
-        pdf_merger.append(file)
-
-with open('merged.pdf', 'wb') as output_file:
-    pdf_merger.write(output_file)
-```
-
-## Adding Watermarks
-
-To add a watermark to a PDF file, we'll first create a `PdfFileWriter` object, loop through the pages of the input PDF, and then merge each page with the watermark:
+`PdfMerger` was removed from pypdf; `PdfWriter.append()` does the same job:
 
 ```python
-import PyPDF2
+from pypdf import PdfWriter
 
-with open('example.pdf', 'rb') as file, open('watermark.pdf', 'rb') as watermark_file:
-    pdf_reader = PyPDF2.PdfFileReader(file)
-    watermark_page = PyPDF2.PdfFileReader(watermark_file).getPage(0)
-    pdf_writer = PyPDF2.PdfFileWriter()
+writer = PdfWriter()
+for path in ["example1.pdf", "example2.pdf"]:
+    writer.append(path)
 
-    for i in range(pdf_reader.numPages):
-        page = pdf_reader.getPage(i)
-        page.merge_page(watermark_page)
-        pdf_writer.addPage(page)
-
-    with open('watermarked.pdf', 'wb') as output_file:
-        pdf_writer.write(output_file)
+writer.write("merged.pdf")
 ```
 
-## Conclusion
+`append()` also takes a `pages` argument, so `writer.append("example.pdf", pages=[0, 2])` copies only the first and third pages. That is also the easiest way to split a document.
 
-In this article, we have explored some of the core features of the PyPDF2 library for working with PDF files in Python. With PyPDF2, you can easily read, manipulate, and create PDF files in your Python projects.
+## Adding a watermark
 
-Keep in mind that PyPDF2 has some limitations, such as not being able to extract text from scanned or image-based PDFs. In such cases, you may want to explore other libraries like [PDFMiner](https://pdfminersix.readthedocs.io/en/latest/) or [OCR tools](https://tesseract-ocr.github.io/) for text extraction.
+Create a one-page PDF with the watermark (text, logo, "DRAFT" stamp), then merge it onto each page:
+
+```python
+from pypdf import PdfReader, PdfWriter
+
+watermark_page = PdfReader("watermark.pdf").pages[0]
+
+writer = PdfWriter(clone_from="example.pdf")
+for page in writer.pages:
+    page.merge_page(watermark_page, over=True)
+
+writer.write("watermarked.pdf")
+```
+
+`over=True` draws the watermark on top of the page content. Use `over=False` to put it underneath, which works better for a background image but is hidden by pages with an opaque white background.
+
+## Encrypting and rotating
+
+```python
+from pypdf import PdfWriter
+
+writer = PdfWriter(clone_from="example.pdf")
+writer.pages[0].rotate(90)  # must be a multiple of 90
+writer.encrypt("secret-password", algorithm="AES-256")
+writer.write("encrypted.pdf")
+```
+
+To open it again, call `reader.decrypt("secret-password")` after creating the `PdfReader`.
+
+## Migrating old PyPDF2 code
+
+If you have scripts written against the pre-3.0 API, these are the renames you'll hit most:
+
+| Old PyPDF2 1.x name | pypdf |
+| --- | --- |
+| `PdfFileReader(file)` | `PdfReader(file)` |
+| `reader.numPages` | `len(reader.pages)` |
+| `reader.getPage(i)` | `reader.pages[i]` |
+| `page.extractText()` | `page.extract_text()` |
+| `PdfFileWriter()` | `PdfWriter()` |
+| `writer.addPage(page)` | `writer.add_page(page)` |
+| `PdfFileMerger().append(f)` | `PdfWriter().append(f)` |
+| `page.mergePage(other)` | `page.merge_page(other)` |
+
+After that, changing `import PyPDF2` to `from pypdf import ...` is usually all that's left.
+
+## Further reading
+
+- [pypdf documentation](https://pypdf.readthedocs.io/en/stable/)
+- [pypdf migration guide from 1.x](https://pypdf.readthedocs.io/en/stable/meta/migration-1-to-2.html)
+- [pypdf on GitHub](https://github.com/py-pdf/pypdf)

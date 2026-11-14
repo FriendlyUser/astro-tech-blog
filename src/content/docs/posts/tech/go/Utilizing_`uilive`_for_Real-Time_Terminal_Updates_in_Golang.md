@@ -1,92 +1,89 @@
 ---
-title: Utilizing `uilive` for Real-Time Terminal Updates in Golang
+title: Updating terminal output in place in Go with uilive
 pubDate: "2023-05-30T19:37:46.011Z"
-description: " In this article, we will explore how to use the `uilive` package to provide real-time updates in terminal applications developed in Go."
+lastUpdated: 2026-11-14
+description: "Use gosuri/uilive to redraw lines in place in a Go CLI: a hand-rolled progress bar, multi-line status output, and printing logs above it."
 tags: ["uilive", "go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Utilizing `uilive` for Real-Time Terminal Updates in Golang
 
-Golang, also known as Go, is a statically typed, compiled programming language created by Google. It has gained popularity for its simplicity, efficiency, and strong support for concurrent programming. In this article, we will explore how to use the `uilive` package to provide real-time updates in terminal applications developed in Go.
+[`uilive`](https://github.com/gosuri/uilive) lets a Go program overwrite its previous terminal output instead of appending to it, which is what you want for progress counters, status lines, and spinners. It is the rendering layer underneath [`uiprogress`](https://github.com/gosuri/uiprogress).
 
-`uilive` is a Go package that allows developers to create dynamic, real-time updates in terminal applications with ease. This makes it perfect for displaying progress bars, loading spinners, and other animated text elements.
+`uilive.Writer` is an `io.Writer` that buffers whatever you write. On a timer (every millisecond by default) it erases the lines it printed last time and prints the buffer in their place.
 
-## Installation
+## Install
 
-To get started, you need to install the `uilive` package. Run the following command:
+Inside a Go module:
 
 ```sh
-go get -u github.com/gosuri/uilive
+go get github.com/gosuri/uilive
 ```
 
-This command fetches the package and its dependencies and installs them in your Go workspace.
-
-## Basic Usage
-
-Let's walk through a simple example of how to use `uilive` to display real-time updates in a Go application. We'll create a basic progress bar that updates as a simulated task completes.
-
-First, import the `uilive` package:
+## A progress bar that redraws in place
 
 ```go
+package main
+
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"strings"
+	"time"
 
-    "github.com/gosuri/uilive"
+	"github.com/gosuri/uilive"
 )
-```
 
-Next, create an instance of the `uilive.Writer`:
+func renderBar(current, total, width int) string {
+	filled := current * width / total
+	return strings.Repeat("#", filled) + strings.Repeat("-", width-filled)
+}
 
-```go
-writer := uilive.New()
-```
+func main() {
+	writer := uilive.New()
+	writer.Start() // start the refresh loop
 
-The `uilive.Writer` is an `io.Writer` that updates the terminal with the latest content. It overwrites previous content instead of appending to it, allowing for real-time updates.
+	const total = 10
+	for i := 0; i <= total; i++ {
+		pct := float64(i) / total * 100
+		fmt.Fprintf(writer, "Progress: [%s] %3.0f%%\n", renderBar(i, total, 20), pct)
+		time.Sleep(100 * time.Millisecond)
+	}
 
-Now, let's start the `uilive.Writer`:
-
-```go
-writer.Start()
-```
-
-This initializes the writer and prepares it to receive updates. After this point, you can write to the `uilive.Writer` instance, and it will handle updating the terminal in real-time.
-
-For our example, let's create a simple progress bar:
-
-```go
-totalSteps := 10
-
-for i := 0; i <= totalSteps; i++ {
-    progress := float64(i) / float64(totalSteps) * 100
-    fmt.Fprintf(writer, "Progress: [%s] %.0f%%\n", renderProgressBar(i, totalSteps, 20), progress)
-    time.Sleep(time.Millisecond * 100)
+	writer.Stop() // flush the last frame and stop the refresh loop
+	fmt.Println("Task completed!")
 }
 ```
 
-The `renderProgressBar` function is a custom helper function that generates a string representation of the progress bar:
+Each `Fprintf` replaces the previous line rather than adding a new one. After `Stop()`, the last frame stays on screen and normal output continues below it.
+
+## Several lines at once
+
+The writer remembers how many lines it printed and erases all of them on the next refresh, so a frame can be more than one line. Write the whole frame in one call, though: the writer flushes every millisecond, and if a refresh lands between two separate writes, the first line will flicker or disappear.
 
 ```go
-func renderProgressBar(current, total, width int) string {
-    filled := (current * width) / total
-    empty := width - filled
-
-    return strings.Repeat("�?", filled) + strings.Repeat("�?", empty)
+for i := 0; i <= 100; i++ {
+	fmt.Fprintf(writer, "file1.zip  %3d%%\nfile2.zip  %3d%%\n", i, i/2)
+	time.Sleep(50 * time.Millisecond)
 }
 ```
 
-Finally, stop the `uilive.Writer` and print a completion message:
+You can also raise `writer.RefreshInterval` before calling `Start()` if you'd rather redraw less often.
+
+## Printing lines that should stay
+
+Anything printed with `fmt.Println` while the writer is running gets erased on the next refresh. To print a log line that stays above the live area, write through `writer.Bypass()`:
 
 ```go
-writer.Stop()
-fmt.Println("Task completed!")
+fmt.Fprintln(writer.Bypass(), "downloaded file1.zip")
 ```
 
-When you run this program, you'll see a progress bar that updates in real-time as the simulated task completes.
+## Gotchas
 
-## Summary
+- Only call `Stop()` once, and only after `Start()`.
+- Lines wider than the terminal wrap, and `uilive` accounts for that when it can read the terminal width. If it can't (for example, output piped to a file), wrapped lines may not be cleared properly.
+- `uilive` is low-level. If you want ready-made bars with percentages and elapsed time, use `uiprogress`, which is built on it.
 
-In this article, we learned how to use the `uilive` package in Go to create terminal applications with real-time updates. We demonstrated a simple example of a progress bar that updates as a simulated task completes. The `uilive` package is a powerful tool for creating dynamic, user-friendly terminal applications in Go.
+## Further reading
 
-Remember to experiment and explore the other capabilities of the `uilive` package, such as creating custom animations and handling multiple lines of output. The possibilities are endless!
+- [uilive on GitHub](https://github.com/gosuri/uilive)
+- [API reference on pkg.go.dev](https://pkg.go.dev/github.com/gosuri/uilive)

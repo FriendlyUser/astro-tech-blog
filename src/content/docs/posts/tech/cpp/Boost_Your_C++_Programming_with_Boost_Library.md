@@ -1,56 +1,85 @@
 ---
-title: Boost Your C++ Programming with Boost Library
+title: "Getting started with Boost in C++: installing, linking and a first example"
 pubDate: "2023-05-05T16:16:44.676Z"
-description: "In this article, we will introduce you to the Boost library and explore some of its key features to help you improve your C++ programming skills."
+lastUpdated: 2026-11-14
+description: "How to install Boost, which libraries are header-only and which need linking, a tour of Asio, Regex, Filesystem, Spirit and Graph, and a Tokenizer example."
 tags: ["cpp", "boost"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1931041591.png
 ---
-# Boost Your C++ Programming with Boost Library
 
-The Boost library is a collection of high-quality, peer-reviewed, portable C++ libraries that aim to extend the functionality and best practices of the C++ programming language. It provides a wide range of powerful libraries for various purposes, such as data structures, algorithms, input/output operations, and more. In this article, we will introduce you to the Boost library and explore some of its key features to help you improve your C++ programming skills.
+Boost is a collection of peer-reviewed, portable C++ libraries distributed under the Boost
+Software License. Several standard library features started there (`shared_ptr`, `optional`,
+`variant`, `filesystem`), and it still fills gaps the standard doesn't cover, such as
+networking, parsing and graph algorithms.
 
-## Getting Started with Boost
+## Installing Boost
 
-Before diving into the world of Boost, you need to install it on your system. You can download the latest version of Boost from the official website: [boost.org](https://www.boost.org/users/download/). Follow the installation instructions for your operating system.
+The easiest route is a package manager:
 
-Once Boost is installed, you can include any Boost library in your C++ project by adding the necessary header files. For example, if you want to use the Boost.Regex library, you would include the following header:
+```bash
+sudo apt install libboost-all-dev   # Debian/Ubuntu
+brew install boost                  # macOS
+vcpkg install boost                 # Windows/cross-platform (or install individual ports)
+```
+
+You can also download a release from [boost.org](https://www.boost.org/users/download/) and
+follow the [getting started guide](https://www.boost.org/doc/libs/latest/more/getting_started/).
+
+## Header-only vs compiled libraries
+
+Most Boost libraries are header-only: include the header and you're done.
 
 ```cpp
 #include <boost/regex.hpp>
 ```
 
-It is essential to note that some Boost libraries require linking against additional compiled libraries. In these cases, you need to configure your build system accordingly.
+Some need a compiled library at link time, for example Boost.Filesystem, Boost.Thread,
+Boost.ProgramOptions, Boost.Serialization, Boost.Log and Boost.Locale. With GCC or Clang that
+means adding the library to the link line, e.g. `-lboost_filesystem`; with CMake, use
+`find_package(Boost REQUIRED COMPONENTS filesystem)` and link `Boost::filesystem`.
 
-## Boost Libraries Overview
+Boost.Regex was in the compiled group for a long time but has been header-only (in C++11 and
+later) since Boost 1.76, so older instructions telling you to link `boost_regex` are out of date.
 
-The Boost library is vast, containing numerous libraries. We will now take a look at some of the prominent libraries and their functionalities.
+## A few libraries worth knowing
 
 ### Boost.Asio
 
-Boost.Asio is a cross-platform C++ library that provides a consistent asynchronous model using a modern C++ approach. It is mainly intended for network programming, including sockets, timers, and signals. Asio can be used for building high-performance networking applications, such as servers and clients.
+Asynchronous I/O for networking (TCP, UDP, SSL), timers, and signal handling, built around
+an `io_context` event loop. It works with callbacks, futures or C++20 coroutines. Asio is
+header-only; on Linux you also link the system threads library (`-pthread`). It is also
+available without the rest of Boost as standalone Asio.
 
 ### Boost.Regex
 
-Boost.Regex is a powerful library for regular expression handling. It provides a rich set of features, including Perl-compatible regular expressions, Unicode support, and several advanced options for matching and searching.
+Regular expressions with Perl syntax by default, plus POSIX and other syntax options, and
+Unicode support through ICU. C++11's `std::regex` was based on it; Boost.Regex still offers
+more, such as Perl-style extensions and ICU-based Unicode matching.
 
 ### Boost.Filesystem
 
-Boost.Filesystem is a library that provides portable facilities for file and directory manipulation. It enables operations like creating, copying, and removing files, iterating over directories, and querying file attributes.
+Portable paths, directory iteration, and copying, renaming and removing files. If you're on
+C++17, `std::filesystem` (which was based on it) covers most of the same ground without the
+extra dependency.
 
 ### Boost.Spirit
 
-Boost.Spirit is a parsing framework that allows you to write EBNF-like grammar directly in C++. This library is useful for creating domain-specific languages and parsing complex data formats.
+A parser framework where you write EBNF-like grammars directly in C++ using operator
+overloading. Spirit X3 is the current version; Spirit Qi is the older one. Useful for
+small domain-specific languages and custom data formats, at the cost of long compile times and
+dense error messages.
 
 ### Boost.Graph
 
-Boost.Graph is a library that provides data structures and algorithms for working with graphs. It includes both directed and undirected graphs, adjacency lists, and incidence matrices, as well as algorithms such as Dijkstra's shortest path, Kruskal's minimum spanning tree, and graph traversal.
+The Boost Graph Library (BGL) provides graph containers (`adjacency_list`,
+`adjacency_matrix`, `compressed_sparse_row_graph`) and generic algorithms such as breadth-first
+and depth-first search, Dijkstra's shortest paths, and Kruskal's and Prim's minimum spanning
+trees. It's header-only except for the GraphViz/GraphML parsers.
 
-## A Quick Example: Boost.Tokenizer
+## Example: splitting a string with Boost.Tokenizer
 
-Now that we have an idea of some of the libraries available in Boost, let's explore a simple example using Boost.Tokenizer. This library provides an easy way to tokenize strings, splitting them into smaller parts based on a delimiter.
-
-Here's a simple example:
+Boost.Tokenizer splits a string into tokens without you writing the loop by hand:
 
 ```cpp
 #include <iostream>
@@ -63,15 +92,36 @@ int main() {
     boost::tokenizer<boost::char_separator<char>> tokens(input_str, sep);
 
     for (const auto& token : tokens) {
-        std::cout << token << std::endl;
+        std::cout << token << '\n';
     }
-
-    return 0;
 }
 ```
 
-In this example, we first include the necessary header files for the standard library and Boost.Tokenizer. We then create a string to tokenize and define a `boost::char_separator` object to specify the delimiter. Finally, we create a `boost::tokenizer` object and iterate over the tokens, printing each one to the console.
+`char_separator` treats each character in `", "` as a separator, so both commas and spaces
+split the string, and empty tokens are dropped by default. The output is:
 
-## Conclusion
+```text
+Boost
+C++
+Library
+Example
+```
 
-The Boost library is an invaluable resource for C++ developers. It offers a wide range of high-quality libraries that can help you write more efficient, robust, and portable code. In this article, we have only scratched the surface of what Boost has to offer. We encourage you to explore the Boost documentation and experiment with different libraries to find the ones that best suit your needs.
+Tokenizer is header-only, so this builds with no extra link flags:
+
+```bash
+g++ -std=c++17 main.cpp -o tokenize
+```
+
+If Boost isn't in a standard include path (e.g. a manual download), add
+`-I/path/to/boost_root`.
+
+## Things to know before adding Boost
+
+- Check the standard library first. Since C++11/17/20 a lot of what people used to pull Boost
+  in for (smart pointers, `optional`, `variant`, `any`, `filesystem`, `thread`) is in `std::`.
+- Boost libraries depend on each other, so a single include can pull in a lot of headers and
+  slow compiles. Package managers like vcpkg let you install individual libraries rather than
+  all of Boost.
+- Each library has its own documentation and maintainers; start from the
+  [library list](https://www.boost.org/doc/libs/) and read the docs for the one you need.

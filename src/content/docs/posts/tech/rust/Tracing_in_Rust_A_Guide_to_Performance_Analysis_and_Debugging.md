@@ -1,136 +1,155 @@
 ---
-title: Tracing in Rust A Guide to Performance Analysis and Debugging
+title: "Getting started with the tracing crate in Rust: spans, events and tokio-console"
 pubDate: "2023-04-22T16:25:04.953Z"
-description: "In this article, we will explore tracing in Rust, discussing its benefits, how to integrate it into your projects, and how to analyze trace data effectively."
+lastUpdated: 2026-11-14
+description: "Add structured spans and events to a Rust program with tracing and tracing-subscriber, time spans, and inspect async tasks with tokio-console."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Tracing in Rust: A Guide to Performance Analysis and Debugging
 
-In the world of systems programming, performance and efficiency are often paramount. Rust, a systems programming language focused on safety and performance, provides tools and libraries to help developers better understand the behavior of their programs. One such tool is tracing, which allows developers to collect and analyze detailed information about their program's execution.
+[`tracing`](https://docs.rs/tracing) is the Tokio project's library for structured, contextual diagnostics.
+Where a plain logger records isolated lines, `tracing` records **spans** (a period of time, like a function
+call or a request) and **events** (a point in time inside a span), so every log line knows which request or
+task it belongs to. You instrument your code once, then choose at startup what to do with the data:
+print it, filter it, time it, or ship it to another tool.
 
-In this article, we will explore tracing in Rust, discussing its benefits, how to integrate it into your projects, and how to analyze trace data effectively.
+## Setup
 
-## Benefits of Tracing
-
-Tracing is a powerful technique for debugging and performance analysis. Instead of relying on log messages or breakpoints that might disrupt program flow, tracing provides a non-invasive way to collect detailed information about a program's execution. Some key benefits include:
-
-1. **Performance analysis**: Tracing allows you to identify bottlenecks, optimize code, and pinpoint areas where parallelism can be utilized to improve performance.
-2. **Debugging**: By examining trace data, you can gain insight into the program's flow and identify potential bugs, such as race conditions or incorrect data handling.
-3. **Monitoring**: Tracing can be used to monitor production systems, helping you understand system behavior and diagnose issues in real-time.
-
-## Getting Started with Tracing in Rust
-
-In the Rust ecosystem, the `tracing` crate is a popular choice for implementing tracing. It provides a flexible and performant infrastructure for collecting structured, event-driven diagnostics.
-
-### Adding the Tracing Crate
-
-To start using `tracing`, add it to your project's `Cargo.toml` file:
+`tracing` provides the macros you put in your code; a *subscriber* decides what happens to the data.
+`tracing-subscriber` provides the usual one.
 
 ```toml
 [dependencies]
 tracing = "0.1"
+tracing-subscriber = "0.3"
 ```
 
-### Basic Usage
-
-To use the `tracing` crate, you'll need to import its macros and create a `Subscriber`. A `Subscriber` is responsible for collecting and processing trace events. In this example, we'll use the `tracing_subscriber` crate, which provides a default `Subscriber` implementation.
-
-First, add the `tracing_subscriber` crate to your `Cargo.toml` file:
-
-```toml
-[dependencies]
-tracing = "0.1"
-tracing_subscriber = "0.2"
-```
-
-Now, initialize a default `Subscriber` and attach it to your application:
+(The crate name uses a hyphen; you refer to it as `tracing_subscriber` in code. This post was checked against
+`tracing` 0.1.44 and `tracing-subscriber` 0.3.23.)
 
 ```rust
 use tracing::{info, instrument};
-use tracing_subscriber;
+
+fn main() {
+    // Install a global subscriber that prints events to stdout.
+    tracing_subscriber::fmt::init();
+
+    some_function(42);
+}
+
+#[instrument]
+fn some_function(id: u32) {
+    info!("doing some work");
+}
+```
+
+`fmt::init()` installs a formatting subscriber globally (it panics if one is already installed). With the
+default features it prints events at `INFO` and above; if you enable the `env-filter` feature it reads the
+filter from `RUST_LOG` instead, e.g. `RUST_LOG=debug cargo run`.
+
+`#[instrument]` wraps the function body in a span named after the function and records its arguments as
+fields using their `Debug` impls, so the event above prints with `some_function{id=42}` as context. Use
+`#[instrument(skip(big_arg))]` for arguments that are large or don't implement `Debug`.
+
+## Spans and events
+
+- A **span** has a start and end, can carry fields, and nests inside other spans.
+- An **event** is a single point in time. It is recorded inside whatever span is current.
+
+Create a span manually with `span!` (or the level shortcuts `info_span!`, `debug_span!`, …) and enter it:
+
+```rust
+use tracing::{info, info_span};
 
 fn main() {
     tracing_subscriber::fmt::init();
 
-    some_function();
+    let span = info_span!("load_config", path = "app.toml");
+    let _guard = span.enter();
+
+    info!(entries = 3, "config loaded"); // recorded inside load_config
+} // span exited when _guard drops
+```
+
+Events take structured fields (`entries = 3`) in addition to the message, which is what makes the output
+filterable and machine-readable (`tracing_subscriber::fmt().json()` with the `json` feature).
+
+:::caution
+Don't hold the guard from `span.enter()` across an `.await`. When the task yields, the span stays "entered"
+on that thread and gets attached to unrelated work. For async code use `#[instrument]` on the `async fn`,
+or `future.instrument(span)` from the `tracing::Instrument` trait.
+:::
+
+## Timing spans
+
+For quick performance checks you don't need extra tools. Ask the `fmt` subscriber to log when spans close;
+it adds `time.busy` (time spent inside the span) and `time.idle` (time the span existed but wasn't entered):
+
+```rust
+use tracing::instrument;
+use tracing_subscriber::fmt::format::FmtSpan;
+
+fn main() {
+    tracing_subscriber::fmt()
+        .with_span_events(FmtSpan::CLOSE)
+        .init();
+
+    slow();
 }
 
 #[instrument]
-fn some_function() {
-    info!("This is an info event");
+fn slow() {
+    std::thread::sleep(std::time::Duration::from_millis(200));
 }
 ```
 
-In this example, the `init` function initializes a default `Subscriber` that logs events to stdout. The `info!` macro creates an event at the info level. The `#[instrument]` attribute automatically generates a span for the function, allowing you to track its execution.
+The `idle` time is mostly useful for async code, where it shows how long a future spent waiting rather
+than running.
 
-### Spans and Events
+## Inspecting async tasks with tokio-console
 
-In the `tracing` crate, there are two primary concepts: spans and events.
+For Tokio applications, [tokio-console](https://github.com/tokio-rs/console) is a terminal UI ("top for
+tasks") that shows every task, how long it has been busy or idle, and how often it has been polled. It
+needs three things:
 
-- **Spans**: A span represents a period during which a program was executing in a specific context. Spans can be nested and form a tree-like structure, which helps you understand the flow of your program.
-- **Events**: Events are single points in time within a span. They can be used to record important moments, such as entering a function or encountering an error.
+1. The `console-subscriber` crate (0.5.0 at the time of writing) in your app:
 
-To create a span, you can use the `span!` macro or the `#[instrument]` attribute:
+   ```toml
+   [dependencies]
+   console-subscriber = "0.5"
+   tokio = { version = "1", features = ["full", "tracing"] }
+   ```
 
-```rust
-use tracing::{span, Level};
+2. A call to `console_subscriber::init()` at the top of `main` (instead of `tracing_subscriber::fmt::init()`):
 
-fn main() {
-    let span = span!(Level::INFO, "my_span");
-    let _enter = span.enter();
+   ```rust
+   #[tokio::main]
+   async fn main() {
+       console_subscriber::init();
 
-    // Code executed within the span
-}
-```
+       // your application code
+   }
+   ```
 
-To create an event, use the `event!` macro or one of the level-specific macros like `info!`, `error!`, or `debug!`:
+3. Tokio's unstable instrumentation turned on at build time, either with
+   `RUSTFLAGS="--cfg tokio_unstable" cargo run` or in `.cargo/config.toml`:
 
-```rust
-use tracing::info;
+   ```toml
+   [build]
+   rustflags = ["--cfg", "tokio_unstable"]
+   ```
 
-fn main() {
-    info!("This is an info event");
-}
-```
-
-## Analyzing Trace Data
-
-Once you've collected trace data, you'll need tools to analyze it. One popular choice is `tracing-console`, a web-based user interface for visualizing traces.
-
-To use `tracing-console`, first add the `tracing-console-subscriber` crate to your `Cargo.toml` file:
-
-```toml
-[dependencies]
-tracing-console-subscriber = "0.1"
-```
-
-Then, initialize a `ConsoleSubscriber` in your application:
-
-```rust
-use tracing_subscriber::prelude::*;
-
-fn main() {
-    let console_subscriber = tracing_console_subscriber::TasksLayer::builder().build();
-    let subscriber = tracing_subscriber::registry().with(console_subscriber);
-    tracing::subscriber::set_global_default(subscriber).unwrap();
-
-    // Your application code
-}
-```
-
-Finally, install the `tracing-console` CLI tool and start the server:
+Then install and run the console in another terminal. It connects to `http://127.0.0.1:6669` by default:
 
 ```sh
-cargo install tracing-console
-tracing-console --bind 127.0.0.1:8080
+cargo install --locked tokio-console
+tokio-console
 ```
 
-Now, you can navigate to `http://127.0.0.1:8080` in your browser and visualize your application's traces.
+## Further reading
 
-## Conclusion
-
-Tracing is a powerful tool for performance analysis and debugging in Rust. By leveraging the `tracing` crate and related libraries, you can collect detailed information about your program's execution without disrupting its flow. With tools like `tracing-console`, you can visualize and analyze trace data to optimize your code and diagnose issues.
-
-To learn more about tracing in Rust, check out the [`tracing` crate documentation](https://docs.rs/tracing) and the [`tracing-console` repository](https://github.com/tokio-rs/tracing-console).
+- [`tracing` docs](https://docs.rs/tracing)
+- [`tracing-subscriber` docs](https://docs.rs/tracing-subscriber)
+- [tokio-console repository](https://github.com/tokio-rs/console)
+- [Tokio's tracing guide](https://tokio.rs/tokio/topics/tracing)

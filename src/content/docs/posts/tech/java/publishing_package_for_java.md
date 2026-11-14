@@ -1,45 +1,39 @@
 ---
-title: Publishing a java package to github and jitpack
-description: How I published a java package to github and jitpack
+title: Publishing a Java Maven package to GitHub Packages and JitPack
+description: How I published a small Java library to GitHub Packages with a GitHub Actions workflow, and made it available through JitPack.
 pubDate: Saturday, 9 June 2023 13:00:00 GMT
-tags: ["solidity", "dapp"]
+lastUpdated: 2026-11-14
+tags: ["solidity", "dapp", "java", "maven", "github actions"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/powell_ANGRY.png'
 ---
 
-Despite using java throughout my academic career, I had completely forgotten how to deploy java packages.
+Despite using Java throughout my academic career, I had completely forgotten how to publish a Java package. These are my notes from publishing [13F-java](https://github.com/FriendlyUser/13F-java), a port of my Python 13F parser, to GitHub Packages and JitPack.
 
-Maven is a build automation tool for Java projects. It uses a standard directory layout and a declarative approach to specify the build requirements for a project.
+## Maven project layout
 
-A typical Maven project has the following directory structure:
+Maven expects a standard directory layout, with the build described in `pom.xml`:
 
-```
+```text
 ├── src
 │   ├── main
-│   │   ├── java
-│   │   └── resources
+│   │   ├── java        # library source code
+│   │   └── resources   # files copied onto the classpath
 │   └── test
-│       ├── java
-│       └── resources
-├── target
-├── pom.xml
+│       ├── java        # unit tests
+│       └── resources   # test-only classpath files
+├── target              # build output, created by Maven
+├── pom.xml             # project info, dependencies, build config
 └── README.md
 ```
-src/main/java: This directory contains the Java source code for the project.
-src/main/resources: This directory contains resource files such as property files and configuration files that need to be included in the classpath of the project.
-src/test/java: This directory contains the Java source code for the unit tests of the project.
-src/test/resources: This directory contains resource files such as property files and configuration files that need to be included in the classpath of the unit tests.
-target: This directory is created by Maven and is used to store the compiled class files and other build artifacts.
 
-pom.xml: This is the main Maven configuration file for the project. It contains information about the project, its dependencies, and the build configuration.
-README.md: This file provides an overview of the project and may contain additional documentation.
-This is just a basic structure, and a Maven project can have additional directories and files based on the needs of the project.
+## Fixing the ChatGPT-converted code
 
+I used ChatGPT to convert the 13F parser from Python to Java, and the result had a lot of build errors to fix. The imports were incomplete:
 
-Using chatgpt to convert the 13F parser I did in python, I noticed there was a lot of build errors I had to fix, and the imports were wrong.
-
-```
+```java
 package com.grandfleet.docparser;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,100 +47,104 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 ```
 
-It got the core imports, but failed to get the exceptions that were being used and the other imports.
+It got the core imports but missed the exceptions the code used. The XML parsing API throws checked exceptions, so you need imports such as `javax.xml.parsers.ParserConfigurationException`, `org.xml.sax.SAXException` and `java.io.IOException`.
 
-I needed to add the package name to the file and make sure the file is called DocParser to reflect the public class name.
+I also had to add the `package` declaration and make sure the file was named `DocParser.java` to match the public class name.
 
-And make sure your package path is specified in pom.xml
+## Publishing to GitHub Packages
+
+First, point `distributionManagement` in `pom.xml` at the repository's GitHub Packages URL. The `id` must be `github`, because that's the server id `actions/setup-java` writes credentials for:
+
 ```xml
 <distributionManagement>
-   <repository>
-     <id>github</id>
-     <name>GitHub FriendlyUser Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/FriendlyUser/13F-java</url>
-   </repository>
+  <repository>
+    <id>github</id>
+    <name>GitHub FriendlyUser Apache Maven Packages</name>
+    <url>https://maven.pkg.github.com/FriendlyUser/13F-java</url>
+  </repository>
 </distributionManagement>
 ```
 
-I used the following code below to publish to github packages.
+Then a GitHub Actions workflow runs `mvn deploy`. This is a cleaned-up version of the workflow I used:
 
-```
-# publish maven project to github packages
+```yaml
 name: Publish Package
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  release:
+    types: [published]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 18
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v7
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
         with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
+          distribution: 'zulu'
           java-version: '17'
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-      - name: Publish package to GitHub Packages
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '17'
-      - name: Publish to GitHub Packages Apache Maven
+      - name: Publish to GitHub Packages
         run: mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-This is a GitHub Actions workflow configuration file that defines a job with several steps. The job is triggered on push or pull request events to the main branch.
+Things I got wrong the first time:
 
-The first step uses the actions/checkout action to checkout the code repository. The second step sets up the Java Development Kit (JDK) version 18 using the actions/setup-java action. The third step uses the mvn command to build the Maven project by running the package goal.
+- **Trigger.** My original workflow ran on every push and pull request to `main`. Pull requests shouldn't publish anything, and GitHub Packages rejects a second upload of the same non-`SNAPSHOT` version, so deploying on every push fails once the version exists. Publishing when a release is created, after bumping `<version>` in `pom.xml`, avoids both problems.
+- **A duplicate `setup-java` step.** I had a second "Publish package" step that just ran `setup-java` again. One setup step is enough.
+- **Permissions.** `GITHUB_TOKEN` needs `packages: write` to publish. Set it in the workflow rather than relying on the repository's default token permissions.
+- `mvn deploy` already runs the `package` phase (and the tests), so a separate `mvn package` step isn't needed.
 
-The fourth step sets up the JDK again using the actions/setup-java action. The fifth step uses the mvn command to deploy the package to GitHub Packages using the deploy goal. The GITHUB_TOKEN environment variable is set to the value of the GITHUB_TOKEN secret, which is provided by GitHub to authenticate the action.
+`setup-java` generates a Maven `settings.xml` with a `github` server entry that reads the username from `GITHUB_ACTOR` and the password from `GITHUB_TOKEN`, which is why the deploy step only needs the `GITHUB_TOKEN` environment variable.
 
-This workflow can be used to automate the process of building and publishing a Maven package to GitHub Packages whenever changes are pushed to the main branch or a pull request is opened or updated.
+One downside of GitHub Packages: consumers need to authenticate with a personal access token even to download a public package. That's the main reason to also offer the library through JitPack.
 
+## Making it available on JitPack
 
-To publish a Maven package to Jitpack using JitCI, you can use the following steps:
+JitPack doesn't need anything in the library's own `pom.xml`, and there's nothing to upload. It builds a public GitHub repository on demand: the first time someone requests a version (a release tag, a commit hash, or `main-SNAPSHOT`), JitPack checks out that commit, runs `mvn install -DskipTests`, and serves the resulting jars.
 
+To make that work:
 
-1. Make sure that you have a Jitpack account and have set up a repository on Jitpack.
+1. Make sure `mvn install` succeeds on a clean checkout.
+2. JitPack builds with Java 8 by default. If your project needs a newer JDK, add a `jitpack.yml` to the repository root:
 
-2. Add the Jitpack repository to your pom.xml file:
-```
+    ```yaml
+    jdk:
+      - openjdk17
+    ```
+
+3. Create a GitHub release (for example `v1.0.0`), then look the repository up on [jitpack.io](https://jitpack.io) to trigger and check the build.
+
+Consumers then add the JitPack repository and the dependency to *their* `pom.xml`. The groupId is `com.github.<GitHub user>` and the artifactId is the repository name:
+
+```xml
 <repositories>
   <repository>
     <id>jitpack.io</id>
     <url>https://jitpack.io</url>
   </repository>
 </repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>com.github.FriendlyUser</groupId>
+    <artifactId>13F-java</artifactId>
+    <version>v1.0.0</version>
+  </dependency>
+</dependencies>
 ```
 
-3. Add the JitCI Maven plugin to your pom.xml file:
-```
-  <repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-    </repositories>
-```
+Replace `v1.0.0` with the release tag you actually published.
 
-4. Commit and push your changes to your code repository.
+## References
 
-5. Go to the JitCI dashboard and enable JitCI for your repository.
-
-6. JitCI will automatically build and publish your Maven package to Jitpack whenever you push changes to your repository.
-
-## REferences 
-
-For full code changes you can view them at
-
-https://github.com/FriendlyUser/13F-java/blob/main/pom.xml
-* https://github.com/FriendlyUser/13F-java/packages/1760367
-* https://jitpack.io/#FriendlyUser/13F-java
+- My `pom.xml`: <https://github.com/FriendlyUser/13F-java/blob/main/pom.xml>
+- The GitHub package: <https://github.com/FriendlyUser/13F-java/packages/1760367>
+- JitPack page: <https://jitpack.io/#FriendlyUser/13F-java>
+- [GitHub docs: Publishing Java packages with Maven](https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven)
+- [JitPack docs: Building](https://docs.jitpack.io/building/)

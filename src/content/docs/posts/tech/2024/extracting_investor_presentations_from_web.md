@@ -1,19 +1,18 @@
 ---
-title: "How to Download Investor Presentation Audio Files from Conference Hosting Software"
-description: "This technical article details the process of downloading investor presentation audio files from conference hosting software. It covers identifying the audio file source, finding the direct audio file URL using browser developer tools, downloading the file via ffmpeg, and transcribing the audio to text using advanced machine learning models."
-tags: ["Investor Presentation", "Audio Download", "Conference Hosting Software", "Web Development", "ffmpeg", "Transcription", "Machine Learning"]
+title: "Downloading investor presentation audio from a webcast with ffmpeg"
+description: "Find the HLS playlist behind a webcast player in your browser's DevTools, save the audio with ffmpeg, and transcribe it with Whisper."
+tags: ["Investor Presentation", "Audio Download", "Conference Hosting Software", "Web Development", "ffmpeg", "Transcription", "Machine Learning", "whisper"]
 pubDate: "2024-03-19T19:17:25.000Z"
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/14447351.png"
 ---
 
-# How to Download Investor Presentation Audio Files
+Investor presentations and earnings calls are often published through webcast platforms that only let you play them in the browser. If you want to listen offline or run the audio through a transcription model, you need the underlying stream. This post walks through doing that for a Scotiabank presentation hosted on gowebcasting.com. Only download recordings you have access to, and check the hosting site's terms.
 
-In this technical article, we'll explore the process of downloading investor presentation audio files from conference hosting software. Often, these presentations are made available via webcasting services, and accessing them for offline review or transcription can be invaluable. We'll use a specific example to illustrate the process, breaking it down into manageable steps.
+## Why the `<audio>` src doesn't help
 
-### Step 1: Identifying the Audio File Source
-
-Webcast services often use HTML5 `<audio>` tags to embed audio content directly within web pages. Here's an example of what the HTML code might look like:
+The player's HTML looks like this:
 
 ```html
 <div id="player-media">
@@ -23,45 +22,54 @@ Webcast services often use HTML5 `<audio>` tags to embed audio content directly 
 </div>
 ```
 
-The `src` attribute within the `<audio>` tag holds the key to locating the audio file. Although it appears as a blob URL, this is merely a pointer to the audio data generated dynamically by the web server.
+A `blob:` URL isn't a file on the server. The page's JavaScript player (typically hls.js or similar) downloads the stream in segments, feeds them to the browser through Media Source Extensions, and the browser gives that in-memory buffer a `blob:` URL. It only exists inside that tab, so you can't download it with `curl` or open it in another window. You need the URL the player is fetching from.
 
-### Step 2: Finding the Direct Audio File URL
+## Find the playlist URL in DevTools
 
-To download the audio file, we need to locate its direct URL. This URL is often not directly visible in the HTML source due to dynamic content loading strategies used by web applications. However, it can typically be found by inspecting the network traffic via your browser's Developer Tools:
+1. Open DevTools (F12) and switch to the **Network** tab.
+2. Type `m3u8` into the filter box.
+3. Start playback so the player requests the stream.
+4. Copy the URL of the playlist request. If there's a master playlist and several variant playlists, either works with ffmpeg. The master lets ffmpeg pick a stream.
 
-1. Open Developer Tools (usually accessible with F12 or right-click → "Inspect").
-2. Go to the "Network" tab and filter by "Media" or "XHR" requests.
-3. Play the audio on the web page to trigger the loading of the audio file.
-4. Look for requests fetching media content, such as an M3U8 playlist file.
+For this presentation, the URL was:
 
-For example, you might find a URL resembling:
-
-```
+```text
 https://5b54b4fce3488.streamlock.net/vods3/_definst_/mp4:amazons3/gowebflash/scotiabank/scotiabank_240227p1.mp4/playlist.m3u8
 ```
 
-This URL points to an M3U8 playlist, commonly used for streaming audio and video content.
+`.m3u8` is an HLS playlist: a text file listing the media segments. ffmpeg reads it, downloads the segments and stitches them together.
 
-### Step 3: Downloading the Audio File
-
-With the direct URL to the M3U8 file, you can use command-line tools like `ffmpeg` to download and convert the audio to a standard format. Here's how you might do it:
+## Download with ffmpeg
 
 ```shell
-ffmpeg -i "https://5b54b4fce3488.streamlock.net/vods3/_definst_/mp4:amazons3/gowebflash/scotiabank/scotiabank_240227p1.mp4/playlist.m3u8" -c copy -bsf:a aac_adtstoasc "scotiabank_240227p1.mp4"
+ffmpeg -i "https://5b54b4fce3488.streamlock.net/vods3/_definst_/mp4:amazons3/gowebflash/scotiabank/scotiabank_240227p1.mp4/playlist.m3u8" \
+  -c copy -bsf:a aac_adtstoasc scotiabank_240227p1.mp4
 ```
 
-This command tells `ffmpeg` to download the audio stream referenced by the M3U8 playlist and save it as an MP4 file, preserving the original audio encoding.
+`-c copy` remuxes the stream without re-encoding, so it's fast and lossless. `-bsf:a aac_adtstoasc` converts the AAC audio from the ADTS framing used in HLS segments into the form an MP4 container expects.
 
-### Step 4: Transcribing the Audio to Text
+If the stream also has video and you only want the audio, drop the video with `-vn` and write an `.m4a` file:
 
-Once you have the audio file, you may want to transcribe its content to text for easier analysis or accessibility. While there are many tools available for this task, one convenient option is the Whisper model available through Hugging Face Spaces:
-
-```
-https://huggingface.co/spaces/Xenova/whisper-web
+```shell
+ffmpeg -i "<playlist URL>" -vn -c:a copy -bsf:a aac_adtstoasc scotiabank_240227p1.m4a
 ```
 
-By uploading the audio file to this space, Whisper can generate a text transcription of the audio content, leveraging advanced machine learning models to provide accurate results.
+Playlist URLs on some platforms include short-lived tokens. If ffmpeg gets a 403, copy a fresh URL from DevTools and run it again straight away.
 
-### Conclusion
+## Transcribe it
 
-Downloading and transcribing investor presentation audio files from conference hosting software can be a straightforward process with the right tools and techniques. By leveraging web development tools to identify the direct URL of an audio file, using `ffmpeg` to download and convert the file, and applying advanced transcription services, you can efficiently access and analyze the valuable information contained in these presentations.
+[Whisper Web](https://huggingface.co/spaces/Xenova/whisper-web) is a Hugging Face Space that runs OpenAI's Whisper in the browser. Open it, load the file and it produces a transcript, with no install needed.
+
+For long recordings, or to script it, run Whisper locally instead:
+
+```shell
+pip install -U openai-whisper
+whisper scotiabank_240227p1.m4a --model small --language en --output_format txt
+```
+
+The `whisper` CLI needs `ffmpeg` on your `PATH` to decode audio. Larger models (`medium`, `large`) are more accurate on financial jargon and speaker names but are much slower without a GPU.
+
+## Further reading
+
+- [ffmpeg documentation](https://ffmpeg.org/ffmpeg.html)
+- [openai/whisper on GitHub](https://github.com/openai/whisper)

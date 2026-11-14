@@ -1,98 +1,89 @@
 ---
-description: In this article, we will explore the Deno Buffer module and its various
-  features, and learn how to effectively use them in our applications
+description: 'How the Buffer class from @std/io works in Deno: writing and reading bytes, filling it from a file, and when to use web streams instead.'
 imgSrc: /imgs/2023/4225416985.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-24T08:06:49.000Z'
-tags: []
-title: Deno Buffer Module A Deep Dive into Efficient Data Management
+lastUpdated: 2026-11-14
+tags: ["deno", "typescript"]
+title: 'Byte buffers in Deno with @std/io Buffer'
 ---
 
-# Deno Buffer Module: A Deep Dive into Efficient Data Management
+:::caution[Updated in November 2026]
+The first version of this post imported `Buffer` from `https://deno.land/std@0.114.0/io/buffer.ts`. The standard library is no longer published to `deno.land/std`; `Buffer` now lives in the [`@std/io`](https://jsr.io/@std/io) package on JSR. That package is still marked unstable (0.x), and its own docs say the `Reader`/`Writer` interfaces it is built around are deprecated in Deno in favour of web streams. The old global `Deno.Buffer` was removed in Deno 2. The examples below were run with Deno 2.9 and `@std/io` 0.225.
+:::
 
-Deno, the modern, secure runtime for JavaScript and TypeScript, has been making waves in the web development community since its release. One of the powerful features it offers is the Buffer module, which provides an efficient way to manage binary data. In this article, we will explore the Deno Buffer module and its various features, and learn how to effectively use them in our applications.
+`Buffer` from `@std/io` is a growable byte queue modelled on Go's `bytes.Buffer`. You write `Uint8Array` chunks onto the end and read them off the front; it grows its underlying `ArrayBuffer` as needed. It is not Node's `Buffer`, and it isn't a general-purpose binary data type: it's for collecting bytes from a `Reader` (a file or socket) and handing them out again.
 
-## Table of Contents
+## Creating a buffer
 
-1. [Introduction to Deno Buffer Module](#introduction-to-deno-buffer-module)
-2. [Creating a Buffer](#creating-a-buffer)
-3. [Reading from a Buffer](#reading-from-a-buffer)
-4. [Writing to a Buffer](#writing-to-a-buffer)
-5. [Seeking and Slicing](#seeking-and-slicing)
-6. [Concurrency and Buffers](#concurrency-and-buffers)
-7. [Conclusion](#conclusion)
+```typescript
+import { Buffer } from "jsr:@std/io@0.225/buffer";
 
-## Introduction to Deno Buffer Module
-
-The Deno Buffer module is a utility module that offers a way to manage binary data efficiently. It is based on the ArrayBuffer and DataView APIs in JavaScript, and it provides an interface for working with byte sequences. The primary use case for buffers is to handle I/O operations, such as reading from or writing to files, sockets, and other data streams.
-
-The Buffer module is part of the Deno standard library and can be imported using the following syntax:
-
-```javascript
-import { Buffer } from "https://deno.land/std@0.114.0/io/buffer.ts";
+const empty = new Buffer();
+const buf = new Buffer(new Uint8Array([65, 66, 67])); // "ABC"
+console.log(buf.length); // 3
 ```
 
-## Creating a Buffer
+The constructor takes an optional `ArrayBuffer` or array-like of numbers as the initial unread contents.
 
-To create a new buffer, simply instantiate the `Buffer` class:
+## Reading consumes bytes
 
-```javascript
+`read(p)` copies up to `p.length` unread bytes into `p` and returns how many it copied. Those bytes are then gone from the buffer: it's a queue, not a random-access array. When the buffer is empty, `read` returns `null` (end of input), not `0`.
+
+```typescript
+const readData = new Uint8Array(2);
+const n = await buf.read(readData);
+console.log(n, readData); // 2 Uint8Array(2) [ 65, 66 ]
+console.log(buf.length);  // 1 ("C" is still unread)
+```
+
+`readSync` does the same thing synchronously. The async version exists so `Buffer` satisfies the `Reader` interface; there's no actual I/O.
+
+## Writing appends bytes
+
+```typescript
+const written = await buf.write(new TextEncoder().encode("DEF"));
+console.log(written); // 3
+
+console.log(new TextDecoder().decode(buf.bytes({ copy: false }))); // "CDEF"
+
+const rest = new Uint8Array(10);
+console.log(await buf.read(rest)); // 4
+console.log(await buf.read(rest)); // null
+console.log(buf.empty());          // true
+```
+
+`bytes()` returns the unread portion without consuming it. With `{ copy: false }` it returns a view into the buffer's memory, which is only valid until the next `read`, `write`, `reset` or `truncate`; pass `{ copy: true }` if you need to keep it.
+
+There is no `seek` or `slice` method. To drop data, use `truncate(n)` (keep only the first `n` unread bytes) or `reset()` (empty the buffer but keep the allocation). `grow(n)` pre-allocates room for `n` more bytes if you know roughly how much is coming.
+
+## Filling a buffer from a file
+
+`readFrom` reads from any `Reader` until end of input. A `Deno.FsFile` still has a `read` method, so it works directly:
+
+```typescript
+import { Buffer } from "jsr:@std/io@0.225/buffer";
+
+using file = await Deno.open("data.bin");
 const buf = new Buffer();
+const n = await buf.readFrom(file);
+console.log(`read ${n} bytes, ${buf.length} unread`);
 ```
 
-You can also create a buffer with an initial set of bytes by passing a Uint8Array to the constructor:
+Run it with `deno run --allow-read`. The `using` declaration closes the file when it goes out of scope.
 
-```javascript
-const initialData = new Uint8Array([65, 66, 67]);
-const buf = new Buffer(initialData);
-```
+## When not to use it
 
-## Reading from a Buffer
+For most new code you don't need `Buffer` at all:
 
-To read data from a buffer, you can use the `read` method, which takes a Uint8Array as an argument and fills it with bytes from the buffer:
+- To read a whole file, `await Deno.readFile(path)` returns a `Uint8Array`.
+- To collect a `ReadableStream` (a file's `.readable`, a `fetch` body), `await new Response(stream).bytes()` does it in one line.
+- To join chunks you already have, `concat` from [`@std/bytes`](https://jsr.io/@std/bytes) is simpler.
 
-```javascript
-const readData = new Uint8Array(3);
-const bytesRead = await buf.read(readData);
+`Buffer` is also an ordinary single-threaded object with no locking. Code within one isolate can't race on it, but it can't be shared with a `Worker` either: `postMessage` copies what you send, so send the bytes (`buf.bytes({ copy: true })`) rather than the `Buffer`. If you really need memory shared between workers, use a `SharedArrayBuffer` with `Atomics`.
 
-console.log(readData); // Output: Uint8Array[65, 66, 67]
-console.log(bytesRead); // Output: 3
-```
+## Further reading
 
-The `read` method returns the number of bytes read, which can be useful for tracking the progress of a large read operation.
-
-## Writing to a Buffer
-
-To write data to a buffer, you can use the `write` method, which takes a Uint8Array as an argument:
-
-```javascript
-const writeData = new Uint8Array([68, 69, 70]);
-const bytesWritten = await buf.write(writeData);
-
-console.log(bytesWritten); // Output: 3
-```
-
-The `write` method returns the number of bytes written. You can also use the `writeSync` method to perform a synchronous write operation.
-
-## Seeking and Slicing
-
-Deno's Buffer module provides methods for seeking and slicing, which can be useful when working with large data sets. The `seek` method allows you to set the current read/write position in the buffer, while the `slice` method returns a new buffer that shares the same underlying memory with the original buffer.
-
-```javascript
-buf.seek(1, 0); // Set the read/write position to 1
-
-const slicedBuf = buf.slice(1, 3);
-console.log(slicedBuf.length); // Output: 2
-```
-
-## Concurrency and Buffers
-
-Buffers in Deno are designed to be used safely in concurrent environments. This means that you can use buffers in async functions, worker threads, and other parallel programming constructs without worrying about data races or other concurrency-related issues.
-
-One thing to keep in mind is that Deno's Buffer module does not provide built-in locking or synchronization mechanisms, so if you need to coordinate access to a buffer across multiple threads or tasks, you will need to use a separate synchronization mechanism, such as a Mutex or Semaphore.
-
-## Conclusion
-
-In this article, we have explored the Deno Buffer module, which provides an efficient way to manage binary data in JavaScript and TypeScript applications. We have covered various aspects of the module, including creating, reading from, and writing to buffers, as well as seeking, slicing, and concurrency considerations.
-
-By understanding and utilizing the Deno Buffer module, you can effectively manage binary data in your Deno applications, enabling you to build more efficient and powerful applications.
+- [`@std/io` Buffer API docs](https://jsr.io/@std/io/doc/buffer)
+- [Go `bytes.Buffer`](https://pkg.go.dev/bytes#Buffer), the design it copies
+- [Streams in Deno](https://docs.deno.com/api/web/streams)

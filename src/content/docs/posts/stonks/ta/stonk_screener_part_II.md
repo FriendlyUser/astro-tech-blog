@@ -1,15 +1,18 @@
 ---
-tags: ['python', 'jsx', 'react']
-title: How I implemented a stock screener in python Part II
-description: A stock screener is a tool that helps you find stocks that meet your criteria. In this post I will show you how I implemented a stock screener in python.
+tags: ['python', 'jsx', 'react', 'stocks']
+title: "How I implemented a stock screener in Python, part II: the scanners"
+description: "The JSON config and two yfinance scanners from my stock screener: one flags big high-low ranges, the other finds liquid penny stocks and posts to Discord."
 pubDate: Fri, 18 April 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2994756722.png
 ---
-The previous post focused on how to extract ticker symbols using Python, with a code example provided to illustrate the process. The code example demonstrated how to use the Pandas library to read data from a CSV file and apply filters to the data to extract relevant ticker symbols.
-This post covers the logic used in my screeners. The logic is written in Python and is used to filter out stocks that do not meet the criteria of the screener. The logic is stored in a JSON file and is used by the Python code to filter out stocks that do not meet the criteria of the screener.
-```js 
- {
+[Part I](/posts/stonks/ta/stonk_screener_part_I/) covered how the screener builds its list of ticker symbols from a CSV with pandas. This post covers the scanners: the code that takes those tickers, downloads recent prices, and decides which ones to report. Each screen is described by a JSON config, and the matching scanner class does the filtering.
+
+## The config
+
+```json
+{
   "name": "High low Technology Stocks",
   "type": "high_low",
   "tsx": {
@@ -26,35 +29,32 @@ This post covers the logic used in my screeners. The logic is written in Python 
     "percent_cutoff": 0.35,
     "day_cutoff": 3
   }
-} 
- ```
+}
+```
 
-This is a configuration file for a program or algorithm that focuses on identifying high and low performing technology stocks on the Toronto Stock Exchange (TSX) and the Canadian Securities Exchange (CSE).
+- `type` picks the scanner class.
+- `tsx` and `cse` hold the `tickers_config` used in part I: technology-sector stocks on the Toronto Stock Exchange, and CleanTech or Technology stocks on the Canadian Securities Exchange.
+- `settings` is passed to the scanner. For the high-low scanner, `percent_cutoff: 0.35` means a 35% range (not 0.35%) between the highest high and lowest low, and `day_cutoff: 3` is the lookback window in calendar days. The scanner looks at the whole window at once; it doesn't require the condition to hold on each day.
 
-The program uses the tickers\_config settings to filter out stocks in specific sectors and industries. For the TSX, it only considers stocks in the technology sector, while for the CSE, it considers stocks in both CleanTech and Technology industries.
+## High-low scanner
 
-The settings section defines the parameters used by the algorithm to determine which stocks are considered high or low performing. The percent\_cutoff parameter is set to 0.35, which means that stocks with a daily percent change greater than or equal to 0.35% will be considered high performing, while stocks with a daily percent change less than or equal to -0.35% will be considered low performing. The day\_cutoff parameter is set to 3, which means that only stocks that have met the high or low performing criteria for at least 3 days will be included in the program's final output.
+This scanner flags stocks whose price range over the last few days is large compared with the price, then records whether the stock moved up or down over the window.
 
-Overall, this configuration file sets the criteria and filters for a program to identify high and low performing technology stocks on the TSX and CSE based on their percent change over a specified number of days.
-
-
-```python 
- """
-Scans for stocks with a change from the low to high with a high number
+```python
 """
-import yfinance as yf
-import numpy as np
-import sys
-import os
-import dateutil.relativedelta
-import pandas as pd
-import glob
-import json
+Scans for stocks with a large high-low range over the last few days.
+"""
 import multiprocessing
-from datetime import datetime, date
-from stock_screener.util import post_webhook
-from stock_screener.interfaces import ScannerInterface
 import time
+from datetime import date
+
+import pandas as pd
+import yfinance as yf
+from dateutil.relativedelta import relativedelta
+
+from stock_screener.interfaces import ScannerInterface
+from stock_screener.util import post_webhook
+
 
 class Scanner(ScannerInterface):
     def __init__(self, tickers, cfg):
@@ -63,239 +63,129 @@ class Scanner(ScannerInterface):
         self.search_settings = cfg.get("settings", {})
 
     def get_data(self, ticker: str, day_cutoff=5) -> pd.DataFrame:
-        """
-        Grab daily days for high and low
-        """
-        current_date = datetime.strptime(date.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
-        past_date = current_date - dateutil.relativedelta.relativedelta(days=day_cutoff)
-        sys.stdout = open(os.devnull, "w")
-        data = yf.download(ticker, past_date, current_date)
-        sys.stdout = sys.__stdout__
-        return data
+        """Daily bars for the last `day_cutoff` calendar days."""
+        end = date.today()
+        start = end - relativedelta(days=day_cutoff)
+        return yf.download(
+            ticker,
+            start=start,
+            end=end,
+            progress=False,           # no progress bar, so no stdout redirect needed
+            multi_level_index=False,  # flat "High"/"Low" columns for a single ticker
+        )
 
-    def find_anomaly(self, data: pd.DataFrame, PERCENT_CUTOFF=0.40) -> dict:
+    def find_anomaly(self, data: pd.DataFrame, percent_cutoff=0.40) -> dict:
         max_value = data["High"].max()
         min_value = data["Low"].min()
-        value_diff = abs(max_value - min_value)
+        value_diff = max_value - min_value
         max_per_diff = value_diff / max_value
         min_per_diff = value_diff / min_value
-        if max_per_diff >= PERCENT_CUTOFF or min_per_diff >= PERCENT_CUTOFF:
-            Direction = "N/A"
-            try:
-                if data.empty == False:
-                    # first open
-                    d_open = data["Open"].iloc[1]
-                    # last close
-                    d_close = data["Close"].iloc[-1]
-                    Direction = "up" if d_close > d_open else "down"
-            except Exception as e:
-                print(e)
-            d = dict(
-                Max=max_value,
-                Min=min_value,
-                Diff=value_diff,
+        d = dict(Max=max_value, Min=min_value, Diff=value_diff)
+        if max_per_diff >= percent_cutoff or min_per_diff >= percent_cutoff:
+            first_open = data["Open"].iloc[0]
+            last_close = data["Close"].iloc[-1]
+            d.update(
                 MaxPercentDiff=max_per_diff,
                 MinPercentDiff=min_per_diff,
-                Direction=Direction,
+                Direction="up" if last_close > first_open else "down",
             )
-        else:
-            d = dict(Max=max_value, Min=min_value, Diff=value_diff)
         return d
 
     def get_match(self, ticker):
-        """
-        get match for ticker
-        for the past five days
-        """
-        PERCENT_CUTOFF = self.search_settings.get("percent_cutoff", 0.35)
-        DAY_CUTOFF = self.search_settings.get("day_cutoff", 5)
-        ticker_data = self.get_data(ticker, DAY_CUTOFF)
-        d = self.find_anomaly(ticker_data, PERCENT_CUTOFF)
-        if d.get("MaxPercentDiff") or d.get("MinPercentDiff"):
-            d["Ticker"] = ticker
-            d["Max % Diff"] = round(d["MaxPercentDiff"], 2)
-            d["Min % Diff"] = round(d["MinPercentDiff"], 2)
-            d["Diff"] = round(d["Diff"], 2)
-            return d
+        percent_cutoff = self.search_settings.get("percent_cutoff", 0.35)
+        day_cutoff = self.search_settings.get("day_cutoff", 5)
+        data = self.get_data(ticker, day_cutoff)
+        if data.empty:  # delisted ticker or no trades in the window
+            return None
+        d = self.find_anomaly(data, percent_cutoff)
+        if "MaxPercentDiff" not in d:
+            return None
+        d["Ticker"] = ticker
+        for key in ("Diff", "MaxPercentDiff", "MinPercentDiff"):
+            d[key] = round(d[key], 2)
+        return d
 
     def main_func(self):
         """
-        Main function for the unusual volume scanner
-
         .. todo
-          Determine if this is the best place to send discord messages
-          probably with seperation of concerns, no.
+          Sending Discord messages from here mixes concerns; return the df instead.
         """
-        cpus = multiprocessing.cpu_count()
         title = self.cfg.get("name", "")
-        with multiprocessing.Pool(cpus) as p:
-            positive_scans = p.map(self.get_match, self.tickers)
+        with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
+            results = p.map(self.get_match, self.tickers)
+        matches = [r for r in results if r is not None]
+
         post_webhook(f"**{title}**")
-        not_none_values = filter(None.__ne__, positive_scans)
-        list_of_values = list(not_none_values)
-        post_webhook(f"Length: **{len(list_of_values)}**")
-        content_df = pd.DataFrame(list_of_values).reindex(
-            columns=[
-                "Ticker",
-                "Max",
-                "Min",
-                "Diff",
-                "MaxPercentDiff",
-                "MinPercentDiff",
-                "Direction",
-            ]
+        post_webhook(f"Length: **{len(matches)}**")
+        if not matches:
+            return pd.DataFrame()
+
+        content_df = pd.DataFrame(matches).reindex(
+            columns=["Ticker", "Max", "Min", "Diff",
+                     "MaxPercentDiff", "MinPercentDiff", "Direction"]
         )
-        if content_df.empty == True:
-            post_webhook(f"**{title}**")
-            return
         content_str = content_df.to_string(index=False)
-        # move later, just return df
-        for chunk in [
-            content_str[i : i + 1950] for i in range(0, len(content_str), 1950)
-        ]:
+        # Discord caps a message at 2,000 characters, so send it in chunks
+        for i in range(0, len(content_str), 1950):
             time.sleep(2)
-            post_webhook(f"```{chunk}```")
+            post_webhook(f"```{content_str[i:i + 1950]}```")
         return content_df
 
 
 if __name__ == "__main__":
     test_tickers = ["IP.CN", "NTAR.CN", "API.CN", "IGN.CN"]
-    cfg = {}
-    scanner = Scanner(test_tickers, cfg)
-    ip = scanner.main_func()
- 
- ```
+    scanner = Scanner(test_tickers, {})
+    scanner.main_func()
+```
 
-This code Implements the Scanner interface for finding high and low technology stocks based on a given percentage cutoff and day cutoff. It imports several packages, including yfinance for downloading stock data, numpy, sys, os, dateutil.relativedelta, pandas, glob, json, multiprocessing, and time.
+`ScannerInterface` and `post_webhook` come from the [stock_screener repo](https://github.com/FriendlyUser/stock_screener); `post_webhook` sends a string to a Discord webhook.
 
-The Scanner class has three methods: **init**, get\_data, and find\_anomaly.
+How it works:
 
-**init** initializes the class with a list of tickers to scan and a configuration dictionary (cfg).
+- `get_data` downloads daily bars from Yahoo Finance with `yf.download`. The `end` date is exclusive, so today's bar isn't included.
+- `find_anomaly` takes the highest high and lowest low in the window and divides the range by each. Because the low is always the smaller number, `min_per_diff` is the larger ratio, so in practice the test is `(high - low) / low >= percent_cutoff`. Direction compares the first open with the last close.
+- `main_func` runs `get_match` over the tickers in a process pool, drops the non-matches, and posts the table to Discord.
 
-get\_data takes a ticker symbol and a day cutoff and returns a DataFrame of daily data for the past day\_cutoff days, using yf.download from the yfinance package to get the data.
+## Liquid penny stock scanner
 
-find\_anomaly takes a DataFrame of stock data and a percentage cutoff, and returns a dictionary of maximum and minimum values for high and low stock prices, the difference between them, the maximum and minimum percentage differences between the values, and the direction (up or down) of the stock price. If the percentage difference is greater than or equal to the percentage cutoff, the direction is calculated as the difference between the first open price and the last close price.
+The second scanner uses the same structure with a different `get_match`. It keeps stocks that last closed under $5 but traded more than $1 million (close × volume) on that day, i.e. cheap stocks with enough liquidity to actually trade.
 
-The main\_func method is the main function of the scanner. It creates a multiprocessing Pool with a number of processes equal to the number of CPUs and maps the get\_match method to each ticker in the list of tickers. It then creates a Pandas DataFrame of the results, filters out any None values, and prints the results to a Discord webhook. Finally, it returns the DataFrame of results.
-
-The script also includes a test case that creates a Scanner object with a list of tickers and an empty configuration dictionary, and calls the main\_func method on the Scanner object.
-
-
-```python 
- import yfinance as yf
-import numpy as np
-import sys
-import os
-import dateutil.relativedelta
-import pandas as pd
-import multiprocessing
-from datetime import datetime, date
-from stock_screener.util import post_webhook
-from stock_screener.interfaces import ScannerInterface
-import time
-
-
-class Scanner(ScannerInterface):
-    def __init__(self, tickers, cfg):
-        self.tickers = tickers
-        self.cfg = cfg
-        self.search_settings = cfg.get("settings", {})
-
+```python
     def get_data(self, ticker: str, months_cutoff=1) -> pd.DataFrame:
-        current_date = datetime.strptime(date.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
-        past_date = current_date - dateutil.relativedelta.relativedelta(
-            months=months_cutoff
-        )
-        sys.stdout = open(os.devnull, "w")
-        data = yf.download(ticker, past_date, current_date)
-        sys.stdout = sys.__stdout__
-        return data
-
-    def custom_print(self, d: pd.DataFrame, tick: str):
-        print("\n\n\n*******  " + tick.upper() + "  *******")
-        print("Ticker is: " + tick.upper())
-        print("*********************\n\n\n")
-
-    
-    @staticmethod
-    def calc_price_vol(ticker_data: pd.DataFrame):
-        try:
-            price = ticker_data["Close"].iloc[-1]
-            volume = ticker_data["Volume"].iloc[-1]
-            return price * volume
-        except Exception as e:
-            print(e)
-            return None
+        end = date.today()
+        start = end - relativedelta(months=months_cutoff)
+        return yf.download(ticker, start=start, end=end,
+                           progress=False, multi_level_index=False)
 
     def get_match(self, ticker):
-        """
-        get match for ticker
-        """
-        DAY_CUTOFF = self.search_settings.get("day_cutoff", 1)
-        ticker_data = self.get_data(ticker, DAY_CUTOFF)
-        try:
-            last_close = ticker_data["Close"].iloc[-1]
-            price_volume = self.calc_price_vol(ticker_data)
-            # penny stock with enough liquidity
-            if last_close < 5 and price_volume > 1E6:
-                stonk = dict()
-                stonk["Ticker"] = ticker
-                stonk["Volume"] = ticker_data["Volume"].iloc[-1]
-                stonk["PriceVolume"] = price_volume
-                stonk["Close"] = last_close
-                return stonk
-        except Exception as e:
-            print("Index failure for stock")
-            print(ticker)
-            print(e)
+        months = self.search_settings.get("months_cutoff", 1)
+        data = self.get_data(ticker, months)
+        if data.empty:
+            return None
+        last = data.iloc[-1]
+        price_volume = last["Close"] * last["Volume"]
+        # penny stock with enough liquidity
+        if last["Close"] < 5 and price_volume > 1e6:
+            return {
+                "Ticker": ticker,
+                "Volume": last["Volume"],
+                "PriceVolume": price_volume,
+                "Close": last["Close"],
+            }
+        return None
+```
 
-    def main_func(self):
-        """
-        Main function for the unusual volume scanner
+`main_func` is the same as above, except the title includes today's date and the columns are `["Ticker", "Volume", "PriceVolume", "Close"]`. Only the last bar is used, so a month of data is more than enough; it just guarantees there is a recent trading day in the window.
 
-        .. todo
-          Determine if this is the best place to send discord messages
-          probably with seperation of concerns, no.
-        """
-        cpus = multiprocessing.cpu_count()
-        title = self.cfg.get("name", "")
-        with multiprocessing.Pool(cpus) as p:
-            positive_scans = p.map(self.get_match, self.tickers)
-        curr_date = date.today().strftime("%Y-%m-%d")
-        post_webhook(f"**{title} - {curr_date}**")
-        not_none_values = filter(None.__ne__, positive_scans)
-        list_of_values = list(not_none_values)
-        post_webhook(f"Number of stocks: {len(list_of_values)}")
-        content_df = pd.DataFrame(list_of_values).reindex(
-            columns=["Ticker", "Volume", "PriceVolume", "Close"]
-        )
-        content_str = content_df.to_string(index=False)
+## Gotchas
 
-        # if else statement in case dataframe is missing
-        for chunk in [
-            content_str[i : i + 1950] for i in range(0, len(content_str), 1950)
-        ]:
-            print("SENDING CHUNK")
-            time.sleep(2)
-            post_webhook(f"```{chunk}```")
-        return content_df
- 
- ```
-
-This is another scanner that implements an unusual volume scanner using the Yahoo Finance API. The script defines a class called `Scanner` that has a constructor, a `get_data` method, a `custom_print` method, a `calc_price_vol` method, a `get_match` method, and a `main_func` method.
-
-The `Scanner` constructor takes two parameters, `tickers` and `cfg`. `tickers` is a list of stock tickers that will be scanned, and `cfg` is a dictionary of configuration settings.
-
-The `get_data` method takes a `ticker` parameter and an optional `months_cutoff` parameter (default 1). It downloads historical data for the given `ticker` from `months_cutoff` months ago to the current date using the Yahoo Finance API and returns it as a pandas DataFrame.
-
-The `custom_print` method takes a pandas DataFrame `d` and a stock ticker `tick` and prints some information about the DataFrame and the stock ticker.
-
-The `calc_price_vol` method takes a pandas DataFrame `ticker_data` and calculates the product of the latest closing price and the latest volume for the given stock ticker. If an error occurs during this calculation, it returns `None`.
-
-The `get_match` method takes a stock ticker `ticker`, gets the historical data for that ticker using the `get_data` method, and checks if the latest closing price is less than 5 and the product of the latest closing price and the latest volume is greater than 1E6. If these conditions are met, it returns a dictionary with information about the stock ticker, including the ticker symbol, volume, price volume, and closing price.
-
-The `main_func` method is the main function of the script that runs the unusual volume scanner. It uses multiprocessing to run the `get_match` method in parallel for each stock ticker in the `tickers` list. It then filters out any `None` values and creates a pandas DataFrame from the remaining results. It also sends a Discord webhook with information about the number of stocks that meet the search criteria and the information about each stock.
+- **yfinance changed its defaults.** The original 2023 code used `data["High"]` directly. Newer yfinance releases return MultiIndex columns (`("High", "IP.CN")`) from `download()` even for one ticker, so `data["High"].max()` returns a Series instead of a number. Pass `multi_level_index=False` as above. `auto_adjust` now defaults to `True`, so `Close` is the split- and dividend-adjusted close.
+- **Don't filter with `None.__ne__`.** The original used `filter(None.__ne__, results)`. It only worked because `NotImplemented` was truthy; newer Python versions warn about or reject `NotImplemented` in a boolean context. Use `r is not None`.
+- **Off-by-one on the open.** The original took `data["Open"].iloc[1]` for the "first open", which is the second bar. It's `iloc[0]` now.
+- **Yahoo data is unofficial.** yfinance scrapes Yahoo's endpoints, which get rate-limited and change without notice. Running a pool of processes against hundreds of tickers will hit those limits.
 
 ## References
-- https://github.com/FriendlyUser/stock_screener/tree/master
-- https://friendlyuser.github.io/posts/stonks/ta/stonk_screener_part_I
+
+- [stock_screener source](https://github.com/FriendlyUser/stock_screener/tree/master)
+- [Part I](/posts/stonks/ta/stonk_screener_part_I/)
+- [yfinance on PyPI](https://pypi.org/project/yfinance/)

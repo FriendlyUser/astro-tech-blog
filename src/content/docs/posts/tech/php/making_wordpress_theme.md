@@ -1,114 +1,106 @@
 ---
 tags: ['php', 'wordpress']
-title: Creating a custom wordpress theme.
-description: After thoughts of building a lousy wordpress theme.
+title: "Building a custom WordPress theme: files, the Loop, and publishing"
+description: Notes from building a rough Tailwind-styled WordPress theme, covering the theme files, a post-card Loop, its bugs, and where to publish it.
 pubDate: Fri, 7 October 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1444932837.png
 ---
-WordPress is a popular open-source content management system (CMS) that allows users to create and manage websites and blogs. It is written in PHP and uses a MySQL database to store and organize website content. With WordPress, users can easily create and customize website designs, add functionality through plugins, and publish content such as blog posts, pages, and media.
+WordPress is an open-source CMS written in PHP that stores content in MySQL (or MariaDB). A theme controls how that content is rendered. These are my notes from building a fairly rough custom theme, [bluey-wordpress-theme](https://github.com/FriendlyUser/bluey-wordpress-theme), styled with Tailwind CSS.
 
+## Classic themes vs. block themes
 
-A WordPress theme is made up of several files and directories that work together to control the layout, design, and functionality of a website. Here is a brief overview of the main files and directories found in a WordPress theme:
+The theme in this post is a **classic theme**: PHP template files that WordPress picks using the [template hierarchy](https://developer.wordpress.org/themes/basics/template-hierarchy/). Since WordPress 5.9, WordPress also supports **block themes**, which use HTML templates and a `theme.json` file and are edited in the Site Editor. Classic themes still work. If you're starting a new theme today, read the [block theme docs](https://developer.wordpress.org/themes/getting-started/what-is-a-theme/) first.
 
-* `style.css`: This file contains the metadata for the theme, including the theme name, author, version, and other details.
-* `index.: This is the main template file that controls the display of the website's homepage.
-* `header.: This file contains the header section of the website, including the logo, navigation menu, and other elements that appear at the top of every page.
-* `footer.: This file contains the footer section of the website, including copyright information, social media links, and other elements that appear at the bottom of every page.
-* `sidebar.: This file contains the sidebar section of the website, including widgets such as search bars, recent posts, and categories.
-* `functions.: This file contains the theme's functions and actions, which can be used to add custom features and modify the behavior of WordPress.
-* `template-parts/`: This directory contains sub-templates for specific sections of the website, such as the loop that displays posts, the comments section, and the search results page.
+## Files in a classic theme
 
-Other files and directories may also be included in a WordPress theme, depending on the complexity of the design and functionality.
+Only two files are required: `style.css` and `index.php`. The rest are optional, and WordPress falls back to `index.php` when a more specific template is missing.
 
+- `style.css`: the header comment holds the theme metadata (Theme Name, Author, Version, Text Domain, and so on).
+- `index.php`: the fallback template for every request.
+- `header.php` / `footer.php` / `sidebar.php`: shared parts, loaded with `get_header()`, `get_footer()` and `get_sidebar()`.
+- `functions.php`: registers menus, widget areas, theme supports (such as `post-thumbnails`), and enqueues scripts and styles.
+- `single.php`, `page.php`, `archive.php`: templates for single posts, pages and archive listings.
+- `template-parts/`: reusable chunks loaded with `get_template_part()`.
 
-Creating a custom WordPress theme involves several steps. Here is a high-level overview of the process:
+## The workflow
 
-1. Plan your design: Sketch out the layout and design of your website, including the color scheme, typography, and overall look and feel.
-2. Set up a development environment: Install WordPress on your local computer or a remote server, and set up a new theme directory in the `wp-content/themes` directory.
-3. Create the basic files: Create the basic files for your theme, including `style.css`, `index., `header., `footer., and `functions.. These files can be created from scratch or based on an existing theme.
-4. Build the template files: Create additional template files for specific pages and post types, such as `single., `page., and `archive.. Use WordPress template tags to display dynamic content such as post titles, content, and custom fields.
-5. Add functionality: Use WordPress functions and hooks to add custom features to your theme, such as custom menus, widgets, and post formats. You can also use plugins to extend the functionality of your theme.
-6. Test and debug: Test your theme on different devices and browsers, and debug any issues that arise. Use tools such as the WordPress Debugging plugin to troubleshoot errors.
-7. Publish your theme: Once your theme is complete and tested, you can package it as a zip file and submit it to the WordPress Theme Directory or sell it on a third-party marketplace.
+1. Run WordPress locally (Docker Compose with the official `wordpress` and `mysql` images works well) and create a folder under `wp-content/themes/`.
+2. Add `style.css` and `index.php`, then activate the theme in **Appearance → Themes**.
+3. Add `header.php`, `footer.php`, `functions.php`, and the specific templates as you need them. Use template tags (`the_title()`, `the_content()`, `the_permalink()`) to output post data.
+4. Turn on `WP_DEBUG` in `wp-config.php` while developing so PHP notices and deprecations show up.
+5. Test on a few screen sizes and with real content: long titles, posts without featured images, posts with no comments.
 
-This is just a high-level overview of the process of creating a custom WordPress theme. In reality, there are many details and best practices to consider at each step of the way. It's also important to stay up to date with the latest WordPress coding standards and security practices.
+## The post-card Loop
 
+This is the Loop from my theme's listing template. It renders each post as a Tailwind card with the featured image, title, excerpt, author, date, an edit link, and a comment link. Some of the translation strings still use the `html5blank` text domain.
 
-```php 
- <?php if (have_posts()): while (have_posts()) : the_post(); ?>
-
-
-
-	<br />
-
-	<br />
-
-	<br />
+```php
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 
 	<div id="post-<?php the_ID(); ?>" class="inline-block max-w-sm rounded overflow-hidden shadow-lg">
-		<?php if ( has_post_thumbnail()) : // Check if thumbnail exists ?>
-			<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-				<img class="w-full" src="<?php the_post_thumbnail_url()?>" alt="<?php the_title(); ?>">
+		<?php if ( has_post_thumbnail() ) : ?>
+			<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
+				<img class="w-full" src="<?php the_post_thumbnail_url(); ?>" alt="<?php the_title_attribute(); ?>">
 			</a>
 		<?php endif; ?>
+
 		<div class="px-6 py-4">
 			<div class="font-bold text-xl mb-2"><?php the_title(); ?></div>
-			<p class="text-gray-700 text-base">
-				<?php the_excerpt() ?>
-			</p>
+			<div class="text-gray-700 text-base">
+				<?php the_excerpt(); ?>
+			</div>
 		</div>
+
 		<div class="px-6 py-4">
 			<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
 				<?php _e( 'Published by', 'html5blank' ); ?> <?php the_author_posts_link(); ?>
 			</span>
 			<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-				<?php the_time('F j, Y'); ?> <?php the_time('g:i a'); ?>
+				<?php the_time( 'F j, Y g:i a' ); ?>
 			</span>
-			<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"><?php edit_post_link(); ?></span>
-      <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 
-      <?php if (get_comments_number() == 0) { echo 'hidden'; } ?>">
-        <?php if (comments_open( get_the_ID() ) ) comments_popup_link( __( 'Leave your thoughts', 'html5blank' ), __( '1 Comment', 'html5blank' ), __( '% Comments', 'html5blank' )); ?>
-        </span>
+			<?php
+			edit_post_link(
+				__( 'Edit', 'html5blank' ),
+				'<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">',
+				'</span>'
+			);
+			?>
+			<?php if ( comments_open() ) : ?>
+				<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+					<?php comments_popup_link( __( 'Leave your thoughts', 'html5blank' ), __( '1 Comment', 'html5blank' ), __( '% Comments', 'html5blank' ) ); ?>
+				</span>
+			<?php endif; ?>
 		</div>
 	</div>
 
-<?php endwhile; ?>
+<?php endwhile; else : ?>
 
-<?php else: ?>
-
-	<!-- article -->
 	<article>
 		<h2><?php _e( 'Sorry, nothing to display.', 'html5blank' ); ?></h2>
 	</article>
-	<!-- /article -->
 
-<?php endif; ?> 
- ```
+<?php endif; ?>
+```
 
-This is a PHP code block that is used in a WordPress theme to display a list of blog posts on a page. Here's what it does:
+`have_posts()` / `the_post()` iterate over the main query and set up the global post, so template tags like `the_title()` and `the_ID()` refer to the current post. If the query is empty, the `else` branch prints a translatable "nothing to display" message.
 
-1. The first line `<?php if (have_posts()): while (have_posts()) : the_post(); ?>` checks if there are any posts to display. If there are, it sets up a loop that will iterate through each post.
-2. The next section of code is a HTML block that displays each post. It uses WordPress template tags to display the post title, excerpt, author, and other metadata such as the publication date and number of comments.
-3. The loop continues until all posts have been displayed, and ends with `<?php endwhile; ?>`.
-4. If there are no posts to display, the code block displays a "Sorry, nothing to display." message using the `_e()` function to allow for translation.
+### What changed from the first version
 
-Some notable points about this code:
+- **Unescaped titles in attributes.** The first version put `the_title()` inside `title="…"` and `alt="…"`. A title containing a quote breaks the markup. `the_title_attribute()` escapes the value for use in an attribute.
+- **`<p>` around `the_excerpt()`.** `the_excerpt()` already wraps its output in `<p>`, so the extra `<p>` produced invalid nested paragraphs. A `<div>` avoids that.
+- **Empty edit pill.** `edit_post_link()` prints nothing for visitors who can't edit the post, but the surrounding `<span>` still rendered as an empty grey pill. Passing the `<span>` as the `$before` / `$after` arguments means it only appears when the link does.
+- **Hidden comment link.** The original added a `hidden` class when the post had zero comments, which meant the "Leave your thoughts" text could never be seen. Wrapping the pill in `comments_open()` shows it whenever comments are allowed.
+- **Stray markup.** Three `<br />` tags inside the Loop added spacing per card. That belongs in CSS (Tailwind margin classes).
 
-* The `the_ID()` function is used to retrieve the ID of the current post, which is then used as a unique identifier for the post container `div` element.
-* The `the_excerpt()` function is used to display an excerpt of the post content, which is useful for displaying a preview of the post.
-* The `edit_post_link()` function is used to display a link to edit the post if the user has permission to do so.
-* The `comments_popup_link()` function is used to display a link to the post comments, with different text depending on the number of comments.
-* The `comments_open()` function is used to check if comments are open for the current post, and the `get_comments_number()` function is used to retrieve the number of comments for the post. If there are no comments, a `hidden` class is added to the comments link to hide it from view.
+## Publishing a theme
 
-There are several ways to publish your WordPress theme on the internet, depending on your needs and preferences. Here are some common methods:
-
-1. WordPress Theme Repository: You can submit your theme to the official WordPress Theme Repository, which allows other WordPress users to download and use your theme for free. This is a great way to gain exposure for your theme and build a user base. To submit your theme, you need to follow the repository's guidelines and submit your theme for review.
-2. Theme Marketplaces: There are several third-party theme marketplaces where you can sell your theme, such as ThemeForest, Creative Market, and Mojo Marketplace. These marketplaces offer a wider audience than the WordPress Theme Repository, but they usually require a fee or commission for each sale.
-3. Your Own Website: If you have your own website, you can publish your theme there and promote it through your own marketing efforts. This gives you more control over the distribution and pricing of your theme, but it also requires more effort to build a user base.
-4. GitHub or Other Code Repositories: You can publish your theme on GitHub or other code repositories, which allows other developers to contribute to your code and suggest improvements. This is a good option if you want to collaborate with other developers and build a community around your theme.
-5. WordPress Meetups and Events: You can showcase your theme at WordPress meetups and events, which allows you to get feedback and promote your theme to other WordPress users and developers. This is a good option if you want to network with other WordPress enthusiasts and get involved in the WordPress community.
+- **WordPress.org Theme Directory**: free themes only. Themes must be GPL-compatible and pass a manual review against the [theme requirements](https://make.wordpress.org/themes/handbook/review/required/). The text domain must match the theme slug, so a theme that still uses another starter theme's text domain (like `html5blank` above) will be flagged. Run the [Theme Check](https://wordpress.org/plugins/theme-check/) plugin before submitting.
+- **Marketplaces** such as ThemeForest: paid themes, with their own review and a commission on sales.
+- **Your own site or GitHub**: zip the theme folder so users can upload it through **Appearance → Themes → Add New Theme → Upload Theme**. GitHub also lets others file issues and send pull requests.
 
 ## References
+
 - https://developer.wordpress.org/themes/getting-started/what-is-a-theme/
 - https://github.com/FriendlyUser/bluey-wordpress-theme

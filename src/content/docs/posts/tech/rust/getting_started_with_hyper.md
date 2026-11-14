@@ -1,93 +1,108 @@
 ---
 tags: ['rust']
-title: Using Hyper in Rust for Asynchronous HTTP
-description: This article will introduce Hyper, explore its core features, and demonstrate how to use it to build a simple asynchronous HTTP server.
+title: "Hello world HTTP server with hyper 1.x in Rust"
+description: "Build a minimal async HTTP/1 server with hyper 1.x, hyper-util and Tokio, and see what changed from the hyper 0.14 Server API."
 pubDate: Fri, 29 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2459005241.png
 ---
 
+:::caution
+This post originally used hyper 0.14. hyper 1.0 removed `hyper::Server`, `make_service_fn` and `hyper::Body`, so the old code no longer compiles against current hyper. The example below targets hyper 1.x.
+:::
 
-# Using Hyper in Rust for Asynchronous HTTP
+[hyper](https://hyper.rs/) is a low-level HTTP library for Rust with client and server support for HTTP/1 and HTTP/2. Frameworks such as axum are built on it. You'd use hyper directly when you want control over connection handling, or you're writing a library rather than an app; for most web apps, a framework on top of hyper is less work.
 
-Hyper is a versatile, fast, and safe HTTP library for Rust. It provides both client and server components, making it ideal for building web applications, APIs, and more. This article will introduce Hyper, explore its core features, and demonstrate how to use it to build a simple asynchronous HTTP server.
+Since 1.0, hyper only provides the protocol implementation. Things like the Tokio integration and convenience body types live in two companion crates: `hyper-util` and `http-body-util`.
 
-## Introduction to Hyper
-
-Hyper is built on top of the Tokio asynchronous runtime, which allows it to be highly concurrent and performant. It supports HTTP/1 and HTTP/2 out of the box and follows the zero-cost abstractions principle, ensuring that unused features do not affect your binary size or performance.
-
-To start working with Hyper, add the following dependencies to your `Cargo.toml`:
+## Dependencies
 
 ```toml
 [dependencies]
-hyper = "0.14"
+hyper = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+http-body-util = "0.1"
 tokio = { version = "1", features = ["full"] }
 ```
 
-## Creating a Simple HTTP Server
+`full` is the easy option for an example. In a real project you can narrow it down, e.g. `hyper = { version = "1", features = ["server", "http1"] }` and `hyper-util = { version = "0.1", features = ["tokio"] }`. This was checked against hyper 1.12 and hyper-util 0.1.21.
 
-In this section, we will create a simple HTTP server that listens on port 8080 and responds with a "Hello, World!" message. To do this, follow these steps:
+## The server
 
-1. **Import the Required Libraries**
-
-Add the necessary imports to your `main.rs` file:
+`src/main.rs`:
 
 ```rust
-use hyper::service::{make_service_fn, service_fn};
-use hyper::{Body, Request, Response, Server};
 use std::convert::Infallible;
 use std::net::SocketAddr;
-```
 
-2. **Implement the Request Handler**
+use http_body_util::Full;
+use hyper::body::{Bytes, Incoming};
+use hyper::server::conn::http1;
+use hyper::service::service_fn;
+use hyper::{Request, Response};
+use hyper_util::rt::TokioIo;
+use tokio::net::TcpListener;
 
-Create a request handler function that takes a `Request` object and returns a `Response` object wrapped in a `Result`:
-
-```rust
-async fn handle_request(_req: Request<Body>) -> Result<Response<Body>, Infallible> {
+async fn handle_request(_req: Request<Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
     let response = Response::builder()
         .status(200)
         .header("Content-Type", "text/plain")
-        .body(Body::from("Hello, World!"))
+        .body(Full::new(Bytes::from("Hello, World!")))
         .unwrap();
 
     Ok(response)
 }
-```
 
-3. **Create the Server**
-
-Create a server that binds to a socket address and uses the request handler function to process incoming requests:
-
-```rust
-async fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let listener = TcpListener::bind(addr).await?;
+    println!("Listening on http://{addr}");
 
-    let make_svc = make_service_fn(|_conn| {
-        let service = service_fn(handle_request);
-        async { Ok::<_, Infallible>(service) }
-    });
+    loop {
+        let (stream, _) = listener.accept().await?;
+        // Adapts a Tokio TcpStream to hyper's own IO traits.
+        let io = TokioIo::new(stream);
 
-    let server = Server::bind(&addr).serve(make_svc);
-
-    if let Err(e) = server.await {
-        eprintln!("Server error: {}", e);
+        // One task per connection so connections are served concurrently.
+        tokio::task::spawn(async move {
+            if let Err(err) = http1::Builder::new()
+                .serve_connection(io, service_fn(handle_request))
+                .await
+            {
+                eprintln!("Error serving connection: {err:?}");
+            }
+        });
     }
 }
 ```
 
-4. **Run the Server**
+What each piece does:
 
-To run the server, execute the following command in your terminal:
+- `handle_request` is the service. It takes a `Request<Incoming>` (the streaming request body) and returns a response whose body is `Full<Bytes>`, a body that is sent in one chunk. The `.unwrap()` on the builder only fails if you pass an invalid header or status, which is a programming error here.
+- `TcpListener` accepts connections. hyper 1.x no longer does this for you; the accept loop is your code.
+- `TokioIo` bridges Tokio's `AsyncRead`/`AsyncWrite` to hyper's runtime-agnostic IO traits.
+- `http1::Builder::serve_connection` runs HTTP/1 on one connection and calls the service for each request on it.
+
+## Running it
 
 ```sh
 cargo run
+curl -i http://127.0.0.1:8080
 ```
 
-Now, if you visit `http://127.0.0.1:8080` in your browser or use a tool like `curl`, you should see the "Hello, World!" message.
+You should get a `200 OK` with `Hello, World!` as the body.
 
-## Conclusion
+## Gotchas and next steps
 
-In this article, we have demonstrated how to use Hyper in Rust to create a simple asynchronous HTTP server. Although this example is minimal, Hyper provides a wide range of features and customization options that make it an excellent choice for building web applications, APIs, and more in Rust.
+- This server only speaks HTTP/1. To accept both HTTP/1 and HTTP/2 on the same port, use `hyper_util::server::conn::auto::Builder` in place of `http1::Builder`.
+- There is no graceful shutdown: Ctrl+C drops in-flight connections. hyper-util has a `GracefulShutdown` helper for this.
+- Routing, middleware, and JSON extraction are not hyper's job. If you need them, use axum (built on hyper) or add `tower` services yourself.
 
-As you dive deeper into Hyper, you may want to explore its support for HTTP/2, streaming requests and responses, and other powerful features. The official [Hyper documentation](https://docs.rs/hyper) is a valuable resource to get started.
+## Further reading
+
+- [hyper guides](https://hyper.rs/guides/1/)
+- [hyper 0.14 to 1.0 upgrade guide](https://hyper.rs/guides/1/upgrading/)
+- [hyper API docs](https://docs.rs/hyper)
+- [hyper-util API docs](https://docs.rs/hyper-util)

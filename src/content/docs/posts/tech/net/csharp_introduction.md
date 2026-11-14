@@ -1,99 +1,138 @@
 ---
 tags: ['csharp', 'dotnet']
-title: Introduction to csharp
-description: Explaining the history of csharp and how it is used
+title: "Introduction to C# and .NET: history, the dotnet CLI, and basic collections"
+description: "A short history of C# and .NET, the dotnet CLI commands you'll use daily, List, Dictionary and tuple examples, and how .NET compares with Java."
 pubDate: Fri, 24 January 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/118660664.png"
 ---
-C# (pronounced "C-sharp") is a modern, object-oriented programming language that was developed by Microsoft as part of its .NET initiative. The development of C# began in 1999, led by Anders Hejlsberg, and the first version of the language was released in 2000 as part of Visual Studio .NET.
+C# (pronounced "C sharp") is a statically typed, object-oriented language from Microsoft that runs on .NET. This post covers where it came from, what ".NET" means today, the `dotnet` command-line tool, and the three collection types you'll reach for first. It ends with a short comparison with Java.
 
-C# was designed to be a simple, modern, and type-safe programming language that would appeal to both object-oriented programmers and component-based development. It has its roots in C and C++, but also incorporates features from other languages such as Java and Delphi.
+## A short history of C#
 
-Since its initial release, C# has become one of the most popular programming languages in the world. It is widely used for developing a variety of applications, including Windows desktop applications, Windows Store apps, web applications, and games. The latest version of the language, C# 9.0, was released in November 2021 as part of .NET 6.0.
+Work on C# started at Microsoft in the late 1990s under Anders Hejlsberg, the original author of Turbo Pascal and chief architect of Delphi. The language was announced in 2000, and C# 1.0 shipped in early 2002 with Visual Studio .NET 2002 and .NET Framework 1.0. Its syntax comes from the C family, and early C# looked a lot like Java.
 
-C# has evolved significantly over the years, with each new version introducing new features and improvements to make the language more powerful and expressive. Despite its complex history, C# has maintained a strong focus on simplicity, readability, and developer productivity, and is widely regarded as one of the most versatile and powerful programming languages in use today.
+Since then it has gained a major feature in most releases: generics (C# 2.0, 2005), LINQ and lambdas (3.0, 2007), `async`/`await` (5.0, 2012), tuples and pattern matching (7.0, 2017), nullable reference types (8.0, 2019), and records and top-level statements (9.0, 2020). Since C# 9 (2020), a new version has shipped every November alongside each .NET release. At the time of writing, the newest is C# 15, which shipped with .NET 11 in November 2026. Microsoft's [C# version history](https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-version-history) lists what each release added.
 
+## What ".NET" means
 
-.NET is a free, open-source, cross-platform framework developed by Microsoft that provides a comprehensive set of tools and libraries for building modern applications. It enables developers to create applications for Windows, Linux, and macOS using a variety of programming languages, including C#, F#, and Visual Basic.
+The name covers two different runtimes, which is a common source of confusion:
 
-The .NET framework consists of a common language runtime (CLR), which provides a runtime environment for executing .NET applications, and a set of libraries and APIs for building applications. The framework also includes a large set of class libraries that provide a wide range of functionality, from basic data structures and algorithms to complex graphics and multimedia.
+- **.NET Framework** (2002) is the original, Windows-only runtime. It's still supported as part of Windows but only gets maintenance updates. Older WinForms, WPF and ASP.NET (non-Core) apps run on it.
+- **.NET Core** (2016) was a cross-platform, open-source rewrite. From version 5 (2020) it dropped "Core" from the name and became just **.NET**. This is what new projects should target. Even-numbered releases are long-term support (LTS), odd-numbered ones are standard-term support (STS); .NET 10 (November 2025) is the current LTS.
 
-.NET also provides tools and services for developing, deploying, and managing applications, including an integrated development environment (IDE) and a range of cloud services for hosting, deploying, and scaling applications.
+Modern .NET runs on Windows, Linux and macOS. At its core is the runtime (the CLR, which JIT-compiles intermediate language to native code and manages memory with a garbage collector) and a large base class library: collections, I/O, networking, JSON, cryptography and so on. C#, F# and Visual Basic all compile to the same intermediate language, so libraries written in one can be used from the others.
 
-.NET has been used to build a wide range of applications, including web applications, desktop applications, mobile apps, gaming, and cloud-based solutions. Its popularity stems from its ease of use, cross-platform support, and the ability to write applications in multiple programming languages.
+You'll see .NET used for web APIs and sites (ASP.NET Core), desktop apps (WinForms and WPF, which are Windows-only), cross-platform mobile and desktop apps (.NET MAUI, which replaced Xamarin), cloud services, and games (Unity uses C# for scripting).
 
-Overall, .NET is a comprehensive and powerful framework that provides developers with the tools they need to build modern applications, and its continued development and support by Microsoft has made it a popular choice for organizations and individuals alike.
+## The dotnet CLI
 
+The [.NET SDK](https://dotnet.microsoft.com/download) installs the `dotnet` command, which works the same on every OS. The commands you'll use most:
 
-The .NET Command-Line Interface (CLI) is a cross-platform tool that provides a command-line interface for working with .NET projects and the .NET platform. The .NET CLI is designed to be used in a variety of scenarios, including creating new projects, managing dependencies, building and publishing applications, and more.
+| Command | What it does |
+| --- | --- |
+| `dotnet new console -n MyApp` | Create a project from a template (`console`, `webapi`, `classlib`, `xunit`, ...) |
+| `dotnet build` | Compile the project or solution |
+| `dotnet run` | Build and run the project |
+| `dotnet test` | Run the tests in a test project |
+| `dotnet add package <name>` | Add a NuGet package reference |
+| `dotnet restore` | Download dependencies (`build`, `run` and `test` do this automatically) |
+| `dotnet publish -c Release` | Produce a deployable build |
 
-The .NET CLI provides a set of commands for managing .NET projects and solutions, including:
+A full loop from nothing to a running program:
 
-* `dotnet new`: Creates a new .NET project using a template.
-* `dotnet build`: Builds a .NET project.
-* `dotnet run`: Runs a .NET project.
-* `dotnet test`: Runs tests for a .NET project.
-* `dotnet add`: Adds a package or reference to a .NET project.
-* `dotnet restore`: Downloads dependencies for a .NET project.
-* `dotnet publish`: Publishes a .NET project for deployment.
+```bash
+dotnet new console -n Hello
+cd Hello
+dotnet run
+```
 
-The .NET CLI is designed to be fast, flexible, and easy to use, and it supports a wide range of .NET-based technologies, including .NET Core, ASP.NET, and Xamarin. The .NET CLI is also designed to be cross-platform, allowing developers to use the same tools and commands across Windows, macOS, and Linux.
+## Lists, dictionaries and tuples
 
-In conclusion, the .NET CLI is a powerful tool for working with .NET projects and solutions, providing developers with a fast and flexible way to manage their projects from the command line.
+The examples below are complete `Program.cs` files for a project created with `dotnet new console`. They use top-level statements, so there's no `Main` method or class to write.
 
+### `List<T>`
 
-In C#, there are several built-in collection types that you can use to store and manipulate collections of data, including lists, dictionaries, and tuples.
-
-1. Lists: A list is a collection of objects that can be dynamically resized. Lists are implemented using the `List<T>` class in C#, where T is the type of objects stored in the list. For example, you could create a list of integers using `List<int>`, or a list of strings using `List<string>`. You can add and remove elements from a list, as well as access elements by index. Here is an example of how to use a list in C#:
-
+`List<T>` is a resizable array of `T`. Indexing is O(1), and `Add` is amortized O(1).
 
 ```csharp
-scss`List<int> numbers = new List<int>();
+var numbers = new List<int>();
 numbers.Add(1);
 numbers.Add(2);
 numbers.Add(3);
 
-foreach (int number in numbers)
+foreach (var number in numbers)
 {
- Console.WriteLine(number);
+    Console.WriteLine(number);
 }
-```
-2. Dictionaries: A dictionary is a collection of key-value pairs, where each key is unique. Dictionaries are implemented using the `Dictionary<TKey, TValue>` class in C#, where TKey is the type of the keys and TValue is the type of the values. For example, you could create a dictionary of strings to integers using `Dictionary<string, int>`. You can add and remove elements from a dictionary, as well as access elements by key. Here is an example of how to use a dictionary in C#:
 
+Console.WriteLine($"First: {numbers[0]}, Count: {numbers.Count}");
+```
+
+### `Dictionary<TKey, TValue>`
+
+`Dictionary<TKey, TValue>` is a hash table of unique keys:
 
 ```csharp
-csharp`Dictionary<string, int> ages = new Dictionary<string, int>();
-ages.Add("John", 30);
-ages.Add("Jane", 25);
+var ages = new Dictionary<string, int>
+{
+    ["John"] = 30,
+    ["Jane"] = 25,
+};
 ages.Add("Jim", 35);
 
-foreach (KeyValuePair<string, int> person in ages)
+foreach (var (name, age) in ages)
 {
- Console.WriteLine(person.Key + " is " + person.Value + " years old.");
+    Console.WriteLine($"{name} is {age} years old.");
+}
+
+if (ages.TryGetValue("Alice", out var aliceAge))
+{
+    Console.WriteLine($"Alice is {aliceAge}");
+}
+else
+{
+    Console.WriteLine("No entry for Alice");
 }
 ```
-3. Tuples: A tuple is a collection of values with multiple components. Tuples are implemented using the `ValueTuple` class in C#, and they provide a convenient way to group multiple values into a single object. For example, you could use a tuple to return multiple values from a method. Here is an example of how to use a tuple in C#:
 
+Two things trip people up: `Add` throws `ArgumentException` if the key already exists (use the indexer, `ages["Jim"] = 36`, to insert or overwrite), and reading a missing key with `ages["Alice"]` throws `KeyNotFoundException`. `TryGetValue` avoids both the exception and a second lookup. Also don't rely on iteration order; it isn't guaranteed.
+
+### Tuples
+
+Tuples group a few values without declaring a type. They're handy for returning more than one value from a method. C# tuples are `System.ValueTuple` structs, and you can name the elements:
 
 ```csharp
-go`(string name, int age) GetPerson()
+(string Name, int Age) GetPerson()
 {
- return ("John", 30);
+    return ("John", 30);
 }
 
 var person = GetPerson();
-Console.WriteLine(person.name + " is " + person.age + " years old.");
+Console.WriteLine($"{person.Name} is {person.Age} years old.");
+
+// Or deconstruct straight into variables
+var (name, age) = GetPerson();
+Console.WriteLine($"{name} is {age} years old.");
 ```
-These are the basics of lists, dictionaries, and tuples in C#. You can use these collections to store and manipulate data in a variety of ways, and they are an essential part of many C# applications.
 
+If the same group of values gets passed around in several places, a `record` (`record Person(string Name, int Age);`) is usually clearer than a tuple.
 
-Both .NET and Java are popular choices for modern software development, and both offer a wide range of features and tools for building applications. However, there are some key differences between the two that may impact your choice of development platform.
+## .NET compared with Java
 
-1. Language: Java uses the Java programming language, while .NET supports multiple languages, including C#, F#, and Visual Basic. This means that developers familiar with different programming languages can use .NET, while Java requires a deep understanding of the Java language.
-2. Ecosystem: Java has a large and mature ecosystem, with many libraries and frameworks available for a wide range of applications. .NET also has a large ecosystem, but it may not be as mature as Java's, especially in certain areas such as machine learning and data science.
-3. Performance: Both .NET and Java can be used to build high-performance applications, but .NET has the advantage of being designed specifically for Windows, which can result in better performance compared to Java on Windows. On the other hand, Java is known for its ability to run well on different platforms, making it a good choice for cross-platform development.
-4. Development tools: Both .NET and Java have a wide range of development tools available, including integrated development environments (IDEs), code editors, and debugging tools. However, .NET has the advantage of being tightly integrated with Microsoft Visual Studio, which is widely regarded as one of the best development environments available.
-5. Enterprise applications: Both .NET and Java are commonly used for enterprise applications, and both have the necessary features and tools to support large and complex projects. However, .NET has the advantage of being tightly integrated with Microsoft technologies, making it a good choice for organizations that use Microsoft products such as Windows and Azure.
+Both are mature, garbage-collected, JIT-compiled platforms used heavily for back-end and enterprise software, and either is a reasonable choice for most server work. The differences that tend to matter in practice:
 
-In conclusion, both .NET and Java are capable platforms for modern software development, and the choice between the two will depend on your specific requirements and preferences. If you are already familiar with a particular language, or have specific requirements for performance or tools, that could influence your decision. If you are starting a new project, it may be worth evaluating both platforms to see which one best meets your needs.
+- **Languages.** .NET supports C#, F# and Visual Basic. The JVM also hosts several languages: Java, Kotlin, Scala, Groovy and Clojure. Neither platform locks you into one language.
+- **Cross-platform.** Both run on Windows, Linux and macOS. That has been true of Java from the start; for .NET it's true of .NET Core and modern .NET, not the older .NET Framework. Old claims that .NET is "designed for Windows" describe .NET Framework.
+- **Ecosystem.** Java's ecosystem is older and larger, with several competing options for most things (Spring, Quarkus and Micronaut for web, for example) and a lot of big-data tooling (Kafka, Hadoop, Spark). .NET's is more centralized: Microsoft ships the main web framework (ASP.NET Core), ORM (Entity Framework Core) and tooling, which means fewer choices but less assembly required.
+- **Tooling.** On .NET, the common IDEs are Visual Studio (Windows), JetBrains Rider, and VS Code with the C# Dev Kit. On Java, IntelliJ IDEA and Eclipse dominate.
+- **Microsoft stack.** If you already run on Azure, SQL Server, or Active Directory / Entra ID, .NET's first-party libraries for them are a practical advantage.
+
+If your team already knows one platform well, that usually outweighs any of the differences above. For a new project with no existing preference, it's worth building a small prototype in each and seeing which one fits your deployment and hiring situation.
+
+## Further reading
+
+- [C# documentation](https://learn.microsoft.com/dotnet/csharp/)
+- [.NET CLI overview](https://learn.microsoft.com/dotnet/core/tools/)
+- [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for which versions are LTS and when they go out of support

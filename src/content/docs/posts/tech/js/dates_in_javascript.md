@@ -1,100 +1,127 @@
 ---
 tags: ['jsx', 'js']
-title: Why working with native JavaScript dates is painful
-description: Working with dates in JavaScript can be frustratingly difficult. The Date object seems simple enough at first glance, but it has some major shortcomings, especially when it comes to handling timezones. 
+title: "Why JavaScript's Date is painful, and what to use instead"
+description: Where the built-in Date object trips you up with time zones and parsing, and how Intl, Temporal, Moment Timezone and date-fns-tz handle the same conversions.
 pubDate: Fri, 4 April 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
 ---
 
-Working with dates in JavaScript can be frustratingly difficult. The Date object seems simple enough at first glance, but it has some major shortcomings, especially when it comes to handling timezones. 
+:::caution
+Moment.js is a legacy project in maintenance mode, and its maintainers advise against using it in new projects. The Moment examples below still work, but for new code prefer `Intl`, Temporal, or a maintained library such as date-fns or Luxon.
+:::
 
-First, the Date object represents a single moment in time, but it does not have any timezone information associated with it. All dates are represented as timestamp values relative to the Unix epoch, so they are timezone agnostic. This means if you construct two Date objects representing the same moment in time but in different timezones, they will be exactly equal, even though they represent different points in time once timezone offsets are accounted for.
+Working with dates in JavaScript is frustrating. The `Date` object looks simple, but it is easy to get wrong, especially once time zones are involved.
 
-This lack of timezone support causes all sorts of issues. If you get a timestamp from a server, you have no idea what timezone it is relative to. When formatting a Date, the toString() and toISOString() methods will format the date in the local timezone of the system, which may not match the intended timezone of the date. 
+## What Date actually is
 
-Timezone manipulation in JavaScript requires manually offsetting the timestamp value and is very unintuitive. There is no built-in way to convert a Date to a different timezone or to account for daylight savings time transitions. You have to do all of the timezone logic manually.
+A `Date` is a single instant: a number of milliseconds since the Unix epoch (1970-01-01T00:00:00Z). It has no time zone attached. Two `Date` objects for the same instant are the same value no matter where they were created.
 
-Newer APIs like the Internationalization API and Temporal provide some relief, with full timezone support and more intuitive methods of manipulating dates. However, the Date object is still very commonly used due to its ubiquity. Unless and until it is improved, handling dates in JavaScript will remain an ongoing challenge.
+The confusion comes from the methods around it:
 
-In summary, working with the JavaScript Date object is difficult for several reasons:
+- `getHours()`, `getDate()`, `toString()` and friends read that instant in the **runtime's local time zone**.
+- `getUTCHours()` and `toISOString()` read it in **UTC**. `toISOString()` always ends in `Z`.
+- There is no way to say "this `Date` is in `Europe/London`". Any zone other than local or UTC has to be handled outside the object.
 
-- It lacks timezone information, representing only a single moment in time. 
-- It provides no methods for converting to different timezones or accounting for DST. 
-- Formatting methods format in the local timezone, which can be unintuitive. 
-- Timestamps from external sources have unknown timezones, leading to ambiguity. 
-- Timezone math requires manual logic and is very complex.
+So the problem is not that `Date` lacks a time zone; it is that it silently uses the machine's zone in half of its API.
 
-Newer APIs provide solutions to some of these issues, but the Date object remains widely used in JavaScript development, warts and all. With some extra effort and consideration of timezones, the Date object can be worked with, but it will likely remain an ongoing source of difficulty.
+## Common traps
 
-Moment and date-fns are both JavaScript libraries for dealing with dates. Some of the main things they let you do:
+```js
+// Date-only ISO strings are parsed as UTC...
+new Date('2022-04-01').toISOString();          // '2022-04-01T00:00:00.000Z'
 
-Format dates - convert a Date into a string in a specific format (e.g. "MM/DD/YYYY")
-Parse dates - convert a string into a Date
-Get parts of a date - get the year, month, day, hours, minutes, seconds, etc. from a Date
-Manipulate dates - add days/months/years, get start/end of month/week/year, etc.
-Locale awareness - format/parse dates with locale-specific options
-Relative time - get the time since some date (e.g. "2 days ago")
+// ...but date-time strings without an offset are parsed as local time
+new Date('2022-04-01T00:00:00').toISOString(); // depends on the machine's zone
 
-The main differences between moment and date-fns are:
+// Months are zero-based
+new Date(2022, 3, 1); // 1 April 2022, local time
 
-date-fns has a smaller footprint (fewer methods/features) and is designed to be tree-shakeable
-moment supports older browsers/environments and has more features
-date-fns aims to have immutable/pure functions and avoid side effects
-moment has some convenient chaining APIs
+// Setters mutate the object in place
+const d = new Date('2022-04-01T12:00:00Z');
+d.setUTCDate(d.getUTCDate() + 1); // d itself is now 2 April
+```
 
-So it basically depends on your use case and preferences. Both are popular choices and have their pros and cons.
+A timestamp from a server like `"2022-04-01 12:00:00"` with no offset is ambiguous: you have to know, out of band, which zone it was written in.
 
-Both Moment.js and date-fns are JavaScript libraries that provide functionality to work with dates, times, and timezones. Here are some examples on how to use timezones in both libraries:
+## Displaying a Date in another zone: Intl
 
-Moment.js:
+For *display*, the platform has had a built-in answer for years. `Intl.DateTimeFormat` (and `toLocaleString`, which uses it) accepts a `timeZone` option and handles daylight saving time for you:
 
-1. To create a moment object with a specific timezone, you can use the `.tz()` method:
+```js
+const d = new Date('2022-04-01T16:00:00Z');
+
+d.toLocaleString('en-GB', { timeZone: 'Europe/London' });
+// '01/04/2022, 17:00:00'  (London was on BST, UTC+1)
+
+new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/New_York',
+  dateStyle: 'medium',
+  timeStyle: 'long',
+}).format(d);
+// 'Apr 1, 2022, 12:00:00 PM EDT'
+```
+
+What `Intl` does not give you is the reverse: turning "12:00 wall-clock time in New York" into an instant, or doing arithmetic in a zone. That is where Temporal or a library comes in.
+
+## Temporal
+
+Temporal is the replacement for `Date`. It has separate types for instants, plain dates, and zoned date-times, and it is immutable. It has shipped in Firefox 139 and Chrome/Edge 144; check [MDN's compatibility table](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal) before relying on it in Safari, and use a polyfill such as `@js-temporal/polyfill` where it is missing.
+
+```js
+const ny = Temporal.ZonedDateTime.from('2022-04-01T12:00:00[America/New_York]');
+
+ny.toInstant().toString();                       // '2022-04-01T16:00:00Z'
+ny.withTimeZone('Europe/London').toString();     // '2022-04-01T17:00:00+01:00[Europe/London]'
+ny.add({ days: 1 }).toString();                  // ny is unchanged; a new value is returned
+```
+
+## Libraries: Moment Timezone and date-fns-tz
+
+Moment and date-fns both format, parse, and manipulate dates. The practical differences:
+
+- **Mutability.** Moment objects are mutable: calling a manipulation method changes the original. date-fns functions take a `Date` and return a new one.
+- **Bundle size.** date-fns is a collection of individual functions, so bundlers only include the ones you import. Moment is a single object with everything attached and does not tree-shake.
+- **Maintenance.** Moment is in maintenance mode; date-fns is actively developed.
+
+Time zone support is a separate package for both: `moment-timezone` and `date-fns-tz`.
+
+### Moment Timezone
 
 ```js
 const moment = require('moment-timezone');
 
 const date = moment.tz('2022-04-01 12:00:00', 'America/New_York');
-
 console.log(date.format()); // 2022-04-01T12:00:00-04:00
+
+const london = date.clone().tz('Europe/London');
+console.log(london.format()); // 2022-04-01T17:00:00+01:00
 ```
 
-2. To convert a moment object to a different timezone, you can use the `.tz()` method again:
+The `clone()` matters: without it, `.tz()` changes `date` as well.
+
+### date-fns-tz
+
+In date-fns-tz 3.0.0 `zonedTimeToUtc` was renamed to `fromZonedTime` and `utcToZonedTime` to `toZonedTime`. Code using the old names fails with the current version.
 
 ```js
-const moment = require('moment-timezone');
+import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
-const date = moment.tz('2022-04-01 12:00:00', 'America/New_York');
+// Interpret a wall-clock time as New York time and get the instant
+const instant = fromZonedTime('2022-04-01T12:00:00', 'America/New_York');
+console.log(instant.toISOString()); // 2022-04-01T16:00:00.000Z
 
-const convertedDate = date.tz('Europe/London');
-
-console.log(convertedDate.format()); // 2022-04-01T16:00:00+01:00
+// Format an instant in another zone
+formatInTimeZone(instant, 'Europe/London', 'yyyy-MM-dd HH:mm:ssXXX');
+// '2022-04-01 17:00:00+01:00'
 ```
 
-date-fns:
+Use `formatInTimeZone` to *show* a `Date` in a zone. A common mistake is passing a UTC `Date` to `fromZonedTime` to "convert" it; that function reads the date's wall-clock fields as if they were in the given zone, so the result depends on the machine's local zone.
 
-1. To create a date object with a specific timezone, you can use the `zonedTimeToUtc()` function:
+## Further reading
 
-```js
-const { zonedTimeToUtc } = require('date-fns-tz');
-
-const date = zonedTimeToUtc('2022-04-01 12:00:00', 'America/New_York');
-
-console.log(date.toISOString()); // 2022-04-01T16:00:00.000Z
-```
-
-Note that the `zonedTimeToUtc()` function returns a `Date` object in UTC timezone.
-
-2. To convert a `Date` object to a different timezone, you can use the `zonedTimeToUtc()` function again:
-
-```js
-const { zonedTimeToUtc } = require('date-fns-tz');
-
-const date = new Date('2022-04-01T12:00:00Z');
-
-const convertedDate = zonedTimeToUtc(date, 'Europe/London');
-
-console.log(convertedDate.toISOString()); // 2022-04-01T13:00:00.000Z
-```
-
-Note that the `zonedTimeToUtc()` function expects a `Date` object in UTC timezone.
+- [MDN: Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+- [MDN: Temporal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal)
+- [Moment.js project status](https://momentjs.com/docs/#/-project-status/)
+- [date-fns-tz](https://github.com/marnusw/date-fns-tz)

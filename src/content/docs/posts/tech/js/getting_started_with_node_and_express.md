@@ -1,118 +1,69 @@
 ---
-title: Getting started with express in nodejs
-description: Using resolutions in package.json
+title: Install Node.js and run your first Express server
+description: Install Node.js on Windows, macOS or Linux, then build a minimal Express 5 server with a start script and static file hosting.
 alt: my first blog post
 tags: ["js","introToJs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 13 Feb 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 imgSrc: '/imgs/2023/3383398588_Ship_on_the_ocean.png'
 ---
 
-JavaScript's global scope is like a public toilet. You can't avoid going
-in there, but try to limit your contact with surfaces when you do. --- Dmitry Baranovskiy
+> JavaScript's global scope is like a public toilet. You can't avoid going
+> in there, but try to limit your contact with surfaces when you do.
+> — Dmitry Baranovskiy
 
-To install Node.js on Windows, follow these steps:
+This post installs Node.js, then builds a small Express server: one route, an `npm start` script, and a folder of static files.
 
--   Go to the Node.js website: https://nodejs.org/
+## Installing Node.js
 
--   Click the \"Download\" button to download the latest version of
-    Node.js for Windows.
+Pick the LTS (long-term support) release unless you have a reason not to.
 
--   Once the download is complete, run the installer and follow the
-    on-screen instructions to install Node.js on your computer.
+### Windows
 
--   Once the installation is complete, open a command prompt or terminal
-    and type node -v to verify that Node.js was installed correctly and
-    to see which version you have installed.
+- Download the LTS installer (`.msi`) from [nodejs.org](https://nodejs.org/) and run it, or
+- use Chocolatey: `choco install nodejs-lts`.
 
-You can also use the following instructions to install Node.js using the
-Chocolatey package manager:
+You can also run Node inside the Windows Subsystem for Linux. On current Windows 10 and 11, `wsl --install` in an administrator terminal installs WSL with Ubuntu; then follow the Linux instructions below inside it.
 
--   Open a command prompt or terminal and run the following command:
+### macOS
 
-        choco install nodejs
-
--   Once the installation is complete, type node -v to verify that
-    Node.js was installed correctly and to see which version you have
-    installed.
-
-Alternatively, you can use the Windows Subsystem for Linux (WSL) to
-install and run Node.js on Windows. To do this, follow these steps:
-
--   Enable the Windows Subsystem for Linux (WSL) feature on your
-    computer. You can do this by opening the \"Turn Windows features on
-    or off\" settings, scrolling down to the \"Windows Subsystem for
-    Linux\" option, and checking the box next to it. Click \"OK\" to
-    save the changes and enable WSL.
-
--   Once WSL is enabled, open the Microsoft Store and search for
-    \"Linux\". Select a Linux distribution, such as Ubuntu, and click
-    \"Get\" to install it on your computer.
-
--   Once the Linux distribution is installed, open a command prompt or
-    terminal and type wsl to launch the Linux environment.
-
--   In the Linux environment, follow the instructions for your specific
-    distribution to install Node.js. For example, on Ubuntu, you can use
-    the following command to install the latest version of Node.js:
-
-```
-    sudo apt-get install nodejs
+```bash
+brew install node
 ```
 
-Once the installation is complete, you can use the node command to run
-Node.js in the Linux environment.
+### Linux (Ubuntu/Debian)
 
-Alternatively, you can also use a package manager like apt on Ubuntu or
-brew on macOS to install Node.js. For example, on Ubuntu, you can use
-the following commands:
-```
-    sudo apt update
-    sudo apt install nodejs
+```bash
+sudo apt update
+sudo apt install nodejs npm
 ```
 
-On macOS, you can use the following commands:
+The Ubuntu repository version usually lags well behind the current LTS. If you need a newer release, use a version manager such as [nvm](https://github.com/nvm-sh/nvm) or the NodeSource packages linked from the Node.js download page.
+
+### Check the install
+
+```bash
+node -v
+npm -v
 ```
-    brew update
-    brew install node
+
+Express 5 needs Node.js 18 or newer, so check the version printed here.
+
+## A minimal Express server
+
+Express is a small web framework for Node.js. Its core is routing (map an HTTP method and path to a handler) and middleware (functions that run on each request before your handler). Things like sessions, authentication, and file uploads come from separate middleware packages.
+
+Create a project and install Express:
+
+```bash
+mkdir my-node-app
+cd my-node-app
+npm init -y
+npm install express
 ```
 
-
-## Express
-
-Express is a popular web application framework for building back-end
-applications with Node.js. It provides a simple and flexible way to
-create web servers and web applications, and includes a variety of
-features and tools that make it easier to develop and maintain back-end
-applications.
-
-Some of the key features of Express include:
-
--   A simple, lightweight, and flexible core that makes it easy to build
-    web applications A routing system that allows you to define
-    different routes for different HTTP methods and URLs
-
--   Middleware support, which allows you to define functions that are
-    executed before or after a request is handled by a route Built-in
-    support for rendering HTML templates using popular template engines
-    like Pug and EJS
-
--   A large ecosystem of third-party libraries and plugins that can be
-    easily integrated into Express applications.
-
--   Express is widely used for building back-end applications because of
-    its simplicity, flexibility, and rich feature set. It provides a
-    solid foundation for building scalable and maintainable back-end
-    applications with Node.js.
-
-Here is an example of a simple Express server:
-
--   In order to test save the file to app.js
-
--   use yarn add express or npm install express, this should create a
-    package.json file to track dependencies.
-
--   run node app.js
+Save this as `app.js`:
 
 ```javascript
 const express = require("express");
@@ -128,17 +79,13 @@ app.listen(3000, () => {
 });
 ```
 
-In this example, the Express app is created using the express function,
-and a route is defined for the / path that sends the string \"Hello,
-world!\" as a response. The app is then set to listen for incoming
-requests on port 3000. When a request is received on the / path, the
-specified response will be sent back to the client.
+Run it with `node app.js` and open `http://localhost:3000`. A `GET /` request returns "Hello, world!"; any other path gets Express's default 404 response.
 
-To add a start command to the package.json file that will run the app.js
-file, you can add a scripts property to the package.json file, and
-specify the start command as follows:
+## Adding a start script
 
-```javascript
+Add a `scripts` entry to `package.json` so you can start the app with `npm start`:
+
+```json
 {
   "name": "my-node-app",
   "version": "1.0.0",
@@ -146,68 +93,52 @@ specify the start command as follows:
     "start": "node app.js"
   },
   "dependencies": {
-    // Dependencies go here
-    "express": "^5.0.0"
+    "express": "^5.3.0"
   }
 }
 ```
 
-In this example, the scripts property is added to the package.json file,
-and the start command is defined as node app.js. This means that when
-the start script is run (for example, by running npm start or yarn
-start), the app.js file will be executed using the node command.
+`npm init` and `npm install` will already have written most of this file; you only need to add the `start` line. Then:
 
-Once the scripts property has been added to the package.json file, you
-can run the start script by using the npm run or yarn run command,
-followed by the name of the script. For example, to run the start script
-with npm, you can run the following command:
+```bash
+npm start
+```
 
-    npm run start
+`start` is one of the few scripts npm runs without `run`; for any other script name use `npm run <name>`.
 
-To create an Express server that hosts static files, you can use the
-express.static middleware function. This function is part of the Express
-framework, which is a popular web application framework for Node.js.
+## Serving static files
 
-Here is an example of how to use the express.static middleware to host
-static files:
+`express.static` is built-in middleware that serves files from a directory:
 
 ```javascript
-const express = require('express');
+const path = require("path");
+const express = require("express");
+
 const app = express();
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.listen(3000, () => {
-  console.log('Server listening on port 3000');
+  console.log("Server listening on port 3000");
 });
 ```
 
-In this example, the express.static middleware is used to serve all
-files in the public directory. This means that any file in the public
-directory can be accessed by a client by requesting the file's path
-relative to the public directory. For example, if there is a file named
-index.html in the public directory, a client can access it by making a
-request to http://your-server-domain/index.html.
+A file at `public/index.html` is then available at `http://localhost:3000/index.html` (and at `/`, because `express.static` serves `index.html` for a directory by default). The directory name is not part of the URL.
 
-You can also specify a different directory to serve static files from by
-passing the directory path as an argument to the express.static
-function. For example:
+Use `path.join(__dirname, ...)` rather than a bare `'public'`. A relative path is resolved against the directory you launched `node` from, so `node src/app.js` run from the project root would look in the wrong place.
 
-```javascript
-app.use(express.static('my-static-files'));
-```
+`express.static` only serves files. Anything dynamic, such as form submissions or API calls, needs its own route handlers registered with `app.get`, `app.post`, and so on.
 
-This will serve all files in the my-static-files directory.
+## Further reading
 
-It's important to note that the express.static middleware only serves
-static files. It does not handle dynamic requests, such as those made
-with a form or an AJAX request. To handle dynamic requests, you will
-need to use additional middleware or route handlers.
+- [Express "Hello world"](https://expressjs.com/en/starter/hello-world.html)
+- [Serving static files in Express](https://expressjs.com/en/starter/static-files.html)
+- [Migrating to Express 5](https://expressjs.com/en/guide/migrating-5.html)
 
 ## References
 
-This content came from a book I generated using chatGPT and a lot of editing.
+This content came from a book I generated using ChatGPT and a lot of editing.
 
-View on the source material see amazon https://www.amazon.com/dp/B0BSL14M71
+View the source material on Amazon: https://www.amazon.com/dp/B0BSL14M71
 
 For a free copy, please view https://friendlyuser.github.io/assets/pdfs/introToJs.pdf

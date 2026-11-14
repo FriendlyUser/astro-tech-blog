@@ -1,112 +1,151 @@
 ---
-title: Understanding the Netty Network Framework
+title: "Netty basics: channels, pipelines and an echo server in Java"
 pubDate: "2024-01-17T06:08:15.000Z"
-description: "In this article, we will explore the core concepts of the Netty framework, its architecture, and how to build a simple server and client application"
-tags: []
+lastUpdated: 2026-11-14
+description: "The core Netty concepts (Channel, ChannelPipeline, handlers, ByteBuf) and a complete echo server and client written against Netty 4.2."
+tags: ["java"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3598219737.png
 ---
-# Understanding the Netty Network Framework
 
-## Introduction
+Netty is an asynchronous, event-driven networking framework for the JVM. Instead of one blocking thread per socket, a small pool of event-loop threads handles I/O for many connections, and your protocol logic lives in handlers that react to events. It's the networking layer under projects like gRPC-Java, Vert.x and many database drivers.
 
-Netty is an open-source, asynchronous, event-driven network application framework designed for rapid development of maintainable, high-performance protocol servers and clients. It simplifies the development of network applications by providing a high-level, easy-to-use API while hiding the complexities of low-level network programming.
+The examples below use Netty 4.2 (4.2.20.Final at the time of writing). Netty 5 exists only as alpha releases.
 
-In this article, we will explore the core concepts of the Netty framework, its architecture, and how to build a simple server and client application.
+## Core concepts
 
-## Core Concepts
+- **Channel:** an open connection (or listening socket). Operations like `write` and `close` are asynchronous and return a `ChannelFuture`.
+- **EventLoop / EventLoopGroup:** an `EventLoop` is a thread that handles I/O for the channels assigned to it. A group is a pool of them.
+- **ChannelPipeline:** an ordered chain of handlers attached to each channel. Inbound events (data read, connection active) flow from head to tail. Outbound operations (write, flush) flow from tail to head.
+- **ChannelHandler:** your code. Inbound handlers implement `ChannelInboundHandler` (usually by extending `ChannelInboundHandlerAdapter` or `SimpleChannelInboundHandler`), and outbound handlers implement `ChannelOutboundHandler`.
+- **ChannelHandlerContext:** a handler's link to its pipeline. You use it to write, fire events to the next handler, or reach the channel.
+- **ByteBuf:** Netty's byte buffer. It has separate reader and writer indexes and is reference-counted, so whoever consumes a buffer last must release it.
 
-Before diving into the architecture and examples, let's familiarize ourselves with some core concepts of the Netty framework.
+Netty also ships codecs (HTTP/1.1, HTTP/2, WebSocket, Protobuf, line- and length-based framing) that you add to the pipeline as ordinary handlers.
 
-1. **Channel**: A channel represents a network connection between two endpoints. It provides an abstraction for I/O operations like read, write, and close. Channels are non-blocking by default, meaning that I/O operations do not block the calling thread.
+## Changes in Netty 4.2
 
-2. **ChannelPipeline**: A ChannelPipeline is a chain of ChannelHandlers that are responsible for processing inbound and outbound events. When an event is triggered, the pipeline processes it sequentially through the handlers in the pipeline.
-
-3. **ChannelHandler**: A ChannelHandler processes inbound and outbound events for a Channel. It can be added to a ChannelPipeline to react to events and manipulate the data flow. There are two main types of handlers: ChannelInboundHandler and ChannelOutboundHandler.
-
-4. **ChannelHandlerContext**: A ChannelHandlerContext is created for every ChannelHandler in a pipeline. It provides a way for a handler to interact with the pipeline and the Channel. It can be used to trigger events, modify the pipeline, and access the Channel.
-
-5. **ByteBuf**: A ByteBuf is Netty's buffer implementation for efficient byte manipulation. It provides methods to read and write data, as well as to manage the buffer's capacity and reference counting.
-
-## Netty Architecture
-
-Netty's architecture revolves around the following components:
-
-1. **Transport**: The transport layer is responsible for creating and managing channels. Netty provides various transports like NIO, OIO (Old Blocking I/O), and Local (in-VM communication).
-
-2. **Buffer**: Netty's ByteBuf is used for efficient byte manipulation and buffer management.
-
-3. **Codec**: A codec is a combination of an encoder and a decoder, responsible for converting data between different formats. Netty provides various codecs like HTTP, WebSocket, and Google Protocol Buffers.
-
-4. **Handler**: Handlers process events in a ChannelPipeline. They are the main building blocks for implementing protocol logic.
-
-These components work together to handle various networking tasks, such as accepting connections, reading and writing data, and managing the lifecycle of connections.
-
-## Building a Simple Server and Client
-
-Let's build a simple server and client application using Netty. Our server will echo back any message it receives from the client.
-
-### Server
-
-1. **Create a ServerBootstrap**: ServerBootstrap is a helper class that sets up a server. We need to specify the transport (Nio), channel class (NioServerSocketChannel), and child handlers.
+Older tutorials (and the first version of this post) create `new NioEventLoopGroup()`. In 4.2, all transport-specific event loop groups are deprecated. You pass an `IoHandlerFactory` to `MultiThreadIoEventLoopGroup` instead:
 
 ```java
-ServerBootstrap bootstrap = new ServerBootstrap();
-bootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
-         .channel(NioServerSocketChannel.class)
-         .childHandler(new ChannelInitializer<SocketChannel>() {
-             @Override
-             protected void initChannel(SocketChannel ch) {
-                 ch.pipeline().addLast(new EchoServerHandler());
-             }
-         });
+EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
 ```
 
-2. **Bind and Start the Server**: To start the server, we need to bind it to a local address and port. The `sync()` method will block until the server is started.
+`EpollIoHandler`, `KQueueIoHandler`, `IoUringIoHandler` and `LocalIoHandler` replace the other transports' groups. 4.2 also changed the default buffer allocator from `pooled` to `adaptive`. Set `-Dio.netty.allocator.type=pooled` to get the 4.1 behaviour back.
 
-```java
-ChannelFuture future = bootstrap.bind(new InetSocketAddress("localhost", 8080)).sync();
-future.channel().closeFuture().sync();
+## Dependency
+
+```xml
+<dependency>
+  <groupId>io.netty</groupId>
+  <artifactId>netty-all</artifactId>
+  <version>4.2.20.Final</version>
+</dependency>
 ```
 
-3. **Implement the EchoServerHandler**: Our EchoServerHandler will extend the ChannelInboundHandlerAdapter and override the `channelRead` method. It will simply write the received message back to the client.
+## Echo server
+
+The server echoes back whatever it receives.
 
 ```java
-public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+public class EchoServer {
+    public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup bossGroup = new MultiThreadIoEventLoopGroup(1, NioIoHandler.newFactory());
+        EventLoopGroup workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+        try {
+            ServerBootstrap b = new ServerBootstrap()
+                .group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        ch.pipeline().addLast(new EchoServerHandler());
+                    }
+                });
+
+            ChannelFuture f = b.bind(8080).sync();
+            f.channel().closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+}
+
+class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        // write() only queues the data; the buffer is released after it's written.
         ctx.write(msg);
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) {
+        // Flush once per batch of reads instead of once per message.
+        ctx.flush();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
     }
 }
 ```
 
-### Client
+The "boss" group accepts connections, and the "worker" group handles I/O on accepted channels. `write()` doesn't send anything by itself. Without a `flush()` (or `writeAndFlush()`), the client never receives the echo.
 
-1. **Create a Bootstrap**: Similar to the server, we need to create a Bootstrap for the client. Specify the transport (Nio), channel class (NioSocketChannel), and handlers.
-
-```java
-Bootstrap bootstrap = new Bootstrap();
-bootstrap.group(new NioEventLoopGroup())
-         .channel(NioSocketChannel.class)
-         .handler(new ChannelInitializer<SocketChannel>() {
-             @Override
-             protected void initChannel(SocketChannel ch) {
-                 ch.pipeline().addLast(new EchoClientHandler());
-             }
-         });
-```
-
-2. **Connect to the Server**: Connect to the server by specifying its address and port. The `sync()` method will block until the connection is established.
+## Echo client
 
 ```java
-ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", 8080)).sync();
-future.channel().closeFuture().sync();
-```
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.CharsetUtil;
 
-3. **Implement the EchoClientHandler**: Our EchoClientHandler will extend the SimpleChannelInboundHandler<ByteBuf> and override the `channelActive` and `channelRead0` methods. When the channel is active, it will send a message to the server. When it receives a message from the server, it will print the echoed message.
+public class EchoClient {
+    public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+        try {
+            Bootstrap b = new Bootstrap()
+                .group(group)
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) {
+                        ch.pipeline().addLast(new EchoClientHandler());
+                    }
+                });
 
-```java
-public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+            ChannelFuture f = b.connect("localhost", 8080).sync();
+            f.channel().closeFuture().sync();
+        } finally {
+            group.shutdownGracefully();
+        }
+    }
+}
+
+class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         ctx.writeAndFlush(Unpooled.copiedBuffer("Hello, Netty!", CharsetUtil.UTF_8));
@@ -115,12 +154,27 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
         System.out.println("Client received: " + msg.toString(CharsetUtil.UTF_8));
+        ctx.close();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
     }
 }
 ```
 
-## Conclusion
+`SimpleChannelInboundHandler` releases the `ByteBuf` for you after `channelRead0` returns. The client closes the channel after the first reply, which lets `closeFuture().sync()` return and the program exit.
 
-In this article, we explored the core concepts and architecture of the Netty network framework. We also built a simple server and client application that demonstrates how to use Netty for asynchronous, event-driven network programming.
+## Gotchas
 
-Netty is a powerful framework that simplifies the development of high-performance network applications. Its modular design, rich set of built-in codecs, and easy-to-use API make it a popular choice for developers building protocol servers and clients.
+- **TCP is a byte stream, not a message stream.** One `write` on the client can arrive as several reads on the server, or several writes can arrive as one read. Real protocols need a framing decoder such as `LineBasedFrameDecoder` or `LengthFieldBasedFrameDecoder` at the front of the pipeline.
+- **Reference counting.** If a handler consumes a `ByteBuf` and doesn't pass it on, it must call `ReferenceCountUtil.release(msg)`. Run tests with `-Dio.netty.leakDetection.level=paranoid` to catch leaks.
+- **Don't block the event loop.** A slow database call inside a handler stalls every channel on that thread. Move blocking work to a separate executor.
+
+## Further reading
+
+- [Netty user guide for 4.x](https://netty.io/wiki/user-guide-for-4.x.html)
+- [Netty 4.2 migration guide](https://netty.io/wiki/netty-4.2-migration-guide.html)
+- [Official examples on GitHub](https://github.com/netty/netty/tree/4.2/example/src/main/java/io/netty/example)

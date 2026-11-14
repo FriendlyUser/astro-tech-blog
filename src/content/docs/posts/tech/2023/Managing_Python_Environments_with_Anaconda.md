@@ -1,109 +1,96 @@
 ---
-description: In this article, we will explore how to use Anaconda to create isolated
-  Python environments, manage packages, and streamline your workflow
+description: Create, share and remove isolated Python environments with conda, install packages with conda and pip, and avoid Anaconda's licensing trap.
 imgSrc: /imgs/2023/3563897667.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-23T15:04:55.000Z'
-tags: []
-title: Managing Python Environments with Anaconda
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: Managing Python environments with Anaconda and conda
 ---
 
-# Managing Python Environments with Anaconda
+Anaconda is a Python distribution for data science that bundles Python, the `conda` package and environment manager, and a few hundred preinstalled packages. Its main use is giving each project its own isolated environment, with its own Python version and dependencies, including compiled libraries (CUDA, MKL, GDAL) that are awkward to install with pip alone.
 
-Python is a versatile and powerful programming language, widely used in various domains such as data science, machine learning, web development, and more. As developers work on different projects with varying requirements, managing different Python environments can quickly become a challenging task. This is where Anaconda comes in handy. Anaconda is an open-source distribution of Python and R programming languages aimed at simplifying package management and deployment. In this article, we will explore how to use Anaconda to create isolated Python environments, manage packages, and streamline your workflow.
+## Installing
 
-## What is Anaconda?
+Download the installer from the [Anaconda download page](https://www.anaconda.com/download) and run it. On Windows, use the **Anaconda Prompt** it installs; on macOS and Linux the installer can set up your shell so `conda` works in a normal terminal.
 
-Anaconda is a distribution of Python and R programming languages that focuses on simplifying package management and deployment. It includes a suite of tools such as the *conda* package manager, the Anaconda Navigator, and the Anaconda prompt. Anaconda aims to make it easy for developers to install, manage, and deploy packages and environments for scientific computing, data science, and machine learning applications.
+If you don't want the few hundred preinstalled packages, install **Miniconda** (conda plus Python only) or **Miniforge** (the same, but configured to use the community `conda-forge` channel). All the commands below work the same in each.
 
-## Installing Anaconda
+### Check the licence first
 
-To get started with Anaconda, you can download the installer from the [official Anaconda website](https://www.anaconda.com/products/distribution). Choose the installer for your operating system (Windows, macOS, or Linux) and follow the installation instructions. By default, Anaconda installs Python, the conda package manager, and a set of pre-installed packages. After installation is complete, you can launch the Anaconda Navigator or open the Anaconda Prompt (Windows) or terminal (macOS, Linux) to start using Anaconda.
+Anaconda's own package channel (`defaults`) is free for individuals and small organisations, but Anaconda's terms of service require a paid licence for organisations with more than 200 employees or contractors. Packages from community channels such as `conda-forge` don't carry that fee. If you're installing at work, check the [Anaconda terms of service FAQ](https://www.anaconda.com/pricing/terms-of-service-faqs) or use Miniforge.
 
-## Creating and Managing Python Environments
+## Creating and using environments
 
-One of the key features of Anaconda is the ability to create isolated Python environments. This is useful when working on multiple projects with different dependencies or Python versions.
+Create an environment with a specific Python version:
 
-To create a new environment, use the following command:
-
-```
-conda create --name my_env_name python=3.8
+```bash
+conda create --name my_env python=3.12
 ```
 
-Replace `my_env_name` with the desired name for your environment and `3.8` with the desired Python version.
+Activate it. Anything you install now goes into this environment only:
 
-To activate the newly created environment, use the `conda activate` command:
-
-```
-conda activate my_env_name
+```bash
+conda activate my_env
 ```
 
-Now, any packages you install or actions you perform will be limited to this environment.
+Go back to the base environment, list environments, and delete one you no longer need:
 
-To deactivate the environment and return to the base environment, use the `conda deactivate` command:
-
-```
+```bash
 conda deactivate
-```
-
-To list all the environments you have created, use the `conda env list` command:
-
-```
 conda env list
+conda remove --name my_env --all
 ```
 
-## Managing Packages
+## Managing packages
 
-Anaconda uses the *conda* package manager to install, update, and remove packages. To search for a package, use the `conda search` command:
-
-```
-conda search package_name
-```
-
-To install a package, use the `conda install` command:
-
-```
-conda install package_name
+```bash
+conda search numpy        # see available versions
+conda install numpy pandas
+conda update numpy
+conda remove pandas
 ```
 
-To update a package to the latest version, use the `conda update` command:
+Packages that aren't on a conda channel can be installed with pip inside the active environment:
 
-```
-conda update package_name
-```
-
-To remove a package, use the `conda remove` command:
-
-```
-conda remove package_name
+```bash
+pip install some-package
 ```
 
-You can also install packages from the Python Package Index (PyPI) using *pip*:
+Mixing the two causes most broken environments. The conda docs recommend installing as much as you can with conda first, then pip. If you need to change the environment after using pip, create a fresh environment rather than running conda on top.
 
+## Sharing an environment
+
+Export the environment to a file you can commit with the project:
+
+```bash
+conda env export --from-history > environment.yml
 ```
-pip install package_name
+
+`--from-history` writes only the packages you explicitly asked for, not every resolved dependency, which keeps the file portable across operating systems. A teammate recreates it with:
+
+```bash
+conda env create --file environment.yml
 ```
 
-However, it's recommended to use *conda* when possible, as it provides better integration with Anaconda environments.
+## Jupyter
 
-## Jupyter Notebooks and Anaconda
+Install Jupyter into the environment and start it from there, so the notebook uses that environment's packages:
 
-Jupyter Notebooks are a popular tool among Python developers, especially for data analysis and visualization. Anaconda simplifies the process of setting up and using Jupyter Notebooks.
-
-To install Jupyter Notebook in your environment, use the `conda install` command:
-
-```
+```bash
 conda install jupyter
-```
-
-To launch a Jupyter Notebook server, run the following command:
-
-```
 jupyter notebook
 ```
 
-This will open a new browser window with the Jupyter Notebook interface.
+This starts a local server and opens the notebook interface in your browser.
 
-## Conclusion
+## Gotchas
 
-Anaconda provides a convenient way to manage Python environments and packages, making it easy to work on multiple projects with varying requirements. With its powerful tools and extensive package ecosystem, Anaconda can streamline your Python development workflow and help you focus on building and deploying your applications.
+- Don't install project packages into `base`. Keep it for conda itself and create an environment per project.
+- An environment is tied to its path. To move a project to another machine, share `environment.yml` rather than copying the environment folder.
+- If you only need pure-Python packages, `venv` plus pip (or uv) is lighter. Conda earns its keep when you need non-Python binaries.
+
+## Further reading
+
+- [conda user guide: managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+- [Miniforge](https://github.com/conda-forge/miniforge)

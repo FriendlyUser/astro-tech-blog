@@ -1,117 +1,109 @@
 ---
-description: C++ has emerged as one of the preferred languages for implementing high-performance
-  scientific computing applications
+description: A short tour of C++ (and C) libraries for scientific computing, covering what each one is for, its licence, and an Eigen example that solves a linear system.
 imgSrc: /imgs/2023/1444932837.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-08T15:59:26.000Z'
-tags: []
-title: C++ Libraries for Scientific Computing An Overview
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: "C++ libraries for scientific computing: Eigen, Armadillo, Boost.Math, Ceres, FFTW and more"
 ---
 
-# C++ Libraries for Scientific Computing: An Overview
+C++ is a common choice for numerical code because you get control over memory layout and can still write `A * x` instead of nested loops. Most of that comes from libraries rather than the language. Here are the ones you are most likely to meet, grouped by what they do.
 
-Scientific computing is a multidisciplinary field that requires the use of advanced mathematical models, algorithms, and various computational techniques to solve complex problems in science and engineering. Over the years, C++ has emerged as one of the preferred languages for implementing high-performance scientific computing applications, thanks to its combination of low-level control, high-level abstractions, and support for multi-threading and parallelism. This article provides an overview of some of the most popular C++ libraries for scientific computing, covering linear algebra, optimization, data processing, and more.
+| Library | Use it for | Licence |
+| --- | --- | --- |
+| Eigen | Dense and sparse linear algebra | MPL 2.0 |
+| Armadillo | Linear algebra with MATLAB-like syntax | Apache 2.0 |
+| Boost.Math, Boost.Odeint, Boost.Geometry | Special functions, statistics, ODEs, geometry | Boost Software License |
+| Ceres Solver | Nonlinear least squares and optimisation | BSD 3-clause |
+| VTK | 3D visualisation of scientific data | BSD 3-clause |
+| OpenCV | Image processing and computer vision | Apache 2.0 |
+| FFTW | Fast Fourier transforms (C library) | GPL v2+ or commercial |
+| GSL | General numerical routines (C library) | GPL v3 |
 
-## 1. Eigen
+Check the licence before you pick one: FFTW and GSL are GPL, which affects how you can distribute software that links them.
 
-**Website:** [http://eigen.tuxfamily.org/](http://eigen.tuxfamily.org/)
+## Eigen
 
-Eigen is a high-performance C++ library for linear algebra, including operations like matrix and vector arithmetic, decompositions, and solvers for systems of linear equations. It is header-only, which means that you only need to include the header files in your project to start using it. Eigen is known for its easy-to-use and expressive API, which makes it a popular choice for both beginners and experts.
+**Website:** [libeigen.gitlab.io](https://libeigen.gitlab.io/)
 
-Some of the key features of Eigen include:
+Eigen is a header-only template library for matrices, vectors, decompositions and solvers. It supports fixed-size types (`Matrix3d`, stored on the stack with no allocation) and dynamic-size types (`MatrixXd`), and it uses expression templates, so `a + b + c` is evaluated in a single loop without temporaries. It vectorises with SSE/AVX/NEON and can use OpenMP for large matrix products. The `Eigen/Sparse` module adds sparse matrices with direct and iterative solvers.
 
-- Support for fixed-size and dynamic-size matrices and vectors
-- Expression templates to optimize computations at compile-time
-- Built-in support for sparse matrices and linear solvers
-- SIMD vectorization and multi-threading for improved performance
+Solving a small symmetric positive-definite system `Ax = b`:
 
-## 2. Armadillo
+```cpp
+#include <Eigen/Dense>
+#include <iostream>
 
-**Website:** [http://arma.sourceforge.net/](http://arma.sourceforge.net/)
+int main() {
+    Eigen::Matrix3d A;
+    A <<  4, -2,  1,
+         -2,  4, -2,
+          1, -2,  4;
+    Eigen::Vector3d b(11, -16, 17);
 
-Armadillo is another popular C++ library for linear algebra, designed with a focus on ease of use, speed, and flexibility. It provides a simple and MATLAB-like syntax for performing various matrix and vector operations, as well as a wide range of mathematical functions, such as trigonometric, logarithmic, and exponential functions. Armadillo is also header-only, making it easy to integrate into your projects.
+    Eigen::Vector3d x = A.ldlt().solve(b);
+    std::cout << x.transpose() << '\n'; // 1 -2 3
+}
+```
 
-Key features of Armadillo include:
+Since it's header-only, building just needs the include path, for example `g++ -O2 -I/usr/include/eigen3 main.cpp` on Linux with the distribution package installed. Pick the decomposition to match the matrix: `ldlt()` or `llt()` for symmetric positive-definite, `partialPivLu()` for general square matrices, `colPivHouseholderQr()` for least squares.
 
-- Support for dense and sparse matrices, as well as complex numbers
-- Optional integration with high-performance libraries like OpenBLAS and Intel MKL
-- A wide range of decomposition and solver algorithms
-- Built-in support for random number generation and statistics
+## Armadillo
 
-## 3. Boost
+**Website:** [arma.sourceforge.net](https://arma.sourceforge.net/)
 
-**Website:** [https://www.boost.org/](https://www.boost.org/)
+Armadillo offers similar functionality with syntax close to MATLAB (`mat A = randu<mat>(4,4); vec x = solve(A, b);`), which makes it a good fit for porting MATLAB or NumPy prototypes. It covers dense and sparse matrices, complex numbers, statistics and random number generation.
 
-Boost is a comprehensive collection of high-quality, peer-reviewed C++ libraries that cover a wide range of functionalities, including several libraries specifically tailored for scientific computing. Some of the most relevant Boost libraries for scientific computing are:
+Unlike Eigen, Armadillo relies on BLAS and LAPACK for decompositions, inverses and solvers. Basic arithmetic works without them, but you'll want OpenBLAS, Intel MKL or Apple Accelerate linked in. It can be used as a pure template library by defining `ARMA_DONT_USE_WRAPPER` and linking BLAS/LAPACK yourself.
 
-- **Boost.Math:** Provides a wide range of mathematical functions, including special functions, statistical distributions, and tools for numerical differentiation and integration.
-- **Boost.ODEint:** A library for solving ordinary differential equations (ODEs) using a variety of numerical methods.
-- **Boost.Geometry:** A library for handling and performing calculations on geometrical objects like points, lines, polygons, and more.
+## Boost
 
-## 4. Ceres Solver
+**Website:** [boost.org](https://www.boost.org/)
 
-**Website:** [http://ceres-solver.org/](http://ceres-solver.org/)
+Several Boost libraries are aimed at numerical work:
 
-Ceres Solver is a powerful C++ library for modeling and solving large-scale nonlinear optimization problems, commonly encountered in various scientific and engineering domains. It is particularly well-suited for problems with sparse, large-scale, or robust objective functions.
+- **Boost.Math:** special functions (gamma, Bessel, elliptic integrals), statistical distributions, quadrature, root finding, interpolation and automatic differentiation.
+- **Boost.Odeint:** ODE solvers (Runge–Kutta, adaptive step size, stiff solvers) that work with your own state types, including Eigen vectors.
+- **Boost.Geometry:** points, polygons and spatial indexes, with algorithms such as intersection, area and distance.
 
-Key features of Ceres Solver include:
+## Ceres Solver
 
-- Support for a wide range of optimization algorithms, including Levenberg-Marquardt, Dogleg, and Trust Region
-- Automatic differentiation for computing gradients
-- Built-in support for various linear solvers, including dense, sparse, and iterative methods
-- Flexible and extensible problem formulation
+**Website:** [ceres-solver.org](http://ceres-solver.org/)
 
-## 5. VTK
+Ceres, from Google, solves nonlinear least-squares problems (with optional bounds) and general unconstrained optimisation problems. It is widely used for bundle adjustment and SLAM in computer vision.
 
-**Website:** [https://vtk.org/](https://vtk.org/)
+- Trust-region methods (Levenberg–Marquardt and Dogleg) and line-search methods (including BFGS and L-BFGS).
+- Automatic, numeric or analytic derivatives. Automatic differentiation via templated cost functors is the usual choice.
+- Dense, sparse and iterative linear solvers, chosen to exploit problem structure.
+- Robust loss functions (Huber, Cauchy and others) to reduce the effect of outliers.
 
-The Visualization Toolkit (VTK) is an open-source, cross-platform C++ library for 3D computer graphics, image processing, and visualization. It provides a wide range of functionalities for processing, analyzing, and visualizing scientific data, making it particularly useful for applications in fields like fluid dynamics, medical imaging, and structural analysis.
+## VTK
 
-Some of the key features of VTK include:
+**Website:** [vtk.org](https://vtk.org/)
 
-- Support for various data types, including structured and unstructured grids, polygonal data, and volume data
-- A large collection of algorithms for filtering, transforming, and analyzing data
-- Built-in support for parallel processing and rendering using MPI and multi-threading
-- Integration with popular visualization tools like ParaView and VisIt
+The Visualization Toolkit handles 3D rendering, image processing and visualisation of scientific data: structured and unstructured grids, polygonal meshes and volumes. It has a large set of filters (contouring, clipping, streamlines) and supports parallel processing with MPI. ParaView and VisIt are both built on VTK, and VTK has Python bindings (`pip install vtk`).
 
-## 6. OpenCV
+## OpenCV
 
-**Website:** [https://opencv.org/](https://opencv.org/)
+**Website:** [opencv.org](https://opencv.org/)
 
-OpenCV (Open Source Computer Vision Library) is an open-source and cross-platform C++ library that provides tools and interfaces for real-time computer vision and image processing. It is widely used in applications like robotics, machine learning, and scientific research, where the processing and analysis of images and videos play a crucial role.
+OpenCV covers image and video processing: filtering, edge detection, geometric transforms, feature detection, camera calibration and object tracking. Its `dnn` module runs inference on models exported from other frameworks (for example ONNX models from PyTorch). OpenCL acceleration is built in, and CUDA modules are available from the `opencv_contrib` repository. Its `highgui` module can display windows using GTK, Qt or the native Windows/macOS backends.
 
-Key features of OpenCV include:
+## FFTW
 
-- A comprehensive library of image processing functions, including filtering, edge detection, and image transformations
-- Support for machine learning and deep learning, with interfaces to popular libraries like TensorFlow and PyTorch
-- Built-in support for parallel processing using OpenCL and CUDA
-- Integration with popular graphical user interface libraries like Qt and GTK
+**Website:** [fftw.org](https://www.fftw.org/)
 
-## 7. FFTW
+FFTW computes discrete Fourier transforms of any size and dimension, for real and complex data, in single, double and extended precision. It is a C library; you call its C API from C++ (`fftw_complex` is layout-compatible with `std::complex<double>`). Its speed comes from a planner that times different algorithms on your machine and picks the fastest, plus generated codelets with SIMD. It supports multithreading and MPI.
 
-**Website:** [http://www.fftw.org/](http://www.fftw.org/)
+Create the plan once and reuse it: planning with `FFTW_MEASURE` can take much longer than the transform itself.
 
-The Fastest Fourier Transform in the West (FFTW) is a C library for computing the discrete Fourier transform (DFT) in one or more dimensions. Although it is written in C, it provides a C++ API that makes it easy to use in C++ projects. FFTW is known for its high performance, achieved through various optimization techniques, such as code generation, runtime adaptation, and SIMD instructions.
+## GSL
 
-Key features of FFTW include:
+**Website:** [gnu.org/software/gsl](https://www.gnu.org/software/gsl/)
 
-- Support for single and double precision, as well as real and complex data
-- Flexible and extensible API for handling arbitrary input sizes and dimensions
-- Support for multi-threading and parallel execution using OpenMP and MPI
+The GNU Scientific Library is also a C library, with no official C++ wrapper. It covers special functions, random number generators and distributions, linear algebra, numerical integration and differentiation, root finding, interpolation, unconstrained minimisation and nonlinear least-squares fitting. Its main draw is breadth and well-documented, stable APIs; its main drawbacks for C++ users are manual memory management (`gsl_vector_alloc`/`gsl_vector_free`) and the GPL licence.
 
-## 8. GSL
+## Where to start
 
-**Website:** [https://www.gnu.org/software/gsl/](https://www.gnu.org/software/gsl/)
-
-The GNU Scientific Library (GSL) is a collection of C++ functions for numerical computing, covering a wide range of areas like linear algebra, numerical integration, optimization, and more. Although it is written in C, it provides a C++ wrapper that facilitates its use in C++ projects. GSL is part of the GNU project, which means it is free software, and it is designed to be efficient and robust.
-
-Some of the key features of GSL include:
-
-- Support for various mathematical functions, including special functions, polynomials, and random number generation
-- A wide range of linear algebra operations, including matrix and vector arithmetic, decompositions, and solvers
-- Algorithms for numerical integration, differentiation, and root-finding
-- Support for optimization and minimization, including both unconstrained and constrained methods
-
-## Conclusion
-
-Scientific computing is a diverse field that requires specialized tools and libraries for efficient and accurate problem-solving. This article has provided an overview of some of the most popular C++ libraries used in scientific computing, covering areas like linear algebra, optimization, data visualization, and more. By using these libraries, researchers and developers can harness the power of C++ to build high-performance and reliable applications for solving complex scientific problems.
+For most new C++ numerical code, start with Eigen for linear algebra and Boost.Math for special functions and statistics. Add Ceres if you need nonlinear optimisation, FFTW if FFTs are on the hot path (and the licence works for you), and VTK or OpenCV when you need visualisation or image processing.

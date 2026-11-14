@@ -1,231 +1,113 @@
 ---
-title: Using Message Passing Interface with Go A Guide to MPB
+title: "Using MPI from Go: a parallel sum with gompi and Open MPI"
 pubDate: "2023-05-30T19:37:46.030Z"
-description: "We will introduce MPB a library that enables the use of the Message Passing Interface."
+lastUpdated: 2026-11-14
+description: "Call the Message Passing Interface from Go with the gompi Open MPI wrapper: start MPI, get ranks, broadcast data, reduce partial sums and run with mpirun."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
 
+:::caution
+An earlier version of this post described an "MPB (Message Passing Bridge)" library at `github.com/btracey/go-mpb`. That package does not exist, and its code would not compile. The post now uses [`github.com/sbromberger/gompi`](https://github.com/sbromberger/gompi), a maintained cgo wrapper around Open MPI.
+:::
 
+MPI (Message Passing Interface) is the standard API for running one program as many cooperating processes, often across the nodes of a cluster. Each process has a *rank* (0 to N-1), and processes exchange data with point-to-point calls (`Send`, `Recv`) and collective calls (`Bcast`, `Reduce`). Go has no MPI support in the standard library, so you use a wrapper around a C implementation.
 
-
-
-Go is a powerful and versatile programming language, known for its simplicity, efficiency, and modern features. This has made it a popular choice for concurrent and distributed systems. In this article, we will introduce MPB (Message Passing Bridge), a library that enables the use of the Message Passing Interface (MPI) in Go programs.
-
-MPI is a widely-used communication protocol for parallel computing that allows processes to exchange data using messages. It provides an efficient and portable way to build distributed and high-performance computing applications. By combining the power of Go and MPI through the MPB library, we can create scalable parallel solutions.
+Within a single machine, goroutines and channels are usually the simpler choice. MPI earns its keep when the work has to span several machines, or when you need to fit into an existing HPC job scheduler that launches programs with `mpirun`.
 
 ## Prerequisites
 
-To follow this guide, you should have:
+- Linux or macOS. gompi's README states it does not work on Windows.
+- Open MPI with its headers and the `mpirun` launcher (for example `apt install libopenmpi-dev openmpi-bin` on Debian/Ubuntu, or `brew install open-mpi`).
+- A C compiler, since gompi uses cgo.
+- Go 1.27 or later. gompi v0.3.0's `go.mod` requires it, because the API uses generic methods such as `comm.Recv[float64](...)`.
 
-1. Go installed on your machine (version 1.16 or higher).
-2. An MPI implementation installed (e.g., OpenMPI, MPICH).
-3. Basic knowledge of Go programming and concurrent programming concepts.
+The code below was written against gompi v0.3.0.
 
-## Setting up MPB
-
-To get started with MPB, you need to install the library first. You can do this using the `go get` command:
+## Setting up
 
 ```bash
-go get github.com/btracey/go-mpb
+mkdir mpi-sum && cd mpi-sum
+go mod init example.com/mpi-sum
+go get github.com/sbromberger/gompi@v0.3.0
 ```
 
+The import path's last element is `gompi`, but the package name is `mpi`, so import it with an explicit name to keep things readable.
 
-This command will download and install the MPB package to your Go workspace.
+## A parallel sum
 
-## Writing an MPB Program
-
-Now that we have MPB installed, let's write a simple Go program that uses the library to send and receive messages between processes. We will create a program that distributes an array of integers among multiple processes, computes the sum of the elements in each process, and then gathers the partial sums.
-
-### Import the required packages
-
-First, we need to import the necessary packages, including the MPB library:
+The program builds the numbers 1 to 4×N on rank 0, broadcasts them to every rank, has each rank sum its own chunk, and reduces the partial sums back to rank 0.
 
 ```go
 package main
 
 import (
 	"fmt"
-	"github.com/btracey/go-mpb"
-	"github.com/btracey/go-mpb/mpbcomm"
-)
-```
+	"log"
 
-###  Initialize and finalize MPI
-
-Before using any MPI functions, we need to initialize the MPI environment and finalize it when we finish:
-
-```go
-func main() {
-	mpi := mpb.New(mpbcomm.New())
-
-	err := mpi.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer mpi.Finalize()
-}
-```
-
-###  Get the MPI rank and size
-
-Each process in an MPI program has a unique identifier called its rank. We also need to know the total number of processes, known as the size. We can obtain these values with the following code:
-
-```go
-rank, err := mpi.Rank()
-if err != nil {
-	panic(err)
-}
-
-size, err := mpi.Size()
-if err != nil {
-	panic(err)
-}
-```
-
-### Distribute the data and compute the partial sums
-
-Now, we can distribute the data and compute the partial sums. We will use the `MPI_Scatter` and `MPI_Gather` functions to distribute and gather the data, respectively. In this example, we will assume that the array has a length that is a multiple of the number of processes:
-
-```go
-// Create the input data (only on the root process)
-data := make([]int, size*4)
-if rank == 0 {
-	for i := range data {
-		data[i] = i + 1
-	}
-}
-
-// Prepare the buffers for receiving the scattered data
-localData := make([]int, len(data)/size)
-
-// Scatter the data among the processes
-err = mpi.Scatter(data, localData, 0) // 0 is the root process
-if err != nil {
-	panic(err)
-}
-
-// Compute the local sum
-localSum := 0
-for _, value := range localData {
-	localSum += value
-}
-```
-
-### Gather the partial sums and compute the total sum
-
-We can now gather the partial sums and compute the total sum:
-
-```go
-// Prepare the buffer for gathering the partial sums
-partialSums := make([]int, size)
-
-// Gather the partial sums on the root process
-err = mpi.Gather(localSum, partialSums, 0) // 0 is the root process
-if err != nil {
-	panic(err)
-}
-
-// Compute the total sum (only on the root process)
-if rank == 0 {
-	totalSum := 0
-	for _, sum := range partialSums {
-		totalSum += sum
-	}
-	fmt.Printf("Total sum: %d\n", totalSum)
-}
-```
-
-With these steps, we have created a simple Go program that uses the MPB library and MPI to distribute data and compute a sum in parallel. The complete source code is provided below:
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/btracey/go-mpb"
-	"github.com/btracey/go-mpb/mpbcomm"
+	mpi "github.com/sbromberger/gompi"
 )
 
 func main() {
-	mpi := mpb.New(mpbcomm.New())
-
-	err := mpi.Init()
+	m, err := mpi.Start()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	defer mpi.Finalize()
+	defer m.Stop()
 
-	rank, err := mpi.Rank()
-	if err != nil {
-		panic(err)
-	}
+	rank := m.WorldRank()
+	size := m.WorldSize()
+	comm := m.NewCommunicator(nil) // nil means all processes (MPI_COMM_WORLD)
 
-	size, err := mpi.Size()
-	if err != nil {
-		panic(err)
-	}
-
-	// Create the input data (only on the root process)
-	data := make([]int, size*4)
+	// Every rank needs a buffer of the same length for Bcast.
+	const perRank = 4
+	data := make([]int64, size*perRank)
 	if rank == 0 {
 		for i := range data {
-			data[i] = i + 1
+			data[i] = int64(i + 1)
 		}
 	}
+	comm.Bcast(data, 0)
 
-	// Prepare the buffers for receiving the scattered data
-	localData := make([]int, len(data)/size)
-
-	// Scatter the data among the processes
-	err = mpi.Scatter(data, localData, 0)
-	if err != nil {
-		panic(err)
+	// Each rank sums its own contiguous chunk.
+	var local int64
+	for _, v := range data[rank*perRank : (rank+1)*perRank] {
+		local += v
 	}
 
-	// Compute the local sum
-	localSum := 0
-	for _, value := range localData {
-		localSum += value
+	// Combine the partial sums on rank 0. dest must be allocated on every rank.
+	total := make([]int64, 1)
+	if err := comm.Reduce(total, []int64{local}, mpi.OpSum, 0); err != nil {
+		log.Fatal(err)
 	}
 
-	// Prepare the buffer for gathering the partial sums
-	partialSums := make([]int, size)
-
-	// Gather the partial sums on the root process
-	err = mpi.Gather(localSum, partialSums, 0)
-	if err != nil {
-		panic(err)
-	}
-
-	// Compute the total sum (only on the root process)
+	fmt.Printf("rank %d of %d: partial sum %d\n", rank, size, local)
 	if rank == 0 {
-		totalSum := 0
-		for _, sum := range partialSums {
-			totalSum += sum
-		}
-		fmt.Printf("Total sum: %d\n", totalSum)
+		fmt.Printf("total: %d\n", total[0])
 	}
 }
 ```
 
-## Running the MPB program
+A few things to note:
 
-To run the program, you need to compile it first. You can use the `go build` command to create an executable:
+- `mpi.Start` calls `MPI_Init`, and `m.Stop` calls `MPI_Finalize`. No MPI calls are allowed after `Stop`.
+- Collective calls such as `Bcast` and `Reduce` must be called by every rank in the communicator, with the same root and buffer lengths, or the program hangs.
+- gompi's element types are fixed-size numbers (`int8`, `byte`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`, `float32`, `float64`, `complex64`, `complex128`). Plain `int` is not accepted, which is why the example uses `int64`.
+- Broadcasting the whole array is the simplest way to share it. MPI also has a scatter operation that sends each rank only its chunk, but gompi v0.3.0 does not wrap `MPI_Scatter`, so for large inputs you would use `Send`/`Recv` per rank or have each rank load its own slice of the data.
+
+## Running it
+
+Build the binary, then launch it with `mpirun`:
 
 ```bash
-go build mpi_sum.go
+go build -o mpi-sum .
+mpirun -n 4 ./mpi-sum
 ```
 
-Now you can run the program using an MPI launcher, such as `mpirun` or `mpiexec`. For example, to run the program with four processes, use the following command:
+With four processes the data is 1 to 16, and rank 0 prints `total: 136`. The per-rank lines can appear in any order. If your machine has fewer cores than the `-n` value, Open MPI refuses to start unless you add `--oversubscribe`.
 
-```bash
-mpirun -np 4 ./mpi_sum
-```
+## Further reading
 
-This will execute the program and display the total sum of the array elements.
-
-## Conclusion
-
-In this article, we have presented an introduction to using the MPB library for Go, which enables the use of the Message Passing Interface in Go programs. With MPB, you can leverage the powerful features of both Go and MPI to create efficient and scalable parallel solutions. The example provided demonstrates how to use MPB for a simple distributed sum computation, but the library can be applied to a wide range of parallel computing tasks.
+- [gompi on GitHub](https://github.com/sbromberger/gompi), including a migration guide from v0.2
+- [Open MPI documentation](https://docs.open-mpi.org/)

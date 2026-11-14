@@ -1,143 +1,98 @@
 ---
-title: Android Architecture Components A Comprehensive Overview
+title: "Android Architecture Components: ViewModel, LiveData, Room, WorkManager and Navigation in Kotlin"
 pubDate: "2023-08-17T05:09:31.000Z"
-description: "In this article , we will delve into the various components of AAC, explaining their usage and benefits to Android developers"
-tags: []
+lastUpdated: 2026-11-14
+description: "A short Kotlin example for each of the main Jetpack architecture libraries (ViewModel, LiveData, Room, Data Binding, WorkManager, Navigation) and the gotchas in each."
+tags: ["android", "kotlin"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2223533571.png
 ---
-# Android Architecture Components: A Comprehensive Overview
 
-Android Architecture Components (AAC) are a collection of libraries designed to help developers build robust, maintainable, and testable applications. Developed by Google, these components provide a solid foundation for creating applications that adhere to best practices and architectural patterns. In this article, we will delve into the various components of AAC, explaining their usage and benefits to Android developers.
+Android Architecture Components are the Jetpack libraries Google built for the problems every Android app hits: surviving configuration changes, observing data without leaking an Activity, storing data in SQLite, running background work and moving between screens. Each library is independent, so you can adopt one without the others. This post gives a minimal Kotlin example of each and points out where people usually trip up.
 
-## Table of Contents
+The examples are written against Lifecycle 2.11, Activity 1.13, Room 2.8, WorkManager 2.12 and Navigation 2.10.
 
-1. [Introduction](#introduction)
-2. [LiveData](#livedata)
-3. [ViewModel](#viewmodel)
-4. [Room Persistence Library](#room-persistence-library)
-5. [DataBinding](#databinding)
-6. [WorkManager](#workmanager)
-7. [Navigation Component](#navigation-component)
-8. [Conclusion](#conclusion)
+## ViewModel and LiveData
 
-## Introduction
-
-In the past, Android developers faced several challenges while creating applications, such as handling lifecycle events, managing UI components, or persisting data. Android Architecture Components provide a set of tools and guidelines to address these issues, making it easier for developers to craft scalable and maintainable apps.
-
-Here is a list of key AAC components that we will discuss in this article:
-
-- LiveData
-- ViewModel
-- Room Persistence Library
-- DataBinding
-- WorkManager
-- Navigation Component
-
-## LiveData
-
-**LiveData** is an observable data holder class designed to handle lifecycle-aware data. It respects the lifecycle of other app components, such as Activities, Fragments, or Services, and automatically manages subscription and unsubscription operations. LiveData ensures that UI components receive updates only when they are in an active state, avoiding common issues like memory leaks or crashes due to stopped activities.
-
-### Advantages
-
-- Ensures UI components are only updated when they are active.
-- Reduces boilerplate code for handling lifecycle events.
-- Provides a consistent way to observe data changes across the application.
-
-### Usage
-
-To use LiveData, wrap your data source with `LiveData` and expose it through a method. You can then observe the LiveData instance in your UI components, such as Activities or Fragments, providing a `LifecycleOwner` and an `Observer` for handling data updates.
+A `ViewModel` holds UI state and survives configuration changes such as rotation. It is cleared only when its owner (Activity, Fragment or navigation destination) is finished for good. `LiveData` is an observable holder that only delivers updates to observers whose lifecycle is at least `STARTED`, and removes them automatically when the lifecycle is destroyed.
 
 ```kotlin
-class UserViewModel : ViewModel() {
-    private val _userLiveData = MutableLiveData<User>()
-    val userLiveData: LiveData<User> get() = _userLiveData
-
-    fun loadUser(userId: String) {
-        // Load user data from a repository and update _userLiveData
-    }
+// build.gradle.kts (app)
+dependencies {
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
+    implementation("androidx.activity:activity-ktx:1.13.0")
 }
+```
 
-class UserActivity : AppCompatActivity() {
-    private lateinit var userViewModel: UserViewModel
+```kotlin
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user)
+class CounterViewModel : ViewModel() {
+    private val _count = MutableLiveData(0)
+    val count: LiveData<Int> = _count
 
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-
-        userViewModel.userLiveData.observe(this, Observer { user ->
-            // Update UI with the new user data
-        })
-
-        // Load user data        val userId = "123"
-        userViewModel.loadUser(userId)
+    fun increment() {
+        _count.value = (_count.value ?: 0) + 1
     }
 }
 ```
 
-## ViewModel
-
-**ViewModel** is a class designed to store and manage UI-related data in a lifecycle-conscious way. Its main purpose is to separate data handling from UI components, such as Activities or Fragments, and to preserve data during configuration changes, such as screen rotations. ViewModel instances are automatically retained during configuration changes and are not destroyed until their associated UI component is permanently removed.
-
-### Advantages
-
-- Preserves data during configuration changes.
-- Separates data handling from UI components, promoting a clean architecture.
-- Simplifies testing by allowing developers to test ViewModel classes independently from UI components.
-
-### Usage
-
-To create a ViewModel, extend the `ViewModel` class and expose your data through properties or methods. You can then obtain an instance of your ViewModel in your UI component using the `ViewModelProvider` class.
-
 ```kotlin
-class CounterViewModel : ViewModel() {
-    private var _count = MutableLiveData<Int>(0)
-    val count: LiveData<Int> get() = _count
-
-    fun increment() {
-        _count.value = _count.value?.plus(1)
-    }
-}
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 
 class CounterActivity : AppCompatActivity() {
-    private lateinit var counterViewModel: CounterViewModel
+    private val viewModel: CounterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_counter)
 
-        counterViewModel = ViewModelProvider(this).get(CounterViewModel::class.java)
+        val label = findViewById<TextView>(R.id.count_label)
+        viewModel.count.observe(this) { count ->
+            label.text = count.toString()
+        }
 
-        counterViewModel.count.observe(this, Observer { count ->
-            // Update UI with the new count
-        })
-
-        // Increment the count on button click
         findViewById<Button>(R.id.increment_button).setOnClickListener {
-            counterViewModel.increment()
+            viewModel.increment()
         }
     }
 }
 ```
 
-## Room Persistence Library
+Rotate the device and the count stays, because `by viewModels()` returns the same `CounterViewModel` instance to the recreated Activity.
 
-**Room** is a persistence library that provides an abstraction layer over SQLite, helping developers create robust and maintainable database applications. It offers compile-time checks for SQL queries, reducing the risk of runtime errors, and simplifies database access by using annotations and Kotlin/Java objects.
+Gotchas:
 
-### Advantages
+- A ViewModel survives rotation but **not** process death. Use `SavedStateHandle` (add it as a constructor parameter) for small state that must survive the process being killed.
+- Never hold a reference to an Activity, Fragment or View in a ViewModel. It outlives them and leaks them.
+- In a Fragment, observe with `viewLifecycleOwner`, not `this`, or you'll register a new observer every time the view is recreated.
+- For new Kotlin code, Google's guidance favours `StateFlow` over `LiveData`. LiveData still works and is not deprecated.
 
-- Provides type-safe and compile-time checked SQL queries.
-- Reduces boilerplate code for database operations.
-- Easily integrates with other Architecture Components, such as LiveData and ViewModel.
+## Room
 
-### Usage
-
-To use Room, define your data entities as Kotlin/Java classes and annotate them with `@Entity`. Create a Data Access Object (DAO) interface for each entity, and annotate the interface with `@Dao`. Finally, define a Room database by extending the `RoomDatabase` class and annotating it with `@Database`. You can then build an instance of your Room database and use it to perform database operations.
+Room is an abstraction over SQLite. You declare entities and DAOs with annotations, and Room's annotation processor generates the implementation and checks your SQL against the schema at compile time.
 
 ```kotlin
-// Define the User entity
+// build.gradle.kts (app); requires the KSP Gradle plugin
+dependencies {
+    implementation("androidx.room:room-runtime:2.8.5")
+    implementation("androidx.room:room-ktx:2.8.5")
+    ksp("androidx.room:room-compiler:2.8.5")
+}
+```
+
+```kotlin
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.room.*
+
 @Entity
 data class User(
     @PrimaryKey val id: String,
@@ -145,130 +100,234 @@ data class User(
     val age: Int
 )
 
-// Create a DAO for the User entity
 @Dao
 interface UserDao {
     @Query("SELECT * FROM user WHERE id = :userId")
-    fun getUser(userId: String): LiveData<User>
+    fun observeUser(userId: String): LiveData<User?>
 
-    @Insert
-    fun insertUser(user: User)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUser(user: User)
 }
 
-// Define the Room database
 @Database(entities = [User::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
-}
 
-// Build an instance of the Room database
-val db = Room.databaseBuilder(
-    context,
-    AppDatabase::class.java,
-    "app_database"
-).build()
+    companion object {
+        @Volatile private var instance: AppDatabase? = null
 
-// Use the database instance to perform operations
-val userDao = db.userDao()
-val user = User("123", "John Doe", 25)
-userDao.insertUser(user)
-userDao.getUser("123").observe(this, Observer { user ->
-    // Update UI with the new user data
-})
-```
-
-## DataBinding
-
-**DataBinding** is a support library that allows developers to bind UI components directly to data sources, reducing the need for boilerplate code to update the UI when data changes. It supports two-way data binding, meaning that changes in the UI can automatically update the data source, and vice versa.
-
-### Advantages
-
-- Reduces boilerplate code for updating the UI.
-- Provides a clear separation of UI and data handling code.
-- Improves performance by minimizing UI updates and avoiding unnecessary operations.
-
-### Usage
-
-To enable DataBinding in your project, add the following to your app's `build.gradle` file:
-
-```groovy
-android {
-    ...
-    buildFeatures {
-        dataBinding true
+        fun get(context: Context): AppDatabase =
+            instance ?: synchronized(this) {
+                instance ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database"
+                ).build().also { instance = it }
+            }
     }
 }
 ```
 
-Next, wrap your layout XML with a `<layout>` tag and add `<data>` elements to define variables. In your UI component, use the generated binding class to inflate the layout and bind the data to the UI.
+Using it from a ViewModel:
+
+```kotlin
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
+class UserViewModel(app: Application) : AndroidViewModel(app) {
+    private val dao = AppDatabase.get(app).userDao()
+
+    val user = dao.observeUser("123")
+
+    fun save(name: String, age: Int) {
+        viewModelScope.launch { dao.insertUser(User("123", name, age)) }
+    }
+}
+```
+
+Gotchas:
+
+- Room throws if you run a blocking query on the main thread. Make write methods `suspend` (or return `Flow`/`LiveData` for reads) and Room moves the work off the main thread for you.
+- Build the database once per process. Each `databaseBuilder(...).build()` opens a new connection pool.
+- Changing an entity means bumping `version` and supplying a `Migration` (or `AutoMigration`). Without one, Room throws at startup rather than silently losing data, unless you opted into `fallbackToDestructiveMigration()`.
+
+## Data Binding
+
+Data Binding lets layout XML reference variables directly with `@{...}` expressions. Enable it in the module:
+
+```kotlin
+// build.gradle.kts (app)
+android {
+    buildFeatures {
+        dataBinding = true
+    }
+}
+```
+
+Wrap the layout in a `<layout>` tag and declare variables in `<data>`:
 
 ```xml
-<!-- activity_main.xml -->
+<!-- res/layout/activity_main.xml -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <variable
             name="user"
             type="com.example.User" />
     </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <TextView
-            android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{user.name}" />
 
         <TextView
-            android:id="@+id/user_age"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{Integer.toString(user.age)}" />
+            android:text="@{String.valueOf(user.age)}" />
     </LinearLayout>
 </layout>
 ```
 
+The build generates `ActivityMainBinding` from the layout name:
+
 ```kotlin
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.example.databinding.ActivityMainBinding
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Inflate the layout using DataBindingUtil
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
-        // Bind the data to the UI
-        val user = User("123", "John Doe", 25)
-        binding.user = user
+        binding.user = User("123", "John Doe", 25)
     }
 }
 ```
 
+Two-way binding (`@={...}`) is also supported, typically against a `MutableLiveData` or `ObservableField`. To bind LiveData, set `binding.lifecycleOwner = this` or the views won't update.
+
+If you only want typed references to views and no expressions in XML, use [View Binding](https://developer.android.com/topic/libraries/view-binding) instead. It's simpler and builds faster. For new UI, most Google samples now use Jetpack Compose, which doesn't need either.
+
 ## WorkManager
 
-**WorkManager** is a library for managing deferrable, guaranteed background work in Android applications. It takes care of compatibility issues and provides a clean API for scheduling tasks, even when the app is not running or the device is rebooted. WorkManager chooses the best way to run your tasks, depending on factors such as the device's API level and the app's constraints.
-
-### Advantages
-
-- Simplifies background task scheduling and execution.
-- Ensures tasks are executed, even when the app is not running or the device is rebooted.
-- Handles compatibility and API level differences gracefully.
-
-### Usage
-
-To use WorkManager, create a class that extends `Worker` and override the `doWork()` method. This method contains the code that will be executed when your task is run. You can then create a `WorkRequest` to schedule your task, and a `WorkManager` instance to enqueue the request.
+WorkManager runs deferrable background work that must complete even if the user leaves the app or the device reboots. It persists work requests in its own database and schedules them through `JobScheduler`.
 
 ```kotlin
-// Define a Worker class
-class MyWorker(context: Context, workerParams: WorkerParameters) :
-    Worker(context, workerParams) {
-    override fun doWork(): Result {
-        // Perform your background task here
-        return Result.success()
+// build.gradle.kts (app)
+dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
+}
+```
+
+```kotlin
+import android.content.Context
+import androidx.work.*
+
+class UploadWorker(context: Context, params: WorkerParameters) :
+    CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result {
+        val fileId = inputData.getString("file_id") ?: return Result.failure()
+        return try {
+            // upload(fileId)
+            Result.success()
+        } catch (e: java.io.IOException) {
+            Result.retry()
+        }
     }
 }
 
-// Schedule a task using WorkManager
-val workRequest
+fun scheduleUpload(context: Context, fileId: String) {
+    val request = OneTimeWorkRequestBuilder<UploadWorker>()
+        .setInputData(workDataOf("file_id" to fileId))
+        .setConstraints(
+            Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+        )
+        .build()
+
+    WorkManager.getInstance(context)
+        .enqueueUniqueWork("upload-$fileId", ExistingWorkPolicy.KEEP, request)
+}
+```
+
+Gotchas:
+
+- WorkManager is not for work that must start right now while the user watches. Use a coroutine in `viewModelScope` for that, or an expedited request / foreground service for urgent long-running work.
+- `PeriodicWorkRequest` has a minimum interval of 15 minutes.
+- Use `enqueueUniqueWork` when the same job could be scheduled twice, otherwise you get duplicates.
+
+## Navigation
+
+The Navigation component describes screens and the actions between them in a navigation graph, and handles the Fragment transactions and back stack for you.
+
+```kotlin
+// build.gradle.kts (app)
+dependencies {
+    implementation("androidx.navigation:navigation-fragment-ktx:2.10.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.10.2")
+}
+```
+
+```xml
+<!-- res/navigation/nav_graph.xml -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.ListFragment">
+        <action
+            android:id="@+id/action_list_to_detail"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.DetailFragment" />
+</navigation>
+```
+
+Host the graph in the Activity layout:
+
+```xml
+<androidx.fragment.app.FragmentContainerView
+    android:id="@+id/nav_host"
+    android:name="androidx.navigation.fragment.NavHostFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:defaultNavHost="true"
+    app:navGraph="@navigation/nav_graph" />
+```
+
+Then navigate from a Fragment:
+
+```kotlin
+import androidx.navigation.fragment.findNavController
+
+// inside ListFragment
+findNavController().navigate(R.id.action_list_to_detail)
+```
+
+To pass arguments type-safely, add the Safe Args Gradle plugin or, since Navigation 2.8, use the Kotlin-serialization-based type-safe routes. For Compose-only apps, also look at [Navigation 3](https://developer.android.com/guide/navigation/navigation-3), a separate library built around a back stack you own.
+
+## Further reading
+
+- [Guide to app architecture](https://developer.android.com/topic/architecture)
+- [ViewModel overview](https://developer.android.com/topic/libraries/architecture/viewmodel)
+- [Room](https://developer.android.com/training/data-storage/room)
+- [WorkManager](https://developer.android.com/develop/background-work/background-tasks/persistent)
+- [Navigation](https://developer.android.com/guide/navigation)

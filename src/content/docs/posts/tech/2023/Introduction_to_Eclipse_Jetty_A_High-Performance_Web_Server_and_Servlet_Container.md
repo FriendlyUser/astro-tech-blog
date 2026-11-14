@@ -1,126 +1,103 @@
 ---
-description: This article explores the key features, architecture, and use cases of
-  Eclipse Jetty.
+description: What Eclipse Jetty is, how its server, connectors and handlers fit together in Jetty 12, and how to embed it in a Java app or run it standalone.
 imgSrc: /imgs/2023/3383398588_Ship_on_the_ocean.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-27T08:18:10.000Z'
-tags: []
-title: Introduction to Eclipse Jetty A High-Performance Web Server and Servlet Container
+lastUpdated: 2026-11-14
+tags: ["java"]
+title: 'Eclipse Jetty: an introduction to the Java web server and servlet container'
 ---
 
-# Introduction to Eclipse Jetty: A High-Performance Web Server and Servlet Container
+Eclipse Jetty is a Java HTTP server, HTTP client and servlet container. You can run it standalone and deploy web applications (WAR files) to it, or embed it as a library so your `main` method starts an HTTP server, which is how many frameworks and tools use it. It is an Eclipse Foundation project, dual-licensed under the Eclipse Public License 2.0 and Apache License 2.0.
 
-Eclipse Jetty is an open-source, high-performance web server and servlet container designed for serving static and dynamic content. It is a subproject of the Eclipse Foundation, which is known for creating and maintaining various open-source projects. Jetty is widely used across a range of industries and applications, from small-scale projects to large-scale enterprise applications. This article explores the key features, architecture, and use cases of Eclipse Jetty.
+## Versions
 
-## Key Features of Eclipse Jetty
+| Version | Status | Minimum Java | Servlet / Jakarta EE |
+|---|---|---|---|
+| 12.1 | Supported | 17 | Servlet 3.1 to 6.1 (EE8 to EE11) |
+| 12.0 | Supported | 17 | Servlet 3.1 to 6.0 (EE8 to EE10) |
+| 11, 10, 9.4 | End of life | 11 (9.4: 8) | 5.0, 4.0, 3.1 |
 
-1. **Lightweight and Modular**: Jetty is designed to be lightweight and modular, allowing developers to include only the components they need for their specific use case. This modularity helps to reduce the application's footprint and improve performance.
+Community support for Jetty 10 and 11 ended on 1 January 2024. If you are on 9.x, 10 or 11, plan an upgrade to 12. Jetty 12 changed the core APIs (see below), so code written for older versions doesn't compile unchanged.
 
-2. **High Performance**: Jetty is known for its high performance, handling thousands of requests per second with minimal overhead. This makes it suitable for large-scale applications as well as small projects.
+## How Jetty is put together
 
-3. **Scalability**: Jetty is designed for horizontal scalability, making it an ideal choice for cloud-based and containerized deployments.
+- **`Server`** owns the thread pool, the connectors and the root handler, and manages their lifecycle (`start()`/`stop()`).
+- **Connectors** accept network connections. `ServerConnector` uses non-blocking NIO and is configured with a `ConnectionFactory` per protocol: HTTP/1.1, HTTP/2 (with or without TLS), and the PROXY protocol. HTTP/3 over QUIC uses a separate connector.
+- **Handlers** process requests. In Jetty 12 the core `Handler` API no longer depends on the Servlet API. Handlers take a Jetty `Request`, `Response` and `Callback`, and can be chained or wrapped (`ContextHandler`, `ResourceHandler` for static files, `GzipHandler`, and so on).
+- **Environments** add servlet support on top of the core: `ee8` (`javax.servlet`), and `ee9`, `ee10` and `ee11` (`jakarta.servlet`). One Jetty 12 server can host applications written against different EE versions side by side.
+- **Modules** (standalone mode only) are how you switch on features such as `http`, `https`, `http2`, `ee11-deploy` or `websocket` without editing XML by hand.
 
-4. **Embeddable**: Jetty can be easily embedded into other Java applications, allowing developers to create custom web servers and servlet containers tailored to their specific requirements.
+## Embedding Jetty
 
-5. **Support for Java Standards**: Jetty supports Java standards, including the Servlet API, JavaServer Pages (JSP), and Java WebSocket API. This ensures compatibility with a wide range of Java-based web applications and frameworks.
+Add the server artifact (12.1.15 is the latest release on Maven Central at the time of writing):
 
-6. **Active Community and Extensive Documentation**: Jetty has an active community and extensive documentation, making it easy to find answers to questions and discover best practices.
+```xml
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-server</artifactId>
+    <version>12.1.15</version>
+</dependency>
+```
 
-## Architecture of Eclipse Jetty
+A server that answers every request with plain text, using the Jetty 12 core API:
 
-Jetty's architecture is composed of several key components:
+```java
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.Callback;
 
-1. **Jetty Server**: The core of Jetty is the Jetty Server, which handles incoming connections and manages the lifecycle of the request-response cycle.
+public class HelloJetty {
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(8080);
 
-2. **HTTP Connectors**: Jetty supports various HTTP connectors, such as standard blocking connectors (HTTP/1.1) and non-blocking connectors (HTTP/2). These connectors handle incoming requests and pass them to the appropriate handlers.
+        server.setHandler(new Handler.Abstract.NonBlocking() {
+            @Override
+            public boolean handle(Request request, Response response, Callback callback) {
+                response.setStatus(200);
+                response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain; charset=UTF-8");
+                Content.Sink.write(response, true, "Hello from Jetty\n", callback);
+                return true; // this handler took responsibility for the request
+            }
+        });
 
-3. **Handlers**: Handlers are responsible for processing requests and generating responses. Jetty provides several built-in handlers, including the ServletHandler, which processes servlet-based web applications, and the ResourceHandler, which serves static content.
+        server.start();
+        server.join();
+    }
+}
+```
 
-4. **Servlet Containers**: Jetty includes a built-in servlet container that implements the Java Servlet API. This container can host Java-based web applications, including those that use JSP and Java WebSocket APIs.
+Run it and `curl http://localhost:8080/` returns `Hello from Jetty`. Returning `true` from `handle` tells Jetty the request was handled, and the response is complete once the `callback` is completed. Here `Content.Sink.write` completes it after the body is written. Returning `false` lets Jetty send a 404.
 
-5. **Jetty Modules**: Jetty's modular architecture allows developers to include additional functionality through modules. These modules include support for SSL/TLS, WebSocket, SPDY, and more.
+To run servlets in embedded mode instead, add the servlet artifact for your EE version (for example `org.eclipse.jetty.ee10:jetty-ee10-servlet`) and use its `ServletContextHandler`.
 
-## Use Cases for Eclipse Jetty
+Jetty logs through SLF4J. Without an SLF4J provider on the classpath you'll see a warning and no logs; add `org.eclipse.jetty:jetty-slf4j-impl` or your usual logging backend.
 
-Eclipse Jetty can be used in a variety of scenarios, including:
+## Running Jetty standalone
 
-1. **Standalone Web Server**: Jetty can be used as a standalone web server to serve static and dynamic content. It is a popular choice for serving RESTful APIs due to its high performance and support for HTTP/2.
+Download and unpack the Jetty distribution (this is `$JETTY_HOME`). Then create a separate `$JETTY_BASE` directory for your configuration and apps, so upgrading Jetty never touches your files:
 
-2. **Servlet Container**: Jetty can be used as a servlet container, hosting Java-based web applications that use the Servlet API, JSP, or Java WebSocket API.
+```bash
+mkdir jetty-base
+cd jetty-base
+java -jar $JETTY_HOME/start.jar --add-modules=http,ee11-deploy
+java -jar $JETTY_HOME/start.jar
+```
 
-3. **Embedded Web Server**: Jetty can be embedded into other Java applications, enabling developers to create custom web servers or servlet containers that meet their specific requirements.
+Drop a WAR file into `jetty-base/webapps/` and Jetty deploys it. The `ee11-deploy` module is for Jakarta EE 11 (Servlet 6.1) applications; use `ee10-deploy`, `ee9-deploy` or `ee8-deploy` to match older ones.
 
-4. **Microservices and Containers**: Jetty's lightweight and modular nature make it an excellent choice for microservices architectures and containerized deployments, such as those using Docker and Kubernetes.
+## Gotchas
 
-5. **Reverse Proxy**: Jetty can be used as a reverse proxy, forwarding requests to other web servers or applications and load balancing traffic.
+- **`javax` vs `jakarta`**: an app that imports `javax.servlet.*` needs the `ee8` environment. `jakarta.servlet.*` apps need `ee9` or later. Picking the wrong one fails at deploy time with class-not-found errors.
+- **Old tutorials**: examples that extend `AbstractHandler` and receive an `HttpServletRequest` are for Jetty 9 to 11. In Jetty 12, use `Handler.Abstract` as above, or a servlet.
+- **Reverse proxying**: the `jetty-proxy` artifact provides a `ProxyHandler` (and `ProxyServlet` variants for each EE environment) if you need Jetty to forward requests to another server. For a plain front-end proxy in front of several services, a dedicated proxy such as nginx or HAProxy is usually simpler.
 
-## Conclusion
+## Further reading
 
-Eclipse Jetty is a versatile, high-performance web server and servlet container that can be easily tailored to meet the specific needs of a wide range of applications. Its lightweight and modular design, support for Java standards, and active community make it an excellent choice for developers looking to build scalable and high-performance web applications.
-## Introduction to Apache Beam: A Unified Model for Batch and Streaming Data Processing
-
-Apache Beam is an open-source, unified programming model for data processing pipelines, designed to provide a comprehensive solution for batch and streaming data processing. This article provides an in-depth introduction to Apache Beam, its features and components, and demonstrates how to build a basic data processing pipeline using the framework.
-
-### Overview of Apache Beam
-
-Developed originally by Google, Apache Beam aims to simplify the process of developing data processing pipelines, allowing developers to focus on their application logic while the framework handles the underlying infrastructure. The main goals of Apache Beam are:
-
-1. **Unified programming model**: Beam provides a single API to develop both batch and streaming-based data processing pipelines.
-2. **Portability**: Beam pipelines can be executed on various runners, such as Apache Flink, Apache Spark, and Google Cloud Dataflow.
-3. **Extensibility**: Beam supports custom data sources, transformations, and sinks, enabling developers to extend its functionality according to their needs.
-
-### Beam Model Concepts
-
-Apache Beam introduces a few key concepts that are essential to understanding the framework:
-
-- **Pipeline**: A data processing job consisting of multiple stages, where data is read from a Source, transformed, and written to a Sink.
-- **PCollection**: An immutable, distributed, and potentially unordered collection of data items, representing the data in a pipeline.
-- **PTransform**: A data processing operation, applied to a PCollection, that takes one or more input PCollections and produces zero or more output PCollections.
-- **Source**: A data source from which the pipeline reads data, such as a file, a database, or a message queue.
-- **Sink**: A data destination where the pipeline writes the processed data, such as a file, a database, or a message queue.
-- **Runner**: A back-end execution engine responsible for running Beam pipelines on various distributed processing platforms.
-
-### Creating a Simple Beam Pipeline
-
-To create a simple Beam pipeline, you need to follow these steps:
-
-1. **Install Apache Beam**: You can install Apache Beam using pip:
-
-   ````bash
-   pip install apache-beam
-   ```
-
-2. **Import Beam libraries**: Import the required Beam libraries in your Python script:
-
-   ```python
-   import apache_beam as beam
-   from apache_beam.options.pipeline_options import PipelineOptions
-   ```
-
-3. **Define PipelineOptions**: Configure the pipeline options, such as the runner and any other required settings:
-
-   ```python
-   pipeline_options = PipelineOptions(['--runner=DirectRunner'])
-   ```
-
-4. **Create the pipeline**: Instantiate a pipeline object using the pipeline options:
-
-   ```python
-   with beam.Pipeline(options=pipeline_options) as pipeline:
-   ```
-
-5. **Define Source, Transformations, and Sink**: Inside the pipeline context, define the source, transformations, and sink:
-
-   ```python
-   (pipeline
-       | "Read from file" >> beam.io.ReadFromText("input.txt")
-       | "Split words" >> beam.FlatMap(lambda line: line.split())
-       | "Count words" >> beam.combiners.Count.PerElement()
-       | "Write to file" >> beam.io.WriteToText("output"))
-   ```
-
-In this example, the pipeline reads text data from an input file, splits the data into words, counts the occurrences of each word, and writes the results to an output file.
-
-### Conclusion
-
-Apache Beam is a powerful framework that simplifies the development of data processing pipelines by providing a unified programming model for both batch and streaming data. With its portability and extensibility, Beam enables developers to focus on their application logic while leveraging the capabilities of various distributed processing platforms. By understanding the key concepts, you can start building your own data processing pipelines using Apache Beam.
+- [Jetty documentation](https://jetty.org/docs/index.html)
+- [Jetty 12.1 programming guide: HTTP server](https://jetty.org/docs/jetty/12.1/programming-guide/server/http.html)
+- [Jetty downloads and version support](https://jetty.org/download.html)

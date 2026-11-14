@@ -1,104 +1,126 @@
 ---
-title: Using Generator Functions (genfuncs) in Rust
+title: "Generator functions in Rust: iter::from_fn, async-stream and nightly gen blocks"
 pubDate: "2023-04-20T14:45:32.928Z"
-description: "In this article, we will explore the use of generator functions, also known as genfuncs, in Rust programming language."
+lastUpdated: 2026-11-14
+description: "Rust has no stable yield keyword. Here's how to write generator-style code today with iter::from_fn, async-stream, and the unstable gen blocks."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/387158145.png
 ---
-# Using Generator Functions (genfuncs) in Rust
 
-In this article, we will explore the use of generator functions, also known as genfuncs, in Rust programming language. Generator functions are a powerful tool that allows you to create iterators with minimal boilerplate code. They are particularly useful when you want to create a custom iterator that yields values on-the-fly.
+:::caution
+An earlier version of this post claimed Rust marks generator functions with `async`. That's wrong: `async fn`
+returns a `Future`, and stable Rust has no `yield` keyword. Generators exist only on nightly (see the last
+section). "genfuncs" is not a Rust feature or crate; it's just shorthand for generator functions.
+:::
 
-## What are Generator Functions?
+A generator function produces a sequence of values lazily, pausing after each `yield` and resuming where it
+left off on the next request. Python's `def ... yield` and JavaScript's `function*` are the familiar
+examples. In Rust you get the same effect today by returning an `Iterator` (synchronous) or a `Stream`
+(asynchronous). This post builds a Fibonacci generator three ways.
 
-Generator functions are a type of function that, instead of returning a single value, can yield multiple values over time. In Rust, genfuncs are implemented using coroutines, which are a generalization of subroutines that can be paused and resumed multiple times during their execution.
+## Stable Rust: `std::iter::from_fn`
 
-A generator function can be thought of as a state machine that encapsulates the state of an iterator. Once a generator is paused, it can be resumed from the same state it was paused in, allowing it to continue producing values from where it left off.
-
-## Prerequisites
-
-Before we dive into using genfuncs in Rust, you need to have Rust installed on your system. You can download and install Rust from the [official website](https://www.rust-lang.org/tools/install).
-
-## Creating a Simple Generator Function
-
-Let's start by creating a simple generator function that yields the Fibonacci sequence. First, we need to declare the generator function. In Rust, we use the `async` keyword to indicate that a function is a generator function. Here's a basic example:
+`iter::from_fn` turns a closure into an iterator. The closure owns the state that a generator would keep
+between `yield`s, and returns `Some(value)` for each item or `None` to stop:
 
 ```rust
-async fn fibonacci() -> impl Iterator<Item = u64> {
-    // Generator function implementation
+fn fibonacci() -> impl Iterator<Item = u64> {
+    let (mut a, mut b) = (0u64, 1u64);
+    std::iter::from_fn(move || {
+        let current = a;
+        let next = a.checked_add(b)?; // stop instead of overflowing
+        (a, b) = (b, next);
+        Some(current)
+    })
 }
-```
 
-In this example, `fibonacci` is a generator function that returns an iterator of `u64` values.
-
-Now let's implement the generator function. We will use the `yield` keyword to produce values from the generator function:
-
-```rust
-async fn fibonacci() -> impl Iterator<Item = u64> {
-    let mut a = 0;
-    let mut b = 1;
-
-    loop {
-        let next = a + b;
-        a = b;
-        b = next;
-        yield a;
+fn main() {
+    for n in fibonacci().take(10) {
+        println!("{n}");
     }
 }
 ```
 
-Unfortunately, this code will not compile in Rust as of today. This is because Rust's `async` keyword is designed for asynchronous programming with `Future`s, and the `yield` keyword is not natively available. However, we can achieve similar functionality with the `futures` crate and using `async-stream` crate for creating generator functions.
+This prints `0 1 1 2 3 5 8 13 21 34`. Using `checked_add` makes the iterator end cleanly near the top of the
+`u64` range instead of panicking in debug builds. For sequences where each item depends only on the previous
+one, `std::iter::successors` is even shorter. For anything with more state, write a struct and implement
+`Iterator` for it.
 
-## Using the `async-stream` Crate
+## Async: the `async-stream` crate
 
-First, add the following dependencies to your `Cargo.toml`:
+When producing each value involves `.await` (reading from a socket, polling an API), you want a `Stream`
+rather than an `Iterator`. The [`async-stream`](https://docs.rs/async-stream) crate (0.3.6 at the time of
+writing) gives you a `stream!` macro where `yield` works:
 
 ```toml
 [dependencies]
 async-stream = "0.3"
 futures = "0.3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
-
-Now, modify the `fibonacci` function to use the `async_stream::stream!` macro:
 
 ```rust
 use async_stream::stream;
-use futures::Stream;
+use futures::{pin_mut, Stream, StreamExt};
 
 fn fibonacci() -> impl Stream<Item = u64> {
     stream! {
-        let mut a = 0;
-        let mut b = 1;
-
+        let (mut a, mut b) = (0u64, 1u64);
         loop {
-            let next = a + b;
-            a = b;
-            b = next;
             yield a;
+            (a, b) = (b, a + b);
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() {
+    let fib = fibonacci().take(10);
+    pin_mut!(fib); // the stream must be pinned before calling next()
+
+    while let Some(value) = fib.next().await {
+        println!("{value}");
+    }
+}
+```
+
+Two things the original version of this example got wrong:
+
+- `async fn main` needs a runtime; `#[tokio::main]` provides one.
+- The stream returned by `stream!` is not `Unpin`, so `next()` won't compile until you pin it with
+  `pin_mut!` (or `Box::pin`).
+
+The infinite `loop` is fine here because `take(10)` stops polling after ten items; without it, `a + b` would
+eventually overflow.
+
+## Nightly: `gen` blocks
+
+Native generators are being designed under the unstable `gen_blocks` feature
+([tracking issue #117078](https://github.com/rust-lang/rust/issues/117078)), which allows `gen` blocks and
+`gen fn`. A `gen` block evaluates to an `Iterator`, so the Fibonacci example becomes:
+
+```rust
+#![feature(gen_blocks)]
+
+fn fibonacci() -> impl Iterator<Item = u64> {
+    gen {
+        let (mut a, mut b) = (0u64, 1u64);
+        loop {
+            yield a;
+            (a, b) = (b, a + b);
         }
     }
 }
 ```
 
-As you can see, we have replaced the `async` keyword with the `stream!` macro and changed the return type to `impl Stream<Item = u64>`. We also imported the `futures::Stream` trait, which provides useful methods for working with streams.
+This needs a nightly compiler and the 2024 edition (where `gen` is a reserved keyword). As of this update the
+feature is still unstable, so the syntax may change; use `from_fn` or a hand-written `Iterator` in code you
+need to ship.
 
-Now we can use the `fibonacci` generator function like this:
+## Further reading
 
-```rust
-use futures::StreamExt;
-
-async fn main() {
-    let mut fib_stream = fibonacci().take(10);
-    
-    while let Some(value) = fib_stream.next().await {
-        println!("{}", value);
-    }
-}
-```
-
-In this example, we use the `StreamExt` trait from the `futures` crate to work with the generator function. We limit the output to the first 10 Fibonacci numbers using the `take()` method and print them using an asynchronous `main` function.
-
-## Conclusion
-
-In this article, we explored the concept of generator functions and how to create them in Rust using the `async-stream` crate. Generator functions can be a powerful tool when dealing with complex iterators or when you want to create custom iterators with minimal boilerplate code. Although Rust does not natively support generator functions with the `async` keyword and the `yield` statement, the `async-stream` crate offers a convenient and expressive way to create generator functions.
+- [`std::iter::from_fn`](https://doc.rust-lang.org/std/iter/fn.from_fn.html) and
+  [`std::iter::successors`](https://doc.rust-lang.org/std/iter/fn.successors.html)
+- [`async-stream` docs](https://docs.rs/async-stream)
+- [`gen_blocks` in the Unstable Book](https://doc.rust-lang.org/unstable-book/language-features/gen-blocks.html)

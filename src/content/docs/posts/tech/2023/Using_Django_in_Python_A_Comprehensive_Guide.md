@@ -1,56 +1,37 @@
 ---
-description: In this article, we will delve into the key concepts of Django and demonstrate
-  how to create a simple web application using this powerful framework
+description: "Build a small Django app from scratch: create a project and app, define a model, run migrations, and render it with a view, URLs, a template and static files."
 imgSrc: /imgs/2023/3750534419.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-31T19:03:01.000Z'
-tags: []
-title: Using Django in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: "Getting started with Django: models, views, URLs and templates"
 ---
 
-# Using Django in Python: A Comprehensive Guide
+Django is a batteries-included Python web framework. It ships an ORM, migrations, an admin site, authentication, forms and a template engine, so a CRUD-style site needs very few extra packages. Django calls its structure Model-View-Template (MVT). The "view" is the function that handles a request, and the "template" renders the HTML.
 
-Django is a high-level, open-source web framework that allows developers to build clean, maintainable, and efficient web applications quickly using Python. It follows the Model-View-Template (MVT) architectural pattern and emphasizes reusability and "plug-ability" of components. In this article, we will delve into the key concepts of Django and demonstrate how to create a simple web application using this powerful framework.
+This walkthrough builds a page that lists blog posts. It was checked against Django 6.1, which requires Python 3.12 or later.
 
-## Table of Contents
-
-1. [Installation and Setup](#installation-and-setup)
-2. [Creating a Django Project](#creating-a-django-project)
-3. [Creating a Django App](#creating-a-django-app)
-4. [Models and the Database](#models-and-the-database)
-5. [Views and URL Routing](#views-and-url-routing)
-6. [Templates and Static Files](#templates-and-static-files)
-7. [Conclusion](#conclusion)
-
-## Installation and Setup
-
-To get started with Django, you first need to install it. We recommend creating a virtual environment to isolate the dependencies of your project. Run the following commands in your terminal:
+## Install
 
 ```bash
-$ python -m venv myenv
-$ source myenv/bin/activate  ## On Windows, use 'myenv\Scripts\activate'
-$ pip install django
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install django
+python -m django --version
 ```
 
-Once Django is installed, you can verify the installation by running:
+## Create a project and an app
+
+A **project** holds settings and the root URL configuration. An **app** is a package with models, views and templates for one feature. A project usually contains several apps.
 
 ```bash
-$ python -m django --version
+django-admin startproject myproject
+cd myproject
+python manage.py startapp myapp
 ```
 
-This should display the version of Django you have installed.
-
-## Creating a Django Project
-
-A Django project is a collection of configurations and apps for a specific web application. To create a new project, run the following command:
-
-```bash
-$ django-admin startproject myproject
-```
-
-This will generate a new directory called `myproject` with the following structure:
-
-```
+```text
 myproject/
     manage.py
     myproject/
@@ -59,139 +40,151 @@ myproject/
         settings.py
         urls.py
         wsgi.py
-```
-
-The top-level `myproject` directory is just a container, and its name doesn’t matter to Django. You can rename it if you wish.
-
-## Creating a Django App
-
-A Django app is a self-contained module that encapsulates a specific functionality of your web application. To create a new app, navigate to your project's root directory (where `manage.py` is located) and run:
-
-```bash
-$ python manage.py startapp myapp
-```
-
-This will generate a new directory called `myapp` with the following structure:
-
-```
-myapp/
-    __init__.py
-    admin.py
-    apps.py
-    migrations/
+    myapp/
         __init__.py
-    models.py
-    tests.py
-    views.py
+        admin.py
+        apps.py
+        migrations/
+            __init__.py
+        models.py
+        tests.py
+        views.py
 ```
 
-## Models and the Database
-
-A model is a Python class that defines the structure of your application's data. In Django, models are used to interact with the database. Let's create a simple model for a blog post:
+Django doesn't pick up the app until you add it to `INSTALLED_APPS`. Without that step, `makemigrations` doesn't see your models and the template loader doesn't find your templates:
 
 ```python
-## myapp/models.py
+# myproject/settings.py
+INSTALLED_APPS = [
+    "myapp",
+    "django.contrib.admin",
+    # ...the rest of the defaults
+]
+```
 
+## Model and migrations
+
+```python
+# myapp/models.py
 from django.db import models
+
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField("date published")
 
     def __str__(self):
         return self.title
 ```
 
-To create the database tables for your models, run the following commands:
-
 ```bash
-$ python manage.py makemigrations myapp
-$ python manage.py migrate
+python manage.py makemigrations myapp
+python manage.py migrate
 ```
 
-## Views and URL Routing
+`makemigrations` writes a migration file describing the change. `migrate` applies it, along with the built-in apps' migrations, to the database (SQLite by default).
 
-A view is a Python function that takes a web request and returns a web response. In Django, views are used to define what should be displayed on a particular page. Let's create a simple view that returns a list of all blog posts:
+To add posts without writing a form, register the model with the admin and create a superuser:
 
 ```python
-## myapp/views.py
+# myapp/admin.py
+from django.contrib import admin
 
-from django.http import HttpResponse
 from .models import Post
 
-def index(request):
-    posts = Post.objects.order_by('-pub_date')
-    output = ', '.join([p.title for p in posts])
-    return HttpResponse(output)
+admin.site.register(Post)
 ```
 
-To map a URL to your view, you need to create a URL configuration for your app and include it in the project's URL configuration:
+```bash
+python manage.py createsuperuser
+```
+
+## View and URLs
 
 ```python
-## myapp/urls.py
+# myapp/views.py
+from django.shortcuts import render
 
+from .models import Post
+
+
+def index(request):
+    posts = Post.objects.order_by("-pub_date")
+    return render(request, "myapp/index.html", {"posts": posts})
+```
+
+Give the app its own URL configuration, then include it from the project's:
+
+```python
+# myapp/urls.py
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path("", views.index, name="index"),
 ]
+```
 
-## myproject/urls.py
-
+```python
+# myproject/urls.py
 from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('myapp/', include('myapp.urls')),
-    path('admin/', admin.site.urls),
+    path("myapp/", include("myapp.urls")),
+    path("admin/", admin.site.urls),
 ]
 ```
 
-## Templates and Static Files
+## Template and static files
 
-Templates are text files that define the structure and layout of your HTML pages. They can include placeholders for dynamic content, which are replaced with actual data when the template is rendered. Let's create a simple template for our blog post view:
+With the default `APP_DIRS: True` setting, Django looks for templates in each installed app's `templates/` directory, and the static files app looks in each app's `static/` directory. Repeat the app name inside both directories (`templates/myapp/`, `static/myapp/`) so files from different apps with the same name don't collide.
+
+```css
+/* myapp/static/myapp/style.css */
+h2 { color: navy; }
+```
 
 ```html
 <!-- myapp/templates/myapp/index.html -->
-
-{% for post in posts %}
-    <h2>{{ post.title }}</h2>
-    <p>{{ post.content }}</p>
-    <p>Published on {{post.pub_date }}</p>
-{% endfor %}
-```
-
-To use this template in your view, you need to update the view to render the template with the required context:
-
-```python
-## myapp/views.py
-
-from django.shortcuts import render
-from .models import Post
-
-def index(request):
-    posts = Post.objects.order_by('-pub_date')
-    context = {'posts': posts}
-    return render(request, 'myapp/index.html', context)
-```
-
-Static files are files that are not dynamically generated, such as CSS, JavaScript, and images. To serve static files in your Django app, create a directory named `static` inside your app's folder and place your static files there. Then, update your template to reference the static files:
-
-```html
-<!-- myapp/templates/myapp/index.html -->
-
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'myapp/style.css' %}">
-
-{% for post in posts %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Posts</title>
+  <link rel="stylesheet" href="{% static 'myapp/style.css' %}">
+</head>
+<body>
+  {% for post in posts %}
     <h2>{{ post.title }}</h2>
     <p>{{ post.content }}</p>
-    <p>Published on {{ post.pub_date }}</p>
-{% endfor %}
+    <p>Published on {{ post.pub_date|date:"Y-m-d" }}</p>
+  {% empty %}
+    <p>No posts yet.</p>
+  {% endfor %}
+</body>
+</html>
 ```
 
-## Conclusion
+## Run it
 
-In this article, we introduced Django, a powerful web framework for building web applications using Python. We covered the key concepts of Django, including projects, apps, models, views, URL routing, templates, and static files. With this foundation, you can now start building your own web applications using Django. To further expand your knowledge, we recommend exploring Django's documentation and experimenting with more advanced features, such as forms, user authentication, and deployment.
+```bash
+python manage.py runserver
+```
+
+Add a post at `http://127.0.0.1:8000/admin/`, then open `http://127.0.0.1:8000/myapp/`.
+
+## Gotchas
+
+- `runserver` serves static files only while `DEBUG = True`. In production, run `collectstatic` and serve the files with your web server or a package like WhiteNoise.
+- With `USE_TZ = True` (the default), assign timezone-aware datetimes (`django.utils.timezone.now()`), not `datetime.now()`.
+- Django loads templates from apps in `INSTALLED_APPS` order, and the first match wins. Without the `myapp/` subdirectory, another app's `index.html` could shadow yours.
+
+## Further reading
+
+- [Official tutorial](https://docs.djangoproject.com/en/stable/intro/tutorial01/)
+- [Models and databases](https://docs.djangoproject.com/en/stable/topics/db/models/)
+- [Managing static files](https://docs.djangoproject.com/en/stable/howto/static-files/)
+- [Deployment checklist](https://docs.djangoproject.com/en/stable/howto/deployment/checklist/)

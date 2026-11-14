@@ -1,239 +1,269 @@
 ---
-title: Side Hustle Income Tracker in Flutter
-description: "Income Tracker is a mobile app that helps you keep track of your income and expenses. The app uses SQLite to store and retrieve data, allowing you to easily add and delete entries with a source, date, amount, and notes. You can also export the database to a CSV file, making it easy to analyze your income and expenses in a spreadsheet program. With Income Tracker, you can easily stay on top of your finances and make informed decisions about your spending."
+title: "Side hustle income tracker in Flutter: SQLite storage and CSV export"
+description: A small Flutter app that records side hustle income in SQLite with sqflite, lists and deletes entries, and exports everything to a CSV file.
 pubDate: Saturday, 23 March 2023 13:00:00 GMT
-tags: ["flutter"]
+lastUpdated: 2026-11-14
+tags: ["flutter", "dart"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
 ---
 
-Side hustles have become increasingly popular over the past few years as people look for ways to supplement their income or pursue their passions. However, keeping track of all the different sources of income and expenses can be a challenge. That's where an income tracker app can come in handy. And what better way to build such an app than using Flutter?
+If you earn money from a few different places (freelance work, a part-time job, selling things online), a spreadsheet gets messy fast. This post builds a minimal Flutter app for logging that income: each entry has a source, date, amount and optional notes, entries are stored locally in SQLite, and the whole table can be exported to CSV so you can open it in a spreadsheet at tax time.
 
-Flutter is a popular framework for building cross-platform mobile apps. It's easy to learn, has a fast development cycle, and produces beautiful and performant apps. In this blog post, we'll discuss the key features of a side hustle income tracker app in Flutter.
+The app has two files: a database helper and a single screen.
 
-Simple and Intuitive UI
-The app's UI should be easy to navigate and use. The main screen should display a summary of income and expenses for the current month. Users should be able to add income and expenses quickly and easily by entering a description and amount.
+## Dependencies
 
-Multiple Income Sources
-The app should allow users to track income from multiple sources. For example, a user might have income from a part-time job, freelance work, and selling items online. Each income source should be assigned a category for easy tracking.
+Create a project and add the packages:
 
-Expense Tracking
-In addition to income, users should be able to track their expenses. The app should allow users to categorize expenses and enter a description and amount. This will give users a complete picture of their finances.
-
-Goal Setting
-Goal setting is an essential part of achieving financial stability. The app should allow users to set financial goals, such as saving for a vacation or paying off debt. Users should be able to track their progress towards their goals and receive notifications when they reach milestones.
-
-Reports and Analytics
-The app should provide users with detailed reports and analytics on their income and expenses. This will allow users to identify trends, such as which income sources are the most profitable or which expenses are the most significant. Users should also be able to export reports for tax purposes.
-
-Syncing and Backup
-The app should allow users to sync their data across multiple devices. This will allow users to access their data from anywhere and avoid the risk of losing their data if their device is lost or stolen. Additionally, the app should provide users with the option to backup their data to the cloud.
-
-
-here is some source code for a Flutter app that uses SQLite, allows users to export the database to CSV, and add/delete entries with source, date, amount, and notes. This is just a basic example to get you started, and you will need to modify it to suit your specific needs:
-
-1. Create a new Flutter project using the Flutter CLI or your preferred IDE.
-
-2. Add the following dependencies to your pubspec.yaml file:
-
-```yaml
-dependencies:
-  sqflite: ^2.0.0+3
-  csv: ^5.0.0
+```bash
+flutter create income_tracker
+cd income_tracker
+flutter pub add sqflite path path_provider csv intl
 ```
-3. Create a new file called database_helper.dart with the following code:
+
+This post was last checked against sqflite 2.4.6, path 1.9.1, path_provider 2.1.6, csv 8.0.0 and intl 0.20.3.
+
+- `sqflite` is the SQLite plugin. It supports Android, iOS and macOS; for Windows/Linux desktop you need `sqflite_common_ffi`, and it doesn't run on the web.
+- `path` and `path_provider` build the file paths for the database and the CSV export.
+- `csv` turns rows into CSV text. Version 7 was a rewrite and 8.0 changed the API again, so older examples using `ListToCsvConverter` won't match the code below.
+- `intl` formats dates.
+
+## The database helper
+
+Create `lib/database_helper.dart`. It is a singleton that opens the database once, creates the table on first run, and exposes insert, delete, query and export methods.
+
 ```dart
-import 'dart:async';
 import 'dart:io';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:csv/csv.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final _databaseName = 'myDatabase.db';
-  static final _databaseVersion = 1;
+  static const _databaseName = 'income.db';
+  static const _databaseVersion = 1;
 
-  static final table = 'myTable';
+  static const table = 'income';
+  static const columnId = '_id';
+  static const columnSource = 'source';
+  static const columnDate = 'date';
+  static const columnAmount = 'amount';
+  static const columnNotes = 'notes';
 
-  static final columnId = '_id';
-  static final columnSource = 'source';
-  static final columnDate = 'date';
-  static final columnAmount = 'amount';
-  static final columnNotes = 'notes';
-
-  // make this a singleton class
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  // only have a single app-wide reference to the database
   static Database? _database;
+
   Future<Database> get database async {
-    if (_database != null) return _database!;
-
-    // lazily instantiate the db the first time it is accessed
-    _database = await _initDatabase();
-    return _database!;
+    return _database ??= await _initDatabase();
   }
 
-  // this opens the database (and creates it if it doesn't exist)
-  _initDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+  Future<Database> _initDatabase() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, _databaseName);
+    return openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
 
-  // SQL code to create the database table
-  Future _onCreate(Database db, int version) async {
+  Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-          CREATE TABLE $table (
-            $columnId INTEGER PRIMARY KEY,
-            $columnSource TEXT NOT NULL,
-            $columnDate TEXT NOT NULL,
-            $columnAmount REAL NOT NULL,
-            $columnNotes TEXT
-          )
-          ''');
+      CREATE TABLE $table (
+        $columnId INTEGER PRIMARY KEY,
+        $columnSource TEXT NOT NULL,
+        $columnDate TEXT NOT NULL,
+        $columnAmount REAL NOT NULL,
+        $columnNotes TEXT
+      )
+    ''');
   }
 
-  // Helper methods
-
-  // Inserts a row in the database
-  Future<int> insert(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    return await db.insert(table, row);
+  Future<int> insert(Map<String, Object?> row) async {
+    final db = await database;
+    return db.insert(table, row);
   }
 
-  // Deletes a row from the database
   Future<int> delete(int id) async {
-    Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+    final db = await database;
+    return db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  // Gets all rows from the database
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
-    Database db = await instance.database;
-    return await db.query(table);
+  Future<List<Map<String, Object?>>> queryAllRows() async {
+    final db = await database;
+    return db.query(table, orderBy: '$columnDate DESC');
   }
 
-  // Exports the database to a CSV file
-  Future<void> exportToCsv() async {
-    List<Map<String, dynamic>> rows = await queryAllRows();
-    List<List<dynamic>> csvData = [
-      [columnSource, columnDate, columnAmount, columnNotes]
+  /// Writes every row to income.csv in the app documents directory
+  /// and returns the file path.
+  Future<String> exportToCsv() async {
+    final rows = await queryAllRows();
+    final csvData = <List<Object?>>[
+      [columnSource, columnDate, columnAmount, columnNotes],
+      for (final row in rows)
+        [row[columnSource], row[columnDate], row[columnAmount], row[columnNotes]],
     ];
-    rows.forEach((row) {
-      csvData.add([
-        row[columnSource],
-        row[columnDate],
-        row[columnAmount],
-        row[columnNotes],
-      ]);
-    });
-    String csv = const ListToCsvConverter().convert(csvData);
-      // get the app's documents directory
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
 
-    // create a file to store the CSV data
-    File file = File('${documentsDirectory.path}/myDatabase.csv');
-
-    // write the CSV data to the file
-    await file.writeAsString(csv);
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final file = File(join(documentsDirectory.path, 'income.csv'));
+    await file.writeAsString(csv.encode(csvData));
+    return file.path;
   }
 }
 ```
 
-4.  Create a new file called `main.dart` with the following code:
+Dates are stored as ISO 8601 strings. SQLite has no date type, and ISO strings sort correctly, which is what the `orderBy` relies on.
 
-In conclusion, a side hustle income tracker app can help users manage their finances and achieve their financial goals. By building this app in Flutter, you can create a beautiful and performant app that works on both iOS and Android devices. With the right features and a simple and intuitive UI, your app could become an essential tool for side hustlers everywhere.
+## The screen
 
+Replace `lib/main.dart` with a single page: a list of entries at the top and a form for adding new ones at the bottom. The `Future` for the list lives in state and is replaced after every insert or delete, so `FutureBuilder` doesn't re-query the database on every rebuild.
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_app/database_helper.dart';
 
-void main() => runApp(MyApp());
+import 'database_helper.dart';
 
-class MyApp extends StatelessWidget {
+void main() => runApp(const IncomeTrackerApp());
+
+class IncomeTrackerApp extends StatelessWidget {
+  const IncomeTrackerApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'My App',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(title: 'Income Tracker', home: HomePage());
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
   final _sourceController = TextEditingController();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  late Future<List<Map<String, Object?>>> _rows;
+
+  @override
+  void initState() {
+    super.initState();
+    _rows = DatabaseHelper.instance.queryAllRows();
+  }
+
+  @override
+  void dispose() {
+    _sourceController.dispose();
+    _amountController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  void _refresh() {
+    setState(() {
+      _rows = DatabaseHelper.instance.queryAllRows();
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
+  Future<void> _addEntry() async {
+    if (!_formKey.currentState!.validate()) return;
+    await DatabaseHelper.instance.insert({
+      DatabaseHelper.columnSource: _sourceController.text,
+      DatabaseHelper.columnDate: _selectedDate.toIso8601String(),
+      DatabaseHelper.columnAmount: double.parse(_amountController.text),
+      DatabaseHelper.columnNotes:
+          _notesController.text.isEmpty ? null : _notesController.text,
+    });
+    if (!mounted) return;
+    _sourceController.clear();
+    _amountController.clear();
+    _notesController.clear();
+    _selectedDate = DateTime.now();
+    _refresh();
+  }
+
+  Future<void> _deleteEntry(int id) async {
+    await DatabaseHelper.instance.delete(id);
+    if (mounted) _refresh();
+  }
+
+  Future<void> _export() async {
+    final path = await DatabaseHelper.instance.exportToCsv();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Exported to $path')));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My App'),
+        title: const Text('Income Tracker'),
         actions: [
           IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () async {
-              await DatabaseHelper.instance.exportToCsv();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Exported to CSV'),
-              ));
-            },
-          )
+            icon: const Icon(Icons.file_download),
+            tooltip: 'Export to CSV',
+            onPressed: _export,
+          ),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder(
-              future: DatabaseHelper.instance.queryAllRows(),
+            child: FutureBuilder<List<Map<String, Object?>>>(
+              future: _rows,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  List<Map<String, dynamic>> rows = snapshot.data as List<Map<String, dynamic>>;
-                  return ListView.builder(
-                    itemCount: rows.length,
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> row = rows[index];
-                      return ListTile(
-                        title: Text(row[DatabaseHelper.columnSource]),
-                        subtitle: Text(
-                            DateFormat.yMMMd().format(DateTime.parse(row[DatabaseHelper.columnDate])) +
-                                ' | \$' +
-                                row[DatabaseHelper.columnAmount].toString() +
-                                (row[DatabaseHelper.columnNotes] == null ? '' : ' | ' + row[DatabaseHelper.columnNotes])),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () async {
-                            await DatabaseHelper.instance.delete(row[DatabaseHelper.columnId]);
-                            setState(() {});
-                          },
-                        ),
-                      );
-                    },
-                  );
+                if (snapshot.hasError) {
+                  return Center(child: Text('${snapshot.error}'));
                 }
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final rows = snapshot.data!;
+                return ListView.builder(
+                  itemCount: rows.length,
+                  itemBuilder: (context, index) {
+                    final row = rows[index];
+                    final date =
+                        DateTime.parse(row[DatabaseHelper.columnDate] as String);
+                    final notes = row[DatabaseHelper.columnNotes] as String?;
+                    return ListTile(
+                      title: Text(row[DatabaseHelper.columnSource] as String),
+                      subtitle: Text([
+                        DateFormat.yMMMd().format(date),
+                        '\$${row[DatabaseHelper.columnAmount]}',
+                        if (notes != null) notes,
+                      ].join(' | ')),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () =>
+                            _deleteEntry(row[DatabaseHelper.columnId] as int),
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
               child: Column(
@@ -241,65 +271,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   TextFormField(
                     controller: _sourceController,
-                    decoration: InputDecoration(hintText: 'Source'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a source';
-                      }
-                      return null;
-                    },
+                    decoration: const InputDecoration(hintText: 'Source'),
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Please enter a source'
+                        : null,
                   ),
                   TextFormField(
                     controller: _amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(hintText: 'Amount'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an amount';
-                      }
-                      return null;
-                    },
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(hintText: 'Amount'),
+                    validator: (value) =>
+                        double.tryParse(value ?? '') == null
+                            ? 'Please enter a number'
+                            : null,
                   ),
                   TextFormField(
                     controller: _notesController,
-                    decoration: InputDecoration(hintText: 'Notes (optional)'),
+                    decoration:
+                        const InputDecoration(hintText: 'Notes (optional)'),
                   ),
-                  SizedBox(height: 16),
-                  Text('Date: ${DateFormat.yMMMd.format(_selectedDate)}'),
-                  ElevatedButton(
-                    onPressed: () async {
-                      DateTime picked = await showDatePicker(
-                          context: context,
-                          initialDate: _selectedDate,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now());
-                      if (picked != null && picked != _selectedDate) {
-                        setState(() {
-                          _selectedDate = picked;
-                        });
-                      }
-                    },
-                    child: Text('Select Date'),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Text('Date: ${DateFormat.yMMMd().format(_selectedDate)}'),
+                      const SizedBox(width: 16),
+                      OutlinedButton(
+                        onPressed: _pickDate,
+                        child: const Text('Select date'),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState.validate()) {
-                        await DatabaseHelper.instance.insert({
-                          DatabaseHelper.columnSource: _sourceController.text,
-                          DatabaseHelper.columnDate: _selectedDate.toIso8601String(),
-                          DatabaseHelper.columnAmount: double.parse(_amountController.text),
-                          DatabaseHelper.columnNotes: _notesController.text.isNotEmpty ? _notesController.text : null,
-                        });
-                        setState(() {
-                          _sourceController.clear();
-                          _amountController.clear();
-                          _notesController.clear();
-                          _selectedDate = DateTime.now();
-                        });
-                      }
-                    },
-                    child: Text('Add Entry'),
+                    onPressed: _addEntry,
+                    child: const Text('Add entry'),
                   ),
                 ],
               ),
@@ -312,6 +318,17 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 
-That's it! You now have a fully functional Flutter app that uses SQLite to store and retrieve data, allows users to export the database to a CSV file, and lets users add and delete entries with a source, date, amount, and notes. You can customize the app's user interface and add more features as needed.
+Run it with `flutter run` on an Android or iOS device or emulator.
 
-In conclusion, a side hustle income tracker app can help users manage their finances and achieve their financial goals. By building this app in Flutter, you can create a beautiful and performant app that works on both iOS and Android devices. With the right features and a simple and intuitive UI, your app could become an essential tool for side hustlers everywhere.
+## Gotchas and next steps
+
+- The CSV lands in the app's private documents directory, which users can't easily browse to on a phone. To get the file off the device, pass the path to a share sheet (for example the `share_plus` package) instead of only showing a snackbar.
+- Amounts are stored as `REAL`, so totals can pick up floating-point rounding. If you start summing amounts, store integer cents instead.
+- The table schema is version 1. If you add columns later (a category, or an income/expense flag), bump `_databaseVersion` and add an `onUpgrade` callback; `onCreate` only runs for fresh installs.
+- Features worth adding once the basics work: expense entries, per-source monthly totals, and a backup to cloud storage. None of these are implemented here.
+
+## Further reading
+
+- [sqflite on pub.dev](https://pub.dev/packages/sqflite)
+- [csv on pub.dev](https://pub.dev/packages/csv)
+- [Flutter cookbook: persist data with SQLite](https://docs.flutter.dev/cookbook/persistence/sqlite)

@@ -1,151 +1,140 @@
 ---
-description: In this article, we will explore Swift's interoperability with Objective-C,
-  providing practical examples and best practices to help developers bridge the gap
-  between these two languages
+description: How to call Objective-C from Swift with a bridging header, call Swift from Objective-C through the generated -Swift.h header, and how types bridge.
 imgSrc: /imgs/2023/577360463.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-18T16:56:39.000Z'
-tags: []
-title: Swift's Interoperability with Objective-C Bridging the Gap
+lastUpdated: 2026-11-14
+tags: ["swift"]
+title: "Mixing Swift and Objective-C: bridging headers and the generated Swift header"
 ---
 
-# Swift's Interoperability with Objective-C: Bridging the Gap
+Plenty of Apple-platform codebases still have Objective-C in them, and new code is usually written in Swift. Xcode lets both languages live in the same target, and the two directions work differently:
 
-In the world of iOS, macOS, watchOS, and tvOS development, Swift and Objective-C have been the two dominant programming languages. Swift is a modern, powerful, and expressive language, while Objective-C is a well-established and extensively used language. Since the inception of Swift in 2014, developers have been gradually transitioning their codebases to Swift. However, due to vast amounts of legacy code and established frameworks in Objective-C, it is crucial to maintain interoperability between the two languages.
+- **Objective-C → Swift:** you write a *bridging header* that lists the Objective-C headers Swift should see.
+- **Swift → Objective-C:** the compiler *generates* a header named `<ProductModuleName>-Swift.h`. You don't write it; you import it.
 
-In this article, we will explore Swift's interoperability with Objective-C, providing practical examples and best practices to help developers bridge the gap between these two languages.
+The examples below assume an app target. Frameworks work slightly differently, covered at the end.
 
-## How Swift Interoperates with Objective-C
+## Using Objective-C from Swift
 
-Swift and Objective-C can seamlessly work together in the same project. This interoperability is facilitated by the Objective-C runtime and a process known as "bridging." Swift's ability to interact with Objective-C code relies on the following mechanisms:
+### Set up the bridging header
 
-1. **Objective-C Bridging Header**: An automatically generated header file that exposes Objective-C classes, categories, protocols, and functions to Swift code.
-2. **Swift Bridging Header**: A header file that exposes Swift classes, structs, enums, and protocols to Objective-C code.
-3. **Type Bridging**: Swift automatically bridges certain types between the two languages, such as `NSString` and `String`, `NSArray` and `Array`, and `NSDictionary` and `Dictionary`.
+When you add the first Objective-C file to a Swift app target (or the first Swift file to an Objective-C one), Xcode offers to create a bridging header for you. To do it by hand:
 
-## Setting Up Interoperability in a Project
+1. Add a header file named `<ProjectName>-Bridging-Header.h`. The name is only a convention.
+2. Import the Objective-C headers you want Swift to see:
 
-To use Objective-C code in Swift, you need to create an Objective-C bridging header. Similarly, to use Swift code in Objective-C, you need to create a Swift bridging header.
-
-### Creating an Objective-C Bridging Header
-
-1. In your Xcode project, create a new header file (File > New > File > Header File) and name it `[Your_Project_Name]-Bridging-Header.h`.
-2. In the header file, import the Objective-C headers you want to use in your Swift files. For example:
-   ````objc
+   ```objc
    #import "MyObjectiveCClass.h"
-   #import "MyObjectiveCProtocol.h"
    ```
-3. In your project's build settings, search for "Objective-C Bridging Header" and set the path to your bridging header file, e.g., `$(SRCROOT)/[Your_Project_Name]/[Your_Project_Name]-Bridging-Header.h`.
 
-### Creating a Swift Bridging Header
+3. In the target's build settings, set **Objective-C Bridging Header** (`SWIFT_OBJC_BRIDGING_HEADER`) to its path, for example `$(SRCROOT)/MyApp/MyApp-Bridging-Header.h`.
 
-1. In your Xcode project, create a new Swift file (File > New > File > Swift File) and name it `[Your_Project_Name]-Swift.h`.
-2. In the file, import the Swift classes, structs, enums, and protocols you want to use in your Objective-C files. For example:
-   ````swift
-   #import "MySwiftClass.swift"
-   #import "MySwiftProtocol.swift"
-   ```
-3. In your Objective-C files, import the generated Swift bridging header as follows:
-   ````objc
-   #import "[Your_Project_Name]-Swift.h"
-   ``` 
+Everything imported there is visible to every Swift file in the target, with no `import` statement needed.
 
-## Using Objective-C Code in Swift
+### Call it
 
-Once you have set up the bridging header, you can use Objective-C classes, protocols, and functions in your Swift code.
-
-For example, suppose you have an Objective-C class named `MyObjectiveCClass`:
+Given this Objective-C class:
 
 ```objc
 // MyObjectiveCClass.h
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MyObjectiveCClass : NSObject
-
 - (NSString *)greetingWithName:(NSString *)name;
-
+- (void)printGreeting:(NSString *)greeting;
 @end
+
+NS_ASSUME_NONNULL_END
 ```
 
-In your Swift code, you can use this class as follows:
+Swift sees it with Swift-style names. `greetingWithName:` becomes `greeting(withName:)`:
+
+```swift
+let objCObject = MyObjectiveCClass()
+let greeting = objCObject.greeting(withName: "John")
+print(greeting)                        // a String, not String?
+objCObject.printGreeting("Hello")      // String is bridged to NSString
+```
+
+The `NS_ASSUME_NONNULL_BEGIN`/`END` block matters. Without nullability annotations, every object pointer is imported as an implicitly unwrapped optional (`String!`), and `let greeting = ...` would infer `String?`. Annotate headers with `nonnull`/`nullable` (or the audited region above) so Swift gets accurate types. If the automatic name is awkward, `NS_SWIFT_NAME` lets you pick the Swift name from the Objective-C side.
+
+## Using Swift from Objective-C
+
+### What gets exposed
+
+Only declarations Objective-C can represent make it into the generated header:
+
+- Classes must inherit from `NSObject` (or another Objective-C class). Swift structs, generic types and most enums can't be exposed; an enum can be if it's `@objc` with an integer raw type.
+- Methods and properties need `@objc`, or put `@objcMembers` on the class. Since Swift 4, subclassing `NSObject` no longer exposes members automatically.
+- In an app target, `public` and `open` declarations are included, and `internal` ones are too when the target has an Objective-C bridging header.
 
 ```swift
 import Foundation
 
-class MySwiftClass {
-    func useObjectiveCClass() {
-        let objCClass = MyObjectiveCClass()
-        let greeting = objCClass.greeting(withName: "John")
-        print(greeting)
-    }
-}
-```
-
-## Using Swift Code in Objective-C
-
-To use Swift code in Objective-C, ensure that your Swift classes, structs, enums, and protocols are marked with `@objc` or inherit from `NSObject`.
-
-For example, suppose you have a Swift class named `MySwiftClass`:
-
-```swift
-import Foundation
-
-@objc class MySwiftClass: NSObject {
+class MySwiftClass: NSObject {
     @objc func greeting(withName name: String) -> String {
-        return "Hello, \(name)!"
+        "Hello, \(name)!"
     }
 }
 ```
 
-In your Objective-C code, you can use this class as follows:
+### Import the generated header
+
+In any `.m` file in the same target:
 
 ```objc
 #import "MyObjectiveCFile.h"
-#import "[Your_Project_Name]-Swift.h"
+#import "MyApp-Swift.h"   // <ProductModuleName>-Swift.h
 
 @implementation MyObjectiveCFile
 
 - (void)useSwiftClass {
-    MySwiftClass *swiftClass = [[MySwiftClass alloc] init];
-    NSString *greeting = [swiftClass greetingWithName:@"John"];
+    MySwiftClass *swiftObject = [[MySwiftClass alloc] init];
+    NSString *greeting = [swiftObject greetingWithName:@"John"];
     NSLog(@"%@", greeting);
 }
 
 @end
 ```
 
-## Type Bridging
+Characters in the product module name that aren't valid in an identifier are replaced with underscores, so check the **Product Module Name** build setting if the import can't be found. Import the generated header only in `.m` files; in a `.h` file, forward-declare the Swift class with `@class MySwiftClass;` to avoid circular imports.
 
-Swift automatically bridges certain types between the two languages. Here are a few examples:
+## Type bridging
 
-| Swift Type | Objective-C Type |
+Common Foundation types convert automatically when they cross the boundary:
+
+| Swift type | Objective-C type |
 |------------|------------------|
-| String     | NSString         |
-| Array      | NSArray          |
-| Dictionary | NSDictionary     |
-| Set        | NSSet            |
+| `String` | `NSString` |
+| `Array` | `NSArray` |
+| `Dictionary` | `NSDictionary` |
+| `Set` | `NSSet` |
+| `Data` | `NSData` |
+| `Date` | `NSDate` |
+| `URL` | `NSURL` |
+| `Int`, `Double`, `Bool` | `NSNumber` (when passed as an object, e.g. in a collection) |
 
-When using these types, Swift handles the conversion for you. For example, when calling an Objective-C method that takes an `NSString` parameter from Swift, you can pass a `String` value, and Swift will automatically bridge it to `NSString`.
+Collections coming from Objective-C are untyped (`[Any]`) unless the header uses lightweight generics, such as `NSArray<NSString *> *`, which Swift imports as `[String]`.
+
+## Frameworks
+
+A framework target can't have a bridging header. Objective-C headers that Swift should see go in the framework's umbrella header (and must be public), and only `public`/`open` Swift declarations appear in the generated header. Import it with the module path:
 
 ```objc
-// MyObjectiveCClass.h
-- (void)printGreeting:(NSString *)greeting;
+#import <MyFramework/MyFramework-Swift.h>
 ```
 
-```swift
-// MySwiftFile.swift
-let greeting: String = "Hello, World!"
-let objCClass = MyObjectiveCClass()
-objCClass.printGreeting(greeting) // Swift automatically bridges `String` to `NSString`
-```
+## Tips
 
-## Best Practices
+- Expose to Objective-C only what it needs. Every `@objc` member adds Objective-C metadata and thunks to the binary, which is why Swift 4 stopped inferring `@objc` ([SE-0160](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0160-objc-inference.md)).
+- Migrate incrementally: new features in Swift, old code converted a class at a time, starting with leaf classes that nothing else in Objective-C depends on.
+- Add nullability and lightweight generics to Objective-C headers before calling them from Swift. It's cheap and removes most of the optionals and casts.
 
-1. **Use `@objc` sparingly**: Only use `@objc` when it is necessary for interoperability with Objective-C. Using `@objc` can result in slower execution and larger binary sizes.
-2. **Gradually transition to Swift**: If you plan to migrate your codebase to Swift, do so incrementally, starting with new features or components.
-3. **Avoid mixed-language files**: Aim to separate Swift and Objective-C code into different files to increase maintainability and readability.
-4. **Leverage modern Swift features**: When using Objective-C APIs in Swift, take advantage of Swift's powerful features like optionals, closures, and generics to write more expressive and safer code.
+## Further reading
 
-## Conclusion
-
-Swift's interoperability with Objective-C is a powerful feature that allows developers to use both languages in the same project, facilitating the gradual transition from Objective-C to Swift. By understanding the mechanisms behind this interoperability, such as bridging headers and type bridging, and following best practices, you can write efficient, maintainable, and readable code that takes advantage of both languages' strengths.
+- [Importing Objective-C into Swift](https://developer.apple.com/documentation/swift/importing-objective-c-into-swift)
+- [Importing Swift into Objective-C](https://developer.apple.com/documentation/swift/importing-swift-into-objective-c)
+- [Designating nullability in Objective-C APIs](https://developer.apple.com/documentation/swift/designating-nullability-in-objective-c-apis)

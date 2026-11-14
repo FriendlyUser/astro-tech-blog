@@ -1,105 +1,147 @@
 ---
-description: In this article, we will discuss C++ memory management, the concept of
-  smart pointers, and how they can help you write better code
+description: Why raw new/delete is error-prone in C++ and how std::unique_ptr, std::shared_ptr and std::weak_ptr express ownership, with working examples.
 imgSrc: /imgs/2023/954954072.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-10T21:02:58.000Z'
-tags: []
-title: C++ Memory Management and Smart Pointers
+lastUpdated: 2026-11-14
+tags: ["cpp"]
+title: "C++ smart pointers: unique_ptr, shared_ptr and weak_ptr instead of new and delete"
 ---
 
-# C++ Memory Management and Smart Pointers
+In C++, objects with automatic storage (local variables, usually on the stack) are destroyed when they go out of scope. Objects created with `new` live until someone calls `delete`. Getting that "someone" right is where leaks, double frees and dangling pointers come from. Smart pointers make ownership part of the type, so the compiler and destructors do the bookkeeping.
 
-In C++, memory management is one of the most important aspects of writing efficient, maintainable, and bug-free code. Manual memory management using raw pointers can be error-prone and lead to memory leaks, crashes, and other hard-to-trace issues. This is where smart pointers come in handy. In this article, we will discuss C++ memory management, the concept of smart pointers, and how they can help you write better code.
-
-## Understanding C++ Memory Management
-
-C++ memory management can be broadly divided into two categories: stack and heap memory. Stack memory is automatically managed by the compiler, and it is where local variables are stored. Heap memory, on the other hand, is manually managed by the programmer, and it is where dynamically allocated objects are stored.
-
-Manual memory management in C++ involves the use of raw pointers and the `new` and `delete` (or `new[]` and `delete[]` for arrays) operators. While raw pointers provide flexibility and control, they can lead to various issues such as memory leaks, dangling pointers, and double deletion.
+## The problem with raw `new` and `delete`
 
 ```cpp
 int* create_array(int size) {
-    int* arr = new int[size];
-    return arr;
+    return new int[size];
 }
 
 void use_array() {
     int* my_array = create_array(10);
-    // ... use my_array ...
-    delete[] my_array; // Don't forget to deallocate!
+    // ... if anything here throws or returns early, the array leaks ...
+    delete[] my_array; // must be delete[], not delete
 }
 ```
 
-## Enter Smart Pointers
+Nothing in `int*` says who owns the memory, whether it is one object or an array, or whether it has already been freed. Any early `return` or exception between `new` and `delete` leaks it.
 
-A smart pointer is a C++ class that wraps a raw pointer and provides additional functionality such as automatic memory management. Smart pointers are part of the C++ Standard Library, and they can help to avoid common memory management pitfalls. There are three main types of smart pointers in C++:
+The fix is RAII: tie the resource's lifetime to an object whose destructor releases it. Smart pointers in `<memory>` are RAII wrappers for heap objects. And for arrays, prefer `std::vector<int>` over any kind of pointer.
 
-1. `std::unique_ptr`
-2. `std::shared_ptr`
-3. `std::weak_ptr`
+## `std::unique_ptr`: single owner
 
-### 1. `std::unique_ptr`
-
-`std::unique_ptr` is a smart pointer that owns and manages a single object. It ensures that the object is deleted when the `unique_ptr` goes out of scope or when it is reset. A `unique_ptr` cannot be copied, ensuring that there is only one owner for the managed object.
+`std::unique_ptr<T>` owns one object and deletes it in its destructor. It can be moved but not copied, so there is always exactly one owner. With the default deleter it is the same size as a raw pointer and adds no runtime cost.
 
 ```cpp
 #include <memory>
+#include <string>
+#include <utility>
 
-std::unique_ptr<int> create_unique_array(int size) {
-    return std::make_unique<int[]>(size);
-}
-
-void use_unique_array() {
-    auto my_unique_array = create_unique_array(10);
-    // ... use my_unique_array ...
-    // No need to deallocate; memory is automatically freed when my_unique_array goes out of scope
-}
-```
-
-### 2. `std::shared_ptr`
-
-`std::shared_ptr` is a smart pointer that allows multiple owners for a single object. It uses reference counting to keep track of the number of `shared_ptr` instances that own the object. When the last `shared_ptr` owning the object is destroyed or reset, the object is automatically deleted.
-
-```cpp
-#include <memory>
-
-std::shared_ptr<int> create_shared_array(int size) {
-    return std::shared_ptr<int>(new int[size], std::default_delete<int[]>());
-}
-
-void use_shared_array() {
-    auto my_shared_array = create_shared_array(10);
-    // ... use my_shared_array ...
-    // Memory is automatically freed when all shared_ptr instances owning the object are destroyed or reset
-}
-```
-
-### 3. `std::weak_ptr`
-
-`std::weak_ptr` is a smart pointer that holds a non-owning reference to an object managed by a `shared_ptr`. It is used to break circular references between `shared_ptr` instances, which can cause memory leaks. A `weak_ptr` can be converted to a `shared_ptr` to access the object, but this does not affect the reference count.
-
-```cpp
-#include <memory>
-
-class MyClass {
-public:
-    std::weak_ptr<MyClass> other;
-
-    // ...
+struct Widget {
+    std::string name;
 };
 
-void use_weak_ptr() {
-    auto obj1 = std::make_shared<MyClass>();
-    auto obj2 = std::make_shared<MyClass>();
+std::unique_ptr<Widget> make_widget() {
+    return std::make_unique<Widget>(Widget{"gear"}); // make_unique is C++14
+}
 
-    obj1->other = obj2;
-    obj2->other = obj1;
+int main() {
+    auto w = make_widget();
+    // auto copy = w;          // error: unique_ptr is not copyable
+    auto owner = std::move(w); // ownership moves; w is now null
+}   // owner's destructor deletes the Widget
+```
 
-    // No circular reference; memory is automatically freed when obj1 and obj2 go out of scope
+`unique_ptr` has an array form, `std::unique_ptr<int[]>`, which calls `delete[]`:
+
+```cpp
+#include <memory>
+
+std::unique_ptr<int[]> create_unique_array(int size) {
+    return std::make_unique<int[]>(size); // elements value-initialised to 0
 }
 ```
 
-## Conclusion
+A custom deleter lets it manage non-memory resources too:
 
-Smart pointers are an invaluable tool for C++ programmers. They help to prevent common memory management issues such as memory leaks, dangling pointers, and double deletion. By adopting smart pointers, you can write more maintainable, bug-free, and efficient code. Remember to choose the appropriate smart pointer type (`unique_ptr`, `shared_ptr`, or `weak_ptr`) based on your use case and ownership semantics.
+```cpp
+#include <cstdio>
+#include <memory>
+
+struct FileCloser {
+    void operator()(std::FILE* f) const { std::fclose(f); }
+};
+
+int main() {
+    std::unique_ptr<std::FILE, FileCloser> file(std::fopen("data.txt", "r"));
+    if (!file) return 1;
+    // ... read from file.get() ...
+}   // fclose runs here, even on early return
+```
+
+The deleter is only called for a non-null pointer, so a failed `fopen` is safe.
+
+## `std::shared_ptr`: shared ownership
+
+`std::shared_ptr<T>` lets several owners share one object. A control block holds a reference count; the object is destroyed when the last `shared_ptr` to it is destroyed or reset.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+    auto a = std::make_shared<int>(42);
+    {
+        std::shared_ptr<int> b = a;
+        std::cout << a.use_count() << '\n'; // 2
+    }
+    std::cout << a.use_count() << '\n';     // 1
+}   // count drops to 0, the int is deleted
+```
+
+Prefer `std::make_shared`: it allocates the object and the control block in one allocation. Since C++17, `std::shared_ptr<int[]>` calls `delete[]` correctly, and C++20 adds `std::make_shared<int[]>(n)`.
+
+`shared_ptr` costs more than `unique_ptr`: it's typically two pointers wide (object and control block), and every copy updates the reference count atomically. Use it when ownership is genuinely shared, not as a default.
+
+## `std::weak_ptr`: observing without owning
+
+`std::weak_ptr<T>` refers to an object managed by `shared_ptr` without keeping it alive. Its main use is breaking reference cycles: if a parent holds a `shared_ptr` to its child and the child holds a `shared_ptr` back to its parent, neither count ever reaches zero and both leak. Make the back-pointer weak:
+
+```cpp
+#include <iostream>
+#include <memory>
+
+struct Parent;
+
+struct Child {
+    std::weak_ptr<Parent> parent; // non-owning back-reference
+};
+
+struct Parent {
+    std::shared_ptr<Child> child;
+    ~Parent() { std::cout << "Parent destroyed\n"; }
+};
+
+int main() {
+    auto parent = std::make_shared<Parent>();
+    parent->child = std::make_shared<Child>();
+    parent->child->parent = parent;
+
+    if (auto p = parent->child->parent.lock()) { // p is a shared_ptr, or empty if expired
+        std::cout << "parent use_count: " << p.use_count() << '\n'; // 2
+    }
+}   // prints "Parent destroyed": no cycle keeps it alive
+```
+
+To use the object, call `lock()`. It returns a `shared_ptr` that is empty if the object is gone. While that `shared_ptr` exists it does count as an owner, which is why `use_count()` reports 2 above. That's what makes `lock()` safe: the object can't be destroyed while you are using it.
+
+## Gotchas
+
+- Don't create two `shared_ptr`s from the same raw pointer (`std::shared_ptr<T>(raw)` twice). Each gets its own control block, and the object is deleted twice. If an object needs a `shared_ptr` to itself, inherit from `std::enable_shared_from_this`.
+- Pass `const T&` or `T*` to functions that only use an object. Pass a smart pointer only when the function takes part in ownership (stores it or takes it over).
+- Don't use `std::move` on a `unique_ptr` and then read it; the moved-from pointer is null.
+
+## Further reading
+
+- [Smart pointers on cppreference](https://en.cppreference.com/w/cpp/memory)
+- [C++ Core Guidelines: resource management](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-resource)

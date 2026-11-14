@@ -1,27 +1,35 @@
 ---
 tags: ["tech"]
-title: Thoughts about tech layoffs
-description: AI generated post about tech layoffs.
+title: Thoughts on the 2023 tech layoffs and why tech jobs are hard to land
+description: "My take in March 2023 on the tech layoffs, why the wider economy still looked strong, what AI might change, and why breaking into tech is hard."
 pubDate: Mon, 14 March 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: '/imgs/2023/2421950579.png'
 ---
 
-The tech industry has been hit hard by layoffs recently, leaving many workers uncertain of their future. While this is unfortunate news for those affected, it's important to remember that the rest of the economy remains strong and resilient.
+*This post started as an AI-generated draft in March 2023 and has since been edited for clarity.*
 
-One potential bright spot in the tech sector is artificial intelligence (AI). AI technology can be used to automate certain tasks such as writing code or performing data analysis. This could potentially reduce costs associated with hiring developers and analysts while also speeding up development timeframes significantly. 
+The tech industry has been hit hard by layoffs. Amazon, Google and Microsoft each announced cuts of 10,000 or more jobs in January 2023, following Meta's 11,000 in November 2022, and [layoffs.fyi](https://layoffs.fyi/) keeps adding to its count. That's bad news for the people affected, but the rest of the economy still looks strong: US unemployment was 3.4% in January, the lowest since 1969.
 
-It's also worth noting that despite recent layoffs in some sectors of technology, there are still plenty of opportunities available for those looking to find a career in tech-related fields such as software engineering or computer science research. Companies are always on the lookout for talented individuals who possess skillsets related to these areas so if you're interested then now may be an excellent time pursue your passion! 
+## AI as a bright spot
 
- Finally, it’s important not forget about all those other industries and businesses outside Silicon Valley which continue driving economic growth across America - from manufacturing jobs based out Detroit & Chicago; retail jobs throughout small towns across Texas; healthcare positions spread out through rural communities nationwide - our country continues functioning thanks largely due its diverse range employment options available everywhere within our borders!
+One bright spot inside tech is artificial intelligence. AI tools can already automate parts of writing code and analysing data. That could reduce what companies spend on hiring developers and analysts, and shorten development time considerably.
 
+## There are still opportunities
 
- Finding a job in the tech industry can be an incredibly difficult and daunting task. With so many qualified applicants vying for the same positions, it’s no wonder why landing a job in this field is often so hard. But what makes finding employment in tech even more challenging? In this blog post, we’ll discuss some of the reasons why securing a role within technology can be such an arduous journey. 
+Even with the layoffs, there are plenty of openings in fields like software engineering and computer science research. Companies are always looking for people with those skills, so if it's what you want to do, now is still a good time to pursue it.
 
-First off, competition for jobs within technology is fierce – there are simply too many people wanting to get their foot into this sector of work! As with any other profession or industry, employers will always receive far more applications than they have available roles; however due to its immense popularity and potential career growth opportunities offered by working within tech-related fields (e.g., software engineering), companies tend to attract large numbers of highly qualified candidates who all want that one position you may be applying for as well! This means that those looking to break into the world of technology must make sure that their skillset stands out from others if they hope to secure an offer letter from their desired employer(s). 
+It's also worth remembering how much of the economy sits outside Silicon Valley: manufacturing jobs around Detroit and Chicago, retail jobs in small towns across Texas, healthcare jobs in rural communities. The country keeps running on that broad mix of work.
 
-Another factor contributing towards difficulty when searching for employment opportunities related with technological advancements could lie on how quickly these sectors evolve over time; staying up-to-date on new trends and technologies is key when trying land yourself a role which requires knowledge about specific tools or programming languages etc.. It's not enough just knowing about them either - having hands on experience using them will also give you added advantage against your competitors during interviews/applications processes too! Therefore anyone hoping join forces with organizations involved in developing innovative products needs stay ahead curve at all times - something easier said done given ever changing nature digital landscape today...  
+## Why tech jobs are hard to get
 
- Finally another obstacle preventing individuals from entering world high demand jobs like computer science robotics artificial intelligence data analytics etcetera could come down lack financial resources Many universities colleges charge hefty fees students pursue degrees these areas making it almost impossible low income families afford education required become successful professionals Thus while talent ambition drive alone won't guarantee success obtaining suitable qualifications certainly help increase chances getting hired right company furthering career path chosen field 
+Landing a job in tech is still hard, for three main reasons.
 
-In conclusion then although there are various challenges associated seeking out positions related technological advancements such as intense competition frequent changes cutting edge developments cost prohibitive tuition rates ultimately perseverance dedication strong skill set remain most important aspects achieving goals desired outcome Finding perfect fit takes time effort but isn't impossible achieve All need do take necessary steps prepare themselves best possible manner
+**Competition.** Every employer gets more applications than it has roles, and tech's pay and career growth attract a lot of highly qualified candidates. To get an offer, your skills have to stand out from everyone else applying for the same position.
+
+**The field changes quickly.** Employers want people who know the current tools and languages, and knowing about them isn't enough. Hands-on experience gives you an advantage in applications and interviews, so you have to keep learning just to stay level.
+
+**Education is expensive.** Many universities and colleges charge high fees for degrees in computer science, robotics, AI and data analytics, which puts them out of reach for many low-income families. Talent and ambition don't guarantee success on their own, but the right qualifications improve your chances of getting hired.
+
+None of these is a reason to give up. Finding the right role takes time and effort, and perseverance and a strong skill set still matter most.

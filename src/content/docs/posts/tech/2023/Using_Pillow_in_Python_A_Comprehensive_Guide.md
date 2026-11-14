@@ -1,136 +1,124 @@
 ---
-description: In this article, we'll explore the capabilities of Pillow and demonstrate
-  its usage with practical examples
+description: Open, convert and save images with Pillow, then resize, rotate, flip, blur, adjust brightness and contrast, and read EXIF metadata.
 imgSrc: /imgs/2023/1793654723_jerome_powell_burning_down_nyse_looking_like_a_boss.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-24T17:15:41.000Z'
-tags: []
-title: Using Pillow in Python A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags:
+  - python
+title: "Image processing in Python with Pillow: resize, rotate, filter and EXIF"
 ---
 
-# Using Pillow in Python: A Comprehensive Guide
-
-Pillow is a powerful Python library that enables you to perform a wide range of image processing tasks. It's an open-source fork of the original Python Imaging Library (PIL) and offers a user-friendly interface for handling images in Python. In this article, we'll explore the capabilities of Pillow and demonstrate its usage with practical examples.
+Pillow is the maintained fork of PIL, the original Python Imaging Library, and it's what you import as `PIL`. It covers everyday image work: format conversion, resizing and thumbnails, rotation, simple filters, colour adjustments, and metadata. For heavier computer vision, reach for OpenCV or scikit-image instead.
 
 ## Installation
-
-Before you can use Pillow, you first need to install it. You can do this using `pip`, the Python package installer.
 
 ```bash
 pip install pillow
 ```
 
-## Opening and Saving Images
+The package name is `pillow`, but the import is `PIL`.
 
-To get started with Pillow, you first need to import the `Image` module from the `PIL` package.
+## Opening and saving images
 
 ```python
 from PIL import Image
+
+with Image.open("photo.jpg") as image:
+    print(image.format, image.size, image.mode)  # e.g. JPEG (4032, 3024) RGB
+    image.save("photo.png")
 ```
 
-Now, let's open an image file using the `Image.open()` method. This method takes a single argument - the path to the image file.
+`Image.open` is lazy: it reads the header straight away and the pixel data only when needed, so using it as a context manager closes the file when you're done. `save` picks the output format from the extension.
+
+`image.size` is `(width, height)`, and `image.mode` is the pixel format (`RGB`, `RGBA`, `L` for grayscale, `P` for palette). Mode matters when saving: JPEG has no alpha channel, so saving an `RGBA` image as JPEG raises `OSError: cannot write mode RGBA as JPEG`. Convert first:
 
 ```python
-image = Image.open('path/to/image.jpg')
+image.convert("RGB").save("photo.jpg", quality=90)
 ```
 
-Once you've opened an image, you can save it in a different format using the `save()` method.
+`image.format` is only set on images loaded from a file. Images produced by `resize`, `rotate`, and similar methods have `format` set to `None`.
 
-```python
-image.save('path/to/new_image.png')
-```
+## Basic operations
 
-## Basic Image Operations
-
-Pillow provides several basic image operations, such as resizing, rotating, and flipping.
+The snippets from here on assume `image` is an open image, for example `image = Image.open("photo.jpg")`. All of these methods return a new image and leave the original unchanged, except `thumbnail`, which works in place.
 
 ### Resizing
 
-To resize an image, use the `resize()` method. This method takes a tuple containing the new width and height.
-
 ```python
-resized_image = image.resize((new_width, new_height))
+resized = image.resize((800, 600))  # exact size; may distort
+
+thumb = image.copy()
+thumb.thumbnail((800, 800))  # fits inside 800x800, keeps aspect ratio, in place
 ```
 
 ### Rotating
 
-To rotate an image, use the `rotate()` method. This method takes a single argument - the angle of rotation in degrees.
+`rotate` takes degrees **counter-clockwise**. By default the output keeps the original size, so the corners are cropped; pass `expand=True` to grow the canvas to fit:
 
 ```python
-rotated_image = image.rotate(45)  ## Rotate the image by 45 degrees
+rotated = image.rotate(45, expand=True)
 ```
 
 ### Flipping
 
-You can flip an image either horizontally or vertically using the `transpose()` method.
+Use `transpose`, or the `ImageOps` helpers:
 
 ```python
-from PIL import ImageOps
+from PIL import Image, ImageOps
 
-## Flip the image horizontally
-flipped_image = ImageOps.flip(image)
+mirrored = image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)  # horizontal
+flipped = image.transpose(Image.Transpose.FLIP_TOP_BOTTOM)   # vertical
 
-## Flip the image vertically
-mirrored_image = ImageOps.mirror(image)
+mirrored = ImageOps.mirror(image)  # same as FLIP_LEFT_RIGHT
+flipped = ImageOps.flip(image)     # same as FLIP_TOP_BOTTOM
 ```
 
-## Image Filtering and Enhancement
+`ImageOps.mirror` flips left to right and `ImageOps.flip` flips top to bottom; the names are easy to mix up.
 
-Pillow also provides various filters and enhancements for images. Let's explore some of them.
+## Filters and enhancements
 
-### Applying Filters
-
-To apply a filter to an image, use the `filter()` method. For example, let's apply a Gaussian blur to an image.
+### Filters
 
 ```python
 from PIL import ImageFilter
 
-blurred_image = image.filter(ImageFilter.GaussianBlur(radius=5))
+blurred = image.filter(ImageFilter.GaussianBlur(radius=5))
+sharpened = image.filter(ImageFilter.SHARPEN)
+edges = image.filter(ImageFilter.FIND_EDGES)
 ```
 
-### Adjusting Brightness, Contrast, and Saturation
+### Brightness, contrast and saturation
 
-You can adjust the brightness, contrast, and saturation of an image using the `ImageEnhance` module.
+Each `ImageEnhance` class takes a factor where `1.0` returns the original image:
 
 ```python
 from PIL import ImageEnhance
 
-## Increase brightness by a factor of 1.5
-enhancer = ImageEnhance.Brightness(image)
-brightened_image = enhancer.enhance(1.5)
-
-## Increase contrast by a factor of 2
-enhancer = ImageEnhance.Contrast(image)
-high_contrast_image = enhancer.enhance(2)
-
-## Decrease saturation by a factor of 0.5
-enhancer = ImageEnhance.Color(image)
-desaturated_image = enhancer.enhance(0.5)
+brighter = ImageEnhance.Brightness(image).enhance(1.5)  # 50% brighter
+more_contrast = ImageEnhance.Contrast(image).enhance(2)
+less_saturated = ImageEnhance.Color(image).enhance(0.5)  # 0.0 = grayscale
 ```
 
-## Working with Image Metadata
+## EXIF metadata
 
-Pillow allows you to access and modify the metadata of an image, such as its format, size, and EXIF data.
-
-### Format and Size
-
-You can obtain the format and size of an image using the `format` and `size` attributes.
+Use the public `getexif()` method. It returns an `Image.Exif` object that behaves like a dict keyed by numeric tag IDs; `ExifTags.TAGS` maps those IDs to names:
 
 ```python
-print(f'Image format: {image.format}')
-print(f'Image size: {image.size}')
+from PIL import Image, ExifTags
+
+with Image.open("photo.jpg") as image:
+    exif = image.getexif()
+    for tag_id, value in exif.items():
+        print(ExifTags.TAGS.get(tag_id, tag_id), value)
+
+    print(exif.get(ExifTags.Base.Model))  # camera model, or None
 ```
 
-### EXIF Data
+Older tutorials (including an earlier version of this post) use `image._getexif()`. It's a private method, so prefer the public `getexif()`.
 
-To access the EXIF data of an image, use the `_getexif()` method.
+`getexif()` returns the main (IFD0) tags such as camera make, model and orientation. Exposure details and GPS data live in sub-IFDs; read them with `exif.get_ifd(ExifTags.IFD.Exif)` and `exif.get_ifd(ExifTags.IFD.GPSInfo)`.
 
-```python
-exif_data = image._getexif()
-```
+A related gotcha: phone photos are often stored sideways with an EXIF Orientation tag telling viewers to rotate them. Pillow doesn't apply it automatically, so call `ImageOps.exif_transpose(image)` before resizing or cropping, or the output can come out rotated.
 
-This method returns a dictionary with the EXIF tags as keys and their values as the corresponding values.
-
-## Conclusion
-
-In this article, we've demonstrated how to use Pillow for basic image operations, applying filters and enhancements, and working with image metadata. Pillow is a versatile library that can help you accomplish various image processing tasks in Python. For more information, refer to the [official Pillow documentation](https://pillow.readthedocs.io/en/stable/index.html).
+Further reading: [Pillow documentation](https://pillow.readthedocs.io/en/stable/), in particular the [Image module reference](https://pillow.readthedocs.io/en/stable/reference/Image.html).

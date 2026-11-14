@@ -1,83 +1,65 @@
 ---
-title: Building Microservices with Go-Kit in Golang
-description: ' Go-Kit offers a set of tools and best practices to develop and manage these services with ease.'
+title: "Go kit basics: services, endpoints and HTTP transport in Go"
+description: 'Build a small string service with Go kit: define the service, wrap it in endpoints, expose it over HTTP, and add logging middleware.'
 imgSrc: /imgs/2023/2269624161_forest.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-16T04:50:20.000Z'
-tags: []
+lastUpdated: 2026-11-14
+tags: ["go", "microservices"]
 ---
 
-# Building Microservices with Go-Kit in Golang
+[Go kit](https://gokit.io/) is a set of Go packages for building services. It is a toolkit, not a framework: you write a plain Go interface for your business logic, and Go kit gives you the pieces to wrap it in endpoints, transports (HTTP, gRPC, NATS and others), and middleware such as logging, rate limiting, circuit breaking and service discovery.
 
-In this technical article, we will discuss the Go-Kit library, a toolkit for building microservices in Golang. Microservices are a popular architectural pattern that decomposes an application into smaller, independently deployable and maintainable services. Go-Kit offers a set of tools and best practices to develop and manage these services with ease.
+The cost is boilerplate. Each method needs request and response types, an endpoint, and decode/encode functions per transport. That pays off when you want the same service exposed over several transports with shared middleware; for a single JSON API, `net/http` alone is less code.
 
-## What is Go-Kit?
+This post was checked against Go kit v0.13.0 (May 2023), which is still the latest tagged release.
 
-[Go-Kit](https://gokit.io/) is an open-source, pluggable toolkit for building microservices in Golang. It provides a set of common components and design patterns, allowing developers to focus on writing business logic while keeping the architectural concerns organized and standardized.
-
-Some key features of Go-Kit include:
-
-- Middleware and decorator patterns to modularize cross-cutting concerns (e.g., logging, tracing, and authentication)
-- Transport-agnostic service definitions
-- Support for multiple transports, such as HTTP, gRPC, and NATS
-- Service discovery and load balancing
-- Circuit breaker and rate limiting for better resilience
-
-## Getting Started
-
-To get started with Go-Kit, first, install the library:
+## Setup
 
 ```sh
-go get -u github.com/go-kit/kit
+mkdir stringsvc && cd stringsvc
+go mod init example.com/stringsvc
+go get github.com/go-kit/kit@v0.13.0
 ```
 
-Now, let's create a simple example of a Go-Kit service.
+The example is a service with two methods: concatenate two strings, and count the characters in a string. The service code lives in the module root (package `stringsvc`) and the binary in `cmd/stringsvc`.
 
-## Example: String Service
+## 1. Define and implement the service
 
-In this example, we will create a simple string manipulation service that can concatenate and count the characters in a string.
-
-### Step 1: Define the Service
-
-Start by defining the service interface:
+`service.go`:
 
 ```go
 package stringsvc
 
-// StringService defines the service interface for string manipulation.
+import "unicode/utf8"
+
+// StringService is the business logic. It knows nothing about HTTP.
 type StringService interface {
 	Concat(a, b string) string
 	Count(s string) int
 }
-```
 
-### Step 2: Implement the Service
-
-Next, implement the service by providing a concrete implementation of the `StringService` interface:
-
-```go
-package stringsvc
-
-type stringServiceImpl struct{}
+type stringService struct{}
 
 func NewStringService() StringService {
-	return &stringServiceImpl{}
+	return stringService{}
 }
 
-func (ss *stringServiceImpl) Concat(a, b string) string {
+func (stringService) Concat(a, b string) string {
 	return a + b
 }
 
-func (ss *stringServiceImpl) Count(s string) int {
-	return len(s)
+// Count returns the number of characters (runes), not bytes.
+func (stringService) Count(s string) int {
+	return utf8.RuneCountInString(s)
 }
 ```
 
-### Step 3: Define the Endpoints
+## 2. Wrap each method in an endpoint
 
-Go-Kit uses the concept of _endpoints_ to decouple the service implementation from the transport layer. An endpoint represents a single RPC method and is transport-agnostic.
+An endpoint is Go kit's unit of RPC: `func(ctx context.Context, request any) (response any, err error)`. Endpoints are transport-agnostic, so the same endpoint can be served over HTTP and gRPC, and middleware written for endpoints applies to both.
 
-Define the endpoints for the `StringService`:
+`endpoints.go`:
 
 ```go
 package stringsvc
@@ -88,38 +70,49 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-type StringEndpoints struct {
-	ConcatEndpoint endpoint.Endpoint
-	CountEndpoint  endpoint.Endpoint
+type ConcatRequest struct {
+	A string `json:"a"`
+	B string `json:"b"`
 }
 
-func MakeStringEndpoints(s StringService) StringEndpoints {
-	return StringEndpoints{
-		ConcatEndpoint: makeConcatEndpoint(s),
-		CountEndpoint:  makeCountEndpoint(s),
-	}
+type ConcatResponse struct {
+	Result string `json:"result"`
 }
 
-func makeConcatEndpoint(s StringService) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(ConcatRequest)
-		result := s.Concat(req.A, req.B)
-		return ConcatResponse{Result: result}, nil
-	}
+type CountRequest struct {
+	S string `json:"s"`
 }
 
-func makeCountEndpoint(s StringService) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(CountRequest)
-		count := s.Count(req.S)
-		return CountResponse{Count: count}, nil
+type CountResponse struct {
+	Count int `json:"count"`
+}
+
+type Endpoints struct {
+	Concat endpoint.Endpoint
+	Count  endpoint.Endpoint
+}
+
+func MakeEndpoints(s StringService) Endpoints {
+	return Endpoints{
+		Concat: func(_ context.Context, request any) (any, error) {
+			req := request.(ConcatRequest)
+			return ConcatResponse{Result: s.Concat(req.A, req.B)}, nil
+		},
+		Count: func(_ context.Context, request any) (any, error) {
+			req := request.(CountRequest)
+			return CountResponse{Count: s.Count(req.S)}, nil
+		},
 	}
 }
 ```
 
-### Step 4: Add Transports
+The type assertions are safe because the decode functions below are the only things that produce these requests.
 
-Now, let's add support for HTTP transport to expose our service over a RESTful API:
+## 3. Add an HTTP transport
+
+The HTTP transport turns an `*http.Request` into a request value, calls the endpoint, and encodes the response. Go kit ships `EncodeJSONResponse` for the common case.
+
+`transport_http.go`:
 
 ```go
 package stringsvc
@@ -132,94 +125,94 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 )
 
-func NewHTTPHandler(endpoints StringEndpoints) http.Handler {
-	m := http.NewServeMux()
-
-	m.Handle("/concat", httptransport.NewServer(
-		endpoints.ConcatEndpoint,
-		decodeConcatRequest,
-		encodeResponse,
+func NewHTTPHandler(e Endpoints) http.Handler {
+	mux := http.NewServeMux()
+	mux.Handle("POST /concat", httptransport.NewServer(
+		e.Concat, decodeConcatRequest, httptransport.EncodeJSONResponse,
 	))
-
-	m.Handle("/count", httptransport.NewServer(
-		endpoints.CountEndpoint,
-		decodeCountRequest,
-		encodeResponse,
+	mux.Handle("POST /count", httptransport.NewServer(
+		e.Count, decodeCountRequest, httptransport.EncodeJSONResponse,
 	))
-
-	return m
+	return mux
 }
 
-func decodeConcatRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeConcatRequest(_ context.Context, r *http.Request) (any, error) {
 	var req ConcatRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	return req, err
 }
 
-func decodeCountRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeCountRequest(_ context.Context, r *http.Request) (any, error) {
 	var req CountRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	return req, err
 }
+```
 
-func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	return json.NewEncoder(w).Encode(response)
+The `"POST /concat"` patterns use the method matching added to `http.ServeMux` in Go 1.22. If a decode function returns an error, Go kit's default error encoder responds with a 500; pass `httptransport.ServerErrorEncoder(...)` to `NewServer` to map errors to other status codes.
+
+## 4. Add middleware
+
+Middleware is where Go kit earns its keep. An endpoint middleware is a `func(endpoint.Endpoint) endpoint.Endpoint`, so one function can log every call regardless of transport. Add this to `endpoints.go` (it also needs `"log"` and `"time"` in the imports):
+
+```go
+func LoggingMiddleware(name string) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request any) (any, error) {
+			start := time.Now()
+			resp, err := next(ctx, request)
+			log.Printf("method=%s took=%s err=%v", name, time.Since(start), err)
+			return resp, err
+		}
+	}
 }
 ```
 
-### Step 5: Run the Service
+The same pattern is how Go kit's `ratelimit` and `circuitbreaker` packages plug in.
 
-Finally, create the main function to run the HTTP server:
+## 5. Run it
+
+`cmd/stringsvc/main.go`:
 
 ```go
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
-	"os"
 
-	"github.com/yourusername/stringsvc"
+	"example.com/stringsvc"
 )
 
-func main(){
-	// Create the service implementation
-	service := stringsvc.NewStringService()
+func main() {
+	svc := stringsvc.NewStringService()
 
-	// Create the service endpoints
-	endpoints := stringsvc.MakeStringEndpoints(service)
+	e := stringsvc.MakeEndpoints(svc)
+	e.Concat = stringsvc.LoggingMiddleware("concat")(e.Concat)
+	e.Count = stringsvc.LoggingMiddleware("count")(e.Count)
 
-	// Create the HTTP handler
-	handler := stringsvc.NewHTTPHandler(endpoints)
-
-	// Start the HTTP server
-	port := "8080"
-	fmt.Printf("Starting server on :%s...\n", port)
-	err := http.ListenAndServe(":"+port, handler)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	log.Println("listening on :8080")
+	log.Fatal(http.ListenAndServe(":8080", stringsvc.NewHTTPHandler(e)))
 }
 ```
 
-Now, you can build and run the service:
+```sh
+go run ./cmd/stringsvc
+```
+
+In another terminal:
 
 ```sh
-go build -o stringsvc .
-./stringsvc
+curl -X POST -d '{"a": "hello", "b": "world"}' http://localhost:8080/concat
+# {"result":"helloworld"}
+curl -X POST -d '{"s": "héllo"}' http://localhost:8080/count
+# {"count":5}
 ```
 
-To test the service, send HTTP requests to the `/concat` and `/count` endpoints:
+## Where to go next
 
-```
-curl -X POST -d '{"a": "hello", "b": "world"}' -H 'Content-Type: application/json' http://localhost:8080/concat
-curl -X POST -d '{"s": "hello world"}' -H 'Content-Type: application/json' http://localhost:8080/count
-```
+- Go kit's own [stringsvc examples](https://gokit.io/examples/stringsvc.html) build this up further with instrumentation and calling other services.
+- The `sd` packages cover service discovery (Consul, etcd, DNS SRV and others) and client-side load balancing.
+- The [package docs](https://pkg.go.dev/github.com/go-kit/kit) list every transport and middleware.
 
-## Conclusion
-
-In this article, we explored Go-Kit, a toolkit for building microservices in Golang. We created a simple string manipulation service and demonstrated how to use Go-Kit to handle service definition, implementation, endpoints, and transports.
-
-Go-Kit provides additional tools and best practices for building scalable, maintainable, and resilient microservices. You can further explore features such as logging, metrics, tracing, service discovery, load balancing, and more to enhance your microservices development experience.
+If you don't need multiple transports or shared endpoint middleware, plain `net/http` or a gRPC server on its own is simpler.

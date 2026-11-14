@@ -1,65 +1,110 @@
 ---
-title: Using `zap` for Efficient Logging in Go
+title: "Structured logging in Go with zap: loggers, levels, fields and encoders"
 pubDate: "2024-05-09T12:01:52.000Z"
-description: "This article will explore the benefits of using `zap` in your Go projects and will walk you through the process of integrating it into your application."
-tags: []
+lastUpdated: 2026-11-14
+description: "Set up Uber's zap logger in Go: production vs development presets, log levels, structured fields, console output and custom time formats."
+tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3582974242.png
 ---
-# Using `zap` for Efficient Logging in Go
 
-`zap` is a high-performance logging library developed by Uber Technologies, Inc. for the Go programming language. It provides a flexible, easy-to-use, and blazingly fast logging experience. This article will explore the benefits of using `zap` in your Go projects and will walk you through the process of integrating it into your application.
+[zap](https://github.com/uber-go/zap) is a structured logging library for Go from Uber. Its main selling point is low overhead: the core `Logger` takes strongly typed fields (`zap.String`, `zap.Int`, ...) instead of `interface{}` values, which avoids reflection and most allocations on the hot path. If you'd rather write `printf`-style calls, it also has a slower but friendlier `SugaredLogger`.
 
-## Why Use `zap`?
+The examples here were checked against zap v1.28.0.
 
-There are several reasons to consider using `zap` for logging in your Go applications:
+## Install
 
-1. **Performance**: `zap` is designed for high performance, with minimal allocations and fast encoding of log entries.
-2. **Structured Logging**: `zap` supports structured logging out of the box, which means that you can log data in a structured format (e.g., JSON) for easy consumption by log aggregation systems.
-3. **Level-based Logging**: `zap` provides level-based logging, allowing you to control the verbosity of your logs at runtime.
-4. **Customizability**: `zap` is highly customizable, allowing you to encode and output logs in different formats, set custom log levels, and create your loggers.
+```bash
+go get go.uber.org/zap
+```
 
-## Installing `zap`
+## Production and development presets
 
-To get started with `zap`, you'll need to install it in your Go project. You can do this using Go modules by adding the following import statement to your Go file:
+zap ships two ready-made configurations:
+
+- `zap.NewProduction()` logs at Info level and above, as JSON, to stderr, with sampling enabled to cap repeated messages.
+- `zap.NewDevelopment()` logs at Debug level and above, in a human-readable console format, to stderr, and adds stack traces to Warn and above.
 
 ```go
+package main
+
 import "go.uber.org/zap"
-```
-
-Then, run `go mod tidy` to download the library and update your `go.mod` file.
-
-## Creating a Basic Logger
-
-To create a basic logger using `zap`, you can use the `NewProduction` or `NewDevelopment` functions. The `NewProduction` function creates a logger with production-suitable defaults, while `NewDevelopment` creates a logger with development-friendly defaults (e.g., more verbose output).
-
-Here's an example of creating a logger using `NewDevelopment`:
-
-```go
-package main
-
-import (
-	"go.uber.org/zap"
-)
 
 func main() {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		panic(err)
 	}
-	defer logger.Sync() // Ensure that all logs are flushed before the application exits
+	defer logger.Sync() // flush buffered entries before exit
 
-	logger.Info("This is an informational log message")
-	logger.Warn("This is a warning log message")
-	logger.Error("This is an error log message")
+	logger.Debug("starting up")
+	logger.Info("listening", zap.Int("port", 8080))
+	logger.Warn("config file not found, using defaults")
 }
 ```
 
-## Level-based Logging
+`Sync` flushes any buffered output. Call it before the program exits. When logging to a terminal it can return an error such as "invalid argument" on some platforms; that's harmless, which is why the deferred call above ignores it.
 
-`zap` supports level-based logging, allowing you to control the verbosity of your logs at runtime. By default, `zap` has five log levels: Debug, Info, Warn, Error, and DPanic. You can set the minimum log level for your logger by passing a configuration object when creating the logger.
+## Structured fields
 
-Here's an example of creating a logger that only logs messages with a level of Warn or higher:
+Pass context as typed fields rather than formatting it into the message. Log aggregators can then filter on `user_id` or `status` directly.
+
+```go
+logger.Info("request handled",
+	zap.String("method", "GET"),
+	zap.String("path", "/users"),
+	zap.Int("status", 200),
+	zap.Duration("latency", 12*time.Millisecond),
+)
+```
+
+To attach fields to every entry from a component, create a child logger with `With`:
+
+```go
+reqLogger := logger.With(zap.String("request_id", "abc123"))
+reqLogger.Info("fetching user")
+reqLogger.Error("user not found", zap.Int("user_id", 42))
+```
+
+If you prefer looser syntax, `logger.Sugar()` returns a `SugaredLogger` that accepts key-value pairs:
+
+```go
+sugar := logger.Sugar()
+sugar.Infow("request handled", "method", "GET", "status", 200)
+sugar.Infof("listening on port %d", 8080)
+```
+
+## Levels
+
+zap has seven levels: `Debug`, `Info`, `Warn`, `Error`, `DPanic`, `Panic` and `Fatal`. `DPanic` panics in development mode and only logs in production; `Panic` logs then panics; `Fatal` logs then calls `os.Exit(1)`.
+
+The easiest way to change the minimum level is to start from a preset config and override it:
+
+```go
+package main
+
+import "go.uber.org/zap"
+
+func main() {
+	cfg := zap.NewProductionConfig()
+	cfg.Level = zap.NewAtomicLevelAt(zap.WarnLevel)
+
+	logger, err := cfg.Build()
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Sync()
+
+	logger.Info("not printed")
+	logger.Warn("printed")
+}
+```
+
+`cfg.Level` is an `AtomicLevel`, so you can keep a reference to it and call `SetLevel` while the program runs, for example from an admin endpoint. `AtomicLevel` also implements `http.Handler` for exactly that purpose.
+
+## Console output and custom time formats
+
+Starting from a preset also avoids filling in every `EncoderConfig` field by hand. This logs to stdout in console format with a custom timestamp layout:
 
 ```go
 package main
@@ -70,170 +115,72 @@ import (
 )
 
 func main() {
-	config := zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.WarnLevel),
-		Development: false,
-		Encoding:    "json",
-		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey: "msg",
-			LevelKey:   "level",
-			TimeKey:    "ts",
-			NameKey:    "logger",
-			CallerKey:  "caller",
-			StacktraceKey: "stacktrace",
-			LineEnding: zapcore.DefaultLineEnding,
-			EncodeLevel: zapcore.LowercaseLevelEncoder,
-			EncodeTime: zapcore.ISO8601TimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stdout"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
+	cfg := zap.NewProductionConfig()
+	cfg.Encoding = "console"
+	cfg.OutputPaths = []string{"stdout"}
+	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
 
-	logger, err := config.Build()
+	logger, err := cfg.Build()
 	if err != nil {
 		panic(err)
 	}
 	defer logger.Sync()
 
-	logger.Info("This log message will not be printed")
-	logger.Warn("This is a warning log message")
-	logger.Error("This is an error log message")
+	logger.Info("console output with a custom timestamp")
 }
 ```
 
-In this example, the `Level` field of the `zap.Config` struct is set to `zap.WarnLevel`, so only log messages with a level of Warn or higher will be printed.
+Use JSON in production, where something else parses your logs, and console format for local development.
 
-## Structured Logging
+## Building a logger from a Core
 
-`zap` supports structured logging, allowing you to log data in a structured format for easy consumption by log aggregation systems. To log structured data, you can use the `With` method to add key-value pairs to your log entries.
-
-Here's an example of logging structured data using `zap`:
+For full control, such as writing JSON to a file and console output to the terminal at the same time, assemble `zapcore.Core` values and pass them to `zap.New`:
 
 ```go
 package main
 
 import (
+	"os"
+
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
+	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
 	if err != nil {
 		panic(err)
 	}
-	defer logger.Sync()
+	defer file.Close()
 
-	logger.Info("Structured log message",
-		zap.String("key1", "value1"),
-		zap.Int("key2", 42),
-		zap.Bool("key3", true),
+	jsonCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.AddSync(file),
+		zap.InfoLevel,
 	)
-}
-```
+	consoleCore := zapcore.NewCore(
+		zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+		zapcore.Lock(os.Stdout),
+		zap.DebugLevel,
+	)
 
-## Customizing Log Output Format
-
-By default, `zap` logs messages in a JSON format. However, you can customize the output format by providing a custom encoder configuration in the `zap.Config` struct.
-
-Here's an example of using a console encoder for log output:
-
-```go
-package main
-
-import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-)
-
-func main() {
-	config := zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
-		Development: false,
-		Encoding:    "console",
-		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey: "msg",
-			LevelKey:   "level",
-			TimeKey:    "ts",
-			NameKey:    "logger",
-			CallerKey:  "caller",
-			StacktraceKey: "stacktrace",
-			LineEnding: zapcore.DefaultLineEnding,
-			EncodeLevel: zapcore.CapitalLevelEncoder,
-			EncodeTime: zapcore.ISO8601TimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stdout"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
-
-	logger, err := config.Build()
-	if err != nil {
-		panic(err)
-	}
+	logger := zap.New(zapcore.NewTee(jsonCore, consoleCore), zap.AddCaller())
 	defer logger.Sync()
 
-	logger.Info("This is an informational log message with console encoding")
+	logger.Debug("only on the console")
+	logger.Info("on the console and in app.log")
 }
 ```
 
-In this example, the `Encoding` field of the `zap.Config` struct is set to `"console"`, which configures the logger to use the console encoder for log output. The console encoder produces human-readable output that is more suitable for development environments.
+`zapcore.NewTee` fans each entry out to every core whose level allows it. `zapcore.Lock` wraps `os.Stdout` so concurrent writes don't interleave.
 
-## Creating Custom Loggers
+## zap and log/slog
 
-If the built-in loggers provided by `zap` do not meet your requirements, you can create custom loggers by defining custom `zapcore.Core` instances and using the `zap.New` function.
+Go 1.21 added structured logging to the standard library as `log/slog`. For new code with modest logging needs, `slog` may be enough on its own. If you want slog's API with zap's encoders and outputs, zap provides a `slog.Handler` in the `go.uber.org/zap/exp/zapslog` package.
 
-Here's an example of creating a custom logger that logs messages with a custom timestamp format:
+## Further reading
 
-```go
-package main
-
-import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"time"
-)
-
-func customTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("2006-01-02 15:04:05"))
-}
-
-func main() {
-	config := zap.Config{
-		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
-		Development: false,
-		Encoding:    "console",
-		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey: "msg",
-			LevelKey:   "level",
-			TimeKey:    "ts",
-			NameKey:    "logger",
-			CallerKey:  "caller",
-			StacktraceKey: "stacktrace",
-			LineEnding: zapcore.DefaultLineEnding,
-			EncodeLevel: zapcore.CapitalLevelEncoder,
-			EncodeTime: customTimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stdout"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
-
-	logger, err := config.Build()
-	if err != nil {
-		panic(err)
-	}
-	defer logger.Sync()
-
-	logger.Info("This is an informational log message with a custom timestamp format")
-}
-```
-
-In this example, we define a custom `customTimeEncoder` function that formats timestamps using a custom format, and pass it to the `EncodeTime` field of the `EncoderConfig`.
-
-## Conclusion
-
-`zap` is a powerful and efficient logging library for Go that provides many useful features, such as structured logging, level-based logging, and log output customization. By using `zap` in your Go projects, you can improve your application's logging capabilities and make it easier to monitor and debug your applications in both development and production environments.
+- [zap on pkg.go.dev](https://pkg.go.dev/go.uber.org/zap)
+- [zapcore package](https://pkg.go.dev/go.uber.org/zap/zapcore)
+- [zap FAQ](https://github.com/uber-go/zap/blob/master/FAQ.md)

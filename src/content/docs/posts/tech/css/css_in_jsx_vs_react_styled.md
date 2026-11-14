@@ -1,102 +1,111 @@
 ---
 tags: ['css', 'jsx', 'react', 'styled']
-title: Css in js vs plain css and styled components
-description: Comparing css in js to plain css and styled components
+title: CSS-in-JS vs plain CSS in React, with styled-components examples
+description: "The trade-offs between runtime CSS-in-JS and plain CSS or CSS Modules in React, with working styled-components examples and its 2025 maintenance-mode status."
 pubDate: Fri, 28 March 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1098832555.png
 ---
-JSX (JavaScript XML) is an extension to JavaScript syntax that allows developers to write HTML-like code in JavaScript. It is commonly used in React to define the structure and layout of user interfaces. When JSX is compiled, it is transformed into regular JavaScript function calls that create React elements.
+:::caution
+In March 2025 the styled-components maintainer announced the project is in maintenance mode: fixes and small improvements continue, but he no longer recommends adopting it, or most other CSS-in-JS libraries, for new projects. See the [announcement on Open Collective](https://opencollective.com/styled-components/updates/thank-you). Existing apps keep working; for new React projects, CSS Modules, Tailwind CSS or a zero-runtime library are the more common choices now.
+:::
 
-CSS-in-JS is a technique for styling web applications by generating and injecting CSS at runtime using JavaScript. Some advantages of using CSS-in-JS are:
+"CSS-in-JS" means writing styles inside your JavaScript, next to the component that uses them. Runtime libraries such as styled-components and Emotion generate class names and inject a `<style>` tag in the browser as components render. Plain CSS, or CSS Modules, keeps styles in `.css` files that the bundler turns into static stylesheets.
 
-1. Scoped styles: CSS-in-JS generates unique class names for each component, ensuring that styles are only applied to the intended elements and reducing the risk of style collisions.
-2. Dynamic styles: CSS-in-JS allows developers to write dynamic styles using JavaScript, making it easier to create responsive designs and dynamic user interfaces.
-3. Better code organization: CSS-in-JS allows developers to write styles in the same file as the corresponding component, making it easier to manage styles and component logic together.
-4. Type safety: CSS-in-JS libraries like styled-components and emotion use TypeScript to provide type safety for CSS styles, ensuring that styles are properly defined and that there are no syntax errors.
-5. Server-side rendering: CSS-in-JS libraries like styled-components and emotion support server-side rendering, allowing styles to be generated on the server and included in the initial page load.
+## The same button, both ways
 
-While there are many advantages to using CSS-in-JS, there are also some potential disadvantages, including:
-
-1. Increased complexity: CSS-in-JS requires developers to write and maintain JavaScript code in addition to CSS, which can increase the overall complexity of the codebase.
-2. Tooling dependencies: CSS-in-JS libraries may require additional tooling and build steps, which can add to the complexity of the development environment.
-3. Learning curve: Developers who are not familiar with JavaScript may find it more difficult to learn and use CSS-in-JS.
-4. Performance overhead: Generating and injecting CSS at runtime can add some overhead to the application's performance, especially on mobile devices or slower networks.
-5. Limited browser support: Some CSS-in-JS libraries may not be fully supported by older browsers or may require additional polyfills to work correctly.
-
-Here are a few examples of using styled-components to create styled React components:
-
-1. Basic example of a styled button:
-
+With styled-components, styles live in a tagged template literal (note the backticks), and props can drive them:
 
 ```jsx
 import styled from 'styled-components';
 
-const Button = styled.button
- background-color: #0077cc;
- color: #fff;
- font-size: 16px;
- padding: 10px 20px;
- border-radius: 4px;
-;
+const Button = styled.button`
+  background-color: ${(props) => (props.$primary ? '#0077cc' : '#fff')};
+  color: ${(props) => (props.$primary ? '#fff' : '#0077cc')};
+  border: 1px solid #0077cc;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 4px;
 
-function App() {
- return <Button>Click me!</Button>;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export function App() {
+  return (
+    <>
+      <Button $primary>Save</Button>
+      <Button>Cancel</Button>
+    </>
+  );
 }
 ```
-2. Example of a styled input component with a hover effect:
 
+The `$` prefix makes `$primary` a "transient" prop: styled-components uses it for styling but doesn't pass it through to the DOM, so React doesn't warn about an unknown attribute.
+
+With a CSS Module, the stylesheet is plain CSS and the component picks classes:
+
+```css
+/* Button.module.css */
+.button {
+  background-color: #fff;
+  color: #0077cc;
+  border: 1px solid #0077cc;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.primary {
+  background-color: #0077cc;
+  color: #fff;
+}
+```
 
 ```jsx
-import styled from 'styled-components';
+import styles from './Button.module.css';
 
-const Input = styled.input
- border: 1px solid #ddd;
- padding: 10px;
- border-radius: 4px;
- 
- &:hover {
- border-color: #0077cc;
- }
-;
-
-function App() {
- return <Input placeholder="Enter your name" />;
+export function Button({ primary, children }) {
+  const className = primary ? `${styles.button} ${styles.primary}` : styles.button;
+  return <button className={className}>{children}</button>;
 }
 ```
-3. Example of a styled card component with a shadow effect:
 
+The bundler (Vite, Next.js, webpack with css-loader) rewrites `.button` to a unique class name, so you get the same scoping as CSS-in-JS without any runtime.
 
-```jsx
-import styled from 'styled-components';
+## What CSS-in-JS gives you
 
-const Card = styled.div
- background-color: #fff;
- border-radius: 4px;
- box-shadow: 0 2px 4px rgba(0,0,0,0.1);
- padding: 20px;
-;
+- **Scoped class names.** Generated names mean one component's styles can't leak into another's. CSS Modules give you this too.
+- **Styles driven by props.** Interpolating props or a theme object into styles is natural. With plain CSS you toggle classes or set CSS custom properties (`style={{ '--accent': color }}`) instead.
+- **Co-location.** Styles sit in the same file as the component, and deleting the component deletes its styles.
+- **Typed props.** In TypeScript you can type the props a styled component accepts. The CSS inside the template string is not type-checked, though; editor plugins only add highlighting and some linting.
 
-function App() {
- return <Card>
- <h2>My Card</h2>
- <p>This is some card content</p>
- </Card>;
-}
-```
-In each example, the styled-components library is used to define a custom styled component using a tagged template literal syntax. The styles are defined in a template string and can include any valid CSS properties.
+## What it costs
 
+- **Runtime work.** Styles are generated and injected in the browser while components render, and props-dependent styles are recomputed when props change. Static CSS files have no such cost and are cached separately from your JavaScript.
+- **Bundle size.** The library itself ships to the client.
+- **Server rendering setup.** styled-components supports SSR, but you have to collect the generated styles on the server (in the Next.js App Router, through a style registry in a client component). Static CSS needs none of this.
+- **Server Components.** Runtime CSS-in-JS depends on client-side React features, which was one of the reasons the styled-components maintainer gave for stepping back. Check the current docs of whichever library you use before mixing it with React Server Components.
 
-"Styled Components" is a popular CSS-in-JS library for styling React components. "CSS-in-JS" is a broader category that includes other libraries and techniques for generating and injecting CSS at runtime using JavaScript.
+## How styled-components compares to other CSS-in-JS options
 
-Here are some differences between styled components and CSS-in-JS:
+styled-components is one CSS-in-JS library, not an alternative to the category. Within the category the main split is:
 
-1. Syntax: Styled Components uses a tagged template literal syntax to define styles for individual components, while other CSS-in-JS libraries may use different syntaxes.
-2. Scalability: Styled Components can scale well in large projects due to its modular approach to styling and componentization. Other CSS-in-JS libraries may not offer the same level of flexibility and scalability.
-3. Performance: Styled Components can offer good performance by optimizing the CSS generated and injected for each component. However, it is worth noting that CSS-in-JS can add some overhead to the application's performance, especially on mobile devices or slower networks.
-4. Server-side rendering: Styled Components provides server-side rendering out of the box, while other CSS-in-JS libraries may require additional setup or configuration.
-5. Developer experience: Styled Components has gained popularity in part because of its developer experience, which makes it easy to create custom, reusable components with minimal CSS code. Other CSS-in-JS libraries may have different learning curves or require more complex setup.
+- **Runtime libraries** (styled-components, Emotion): styles are generated in the browser. Most flexible, with the costs above.
+- **Zero-runtime libraries** (vanilla-extract, Linaria, Panda CSS): you write styles in JS or TS, but they are extracted to static CSS at build time. You keep co-location and typed APIs while losing some dynamic-styling convenience.
 
-Ultimately, the choice of CSS-in-JS library will depend on the specific needs of a project and the preferences of the development team.
+## Should you still use styled-components?
 
+If an existing codebase already uses it heavily, it still works and still gets fixes, so a rewrite purely to remove it is rarely worth it on its own. For a new project, start with CSS Modules or a utility framework, and reach for a zero-runtime library if you want styles written in TypeScript.
 
+## Further reading
+
+- [styled-components documentation](https://styled-components.com/docs)
+- [Next.js: CSS-in-JS in the App Router](https://nextjs.org/docs/app/guides/css-in-js)
+- [Next.js: CSS Modules](https://nextjs.org/docs/app/getting-started/css)

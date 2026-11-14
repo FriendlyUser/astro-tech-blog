@@ -1,142 +1,166 @@
 ---
-title: "Integrating Recurring Payments with Clover API"
+title: "Subscribing a customer to a Clover recurring plan with PHP"
 pubDate: "2024-12-31T00:03:37.000Z"
-description: "Learn how to use Clover API to tokenize credit card information, create customer profiles, look up tax rates, and manage subscriptions for recurring payments in your applications."
-tags: ["Clover API", "Payment Integration", "Recurring Payments", "Web Development"]
+lastUpdated: 2026-11-14
+description: "Use Clover's sandbox APIs from PHP to tokenize a card, create a customer with a card on file, look up a tax rate, and subscribe them to a recurring plan."
+tags: ["Clover API", "Payment Integration", "Recurring Payments", "Web Development", "php"]
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/clover_api.png"
 ---
 
+Clover's Recurring Payments API charges a saved card on a schedule defined by a *plan*. To put a customer on a plan you need four calls: tokenize the card, create a customer with that card on file, optionally look up a tax rate, and create a subscription under the plan. Once the subscription exists, Clover charges the card automatically; there is no separate "charge" call.
 
-# Introduction
+All examples below use the sandbox hosts and PHP with the `curl` extension.
 
-Clover offers a suite of APIs that allow developers to integrate Clover functionality into their own applications. One useful feature is the ability to subscribe customers to recurring payment plans. This allows collecting automatic recurring payments from customers on a schedule. 
+## Prerequisites
 
-This article will explain how to use the Clover APIs to:
+- A Clover sandbox developer account with a test merchant and its merchant ID (`mId`).
+- An API token for that merchant (a test API token, or an OAuth `access_token` for multi-merchant apps). Reading tax rates needs inventory read permission.
+- An Ecommerce public API key (PAKMS key), used only for tokenizing cards.
+- The ID of an existing recurring plan.
 
-- Tokenize credit card information to create a payment source
-- Create a customer profile 
-- Lookup tax rates
-- Create a subscription plan under an existing recurring payment plan
-- Charge the customer's card automatically based on the subscription
+:::caution
+Posting raw card numbers from your own server puts that server in PCI DSS scope. Clover's docs recommend sending an `encrypted_pan` instead of `number`, and Clover's iframe tokenizes the card in the browser so that only the `clv_...` token reaches your backend. Use the raw-number request below for sandbox testing with test cards only.
+:::
 
-# Prerequisites
+## A small request helper
 
-To follow along with the examples, you will need:
+Each Clover API uses a different host and auth header, so the helper takes the full URL and headers and throws on any HTTP error:
 
-- A Clover developer account and merchant ID
-- API keys for the Token, Connector, and Commerce APIs 
-- The OAuth token for making API requests
-- The ID of the recurring plan you want to subscribe customers to
+```php
+<?php
 
-For testing, you can use the Clover sandbox environment with test API keys and merchant accounts.
+function cloverRequest(string $method, string $url, array $headers = [], ?array $body = null): array
+{
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => array_merge(
+            ['Accept: application/json', 'Content-Type: application/json'],
+            $headers
+        ),
+    ]);
+    if ($body !== null) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+    }
 
-# Tokenize the Credit Card
+    $raw = curl_exec($ch);
+    if ($raw === false) {
+        throw new RuntimeException('Request failed: ' . curl_error($ch));
+    }
 
-The first step is to collect the customer's credit card information on your site or app. Then tokenize the card data by making a request to the Token API:
+    $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($status >= 400) {
+        throw new RuntimeException("Clover API returned $status: $raw");
+    }
 
-```
-$creditCard = [
-  'number' => $cardNumber,
-  'exp_month' => $expiryMonth, 
-  'exp_year' => $expiryYear,
-  'cvv' => $cvv,
-  'name' => $nameOnCard
-  // other address fields  
-];
+    return json_decode($raw, true) ?? [];
+}
 
-$url = "https://sandbox.dev.clover.com/v1/tokens";
+$merchantId = getenv('CLOVER_MERCHANT_ID');
+$apiToken   = getenv('CLOVER_API_TOKEN');
+$pakmsKey   = getenv('CLOVER_PAKMS_KEY');
+$planId     = getenv('CLOVER_PLAN_ID');
 
-// Call API to create token
-$response = apiRequest($url, $creditCard); 
-
-// Extract token id 
-$cardToken = $response['id'];
-```
-
-This will return a token that represents the credit card, which we can use for payments without passing sensitive card data to our server.
-
-# Create the Customer Profile
-
-Next we need to create a customer profile that is attached to the card token:
-
-```
-$customer = [
-  'email' => $email,
-  'firstName' => $firstName,
-  'lastName' => $lastName,
-  'phone' => $phone,
-  'source' => $cardToken
-];
-
-$url = "https://scl-sandbox.dev.clover.com/v1/customers";
-
-// Call API to create customer
-$response = apiRequest($url, $customer);
-  
-// Extract customer id
-$customerId = $response['id'];
+$auth = ["Authorization: Bearer $apiToken"];
 ```
 
-This customer record will allow us to charge the tokenized card.
+## 1. Tokenize the card
 
-# Lookup Tax Rates
+The token endpoint authenticates with the PAKMS key in an `apikey` header, and the card fields go inside a `card` object:
 
-If charging taxes, we need to lookup the tax rates configured in the merchant's Clover account:
+```php
+$token = cloverRequest('POST', 'https://token-sandbox.dev.clover.com/v1/tokens', ["apikey: $pakmsKey"], [
+    'card' => [
+        'number'    => $cardNumber, // a Clover sandbox test card
+        'exp_month' => $expiryMonth, // e.g. "12"
+        'exp_year'  => $expiryYear,  // e.g. "2030"
+        'cvv'       => $cvv,
+    ],
+]);
 
+$cardToken = $token['id']; // starts with "clv_"
 ```
-$url = "https://sandbox.dev.clover.com/v3/merchants/{merchantId}/tax_rates";
 
-// Call API 
-$response = apiRequest($url);
+## 2. Create the customer with the card on file
 
-// Find first non-zero tax rate 
-foreach ($response['elements'] as $tax) {
-  if ($tax['rate'] > 0) {
-     $taxId = $tax['id'];
-     break;
-  } 
+Passing the token as `source` when creating the customer saves the card on file, which the subscription will charge:
+
+```php
+$customer = cloverRequest('POST', 'https://scl-sandbox.dev.clover.com/v1/customers', $auth, [
+    'email'     => $email,
+    'firstName' => $firstName,
+    'lastName'  => $lastName,
+    'source'    => $cardToken,
+]);
+
+$customerId = $customer['id'];
+```
+
+Card network rules require the cardholder's explicit consent before you store their card, so collect that in your checkout flow.
+
+## 3. Look up a tax rate (optional)
+
+Tax rates are configured per merchant and returned by the platform REST API:
+
+```php
+$taxRates = cloverRequest(
+    'GET',
+    "https://apisandbox.dev.clover.com/v3/merchants/$merchantId/tax_rates",
+    $auth
+);
+
+$taxId = null;
+foreach ($taxRates['elements'] ?? [] as $tax) {
+    if ($tax['rate'] > 0) {
+        $taxId = $tax['id'];
+        break;
+    }
 }
 ```
 
-This will give us the tax rate ID to include when creating the subscription.
+Picking the first non-zero rate is fine for a demo. In a real integration, choose the rate the merchant intends for this product.
 
-# Create the Subscription 
+## 4. Create the subscription
 
-Now we can create the subscription plan under the recurring payment plan:
+The subscription is created under the plan, and the request needs the merchant ID in an `X-Clover-Merchant-Id` header:
 
-```
-// Existing plan ID
-$planId = "existing-plan-uuid"; 
+```php
+$startDate = (new DateTimeImmutable('tomorrow', new DateTimeZone('UTC')))->format('Y-m-d\TH:i:s\Z');
 
-// Subscription details
 $subscription = [
-  'customerId' => $customerId,
-  'startDate' => '2023-02-01T00:00:00Z', 
-  'collectionMethod' => 'CHARGE_AUTOMATICALLY',
-  'amount' => $amount * 100 // In cents
+    'customerId'       => $customerId,
+    'collectionMethod' => 'CHARGE_AUTOMATICALLY',
+    'startDate'        => $startDate,
 ];
-
-// API endpoint 
-$url = "https://sandbox.dev.clover.com/recurring/v1/plans/$planId/subscriptions";
-
-// Call API to create subscription
-$response = apiRequest($url, $subscription);
-
-// Check response
-if ($response['status'] == 200) {
-  // Subscription created successfully
-} else {
-  // Handle error
+if ($taxId !== null) {
+    $subscription['taxRateUuids'] = [$taxId];
 }
+
+$result = cloverRequest(
+    'POST',
+    "https://apisandbox.dev.clover.com/recurring/v1/plans/$planId/subscriptions",
+    array_merge($auth, ["X-Clover-Merchant-Id: $merchantId"]),
+    $subscription
+);
+
+echo "Created subscription {$result['id']}\n";
 ```
 
-This allows creating a subscription attached to a particular recurring payment plan. The customer will then be billed according to the plan schedule
+`CHARGE_AUTOMATICALLY` is currently the only allowed `collectionMethod`. The plan defines the amount and schedule. You can override the amount per subscription with `amount` (and add `tipAmount` or `endDate`), but the docs don't spell out the unit, so check it in the sandbox before sending real values. Clover's Ecommerce APIs generally use cents.
 
-The customer is now enrolled in the recurring payment plan!
+Errors are reported with HTTP status codes, which the helper turns into exceptions. Check the HTTP status, not a `status` field in the JSON body.
 
-# Conclusion
+## Gotchas
 
-The Clover APIs provide a way to easily integrate recurring billing into your application. By tokenizing cards, creating customer records, and setting up a subscription, you can support automatic recurring payments from customers.
+- **Several hosts.** Tokens, Ecommerce (`scl-`) and platform/recurring APIs each have their own sandbox host, and production uses different ones again. Keep them in config rather than hard-coding them.
+- **401 on tax rates.** This usually means the token lacks inventory read permission.
+- **One-time payments** use the same card token or customer as the `source` of a charge on the Ecommerce API (`/v1/charges`), with no plan involved.
 
-The same approach works for one-time payments as well. Overall, the Clover APIs give developers flexible options for managing payments in their software.
+## Further reading
+
+- [Clover: Create a card token](https://docs.clover.com/dev/docs/create-a-card-token)
+- [Clover: Save a card for future transactions](https://docs.clover.com/dev/docs/save-a-card-for-future-transactions)
+- [Clover: Recurring payments plans](https://docs.clover.com/dev/docs/working-with-recurring-payments-and-subscriptions)
+- [Clover: Recurring payments subscriptions](https://docs.clover.com/dev/docs/recurring-apis-subscriptions)

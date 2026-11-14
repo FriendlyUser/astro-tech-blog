@@ -1,366 +1,228 @@
 ---
 tags: ['python', 'introtopython']
-title: Chapter 7 File handling and data processing.
-description: For my introductory book on python, I am going to explain how to handle files.
+title: "Chapter 7: Reading, writing and processing files in Python"
+description: Opening files with open() and with, file modes, processing lines with string methods and regex, CSV/JSON/XML modules, large files, and running ffmpeg.
 pubDate: Fri, 30 September 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1096284488.png
 
 ---
 
-Here is an overview of how to work with files in Python using `open()`, `close()`, `read()`, `write()` and other methods:
+This chapter covers reading and writing files with the built-in `open()`, the standard-library modules for CSV, JSON and XML, processing files too large to load at once, and calling external programs such as ffmpeg from Python.
 
-1. Opening a file:
-You can use the `open()` function to open a file in Python. The function takes two arguments: the name of the file you want to open and the mode in which you want to open the file. The mode can be "r" for reading, "w" for writing, "a" for appending, or "x" for creating a new file. For example, to open a file named "example.txt" for writing, you can use the following code:
+## Opening, reading and writing files
 
-
-```python
-file = open("example.txt", "w")
-```
-2. Reading from a file:
-You can use the `read()` method to read the contents of a file. The method reads the entire contents of the file and returns it as a string. For example, to read the contents of the "example.txt" file, you can use the following code:
-
+`open(path, mode)` returns a file object. Always open files with a `with` block: it closes the file when the block ends, even if an exception is raised.
 
 ```python
-file = open("example.txt", "r")
-contents = file.read()
+with open("example.txt", "w", encoding="utf-8") as f:
+    f.write("Hello, World!\n")
+
+with open("example.txt", "r", encoding="utf-8") as f:
+    contents = f.read()
+
 print(contents)
 ```
-3. Writing to a file:
-You can use the `write()` method to write to a file. The method takes a string as its argument and writes it to the file. For example, to write the string "Hello, World!" to the "example.txt" file, you can use the following code:
 
+Pass `encoding="utf-8"` for text files. Without it, Python uses the platform's default encoding, which differs between Windows and Linux/macOS and is a common source of `UnicodeDecodeError`.
 
-```python
-file = open("example.txt", "w")
-file.write("Hello, World!")
-```
-4. Closing a file:
-You should always close a file after you have finished working with it. You can use the `close()` method to close a file. For example, to close the "example.txt" file, you can use the following code:
+If you don't use `with`, you must call `f.close()` yourself, and an exception between `open()` and `close()` will leave the file open. `with` avoids that.
 
+### Reading methods
 
-```python
-file.close()
-```
-5. Using context managers:
-You can use a context manager with the `with` statement to open and close files automatically. This is a more convenient and safer way to work with files as it automatically closes the file for you after you're done working with it. For example, to write the string "Hello, World!" to the "example.txt" file using a context manager, you can use the following code:
+- `f.read()` returns the whole file as one string.
+- `f.readline()` returns the next line, including its trailing `\n` (and `""` at end of file).
+- `f.readlines()` returns a list of all lines.
+- Iterating with `for line in f:` reads one line at a time and is usually what you want.
 
+### Writing methods
 
-```python
-with open("example.txt", "w") as file:
- file.write("Hello, World!")
-```
-6. Reading and writing lines:
-You can use the `readline()` method to read a single line from a file, and the `writelines()` method to write a list of strings to a file, with each string representing a line. For example, to read the first line of the "example.txt" file, you can use the following code:
-
-
-```python
-file = open("example.txt", "r")
-line = file.readline()
-print(line)
-```
-And to write a list of strings to the "example.txt" file, you can use the following code:
-
+- `f.write(s)` writes a string and returns the number of characters written.
+- `f.writelines(lines)` writes each string in an iterable. It does **not** add newlines, so include them yourself:
 
 ```python
 lines = ["Hello", "World"]
-with open("example.txt", "w") as file:
- file.writelines(lines)
+with open("example.txt", "w", encoding="utf-8") as f:
+    f.writelines(line + "\n" for line in lines)
 ```
 
+## File modes
 
-In Linux, write permissions determine whether a user, group or others can modify, create or delete files or directories. The write permission is represented by a number in the file permission system and can be set or changed using the chmod command.
+| Mode | Meaning | If the file doesn't exist | If it exists |
+| --- | --- | --- | --- |
+| `"r"` | Read (default) | `FileNotFoundError` | Read from start |
+| `"w"` | Write | Created | Truncated (contents erased) |
+| `"a"` | Append | Created | Writes go to the end |
+| `"x"` | Exclusive create | Created | `FileExistsError` |
+| `"r+"` | Read and write | `FileNotFoundError` | Not truncated |
+| `"w+"` | Read and write | Created | Truncated |
+| `"a+"` | Read and append | Created | Writes always go to the end |
 
-Here's what each digit in a chmod code represents:
-
-* The first digit (leftmost) represents the permissions for the owner of the file/directory.
-* The second digit represents the permissions for the group owner of the file/directory.
-* The third digit represents the permissions for other users who are not the owner or group owner.
-
-Each digit in the chmod code can be one of the following values:
-
-* 0: no permissions
-* 1: execute permission only
-* 2: write permission only
-* 3: write and execute permissions
-* 4: read permission only
-* 5: read and execute permissions
-* 6: read and write permissions
-* 7: read, write, and execute permissions
-
-Here are some examples of how to use chmod to set write permissions:
-
-* chmod 700 file.txt - this command sets read, write, and execute permissions for the owner of the file, and no permissions for the group owner or others.
-* chmod 755 directory - this command sets read, write, and execute permissions for the owner of the directory, and read and execute permissions for the group owner and others. The group owner and others cannot write to the directory.
-* chmod 777 file.txt - this command sets read, write, and execute permissions for everyone, including the owner, group owner, and others.
-
-In the above examples, the chmod code is composed of three digits. Each digit represents the permissions for a different set of users: the first digit represents the owner's permissions, the second digit represents the group's permissions, and the third digit represents everyone else's permissions.
-
-Here's an explanation of the different modes you can use to open files in Python:
-
-* 'r': This is the default mode when you open a file in Python. It opens the file for reading, which means you can only read data from the file but you can't write to it or modify it. If the file doesn't exist, you will get a `FileNotFoundError`.
-
-Example:
-
+Add `"b"` for binary mode (`"rb"`, `"wb"`, …) when working with images, audio or other non-text files. In binary mode you read and write `bytes` instead of `str`, and you don't pass `encoding`:
 
 ```python
-file = open('example.txt', 'r')
+with open("example.mp3", "rb") as f:
+    header = f.read(10)  # first 10 bytes
 ```
-* 'w': This mode opens the file for writing, which means you can write data to the file and overwrite its existing contents. If the file doesn't exist, it will be created. If it exists, its previous contents will be deleted.
 
-Example:
+### A note on Linux file permissions
 
+Python's `open()` can only write to a file if the operating system allows it; otherwise you get a `PermissionError`. On Linux and macOS, permissions are set with `chmod`, using three octal digits for the owner, the group, and everyone else. Each digit is the sum of read (4), write (2) and execute (1):
+
+- `chmod 700 file.txt`: owner can read, write and execute; nobody else has access.
+- `chmod 644 file.txt`: owner can read and write; group and others can only read.
+- `chmod 755 directory`: owner has full access; group and others can list and enter the directory but not create or delete files in it.
+
+You can do the same from Python with `os.chmod("file.txt", 0o644)`.
+
+## Processing data line by line
+
+Iterating over a file reads one line at a time, so it works on files of any size:
 
 ```python
-file = open('example.txt', 'w')
+with open("example.txt", encoding="utf-8") as f:
+    for line in f:
+        print(line.strip())
 ```
-* 'a': This mode opens the file for appending, which means you can write data to the end of the file without overwriting its existing contents. If the file doesn't exist, it will be created.
 
-Example:
-
+`strip()` removes the trailing newline and surrounding whitespace. For simple delimited data, `split()` turns a line into fields:
 
 ```python
-file = open('example.txt', 'a')
+with open("example.txt", encoding="utf-8") as f:
+    for line in f:
+        values = line.strip().split(",")
+        print(values[0])
 ```
-* 'x': This mode opens the file for exclusive creation, which means it creates a new file and opens it for writing. If the file already exists, the `FileExistsError` exception will be raised.
 
-Example:
+This breaks as soon as a field contains a quoted comma; use the `csv` module (below) for real CSV files.
 
-
-```python
-file = open('example.txt', 'x')
-```
-* 'b': This mode opens the file in binary mode, which is used for working with non-text files such as images, audio, or video files. When you use this mode, you must specify the file as a binary file using the 'b' character.
-
-Example:
-
-
-```python
-file = open('example.mp3', 'rb')
-```
-In addition to the modes described above, you can also combine them with the `+` character to create hybrid modes that allow you to read and write to a file at the same time:
-
-* 'r+': This mode opens the file for reading and writing.
-
-Example:
-
-
-```python
-file = open('example.txt', 'r+')
-```
-* 'w+': This mode opens the file for reading and writing, overwriting its existing contents.
-
-Example:
-
-
-```python
-file = open('example.txt', 'w+')
-```
-* 'a+': This mode opens the file for reading and appending.
-
-Example:
-
-
-```python
-file = open('example.txt', 'a+')
-```
-Remember to always close the file after you're done with it using the `close()` method or use the `with` statement to automatically close it:
-
-
-```python
-with open('example.txt', 'r') as file:
- # Do something with the file
-```
-I hope this helps! Let me know if you have any further questions.
-
-
-Sure, here's an example of how to use a context manager with the `with` statement to automatically close a file after you're done with it:
-
-
-```python
-with open('example.txt', 'r') as file:
- # Do something with the file
- contents = file.read()
- print(contents)
-# The file will be automatically closed when the code block is exited
-```
-In the example above, we open the file `example.txt` in read mode using the `open()` function, and assign the file object to the variable `file`. Then we do something with the file, such as reading its contents and printing them. When we're done with the file, we exit the code block and the file is automatically closed thanks to the `with` statement.
-
-Using a context manager with the `with` statement is a safer and more concise way to open and close files, as it ensures that the file is always closed even if an exception occurs while the code is executing. It also avoids the need to explicitly call the `close()` method, which can be easy to forget and can lead to resource leaks if not properly handled.
-
-I hope this helps! Let me know if you have any further questions.
-
-
-Sure, here are some examples of how to process data from files using loops, string methods, and regular expressions in Python:
-
-1. Loops: You can use loops to iterate over the lines in a file and process each line as a separate string. For example, if you have a file named `example.txt` with several lines of text, you can read and process each line like this:
-
-
-```python
-with open('example.txt', 'r') as file:
- for line in file:
- # Do something with the line
-  print(line.strip())
-```
-In this example, we open the file in read mode using a context manager and a `for` loop to iterate over each line in the file. We then process each line by stripping its leading and trailing whitespace characters using the `strip()` method, and print the resulting string to the console.
-
-2. String methods: You can use string methods to manipulate the data in each line of a file. For example, if you have a file named `example.txt` with comma-separated values on each line, you can read and process each line like this:
-
-
-```python
-with open('example.txt', 'r') as file:
- for line in file:
-  # Split the line into a list of values using the comma separator
-  values = line.strip().split(',')
-  # Do something with the values
-  print(values[0])
-```
-In this example, we use the `strip()` method to remove leading and trailing whitespace characters from each line, and the `split()` method to split each line into a list of values using the comma separator. We then process the resulting list of values by printing the first value to the console.
-
-3. Regular expressions: You can use regular expressions to search for patterns in the data in each line of a file. For example, if you have a file named `example.txt` with email addresses on each line, you can read and process each line like this:
-
+Regular expressions help when you're searching for a pattern rather than splitting on a fixed character. This pulls email-like strings out of each line:
 
 ```python
 import re
 
-with open('example.txt', 'r') as file:
- for line in file:
- # Search for email addresses using a regular expression
- match = re.search(r'\b[A-Za-z0-9.\_%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', line)
- # If a match is found, print the email address
- if match:
- print(match.group())
+EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+
+with open("example.txt", encoding="utf-8") as f:
+    for line in f:
+        for email in EMAIL.findall(line):
+            print(email)
 ```
-In this example, we use the `re.search()` function to search for email addresses in each line of the file using a regular expression pattern. If a match is found, we print the email address using the `group()` method of the match object.
 
-I hope these examples help you understand how to process data from files using loops, string methods, and regular expressions in Python. Let me know if you have any further questions!
+Compiling the pattern once with `re.compile()` and using `findall()` catches every address on a line, not just the first.
 
+## CSV, JSON and XML
 
-Sure, here's a brief overview of how to use some of the built-in modules in Python to read and write data in different formats:
-
-1. CSV: The `csv` module in Python provides functionality for reading and writing comma-separated values (CSV) files. Here's an example of how to read a CSV file and process its data:
-
+### CSV
 
 ```python
 import csv
 
-with open('example.csv', 'r') as file:
- reader = csv.reader(file)
- for row in reader:
- # Do something with the row data
- print(row)
+with open("example.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["Name", "Age", "City"])
+    writer.writerow(["John", 30, "New York"])
+    writer.writerow(["Jane", 25, "San Francisco"])
+
+with open("example.csv", newline="", encoding="utf-8") as f:
+    for row in csv.DictReader(f):
+        print(row["Name"], row["City"])
 ```
-In this example, we open a CSV file named `example.csv` using a context manager and the `csv.reader()` function. We then use a `for` loop to iterate over each row in the CSV file and process the row data as a list of strings. In this case, we simply print each row to the console.
 
-To write data to a CSV file using the `csv` module, you can use the `csv.writer()` function to create a writer object and the `writerow()` method to write rows of data to the file. Here's an example:
+Open CSV files with `newline=""`, as the [csv docs](https://docs.python.org/3/library/csv.html) recommend; otherwise you can get blank lines between rows on Windows. `csv.reader` gives each row as a list of strings, while `csv.DictReader` uses the header row as dictionary keys. Every value comes back as a string, so convert numbers yourself.
 
-
-```python
-import csv
-
-with open('example.csv', 'w', newline='') as file:
- writer = csv.writer(file)
- writer.writerow(['Name', 'Age', 'City'])
- writer.writerow(['John', '30', 'New York'])
- writer.writerow(['Jane', '25', 'San Francisco'])
-```
-In this example, we create a new CSV file named `example.csv` using a context manager and the `csv.writer()` function. We then use the `writerow()` method to write the column headers and two rows of data to the file.
-
-2. JSON: The `json` module in Python provides functionality for encoding and decoding JSON data. Here's an example of how to read a JSON file and process its data:
-
+### JSON
 
 ```python
 import json
 
-with open('example.json', 'r') as file:
- data = json.load(file)
- # Do something with the JSON data
- print(data)
+data = {"name": "John", "age": 30, "city": "New York"}
+
+with open("example.json", "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2)
+
+with open("example.json", encoding="utf-8") as f:
+    loaded = json.load(f)
+
+print(loaded["age"])  # 30
 ```
-In this example, we open a JSON file named `example.json` using a context manager and the `json.load()` function. We then load the JSON data into a Python object and process the data as necessary. In this case, we simply print the JSON data to the console.
 
-To write data to a JSON file using the `json` module, you can use the `json.dump()` function to write a Python object to the file as JSON data. Here's an example:
+`json.dump`/`json.load` work with files; `json.dumps`/`json.loads` work with strings.
 
-
-```python
-import json
-
-data = {'name': 'John', 'age': 30, 'city': 'New York'}
-
-with open('example.json', 'w') as file:
- json.dump(data, file)
-```
-In this example, we create a Python dictionary object containing some data, and then open a new JSON file named `example.json` using a context manager and the `json.dump()` function. We then write the Python object to the file as JSON data.
-
-3. XML: The `xml` module in Python provides functionality for parsing and generating XML data. Here's an example of how to read an XML file and process its data:
-
+### XML
 
 ```python
 import xml.etree.ElementTree as ET
 
-tree = ET.parse('example.xml')
+tree = ET.parse("example.xml")
 root = tree.getroot()
 
 for child in root:
- # Do something with the child element
- print(child.tag, child.attrib)
+    print(child.tag, child.attrib, child.text)
 ```
-In this example, we parse an XML file named `example.xml` using the `ET.parse()` function from the `xml.etree.ElementTree` module. We then access the root element of the XML file using the `getroot()` method, and use a `for` loop to iterate over the
 
+`getroot()` returns the top-level element, and iterating over an element yields its direct children. Use `root.iter("tag")` to find matching elements at any depth, or `root.find()`/`root.findall()` for simple path queries. The `xml` modules are not safe against maliciously constructed XML, so don't parse untrusted input with them (see the [security note](https://docs.python.org/3/library/xml.html#xml-vulnerabilities) in the docs).
 
-Generators are a great way to process large data sets efficiently in Python. They allow you to lazily load data one chunk at a time, rather than loading everything into memory at once. This can be particularly useful when dealing with very large data sets that would otherwise exceed available memory.
+## Processing large files
 
-To use generators to process large data sets, you can create a function that yields data in manageable chunks. Here's an example:
+Because iterating over a file is already lazy, `for line in f:` handles large text files without loading them into memory. You don't need to wrap `readline()` in your own generator.
 
+Generators are still useful for building processing pipelines on top of that, or for reading binary files in fixed-size chunks:
 
 ```python
-def read\_large\_file(file\_object):
- """A generator function that yields a line from a file object"""
- while True:
-  data = file_object.readline()
- if not data:
-  break
- yield data
+def read_in_chunks(f, chunk_size=1024 * 1024):
+    """Yield successive chunks of a binary file."""
+    while True:
+        chunk = f.read(chunk_size)
+        if not chunk:
+            break
+        yield chunk
+
+
+total = 0
+with open("large_data_set.bin", "rb") as f:
+    for chunk in read_in_chunks(f):
+        total += len(chunk)
+
+print(f"{total} bytes")
 ```
-In this example, we define a generator function called `read_large_file()` that takes a file object as input. The function uses a `while` loop to read data from the file object one line at a time, and yields each line of data as it is read. When the end of the file is reached, the loop exits and the generator function stops yielding data.
 
-To use the `read_large_file()` generator function to process a large data set, you can open the file and pass the file object to the generator function, then use a `for` loop to iterate over the generated data one chunk at a time. Here's an example:
-
+Generator expressions let you chain steps without building intermediate lists:
 
 ```python
-with open('large\_data\_set.txt') as f:
- for line in read_large_file(f):
- # Process the line of data
- print(line.strip())
+with open("large_data_set.txt", encoding="utf-8") as f:
+    stripped = (line.strip() for line in f)
+    non_empty = (line for line in stripped if line)
+    print(sum(1 for _ in non_empty), "non-empty lines")
 ```
-In this example, we open a large data set file named `large_data_set.txt` using a context manager and the `open()` function. We then pass the file object to the `read_large_file()` generator function, which yields each line of data one at a time. Finally, we use a `for` loop to iterate over the generated data and process each line of data as necessary.
 
-Note that you can modify the `read_large_file()` generator function to read data in larger or smaller chunks, depending on your specific needs. Additionally, you can use other generator functions or built-in functions like `map()` and `filter()` to further process the generated data as needed.
+## Running command-line tools: converting MP4 to MP3 with ffmpeg
 
-
-You can use the `subprocess` module in Python to run command-line programs like ffmpeg and pass them arguments. Here's an example of how you can use `subprocess` to convert video files from mp4 to mp3 using ffmpeg:
-
+The `subprocess` module runs external programs. This converts a video's audio track to MP3 with [ffmpeg](https://ffmpeg.org/ffmpeg.html), which must be installed and on your `PATH`:
 
 ```python
 import subprocess
 
-# Input video file path
-input_file = 'path/to/video.mp4'
+input_file = "path/to/video.mp4"
+output_file = "path/to/audio.mp3"
 
-# Output audio file path
-output_file = 'path/to/audio.mp3'
-
-# Run the ffmpeg command to convert the video to audio
-subprocess.run(['ffmpeg', '-i', input_file, '-vn', '-acodec', 'libmp3lame', '-y', output_file])
+subprocess.run(
+    ["ffmpeg", "-y", "-i", input_file, "-vn", "-acodec", "libmp3lame", output_file],
+    check=True,
+)
 ```
-In this example, we import the `subprocess` module, then define the paths to the input and output files. We then use `subprocess.run()` to run the ffmpeg command with the following arguments:
 
-* `-i`: specifies the input file path
-* `-vn`: tells ffmpeg to disable video recording
-* `-acodec`: specifies the audio codec to use
-* `libmp3lame`: specifies the MP3 audio codec
-* `-y`: tells ffmpeg to overwrite the output file if it already exists
-* The output file path
+- `-y` overwrites the output file without asking.
+- `-i` sets the input file.
+- `-vn` drops the video stream.
+- `-acodec libmp3lame` encodes the audio as MP3.
 
-Note that the `subprocess.run()` function will block until the ffmpeg command finishes running, so if you need to convert multiple files, you may want to use `subprocess.Popen()` instead and run the commands in parallel. Also note that if you want to convert other types of video files to MP3, you may need to modify the ffmpeg command accordingly.
+Passing the command as a list (rather than one string with `shell=True`) avoids problems with spaces and special characters in file names. `check=True` raises `subprocess.CalledProcessError` if ffmpeg exits with an error, instead of failing silently.
 
+`subprocess.run()` waits for the command to finish. To convert several files at once, start them with `subprocess.Popen()` and wait on each, or submit `subprocess.run` calls to a `concurrent.futures.ThreadPoolExecutor`.
 
+## Further reading
+
+- [Reading and Writing Files](https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files) in the Python tutorial
+- [`open()`](https://docs.python.org/3/library/functions.html#open), [`csv`](https://docs.python.org/3/library/csv.html), [`json`](https://docs.python.org/3/library/json.html), [`xml.etree.ElementTree`](https://docs.python.org/3/library/xml.etree.elementtree.html) and [`subprocess`](https://docs.python.org/3/library/subprocess.html) reference docs

@@ -1,148 +1,118 @@
 ---
-title: Building an interactive nlp ui for a custom nlp pipeline in spacy
-description: Web app that uses openbb-sdk to display technical analysis graphs for a given stock
+title: A Gradio demo for a spaCy entity ruler that tags stock tickers
+description: How I built a spaCy pipeline that tags stock symbols and company names with an entity ruler, and served it as a Gradio app on Hugging Face Spaces.
 alt: Applying nlp to various youtube videos
 pubDate: Friday, 20 January 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["spacy", "gradio", "python"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 20.50.12 - big topology graph with shapes with paper straws.png'
 imgAlt: 'rbc stock analyzer'
 ---
 
+For my stock news pipeline I want to pull tickers and company names out of headlines and transcripts. A trained NER model won't know that `SHOP.TO` or `$AA` is a stock, but a list of every listed symbol and company name gets most of the way there. spaCy's [`EntityRuler`](https://spacy.io/api/entityruler) turns such a list into entity labels. I packaged the result as `en_stonk_pipeline` and put a [Gradio](https://www.gradio.app/) front end on it so I could paste text and see what it tags.
 
-## Summary
+## Building the patterns
 
-For the stonk pipeline I tend to focus on stock tickers from various csv files automatic generate.
-
-This code initializes the spacy library with some custom configurations and data, such as company names, stock symbols, and exchange information. It also adds an entity_ruler to the pipeline, which allows the library to identify specific entities in text, such as stocks and companies, based on pre-defined patterns. The entity_ruler is populated with patterns using data from various CSV files.
+The symbol and company lists come from a CSV of US-listed tickers in my [eod_tickers](https://github.com/dli-invest/eod_tickers) repo, with `Code` and `Name` columns. Each symbol gets three kinds of pattern: the bare symbol, a cashtag (`$AA`), and the symbol with a Canadian or Hong Kong exchange suffix (`SHOP.TO`). Each company name becomes a `COMPANY` pattern. This is a condensed, runnable version of the `init_nlp` function I keep in my [fin_news_nlp](https://github.com/dli-invest/fin_news_nlp) repo. Save it as `build_pipeline.py`:
 
 ```python
-def init_nlp(exchange_data_path: str = "https://raw.githubusercontent.com/dli-invest/fin_news_nlp/main/nlp_articles/core/data/exchanges.tsv", indicies_data_path: str = "https://raw.githubusercontent.com/dli-invest/fin_news_nlp/main/nlp_articles/core/data/indicies.tsv"):
-    SPLIT_COMPANY_INTO_WORDS = False
-    BEAR_MARKET_ADJUSTMENT = True
+import pandas as pd
+import spacy
+from spacy import displacy
+
+TICKERS_CSV = "https://raw.githubusercontent.com/dli-invest/eod_tickers/main/data/us.csv"
+SUFFIXES = [".TO", ".V", ".CN", ".HK"]
+BAD_SYMBOLS = {"ET"}  # symbols that are also common words in my data
+
+
+def init_nlp() -> spacy.Language:
     nlp = spacy.load("en_core_web_sm")
-    ticker_df = pd.read_csv(
-                "https://raw.githubusercontent.com/dli-invest/eod_tickers/main/data/us.csv"
-            )
-    ticker_df = ticker_df.dropna(subset=['Code', 'Name'])
-    ticker_df = ticker_df[~ticker_df.Name.str.contains("Wall Street", na=False)]
+
+    df = pd.read_csv(TICKERS_CSV, dtype=str).dropna(subset=["Code", "Name"])
+    df = df[~df["Name"].str.contains("Wall Street") & ~df["Code"].isin(BAD_SYMBOLS)]
+
+    patterns = []
+    for symbol in df["Code"]:
+        if len(symbol) > 1:
+            patterns.append({"label": "STOCK", "pattern": symbol})
+            patterns.append({"label": "STOCK", "pattern": f"${symbol}"})
+            patterns += [{"label": "STOCK", "pattern": symbol + s} for s in SUFFIXES]
+    for name in df["Name"]:
+        if len(name) > 1:
+            patterns.append({"label": "COMPANY", "pattern": name})
+    # a token pattern, so it matches "MOU", "MoU" and "mou"
+    patterns.append({"label": "NEWS", "pattern": [{"LOWER": "mou"}]})
+
+    ruler = nlp.add_pipe("entity_ruler", before="ner")
+    ruler.add_patterns(patterns)
+    return nlp
+
+
+if __name__ == "__main__":
+    nlp = init_nlp()
+    doc = nlp("Agilent Technologies Inc signed an MoU with $AA. Shares of SHOP.TO rose.")
+    print([(ent.text, ent.label_) for ent in doc.ents])
 ```
 
-This code reads a CSV file containing stock ticker data using the pandas library. It then filters out rows that have missing values in the "Code" and "Name" columns, or that contain the string "Wall Street" in the "Name" column. These operations ensure that the data used for pattern matching is as clean and accurate as possible.
+You need `pip install spacy pandas` and `python -m spacy download en_core_web_sm`. With spaCy 3.8 that prints:
 
-```python
-    ticker_df = ticker_df.dropna(subset=['Code', 'Name'])
-    ticker_df = ticker_df[~ticker_df.Name.str.contains("Wall Street", na=False)]
-    # remove exact matches
-    ticker_df = ticker_df[~ticker_df['Name'].isin(['Wall Street'])]
-    # remove bad symbols
-    ticker_df = ticker_df[~ticker_df['Code'].isin(['ET'])]
-    symbols = ticker_df.Code.tolist()
-    companies = ticker_df.Name.tolist()
+```text
+[('Agilent Technologies Inc', 'COMPANY'), ('MoU', 'NEWS'), ('$AA', 'STOCK'), ('SHOP.TO', 'STOCK')]
 ```
 
-After filtering the data, the code extracts the stock symbols and company names from the "Code" and "Name" columns of the dataframe, respectively. These lists of symbols and names will be used to create the patterns that the entity_ruler will use to identify entities in text.
+A few things I learned along the way:
 
-```
- ruler = nlp.add_pipe("entity_ruler")
-  patterns = []
+- **String patterns are case-sensitive phrase matches.** `"AA"` matches `AA` but not `aa`. That keeps short symbols such as `ON` or `ALL` from matching ordinary words most of the time, but not always: a headline in all caps will light up. Skipping one-character symbols and dropping known offenders like `ET` helped.
+- **Watch the suffix concatenation.** The suffixes already include the dot. My original code built `symbol + f".{ending}"`, which produced patterns like `AA..TO` that never matched.
+- **Ruler position matters.** By default `add_pipe` puts the ruler last, after `ner`. With the default `overwrite_ents=False`, the ruler then skips any match that overlaps an entity `ner` already found, so `Agilent Technologies Inc` stays an `ORG`. Adding it with `before="ner"` lets the ruler's labels win, and `ner` fills in around them.
+- **Building is slow.** That CSV produces about 139,000 patterns, and each phrase pattern is run through the tokenizer. It took about 35 seconds on my machine, which is why I package the pipeline instead of rebuilding it on every start.
 
-  first_words_added = []
-  endings = [".TO", ".V", ".CN", ".HK"]
-  #List of Entities and Patterns
-  for symbol in symbols:
-      if len(symbol) > 1:
-          patterns.append({"label": "STOCK", "pattern": symbol})
-          patterns.append({"label": "STOCK", "pattern": f"${symbol}"})
-          for ending in endings:
-              patterns.append({"label": "STOCK", "pattern": symbol+f".{ending}"})
+The full pipeline also has `INDEX`, `STOCK_EXCHANGE`, `COUNTRY` and `DIVIDENDS` labels built from other TSV files the same way, plus an option to add each company's first word as a pattern (so "Agilent" alone matches). That last one catches more mentions and more false positives. The packaged model is at [huggingface.co/FriendlyUser/en_stonk_pipeline](https://huggingface.co/FriendlyUser/en_stonk_pipeline).
 
+## The Gradio app
 
-
-  for company in companies:
-      if company not in stops and len(company) > 1:
-          patterns.append({"label": "COMPANY", "pattern": company})
-          if SPLIT_COMPANY_INTO_WORDS:
-              words = company.split()
-              if len(words) >= 1:
-                  new = " ".join(words)
-                  if new not in first_words_added and new.isnumeric() == False:
-                      patterns.append({"label": "COMPANY", "pattern": new})
-                  # add first word to list as well
-                  first_word = words[0]
-                  # ignore the numbers
-                  if (
-                      first_word.isnumeric() == False
-                      and first_word.lower() not in stops
-                      and first_word not in first_words_added
-                  ):
-                      first_words_added.append(first_word)
-                      patterns.append({"label": "COMPANY", "pattern": words[0]})
-```
-
-This code creates a list of dictionaries called patterns, which will be used to populate the entity_ruler with the appropriate patterns. For each stock symbol in the symbols list, it creates a pattern that matches the symbol and another that matches the symbol preceded by a dollar sign. It also creates a pattern for each symbol with a suffix from the endings list, such as .TO and .V.
-
-For each company name in the companies list, it creates a pattern that matches the full name of the company. If the SPLIT_COMPANY_INTO_WORDS flag is True, it also creates patterns for the individual words in the company name and for the first word of the company name. These additional patterns allow the entity_ruler to match entities even when they appear in a different form than their exact name. For example, a company named "Apple Inc." would also be matched if it appears as "Apple" or "Inc." in the text.
-
-
-Similar logic is applied to the indicies.
-
-```python
- patterns.append({
-      "label": "COMPANY",
-      "pattern": cse_pattern,
-  })
-  patterns.append({
-      "label": "COMPANY",
-      "pattern": tsx_pattern,
-  })
-
-  # ignore investor conference
-  # can be useful in bull markets, but not in bear markets
-  if BEAR_MARKET_ADJUSTMENT:
-      patterns.append({
-          "label": IGNORE_LABEL,
-          "pattern": [{"LOWER": "investor"}, {"LOWER": "conference"}]
-      })
-
-  # search for MOU
-  patterns.append({
-      "label": "NEWS",
-      "pattern": [{"LOWER": "mou"}]
-  })
-  ruler.add_patterns(patterns)
-  return nlp
-```
-
-This code appends additional patterns to the patterns list for matching Canadian companies listed on the CSE and TSX exchanges, as well as for ignoring investor conferences and identifying news related to "MOU" (memorandum of understanding) agreements. Finally, it adds the patterns to the entity_ruler and returns the nlp object with the updated pipeline.
-
-To view the full source code please visit
-
-https://huggingface.co/FriendlyUser/en_stonk_pipeline
-
-
-## Deployment
-Gradio is a free and open-source tool that allows users to quickly and easily create interactive web-based interfaces for machine learning models. With Gradio, users can create a simple interface with a few lines of code, which allows others to test and interact with the model in a web browser. This can be useful for sharing and explaining machine learning models to a broader audience, as well as for collecting feedback and real-world data from users.
-
+[Gradio](https://www.gradio.app/) is an open-source Python library for building a web UI around a function. `gr.Interface` takes the function plus input and output component types, and `launch()` starts a local server. spaCy's `displacy.render` produces HTML with highlighted entities, so the whole app is a few lines:
 
 ```python
 import gradio as gr
 import spacy
+from spacy import displacy
+
 nlp = spacy.load("en_stonk_pipeline", disable=["lemmatizer"])
 
-def text_analysis(text):
-    doc = nlp(text)
-    rendered_spacy = spacy.displacy.render(
-            doc, style="ent", page=False)
-    return rendered_spacy
 
-iface = gr.Interface(fn=text_analysis, inputs="text", outputs="html")
-iface.launch()
+def text_analysis(text: str) -> str:
+    doc = nlp(text)
+    return displacy.render(doc, style="ent", page=False)
+
+
+demo = gr.Interface(fn=text_analysis, inputs="text", outputs="html")
+demo.launch()
 ```
 
-Huggingspace is a website and community forum for natural language processing (NLP) researchers and practitioners. It provides a platform for discussing the latest developments and research in the field, as well as sharing resources and code. Huggingspace also hosts workshops and events related to NLP. Overall, it is a valuable resource for anyone interested in the field of NLP.
+## Deploying to Hugging Face Spaces
 
+[Hugging Face Spaces](https://huggingface.co/docs/hub/spaces-overview) hosts Gradio, Streamlit and Docker apps from a Git repo. A Gradio Space needs an `app.py` like the one above, a `README.md` whose YAML header sets `sdk: gradio`, and a `requirements.txt`. Mine installs the packaged pipeline straight from the model repo:
 
-View the full package at hugging space
+```text
+https://huggingface.co/FriendlyUser/en_stonk_pipeline/resolve/main/en_stonk_pipeline-any-py3-none-any.whl
+gradio
+```
 
-https://huggingface.co/spaces/FriendlyUser/en_stonk_pipeline
+The pipeline was packaged with spaCy 3.4 and its metadata pins `spacy>=3.4.1,<3.5.0`. spaCy 3.4 requires pydantic 1, while Gradio 4 and later require pydantic 2, so that wheel can't be installed next to a current Gradio. It worked on the Space because the Space's config pins Gradio 3.13. To move to current versions, rebuild the pipeline with spaCy 3.8 and publish a new wheel:
+
+```bash
+python -c "from build_pipeline import init_nlp; init_nlp().to_disk('en_stonk_pipeline')"
+python -m spacy package en_stonk_pipeline dist --name stonk_pipeline --version 0.0.2 --build wheel
+```
+
+Here `build_pipeline.py` is the script from the first section.
+
+The live demo is at [huggingface.co/spaces/FriendlyUser/en_stonk_pipeline](https://huggingface.co/spaces/FriendlyUser/en_stonk_pipeline).
+
+## Further reading
+
+- [spaCy rule-based matching: EntityRuler](https://spacy.io/usage/rule-based-matching#entityruler)
+- [Gradio quickstart](https://www.gradio.app/guides/quickstart)
+- [Hugging Face Spaces documentation](https://huggingface.co/docs/hub/spaces-overview)

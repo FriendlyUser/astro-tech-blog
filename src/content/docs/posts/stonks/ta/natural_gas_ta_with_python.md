@@ -1,113 +1,115 @@
 ---
 tags: ['python', 'pandas', 'ta']
-title: Natural Gas Price Analysis with Python
-description: Using Pandas and python we can analyze natural gas prices.
+title: 'Natural gas futures in Python: quarterly averages and moving averages with yfinance'
+description: Download Henry Hub natural gas futures with yfinance, compute quarterly and rolling averages in pandas, and use them to sanity-check a gas producer.
 pubDate: Mon, 27 September 2023
+lastUpdated: 2026-11-14
 imgSrc: "/imgs/2023/2223533571.png"
 layout: '@/templates/BasePost.astro'
 ---
 
-Gas prices fluctuate due to a variety of factors, including changes in the cost of crude oil, which is the primary raw material used to produce gasoline, as well as changes in supply and demand for gasoline, taxes, and other costs associated with refining, storing, and transporting gasoline. Additionally, geopolitical events, such as conflicts or natural disasters, can also affect gas prices by disrupting the global oil market.
+I wanted a quick read on where natural gas prices had been before estimating what a Canadian gas producer, Birchcliff Energy (BIR.TO), might earn. This post pulls two years of NYMEX Henry Hub futures (`NG=F` on Yahoo Finance), averages them by quarter, and plots them with moving averages.
 
+## What moves natural gas prices
 
-Cyclical stocks are stocks that tend to be sensitive to the economic cycle, meaning their prices tend to rise and fall with the overall health of the economy. These stocks are often associated with industries that are heavily influenced by consumer spending, such as retail, consumer durables, and homebuilding.
+North American gas prices are set mostly by weather (heating demand in winter, power-burn for air conditioning in summer), storage levels compared with the five-year average, which the EIA reports every Thursday, production, and LNG export demand. In 2022, Russia's invasion of Ukraine pulled European buyers toward US LNG and sent Henry Hub to its highest levels in over a decade. That is the spike in the chart below.
 
-Cyclical stocks tend to perform well during economic expansions and periods of low unemployment, as consumers have more disposable income to spend on non-essential goods and services. However, during economic downturns and recessions, when consumer spending decreases, the profits and stock prices of companies in cyclical industries tend to decline.
+Gas producers are cyclical stocks: their earnings track the commodity price, so a quarter of $8 gas and a quarter of $3 gas look like two different companies.
 
-Examples of cyclical stocks include those in the automotive, construction, housing, and consumer discretionary sectors.
+## Quarterly and rolling averages
 
+A moving average smooths daily noise so the trend is easier to see. Price above a rising moving average is usually read as an uptrend, and below a falling one as a downtrend. For estimating a producer's quarterly revenue, though, the more useful number is the plain average price over each calendar quarter, since that is roughly what the company realised.
 
-A 3-month moving average is a technical indicator that is used to smooth out short-term fluctuations in a stock or index's price, and to help identify longer-term trends. It is calculated by taking the average of a stock or index's closing price over the past three months.
+```bash
+pip install yfinance mplfinance six
+```
 
-The idea behind a moving average is that it helps to filter out "noise" in the stock or index's price, and to make it easier to spot trends. By averaging out the closing prices over a longer period of time, such as three months, the moving average smooths out any short-term volatility in the stock or index's price, and makes it easier to identify longer-term trends.
+`mplfinance` (last released as 0.12.10b0 in 2023) imports `six` without declaring it as a dependency, so install it explicitly.
 
-Traders often use moving averages to help identify buy and sell signals. For example, if a stock or index's price is above its 3-month moving average, it may be considered to be in an uptrend, and traders may buy the stock or index. Conversely, if a stock or index's price is below its 3-month moving average, it may be considered to be in a downtrend, and traders may sell the stock or index.
-
-
-```python 
- # calculate average from daily data from natural gas futures from yahoo finance
-import yfinance
-import pandas as pd
+```python
 import mplfinance as mpf
+import yfinance as yf
 
-# read NG=F 2 years worth of data
+# Front-month Henry Hub natural gas futures, two years of daily bars
+nat_gas = yf.download(
+    "NG=F", start="2021-01-01", end="2023-01-01",
+    progress=False, multi_level_index=False,
+)
 
-nat_gas = yfinance.download("NG=F", start="2021-01-01", end="2023-01-01")
+# Average close for each calendar quarter ("QE" = quarter end)
+quarterly = nat_gas["Close"].resample("QE").mean().rename("avg_close")
+print(quarterly.round(2))
 
-nat_gas['Month'] = pd.to_datetime(nat_gas.index)
-# pad all date
-# print(nat_gas.groupby(by=['Volume', 'Adj Close', pd.Grouper(key='Month', freq='3M')])['Open'].agg('mean'))
+# Rolling ~3-month average (about 63 trading days)
+nat_gas["MA_63"] = nat_gas["Close"].rolling(63).mean()
+print(nat_gas[["Close", "MA_63"]].tail())
 
-mths_3 = pd.date_range(end = nat_gas.index[-1], freq=pd.offsets.BQuarterEnd(),periods=8)
-# mths_6 = pd.date_range(end = nat_gas.index[-1], freq=pd.offsets.MonthBegin(6),periods=4)
+# OHLC chart with 30/60/90-day moving averages and volume
+mpf.plot(
+    nat_gas, type="ohlc", mav=(30, 60, 90), volume=True,
+    style="yahoo", savefig="ng.png",
+)
+```
 
-mth3 = (nat_gas
-         #filter for last three months
-        .loc[mths_3]
-        .groupby(["Month", "Volume"])
-        .agg(avg_ng_last_3_months=("Open","mean"))
-        )
+The quarterly averages (USD per MMBtu, front-month close):
 
-print(mth3)
-
-# for Bir.to (birchcliff energy, I use the following numbers for some estimations)
-# random guess from last two quarters of profit
-# at 4.558 assume 360 revenue for Q4 and 160M profit
-# 475 revenue and 260M profit for Q4
-# considering the investor presentation, thinking its closer to 360M revenue and 160 M profit.
-quarterly_profit = 160
-# 	266.05M * 0.2
-# if deliveries are 3 quarters behind then 
-
-
-quarterly_dividend = 266.05 * 0.2
-print(quarterly_dividend)
-
-remaining_revenue = quarterly_profit - quarterly_dividend
-print(remaining_revenue)
-# 176 debt
-total_debt = 176
-
-# max debt reduction (they target to get to 50M USD in debt)
-min_debt_reduction = total_debt - 100
-
-print(min_debt_reduction)
-# bunch of risk of falling gas prices, but with new supply reduction from russia, doubt it would be so bad.
-
-# save fig
-mpf.plot(nat_gas,type='ohlc',mav=(30, 60, 90), volume=True, style='yahoo', savefig='ng.png') 
+```text
+Date
+2021-03-31    2.72
+2021-06-30    2.98
+2021-09-30    4.32
+2021-12-31    4.84
+2022-03-31    4.59
+2022-06-30    7.50
+2022-09-30    7.95
+2022-12-31    6.09
+Freq: QE-DEC, Name: avg_close, dtype: float64
 ```
 
 ![markdown](/imgs/2023/ng.png)
 
-This script appears to be using the yfinance library to download historical data for natural gas futures (NG=F) from Yahoo Finance, for the period between January 1, 2021 and January 1, 2023. It then uses the Pandas library to create a new column in the dataframe called "Month" which is populated with the date of the data point, and converts it to a datetime object.
+A few notes on the code:
 
-It then uses the Pandas library to create a date range for the last 8 quarters, and filters the dataframe to only include data points from those quarters. It then groups the data by the "Month" column and the "Volume" column, and calculates the average "Open" value for each group, which it saves to a new column in the dataframe called "avg\_ng\_last\_3\_months".
+- `multi_level_index=False` keeps columns flat (`Open`, `High`, `Low`, `Close`, `Volume`). Recent yfinance versions otherwise return a `('Close', 'NG=F')` MultiIndex, which mplfinance can't read.
+- `resample("QE")` groups by calendar quarter. Older pandas used `"Q"`, which pandas 2.2 deprecated in favour of `"QE"`.
+- `mav=(30, 60, 90)` in mplfinance counts rows (trading days), not calendar days, so the 60-row line is roughly a three-month average.
+- `NG=F` is a continuous front-month series. It jumps at each contract roll, so treat it as an approximation of spot, not a tradeable price history.
 
-It also appears to be doing some calculations related to a company's profit, dividend, and debt, but it's not clear how these calculations relate to the data being downloaded or how they are being used.
+## Back-of-envelope numbers for Birchcliff
 
-After that it is using mplfinance library to plot Open high low and close prices of natural gas with 30, 60 and 90 moving averages, and volume, and then it's saving the graph with the name ng.png.
+These are my own rough estimates from around the start of 2023, in CAD millions, when gas was trading near $4.50. My first guess for Q4 2022 was about $475M of revenue and $260M of profit, but after reading the investor presentation I settled on about $360M of revenue and $160M of profit.
 
+```python
+quarterly_profit = 160        # my Q4 2022 estimate
+shares_outstanding = 266.05   # millions of shares
+quarterly_dividend = shares_outstanding * 0.20  # $0.80/yr base dividend, paid quarterly
+free_cash = quarterly_profit - quarterly_dividend
+total_debt = 138.5            # reported total debt at December 31, 2022
 
-There are several libraries in Python that can be used to create financial plots, including:
+print(f"dividend: {quarterly_dividend:.1f}M, left over: {free_cash:.1f}M")
+print(f"debt after one quarter of paydown: {total_debt - free_cash:.1f}M")
+```
 
-* Matplotlib: A widely-used library for creating static, animated, and interactive visualizations in Python. It can be used to create a wide variety of plots, including line plots, scatter plots, bar plots, and candlestick plots.
-* Plotly: A library for creating interactive visualizations in Python. It can be used to create a wide variety of plots, including line plots, scatter plots, bar plots, and candlestick plots.
-* mplfinance: A library built on top of matplotlib that is specifically designed for financial plotting. It can be used to create a wide variety of financial plots, including candlestick plots, barcharts and volume plots.
-* seaborn: A library for creating statistical visualizations in Python. It can be used to create a wide variety of plots, including line plots, scatter plots, bar plots, and heatmaps.
-* bokeh: A library for creating interactive visualizations in Python. It can be used to create a wide variety of plots, including line plots, scatter plots, bar plots, and candlestick plots.
+```text
+dividend: 53.2M, left over: 106.8M
+debt after one quarter of paydown: 31.7M
+```
 
-All of these libraries have their own strengths and weaknesses, and the best choice will depend on the specific needs of the project. Some are better for creating static plots, while others are better for creating interactive visualizations. Some are better for working with large datasets, while others are better for creating highly customized visualizations.
+My original notes used $176M of debt. Birchcliff reported $186.1M at September 30, 2022 and $138.5M at year-end. Either way, at those gas prices the dividend looked well covered and the debt could be cleared within a few quarters. The main risk was falling gas prices, but with Russian supply leaving the market I doubted it would get that bad.
 
-Most of the libraries mentioned above require a basic understanding of the plotting and visualization concepts, Some of the libraries like mplfinance are built on top of matplotlib and are more specialized to financial plots, making it easier to create charts like candlestick charts and other financial plots.
+**Update:** it did get that bad. The `NG=F` front-month close averaged about $2.67 in 2023 and was below $3 on most trading days. Birchcliff cut its 2024 base dividend to $0.40 a year ($0.10 a quarter) to protect the balance sheet, then cut it again to $0.12 a year for 2025. The sensitivity in the script above is the lesson: the dividend was covered at $4.50 gas, not at $2.50.
 
+## Plotting libraries
 
-Climate change is expected to have a significant impact on gas consumption as the world shifts towards cleaner and more sustainable energy sources. As temperatures rise and weather patterns become more extreme, the demand for natural gas is expected to increase in certain sectors such as power generation, as it is considered a cleaner alternative to coal and oil. However, in other sectors such as transportation, the demand for natural gas may decrease as electric vehicles and other alternative fuel vehicles become more prevalent.
+mplfinance is the quickest way to get OHLC or candlestick charts with moving averages and a volume panel from a pandas DataFrame. For interactive charts, Plotly's `go.Candlestick` and Bokeh both work. Plain Matplotlib or seaborn are fine for line plots of the averages.
 
-The use of natural gas for power generation is expected to increase as countries look to phase out coal and reduce their greenhouse gas emissions. Natural gas is a less carbon-intensive fossil fuel and can be used in combination with renewable energy sources such as wind and solar power to provide a flexible and reliable source of electricity.
+## Longer-term demand
 
-However, the transportation sector is also a significant contributor to global greenhouse gas emissions, and there is a growing movement to shift away from fossil fuels and towards electric and alternative fuel vehicles. As a result, the demand for natural gas as a transportation fuel is expected to decrease in the long term.
+Gas demand for power generation has grown as coal plants retire, since gas plants can ramp up and down to back up wind and solar. Over the long run, how fast renewables, storage and electrification grow will matter more to gas producers than any moving average.
 
-Overall, the impact of climate change on gas consumption is complex and will depend on a variety of factors, including government policies, technological advancements, and consumer preferences. It's important to note that natural gas can be used as a transition fuel to decrease the use of coal and oil in power production and make the transition to renewable energy sources.
+## Further reading
 
-
+- [yfinance documentation](https://ranaroussi.github.io/yfinance/)
+- [pandas time series and resampling](https://pandas.pydata.org/docs/user_guide/timeseries.html)
+- [mplfinance on GitHub](https://github.com/matplotlib/mplfinance)
+- [EIA weekly natural gas update](https://www.eia.gov/naturalgas/weekly/)

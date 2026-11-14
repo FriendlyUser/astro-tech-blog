@@ -1,25 +1,27 @@
 ---
-title: Converting React CSS styles to CSS classes
-description: Leverage chatgpt to convert React CSS styles to CSS classes
+title: Converting React inline style objects to CSS classes with ChatGPT
+description: "Why moving React inline style objects into CSS classes helps, and how I used ChatGPT to turn a camelCase style object into a CSS rule."
 pubDate: Saturday, 20 October 2023 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["css", "chatgpt"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/DALL·E 2022-12-26 21.10.41 - decentralized network diagram simple bobble heads.png'
 ---
 
+React's `style` prop is handy for a quick tweak, but style objects tend to pile up. Moving them into CSS classes is usually worth it:
 
-Converting React CSS styles to CSS classes is important for several reasons:
+- **Separation of concerns.** The component file holds behaviour and markup; the stylesheet holds how it looks.
+- **Reuse.** One class can be shared across components instead of copying the same object around.
+- **Things inline styles can't do.** The `style` prop can't express `:hover`, `:focus`, media queries, or `::before`/`::after`. A class can.
+- **Less per-render work.** An inline style object literal is recreated on every render, and React compares it and updates the element's `style` attribute when it changes. A class name is a single string, and the rules live in a stylesheet the browser parses once and caches.
+- **Tooling.** Stylesheets go through the usual CSS pipeline (PostCSS, autoprefixing, minification).
 
-Separation of Concerns: By using CSS classes, the styling and layout of a React component can be separated from its functionality. This makes the code easier to maintain and update, as changes to the styling don't affect the component's behavior.
+## Converting with ChatGPT
 
-Reusability: CSS classes can be reused across multiple components, making it easier to maintain consistency in the appearance of a website or application.
+The conversion is mechanical: camelCase keys become kebab-case properties, quotes and commas go away, and unitless numbers need units. Take this style object:
 
-Performance: Inlining styles in a React component can lead to slow performance, as the styles need to be recalculated every time the component is re-rendered. Using CSS classes instead can improve the performance, as the styles are cached by the browser.
-
-Better Tooling: CSS class-based styles can be optimized and minified using tools such as CSS preprocessors and postprocessors, making the code more efficient and faster to load.
-
-For example the following inline styles can be posted to chatgpt
-```jsx
+```js
+const tagStyle = {
   border: "1px solid #fff",
   paddingRight: "4px",
   paddingLeft: "4px",
@@ -30,9 +32,10 @@ For example the following inline styles can be posted to chatgpt
   boxShadow: "0 0 2px 0 rgba(0, 0, 0, 0.5)",
   fontSize: "14px",
   textAlign: "center",
+};
 ```
 
-Pasting that to chatgpt, it gives me this:
+Pasting that into ChatGPT, it gave me this:
 
 ```css
 .some-class {
@@ -49,7 +52,22 @@ Pasting that to chatgpt, it gives me this:
 }
 ```
 
-This illustrates how simple it can be to build useful tools that boost developer productivity and make life easier for everyone.
+That is a correct one-to-one translation. Two things to do by hand afterwards:
 
+- **Give the class a real name** and tidy it. The four padding lines collapse to `padding: 5px 4px;` (vertical, then horizontal).
+- **Watch for numbers.** If the object had used numbers, such as `fontSize: 14`, React adds `px` automatically for most properties, so the CSS needs `font-size: 14px`. Unitless properties like `lineHeight: 1.5` or `zIndex: 2` stay unitless.
 
-In conclusion, converting React CSS styles to CSS classes is a best practice that can lead to better maintainability, performance, and overall organization of code.
+Then swap the prop on the component:
+
+```jsx
+import './Tag.css';
+
+// before: <span style={tagStyle}>{label}</span>
+<span className="tag">{label}</span>
+```
+
+This is a small example of how a chat assistant can take the tedious part out of a refactor and boost day-to-day productivity.
+
+## When inline styles are still fine
+
+Keep the `style` prop for values that are truly dynamic and computed at runtime, such as a width from a drag handle or a colour picked by the user. A middle ground is to keep the rules in CSS and pass only the variable part as a custom property: `style={{ '--accent': color }}` with `color: var(--accent)` in the stylesheet.

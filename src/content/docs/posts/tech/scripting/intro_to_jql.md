@@ -1,35 +1,37 @@
 ---
 tags: ['jira', 'jql']
-title: Introduction to JIRA query languages.
-description: In this post I will show you how to use jql to find jira issues.
+title: "JQL basics: finding the Jira issues you created recently"
+description: Two short JQL queries for finding Jira issues you created in the last 15 days, and how to narrow them down to open bugs.
 pubDate: Fri, 14 July 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/2466346852.png
 ---
-JIRA is a project management tool that helps software development teams plan, track, and release software. It is developed by Atlassian and is widely used by software development teams to manage tasks, bugs, and other issues related to software development. JIRA offers a wide range of features and integrations, making it a versatile tool for software project management.
 
+Jira is Atlassian's issue and project tracker. JQL (Jira Query Language) is its search syntax: you combine fields, operators, and functions (`project = WEB AND assignee = currentUser()`) to filter issues. It looks a bit like a SQL `WHERE` clause, but it only filters and sorts issues; there are no joins or `SELECT`. You can type JQL in the advanced search view, and save a query as a filter to reuse it on boards and dashboards or share it with your team.
 
-JIRA Query Language (JQL) is a powerful tool for searching and reporting on issues in JIRA. It is a SQL-like language that allows users to construct complex queries to search for issues based on various criteria, such as issue type, status, priority, assignee, and more. JQL is used to create custom filters, which can be saved and shared with other team members to simplify issue tracking and management. With JQL, users can quickly and easily retrieve the information they need, making it an essential tool for any team using JIRA.
-
-
-To filter for issues in JIRA that you have created in the last 15 days, you can use the following JQL query:
-
+## Issues you created in the last 15 days
 
 ```sql
-created >= -15d and creator = currentUser()
+created >= -15d AND creator = currentUser()
 ```
-This query will return all issues that were created in the last 15 days (`created >= -15d`) and were created by the current user (`creator = currentUser()`).
 
-You can further customize this query by adding other criteria, such as issue type, project, or status, to narrow down your search results. For example, to search for all open bugs that you created in the last 15 days, you can use the following query:
+- `created >= -15d` matches issues created in the last 15 days. Relative dates use units such as `m` (minutes), `h`, `d`, and `w`.
+- `creator = currentUser()` matches issues created by whoever runs the query, so the same saved filter works for everyone on the team.
 
+## Open bugs you created in the last 15 days
+
+Add more clauses to narrow the results:
 
 ```sql
-type = Bug and status != Closed and created >= -15d and creator = currentUser()
+type = Bug AND status != Closed AND created >= -15d AND creator = currentUser()
 ```
 
-This query will return all open bugs (`type = Bug` and `status != Closed`) that were created in the last 15 days (`created >= -15d`) and were created by the current user (`creator = currentUser()`).
+`type` is an alias for `issuetype`. `status != Closed` only works if your workflow has a status called `Closed`; many projects use `Done` or `Resolved` instead. A query that works across workflows is `statusCategory != Done`, or `resolution = Unresolved` if your project sets resolutions.
 
-To learn jql in details refer to the atlassian docs
+Add `ORDER BY created DESC` to the end to see the newest issues first.
 
-https://www.atlassian.com/blog/jira-software/jql-the-most-flexible-way-to-search-jira-14
+## Further reading
 
+- [JQL: the most flexible way to search Jira](https://www.atlassian.com/blog/jira-software/jql-the-most-flexible-way-to-search-jira-14) (Atlassian blog)
+- [Use advanced search with Jira Query Language (JQL)](https://support.atlassian.com/jira-software-cloud/docs/use-advanced-search-with-jira-query-language-jql/)

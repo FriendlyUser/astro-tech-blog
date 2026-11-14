@@ -1,53 +1,45 @@
 ---
-tags: ['autohotkey']
-title: How to use AI to generate logos
-description: By leveraging bing image creator and gpt-4 (poe), I can generate high quality logos for AI startups.
+tags: ['autohotkey', 'openai']
+title: "How I generate logos with AI: GPT-4 for descriptions, Bing Image Creator for images"
+description: My two-step process for logo ideas. I ask GPT-4 (on Poe) for written logo descriptions, then paste them into Bing Image Creator or DALL-E.
 pubDate: Fri, 21 March 2025
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1492118595.png
 ---
 
+I generate logos with two AI tools: a chat model writes the logo descriptions, and an image model draws them.
 
-In order to generate logos with AI, I have a two step process:
+## Step 1: Ask a chat model for logo descriptions
 
+I used GPT-4 on Poe with this prompt:
 
-1. Generate logo description using AI.
+```text
+Write descriptions for logos for AI SaaS startups
+```
 
+It came back with these:
 
-Write descriptions for logos for AI sass startups:
+1. **InferoBot**: a vibrant orange flame with a geometric twist. The flame is built from interconnected angular shapes that subtly form a robot's face.
 
+2. **MindMeld**: a minimalist design of two connected brain hemispheres in a gradient of blues. Where the hemispheres meet is a stylised, glowing light bulb, standing for human intelligence merging with AI.
 
-1. **InferoBot**
+3. **AI Whisperer**: a stylised ear in clean, curved lines and cool teal, with an abstract waveform in electric blue and purple flowing out of it, representing communication between people and AI.
 
-   The InferoBot logo features a vibrant, fiery orange flame with a modern, geometric twist. The flame is composed of a series of interconnected, angular shapes that subtly form the shape of a robot's face. This dynamic logo represents the powerful and cutting-edge AI-driven technology, igniting the spirit of innovation and intelligence.
+4. **NeuraSphere**: a 3D sphere made of interconnected nodes and lines, like a neural network, with a metallic, pearlescent finish in silver, blue and purple.
 
-2. **MindMeld**
+5. **CodeGenius**: a monochrome "C" and "G" intertwined to form an infinity symbol, with smooth lines broken by sharp angles, in black and white.
 
-   The MindMeld logo is a sleek, minimalist design showcasing two interconnected human brain hemispheres in a subtle gradient of blue hues. The merge point between the hemispheres is a stylized, glowing light bulb, symbolizing the fusion of human intelligence with AI's limitless potential. This logo conveys a sense of collaboration, innovation, and cognitive growth.
+6. **DataCrafter**: a blacksmith's anvil whose top surface is replaced by glowing, multicoloured pixels, set against a deep blue-to-purple gradient, for "forging" data into insights.
 
-3. **AI Whisperer**
+Specific details like colours, shapes and finish give the image model much more to work with than "a logo for an AI startup".
 
-   The AI Whisperer logo showcases a modern, stylized ear with an abstract, flowing waveform emanating from it. The ear is composed of clean, curved lines in a gradient of cool teal colors, while the waveform is a blend of electric blue and purple hues. This logo represents the seamless communication and understanding between humans and AI, as well as the company's commitment to bridging the gap between technology and user experience.
+## Step 2: Paste each description into an image generator
 
-4. **NeuraSphere**
-
-   The NeuraSphere logo is an elegant, futuristic design featuring a 3D sphere composed of interconnected nodes and lines, representing a neural network. The sphere has a metallic, pearlescent finish in shades of silver, blue, and purple, giving it a sense of depth and sophistication. This emblem symbolizes the company's focus on harnessing the power of AI for innovative solutions in various industries.
-
-5. **CodeGenius**
-
-   The CodeGenius logo is a bold and modern design that incorporates a stylized, monochromatic letter "C" and "G" intertwined to form an infinity symbol. The smooth, flowing lines are punctuated by sharp angles, representing the seamless integration of human expertise and AI technology. The timeless black and white color scheme signifies the company's dedication to creating enduring, intelligent software solutions.
-
-6. **DataCrafter**
-
-   The DataCrafter logo features a striking, stylized image of a blacksmith's anvil, with the top surface replaced by a series of glowing, multicolored pixels. The anvil is set against a backdrop of a deep blue to purple gradient, which adds depth and visual interest. This unique logo symbolizes the company's dedication to crafting powerful AI solutions through the forging of data into meaningful insights and applications.
-
-
-2. Copy and paste the responses into bing image creator or dall-e.
-
-
-![inferobot logo](https://th.bing.com/th/id/OIG.HZ25n7FGCOsn264MoXXA?pid=ImgGn)
+Copy a description into [Bing Image Creator](https://www.bing.com/images/create) or DALL-E and let it generate a few candidates. This is what Bing made from the InferoBot description:
 
 https://www.bing.com/images/create/the-inferobot-logo-features-a-vibrant2c-fiery-orang/64211dd0e6104eeca2106952bb320309?id=kBXMDBPpDiLb7hoEODFQjA%3d%3d&view=detailv2&idpp=genimg&FORM=GCRIDP&mode=overlay
 
+## Thoughts
 
-In this article, you learned how to use AI to generate prompts for another AI. Honestly, I think designers will have a hard time competing with all these AI services. For example, at this time of writing ChatGPT has trouble with math, but with the wolfram alpha integration, it does not need to perform well, just rely on another service.
+This is really just using one AI to write prompts for another. Honestly, I think designers will have a hard time competing with these services. AI tools don't have to be good at everything themselves; they can lean on other services. For example, when I wrote this ChatGPT had trouble with maths, but with the Wolfram Alpha plugin it didn't need to be good at it.

@@ -1,39 +1,42 @@
 ---
-description: Explore the emergence of custom ChatGPT bots and their role in streamlining coding-related tasks. Discover how OpenAI's GPT facilitates the creation of tailored AI chatbots for various applications such as type conversions, diagram generation, string manipulation, and encoding.
+description: How I used OpenAI's custom GPTs to build one ChatGPT bot for small coding chores like type conversions, string tricks, Base64 and Mermaid diagrams.
 imgSrc: /imgs/2023/progress.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-09T15:20:34.000Z'
-tags: ['ChatGPT', 'AI Chatbots', 'Programming', 'Automation', 'Mermaid Diagrams']
-title: "Custom ChatGPT Bots: Revolutionizing Coding Tasks"
+lastUpdated: 2026-11-14
+tags: ['ChatGPT', 'AI Chatbots', 'Programming', 'Automation', 'Mermaid Diagrams', 'openai']
+title: "Building a custom GPT for everyday coding chores"
 ---
 
+OpenAI announced custom GPTs at its first developer conference (DevDay) in San Francisco in November 2023. A GPT is a version of ChatGPT with your own instructions, optional uploaded files, and optional tools such as web browsing and DALL-E image generation. You configure it by chatting with a builder or filling in a form, with no code required.
 
-Creating custom ChatGPT bots has become a streamlined process accessible to individuals and enterprises alike. With platforms like OpenAI's GPT-3, the barriers to creating sophisticated chatbots tailored to specific use cases have significantly lowered. The ability to create a custom chatbot, such as the one available via the provided link, underscores the versatility of this technology. Users can now rely on a single, integrated bot to perform various coding-related tasks, such as type conversions, generating Mermaid diagrams, reversing strings, and handling base64 encoding/decoding, thereby eliminating the need to visit multiple websites for each task.
+I used one to replace a handful of single-purpose websites I kept visiting for small coding chores. Instead of opening a Base64 decoder in one tab and a diagram tool in another, I ask the same bot.
 
-The inception of these AI agents, or GPTs (Generative Pre-trained Transformers), represents a shift towards more personalized and efficient digital tools. OpenAI's release of a platform for making custom versions of ChatGPT aligns with the growing demand for AI chatbots capable of handling specialized tasks without requiring users to write any code. These custom GPTs, which were announced during OpenAI’s first-ever developer conference in San Francisco, offer a glimpse into the future of personalized AI tools that can adapt to and streamline our digital interactions.
+## What my bot does
 
-By utilizing a custom GPT, users can command the bot to execute various tasks within a conversation, significantly improving the efficiency of workflows and digital interactions. For instance, rather than using separate applications or websites to generate diagrams, manipulate strings, or encode data, a single GPT can be programmed to manage all these tasks within the same interface.
+You can try it here: [Custom ChatGPT Bot](https://chat.openai.com/share/02cf4cbd-0574-4aee-8e24-1ad6d02d234d).
 
-These advancements are made possible by the GPT Store, which is set to host these AI agents. While details about the store's operations are still emerging, it is clear that creators will be compensated based on the usage of their GPTs. This marketplace will be available to ChatGPT Plus subscribers and enterprise customers, emphasizing the value of these bots in professional settings.
+It's set up for:
 
-The customizability of GPTs extends to their interaction styles and the tasks they can perform. OpenAI's platform allows creators to define how their GPTs interact with users, ensuring that the bot's responses are aligned with the intended purpose, whether it's to provide concise information or to navigate an event schedule. Moreover, GPTs can integrate web browsing capabilities, use DALL-E to generate images, and access custom data, providing a robust framework for creating highly functional bots.
+- **Type conversions** between strings, integers, floats, booleans and so on.
+- **Diagrams**: UML and Mermaid charts for visualising code and workflows.
+- **String manipulation**: reversing, concatenating and parsing strings.
+- **Encoding**: Base64 encoding and decoding.
 
-The broader implications of custom GPTs are significant. Not only do they position OpenAI as a competitor in the AI bot market, but they also contribute to the company's ultimate goal of creating an Artificial General Intelligence (AGI). With measures in place to monitor the use of GPTs to prevent misuse, and with access initially restricted to paid subscribers, OpenAI is taking steps to ensure responsible use and to drive revenue.
-
-To explore the capabilities of a custom GPT and how it can streamline your coding-related tasks, you can visit the following link: [Custom ChatGPT Bot](https://chat.openai.com/share/02cf4cbd-0574-4aee-8e24-1ad6d02d234d). This chatbot exemplifies the practical application of GPT technology, serving as a single, efficient tool for various programming needs.
-
-It's particularly useful for:
-
-Type conversions - Between strings, integers, floats, booleans, etc.
-Generating diagrams - UML and mermaid charts for visualizing code.
-String manipulation - Reversing, concatenating, parsing strings.
-Encoding - Base64 encoding and decoding strings.
-
-
-In that bot, we can generate mermaid diagrams for various workflows, copying and pasting into a mermaid viewer is simple.
-
-For example, see:
+The Mermaid output is the part I use most. The bot writes the diagram source, and I paste it into a Mermaid viewer to render it. For example:
 
 https://www.mermaidchart.com/raw/b78e5405-cb5f-481d-ad22-14c09bab86f9?theme=light&version=v0.1&format=svg
 
-In conclusion, the development of custom ChatGPT bots represents a significant advancement in the field of artificial intelligence, making it easier for both individuals and businesses to create and use AI-powered chatbots tailored to their specific needs. The integration of such bots into a single platform via OpenAI's GPT-3 technology offers a versatile and efficient approach to managing coding-related tasks without the need to switch between different applications. With the upcoming GPT Store, creators will be able to monetize their bots, contributing to a marketplace that rewards innovation and utility. These bots are not only tools for immediate problem-solving but also stepping stones towards the creation of more sophisticated AI systems, potentially culminating in the realization of Artificial General Intelligence. For those interested in experiencing the capabilities of a custom GPT firsthand, the provided link offers direct access to a bot that can aid in a variety of programming tasks, exemplifying the practical value of this technology.
+## Caveats
+
+- **Check deterministic work.** A language model can get Base64 or type conversions wrong, especially on long inputs. For anything that matters, verify the result with a real tool, such as `base64` on the command line or Python's `base64` module.
+- **Instructions shape the output.** Most of the work in making a useful GPT is writing clear instructions about what it should and shouldn't do. You can also tell it what response style to use, such as "return only the code block".
+
+## The GPT Store
+
+At DevDay, OpenAI also announced a GPT Store where people could publish and find GPTs, and said builders would be paid based on how much their GPTs were used. The store opened in January 2024, initially for paid ChatGPT plans (Plus, Team and Enterprise), with GPTs checked by a mix of human and automated review.
+
+## Further reading
+
+- [Introducing GPTs (OpenAI)](https://openai.com/index/introducing-gpts/)
+- [Introducing the GPT Store (OpenAI)](https://openai.com/index/introducing-the-gpt-store/)

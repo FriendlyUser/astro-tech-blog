@@ -1,78 +1,67 @@
 ---
-description: In this article, we will explore the basics of using `echo` in Golang
-  to create a simple web application
+description: "Build a small Go web server with the Echo framework: routes, a JSON POST handler with request binding, and the built-in logging and recovery middleware."
 imgSrc: /imgs/2023/3437532028.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-27T06:04:59.000Z'
-tags: []
-title: Using `echo` in Golang for Efficient Web Development
+lastUpdated: 2026-11-14
+tags: ["go"]
+title: "Getting started with Echo in Go: routes, JSON handlers and middleware"
 ---
 
-# Using `echo` in Golang for Efficient Web Development
+:::caution
+This post was originally written for Echo v4. Echo v5 was released in January 2026 and changed the handler signature (`echo.Context` is now the concrete type `*echo.Context`) and some middleware names. v4 is in maintenance mode, so the examples below use v5. If you maintain a v4 app, see the [Echo repository](https://github.com/labstack/echo) for the v4 support timeline and upgrade notes.
+:::
 
-`echo` is a high-performance, extensible, and easy-to-use web framework for the Go programming language (Golang). It is designed to simplify the process of creating web applications by providing a minimalistic and fast solution for building RESTful APIs, microservices, and web applications.
+[Echo](https://echo.labstack.com/) is a small web framework for Go. It adds a router with path parameters, request binding, response helpers and a middleware chain on top of `net/http`, without much else. That makes it a reasonable middle ground between the standard library's `http.ServeMux` and heavier frameworks.
 
-In this article, we will explore the basics of using `echo` in Golang to create a simple web application. We will start by setting up our development environment, and then we will create a basic `echo` application with routing, middleware, and request handling.
+This post builds a small server with one GET route, one JSON POST route, and Echo's logging and recovery middleware.
 
-## Setting up the Development Environment
+## Set up the project
 
-Before we can start using `echo` in our Golang projects, we need to ensure that our development environment is set up correctly. To do this, follow these steps:
+Echo v5 requires Go 1.25 or later. Create a module and add Echo:
 
-1. Install the Go programming language by following the [official installation guide](https://golang.org/doc/install).
-2. Verify that Go is installed correctly by running `go version` in your terminal. You should see the installed Go version.
-3. Install the `echo` package by running the following command:
+```bash
+mkdir echo-demo && cd echo-demo
+go mod init example.com/echo-demo
+go get github.com/labstack/echo/v5
 ```
-go get -u github.com/labstack/echo/v4
-```
 
-## Creating a Basic Echo Application
+## A minimal server
 
-Now that our development environment is set up, we can create a basic `echo` application. To do this, create a new file called `main. and add the following code:
+Create `main.go`:
 
 ```go
 package main
 
 import (
+	"log/slog"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 func main() {
-	// Create a new Echo instance
 	e := echo.New()
 
-	// Register a route
-	e.GET("/", func(c echo.Context) error {
+	e.GET("/", func(c *echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Echo!")
 	})
 
-	// Start the server
-	e.Start(":8080")
+	if err := e.Start(":8080"); err != nil {
+		slog.Error("failed to start server", "error", err)
+	}
 }
 ```
 
-This code creates a new `echo` instance, registers a simple route that responds with "Hello, Echo!" on a GET request to the root path ("/"), and starts the server on port 8080.
+Run it with `go run .` and open `http://localhost:8080` to see `Hello, Echo!`.
 
-To run the application, execute the following command in your terminal:
+Every Echo handler returns an `error`. Returning one hands it to Echo's central error handler, which turns it into an HTTP response, so you don't write the error response in every handler.
 
-```
-go run main.go
-```
+Also check the error from `e.Start`. Ignoring it, as many examples do, hides problems like the port already being in use.
 
-You should see the following output:
+## A JSON POST handler
 
-```
-⇨ http server started on [::]:8080
-```
-
-Now, open your web browser and navigate to `http://localhost:8080`. You should see the "Hello, Echo!" message.
-
-## Adding Routing and Request Handling
-
-`echo` makes it easy to define routes and handle HTTP requests. In this section, we will add a new route and request handler for a simple JSON API.
-
-Add the following code to your `main. file:
+Add a `User` type and a handler that binds the request body to it:
 
 ```go
 type User struct {
@@ -80,55 +69,96 @@ type User struct {
 	Email string `json:"email"`
 }
 
-// CreateUser is a request handler for creating a new user
-func CreateUser(c echo.Context) error {
-	user := new(User)
-	if err := c.Bind(user); err != nil {
+func createUser(c *echo.Context) error {
+	var u User
+	if err := c.Bind(&u); err != nil {
 		return err
 	}
-
-	return c.JSON(http.StatusCreated, user)
-}
-
-func main() {
-	// ...
-	// Register the new route
-	e.POST("/users", CreateUser)
-	// ...
+	if u.Name == "" || u.Email == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "name and email are required")
+	}
+	return c.JSON(http.StatusCreated, u)
 }
 ```
 
-This code defines a new `User` struct and a `CreateUser` function that acts as a request handler for creating new users. The `CreateUser` function binds the incoming JSON request to the `User` struct and returns a JSON response with the created user object.
-
-Restart your server and use a tool like [Postman](https://www.postman.com/) or [curl](https://curl.se/) to send a POST request to `http://localhost:8080/users` with a JSON payload containing a name and email. You should receive a JSON response with the created user.
-
-## Implementing Middleware
-
-`echo` supports middleware, which are functions that can be executed before or after route handlers. Middleware can be used for various purposes, such as logging, authentication, or CORS.
-
-Add the following code to your `main. file to implement a simple logging middleware:
+Register it in `main`, before `e.Start`:
 
 ```go
+e.POST("/users", createUser)
+```
+
+`c.Bind` decodes the body based on the `Content-Type` header (JSON, XML or form data) and can also fill fields from path and query parameters tagged with `param` and `query`. If decoding fails it returns an error that Echo turns into a `400 Bad Request`. Binding doesn't validate anything, which is why the handler checks the fields itself; for larger structs, plug a validator such as `go-playground/validator` into `e.Validator`.
+
+Test it with curl:
+
+```bash
+curl -X POST http://localhost:8080/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada","email":"ada@example.com"}'
+```
+
+The response is the same user as JSON with status `201 Created`.
+
+## Middleware
+
+Middleware wraps handlers to run code before or after them. Echo ships common ones in the `middleware` package. Here is the complete `main.go` with request logging and panic recovery added:
+
+```go
+package main
+
 import (
-	// ...
-	"github.com/labstack/echo/v4/middleware"
+	"log/slog"
+	"net/http"
+
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
+type User struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func createUser(c *echo.Context) error {
+	var u User
+	if err := c.Bind(&u); err != nil {
+		return err
+	}
+	if u.Name == "" || u.Email == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "name and email are required")
+	}
+	return c.JSON(http.StatusCreated, u)
+}
+
 func main() {
-	// ...
+	e := echo.New()
 
-	// Add middleware to the Echo instance
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	e.Use(middleware.RequestLogger()) // logs each request with log/slog
+	e.Use(middleware.Recover())       // turns panics into 500 responses instead of crashing
 
-	// ...
+	e.GET("/", func(c *echo.Context) error {
+		return c.String(http.StatusOK, "Hello, Echo!")
+	})
+	e.POST("/users", createUser)
+
+	if err := e.Start(":8080"); err != nil {
+		slog.Error("failed to start server", "error", err)
+	}
 }
 ```
 
-This code adds two built-in middleware functions to the `echo` instance: the `Logger` middleware, which logs information about each request, and the `Recover` middleware, which recovers from panics and logs the error.
+Middleware registered with `e.Use` runs for every route, in the order it was added. Restart the server and each request now produces a log line.
 
-Restart your server and send a request to any of the registered routes. You should see log output in your terminal, showing information about the request.
+Other built-in middleware worth knowing: `CORS`, `BodyLimit`, `Gzip`, `RateLimiter` and `ContextTimeout`. You can also apply middleware to a single route or to a group created with `e.Group("/api")`.
 
-## Conclusion
+## Gotchas
 
-In this article, we explored the basics of using `echo` in Golang to create a simple web application. We learned how to set up our development environment, create an `echo` application, define routes and request handlers, and implement middleware.
+- In v4, handlers take `echo.Context` (an interface); in v5 they take `*echo.Context`. Code and examples written for one won't compile against the other, so check which major version a tutorial targets.
+- v4's `middleware.Logger()` does not exist in v5; use `middleware.RequestLogger()`.
+- Be careful with `c.RealIP()` and the IP-based rate limiter behind proxies. Configure `e.IPExtractor` to match your proxy setup, or clients can spoof their IP with `X-Forwarded-For`.
+
+## Further reading
+
+- [Echo documentation](https://echo.labstack.com/)
+- [Echo on pkg.go.dev](https://pkg.go.dev/github.com/labstack/echo/v5)
+- [Echo middleware package](https://pkg.go.dev/github.com/labstack/echo/v5/middleware)

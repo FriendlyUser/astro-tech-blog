@@ -1,227 +1,200 @@
 ---
-tags: ['python', 'latex', 'openbb']
-title: How I generate stock reports with python and latex
-description: Generating premarket and postmarket reports with python and latex
+tags: ['python', 'latex', 'openbb', 'stonks', 'pandas']
+title: How I generate premarket stock reports with Python, PyLaTeX and Discord
+description: My pipeline for premarket stock reports, pulling market events, Reddit posts and economic data into a PyLaTeX document and posting it to Discord.
 pubDate: Mon, 20 March 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/1678591372_a_blade_in_the_desert_under_the_sun.png"
 ---
 
-Premarket refers to the trading activity that occurs before the regular market hours. In the United States, the regular market hours are 9:30 AM to 4:00 PM Eastern Time. The premarket session usually starts at 4:00 AM Eastern Time and ends at 9:30 AM Eastern Time. During the premarket session, investors can trade stocks through electronic communication networks (ECNs) that are open for trading.
+:::caution
+The economy tables come from a helper built on the OpenBB SDK v3 (`from openbb_terminal.sdk import openbb`). OpenBB has since replaced the SDK with the OpenBB Platform v4 (`from openbb import obb`), which has breaking changes: `source` became `provider`, and results come back as `OBBject` models rather than DataFrames. If you rebuild this, port that helper to the Platform. See the [OpenBB docs](https://docs.openbb.co/).
+:::
 
-The premarket session provides an opportunity for investors to trade stocks ahead of important market-moving events such as earnings releases or economic data releases. The trading volume and liquidity during the premarket session are usually lower compared to the regular market hours, so investors should be aware that the prices may be more volatile and less accurate.
+Each morning before the US market opens, I generate a report that collects the day's scheduled market events, recent posts from investing subreddits and some economic data. The report is a LaTeX document built from Python and then sent to a Discord channel.
 
-It's worth noting that not all stocks are available for trading during the premarket session, and the prices quoted during this time may not necessarily be indicative of the prices that will be available during the regular market hours.
+Regular US market hours are 9:30 AM to 4:00 PM Eastern. Premarket trading on ECNs can start as early as 4:00 AM, though many brokers open later. Volume is thin before the open, so premarket prices move a lot and don't always hold once regular trading starts. That makes it worth having the day's events in one place before the bell.
 
+The full project is at [dli-invest/stonk_events](https://github.com/dli-invest/stonk_events).
 
-```python 
- import sys
+## Building the report
 
-# all tex related stuff is in src/tex.py
-import numpy as np
-import pylatex as pl
-import pandas as pd
+`pylatex` assembles the document, and `DataFrame.to_latex` turns each pandas table into LaTeX. `split_tables`, `fetch_reddit_posts`, `parse_reddit_posts`, `make_dirs`, `escape_latex` and `openbb_economy` are helpers from my repo, not library functions.
+
+```python
 import datetime
+
+import pylatex as pl
+
+# project helpers from the stonk_events repo
 from marketwatch import split_tables
-from utils.parse_reddit import fetch_reddit_posts, parse_reddit_posts, make_dirs
-from utils.tex import escape_latex
 from utils.openbb_data import openbb_economy
+from utils.parse_reddit import fetch_reddit_posts, make_dirs, parse_reddit_posts
+from utils.tex import escape_latex
+
+
+def add_table(doc: pl.Document, tex_table: str, caption: str) -> None:
+    with doc.create(pl.Table(position="htbp")) as table:
+        table.add_caption(caption)
+        table.append(pl.Command("centering"))
+        table.append(pl.NoEscape(r"\begin{adjustbox}{width=1\textwidth}"))
+        table.append(pl.NoEscape(tex_table))
+        table.append(pl.NoEscape(r"\end{adjustbox}"))
+
 
 def main():
-
     doc = pl.Document()
-
-    doc.packages.append(pl.Package('booktabs'))
-    doc.packages.append(pl.Package('adjustbox'))
+    doc.packages.append(pl.Package("booktabs"))
+    doc.packages.append(pl.Package("adjustbox"))
     doc.packages.append(pl.Package("hyperref"))
 
+    # Market events scraped from MarketWatch
     dfs, captions = split_tables()
-    # MARKET EVENTS
-    for index, df in enumerate(dfs):
-        # only add these ta
+    for df, caption in zip(dfs, captions):
         try:
-            column_format = 'l' + 'c' * (len(df.columns) - 1)
+            column_format = "l" + "c" * (len(df.columns) - 1)
             tex_table = df.to_latex(escape=True, index=False, column_format=column_format)
-            with doc.create(pl.Table(position='htbp')) as table:
-                table.add_caption(captions[index])
-                table.append(pl.Command('centering'))
-                doc.append(pl.NoEscape(r'\begin{adjustbox}{width=1\textwidth}'))
-                table.append(pl.NoEscape(tex_table))
-                doc.append(pl.NoEscape(r'\end{adjustbox}'))
+            add_table(doc, tex_table, caption)
         except Exception as e:
             print(e)
-    # PULL REDDIT DATA
-    # TODO integrate custom commands
-    # eventually https://jeltef.github.io/PyLaTeX/current/examples/own_commands_ex.html
+
+    # Reddit posts as a list of links
     reddit_posts = fetch_reddit_posts()
-    # eventually do a md framed component per post
     if reddit_posts is not None and len(reddit_posts) > 0:
         df_posts = parse_reddit_posts(reddit_posts)
-        # add reddit post to tex report
         with doc.create(pl.Itemize()) as itemize:
-            for index, row in df_posts.iterrows():
-                itemize.add_item(pl.NoEscape(r"\href{" + escape_latex(row['url']) + r"}{" + escape_latex(row['title']) + r"}," + escape_latex(row["linkFlairText"])))
+            for _, row in df_posts.iterrows():
+                itemize.add_item(pl.NoEscape(
+                    r"\href{" + escape_latex(row["url"]) + "}{" + escape_latex(row["title"]) + "}, "
+                    + escape_latex(row["linkFlairText"])
+                ))
 
+    # Economy tables
     economy_dfs, file_names = openbb_economy()
-    for index, df in enumerate(economy_dfs):
-        tex_table = df.to_latex(escape=True, index=False)
-        with doc.create(pl.Table(position='htbp')) as table:
-            table.add_caption(file_names[index])
-            table.append(pl.Command('centering'))
-            doc.append(pl.NoEscape(r'\begin{adjustbox}{width=1\textwidth}'))
-            table.append(pl.NoEscape(tex_table))
-            doc.append(pl.NoEscape(r'\end{adjustbox}'))
-    # make images
-    # make dirs files
-    curr_month = datetime.datetime.now().strftime("%B")
-    base_folder = f"data/reports/{curr_month}"
+    for df, name in zip(economy_dfs, file_names):
+        add_table(doc, df.to_latex(escape=True, index=False), name)
+
+    now = datetime.datetime.now()
+    base_folder = f"data/reports/{now.strftime('%B')}"
     make_dirs(base_folder)
-    output_path = f"{base_folder}/report_{datetime.datetime.now().strftime('%Y_%m_%d')}_pre"
-    doc.generate_tex(output_path)
+    doc.generate_tex(f"{base_folder}/report_{now.strftime('%Y_%m_%d')}_pre")
     doc.generate_tex("data/latest")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
- 
- ```
+```
 
-This code is a script for generating a LaTeX report on stock market data. The report includes information about market events and economy, as well as data from Reddit posts. The script makes use of several imported modules and functions, including:
+A few things that are easy to trip over:
 
-* `numpy` and `pandas` for numerical and data manipulation, respectively.
-* `pylatex` to generate a LaTeX report.
-* `split_tables` from `marketwatch` to obtain data on market events.
-* `fetch_reddit_posts` and `parse_reddit_posts` from `parse_reddit` to fetch and parse data from Reddit posts.
-* `make_dirs` from `utils.parse_reddit` to create necessary directories.
-* `openbb_economy` from `openbb_data` to obtain data on the economy.
+- Since pandas 2.0, `to_latex` is implemented on top of `Styler` and needs `jinja2` installed.
+- `adjustbox` scales wide tables down to the text width. Without it, the MarketWatch tables run off the page.
+- `generate_tex` only writes `data/latest.tex`. To get the PDF that gets posted to Discord, compile it with `pdflatex`, or call `doc.generate_pdf("data/latest", clean_tex=False)`, which runs `latexmk` or `pdflatex` for you. Either way you need a TeX distribution installed.
 
-The code first creates a LaTeX document and adds some necessary packages for formatting. It then retrieves data on market events and economy and formats it into LaTeX tables, which are added to the report. The code also fetches and parses data from Reddit posts and adds it to the report as a list. Finally, the code generates the LaTeX report and saves it to a file.
+## Pulling Reddit posts
 
+The Reddit data comes from my Go project [finreddit](https://github.com/dli-invest/finreddit), which I wrote about in [scraping comments from Reddit](/posts/stonks/web/scrapping_comments_from_reddit/). Python shells out to it and reads the tab-separated output into a DataFrame:
 
-The fetch_reddit command calls a function from my finreddit project available on github at [finreddit](https://github.com/dli-invest/finreddit) and the corresponding article is at [scrapping comments from reddit](https://friendlyuser.github.io/posts/stonks/web/scrapping_comments_from_reddit/)
-```python 
- # parse reddit data resulting from subprocess into pandas dataframe
-import pandas as pd
-import subprocess
+```python
 import datetime
 import os
+import subprocess
 from io import StringIO
 
-def fetch_reddit_posts():
+import pandas as pd
+
+
+def fetch_reddit_posts() -> pd.DataFrame | None:
     try:
-        output = subprocess.run("go run main.go", shell=True, cwd="tools/reddit", capture_output=True)
-        raw_text = output.stdout.decode("utf-8")
-        # read raw text in csv format in pandas df
-        csvStringIO = StringIO(raw_text)
-        print(raw_text)
-        df = pd.read_csv(csvStringIO, sep="\t", on_bad_lines='warn')
-        return df
+        output = subprocess.run(
+            ["go", "run", "main.go"],
+            cwd="tools/reddit",
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return pd.read_csv(StringIO(output.stdout), sep="\t", on_bad_lines="warn")
     except Exception as e:
         print("FAILING TO PARSE ARTICLES")
         print(e)
         return None
 
-def make_dirs(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
 
-def parse_reddit_posts(df: pd.DataFrame)-> None:
-    # get curr month from curr date
-    curr_month = datetime.datetime.now().strftime("%B")
-    base_folder = f"data/reddit/{curr_month}"
+def make_dirs(path: str) -> None:
+    os.makedirs(path, exist_ok=True)
+
+
+def parse_reddit_posts(df: pd.DataFrame) -> pd.DataFrame:
+    """Save the posts to data/reddit/<Month>/<YYYY_MM_DD>_pre.csv and return them."""
+    now = datetime.datetime.now()
+    base_folder = f"data/reddit/{now.strftime('%B')}"
     make_dirs(base_folder)
-    # date in YYYY_MM_DD format plus - pre/post
-    file_name = f"{datetime.datetime.now().strftime('%Y_%m_%d')}_pre.csv"
-    # make folder for reddit data
-    csv_path = f"{base_folder}/{file_name}"
-    df.to_csv(csv_path, index=False)
+    df.to_csv(f"{base_folder}/{now.strftime('%Y_%m_%d')}_pre.csv", index=False)
     return df
 
-def main():
+
+if __name__ == "__main__":
     df = fetch_reddit_posts()
     if df is not None and len(df) > 0:
         parse_reddit_posts(df)
+```
 
-if __name__ == '__main__':
-    main()
- 
- ```
+`check=True` matters here: without it, a failed `go run` returns an empty stdout, and the error shows up later as a confusing pandas parse error instead of the Go compiler or runtime message.
 
-This code appears to scrape Reddit data using the `go run main.go` command, which is run via a subprocess in Python. The data is then processed and saved as a CSV file in a specified directory.
+The Go side is just a call into finreddit, which reads the list of subreddits to scan from a YAML file:
 
-The `fetch_reddit_posts` function runs the `go run main.go` command using the `subprocess.run` method, captures the output of the command, and decodes it into a string. The string is then passed as an argument to the `pd.read_csv` function and saved as a pandas DataFrame.
+```go
+package main
 
-The `make_dirs` function creates a new directory if it doesn't already exist. The `parse_reddit_posts` function formats the current date and uses it to create a directory path to store the data, along with a filename based on the date and the string "pre" or "post." The resulting DataFrame is then saved to a CSV file in the specified location.
-
-The `main` function calls the `fetch_reddit_posts` function, checks if the returned DataFrame is not `None` and has a length greater than 0, and if so, calls the `parse_reddit_posts` function and passes the DataFrame to it as an argument.
-
-Finally, the code sets up an `if __name__ == '__main__':` block, which calls the `main` function when the code is run as a standalone script.
-
-
-```python 
- package main
-
-import (
-	// "os"
-
-	"github.com/dli-invest/finreddit/pkg/reddit"
-)
+import "github.com/dli-invest/finreddit/pkg/reddit"
 
 func main() {
 	reddit.ScanSRs("investing.yml")
-	// argsWithProg := os.Args
-	// if len(argsWithProg) > 1 {
-	// 	reddit.ScanSRs(argsWithProg[1])
-	// } else {
-	// 	panic("No arguments passed in")
-	// }
-
 }
- 
- ```
+```
 
-This is the Go code for the main function of a Reddit scrapper tool. The function calls the `ScanSRs` method from the `reddit` package, passing the file name "investing.yml" as an argument. The `ScanSRs` method takes a file name as an argument, which specifies the subreddit names to be scanned. The function does not provide any error handling in case the file does not exist, which may cause the application to panic. A possible improvement would be to add error handling to handle cases where the file does not exist, or the file name argument is missing.
+`ScanSRs` doesn't return an error, so a missing config file or bad Reddit credentials only show up in the program's own output. finreddit authenticates with Reddit's OAuth API, so you need your own Reddit app credentials to run it.
 
+## Sending the report to Discord
 
-Generating stock reports is important for several reasons:
+The last step posts the PDF to a Discord channel through a webhook. The webhook URL comes from the `DISCORD_WEBHOOK` environment variable:
 
-1. Monitoring performance: Stock reports provide a comprehensive view of a company's financial performance and help to track its progress over time. They can help investors make informed decisions about whether to buy, sell, or hold a stock.
-2. Compliance: Publicly traded companies are required to file regular reports with regulatory bodies such as the Securities and Exchange Commission (SEC). These reports provide transparency and accountability to the public and help to ensure compliance with financial reporting regulations.
-3. Investors: Stock reports provide investors with key financial information, including revenue, expenses, profits, and cash flow. They can use this information to make informed investment decisions and evaluate the financial health of a company.
-4. Management: Stock reports can also help management to identify areas of the business that need improvement and track the company's progress towards achieving its goals. They can be used as a tool for planning and decision-making, and to measure the success of strategies and initiatives.
-
-Overall, generating stock reports is an important aspect of financial reporting that provides valuable information to investors, management, and regulators.
-
-
-```python 
- import os 
-import requests
+```python
 import argparse
+import os
+
+import requests
 
 
-def send_file(path: str, content = "MarketWatch Report", username="Marketwatch") -> None:
-    """ send discord file from path to discord using requests"""
-    url = os.getenv("DISCORD_WEBHOOK")
-    files = {'file': open(path, 'rb')}
-    data = {
-        "username": username,
-        "content": content,
-    }
-    requests.post(url, files=files, data=data)
+def send_file(path: str, content: str = "MarketWatch Report", username: str = "Marketwatch") -> None:
+    """Upload a file to Discord through a webhook."""
+    url = os.environ["DISCORD_WEBHOOK"]
+    with open(path, "rb") as f:
+        resp = requests.post(
+            url,
+            files={"file": f},
+            data={"username": username, "content": content},
+            timeout=30,
+        )
+    resp.raise_for_status()
 
-    
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", type=str, required=False, default="latest.pdf")
-    parser.add_argument("--content", type=str, required=False, default="MarketWatch Report")
-    parser.add_argument("--username", type=str, required=False, default="Marketwatch")
+    parser.add_argument("--path", default="latest.pdf")
+    parser.add_argument("--content", default="MarketWatch Report")
+    parser.add_argument("--username", default="Marketwatch")
     args = parser.parse_args()
-    send_file(args.path, args.content, args.username) 
- ```
+    send_file(args.path, args.content, args.username)
+```
 
-This script sends a file located at `path` to a Discord channel using a Discord webhook URL. The webhook URL is retrieved from an environment variable named "DISCORD\_WEBHOOK". The script also accepts optional arguments for the file's content and the Discord username to display when sending the file. The file is sent using a `POST` request to the Discord webhook URL with the file and the content and username data in the request body.
+Discord caps attachment size per message (the limit depends on the server's boost level), so a report with many tables or images can be rejected. `raise_for_status()` makes that failure visible instead of silently doing nothing.
 
 ## References
-- https://github.com/dli-invest/stonk_events
-- https://friendlyuser.github.io/posts/stonks/web/scrapping_comments_from_reddit/
-- https://friendlyuser.github.io/posts/tech/python/simple_deta_micro_service_to_view_uploaded_files
+
+- [dli-invest/stonk_events](https://github.com/dli-invest/stonk_events)
+- [Scraping comments from Reddit](/posts/stonks/web/scrapping_comments_from_reddit/)
+- [Simple Deta micro service to view uploaded files](/posts/tech/python/simple_deta_micro_service_to_view_uploaded_files/)
+- [PyLaTeX documentation](https://jeltef.github.io/PyLaTeX/current/)
+- [Discord webhook docs](https://discord.com/developers/docs/resources/webhook#execute-webhook)

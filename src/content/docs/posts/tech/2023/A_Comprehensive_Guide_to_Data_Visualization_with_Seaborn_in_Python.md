@@ -1,187 +1,165 @@
 ---
-description: In this article, we will explore Seaborn, a powerful Python library for
-  data visualization
+description: How to make scatter, distribution, categorical and correlation plots with
+  Seaborn 0.13, plus the figure-level vs axes-level split that trips people up.
 imgSrc: /imgs/2023/2463860355.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-12-16T08:27:25.000Z'
-tags: []
-title: A Comprehensive Guide to Data Visualization with Seaborn in Python
+lastUpdated: 2026-11-14
+tags: ["python", "pandas"]
+title: 'Seaborn basics: statistical plots from pandas DataFrames'
 ---
 
-# A Comprehensive Guide to Data Visualization with Seaborn in Python
+Seaborn is a Python plotting library built on Matplotlib. You hand it a pandas DataFrame and the names of columns, and it handles grouping, colouring by category, legends and statistical summaries such as histograms, kernel density estimates and confidence intervals. When you need to adjust something Seaborn doesn't expose, you drop down to the Matplotlib objects underneath.
 
-In this article, we will explore Seaborn, a powerful Python library for data visualization. We'll cover essential topics such as installing Seaborn, creating various types of plots, customizing plots, and working with datasets. By the end of this guide, you'll be well-equipped to create stunning visualizations using Seaborn in your Python projects.
+The examples below were run with Seaborn 0.13.2, which needs Python 3.8 or later.
 
-## Table of Contents
+## Installing
 
-1. [Introduction to Seaborn](#introduction)
-2. [Installing Seaborn](#installation)
-3. [Importing Libraries](#importing)
-4. [Working with Datasets](#datasets)
-5. [Creating Basic Plots](#basic-plots)
-6. [Customizing Plots](#customizing)
-7. [Advanced Plots](#advanced-plots)
-8. [Conclusion](#conclusion)
-
-<a name="introduction"></a>
-## 1. Introduction to Seaborn
-
-Seaborn is a powerful yet easy-to-use Python library for statistical data visualization. It is built on top of the Matplotlib library and tightly integrated with pandas for data manipulation. Seaborn provides high-level functions to create visually appealing and informative statistical graphics. It also comes with several built-in themes and color palettes to make it easy to create aesthetically pleasing visualizations.
-
-<a name="installation"></a>
-## 2. Installing Seaborn
-
-To install Seaborn, you can use the package manager pip:
-
-```
+```bash
 pip install seaborn
-```
-
-Alternatively, if you're using Anaconda, you can install Seaborn using the conda package manager:
-
-```
+# or
 conda install seaborn
 ```
 
-<a name="importing"></a>
-## 3. Importing Libraries
+This also pulls in NumPy, pandas and Matplotlib.
 
-Before we can start using Seaborn, we need to import the necessary libraries. Typically, you'll also want to import NumPy, pandas, and Matplotlib alongside Seaborn:
+## Loading data
+
+Seaborn ships a few example datasets for learning. `load_dataset` downloads them from the [seaborn-data](https://github.com/mwaskom/seaborn-data) repository the first time you use them, so it needs a network connection. After that it reads them from a local cache.
 
 ```python
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-```
 
-<a name="datasets"></a>
-## 4. Working with Datasets
-
-Seaborn provides several built-in datasets that can be loaded easily. Let's load the 'tips' dataset, which contains information about the total bill and tip amounts for different meals:
-
-```python
 tips = sns.load_dataset("tips")
 print(tips.head())
 ```
 
-You can also work with your own datasets by loading them into a pandas DataFrame:
+`tips` has numeric columns (`total_bill`, `tip`, `size`) and categorical ones (`sex`, `smoker`, `day`, `time`). For your own data, any DataFrame works:
 
 ```python
 data = pd.read_csv("my_data.csv")
 ```
 
-<a name="basic-plots"></a>
-## 5. Creating Basic Plots
+Seaborn prefers "long-form" (tidy) data, meaning one row per observation and one column per variable. Most plotting functions take `data=` plus column names for `x`, `y` and `hue`.
 
-Seaborn provides a variety of plot types for different analysis needs. In this section, we'll cover some of the basic plot types.
+## Basic plots
 
-### Scatter Plot
-
-To create a scatter plot, you can use the `scatterplot()` function:
+### Scatter plot
 
 ```python
-sns.scatterplot(x="total_bill", y="tip", data=tips)
+sns.scatterplot(data=tips, x="total_bill", y="tip", hue="time")
 plt.show()
 ```
+
+`hue` colours the points by a third column and adds a legend.
 
 ### Histogram
 
-To create a histogram, you can use the `histplot()` function:
-
 ```python
-sns.histplot(tips["total_bill"], bins=20)
+sns.histplot(data=tips, x="total_bill", bins=20, kde=True)
 plt.show()
 ```
 
-### Box Plot
+`kde=True` overlays a kernel density estimate on the bars.
 
-To create a box plot, you can use the `boxplot()` function:
+### Box plot
 
 ```python
-sns.boxplot(x="day", y="total_bill", data=tips)
+sns.boxplot(data=tips, x="day", y="total_bill")
 plt.show()
 ```
 
-<a name="customizing"></a>
-## 6. Customizing Plots
+## Styling
 
-Seaborn allows you to customize various aspects of your plots, such as color, style, and size.
-
-### Customizing Colors
-
-You can change the color of your plot using the `palette` parameter:
+`set_theme` sets the style, palette and font scale for every plot that follows:
 
 ```python
-sns.scatterplot(x="total_bill", y="tip", data=tips, hue="time", palette="coolwarm")
+sns.set_theme(style="whitegrid", palette="deep")
+```
+
+To pick colours for one plot, pass `palette`. It only applies when `hue` is set. Without `hue`, relational plots such as `scatterplot` ignore it with a warning, and categorical plots such as `boxplot` raise a `FutureWarning` because that usage is deprecated in 0.13. For per-category colours in a box plot, set `hue` to the same column as `x` and pass `legend=False`.
+
+```python
+sns.scatterplot(data=tips, x="total_bill", y="tip", hue="time", palette="coolwarm")
 plt.show()
 ```
 
-### Customizing Plot Styles
+## Figure-level vs axes-level functions
 
-Seaborn provides several built-in plot styles that can be set using the `set_style()` function:
+This is the part of Seaborn that causes the most confusion.
+
+- **Axes-level** functions (`scatterplot`, `histplot`, `boxplot`, `violinplot`, `heatmap`) draw onto one Matplotlib `Axes`. You can pass `ax=` and size the figure with Matplotlib.
+- **Figure-level** functions (`relplot`, `displot`, `catplot`, `pairplot`, `jointplot`) create their own figure, which may contain several axes. They return a grid object, and you size them with `height` and `aspect`. Calling `plt.figure(figsize=...)` beforehand has no effect on them.
+
+Sizing an axes-level plot:
 
 ```python
-sns.set_style("whitegrid")
-sns.boxplot(x="day", y="total_bill", data=tips)
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.histplot(data=tips, x="total_bill", bins=20, ax=ax)
+ax.set_title("Total bill")
 plt.show()
 ```
 
-### Customizing Plot Size
-
-To change the size of your plot, you can use the `figure()` function from Matplotlib:
+Splitting a figure-level plot into panels by a column:
 
 ```python
-plt.figure(figsize=(12, 6))
-sns.histplot(tips["total_bill"], bins=20)
-plt.show()
+g = sns.relplot(data=tips, x="total_bill", y="tip", hue="smoker", col="time", height=4, aspect=1.2)
+g.savefig("tips_by_time.png")
 ```
 
-<a name="advanced-plots"></a>
-## 7. Advanced Plots
+## More plot types
 
-Seaborn also provides some advanced plot types that can be useful for in-depth data analysis.
+### Pair plot
 
-### Pair Plot
-
-A pair plot displays pairwise relationships between variables in a dataset. You can create a pair plot using the `pairplot()` function:
+`pairplot` draws a scatter plot for every pair of numeric columns and a distribution plot on the diagonal:
 
 ```python
 sns.pairplot(tips, hue="time")
 plt.show()
 ```
 
-### Heatmap
+### Correlation heatmap
 
-A heatmap displays matrix data using color intensity to represent values. You can create a heatmap using the `heatmap()` function:
+`DataFrame.corr()` only works on numeric columns. Since pandas 2.0 it raises a `ValueError` if the frame has string or categorical columns, so pass `numeric_only=True`:
 
 ```python
-correlation = tips.corr()
-sns.heatmap(correlation, annot=True, cmap="coolwarm")
+correlation = tips.corr(numeric_only=True)
+sns.heatmap(correlation, annot=True, cmap="coolwarm", vmin=-1, vmax=1)
 plt.show()
 ```
 
-### Violin Plot
+Setting `vmin` and `vmax` keeps the colour scale centred on zero, so a weak correlation doesn't look strong.
 
-A violin plot combines aspects of a box plot and a kernel density plot, providing more detailed information about the distribution of values. You can create a violin plot using the `violinplot()` function:
+### Violin plot
+
+A violin plot shows a kernel density estimate for each category. `inner="quart"` draws the quartiles inside each violin:
 
 ```python
-sns.violinplot(x="day", y="total_bill", data=tips, inner="quartile")
+sns.violinplot(data=tips, x="day", y="total_bill", inner="quart")
 plt.show()
 ```
 
-### Joint Plot
+### Joint plot
 
-A joint plot displays a scatter plot (or other bivariate plot) along with marginal histograms. You can create a joint plot using the `jointplot()` function:
+`jointplot` shows a bivariate plot with the distribution of each variable along the margins:
 
 ```python
-sns.jointplot(x="total_bill", y="tip", data=tips, kind="scatter")
+sns.jointplot(data=tips, x="total_bill", y="tip", kind="reg")
 plt.show()
 ```
 
-<a name="conclusion"></a>
-## 8. Conclusion
+`kind` can be `"scatter"`, `"kde"`, `"hist"`, `"hex"`, `"reg"` or `"resid"`.
 
-In this comprehensive guide, we've introduced Seaborn, a powerful Python library for data visualization. We've covered essential topics, including installing Seaborn, importing libraries, working with datasets, creating and customizing various types of plots. With this knowledge, you're now well-prepared to create stunning and informative visualizations using Seaborn in your Python projects.
+## Gotchas
 
-Happy plotting!
+- In scripts, call `plt.show()` or `savefig`. In Jupyter the plot renders on its own.
+- Seaborn draws on the current Matplotlib axes. If plots overlap in a script, create a new figure for each one or pass `ax=`.
+- Seaborn's statistical plots (such as `lineplot` with repeated x values, or `barplot`) aggregate your data and draw confidence intervals by default. Check the `errorbar` parameter if the bars don't match what you expected.
+
+## Further reading
+
+- [Seaborn tutorial](https://seaborn.pydata.org/tutorial.html)
+- [API reference](https://seaborn.pydata.org/api.html)
+- [The `seaborn.objects` interface](https://seaborn.pydata.org/tutorial/objects_interface.html), a newer declarative API added in 0.12

@@ -1,89 +1,89 @@
 ---
-title: Rust's Match Syntax for Pattern Matching A Comprehensive Guide
+title: "Rust match expressions: destructuring, guards, ranges, @ bindings and or-patterns"
 pubDate: "2024-10-17T02:21:56.000Z"
-description: "In this article , we'll dive deep into Rust's `match` syntax and explore various ways to utilize it for elegant and efficient pattern matching"
-tags: []
+lastUpdated: 2026-11-14
+description: "How Rust's match works: exhaustiveness checking, destructuring enums, match guards, range patterns, @ bindings and or-patterns, with runnable examples."
+tags: ["rust"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3170249337.png
 ---
-# Rust's Match Syntax for Pattern Matching: A Comprehensive Guide
 
-Pattern matching is a powerful feature found in many programming languages, and Rust is no exception. In this article, we'll dive deep into Rust's `match` syntax and explore various ways to utilize it for elegant and efficient pattern matching.
+`match` compares a value against a list of patterns and runs the arm for the first one that matches. Unlike a C `switch`, it is an expression (it returns a value), it can destructure data, and the compiler checks that every possible value is handled.
 
-## Overview
-
-Pattern matching in Rust is achieved using the `match` expression, which allows you to compare a value against a series of patterns and execute a block of code for the first pattern that matches. The syntax for a basic `match` expression looks like this:
+## Syntax and exhaustiveness
 
 ```rust
 match VALUE {
     PATTERN_1 => EXPRESSION_1,
     PATTERN_2 => EXPRESSION_2,
-    // ...
-    _ => EXPRESSION_N
+    _ => EXPRESSION_N,
 }
 ```
 
-The `_` pattern is a catch-all pattern, which will match any value. It's essential to have this catch-all arm to ensure that all cases are covered, as Rust enforces exhaustive pattern matching.
+`_` is a wildcard that matches anything. You only need it when your other arms don't already cover every value. If you match on an enum and list every variant, no `_` arm is required, and leaving it out is better: when someone adds a variant later, the compiler will point at every `match` that needs updating.
 
-## Basic Pattern Matching
-
-Let's start with a simple example. Suppose we have an `enum` representing different shapes, and we want to calculate their area:
+## Destructuring enums
 
 ```rust
 enum Shape {
-    Circle(f64),      // radius
+    Circle(f64),         // radius
     Rectangle(f64, f64), // width, height
-    Square(f64),       // side
+    Square(f64),         // side
 }
 
-fn area(shape: Shape) -> f64 {
+fn area(shape: &Shape) -> f64 {
     match shape {
         Shape::Circle(radius) => std::f64::consts::PI * radius * radius,
         Shape::Rectangle(width, height) => width * height,
         Shape::Square(side) => side * side,
     }
 }
+
+fn main() {
+    println!("{:.2}", area(&Shape::Circle(1.0))); // 3.14
+}
 ```
 
-Here, we match the input `shape` against the different variants of the `Shape` enum. Note how we can destructure the values associated with each variant directly in the pattern.
+Each arm pulls the variant's fields into local variables. All three variants are covered, so there is no `_` arm.
 
-## Using Guards
+## Match guards
 
-Guards are an additional, optional condition that must be satisfied for a pattern to match. They are introduced using the `if` keyword, followed by an expression that evaluates to a boolean value. Here's an example that demonstrates the use of guards:
+A guard is an extra `if` condition on an arm. The arm only matches if the pattern matches *and* the guard is true.
 
 ```rust
 fn number_type(n: i32) -> &'static str {
     match n {
         x if x < 0 => "negative",
         0 => "zero",
-        x if x > 0 => "positive",
-        _ => unreachable!(),
+        _ => "positive",
     }
 }
 ```
 
-In this example, we use guards to differentiate between negative and positive numbers. The `_` pattern with `unreachable!()` macro is used here just to satisfy the exhaustive pattern matching requirement, but it's not actually reachable.
+The compiler does not reason about guard conditions when checking exhaustiveness, so a match where every arm has a guard still needs a final unguarded arm. Here the last arm is a plain `_`, which handles the positive case without an `unreachable!()`.
 
-## Matching Ranges
+## Range patterns
 
-You can use ranges in patterns to match a range of values. Ranges are created using the `..` or `..=` syntax. The former creates an exclusive range, while the latter creates an inclusive range. Here's an example that demonstrates how to use ranges to match a grade based on a score:
+`a..=b` matches an inclusive range. Exclusive range patterns (`a..b`) have been stable since Rust 1.80; before that only `..=` was allowed in patterns.
 
 ```rust
-fn grade(score: u32) -> &'static str {
+fn grade(score: u32) -> Option<&'static str> {
     match score {
-        0..=59 => "F",
-        60..=69 => "D",
-        70..=79 => "C",
-        80..=89 => "B",
-        90..=100 => "A",
-        _ => unreachable!(),
+        0..=59 => Some("F"),
+        60..=69 => Some("D"),
+        70..=79 => Some("C"),
+        80..=89 => Some("B"),
+        90..=100 => Some("A"),
+        _ => None, // anything above 100 is invalid input
     }
 }
 ```
 
-## Using `@` to Bind Names to Values
+A `u32` can be larger than 100, so the final arm is reachable. Return an `Option` (or a `Result`) for that case instead of `unreachable!()`, which would panic on bad input.
 
-The `@` syntax allows you to bind a name to a value in a pattern. This can be useful for situations where you want to both destructure a value and use it in an expression. Consider the following example that demonstrates this feature:
+## Binding with `@`
+
+`name @ pattern` tests a value against a pattern and binds it to a name at the same time. It is most useful with ranges, where the pattern alone doesn't give you the value.
 
 ```rust
 enum Message {
@@ -92,17 +92,17 @@ enum Message {
 
 fn process_message(msg: Message) {
     match msg {
-        Message::Hello { id: id @ 0..=100 } => println!("Special Hello to id {}", id),
-        Message::Hello { id } => println!("Regular Hello to id {}", id),
+        Message::Hello { id: id @ 0..=100 } => println!("Special hello to id {id}"),
+        Message::Hello { id } => println!("Regular hello to id {id}"),
     }
 }
 ```
 
-In this example, we use the `@` syntax to bind the `id` value to the `id` variable if it's in the range of 0 to 100. This allows us to use the `id` value in the expression that follows.
+The first arm only matches ids from 0 to 100 and still makes `id` available in the arm body. Every other id falls through to the second arm.
 
-## Matching Multiple Patterns
+## Or-patterns with `|`
 
-You can match multiple patterns at once using the `|` operator. This can be useful for situations where you want to execute the same code for different patterns. Here's an example that demonstrates this feature:
+`|` lets several patterns share one arm:
 
 ```rust
 enum Color {
@@ -115,13 +115,21 @@ enum Color {
 fn is_primary_color(color: Color) -> bool {
     match color {
         Color::Red | Color::Green | Color::Blue => true,
-        _ => false,
+        Color::Yellow => false,
     }
 }
 ```
 
-In this example, we use the `|` operator to match all primary colors and return `true`.
+Listing `Color::Yellow` explicitly instead of `_` keeps the exhaustiveness check useful if more colors are added. When you only need a `bool`, the `matches!` macro is shorter: `matches!(color, Color::Red | Color::Green | Color::Blue)`.
 
-## Conclusion
+## Gotchas
 
-Rust's `match` syntax offers a powerful and flexible way to perform pattern matching in your code. By understanding and leveraging its various features, you can write more expressive and efficientRust programs. In this article, we covered basic pattern matching, guards, ranges, binding names to values using `@`, and matching multiple patterns using the `|` operator. These are just a few of the many ways Rust's `match` syntax can be used to make your code more elegant and maintainable. As you gain more experience with Rust, you'll discover even more ways to harness the power of pattern matching to write robust and efficient code.
+- A bare lowercase name in a pattern is a new binding, not a comparison. `match x { limit => ... }` matches everything and shadows any outer `limit`. Compare against a variable with a guard (`v if v == limit`) or use a `const`.
+- If you only care about one pattern, `if let` or `let ... else` is usually clearer than a `match` with a `_ => {}` arm.
+- Arms are checked top to bottom, so put specific patterns before general ones. The compiler warns about arms that can never be reached.
+
+## Further reading
+
+- [The Rust Book: The `match` control flow construct](https://doc.rust-lang.org/book/ch06-02-match.html)
+- [The Rust Book: Pattern syntax](https://doc.rust-lang.org/book/ch19-03-pattern-syntax.html)
+- [Rust Reference: Patterns](https://doc.rust-lang.org/reference/patterns.html)

@@ -1,253 +1,197 @@
 ---
 tags: ['react', 'context']
-title: Using react context to manage state
-description: Explaining the use of react context to manage state
+title: Sharing state across React components with Context
+description: How to use createContext and useContext to share state without prop drilling, with counter, theme toggle and viewport-size examples, and how context re-renders work.
 pubDate: Fri, 29 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/1212575964.png
 ---
-React context is a feature in React that allows for global state management within an application. It enables data to be passed down through the component tree without having to pass props manually at every level. With context, any component in the tree can access and update the state, making it a powerful tool for managing state in large applications.
 
+React context lets a parent make a value available to every component below it without passing it as a prop through each level. Put state in a provider component and pass that state, plus the functions that change it, as the context value. Any descendant can then read and update it with `useContext`.
 
-Using React context to manage state can be beneficial for several reasons:
+The examples use React 19, where you can render the context itself as the provider (`<CountContext value={...}>`). On React 18 and earlier, use `<CountContext.Provider value={...}>`.
 
-1. **Avoiding prop drilling:** When an application grows, it becomes harder to pass down state as props through multiple levels of nested components. React context solves this problem by allowing data to be shared between components without having to pass it manually.
-2. **Global state management:** Context provides a central location for state management, making it easier to share data between components, even if they are not directly related.
-3. **Performance optimization:** With context, only the components that need access to the shared data will be re-rendered when that data changes. This can lead to better performance and faster rendering times.
-4. **Code organization:** Context can be used to separate concerns and organize code in a more modular way. By creating separate context objects for different parts of the application, you can keep related data and logic together, making it easier to maintain and debug.
+## When context helps, and what it costs
 
-Overall, using React context for state management can improve the scalability, performance, and maintainability of your application.
+- **It avoids prop drilling.** You don't have to thread a value through intermediate components that don't use it.
+- **It suits values many components read and that change rarely,** such as theme, locale, the signed-in user, or feature flags.
+- **It is not a performance optimisation.** When the value changes, React re-renders *every* component that reads that context, even if it only uses part of the value. If the provider passes a new object on every render (`value={{ count, setCount }}`), all consumers re-render whenever the provider does. Memoize the value with `useMemo` (see [the `useContext` docs](https://react.dev/reference/react/useContext#optimizing-re-renders-when-passing-objects-and-functions)), and split unrelated data into separate contexts.
 
+For state that changes often and is read by many components, a store library with selectors (Zustand, Redux Toolkit) usually re-renders less.
 
-Certainly! Here is an example of using the React Context API to manage state:
-
-
-```jsx
-// createContext returns an object with two properties: Provider and Consumer
-import { createContext } from 'react'
-
-// Define a new context object
-const MyContext = createContext()
-
-// Define a provider component that wraps the entire application and provides state to child components
-function MyProvider({ children }) {
- const [count, setCount] = useState(0)
- 
- // Use the `value` prop to provide state to child components
- return (
- <MyContext.Provider value={{ count, setCount }}>
- {children}
- </MyContext.Provider>
- )
-}
-
-// Define a child component that uses state provided by the context
-function MyComponent() {
- const { count, setCount } = useContext(MyContext)
-
- return (
- <div>
- <p>Count: {count}</p>
- <button onClick={() => setCount(count + 1)}>Increment</button>
- </div>
- )
-}
-
-// Render the entire application
-function App() {
- return (
- <MyProvider>
- <MyComponent />
- </MyProvider>
- )
-}
-```
-In this example, we define a context object using the `createContext` function. We then define a provider component that wraps the entire application and provides state to child components. We use the `value` prop to pass state down to child components.
-
-In the child component `MyComponent`, we use the `useContext` hook to access the state provided by the context. We can then use this state to render the UI and update the state when necessary.
-
-Finally, we render the entire application by wrapping it in the `MyProvider` component. Any child components that need access to the state can simply use the `useContext` hook to access it.
-
-
-Sure! Here is an example of using the React Context API to manage the theme of a website:
-
+## A shared counter
 
 ```jsx
-// ThemeContext.js
-import { createContext, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react';
 
-// Define a new context object
-export const ThemeContext = createContext()
+const CountContext = createContext(null);
 
-// Define a provider component that wraps the entire application and provides theme to child components
-export const ThemeProvider = ({ children }) => {
- const [theme, setTheme] = useState('light')
+function CountProvider({ children }) {
+  const [count, setCount] = useState(0);
+  // Keep the same object between renders unless count changes
+  const value = useMemo(() => ({ count, setCount }), [count]);
 
- const toggleTheme = () => {
- setTheme(theme === 'light' ? 'dark' : 'light')
- }
+  return <CountContext value={value}>{children}</CountContext>;
+}
 
- // Use the `value` prop to provide theme and toggle function to child components
- return (
- <ThemeContext.Provider value={{ theme, toggleTheme }}>
- {children}
- </ThemeContext.Provider>
- )
+// A small hook gives a clear error when the provider is missing
+function useCount() {
+  const ctx = useContext(CountContext);
+  if (ctx === null) {
+    throw new Error('useCount must be used inside <CountProvider>');
+  }
+  return ctx;
+}
+
+function Counter() {
+  const { count, setCount } = useCount();
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount((c) => c + 1)}>Increment</button>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <CountProvider>
+      <Counter />
+    </CountProvider>
+  );
 }
 ```
-In this example, we define a context object using the `createContext` function. We then define a provider component that wraps the entire application and provides theme to child components. We use the `value` prop to pass theme and toggle function down to child components.
 
-The `toggleTheme` function is used to toggle the current theme between light and dark.
+`createContext(null)` sets the default value a component gets when there is no provider above it. Here that default is `null`, which `useCount` turns into an error instead of a confusing `undefined` crash later.
 
+## A theme toggle
+
+Split across files, the same pattern drives a light/dark theme.
 
 ```jsx
-// Header.js
-import { useContext } from 'react'
-import { ThemeContext } from './ThemeContext'
+// ThemeContext.jsx
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-export const Header = () => {
- const { theme, toggleTheme } = useContext(ThemeContext)
+const ThemeContext = createContext(null);
 
- return (
- <header className={theme}>
- <h1>My Website</h1>
- <button onClick={toggleTheme}>
- {theme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme'}
- </button>
- </header>
- )
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+
+  const toggleTheme = useCallback(() => {
+    setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+  }, []);
+
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
+
+  return <ThemeContext value={value}>{children}</ThemeContext>;
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (ctx === null) throw new Error('useTheme must be used inside <ThemeProvider>');
+  return ctx;
 }
 ```
-In the child component `Header`, we use the `useContext` hook to access the theme and toggle function provided by the context. We can then use this theme to add or remove classes to our HTML elements, which will change the visual appearance of the website.
-
 
 ```jsx
-// App.js
-import { ThemeProvider } from './ThemeContext'
-import { Header } from './Header'
-import { Main } from './Main'
-import { Footer } from './Footer'
+// Header.jsx
+import { useTheme } from './ThemeContext';
 
-export const App = () => {
- return (
- <ThemeProvider>
- <Header />
- <Main />
- <Footer />
- </ThemeProvider>
- )
+export function Header() {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <header className={theme}>
+      <h1>My Website</h1>
+      <button onClick={toggleTheme}>
+        {theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+      </button>
+    </header>
+  );
 }
 ```
-Finally, we render the entire application by wrapping it in the `ThemeProvider` component. Any child components that need access to the theme can simply use the `useContext` hook to access it. When the user clicks the button in the header, the theme will be toggled and all child components will re-render with the new theme.
-
-
-Certainly! Here is an example of using the React Context API to sync state variables between mobile and desktop components:
-
 
 ```jsx
-// DeviceContext.js
-import { createContext, useState, useEffect } from 'react'
+// App.jsx
+import { ThemeProvider } from './ThemeContext';
+import { Header } from './Header';
 
-const DeviceContext = createContext()
-
-const DeviceProvider = ({ children }) => {
- const [isMobile, setIsMobile] = useState(false)
-
- useEffect(() => {
- const checkIsMobile = () => {
- setIsMobile(window.innerWidth < 768)
- }
-
- checkIsMobile()
- window.addEventListener('resize', checkIsMobile)
-
- return () => {
- window.removeEventListener('resize', checkIsMobile)
- }
- }, [])
-
- return (
- <DeviceContext.Provider value={{ isMobile }}>
- {children}
- </DeviceContext.Provider>
- )
+export default function App() {
+  return (
+    <ThemeProvider>
+      <Header />
+      {/* other components can call useTheme() too */}
+    </ThemeProvider>
+  );
 }
-
-export { DeviceContext, DeviceProvider }
 ```
 
-In this example, we define a context object using the `createContext` function. We then define a provider component that wraps the entire application and provides `isMobile` state to child components.
+When the button is clicked, `theme` changes, the memoized value changes, and every component that calls `useTheme()` re-renders with the new theme. Your CSS then styles `.light` and `.dark`.
 
-In the `useEffect` hook, we add an event listener to check the window size and set `isMobile` state to `true` if the window width is less than 768px. We also remove the event listener when the component unmounts.
+## Sharing a viewport flag between mobile and desktop components
 
+Context can also hold values derived from the browser, so several components share one listener instead of each adding its own.
 
 ```jsx
-// DesktopComponent.js
-import { useContext } from 'react'
-import { DeviceContext } from './DeviceContext'
+// DeviceContext.jsx
+import { createContext, useContext, useEffect, useState } from 'react';
 
-const DesktopComponent = () => {
- const { isMobile } = useContext(DeviceContext)
+const DeviceContext = createContext(false);
 
- return (
- <div>
- {isMobile ? null : (
- <div>
- <h2>Desktop Component</h2>
- <p>This component is only visible on desktop devices.</p>
- </div>
- )}
- </div>
- )
+export function DeviceProvider({ children }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(query.matches);
+
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  return <DeviceContext value={isMobile}>{children}</DeviceContext>;
 }
 
-export { DesktopComponent }
+export function useIsMobile() {
+  return useContext(DeviceContext);
+}
 ```
-In the `DesktopComponent`, we use the `useContext` hook to access the `isMobile` state provided by the context. We can then use this state to conditionally render the component based on the device type.
 
+`matchMedia` only fires when the breakpoint is crossed, not on every pixel of a resize like a `resize` listener does. The value is a plain boolean, so there's nothing to memoize.
 
 ```jsx
-// MobileComponent.js
-import { useContext } from 'react'
-import { DeviceContext } from './DeviceContext'
+// App.jsx
+import { DeviceProvider, useIsMobile } from './DeviceContext';
 
-const MobileComponent = () => {
- const { isMobile } = useContext(DeviceContext)
-
- return (
- <div>
- {isMobile ? (
- <div>
- <h2>Mobile Component</h2>
- <p>This component is only visible on mobile devices.</p>
- </div>
- ) : null}
- </div>
- )
+function DesktopNav() {
+  return <nav>Desktop navigation</nav>;
 }
 
-export { MobileComponent }
-```
-Similarly, in the `MobileComponent`, we use the `useContext` hook to access the `isMobile` state provided by the context. We can then use this state to conditionally render the component based on the device type.
-
-
-```jsx
-// App.js
-import { DeviceProvider } from './DeviceContext'
-import { DesktopComponent } from './DesktopComponent'
-import { MobileComponent } from './MobileComponent'
-
-const App = () => {
- return (
- <DeviceProvider>
- <DesktopComponent />
- <MobileComponent />
- </DeviceProvider>
- )
+function MobileNav() {
+  return <nav>Mobile navigation</nav>;
 }
 
-export default App
+function Nav() {
+  const isMobile = useIsMobile();
+  return isMobile ? <MobileNav /> : <DesktopNav />;
+}
+
+export default function App() {
+  return (
+    <DeviceProvider>
+      <Nav />
+    </DeviceProvider>
+  );
+}
 ```
 
+`isMobile` starts as `false` and is corrected after the first effect runs, so on a phone the desktop version can flash briefly. With server rendering this is unavoidable unless you guess from the request. If the difference is only visual, a CSS media query avoids the problem entirely.
 
-Finally, we render the entire application by wrapping it in the `DeviceProvider` component. Any child components that need access to the `isMobile` state can simply use the `useContext` hook to access it. When the device type changes (i.e. when the user resizes the window), the state will be updated and all child components will re-render with the new state.
+## Further reading
+
+- [`createContext`](https://react.dev/reference/react/createContext)
+- [`useContext`](https://react.dev/reference/react/useContext)
+- [Passing data deeply with context](https://react.dev/learn/passing-data-deeply-with-context)

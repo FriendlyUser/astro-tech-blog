@@ -1,234 +1,176 @@
 ---
-description: This article will provide a comprehensive introduction to NumPy and its
-  capabilities.
+description: "NumPy essentials: creating and reshaping arrays, vectorised arithmetic, broadcasting, indexing, aggregations, linear algebra and random numbers with Generator."
 imgSrc: /imgs/2023/1879869613.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-28T20:33:27.000Z'
-tags: []
-title: Mastering NumPy A Comprehensive Guide to Efficient Numerical Computing in Python
+lastUpdated: 2026-11-14
+tags: ["python"]
+title: "NumPy basics: arrays, broadcasting and vectorised maths in Python"
 ---
 
-# Mastering NumPy: A Comprehensive Guide to Efficient Numerical Computing in Python
+NumPy gives Python an n-dimensional array type, `ndarray`, that stores elements of one data type in a contiguous block of memory. Operations on whole arrays run in compiled C loops instead of the Python interpreter, which is why NumPy code is much faster than equivalent loops over lists. pandas, SciPy, scikit-learn and most of the scientific Python stack are built on it.
 
-NumPy (Numerical Python) is a powerful library for numerical computing in Python. It provides a high-performance multidimensional array object, as well as tools for working with these arrays. NumPy is a fundamental library for scientific computing, data analysis, and machine learning in Python. This article will provide a comprehensive introduction to NumPy and its capabilities.
+The examples below use APIs that are current in NumPy 2.x.
 
-## Table of Contents
-
-1. [Introduction to NumPy](#introduction)
-2. [Installation](#installation)
-3. [NumPy Arrays](#numpy-arrays)
-4. [Array Creation](#array-creation)
-5. [Array Manipulation](#array-manipulation)
-6. [Basic Operations](#basic-operations)
-7. [Broadcasting](#broadcasting)
-8. [Indexing and Slicing](#indexing-slicing)
-9. [Mathematical Functions](#mathematical-functions)
-10. [Linear Algebra](#linear-algebra)
-11. [Random Numbers](#random-numbers)
-12. [Conclusion](#conclusion)
-
-<a id='introduction'></a>
-## 1. Introduction to NumPy
-
-NumPy is the backbone of the Python scientific stack, providing support for large, multi-dimensional arrays and matrices, as well as a rich collection of high-level mathematical functions to operate on these arrays. Using NumPy allows for efficient operations on large datasets, which is essential in data-driven fields and industries.
-
-Some of the key features of NumPy include:
-
-- Efficient array operations
-- Broadcasting capabilities
-- Mathematical functions
-- Linear algebra functions
-- Random number generation
-- Interoperability with other libraries
-
-<a id='installation'></a>
-## 2. Installation
-
-To get started with NumPy, you first need to install it. The easiest way to install NumPy is using `pip`.
+## Installing
 
 ```bash
 pip install numpy
 ```
 
-<a id='numpy-arrays'></a>
-## 3. NumPy Arrays
-
-The core of the NumPy library is the `ndarray` object, which is an n-dimensional array of fixed-size homogenous elements (typically numbers). NumPy arrays are more efficient and faster than Python lists for numerical operations due to their optimized memory usage and vectorized operations.
+Every example assumes:
 
 ```python
 import numpy as np
+```
 
-## Create a one-dimensional array
+## Creating arrays
+
+```python
 arr = np.array([1, 2, 3, 4, 5])
-print(arr)
-
-## Create a two-dimensional array
 arr2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-print(arr2d)
-```
+print(arr2d.shape, arr2d.ndim)   # (3, 3) 2
 
-<a id='array-creation'></a>
-## 4. Array Creation
-
-There are several ways to create NumPy arrays:
-
-```python
-## Create an array of zeros
-zeros = np.zeros((3, 4))
-
-## Create an array of ones
-ones = np.ones((2, 3))
-
-## Create an array with a specific value
-full = np.full((2, 2), 7)
-
-## Create an identity matrix
+zeros = np.zeros((3, 4))                # 3x4 of 0.0
+ones = np.ones((2, 3), dtype=np.int64)  # choose the dtype explicitly
+sevens = np.full((2, 2), 7)
 identity = np.eye(3)
-
-## Create an array with a range of values
-arange = np.arange(0, 10, 2)
-
-## Create an array with evenly spaced values
-linspace = np.linspace(0, 1, 5)
+evens = np.arange(0, 10, 2)        # [0 2 4 6 8], end is exclusive
+points = np.linspace(0, 1, 5)      # [0. 0.25 0.5 0.75 1.], end is inclusive
 ```
 
-<a id='array-manipulation'></a>
-## 5. Array Manipulation
+## Reshaping
 
-Here are some common array manipulation operations:
+`reshape` needs the new shape to hold exactly the same number of elements:
 
 ```python
-## Reshape an array
-reshaped = np.reshape(arr, (3, 3))
-
-## Flatten an array
-flattened = np.ravel(arr2d)
-
-## Transpose an array
-transposed = np.transpose(arr2d)
+nums = np.arange(9)       # 9 elements
+grid = nums.reshape(3, 3)
+flat = grid.ravel()       # back to 1-D
+transposed = grid.T
 ```
 
-<a id='basic-operations'></a>
-## 6. Basic Operations
+`np.arange(5).reshape(3, 3)` raises a `ValueError`, because 5 elements can't fill a 3x3 array. Pass `-1` for one dimension to let NumPy work it out: `np.arange(12).reshape(3, -1)` gives a 3x4 array.
 
-NumPy arrays support element-wise arithmetic operations:
+## Element-wise arithmetic
+
+Arithmetic operators work element by element. No loops needed:
 
 ```python
 a = np.array([1, 2, 3])
 b = np.array([4, 5, 6])
 
-## Addition
-c = a + b
-
-## Subtraction
-d = a - b
-
-## Multiplication
-e = a * b
-
-## Division
-f = a / b
+a + b    # [5 7 9]
+a * b    # [ 4 10 18]  element-wise, not a matrix product
+a / b    # [0.25 0.4  0.5 ]
+a ** 2   # [1 4 9]
 ```
 
-<a id='broadcasting'></a>
-## 7. Broadcasting
+## Broadcasting
 
-Broadcasting is a powerful mechanism that allows NumPy to work with arrays of different shapes when performing arithmetic operations.
+When shapes differ, NumPy compares them from the trailing dimension backwards. Two dimensions are compatible if they are equal or one of them is 1, and the size-1 dimension is stretched to match.
 
 ```python
-a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-b = np.array([1, 0, 1])
+m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])   # shape (3, 3)
 
-## Broadcasted addition
-c = a + b
+row = np.array([10, 20, 30])        # shape (3,): added to every row
+print(m + row)
+# [[11 22 33]
+#  [14 25 36]
+#  [17 28 39]]
+
+col = np.array([[1], [2], [3]])     # shape (3, 1): applied to every column
+print(m * col)
+# [[ 1  2  3]
+#  [ 8 10 12]
+#  [21 24 27]]
 ```
 
-<a id='indexing-slicing'></a>
-## 8. Indexing and Slicing
+Shapes `(3, 3)` and `(2,)` are not compatible and raise a `ValueError`.
 
-You can access and modify elements in NumPy arrays using indexing and slicing.
+## Indexing and slicing
 
 ```python
-a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
-## Access a single element
-element = a[0, 1]
-
-## Access a row
-row = a[1]
-
-## Access a column
-column = a[:, 2]
-
-## Access a subarray with slicing
-subarray = a[0:2, 1:3]
+m[0, 1]       # 2, row 0 column 1
+m[1]          # [4 5 6], a whole row
+m[:, 2]       # [3 6 9], a whole column
+m[0:2, 1:3]   # [[2 3] [5 6]]
+m[m > 4]      # [5 6 7 8 9], boolean mask
 ```
 
-<a id='mathematical-functions'></a>
-## 9. Mathematical Functions
-
-NumPy offers a wide range of mathematical functions that can be applied element-wise to arrays:
+Slices are **views**, not copies. Writing to a slice changes the original array:
 
 ```python
-a = np.array([1, 2, 3])
+first_row = m[0]
+first_row[0] = 100
+print(m[0, 0])        # 100
 
-## Trigonometric functions
-sin_a = np.sin(a)
-cos_a = np.cos(a)
-tan_a = np.tan(a)
-
-## Exponential and logarithmic functions
-exp_a = np.exp(a)
-log_a = np.log(a)
-
-## Rounding functions
-ceil_a = np.ceil(a)
-floor_a = np.floor(a)
-round_a = np.round(a)
+safe = m[0].copy()    # use .copy() when you need independent data
 ```
 
-<a id='linear-algebra'></a>
-## 10. Linear Algebra
+Boolean-mask and integer-list indexing (`m[[0, 2]]`) always return copies.
 
-NumPy provides several functions for performing linear algebra operations:
+## Maths and aggregations
+
+Universal functions ("ufuncs") apply element-wise:
+
+```python
+x = np.array([1.0, 2.0, 3.0])
+np.sqrt(x)
+np.exp(x)
+np.log(x)       # natural log; log of 0 gives -inf with a warning
+np.round(x * 1.55, 1)
+```
+
+Aggregations take an `axis` argument. `axis=0` collapses rows (one result per column) and `axis=1` collapses columns (one result per row):
+
+```python
+m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+m.sum()          # 45
+m.sum(axis=0)    # [12 15 18]
+m.mean(axis=1)   # [2. 5. 8.]
+m.max()          # 9
+```
+
+## Linear algebra
 
 ```python
 a = np.array([[1, 2], [3, 4]])
 b = np.array([[5, 6], [7, 8]])
 
-## Dot product
-dot_product = np.dot(a, b)
-
-## Matrix multiplication
-matmul = np.matmul(a, b)
-
-## Determinant
-determinant = np.linalg.det(a)
-
-## Inverse
-inverse = np.linalg.inv(a)
-
-## Eigenvalues and eigenvectors
+a @ b                  # matrix product, same as np.matmul(a, b)
+np.linalg.det(a)       # -2.0000000000000004 (floating point)
+np.linalg.inv(a)
 eigenvalues, eigenvectors = np.linalg.eig(a)
+
+# Solve a x = y. Prefer this over inv(a) @ y: it's faster and more accurate.
+y = np.array([5, 6])
+x = np.linalg.solve(a, y)   # [-4.   4.5]
 ```
 
-<a id='random-numbers'></a>
-## 11. Random Numbers
+## Random numbers
 
-NumPy provides a rich collection of functions for generating random numbers:
+Use a `Generator` from `np.random.default_rng()`. The older module-level functions such as `np.random.rand` and `np.random.randint` still work but are the legacy API, and the NumPy docs recommend `Generator` for new code.
 
 ```python
-## Generate a random float in the range [0, 1)
-rand_float = np.random.rand()
+rng = np.random.default_rng(seed=42)   # seed for reproducible results
 
-## Generate a random array of floats in the range [0, 1)
-rand_array = np.random.rand(3, 3)
-
-## Generate random integers in a specified range
-rand_int = np.random.randint(1, 10, size=(3, 3))
+rng.random()                        # float in [0, 1)
+rng.random((3, 3))                  # 3x3 array of floats in [0, 1)
+rng.integers(1, 10, size=(3, 3))    # ints from 1 to 9; the high end is exclusive
+rng.normal(loc=0, scale=1, size=5)  # standard normal samples
 ```
 
-<a id='conclusion'></a>
-## 12. Conclusion
+## Gotchas
 
-NumPy is an essential library for numerical computing in Python. Its efficient array operations, broadcasting capabilities, mathematical functions, linear algebra functions, and random number generation make it a powerful tool for a wide range of applications in data science, machine learning, and scientific computing. By mastering NumPy, you will have a solid foundation for further exploration in these fields.
+- **Integer overflow is silent.** Integer arrays have a fixed width, so `np.array([2**62], dtype=np.int64) * 4` wraps around instead of growing like a Python `int`.
+- **Default integer size depends on the platform** in NumPy 1.x (32-bit on Windows). NumPy 2 made it 64-bit everywhere. Set `dtype` explicitly if it matters.
+- **Avoid Python loops over arrays.** If you're writing `for i in range(len(arr))`, there's usually a vectorised expression or ufunc that does the same thing much faster.
+
+## Further reading
+
+- [NumPy: the absolute basics for beginners](https://numpy.org/doc/stable/user/absolute_beginners.html)
+- [Broadcasting](https://numpy.org/doc/stable/user/basics.broadcasting.html)
+- [Random Generator](https://numpy.org/doc/stable/reference/random/generator.html)

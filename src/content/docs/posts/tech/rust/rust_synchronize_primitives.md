@@ -1,112 +1,106 @@
 ---
-title: "How to use sycnronization primitives in Rust"
-description: In this article, we will explore Rust's synchronization primitives and build a program that uses mutexes to synchronize access to a shared data structure between multiple threads..
+title: "Sharing data between threads in Rust with Arc and Mutex"
+description: "Use Arc<Mutex<T>> to let several threads update one Vec safely, plus when an atomic or a channel is the better synchronization primitive."
 pubDate: Saturday, 27 December 2024 13:00:00 GMT
+lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
 imgSrc: '/imgs/2023/117117315.png'
 ---
 
+When several threads need to change the same data, Rust won't compile the program until you say how that access is coordinated. The standard library gives you a few tools for this in `std::sync`: `Mutex` and `RwLock` for locking, atomic types for single values, and channels (`mpsc`) for passing data instead of sharing it.
 
-Rust is a modern programming language that emphasizes safety, speed, and concurrency. Rust provides a rich set of synchronization primitives that allow developers to write concurrent programs that are safe and efficient. In this article, we will explore Rust's synchronization primitives and build a program that uses mutexes to synchronize access to a shared data structure between multiple threads.
+This post builds a small program where five threads update one shared `Vec` through an `Arc<Mutex<Vec<i32>>>`.
 
-Before we dive into the program, let's first discuss what synchronization primitives are and why they are important in concurrent programming.
+## What `Arc` and `Mutex` each do
 
-Synchronization primitives are tools that help coordinate access to shared resources in concurrent programs. In concurrent programs, multiple threads may access the same shared resource, such as a data structure or a file. Without proper synchronization, these threads may interfere with each other, leading to race conditions, deadlocks, and other bugs.
+- `Mutex<T>` allows one thread at a time to access the `T` inside. `lock()` blocks until the lock is free and returns a guard; the lock is released when the guard is dropped.
+- `Arc<T>` is a reference-counted pointer that is safe to share across threads. A `Mutex` on its own can't be moved into several threads, so you wrap it in an `Arc` and give each thread a clone of the `Arc`.
 
-Rust provides several synchronization primitives, including mutexes, atomic types, and channels. In this article, we will focus on mutexes.
+Without the `Mutex`, the compiler rejects mutation through an `Arc`. Without the `Arc`, the compiler rejects moving the same value into more than one `thread::spawn` closure.
 
-A mutex, short for mutual exclusion, is a synchronization primitive that allows only one thread to access a shared resource at a time. Mutexes are used to prevent race conditions and ensure that shared resources are accessed in a safe and orderly manner.
+## Project setup
 
-Let's now build a program that uses mutexes to synchronize access to a shared data structure between multiple threads. We will use a vector of integers as our shared data structure, and multiple threads will increment the values in the vector.
-
-To start, create a new Rust project using Cargo, Rust's package manager. Open a terminal and run the following command:
-
-```
+```sh
 cargo new mutex-demo
-```
-
-This will create a new Rust project named `mutex-demo`. Now, navigate to the project directory by running:
-
-```
 cd mutex-demo
+cargo add rand
 ```
 
-Next, open the `Cargo.toml` file and add the following dependencies:
+The `rand` crate is only used to pick a random index. This example was written against `rand` 0.10, where `rand::random_range` uses the thread-local generator.
 
-```
-[dependencies]
-rand = "0.8.4"
-```
+## The program
 
-These dependencies are required for generating random numbers. The `rand` crate provides a random number generator for Rust.
-
-Now, let's create a new file named `src/main.rs` and add the following code:
+Replace `src/main.rs` with:
 
 ```rust
-use rand::Rng;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
 fn main() {
-    let mut data = Vec::new();
-    for _ in 0..10 {
-        data.push(0);
-    }
+    // Ten counters, all starting at zero.
+    let data = Arc::new(Mutex::new(vec![0; 10]));
 
-    let data = Arc::new(Mutex::new(data));
-
-    let mut threads = Vec::new();
+    let mut handles = Vec::new();
 
     for i in 0..5 {
         let data = Arc::clone(&data);
-        let thread = thread::spawn(move || {
-            let mut rng = rand::thread_rng();
+        let handle = thread::spawn(move || {
             for _ in 0..100 {
                 let mut data = data.lock().unwrap();
-                let index = rng.gen_range(0, data.len());
+                let index = rand::random_range(0..data.len());
                 data[index] += i;
-            }
+            } // the guard is dropped here each iteration, releasing the lock
         });
-        threads.push(thread);
+        handles.push(handle);
     }
 
-    for thread in threads {
-        thread.join().unwrap();
+    for handle in handles {
+        handle.join().unwrap();
     }
 
-    println!("{:?}", data);
+    let data = data.lock().unwrap();
+    let total: i32 = data.iter().sum();
+    println!("{:?}", *data);
+    println!("total = {total}");
 }
 ```
 
-Let's go through this code step by step. First, we import the `rand` crate for generating random numbers and the `std::sync` module for using synchronization primitives.
+How it works:
 
-Next, we create a new vector named `data` with 10 elements, each initialized to 0. This will be our shared data structure that multiple threads will access.
+1. `vec![0; 10]` is the shared data, moved into a `Mutex` and then into an `Arc`.
+2. Each loop iteration clones the `Arc` (this only increments a reference count) and moves the clone into a new thread.
+3. Inside the thread, `data.lock()` returns a `MutexGuard`, which dereferences to the `Vec`. The guard is created inside the inner `for` loop, so the lock is held for one update at a time and the threads interleave.
+4. `lock()` returns a `Result` because a mutex becomes *poisoned* if a thread panics while holding it. `unwrap()` is fine for a demo; in real code decide whether to propagate the error or recover the data with `into_inner()` on the `PoisonError`.
+5. After `join()`ing every thread, `main` locks the mutex one last time to print the result.
 
-We then create a new `Arc<Mutex<Vec<i32>>>` object named `data`. The `Arc` type allows us to share ownership of `data` between multiple threads, while the `Mutex` type provides mutual exclusion to ensure that only one thread can access `data` at a time.
+## Running it
 
-We then create a vector named `threads` that will hold our thread handles.
-
-Next, we create five threads using a `for` loop. For each thread, we create a new `Arc<Mutex<Vec<i32>>>` object named `data` by cloning the original `data` object using the `Arc::clone` method. We also create a new thread using the `thread::spawn` function, passing in a closure that will be executed in the new thread. In this closure, we generate a random index into the `data` vector using the `rng.gen_range` method, and increment the value at that index by `i`. We also acquire a lock on the `data` mutex using the `lock` method and the `unwrap` method to handle any errors.
-
-We then push the thread handle onto the `threads` vector.
-
-After all threads have been created, we wait for each thread to finish using the `join` method. This ensures that all threads have finished executing before we print out the final state of the `data` vector.
-
-Finally, we print out the `data` vector using the `println` macro.
-
-To run the program, use the following command:
-
-```
+```sh
 cargo run
 ```
 
-You should see output similar to the following:
+The distribution changes on every run, because the indices are random and the threads are scheduled in a different order each time:
 
+```text
+[93, 112, 105, 87, 120, 96, 101, 94, 88, 104]
+total = 1000
 ```
-Mutex { data: [0, 86, 109, 79, 93, 48, 98, 49, 80 ] }
-```
 
-This output shows that the values in the data vector have been incremented by multiple threads. However, notice that the output is not in the expected order. This is because the threads acquire the lock on the data mutex in a non-deterministic order, and increment the values in the vector in a random order.
+The total is always 1000: thread `i` adds `i` a hundred times, and `100 × (0 + 1 + 2 + 3 + 4) = 1000`. That fixed total is the point of the mutex. No update is lost even though five threads are writing to the same `Vec`.
 
-In conclusion, Rust's synchronization primitives, such as mutexes, are powerful tools for writing safe and efficient concurrent programs. In this article, we built a program that uses mutexes to synchronize access to a shared data structure between multiple threads. We learned how to create an Arc<Mutex<T>> object, which allows multiple threads to access a shared resource in a safe and synchronized manner. We also learned how to use the lock method to acquire a lock on a mutex and prevent other threads from accessing the shared resource at the same time. By using synchronization primitives, we can write concurrent programs that are safe, efficient, and free from race conditions and deadlocks.
+Print `*data` (the `Vec` behind the guard) rather than the `Arc` itself. Debug-printing `Arc<Mutex<_>>` gives you something like `Mutex { data: [...], poisoned: false, .. }`.
+
+## Gotchas and alternatives
+
+- **Keep critical sections short.** Holding a guard across slow work (I/O, sleeping, another lock) blocks every other thread. If you need the value after unlocking, copy it out and drop the guard first.
+- **Lock ordering.** If code ever holds two mutexes at once, always take them in the same order, or two threads can deadlock waiting on each other. Rust's type system prevents data races, but not deadlocks.
+- **Atomics for single numbers.** If the shared state is a single counter, `AtomicUsize::fetch_add` avoids locking entirely.
+- **`RwLock` for read-heavy data.** It allows many readers or one writer at a time.
+- **Scoped threads.** If the threads don't outlive the function, `std::thread::scope` lets them borrow a `Mutex` from the stack, so you don't need the `Arc`.
+- **Channels.** If threads only produce results for one consumer, sending values over `std::sync::mpsc` is often simpler than sharing a structure.
+
+## Further reading
+
+- [`std::sync` module docs](https://doc.rust-lang.org/std/sync/index.html)
+- [The Rust Book: Shared-State Concurrency](https://doc.rust-lang.org/book/ch16-03-shared-state.html)

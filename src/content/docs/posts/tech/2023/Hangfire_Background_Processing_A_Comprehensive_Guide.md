@@ -1,222 +1,197 @@
 ---
-description: In this article, we'll explore Hangfire's background processing capabilities,
-  its components, and how to implement it
+description: "Set up Hangfire in an ASP.NET Core app with SQL Server storage, then enqueue fire-and-forget, delayed and recurring jobs, configure retries, and secure the dashboard."
 imgSrc: /imgs/2023/2459232016.png
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-30T01:44:02.000Z'
-tags: []
-title: Hangfire Background Processing A Comprehensive Guide
+lastUpdated: 2026-11-14
+tags:
+  - csharp
+  - dotnet
+title: 'Hangfire in ASP.NET Core: background, delayed and recurring jobs'
 ---
 
-# Hangfire Background Processing: A Comprehensive Guide
+[Hangfire](https://www.hangfire.io/) runs background jobs in .NET applications. You call a method through Hangfire instead of directly, Hangfire stores the call in a database, and a worker picks it up and runs it, retrying on failure. Because jobs are persisted, they survive app restarts. You don't need a separate Windows service or cron. Typical uses are sending email, generating reports, and calling slow third-party APIs outside the HTTP request.
 
-## Introduction
+The examples below target Hangfire 1.8 (1.8.25 at the time of revision) on ASP.NET Core with minimal hosting (`Program.cs`).
 
-In today's software development landscape, it's common to deal with time-consuming tasks that can significantly impact the performance of web applications. To avoid blocking the main execution thread and ensure a smooth user experience, these tasks are often delegated to background processes. Hangfire is a popular library for .NET that addresses this need by providing an easy-to-use framework for creating, processing, and managing background jobs. In this article, we'll explore Hangfire's background processing capabilities, its components, and how to implement it in a .NET application.
+## How it fits together
 
-## Table of Contents
+- **Client**: `BackgroundJob`, `IBackgroundJobClient` and `RecurringJob` serialize a method call (type, method, arguments) and write it to storage.
+- **Storage**: SQL Server via `Hangfire.SqlServer` is the official, free option. Redis and others are available as Hangfire Pro or community packages.
+- **Server**: `AddHangfireServer()` starts worker threads in your process that poll storage and run jobs.
+- **Dashboard**: a web UI at `/hangfire` showing queues, history, failures and recurring jobs.
 
-1. What is Hangfire?
-2. Hangfire Components
-3. Setting Up Hangfire in a .NET Application
-4. Creating and Enqueuing Background Jobs
-5. Recurring Jobs
-6. Job Retries and Error Handling
-7. Monitoring and Managing Background Jobs
-8. Conclusion
+The client and server can live in different processes as long as they share storage and the job's types.
 
-## 1. What is Hangfire?
+## Setup
 
-Hangfire is an open-source framework that simplifies the implementation of background job processing in .NET applications. It allows developers to offload resource-intensive or time-consuming tasks to background processes, thereby improving the overall performance and responsiveness of the application. Hangfire is particularly useful for tasks such as:
-
-- Sending emails
-- Data import/export
-- Database maintenance
-- Image processing
-- Long-running calculations
-
-Hangfire supports various job types, including fire-and-forget, delayed, and recurring jobs. It also provides a built-in dashboard for monitoring and managing background jobs, complete with detailed statistics, job history, and real-time updates.
-
-## 2. Hangfire Components
-
-Hangfire comprises four main components:
-
-1. **Client**: The client component is responsible for creating and enqueuing background jobs. It generates a job identifier for each job and stores the job in a persistent storage.
-
-2. **Server**: The server component fetches queued jobs from the storage and processes them in the background. It also handles job retries and state changes.
-
-3. **Storage**: Hangfire uses a storage system to persist job data, ensuring that jobs are not lost in case of application restarts or crashes. It supports various storage providers like SQL Server, PostgreSQL, Redis, and more.
-
-4. **Dashboard**: The web-based dashboard provides an interface for monitoring and managing background jobs, allowing developers and administrators to track job progress and troubleshoot issues.
-
-## 3. Setting Up Hangfire in a .NET Application
-
-To get started with Hangfire, follow these steps:
-
-1. Install the Hangfire NuGet packages:
+Install the packages:
 
 ```bash
-Install-Package Hangfire
-Install-Package Hangfire.SqlServer
+dotnet add package Hangfire.Core
+dotnet add package Hangfire.SqlServer
+dotnet add package Hangfire.AspNetCore
+dotnet add package Microsoft.Data.SqlClient
 ```
 
-2. Add the following code in the `Startup.cs` file to configure Hangfire:
-
-```csharp
-using Hangfire;
-
-public void ConfigureServices(IServiceCollection services)
-{
-    // Configure Hangfire storage with SQL Server
-    services.AddHangfire(config =>
-        config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection")));
-
-    // Add Hangfire server
-    services.AddHangfireServer();
-}
-
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{
-    // Add Hangfire dashboard
-    app.UseHangfireDashboard();
-}
-```
-
-3. Update the `appsettings.json` file to include the Hangfire connection string:
+Add a connection string to `appsettings.json`. Hangfire creates its tables (in a `HangFire` schema) on startup, but the database itself must exist:
 
 ```json
 {
   "ConnectionStrings": {
-    "HangfireConnection": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=HangfireDemo;Integrated Security=True;"
+    "HangfireConnection": "Server=(localdb)\\MSSQLLocalDB;Database=HangfireDemo;Integrated Security=True;"
   }
 }
 ```
 
-## 4. Creating and Enqueuing Background Jobs
+Configure it in `Program.cs`:
 
-Hangfire supports various background job types:
+```csharp
+using Hangfire;
 
-- **Fire-and-forget**: Execute a job once and immediately.
-- **Delayed**: Execute a job once, after a specified delay.
-- **Recurring**: Execute a job repeatedly at a specified interval.
+var builder = WebApplication.CreateBuilder(args);
 
-To create and enqueue a fire-and-forget job, use the `Enqueue` method:
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
+
+builder.Services.AddHangfireServer();
+builder.Services.AddTransient<EmailSender>();
+
+var app = builder.Build();
+
+app.UseHangfireDashboard(); // served at /hangfire
+
+app.Run();
+```
+
+The three serializer and compatibility calls are what the Hangfire docs recommend for new installations. Don't add them blindly to an existing install; follow the upgrade guide instead.
+
+## Enqueuing jobs
+
+Fire-and-forget, run as soon as a worker is free:
 
 ```csharp
 BackgroundJob.Enqueue(() => Console.WriteLine("Hello, Hangfire!"));
 ```
 
-For delayed jobs, use the `Schedule` method:
+Delayed:
 
 ```csharp
 BackgroundJob.Schedule(() => Console.WriteLine("Delayed job"), TimeSpan.FromMinutes(5));
 ```
 
-For recurring jobs, use the `AddOrUpdate` method:
+Continuation, which runs after another job succeeds:
 
 ```csharp
-RecurringJob.AddOrUpdate("jobId", () => Console.WriteLine("Recurring job"), Cron.Minutely);
+var parentId = BackgroundJob.Enqueue(() => Console.WriteLine("parent"));
+BackgroundJob.ContinueJobWith(parentId, () => Console.WriteLine("continuation"));
 ```
 
-## 5. Recurring Jobs
-
-Hangfire recurring jobs allow you to schedule background tasks to run at regular intervals. You can use the Cron class to define the job schedule:
+In real code, inject `IBackgroundJobClient` and enqueue a call on a service. Hangfire resolves `EmailSender` from DI when the job runs:
 
 ```csharp
-RecurringJob.AddOrUpdate("jobId", () => Console.WriteLine("Daily job"), Cron.Daily);
-```
-
-You can also use custom cron expressions for more complex scheduling:
-
-```csharp
-RecurringJob.AddOrUpdate("jobId", () => Console.WriteLine("Custom recurring job"), "0 12 * * 1-5");
-```
-
-## 6. Job Retries and Error Handling
-
-Hangfire automatically retries failed jobs using an exponential back-off strategy. You can customize the retry attemptsand delay by configuring the `AutomaticRetryAttribute`:
-
-```csharp
-[AutomaticRetry(Attempts = 5, DelaysInSeconds = new int[] { 1, 5, 10, 15, 30 })]
-public void MyJobMethod()
+app.MapPost("/signup", (string email, IBackgroundJobClient jobs) =>
 {
-    // Job logic here
+    var jobId = jobs.Enqueue<EmailSender>(s => s.SendWelcome(email));
+    return Results.Accepted(value: new { jobId });
+});
+
+public class EmailSender
+{
+    public void SendWelcome(string email) => Console.WriteLine($"Welcome mail to {email}");
 }
 ```
 
-To disable automatic retries for a specific job, set the `Attempts` property to 0:
+Hangfire stores the method and its *arguments*, not a closure. Pass small, serializable values such as IDs and strings, not entities or `HttpContext`, and load what you need inside the job.
+
+## Recurring jobs
+
+Recurring jobs need a stable ID. Calling `AddOrUpdate` with the same ID updates the existing job, so it's safe to call on every startup:
 
 ```csharp
-[AutomaticRetry(Attempts = 0)]
-public void MyJobMethod()
+RecurringJob.AddOrUpdate("daily-report", () => Console.WriteLine("Daily job"), Cron.Daily);
+RecurringJob.AddOrUpdate("weekday-noon", () => Console.WriteLine("Weekdays at noon"), "0 12 * * 1-5");
+RecurringJob.AddOrUpdate<EmailSender>("digest", s => s.SendDigest(), Cron.Weekly(DayOfWeek.Monday, 8));
+```
+
+`Cron` has helpers for minutely through yearly schedules, or you can pass a standard cron expression. Schedules are evaluated in UTC unless you pass a time zone through `RecurringJobOptions`.
+
+## Retries and failures
+
+By default every job gets the `AutomaticRetry` filter: up to 10 attempts, with the delay between attempts growing each time. After the last attempt the job moves to the Failed state, where you can retry it from the dashboard. Override it per method:
+
+```csharp
+public class EmailSender
 {
-    // Job logic here
+    [AutomaticRetry(Attempts = 5, DelaysInSeconds = new[] { 10, 30, 60, 300, 900 })]
+    public void SendWelcome(string email) { /* ... */ }
+
+    [AutomaticRetry(Attempts = 0)]
+    public void SendDigest() { /* ... */ }
 }
 ```
 
-You can also handle job errors using the `IElectStateFilter` interface:
+Use `Attempts = 0` for jobs that are not safe to repeat. More generally, write jobs to be idempotent: a job can run more than once, for example if the process dies after the work is done but before Hangfire records success.
+
+To react to failures, write a job filter. This one logs when a job is about to move to the Failed state:
 
 ```csharp
-public class MyJobExceptionFilter : JobFilterAttribute, IElectStateFilter
+using Hangfire.Common;
+using Hangfire.States;
+
+public class LogFailureAttribute : JobFilterAttribute, IElectStateFilter
 {
     public void OnStateElection(ElectStateContext context)
     {
-        var failedState = context.CandidateState as FailedState;
-        if (failedState != null)
+        if (context.CandidateState is FailedState failed)
         {
-            // Log the error or perform custom error handling
-            Console.WriteLine($"Job {context.BackgroundJob.Id} failed: {failedState.Exception}");
+            Console.WriteLine($"Job {context.BackgroundJob.Id} failed: {failed.Exception.Message}");
         }
     }
 }
 ```
 
-Then, apply the custom filter to your job method:
+Apply it with `[LogFailure]` on a job method, or globally with `GlobalJobFilters.Filters.Add(new LogFailureAttribute())`.
+
+## Securing the dashboard
+
+By default the dashboard only answers local requests. That works on your machine, but once deployed, remote requests are refused until you add an authorization filter. Don't just `return true`: the dashboard can delete and re-run jobs.
 
 ```csharp
-[MyJobExceptionFilter]
-public void MyJobMethod()
-{
-    // Job logic here
-}
-```
+using Hangfire.Dashboard;
 
-## 7. Monitoring and Managing Background Jobs
-
-Hangfire provides a built-in dashboard that allows you to monitor and manage background jobs. By default, the dashboard is accessible at the `/hangfire` route.
-
-To secure the dashboard, you can implement a custom authorization filter:
-
-```csharp
-public class MyHangfireAuthorizationFilter : IDashboardAuthorizationFilter
+public class AdminOnlyDashboardFilter : IDashboardAuthorizationFilter
 {
     public bool Authorize(DashboardContext context)
     {
-        // Implement custom authorization logic, e.g., check if the user is an admin
-        return true;
+        var httpContext = context.GetHttpContext();
+        return httpContext.User.Identity?.IsAuthenticated == true
+            && httpContext.User.IsInRole("Admin");
     }
 }
 ```
 
-Then, update the `Startup.cs` file to apply the custom filter:
-
 ```csharp
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
-    // Add Hangfire dashboard with custom authorization filter
-    app.UseHangfireDashboard("/hangfire", new DashboardOptions
-    {
-        Authorization = new[] { new MyHangfireAuthorizationFilter() }
-    });
-}
+    Authorization = new[] { new AdminOnlyDashboardFilter() }
+});
 ```
 
-The dashboard provides various features, such as:
+## When Hangfire is not the right fit
 
-- Real-time monitoring of job execution
-- Detailed job history and statistics
-- Manually triggering, deleting, or retrying jobs
+- For a single in-process loop with no persistence or retries, a plain `BackgroundService` is simpler.
+- Hangfire polls its storage. With SQL Server that adds steady database load, and very high job volumes need tuning or a different storage.
+- Job methods are found by type and method name, so renaming or moving a job method breaks jobs already in the queue. Deploy such changes while the queue is empty, or keep the old method around until it drains.
 
-## 8. Conclusion
+## Further reading
 
-Hangfire is a powerful and flexible framework for background job processing in .NET applications. It allows developers to offload time-consuming tasks to background processes, improving application performance and user experience. With support for various job types, automatic retries, and a built-in dashboard, Hangfire is an invaluable tool for managing and monitoring background jobs in your .NET projects.
+- [Hangfire documentation](https://docs.hangfire.io/)
+- [ASP.NET Core getting started](https://docs.hangfire.io/en/latest/getting-started/aspnet-core-applications.html)
+- [Using the dashboard](https://docs.hangfire.io/en/latest/configuration/using-dashboard.html)

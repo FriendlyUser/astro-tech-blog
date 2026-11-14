@@ -1,84 +1,19 @@
 ---
-title: Swift Error Handling A Comprehensive Guide
+title: "Swift error handling: throws, do-catch, try?, typed throws and rethrows"
 pubDate: "2024-03-18T15:08:37.000Z"
-description: "This article will provide a comprehensive guide to Swift's error handling, covering the basics, error propagation, and advanced techniques."
-tags: []
+lastUpdated: 2026-11-14
+description: "How Swift error handling works: defining Error types, throwing and propagating errors, do-catch with patterns, try? and try!, typed throws, rethrows and defer."
+tags:
+  - swift
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3847215807.png
 ---
-# Swift Error Handling: A Comprehensive Guide
 
-Error handling is a crucial aspect of modern programming languages, and Swift is no exception. Swift provides a robust error handling mechanism that makes it easy for developers to handle errors gracefully, ensuring that their applications can continue running even in the face of unexpected issues. This article will provide a comprehensive guide to Swift's error handling, covering the basics, error propagation, and advanced techniques.
+Swift handles recoverable errors with values that conform to the `Error` protocol. A function marks itself `throws`, callers must call it with `try`, and the compiler makes sure every thrown error is either handled with `do`/`catch` or passed up to a function that also throws. Unlike exceptions in Java or C++, you can see every call that might fail because it has `try` in front of it.
 
-## Overview of Swift Error Handling
+## Defining errors
 
-Swift uses a set of language features to handle errors at runtime, allowing developers to write clean and maintainable code. The primary components of Swift's error handling are:
-
-1. The `Error` protocol: This protocol defines a type that can represent an error.
-2. The `throw` keyword: Used to throw an error.
-3. The `throws` keyword: Indicates that a function or method can throw an error.
-4. The `do-catch` statement: Used to catch and handle errors thrown within a code block.
-5. The `try` keyword: Used to call a function or method that can throw an error.
-
-## Defining Errors
-
-In Swift, errors are represented by values of types conforming to the `Error` protocol. To define custom error types, you can create an enumeration that conforms to the `Error` protocol. For example:
-
-```swift
-enum NetworkError: Error {
-    case serverError
-    case noInternetConnection
-    case authenticationFailed
-}
-```
-
-## Throwing Errors
-
-To signal that an error has occurred, you can use the `throw` keyword followed by an instance of the error. Consider the following example:
-
-```swift
-func fetchData() throws {
-    if noInternetConnection {
-        throw NetworkError.noInternetConnection
-    }
-    // Remaining implementation
-}
-```
-
-## Propagating Errors
-
-When you have a function or method that can throw an error, you must indicate this in the function or method's signature by adding the `throws` keyword. This will allow the error to be propagated up the call stack, giving the caller an opportunity to handle the error. For example:
-
-```swift
-func fetchDataFromServer() throws {
-    try fetchData()
-}
-```
-
-## Handling Errors with do-catch
-
-To handle errors thrown by a function or method, you can use the `do-catch` statement. Within the `do` block, you call the throwing function or method using the `try` keyword. If an error is thrown, the execution jumps to the nearest `catch` block, where you can handle the error. For example:
-
-```swift
-do {
-    try fetchDataFromServer()
-    print("Data fetched successfully")
-} catch NetworkError.serverError {
-    print("Server error occurred")
-} catch NetworkError.noInternetConnection {
-    print("No internet connection")
-} catch NetworkError.authenticationFailed {
-    print("Authentication failed")
-} catch {
-    print("An unexpected error occurred: \(error)")
-}
-```
-
-## Advanced Error Handling Techniques
-
-Swift also provides additional tools for more advanced error handling scenarios, such as:
-
-1. Defining associated values with errors: You can add associated values to your error types, allowing you to provide more detailed error information.
+Any type can be an error by conforming to `Error`. Enums are the usual choice, and associated values carry details:
 
 ```swift
 enum NetworkError: Error {
@@ -88,20 +23,120 @@ enum NetworkError: Error {
 }
 ```
 
-2. Using `try?` and `try!`: Swift provides two additional keywords for handling errors: `try?` and `try!`. The `try?` keyword returns an optional value, which is `nil` if an error is thrown. The `try!` keyword forces the call to succeed and returns a non-optional value, causing a runtime error if an error is thrown.
+## Throwing and propagating
+
+A function that can fail is marked `throws` and uses `throw` to exit with an error. A caller that doesn't want to handle the error can be marked `throws` too and just call with `try`; the error passes straight through.
 
 ```swift
-let data = try? fetchDataFromServer() // data is an optional value
+func fetchData(isOnline: Bool, statusCode: Int) throws -> String {
+    guard isOnline else {
+        throw NetworkError.noInternetConnection
+    }
+    guard (200..<300).contains(statusCode) else {
+        throw NetworkError.serverError(statusCode: statusCode)
+    }
+    return "payload"
+}
 
-let data = try! fetchDataFromServer() // data is a non-optional value, but may cause a runtime error if an error is thrown
-```
-
-3. Using `rethrows`: The `rethrows` keyword can be used in a function or method that takes a throwing closure as a parameter. It signals that the function or method will only throw an error if the closure does.
-
-```swift
-func execute(_ operation: () throws -> Void) rethrows {
-    try operation()
+func loadDashboard() throws -> String {
+    let data = try fetchData(isOnline: true, statusCode: 503)
+    return "Dashboard: \(data)"
 }
 ```
 
-By understanding and utilizing Swift's error handling features, developers can write more robust and maintainable applications that gracefully handle errors and unexpected situations.
+## Handling errors with do-catch
+
+`catch` clauses are patterns, so you can match specific cases and bind associated values. A final `catch` with no pattern catches everything else and gives you an implicit `error` constant.
+
+```swift
+do {
+    let page = try loadDashboard()
+    print(page)
+} catch NetworkError.serverError(let code) where code >= 500 {
+    print("Server is down (\(code)), try again later")
+} catch NetworkError.noInternetConnection {
+    print("No internet connection")
+} catch let NetworkError.authenticationFailed(reason) {
+    print("Authentication failed: \(reason)")
+} catch {
+    print("Unexpected error: \(error)")
+}
+// Prints: Server is down (503), try again later
+```
+
+With untyped `throws`, the compiler can't know which errors are possible, so the catch-all clause is required unless the enclosing function also throws.
+
+## try? and try!
+
+`try?` turns the result into an optional and discards the error. `try!` asserts that the call cannot fail and crashes if it does.
+
+```swift
+let maybePage = try? loadDashboard()        // String?, nil here
+let config = try! fetchData(isOnline: true, statusCode: 200) // String, traps on error
+```
+
+Use `try?` when you genuinely don't care why something failed. Keep `try!` for cases where failure means a programming error, like decoding a resource bundled with the app.
+
+## Typed throws
+
+Since Swift 6.0 ([SE-0413](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0413-typed-throws.md)) a function can declare the one error type it throws. Callers then get `error` with that concrete type, and a `do`/`catch` can be exhaustive without a catch-all.
+
+```swift
+func fetchTyped(isOnline: Bool) throws(NetworkError) -> String {
+    guard isOnline else { throw .noInternetConnection }
+    return "payload"
+}
+
+do {
+    _ = try fetchTyped(isOnline: false)
+} catch {
+    // error is NetworkError here, not any Error
+    switch error {
+    case .serverError(let code): print("Server error \(code)")
+    case .noInternetConnection: print("Offline")
+    case .authenticationFailed(let reason): print("Auth: \(reason)")
+    }
+}
+```
+
+The proposal itself recommends untyped `throws` for most code, since a fixed error type is hard to change later in a public API. Typed throws are most useful inside a module, in generic code that should pass a closure's error type through unchanged, and in embedded Swift where `any Error` boxing isn't available.
+
+## rethrows
+
+A function that takes a throwing closure can be marked `rethrows`. It only throws if the closure does, so callers passing a non-throwing closure don't need `try`. That's how `map` and `filter` work.
+
+```swift
+func retry<T>(times: Int, _ operation: () throws -> T) rethrows -> T {
+    for _ in 1..<max(times, 1) {
+        if let value = try? operation() { return value }
+    }
+    return try operation()
+}
+
+let n = retry(times: 3) { 42 }                 // no try needed
+let s = try? retry(times: 3) { try loadDashboard() }
+```
+
+## Cleanup with defer
+
+`defer` runs a block when the current scope exits, whether by returning or by throwing. It's the place to close files or release locks.
+
+```swift
+import Foundation
+
+func process(path: String) throws {
+    let handle = FileHandle(forReadingAtPath: path)
+    defer { try? handle?.close() }
+    // ... work that might throw ...
+}
+```
+
+## Errors versus Result and async
+
+- `Result<Success, Failure>` stores either a value or an error. It's useful when you need to keep an outcome around, such as in a callback-based API. `Result { try loadDashboard() }` converts a throwing call into a `Result`, and `.get()` converts it back.
+- `async throws` functions combine with `try await`. Errors behave the same way across suspension points. If an error escapes the body of `withThrowingTaskGroup`, the group's remaining child tasks are cancelled.
+
+## Further reading
+
+- [The Swift Programming Language: Error Handling](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/errorhandling/)
+- [SE-0413 Typed throws](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0413-typed-throws.md)

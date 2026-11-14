@@ -1,219 +1,168 @@
 ---
 tags: ['github', 'ci']
-title: Introduction to github actions and how to use them
-description: This blog post covers how to use github actions to automate tasks.
+title: "GitHub Actions basics: YAML, cron schedules, push triggers and keeping scheduled workflows alive"
+description: The YAML and cron syntax you need for GitHub Actions workflows, with a scheduled scraper, push triggers, and a workaround for the 60-day schedule shutoff.
 pubDate: Mon, 13 November 2023
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: "/imgs/2023/2543580613.png"
 ---
-YAML (short for "YAML Ain't Markup Language") is a human-readable data serialization format. It is commonly used for configuration files, data exchange between systems, and in many other applications.
 
-The basic structure of a YAML file consists of a series of key-value pairs, separated by colons. Keys are always strings, and values can be strings, numbers, booleans, arrays, or other complex data structures. Here is an example of a simple YAML file:
+GitHub Actions workflows are YAML files in `.github/workflows/` that run jobs when something happens in a repository: a push, a pull request, or a schedule. This post covers the YAML and cron syntax you need to read them, then walks through two workflows I use in [news-alert](https://github.com/FriendlyUser/news-alert).
 
+## YAML in two minutes
+
+YAML is a data format built from key-value pairs separated by colons. Indentation (spaces, not tabs) defines nesting, and lines starting with `-` are list items.
 
 ```yaml
-makefile`name: John Doe
+name: John Doe
 age: 35
 email: john.doe@example.com
 
 interests:
- - programming
- - photography
- - hiking
+  - programming
+  - photography
+  - hiking
 ```
-In this example, `name`, `age`, and `email` are the keys, and their corresponding values are strings. The key `interests` has an array of values as its value.
 
-YAML also provides syntax for more complex data structures, such as nested dictionaries and arrays. The indentation in a YAML file is important, as it defines the structure of the data.
-
-Here is an example of a nested data structure in YAML:
-
+`name` and `email` are strings, `age` is a number, and `interests` is a list. Nesting another level looks like this:
 
 ```yaml
 person:
- name: John Doe
- age: 35
- email: john.doe@example.com
-
- interests:
- - programming
- - photography
- - hiking
+  name: John Doe
+  age: 35
+  email: john.doe@example.com
+  interests:
+    - programming
+    - photography
+    - hiking
 ```
-In this example, the key `person` has a nested dictionary as its value, which contains the keys `name`, `age`, `email`, and `interests`.
 
-YAML is a versatile and widely used format that is easy to read and write. It is often used in combination with other technologies, such as Ansible, to manage configurations and deploy software.
+Here `person` maps to a dictionary with four keys. If the indentation is off, the structure changes or the file fails to parse, which is the most common cause of broken workflow files.
 
+## Cron syntax
 
-A schedule, or cron job, is a task that runs automatically at specified intervals on a Unix-based operating system. The task is defined in a special file called the crontab file, which specifies the schedule and command to run.
+A cron expression has five fields:
 
-Cron uses a simple syntax to define the schedule for a task, with each line in the crontab file representing a single cron job. The syntax consists of six fields, separated by spaces:
-
-
-```txt
-* * * * * command
-- - - - -
-| | | | |
-| | | | ----- Day of week (0 - 7) (Sunday = both 0 and 7)
-| | | ------- Month (1 - 12)
-| | --------- Day of month (1 - 31)
-| ----------- Hour (0 - 23)
-------------- Minute (0 - 59)
+```text
+┌───────────── minute (0-59)
+│ ┌─────────── hour (0-23)
+│ │ ┌───────── day of month (1-31)
+│ │ │ ┌─────── month (1-12)
+│ │ │ │ ┌───── day of week (0-6, Sunday = 0)
+│ │ │ │ │
+* * * * *
 ```
-The first five fields represent the schedule, and the last field is the command to run. The asterisk (`*`) is a wildcard that matches any value, so a schedule of `* * * * *` would run every minute of every day.
 
-Here is an example of a cron job that runs a script every day at 4 PM:
+`*` matches any value, `,` separates a list, `-` is a range, and `/` is a step. In a Unix crontab the five fields are followed by the command to run, so this runs a script every day at 4 PM:
 
-
-```yaml
+```text
 0 16 * * * /path/to/script.sh
 ```
-Cron jobs can be managed using the `crontab` command, which allows you to view, edit, and delete cron jobs for a user. You can also use the `crontab` command to specify the location of a crontab file for a user, for example:
 
+Edit your crontab with `crontab -e`, list it with `crontab -l`, or load one from a file with `crontab /path/to/crontab.file`.
 
-```bash
-crontab /path/to/crontab.file
-```
-Cron is a powerful tool that can automate many types of tasks, such as backing up data, sending emails, or updating databases. However, it is important to use it responsibly and make sure that the tasks you run do not interfere with other systems or processes.
+In GitHub Actions you write only the five schedule fields. Two differences from a server crontab:
 
+- Schedules run in UTC by default.
+- The shortest interval is every 5 minutes, and runs can start late when GitHub is busy, especially at the top of the hour.
 
-```yaml 
+## A scheduled workflow
+
+This workflow runs a .NET scraper that posts news to Discord:
+
+```yaml
 name: Scrap News
 
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '10/20 13-19 * * 1-5'
+    # * is a special character in YAML, so quote the string
+    - cron: '10-59/20 13-19 * * 1-5'
 
 jobs:
   scrap:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '3.1.100' # SDK Version to use.
+          dotnet-version: '10.0.x'
       - run: dotnet restore
       - run: dotnet build -o out
       - run: dotnet out/news-alert.dll
         env:
-          DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK}}
-          ES_INSTANCE: ${{secrets.ES_INSTANCE}}
- 
- ```
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ES_INSTANCE: ${{ secrets.ES_INSTANCE }}
+```
 
-This YAML file defines a GitHub Actions workflow named `Scrap News`. The workflow is triggered by a schedule defined in the `on` section.
+The cron expression runs at minutes 10, 30, and 50 of every hour from 13:00 to 19:59 UTC, Monday to Friday. The steps check out the repository, install the .NET SDK, build the project into `out/`, and run it. `DISCORD_WEBHOOK` and `ES_INSTANCE` are [repository secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions) passed to the app as environment variables, so the webhook URL and Elasticsearch address never appear in the repository.
 
-The schedule is defined using a cron expression: `10/20 13-19 * * 1-5`. This expression runs the workflow every 20 minutes between the hours of 1 PM and 7 PM, from Monday to Friday (1-5).
+The original 2023 version of this workflow used `actions/checkout@master`, `actions/setup-dotnet@v1` and .NET Core 3.1, which went out of support in December 2022. Pin actions to a release tag rather than a branch, and make sure the project's target framework matches the SDK you install.
 
-The workflow contains a single job named `scrap`. The job is set to run on the latest version of Ubuntu.
+## Triggering on push
 
-The job has several steps, each represented by a step in the `steps` section. The steps perform the following actions:
-
-1. Check out the code from the repository using the `actions/checkout@master` action.
-2. Set up .NET using the `actions/setup-dotnet@v1` action, specifying a .NET version of `3.1.100`.
-3. Restore the .NET dependencies using the `dotnet restore` command.
-4. Build the .NET project using the `dotnet build -o out` command.
-5. Run the .NET project using the `dotnet out/news-alert.dll` command. This step also sets two environment variables: `DISCORD_WEBHOOK` and `ES_INSTANCE`. These variables are stored as secrets in the GitHub repository and are passed to the .NET application to allow it to interact with Discord and Elasticsearch.
-
-To trigger a GitHub Actions workflow on a push event, you can use the following YAML syntax in the `on` section of your workflow file:
-
+To run a workflow on every push to `main`:
 
 ```yaml
 on:
- push:
- branches:
- - main
+  push:
+    branches:
+      - main
 ```
-In this example, the workflow will be triggered every time a push event is made to the `main` branch of your repository.
 
-You can also specify multiple branches to trigger the workflow, for example:
+`branches` is a list, so add more entries (for example `- dev`) to watch several branches. To run on pushes to any branch, leave the filter out:
 
+```yaml
+on: push
+```
+
+You can combine triggers. This runs on pushes to `main` and every day at midnight UTC:
 
 ```yaml
 on:
- push:
- branches:
- - main
- - dev
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
 ```
-In this example, the workflow will be triggered on push events to both the `main` and `dev` branches of your repository.
 
-If you want to trigger the workflow on pushes to all branches, you can use the following syntax:
+## Keeping scheduled workflows alive
 
-
-```yaml
-on:
- push:
-```
-Note that you can combine multiple events in the `on` section, for example, to trigger the workflow on both push events and schedule events, you can use the following syntax:
-
-
-```yaml
-on:
- push:
- branches:
- - main
- schedule:
- - cron: '0 0 \* \* \*'
-```
-In this example, the workflow will be triggered on pushes to the `main` branch and on a daily schedule at midnight.
-
-
-To generate a GitHub token with write permissions, you need to follow these steps:
-
-Log in to your GitHub account.
-
-Go to your GitHub settings by clicking on your profile picture in the upper-right corner and selecting "Settings."
-
-Click on the "Developer settings" option in the left-side menu.
-
-Select the "Personal access tokens" option under "Developer settings."
-
-Click on the "Generate new token" button.
-
-Give your token a descriptive name and select the appropriate scopes for your use case. For example, if you want to use the token for triggering GitHub Actions, you need to select the "repo" scope, which provides write access to repositories.
-
-Click on the "Generate token" button.
-
-Store the generated token in a secure place, as it will only be displayed once and cannot be retrieved later.
-
-With this token, you can now use the GitHub API or other tools to interact with GitHub, such as triggering GitHub Actions, creating and managing issues, or managing your repositories. Just make sure to keep your token secure, as it provides write access to your repositories.
-
-GitHub Actions are designed to run only when there are new commits or other events that trigger a workflow. After 60 days of inactivity, workflows that have not been triggered will be automatically stopped to conserve resources and ensure optimal performance for active workflows.
-
-The 60-day limit is in place to prevent workflows from running indefinitely without being updated, as this can consume system resources and potentially impact other workflows running on the same infrastructure. Inactive workflows can always be restarted by pushing new commits to the repository, which will trigger the workflow again.
-
-By stopping inactive workflows, GitHub is able to provide a stable and efficient platform for continuous integration and continuous deployment, enabling developers to automate their workflows and deliver better results to their users more quickly and reliably.
+In public repositories, GitHub disables scheduled workflows after 60 days with no repository activity. You can re-enable them from the Actions tab, but if a repository exists only to run a scheduled job, it's easier to have a workflow commit something once a month:
 
 ```yaml
 name: Update CRON
-# Make update to public file to keep workflows running
+# Commit to a file once a month so scheduled workflows stay enabled
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '1 1 1 * *'
+    - cron: '1 1 1 * *'
 
+permissions:
+  contents: write
 
 jobs:
   update_cron:
-    name: Generate Report
+    name: Update CRON.md
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Update Cron
-        run: |
-          echo "c\n" >> CRON.md
-      
-      - name: Update resources
+        run: echo "c" >> CRON.md
+      - name: Commit file
         uses: test-room-7/action-update-file@v1
         with:
-            file-path: CRON.md
-            commit-msg: Update CRON.md
-            github-token: ${{ secrets.GITHUB_TOKEN }}
+          file-path: CRON.md
+          commit-msg: Update CRON.md
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+This runs at 01:01 UTC on the first of each month. The built-in `GITHUB_TOKEN` is enough to push the commit, but repositories created since 2023 default it to read-only, so the `permissions: contents: write` block is needed.
+
+You only need a personal access token if the commit must trigger *other* workflows: events created with `GITHUB_TOKEN` don't start new workflow runs. If you do create one, prefer a [fine-grained token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) limited to the one repository with Contents read/write, store it as a repository secret, and use it in place of `secrets.GITHUB_TOKEN`.
 
 ## References
 
 - https://github.com/FriendlyUser/news-alert/blob/master/.github/workflows/CRON.yml
 - https://github.com/FriendlyUser/news-alert/blob/master/.github/workflows/scrapNews.yml
+- [Events that trigger workflows: schedule](https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule)

@@ -1,37 +1,44 @@
 ---
-title: Using Subcmd in Golang Enhancing CLI Applications with Subcommands
+title: "Building a Go CLI with subcommands using google/subcommands"
 pubDate: "2023-05-30T19:37:46.152Z"
-description: "In this article, we will explore how to use subcommands in Golang CLI applications using the `subcmd` package"
+lastUpdated: 2026-11-14
+description: "Build a small Go command-line tool with add and multiply subcommands using the google/subcommands package, including per-command flags and help output."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/186810635.png
 ---
-# Using Subcmd in Golang: Enhancing CLI Applications with Subcommands
 
-In this article, we will explore how to use subcommands in Golang CLI applications using the `subcmd` package. Subcommands are a useful way to organize your command-line interface (CLI) tool into logical groups of functionality. Let's dive in!
+Subcommands (`git commit`, `go build`) let one binary group related actions, each with its own flags and help text. Go's standard `flag` package parses flags but has no notion of subcommands. [`github.com/google/subcommands`](https://github.com/google/subcommands) is a small package that adds them on top of `flag`: each subcommand is a type that implements a five-method interface, and the package handles dispatch and `help`.
 
-## What is `subcmd`?
+The package is stable but small and rarely updated; its latest tag is v1.2.0 from 2019. If you want shell completion, nested command trees or POSIX-style `--long` flags, look at [Cobra](https://github.com/spf13/cobra) or [urfave/cli](https://github.com/urfave/cli) instead.
 
-`subcmd` is a Golang package that enables the easy creation of CLI applications with subcommands. It provides a simple interface for defining and parsing subcommands, allowing developers to focus on their application's core functionality.
-
-To get started with `subcmd`, we will need to install it:
-
-```bash
-go get -u github.com/google/subcommands
-```
-
-## Creating a Simple CLI Application with Subcommands
-
-Now that we have `subcmd` installed, let's create a simple CLI application with two subcommands: `add` and `multiply`. The `add` subcommand will take two integers and return their sum, while the `multiply` subcommand will return their product.
-
-First, create a new project folder and initialize it as a Go module:
+## Setup
 
 ```bash
 mkdir mycli && cd mycli
-go mod init github.com/yourusername/mycli
+go mod init example.com/mycli
+go get github.com/google/subcommands
 ```
 
-Next, create a `main. file in your project root and add the following code:
+## The Command interface
+
+Each subcommand implements `subcommands.Command`:
+
+```go
+type Command interface {
+	Name() string             // what the user types, e.g. "add"
+	Synopsis() string         // one line, shown in the command list
+	Usage() string            // longer text, shown by "help add"
+	SetFlags(*flag.FlagSet)   // register flags for this subcommand
+	Execute(ctx context.Context, f *flag.FlagSet, args ...interface{}) ExitStatus
+}
+```
+
+`Execute` receives the subcommand's own `FlagSet`, already parsed, so positional arguments are in `f.Args()`. The variadic `args` are whatever you passed to `subcommands.Execute` in `main`, which is a way to hand shared state (a config, a database handle) to every command.
+
+## A calculator with two subcommands
+
+Put this in `main.go`. Both commands take two integers; `multiply` also has a `-v` flag to show the working.
 
 ```go
 package main
@@ -41,146 +48,127 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/google/subcommands"
 )
 
+// parseTwoInts reads exactly two integer positional arguments.
+func parseTwoInts(f *flag.FlagSet) (int, int, error) {
+	if f.NArg() != 2 {
+		return 0, 0, fmt.Errorf("expected two arguments, got %d", f.NArg())
+	}
+	a, err := strconv.Atoi(f.Arg(0))
+	if err != nil {
+		return 0, 0, fmt.Errorf("first argument: %w", err)
+	}
+	b, err := strconv.Atoi(f.Arg(1))
+	if err != nil {
+		return 0, 0, fmt.Errorf("second argument: %w", err)
+	}
+	return a, b, nil
+}
+
+type addCmd struct{}
+
+func (*addCmd) Name() string     { return "add" }
+func (*addCmd) Synopsis() string { return "Add two integers." }
+func (*addCmd) Usage() string {
+	return "add <num1> <num2>:\n  Add two integers and print the result.\n"
+}
+func (*addCmd) SetFlags(*flag.FlagSet) {}
+
+func (*addCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	a, b, err := parseTwoInts(f)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return subcommands.ExitUsageError
+	}
+	fmt.Println(a + b)
+	return subcommands.ExitSuccess
+}
+
+type multiplyCmd struct {
+	verbose bool
+}
+
+func (*multiplyCmd) Name() string     { return "multiply" }
+func (*multiplyCmd) Synopsis() string { return "Multiply two integers." }
+func (*multiplyCmd) Usage() string {
+	return "multiply [-v] <num1> <num2>:\n  Multiply two integers and print the result.\n"
+}
+func (m *multiplyCmd) SetFlags(f *flag.FlagSet) {
+	f.BoolVar(&m.verbose, "v", false, "print the full expression")
+}
+
+func (m *multiplyCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	a, b, err := parseTwoInts(f)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return subcommands.ExitUsageError
+	}
+	if m.verbose {
+		fmt.Printf("%d * %d = %d\n", a, b, a*b)
+	} else {
+		fmt.Println(a * b)
+	}
+	return subcommands.ExitSuccess
+}
+
 func main() {
 	subcommands.Register(subcommands.HelpCommand(), "")
+	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(&addCmd{}, "")
 	subcommands.Register(&multiplyCmd{}, "")
 
 	flag.Parse()
-	ctx := context.Background()
-	os.Exit(int(subcommands.Execute(ctx)))
-}
-
-// Add command
-type addCmd struct {
-}
-
-func (*addCmd) Name() string {
-	return "add"
-}
-
-func (*addCmd) Synopsis() string {
-	return "Add two integers."
-}
-
-func (*addCmd) Usage() string {
-	return `add <num1> <num2>
-	Add two integers and print the result.
-`
-}
-
-func (a *addCmd) SetFlags(f *flag.FlagSet) {
-}
-
-func (a *addCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	if f.NArg() != 2 {
-		fmt.Fprintln(os.Stderr, "Expected two arguments.")
-		return subcommands.ExitUsageError
-	}
-
-	// Parse the integers
-	num1, err1 := strconv.Atoi(f.Arg(0))
-	num2, err2 := strconv.Atoi(f.Arg(1))
-
-	if err1 != nil || err2 != nil {
-		fmt.Fprintln(os.Stderr, "Both arguments must be integers.")
-		return subcommands.ExitUsageError
-	}
-
-	fmt.Println(num1 + num2)
-	return subcommands.ExitSuccess
-}
-
-// Multiply command
-type multiplyCmd struct {
-}
-
-func (*multiplyCmd) Name() string {
-	return "multiply"
-}
-
-func (*multiplyCmd) Synopsis() string {
-	return "Multiply two integers."
-}
-
-func (*multiplyCmd) Usage() string {
-	return `multiply <num1> <num2>
-	Multiply two integers and print the result.
-`
-}
-
-func (m *multiplyCmd) SetFlags(f *flag.FlagSet) {
-}
-
-func (m *multiplyCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	if f.NArg() != 2 {
-		fmt.Fprintln(os.Stderr, "Expected two arguments.")
-		return subcommands.ExitUsageError
-	}
-
-	// Parse the integers
-	num1, err1 := strconv.Atoi(f.Arg(0))
-	num2, err2 := strconv.Atoi(f.Arg(1))
-
-	if err1 != nil || err2 != nil {
-		fmt.Fprintln(os.Stderr, "Both arguments must be integers.")
-		return subcommands.ExitUsageError
-	}
-
-	fmt.Println(num1 * num2)
-	return subcommands.ExitSuccess
+	os.Exit(int(subcommands.Execute(context.Background())))
 }
 ```
 
-In the code above, we first import the necessary packages and then define a `main` function. Inside the main function, we register our subcommands using the `subcommands.Register()` function. We also register the built-in `subcommands.HelpCommand()` to provide help functionality.
+`Register`'s second argument is a group name. Commands in the same group are listed together in the help output; the empty string is the default group.
 
-Next, we define the `addCmd` and `multiplyCmd` structs and implement the `subcommands.Command` interface for each. The interface has five methods:
+`flag.Parse()` parses top-level flags (none here) and must run before `subcommands.Execute`, which then picks the subcommand from the first remaining argument.
 
-1. `Name()`: Returns the subcommand's name.
-2. `Synopsis()`: Returns a short description of the subcommand.
-3. `Usage()`: Returns a string describing how to use the subcommand.
-4. `SetFlags(*flag.FlagSet)`: Used to set any flags specific to the subcommand.
-5. `Execute(context.Context, *flag.FlagSet, ...interface{}) subcommands.ExitStatus`: The main function that runs when the subcommand is called.
-
-We define these methods for both the `addCmd` and `multiplyCmd` structs, implementing the desired functionality in the `Execute()` method.
-
-Tobuild and run the CLI application, execute the following commands in your project root:
+## Trying it
 
 ```bash
 go build
 ./mycli help
 ```
 
-You should see the help output, which lists the available subcommands:
+With no top-level flags defined, the output is:
+
+```text
+Usage: mycli <flags> <subcommand> <subcommand args>
+
+Subcommands:
+	add              Add two integers.
+	flags            describe all known top-level flags
+	help             describe subcommands and their syntax
+	multiply         Multiply two integers.
 
 ```
-Usage: mycli <command> [arguments]
 
-Commands:
-	add            Add two integers.
-	help           Describe the usage of this program or its subcommands.
-	multiply       Multiply two integers.
-```
-
-Now, let's test the `add` and `multiply` subcommands:
+The subcommands work as expected, and flags go after the subcommand name:
 
 ```bash
-./mycli add 3 4
+$ ./mycli add 3 4
 7
-
-./mycli multiply 3 4
-12
+$ ./mycli multiply -v 3 4
+3 * 4 = 12
+$ ./mycli add 3 x
+second argument: strconv.Atoi: parsing "x": invalid syntax
 ```
 
-Great! Our CLI application with subcommands is working as expected.
+`./mycli help multiply` prints the `Usage()` text followed by the subcommand's flags.
 
-## Summary
+## Gotchas
 
-In this article, we explored how to use the `subcmd` package to create a Golang CLI application with subcommands. We demonstrated how to define, register, and implement subcommands using the `subcommands.Command` interface, and we built a simple CLI application that supports `add` and `multiply` subcommands.
+- Flags must come before positional arguments: `multiply -v 3 4` works, `multiply 3 4 -v` treats `-v` as a third argument. This is standard `flag` package behaviour.
+- `ExitUsageError` is exit code 2 and `ExitFailure` is 1, matching common Unix conventions.
+- Every command is registered on the package-level `DefaultCommander`. In tests, create a separate `subcommands.NewCommander(flagSet, "name")` so state doesn't leak between cases.
 
-The `subcmd` package is an excellent choice for creating organized and easy-to-use CLI applications in Golang. By implementing subcommands, developers can group related functionality and make their tools more user-friendly.
+## Further reading
 
+- [google/subcommands on pkg.go.dev](https://pkg.go.dev/github.com/google/subcommands)

@@ -1,128 +1,117 @@
 ---
 tags: ['go']
-title: History of golang.
-description: Covering reasons to use golang and why it's a good choice for your next project.
+title: "Go pointers and garbage collection basics"
+description: "How pointers work in Go (&, *, passing by pointer), how the compiler decides between stack and heap, and a small program that shows the garbage collector running."
 pubDate: Fri, 21 October 2024
+lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/3867963691.png
 ---
-Sure, I can explain pointers in Go!
+A pointer in Go holds the memory address of a value. You use pointers when a function needs to modify its caller's variable, or when copying a large struct on every call would be wasteful. Go has pointers but no pointer arithmetic (outside the `unsafe` package), and memory is freed by a garbage collector rather than by hand.
 
-In Go, a pointer is a variable that stores the memory address of another variable. You can think of a pointer as a reference to a variable's location in memory.
+## Pointer syntax
 
-To declare a pointer variable, you use the `*` symbol before the variable name, like so:
-
-
-```go
-java`var p *int
-```
-In this example, `p` is a pointer to an `int` variable.
-
-To initialize a pointer variable, you can use the `&` symbol before a variable to get its memory address. For example:
-
+`*T` is the type "pointer to T". `&x` takes the address of `x`, and `*p` reads or writes the value `p` points to (dereferencing).
 
 ```go
-java`var x int = 5
-p = &x
+package main
+
+import "fmt"
+
+func main() {
+	x := 5
+	var p *int = &x // p holds the address of x
+
+	fmt.Println(*p) // 5
+
+	*p = 10        // write through the pointer
+	fmt.Println(x) // 10
+}
 ```
-In this example, `p` is now pointing to the memory address of `x`.
 
-To access the value of the variable that a pointer is pointing to, you can use the `*` symbol before the pointer variable, like so:
+The zero value of a pointer is `nil`. Dereferencing a `nil` pointer panics at runtime, so check for `nil` when a pointer may not be set.
 
+For struct pointers, Go dereferences automatically on field access: if `u` is a `*User`, `u.Name` means `(*u).Name`.
+
+## Passing a pointer to a function
+
+Go passes arguments by value, so a function receives a copy. To change the caller's variable, pass its address:
 
 ```go
-sfmt.Println(*p) // prints "5"
+package main
+
+import "fmt"
+
+func increment(x *int) {
+	*x++
+}
+
+func main() {
+	x := 0
+	fmt.Println("x before increment:", x)
+	increment(&x)
+	fmt.Println("x after increment:", x) // 1
+}
 ```
-This syntax is sometimes referred to as "dereferencing" the pointer.
 
-You can also change the value of the variable that a pointer is pointing to by using the dereferencing syntax on the left side of an assignment, like so:
+Passing a pointer also avoids copying a large struct. Slices, maps and channels already refer to shared underlying data, so you rarely need a pointer to one of those just to avoid a copy.
 
+## Stack, heap and escape analysis
 
-```go
-less`*p = 10
-fmt.Println(x) // prints "10"
+You never call `malloc` or `free` in Go. The compiler decides where each value lives: if it can prove a value isn't used after the function returns, the value goes on the stack and disappears with the stack frame. If the value "escapes" (for example, you return a pointer to it or store it in a package-level variable), it is allocated on the heap and the garbage collector frees it once nothing references it.
+
+So `new(int)` or `&T{}` does not automatically mean a heap allocation. You can see the compiler's decisions with:
+
+```bash
+go build -gcflags=-m .
 ```
-In this example, we're changing the value of `x` by assigning `10` to the memory address that `p` is pointing to.
 
-Pointers can be a bit tricky to work with, but they're a powerful tool for managing memory and optimizing performance in Go.
+## The garbage collector
 
+Go's collector is a concurrent mark-and-sweep collector: it runs alongside your goroutines, marks every object still reachable from goroutine stacks and globals, and reclaims the rest. It doesn't move objects and isn't generational. Two settings control it:
 
-Sure, I can explain memory allocation and garbage collection in Go!
+- `GOGC` (default 100) sets how much the heap may grow, relative to the live heap after the last collection, before the next cycle starts.
+- `GOMEMLIMIT` (Go 1.19+) sets a soft memory limit the runtime tries to stay under.
 
-In Go, memory allocation and garbage collection are handled automatically by the runtime. This means that you don't have to worry about manually allocating or deallocating memory like you would in a lower-level language like C or C++.
-
-When you create a variable in Go, the runtime automatically allocates memory for it. For example:
-
-
-```go
-java`var x int
-```
-In this example, the runtime allocates memory for an `int` variable named `x`.
-
-When you're done with a variable in Go, the runtime automatically frees up the memory that it was using. This process is known as garbage collection.
-
-Go's garbage collector runs automatically in the background, periodically scanning the program's memory and freeing up any memory that's no longer being used by the program.
-
-While this automatic memory management makes programming in Go much easier and less error-prone than in lower-level languages, it can come with some performance overhead. To help mitigate this overhead, Go's garbage collector is designed to be efficient and run quickly.
-
-In addition, Go provides some features that can help you optimize memory usage and minimize garbage collection overhead. For example, you can use pointers to pass large data structures between functions without having to copy the data, or use "pools" to pre-allocate memory for frequently-used data structures.
-
-Overall, Go's memory management system strikes a good balance between ease of use and performance, making it a popular choice for a wide variety of programming tasks.
-
-
-Sure, here's an example CLI application in Go that uses pointers:
-
+This program allocates about 100 MB in 1 KB chunks. Assigning each chunk to a package-level variable forces it onto the heap; each new assignment makes the previous chunk unreachable, so the collector has work to do:
 
 ```go
 package main
 
 import (
- "fmt"
+	"fmt"
+	"runtime"
 )
 
-func increment(x \*int) {
- *x = *x + 1
-}
+var sink *[1024]byte
 
 func main() {
- var x int = 0
- fmt.Println("x before increment:", x)
- increment(&x)
- fmt.Println("x after increment:", x)
+	var before, after runtime.MemStats
+	runtime.ReadMemStats(&before)
+
+	for i := 0; i < 100_000; i++ {
+		sink = new([1024]byte) // escapes to the heap via the package-level variable
+	}
+
+	runtime.ReadMemStats(&after)
+	fmt.Println("GC cycles during loop:", after.NumGC-before.NumGC)
+	fmt.Println("heap allocated (MB):", (after.TotalAlloc-before.TotalAlloc)/1024/1024)
 }
 ```
-In this example, we're defining a function called `increment` that takes a pointer to an `int` variable as an argument. The function dereferences the pointer, increments the value of the variable it's pointing to, and then assigns the new value back to the variable.
 
-In the `main` function, we're creating an `int` variable called `x` and initializing it to `0`. We then call the `increment` function with a pointer to `x` using the `&` operator. After the function call, we print out the value of `x` to see that it has indeed been incremented.
+Run it with `GODEBUG=gctrace=1 go run .` to print a line for each GC cycle, or with `GOGC=off` to see the cycle count drop to zero.
 
-This is a simple example, but it demonstrates the basics of using pointers in Go to modify variables in memory. By passing a pointer to a function instead of the variable itself, we can modify the original variable directly and avoid creating a copy of the data. This can be especially useful when working with large data structures that would be expensive to copy.
+## Reducing GC work
 
+- Allocate less: reuse buffers, and preallocate slices with `make([]T, 0, n)` when you know the size.
+- Use `sync.Pool` to reuse short-lived objects (such as buffers) across requests instead of allocating new ones.
+- Measure first: `go test -bench . -benchmem` and `pprof` heap profiles show where allocations actually happen.
 
-Here's an example CLI application in Go that demonstrates how garbage collection works:
+## Further reading
 
-
-```go
-package main
-
-import (
- "fmt"
-)
-
-func main() {
- for i := 0; i < 10000000; i++ {
- x := new(int)
- *x = i
- }
- fmt.Println("Done")
-}
-```
-In this example, we're creating 10 million `int` variables in a loop using the `new` function. Each variable is assigned a value using the `*` operator and then goes out of scope at the end of the loop.
-
-Since we're not keeping any references to these variables, they become eligible for garbage collection as soon as they go out of scope. The Go runtime periodically scans the program's memory and frees up any memory that's no longer being used by the program, including these variables.
-
-In this example, we're not doing anything with the variables after they're created, so the program doesn't actually do anything useful. However, it does demonstrate how garbage collection works in Go and how the runtime automatically manages memory for us.
-
-
+- [A Guide to the Go Garbage Collector](https://go.dev/doc/gc-guide)
+- [Go FAQ: stack or heap?](https://go.dev/doc/faq#stack_or_heap)
+- [A Tour of Go: Pointers](https://go.dev/tour/moretypes/1)
 
 ## References
 - https://github.com/FriendlyUser/bluey-wordpress-theme

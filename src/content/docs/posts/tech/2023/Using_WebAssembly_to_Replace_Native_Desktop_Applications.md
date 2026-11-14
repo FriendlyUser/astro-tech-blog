@@ -1,60 +1,50 @@
 ---
-title: Using WebAssembly to Replace Native Desktop Applications
+title: "Can WebAssembly replace native desktop apps? Benefits and limits"
 pubDate: "2024-05-16T14:59:44.000Z"
-description: "This article explores the potential of WebAssembly to replace native desktop applications and discusses the benefits and challenges of this approach"
+lastUpdated: 2026-11-14
+description: "How WebAssembly lets native C++, Rust and .NET code run as web apps, what it does well, and where native desktop apps still have the edge."
 tags: []
 layout: "@/templates/BasePost.astro"
 imgSrc: /imgs/2023/other
 ---
-# Using WebAssembly to Replace Native Desktop Applications
 
-## Introduction
+WebAssembly (Wasm) is a portable binary format that C, C++, Rust, C# and other languages compile to. Its main role in "desktop replacement" is not to replace the app shell, but to let an existing native codebase run inside a browser tab, so a product that used to need an installer can ship as a web app instead.
 
-WebAssembly (Wasm) is a binary instruction format designed as a portable target for high-level languages like C, C++, and Rust. It enables the execution of code at near-native speed by taking advantage of common hardware capabilities available on a wide range of platforms. In recent years, WebAssembly has gained significant popularity as a viable alternative to native desktop applications. This article explores the potential of WebAssembly to replace native desktop applications and discusses the benefits and challenges of this approach.
+Figma's editor (a C++ renderer compiled to Wasm) and Adobe's web version of Photoshop (ported with Emscripten) are the usual examples. This post looks at what makes that possible and what still pushes teams towards native.
 
-## Background
+## Why it can work
 
-Traditionally, native desktop applications are developed using platform-specific languages and APIs, such as C++ with the Windows API or Objective-C with Cocoa for macOS. While these technologies provide native performance and access to platform-specific features, they come with the overhead of increased development time, cost, and complexity due to platform fragmentation.
+Native desktop apps are traditionally built per platform: Win32 or WinUI on Windows, AppKit on macOS, GTK or Qt on Linux. Each target adds build, test and release work.
 
-WebAssembly, initially designed to enable high-performance web applications, offers an alternative to native development with its cross-platform and language-agnostic capabilities. By leveraging WebAssembly, developers can write code once and run it across multiple platforms, reducing the need for platform-specific implementations.
+Wasm changes the economics in a few ways:
 
-## Benefits of Using WebAssembly for Desktop Applications
+- **One binary, every browser.** The same `.wasm` file runs in Chrome, Firefox and Safari on any OS. You still test across browsers, but you don't maintain per-OS builds.
+- **Reuse of existing code.** Emscripten compiles C and C++ (including codebases using SDL or OpenGL ES, mapped to WebGL), Rust targets `wasm32-unknown-unknown`, and frameworks like Qt for WebAssembly, Blazor WebAssembly (.NET) and Flutter web can target the browser. Porting is work, but much less than a rewrite.
+- **Performance close to native for compute.** Wasm code is statically typed and compiled to machine code by the browser, which makes it well suited to the hot paths: rendering, image processing, geometry, codecs.
+- **Sandboxing.** A Wasm module can only reach its own memory and the functions the host gives it. Users can open the app without trusting an installer.
+- **No install or update step.** Deploying a new version means updating files on a server.
 
-### 1. Cross-Platform Compatibility
+The UI usually stays in HTML, CSS and JavaScript (or a canvas the Wasm code draws into), with Wasm handling the heavy lifting.
 
-WebAssembly is designed to be a portable target for the compilation of high-level languages. This means that the same WebAssembly binary can be executed across a wide range of platforms, including Windows, macOS, and Linux. This cross-platform compatibility reduces the need for multiple codebases, simplifying development and maintenance.
+## Where native still wins
 
-### 2. Performance
+- **Platform APIs.** Wasm has no direct access to the OS. In the browser, everything goes through web APIs called from JavaScript. Some desktop features are missing or Chromium-only (for example, broad file system access via the File System Access API), and things like system tray icons, global shortcuts, or talking to arbitrary hardware aren't available at all.
+- **Threads and memory.** Wasm threads need `SharedArrayBuffer`, which browsers only enable on cross-origin-isolated pages. Standard 32-bit Wasm is limited to 4 GiB of linear memory, which matters for large documents or datasets.
+- **Startup size.** A large C++ app can compile to a module tens of megabytes in size, which must be downloaded and compiled before the app starts. Caching helps on repeat visits, not the first one.
+- **Tooling.** Debugging Wasm in browser DevTools works (Chrome can show C/C++ source via its DWARF debugging extension), but it's less polished than a native debugger, and profiling across the JS/Wasm boundary takes effort.
+- **Offline and OS integration.** Progressive Web Apps can be installed and work offline, but file associations, background work and OS integration vary by browser and platform.
 
-WebAssembly is designed to be fast, offering near-native performance. This is achieved through a compact binary format, which enables fast decoding and execution. Additionally, WebAssembly employs a structured stack machine with a single-pass compiler that allows for efficient Just-In-Time (JIT) compilation and optimization.
+## Outside the browser
 
-### 3. Language Agnosticism
+Wasm also runs outside browsers. Runtimes such as [Wasmtime](https://wasmtime.dev/) and [Wasmer](https://wasmer.io/) execute Wasm modules on the command line or embedded in other programs, using WASI for file and network access. WASI does not include a GUI API, though, so for a desktop app with a window you would still pair Wasm with a native or webview shell (Electron or Tauri, for example) rather than run it standalone.
 
-WebAssembly is not tied to a specific programming language, making it possible to compile code written in various languages, such as C, C++, Rust, and others. This allows developers to choose the most suitable language for their projects and leverage existing codebases and libraries.
+## When to consider it
 
-### 4. Security
+Wasm is a good fit when you have a compute-heavy native core you want to put on the web, and the app's UI can live in a browser. It is a poor fit when the app depends on deep OS integration, very large memory, or specific hardware. In those cases, a cross-platform native toolkit (Qt, Flutter desktop, .NET MAUI) or a webview shell is the more realistic way to cut per-platform work.
 
-WebAssembly provides a sandboxed execution environment, which isolates the application from the underlying system. This ensures that potentially harmful code cannot access the host system, providing a secure environment for running untrusted code.
+## Further reading
 
-### 5. Integration with Web Technologies
-
-WebAssembly can be tightly integrated with existing web technologies, such as HTML, CSS, and JavaScript. This enables the creation of hybrid desktop applications that combine the performance of WebAssembly with the flexibility and ease of use of web technologies.
-
-## Challenges of Using WebAssembly for Desktop Applications
-
-### 1. Limited Access to Native APIs
-
-While WebAssembly offers a cross-platform solution, it does not provide direct access to platform-specific APIs. This means that developers may still need to write native code or use third-party libraries to access certain platform-specific features.
-
-### 2. Tooling and Ecosystem
-
-Although the WebAssembly ecosystem is growing rapidly, it is still relatively young compared to established native development ecosystems. This may lead to a lack of mature tools, libraries, and frameworks, which could impact development time and effort.
-
-### 3. Browser-based Execution
-
-WebAssembly is currently executed in a browser environment, which may not provide the same level of performance and integration as native applications. However, projects like WebAssembly System Interface (WASI) and standalone WebAssembly runtimes, such as Wasmer and Wasmtime, are working to improve the execution environment for WebAssembly outside the browser.
-
-## Conclusion
-
-WebAssembly has the potential to revolutionize the way desktop applications are developed, offering significant benefits, such as cross-platform compatibility, performance, and security. However, there are still challenges to be addressed, such as limited access to native APIs and a developing ecosystem. As the WebAssembly ecosystem matures and new tools and frameworks emerge, it is expected that WebAssembly will become an increasingly attractive alternative to native desktop application development.
-
+- [MDN: WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly)
+- [Emscripten documentation](https://emscripten.org/docs/)
+- [web.dev: Photoshop's journey to the web](https://web.dev/articles/ps-on-the-web)
+- [WASI](https://wasi.dev/)
