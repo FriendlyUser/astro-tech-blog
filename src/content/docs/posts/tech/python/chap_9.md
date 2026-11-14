@@ -5,7 +5,7 @@ description: Chapter 9 of my intro to Python book covers HTTP, HTML, CSS and Jav
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1938616315.png
+imgSrc: /imgs/2023/1938616315.webp
 
 ---
 This chapter covers the basics you need before writing a web app in Python: how browsers and servers talk to each other, what HTML, CSS and JavaScript each do, which Python frameworks exist, and how to build, run and containerise a small Flask app.

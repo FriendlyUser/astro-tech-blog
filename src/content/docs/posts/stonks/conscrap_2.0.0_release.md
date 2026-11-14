@@ -7,7 +7,7 @@ lastUpdated: 2026-11-14
 tags: ["dotnet", "stonks", "selenium", "csharp"]
 projects: ["conscrap"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/conscrap200.png'
+imgSrc: '/imgs/2023/conscrap200.webp'
 imgAlt: 'Conscrap'
 ---
 

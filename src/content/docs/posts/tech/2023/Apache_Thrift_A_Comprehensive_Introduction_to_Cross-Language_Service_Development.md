@@ -1,6 +1,6 @@
 ---
 description: "Define a service in Thrift IDL, generate Java and Python code, and call a Java Thrift server from a Python client, with notes on protocols and versions."
-imgSrc: /imgs/2023/other
+imgSrc: "/imgs/covers/apache-thrift-a-comprehensive-introduction-to-cross-language-service-development.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-09T05:19:51.000Z'
 lastUpdated: 2026-11-14

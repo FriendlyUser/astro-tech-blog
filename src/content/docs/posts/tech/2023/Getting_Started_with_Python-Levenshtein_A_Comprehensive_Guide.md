@@ -1,6 +1,6 @@
 ---
 description: How to install the Levenshtein package (formerly python-Levenshtein) and use distance, ratio, Jaro-Winkler and editops to compare strings in Python.
-imgSrc: /imgs/2023/3708253319.png
+imgSrc: /imgs/2023/3708253319.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-08T13:34:49.000Z'
 lastUpdated: 2026-11-14

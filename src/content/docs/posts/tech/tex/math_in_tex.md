@@ -5,7 +5,7 @@ description: "How to write equations in LaTeX: inline and display math, numberin
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1710982917.png
+imgSrc: /imgs/2023/1710982917.webp
 ---
 
 LaTeX is the standard tool for documents with a lot of mathematics: you write equations as markup and the engine handles spacing, sizing and numbering. Almost everything below needs the `amsmath` package, so load it (and usually `amssymb` and `mathtools`) in every document that contains math.

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Install the POCO C++ Libraries with vcpkg or Conan, link them with CMake, and write an HTTP GET client, a threaded worker, and a recursive directory listing."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2465919888.png
+imgSrc: /imgs/2023/2465919888.webp
 ---
 
 POCO (Portable Components) is a set of open-source C++ libraries for networked, cross-platform applications. It's split into modules you link separately: `Foundation` (threads, streams, file system, logging), `Net` (sockets, HTTP client and server), `NetSSL` (TLS), `Util` (configuration, command-line apps), plus `JSON`, `XML`, `Data` (databases) and others. It runs on Windows, Linux and macOS and is released under the Boost Software License.

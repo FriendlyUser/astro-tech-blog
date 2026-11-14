@@ -5,7 +5,7 @@ description: How to share a LaTeX project with co-authors using Git, Overleaf, o
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2469646353.png
+imgSrc: /imgs/2023/2469646353.webp
 ---
 
 LaTeX source is plain text, so co-authoring a paper or thesis works much like working on code. The two usual setups are a Git repository that everyone edits locally, or a shared Overleaf project edited in the browser. Overleaf can also sync with Git, so a team can mix the two.

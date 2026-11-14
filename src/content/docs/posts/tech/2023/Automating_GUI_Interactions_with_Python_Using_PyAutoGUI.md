@@ -1,6 +1,6 @@
 ---
 description: "Control the mouse and keyboard from Python with PyAutoGUI: moving, clicking, typing, hotkeys, screenshots and image matching, plus a Notepad script."
-imgSrc: /imgs/2023/226878303.png
+imgSrc: /imgs/2023/226878303.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-09-17T00:24:45.000Z'
 lastUpdated: 2026-11-14

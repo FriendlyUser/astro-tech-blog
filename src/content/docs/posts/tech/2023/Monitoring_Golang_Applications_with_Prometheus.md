@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Instrument a Go HTTP server with client_golang (request count, latency histogram, in-flight gauge), scrape it with Prometheus and query it in Grafana."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4264430676.png
+imgSrc: /imgs/2023/4264430676.webp
 ---
 
 Prometheus is an open-source monitoring system that periodically scrapes metrics over HTTP and stores them as time series you can query with PromQL. For a Go service you expose a `/metrics` endpoint with the official `client_golang` library, point Prometheus at it, and build dashboards in Grafana.

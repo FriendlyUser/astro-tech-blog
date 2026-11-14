@@ -6,7 +6,7 @@ pubDate: Friday, 20 January 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["spacy", "gradio", "python"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 20.50.12 - big topology graph with shapes with paper straws.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-12-20-50-12-big-topology-graph-with-shapes-with-paper-straws.webp'
 imgAlt: 'rbc stock analyzer'
 ---
 

@@ -5,7 +5,7 @@ description: A small Go program that uses bitfield/script to gather HTML and PDF
 pubDate: Fri, 7 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3194903180.png"
+imgSrc: "/imgs/2023/3194903180.webp"
 ---
 
 I wanted to host my old university MATLAB assignments on GitHub Pages. The repository already had the published reports as HTML and PDF files scattered across folders, so all the deploy needed was:

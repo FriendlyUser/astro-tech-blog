@@ -1,7 +1,6 @@
 ---
 description: 'Install Flask 3, write a small app with HTML and JSON routes, run it with the flask CLI, and see which extensions add databases, forms and logins.'
-imgSrc: /imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the
-  window at a tree.png
+imgSrc: "/imgs/2023/teddy-bear-couch-window.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-31T19:30:20.000Z'
 lastUpdated: 2026-11-14

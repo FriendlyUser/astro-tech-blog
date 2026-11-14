@@ -5,7 +5,7 @@ description: A Python script that walks a folder of LaTeX diagram sources and as
 pubDate: Fri, 7 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1220160824_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/1220160824-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 ---
 
 :::caution

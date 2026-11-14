@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: How to use the bits-and-blooms/bitset package in Go to set, test, count and iterate bits, and to take unions and intersections of sets.
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 :::caution

@@ -5,7 +5,7 @@ description: A small PyQt6 window that loads a YAML post config, lets you edit i
 pubDate: Fri, 21 July 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2890612218.png
+imgSrc: /imgs/2023/2890612218.webp
 ---
 
 Qt is a C++ framework for building desktop GUIs, and PyQt6 is its Python binding. I wanted a small form for editing the YAML files I use to generate blog posts, so I didn't have to hand-edit them. Each file looks like this:

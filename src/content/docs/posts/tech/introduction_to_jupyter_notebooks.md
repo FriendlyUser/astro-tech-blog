@@ -5,7 +5,7 @@ description: What a Jupyter notebook is, how to install and launch JupyterLab wi
 pubDate: Fri, 7 Feburary 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.png"
+imgSrc: "/imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.webp"
 ---
 
 A Jupyter notebook is a document made of cells. Code cells run in a live interpreter (the *kernel*) and show their output (text, tables, plots) directly underneath; Markdown cells hold notes, headings and LaTeX equations. That mix makes notebooks popular for data exploration, teaching and sharing an analysis along with its results.

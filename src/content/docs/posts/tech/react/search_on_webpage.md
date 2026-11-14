@@ -5,7 +5,7 @@ description: Working examples of site search with Algolia, Fuse.js in React, Goo
 pubDate: Fri, 15 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/481242631.png
+imgSrc: /imgs/2023/481242631.webp
 ---
 
 There are roughly three ways to add search to a site: send queries to a hosted service (Algolia, Google), search on your own server (a database query), or ship an index to the browser and search there (Fuse.js, Pagefind). Which one fits depends on how much content you have, whether it changes often, and whether you run a backend at all.

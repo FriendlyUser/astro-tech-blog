@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What Astrodon was, how its webview windows and Deno messaging worked, why it no longer runs, and what to use for Deno desktop apps instead."
 tags: ["deno", "typescript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2892583015.png
+imgSrc: /imgs/2023/2892583015.webp
 ---
 
 :::caution

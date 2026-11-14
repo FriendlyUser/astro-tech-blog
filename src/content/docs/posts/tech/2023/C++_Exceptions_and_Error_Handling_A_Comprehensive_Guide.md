@@ -1,7 +1,6 @@
 ---
 description: 'How C++ exceptions work: the standard exception hierarchy, throwing and catching, custom exception types, RAII, noexcept, and when std::expected fits better.'
-imgSrc: /imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the
-  window at a tree.png
+imgSrc: "/imgs/2023/teddy-bear-couch-window.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-13T03:27:04.000Z'
 lastUpdated: 2026-11-14

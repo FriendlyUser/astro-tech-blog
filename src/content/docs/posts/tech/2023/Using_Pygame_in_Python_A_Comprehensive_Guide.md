@@ -1,6 +1,6 @@
 ---
 description: Install Pygame, set up a game loop with a fixed frame rate, handle keyboard input, and move a sprite around the screen, in one runnable script.
-imgSrc: /imgs/2023/262205434.png
+imgSrc: /imgs/2023/262205434.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-18T07:09:48.000Z'
 lastUpdated: 2026-11-14

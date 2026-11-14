@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Rust's Iterator trait works, how lazy adapters like map and filter chain into consumers like sum, how to implement a custom iterator, and common pitfalls."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1452718796.png
+imgSrc: /imgs/2023/1452718796.webp
 ---
 
 An iterator in Rust is any type that implements the `Iterator` trait. Iterators are lazy: adapters such as `map` and `filter` build up a pipeline, and nothing runs until a consumer such as `sum`, `collect`, or a `for` loop pulls values through it. This post covers the trait, how chains are evaluated, and how to write your own iterator.

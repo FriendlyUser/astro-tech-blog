@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Dagger's components, modules, @Inject constructors and scopes fit together, with a working Java example for an Android app and when to use Hilt instead."
 tags: ["android", "java", "dagger"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4067359065.png
+imgSrc: /imgs/2023/4067359065.webp
 ---
 
 :::note[Use Hilt for new Android apps]

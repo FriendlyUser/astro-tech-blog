@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Rust's String and &str differ, the standard methods for building and splitting text, why len() counts bytes, and matching with the regex crate."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1693067648.png
+imgSrc: /imgs/2023/1693067648.webp
 ---
 
 Rust has two everyday string types and a small set of standard-library methods that cover most text work. When you need pattern matching, the `regex` crate fills the gap. This post walks through both, with examples you can paste into `cargo run`.

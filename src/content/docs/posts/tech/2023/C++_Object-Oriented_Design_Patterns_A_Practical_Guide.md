@@ -1,7 +1,7 @@
 ---
 title: "Classic design patterns in modern C++: Singleton, factories, Builder, Adapter, Composite and Decorator"
 description: "Compilable C++17 examples of nine Gang of Four creational and structural patterns, using std::unique_ptr for ownership instead of raw new and delete."
-imgSrc: /imgs/2023/other
+imgSrc: "/imgs/covers/c-object-oriented-design-patterns-a-practical-guide.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-17T16:45:07.000Z'
 lastUpdated: 2026-11-14

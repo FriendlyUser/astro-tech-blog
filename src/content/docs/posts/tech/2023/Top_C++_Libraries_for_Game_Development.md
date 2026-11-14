@@ -1,6 +1,6 @@
 ---
 description: "Graphics, physics, audio and networking libraries for C++ games: OpenGL, Vulkan, Ogre, Bullet, Jolt, Box2D, OpenAL Soft, FMOD, ENet and RakNet, with their current status."
-imgSrc: /imgs/2023/244959930.png
+imgSrc: /imgs/2023/244959930.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-26T06:45:23.000Z'
 lastUpdated: 2026-11-14

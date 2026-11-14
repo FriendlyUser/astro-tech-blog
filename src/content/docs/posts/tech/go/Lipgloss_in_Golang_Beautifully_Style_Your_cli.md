@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to style and lay out terminal output in Go with Charm's Lip Gloss v2: colors, bold text, fixed-width bars and stacking blocks to fit the terminal width."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 Lip Gloss is a Go library from Charm for styling terminal text. You describe a style once (colors, bold, padding, borders, width, alignment) and call `Render` on strings to get ANSI-styled output. It is the styling layer used by Bubble Tea apps, but it works fine in a plain CLI too.

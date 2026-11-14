@@ -1,7 +1,7 @@
 ---
 description: Use Dapper to run SQL from C# and map rows to objects, with a runnable SQLite
   example covering queries, parameters, inserts and transactions.
-imgSrc: /imgs/2023/bear_book_1.png
+imgSrc: /imgs/2023/bear-book-1.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-15T13:51:04.000Z'
 lastUpdated: 2026-11-14

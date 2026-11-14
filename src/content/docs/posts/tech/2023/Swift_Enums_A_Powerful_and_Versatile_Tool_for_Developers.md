@@ -1,6 +1,6 @@
 ---
 description: How Swift enums work, covering basic cases, associated values, raw values, switch pattern matching, CaseIterable, and adding methods to an enum.
-imgSrc: /imgs/2023/872471039.png
+imgSrc: /imgs/2023/872471039.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-27T17:08:22.000Z'
 lastUpdated: 2026-11-14

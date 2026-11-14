@@ -5,7 +5,7 @@ alt: my first blog post
 tags: ["dotnet","git"]
 layout: '@/templates/BasePost.astro'
 pubDate: Saturday, 30 April 2022 13:00:00 GMT
-imgSrc: '/imgs/2023/bear_book_2.png'
+imgSrc: '/imgs/2023/bear-book-2.webp'
 ---
 
 

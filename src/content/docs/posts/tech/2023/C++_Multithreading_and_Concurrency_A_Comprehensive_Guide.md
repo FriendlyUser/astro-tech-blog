@@ -1,7 +1,7 @@
 ---
 title: "C++ multithreading basics: std::thread, mutexes, condition variables and std::async"
 description: "Starting threads in standard C++, protecting shared data with mutexes and atomics, a working producer-consumer queue, and std::async and std::jthread."
-imgSrc: /imgs/2023/4181036141.png
+imgSrc: /imgs/2023/4181036141.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-09-17T19:14:17.000Z'
 lastUpdated: 2026-11-14

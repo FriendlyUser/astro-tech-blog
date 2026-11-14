@@ -5,7 +5,7 @@ description: Use the IPython shell for quick arithmetic, then write a small func
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4039349639.png
+imgSrc: /imgs/2023/4039349639.webp
 ---
 IPython is an interactive Python shell with tab completion, syntax highlighting, command history and numbered input/output prompts. That makes it a handy calculator: type an expression, press Enter, and the result appears straight away. This post uses it for basic arithmetic and then for a slightly more realistic job, calculating income tax across progressive brackets.
 

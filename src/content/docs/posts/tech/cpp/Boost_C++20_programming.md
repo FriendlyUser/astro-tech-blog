@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to build and link Boost for a C++20 project, which Boost libraries still matter next to the standard library, and working Asio and Beast examples."
 tags: ["C++", "Boost", "C++20", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2024/leveraging-boost-cpp20.png
+imgSrc: "/imgs/covers/boost-c-20-programming.webp"
 ---
 
 Boost is a collection of peer-reviewed, portable C++ libraries. A lot of today's standard library started there (`shared_ptr`, `<regex>`, `<filesystem>`, `<chrono>`, `<thread>`), but C++20 still has no networking, so for sockets and HTTP Boost.Asio and Boost.Beast are still the usual choice. This post covers getting Boost into a C++20 build, then walks through an Asio server written with C++20 coroutines and a Beast HTTP client.

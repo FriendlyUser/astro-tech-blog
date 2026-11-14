@@ -1,6 +1,6 @@
 ---
 description: 'What the Spring Framework does: the IoC container and dependency injection, its main modules, a runnable example, and how Spring Boot fits in.'
-imgSrc: /imgs/2023/2679960937.png
+imgSrc: /imgs/2023/2679960937.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-05T04:26:36.000Z'
 lastUpdated: 2026-11-14

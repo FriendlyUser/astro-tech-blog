@@ -1,6 +1,6 @@
 ---
 description: "What Hibernate ORM does and how to use it today: annotated entities, a SessionFactory, persisting and querying with HQL in Hibernate 7, plus the old APIs that are now gone."
-imgSrc: /imgs/2023/251520990.png
+imgSrc: /imgs/2023/251520990.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-06T05:08:26.000Z'
 lastUpdated: 2026-11-14

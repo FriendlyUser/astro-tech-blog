@@ -1,6 +1,6 @@
 ---
 description: "What .NET (formerly .NET Core) is made of, how releases and support work, how to build and publish an app, and which app types it supports."
-imgSrc: /imgs/2023/1938616315.png
+imgSrc: /imgs/2023/1938616315.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-20T11:47:23.000Z'
 lastUpdated: 2026-11-14

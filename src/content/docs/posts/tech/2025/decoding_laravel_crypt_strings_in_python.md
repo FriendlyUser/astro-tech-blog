@@ -5,7 +5,7 @@ tags: ["Laravel", "Cryptography", "Python", "AES-256-CBC", "HMAC-SHA256", "pycry
 pubDate: "2025-10-17T19:17:25.000Z"
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
+imgSrc: "/imgs/2023/3267094508-short-ruler-in-the-grass.webp"
 ---
 
 Laravel's `Crypt` facade encrypts values with your application's `APP_KEY`. If you're migrating data out of a Laravel app, auditing a database, or reading encrypted columns from a non-PHP service, you need to reproduce `Crypt::decryptString()` yourself. This post walks through the payload format and a Python function that verifies and decrypts it with `pycryptodome`.

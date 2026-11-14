@@ -5,7 +5,7 @@ description: How VS Code user, workspace and language-specific settings work, wh
 pubDate: Fri, 22 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1834084038_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/1834084038-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 ---
 
 Everything you change in VS Code's Settings screen ends up as a key in a JSON file. Knowing where those files are and how they override each other lets you keep per-project settings in git, set different rules for different languages, and copy your setup between machines.

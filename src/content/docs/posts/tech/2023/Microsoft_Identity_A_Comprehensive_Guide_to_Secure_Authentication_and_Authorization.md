@@ -1,6 +1,6 @@
 ---
 description: "An overview of the Microsoft identity platform (Entra ID, MSAL, External ID) and how to protect an ASP.NET Core API and call it with MSAL.NET."
-imgSrc: /imgs/2023/359936451.png
+imgSrc: /imgs/2023/359936451.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-10T04:44:13.000Z'
 lastUpdated: 2026-11-14

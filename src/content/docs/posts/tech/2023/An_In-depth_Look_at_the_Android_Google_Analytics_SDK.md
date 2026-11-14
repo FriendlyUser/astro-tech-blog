@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What Google Analytics v4 SDK code for Android looks like, why it no longer works, and how to replace trackers and hits with Google Analytics for Firebase."
 tags: ["android", "kotlin"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/118660664.png
+imgSrc: /imgs/2023/118660664.webp
 ---
 
 :::caution

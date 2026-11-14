@@ -5,7 +5,7 @@ pubDate: Saturday, 18 August 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["js", "chatbot", "react"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/3793215953.png'
+imgSrc: '/imgs/2023/3793215953.webp'
 ---
 
 [react-simple-chatbot](https://github.com/LucasBassetti/react-simple-chatbot) renders a chat window from a list of steps. There's no language model behind it: each step is either a bot message or a set of buttons, and its `trigger` names the step to show next. That's enough for a guided tour like this one, which walks through a short summary of my background.

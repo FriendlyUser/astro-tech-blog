@@ -5,7 +5,7 @@ description: A linear congruential generator and a simplified-fraction Rational 
 pubDate: Fri, 21 March 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2617761522.png
+imgSrc: /imgs/2023/2617761522.webp
 ---
 
 A linear congruential generator (LCG) produces pseudorandom numbers with one recurrence:

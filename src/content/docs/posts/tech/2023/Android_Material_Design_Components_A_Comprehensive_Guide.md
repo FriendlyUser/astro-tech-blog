@@ -1,6 +1,6 @@
 ---
 description: "Set up Material Components for Android (Views) with a Material 3 theme, then use buttons, text fields, cards, app bars, navigation views, and snackbars."
-imgSrc: /imgs/2023/654074938.png
+imgSrc: /imgs/2023/654074938.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-29T08:24:55.000Z'
 lastUpdated: 2026-11-14

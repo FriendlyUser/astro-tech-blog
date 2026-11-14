@@ -5,7 +5,7 @@ description: A small menu-driven CLI that adds, lists, updates and deletes conta
 pubDate: Fri, 14 September 2025
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 ---
 
 A contact book is a good first database project: one table, four operations (create, read, update, delete), and a text menu. Python ships with the `sqlite3` module, so there is nothing to install. SQLite stores everything in a single local file.

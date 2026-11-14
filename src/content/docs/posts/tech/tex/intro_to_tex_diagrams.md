@@ -5,7 +5,7 @@ pubDate: Saturday, 16 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["latex"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 LaTeX is good for graphics as well as text. With TikZ, a LaTeX package for drawing with commands, you can produce flowcharts, block diagrams, circuits and charts that use the same fonts as the rest of your document and scale without blurring.

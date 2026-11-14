@@ -4,6 +4,7 @@ description: "How the YellowSheet free-demo email campaign was rebuilt as email-
 tags: ["Claude Code", "Email", "HTML", "PHP", "AI", "Mailpit"]
 pubDate: "2023-11-01T16:00:00.000Z"
 lastUpdated: 2026-11-14
+imgSrc: "/imgs/covers/email-templates-with-claude-code.webp"
 ---
 
 I rebuilt the YellowSheet free-demo email campaign. The old emails were plain, the schedule had a step nobody needed, and the sending code dates from the `mysql_*` era of PHP. I used Claude Code to turn the new email designs into HTML that survives real email clients, then wired the result into the existing cron and signup code myself.

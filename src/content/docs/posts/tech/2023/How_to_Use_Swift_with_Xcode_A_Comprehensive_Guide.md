@@ -1,6 +1,6 @@
 ---
 description: Create an iOS app project in Xcode, find your way around the workspace, connect a storyboard button and label to Swift code, then run and debug it.
-imgSrc: /imgs/2023/3170249337.png
+imgSrc: /imgs/2023/3170249337.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-31T16:56:30.000Z'
 lastUpdated: 2026-11-14

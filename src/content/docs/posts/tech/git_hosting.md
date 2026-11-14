@@ -5,7 +5,7 @@ description: How GitHub, GitLab and Bitbucket differ on CI/CD, self-hosting, lic
 pubDate: Fri, 22 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2677360986.png
+imgSrc: /imgs/2023/2677360986.webp
 ---
 
 GitHub, GitLab and Bitbucket all host Git repositories with pull/merge requests, code review, issues and built-in CI/CD, and all three offer free plans with private repositories. The basics are close enough that the choice usually comes down to three things: where the people you work with already are, whether you need to run it on your own servers, and which other tools it has to plug into.

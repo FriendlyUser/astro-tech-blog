@@ -6,7 +6,7 @@ pubDate: Friday, 30 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["git", "bash"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-17 09.01.21 - two tags and lines between them.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-17-09-01-21-two-tags-and-lines-between-them.webp'
 imgAlt: 'two tags and lines'
 ---
 

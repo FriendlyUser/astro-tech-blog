@@ -1,6 +1,6 @@
 ---
 description: Swift concurrency with working examples of async/await, actors, task groups, and cancellation, including a timeout helper and common gotchas.
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-05T03:10:42.000Z'
 lastUpdated: 2026-11-14

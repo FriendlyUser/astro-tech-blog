@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to load a .wasm module in the browser, call its exports, pass JavaScript functions in as imports, and decide whether moving code to WebAssembly will help."
 tags: ["javascript", "rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2734189697_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/2734189697-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 ---
 
 WebAssembly (Wasm) is a binary instruction format that browsers (and runtimes like Node.js) can run alongside JavaScript. You compile C, C++, Rust or another language to a `.wasm` module and call its functions from JS. The usual reason to do this is CPU-heavy work, such as image or audio processing, compression, parsing or simulation, or reusing an existing native library on the web.

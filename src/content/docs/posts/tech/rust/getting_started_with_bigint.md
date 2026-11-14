@@ -5,7 +5,7 @@ description: How to create, parse, compare and do arithmetic on arbitrarily larg
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3563897667.png
+imgSrc: /imgs/2023/3563897667.webp
 ---
 
 Rust's primitive integers top out at 128 bits (`i128`/`u128`), and overflowing them panics in debug builds and wraps in release builds. When you need integers of any size, such as for cryptography, exact factorials, or parsing huge numeric strings, the standard crate is [`num-bigint`](https://crates.io/crates/num-bigint). It provides `BigInt` (signed) and `BigUint` (unsigned), which grow their storage as needed.

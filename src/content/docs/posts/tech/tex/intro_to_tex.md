@@ -5,7 +5,7 @@ description: How to install a LaTeX distribution and editor, how a .tex document
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2291827528.png
+imgSrc: /imgs/2023/2291827528.webp
 ---
 
 LaTeX is a document preparation system: you write plain-text source with markup commands, and a TeX engine turns it into a typeset PDF. It is the standard tool for papers, theses and anything with a lot of mathematics, because its equation typesetting, cross-references and bibliographies are much better than what a word processor gives you.

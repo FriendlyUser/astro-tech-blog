@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Build a small Go command-line tool with add and multiply subcommands using the google/subcommands package, including per-command flags and help output."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 Subcommands (`git commit`, `go build`) let one binary group related actions, each with its own flags and help text. Go's standard `flag` package parses flags but has no notion of subcommands. [`github.com/google/subcommands`](https://github.com/google/subcommands) is a small package that adds them on top of `flag`: each subcommand is a type that implements a five-method interface, and the package handles dispatch and `help`.

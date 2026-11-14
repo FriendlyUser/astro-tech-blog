@@ -5,7 +5,7 @@ description: Fetch a page with reqwest, pull out elements with CSS selectors usi
 pubDate: Fri, 7 July 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 Web scraping means downloading a page's HTML and extracting the parts you need. In Rust that takes two crates: [`reqwest`](https://crates.io/crates/reqwest) to make the HTTP request and [`scraper`](https://crates.io/crates/scraper) to parse the HTML and query it with CSS selectors. `scraper` is built on Servo's `html5ever` parser and `selectors` crate, so it handles messy real-world HTML the way a browser would.

@@ -5,7 +5,7 @@ description: "Animate Vue 3 components with CSS keyframes, toggle animations wit
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 
 Vue doesn't need an animation library for most UI motion. Plain CSS `@keyframes` and transitions handle the animation itself, Vue's class bindings decide when it runs, and the built-in `<Transition>` and `<TransitionGroup>` components add classes at the right moments when elements enter or leave the DOM. The examples use Vue 3 single-file components with `<script setup>`.

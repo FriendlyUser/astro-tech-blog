@@ -5,7 +5,7 @@ description: "Fixed-size arrays, slices that share a backing array, and maps, wi
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1031426508.png
+imgSrc: /imgs/2023/1031426508.webp
 ---
 Go has three built-in collection types: arrays (fixed size), slices (a variable-length view onto an array), and maps (hash tables). In practice you'll use slices and maps almost all the time, but slices only make sense once you know how arrays work underneath them.
 

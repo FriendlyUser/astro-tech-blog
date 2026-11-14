@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Install the yaydl video downloader, use its command-line options, and call it from Rust with std::process::Command, since it has no library API."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/336369522.png
+imgSrc: /imgs/2023/336369522.webp
 ---
 
 :::caution

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Create a Fresh 2 app in Deno and add a file-based route with a data handler, a JSON API route and an interactive Preact island."
 tags: ["deno", "typescript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3053072516.png
+imgSrc: /imgs/2023/3053072516.webp
 ---
 
 [Fresh](https://usefresh.dev/) is Deno's web framework. It renders pages on the server with Preact, routes requests based on the files in `routes/`, and ships JavaScript to the browser only for the components you mark as "islands". By default a page is plain HTML with no client-side JS.

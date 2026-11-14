@@ -4,7 +4,7 @@ title: Scraping HTML tables with pandas read_html and BeautifulSoup
 description: Pull an HTML table into a DataFrame with pandas.read_html, pick the right table with match=, and use BeautifulSoup for data held in class attributes.
 pubDate: Mon, 20 November 2023
 lastUpdated: 2026-11-14
-imgSrc: /imgs/2023/4046799380_Scrapping_oil_off_a_painting.png
+imgSrc: /imgs/2023/4046799380-scrapping-oil-off-a-painting.webp
 layout: '@/templates/BasePost.astro'
 ---
 

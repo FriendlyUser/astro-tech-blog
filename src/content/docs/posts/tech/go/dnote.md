@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to install the Dnote CLI and use books, add, view, find and edit to keep short notes about Go (or anything else) from your terminal."
 tags: ["dnote", "go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [Dnote](https://github.com/dnote/dnote) is a small command-line notebook written in Go. You

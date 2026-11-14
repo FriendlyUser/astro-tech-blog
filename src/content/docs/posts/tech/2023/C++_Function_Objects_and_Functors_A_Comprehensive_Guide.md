@@ -1,6 +1,6 @@
 ---
 description: How C++ function objects work, why algorithms like std::sort can inline them, and how to use the standard functors and lambdas in their place.
-imgSrc: /imgs/2023/248665811.png
+imgSrc: /imgs/2023/248665811.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-03T21:43:43.000Z'
 lastUpdated: 2026-11-14

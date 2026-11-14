@@ -5,7 +5,7 @@ description: Write React function components, manage state and effects with hook
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3281011769.png
+imgSrc: "/imgs/covers/react-functional-components.webp"
 ---
 
 A function component is a JavaScript function that takes props and returns JSX. Since hooks arrived in React 16.8, function components can hold state and run side effects, so they are the default way to write React today. Class components still work, but the [React docs](https://react.dev/learn) teach function components only.

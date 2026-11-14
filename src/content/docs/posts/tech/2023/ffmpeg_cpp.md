@@ -1,6 +1,6 @@
 ---
 description: A complete C++ program that uses FFmpeg's libavformat and libavcodec to decode a video stream and re-encode it to H.264 in an MP4 file.
-imgSrc: /imgs/2023/1047200128.png
+imgSrc: /imgs/2023/1047200128.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-05T01:45:04.000Z'
 lastUpdated: 2026-11-14

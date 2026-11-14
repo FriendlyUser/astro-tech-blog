@@ -4,7 +4,7 @@ title: Filtering Reddit posts with Go and sending matches to Discord
 description: How my finreddit project pulls new posts from several subreddits with the Reddit API, filters them by score, flair and keywords, and posts matches to a Discord webhook.
 pubDate: Mon, 7 November 2023
 lastUpdated: 2026-11-14
-imgSrc: "/imgs/2023/3493235193_A_dream_of_a_distant_galaxy__concept_art.png"
+imgSrc: "/imgs/2023/3493235193-a-dream-of-a-distant-galaxy-concept-art.webp"
 projects: ["finreddit"]
 layout: '@/templates/BasePost.astro'
 ---

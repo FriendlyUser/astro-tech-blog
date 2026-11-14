@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use gosuri/uilive to redraw lines in place in a Go CLI: a hand-rolled progress bar, multi-line status output, and printing logs above it."
 tags: ["uilive", "go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [`uilive`](https://github.com/gosuri/uilive) lets a Go program overwrite its previous terminal output instead of appending to it, which is what you want for progress counters, status lines, and spinners. It is the rendering layer underneath [`uiprogress`](https://github.com/gosuri/uiprogress).

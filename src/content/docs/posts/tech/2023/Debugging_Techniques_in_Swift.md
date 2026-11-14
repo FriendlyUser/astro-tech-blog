@@ -1,6 +1,6 @@
 ---
 description: How to debug Swift code in Xcode with breakpoints, LLDB's p, po and v commands, print and Logger output, and the Address and Thread Sanitizers.
-imgSrc: /imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.png
+imgSrc: /imgs/2023/45c8f451-5ee8-4f76-8769-691be0cfc6c2.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-23T01:41:19.000Z'
 lastUpdated: 2026-11-14

@@ -4,7 +4,7 @@ title: 'Natural gas futures in Python: quarterly averages and moving averages wi
 description: Download Henry Hub natural gas futures with yfinance, compute quarterly and rolling averages in pandas, and use them to sanity-check a gas producer.
 pubDate: Mon, 27 September 2023
 lastUpdated: 2026-11-14
-imgSrc: "/imgs/2023/2223533571.png"
+imgSrc: "/imgs/2023/2223533571.webp"
 layout: '@/templates/BasePost.astro'
 ---
 

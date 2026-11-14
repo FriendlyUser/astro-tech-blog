@@ -1,6 +1,6 @@
 ---
 description: "How Protocol Buffers work: define a .proto schema, generate Python code with protoc, serialize and parse messages, and evolve the schema safely."
-imgSrc: /imgs/2023/1879869613.png
+imgSrc: /imgs/2023/1879869613.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-02T13:08:12.000Z'
 lastUpdated: 2026-11-14

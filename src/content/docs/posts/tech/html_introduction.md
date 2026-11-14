@@ -5,7 +5,7 @@ description: A short history of the Web, the structure of a minimal HTML documen
 pubDate: Fri, 25 July 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/760955596.png"
+imgSrc: "/imgs/2023/760955596.webp"
 ---
 
 HTML describes the structure and content of a web page; CSS describes how it looks. Every page you load in a browser is some mix of the two (plus JavaScript for behaviour). This post covers where they came from, what a minimal HTML document contains, and the three ways to attach CSS to it.

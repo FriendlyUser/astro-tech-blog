@@ -1,6 +1,6 @@
 ---
 description: "Load images into Android ImageViews with Square's Picasso: placeholders, resizing, and custom transformations, plus the Coil equivalent now that Picasso is deprecated."
-imgSrc: /imgs/2023/148139817.png
+imgSrc: /imgs/2023/148139817.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-14T01:18:17.000Z'
 lastUpdated: 2026-11-14

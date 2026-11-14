@@ -1,6 +1,6 @@
 ---
 description: Fetch a Wikipedia page with Requests and pull out its title, section headings, first paragraph and infobox using Beautiful Soup's find, find_all and select.
-imgSrc: /imgs/2023/262205434.png
+imgSrc: /imgs/2023/262205434.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-02-10T08:30:57.000Z'
 lastUpdated: 2026-11-14

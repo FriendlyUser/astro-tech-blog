@@ -1,6 +1,6 @@
 ---
 description: Why raw new/delete is error-prone in C++ and how std::unique_ptr, std::shared_ptr and std::weak_ptr express ownership, with working examples.
-imgSrc: /imgs/2023/954954072.png
+imgSrc: /imgs/2023/954954072.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-10T21:02:58.000Z'
 lastUpdated: 2026-11-14

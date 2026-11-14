@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Build a small TLS echo server and client in Rust with rustls 0.23 and tokio-rustls, loading PEM certificates and trusting a local CA."
 tags: ["tags", "rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/729981546.png
+imgSrc: /imgs/2023/729981546.webp
 ---
 
 [rustls](https://github.com/rustls/rustls) is a TLS library written in Rust. It's the usual choice when you want TLS in a Rust program without linking OpenSSL: reqwest, hyper-rustls, axum-server and many others build on it. This post builds a small TLS echo server and a client that talks to it, using tokio-rustls for async I/O.

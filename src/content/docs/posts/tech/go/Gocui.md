@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: Set up a gocui application in Go that draws a centred view, then add key bindings to quit. Includes notes on the maintained awesome-gocui fork.
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [gocui](https://github.com/jroimartin/gocui) is a small Go library for console user interfaces. You describe the screen as a set of named, possibly overlapping views (rectangles you can write text into), and gocui redraws them and dispatches key and mouse events to handlers you register. It sits on top of termbox-go and doesn't provide ready-made widgets, so it suits tools where you want control over the layout rather than a form library.

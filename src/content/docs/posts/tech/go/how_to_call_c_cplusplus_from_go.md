@@ -5,7 +5,7 @@ description: "Call C functions from Go with cgo, wrap C++ behind an extern \"C\"
 pubDate: Fri, 17 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1797349317.png"
+imgSrc: "/imgs/2023/1797349317.webp"
 ---
 
 Sometimes the library you need only exists in C or C++, or you already have a C++ codebase

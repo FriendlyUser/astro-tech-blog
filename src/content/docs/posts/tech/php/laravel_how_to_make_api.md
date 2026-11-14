@@ -5,7 +5,7 @@ description: A small Laravel JSON API that validates IP addresses, looks them up
 pubDate: Fri, 7 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1899250612.png
+imgSrc: /imgs/2023/1899250612.webp
 ---
 
 :::caution

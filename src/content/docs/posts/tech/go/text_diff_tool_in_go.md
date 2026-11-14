@@ -5,7 +5,7 @@ description: Build a small command-line diff in Go that compares two files line 
 pubDate: Fri, 17 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1797349317.png"
+imgSrc: "/imgs/2023/1797349317.webp"
 ---
 
 A diff tool answers one question: what is the smallest set of lines I need to delete from file A and add to get file B? The lines you *keep* are a longest common subsequence (LCS) of the two files, and everything else is a deletion or an insertion. This post builds a working line-based diff in Go around that idea, in about 80 lines with only the standard library.

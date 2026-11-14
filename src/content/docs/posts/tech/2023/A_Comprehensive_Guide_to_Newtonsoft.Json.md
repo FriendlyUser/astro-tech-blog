@@ -1,8 +1,7 @@
 ---
 description: Serialize and deserialize C# objects with Newtonsoft.Json, customise names
   and settings, query JSON with LINQ to JSON, and stream large files.
-imgSrc: /imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in
-  a library.png
+imgSrc: "/imgs/2023/book-placed-into-bookshelf.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-26T23:24:40.000Z'
 lastUpdated: 2026-11-14

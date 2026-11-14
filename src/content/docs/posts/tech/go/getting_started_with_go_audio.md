@@ -5,7 +5,7 @@ description: "Read a WAV file with go-audio/wav, apply gain and a low-pass filte
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/323056288.png
+imgSrc: /imgs/2023/323056288.webp
 ---
 
 :::note

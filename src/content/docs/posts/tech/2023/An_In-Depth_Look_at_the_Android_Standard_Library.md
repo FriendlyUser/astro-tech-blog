@@ -1,6 +1,6 @@
 ---
 description: A map of the Android framework's core android.* packages and the four app components (activities, services, content providers, broadcast receivers), with current caveats.
-imgSrc: /imgs/2023/1575571770.png
+imgSrc: /imgs/2023/1575571770.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-02-03T22:08:52.000Z'
 lastUpdated: 2026-11-14

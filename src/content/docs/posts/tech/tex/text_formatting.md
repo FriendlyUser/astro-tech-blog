@@ -5,7 +5,7 @@ description: A practical reference for formatting text in LaTeX, covering font c
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/303236472.png
+imgSrc: /imgs/2023/303236472.webp
 ---
 
 LaTeX separates what text *is* (a heading, an emphasised word, a list item) from how it looks.

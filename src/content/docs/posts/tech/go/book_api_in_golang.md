@@ -5,7 +5,7 @@ description: How I generated a Go server from an OpenAPI spec and wired its one 
 pubDate: Fri, 10 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1246994641.png"
+imgSrc: "/imgs/2023/1246994641.webp"
 ---
 
 :::caution

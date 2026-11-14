@@ -1,6 +1,6 @@
 ---
 description: How to build HTTP servers in Deno with Deno.serve, make requests with fetch, stream files, and serve static directories with @std/http.
-imgSrc: /imgs/2023/3054188082.png
+imgSrc: /imgs/2023/3054188082.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-09-08T03:12:13.000Z'
 lastUpdated: 2026-11-14

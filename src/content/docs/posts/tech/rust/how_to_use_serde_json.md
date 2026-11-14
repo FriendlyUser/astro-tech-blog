@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/294668704.png'
+imgSrc: '/imgs/2023/294668704.webp'
 ---
 
 [serde_json](https://docs.rs/serde_json) is the JSON format for [Serde](https://serde.rs), Rust's serialization framework. Serde provides the `Serialize` and `Deserialize` traits (and derive macros for them); serde_json turns anything that implements those traits into JSON and back.

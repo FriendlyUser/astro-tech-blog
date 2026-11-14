@@ -6,7 +6,7 @@ description: "How to compile, match, capture and replace with Rust's regex crate
 tags:
   - rust
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1096284488.png
+imgSrc: /imgs/2023/1096284488.webp
 ---
 
 The [`regex`](https://docs.rs/regex) crate is the standard way to do regular expressions in Rust. It is maintained by the Rust project, guarantees linear-time searching, and covers the usual tasks: checking for a match, pulling out capture groups, and search-and-replace. This post walks through those with one running example, a US Social Security number pattern like `123-45-6789`.

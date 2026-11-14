@@ -1,7 +1,7 @@
 ---
 description: Build a small FastAPI app in Python, covering path and query parameters,
   Pydantic request validation, and dependencies with yield for resource cleanup.
-imgSrc: /imgs/2023/1899250612.png
+imgSrc: /imgs/2023/1899250612.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-05T02:02:13.000Z'
 lastUpdated: 2026-11-14

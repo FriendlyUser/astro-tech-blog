@@ -6,7 +6,7 @@ lastUpdated: 2026-11-14
 tags: ["python", "cad_tickers"]
 projects: ["cad_tickers"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/260870876.png'
+imgSrc: '/imgs/2023/260870876.webp'
 imgAlt: 'Conscrap'
 ---
 

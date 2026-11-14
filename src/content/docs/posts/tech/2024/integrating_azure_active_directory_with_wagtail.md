@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Add Microsoft Entra ID (formerly Azure Active Directory) login to the Wagtail admin with social-auth-app-django, including settings, URLs and a login button."
 tags: ["Wagtail", "Microsoft Entra", "Azure Active Directory", "OAuth2", "Django", "Authentication", "Security", "Web Development", "Python", "Social Auth"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2024/authentication_birds.webp
+imgSrc: /imgs/2024/authentication-birds.webp
 ---
 
 Microsoft Entra ID is the current name for Azure Active Directory. If your organisation already uses it, letting editors sign in to the Wagtail admin with their work accounts saves managing a separate set of passwords. Wagtail is a Django app, so the standard Django route works: [social-auth-app-django](https://python-social-auth.readthedocs.io/en/latest/configuration/django.html) (Python Social Auth).

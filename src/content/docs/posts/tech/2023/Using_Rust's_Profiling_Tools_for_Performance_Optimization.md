@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to find slow code in a Rust program: sample it with perf, draw a flamegraph with cargo-flamegraph, and measure changes with Criterion benchmarks."
 tags: ['rust']
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/270485010_forest.png
+imgSrc: /imgs/2023/270485010-forest.webp
 ---
 
 Rust gives you fast code by default, but "fast by default" doesn't tell you where your program actually spends its time. Three tools cover most of what you need:

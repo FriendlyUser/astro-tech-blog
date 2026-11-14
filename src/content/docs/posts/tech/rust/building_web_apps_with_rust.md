@@ -5,7 +5,7 @@ tags: ["rust", "bash"]
 pubDate: Saturday, 29 April 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 layout: '@/templates/BasePost.astro'
-imgSrc: "/imgs/2023/nature_0.jpeg"
+imgSrc: "/imgs/2023/nature-0.webp"
 ---
 
 [Actix Web](https://actix.rs/) is an async web framework for Rust. You register handler functions

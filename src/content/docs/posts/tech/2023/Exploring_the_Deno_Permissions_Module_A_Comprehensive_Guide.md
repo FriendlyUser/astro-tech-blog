@@ -1,7 +1,7 @@
 ---
 description: How Deno's permission flags work and how to check, request, and revoke
   permissions at runtime with the built-in Deno.permissions API.
-imgSrc: /imgs/2023/1047200128.png
+imgSrc: /imgs/2023/1047200128.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-05T01:45:04.000Z'
 lastUpdated: 2026-11-14

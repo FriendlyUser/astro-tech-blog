@@ -5,7 +5,7 @@ description: "Add the MudBlazor component library to a Blazor app: install the p
 pubDate: Tues, 21 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/4067359065.png'
+imgSrc: '/imgs/2023/4067359065.webp'
 ---
 
 MudBlazor is an open-source (MIT-licensed) component library for Blazor based on Google's Material

@@ -5,7 +5,7 @@ description: A small Vue 3 single-file component that encrypts and decrypts text
 pubDate: Fri, 4 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
+imgSrc: /imgs/2023/358691897-blank-card-on-brown-table.webp
 ---
 
 A Caesar cipher replaces each letter with the letter a fixed number of positions further along the alphabet. With a shift of 3, `A` becomes `D`, `B` becomes `E`, and `Z` wraps around to `C`. Suetonius records Julius Caesar using a shift of 3, which is where the name comes from.

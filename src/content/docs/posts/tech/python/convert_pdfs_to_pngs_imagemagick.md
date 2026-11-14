@@ -5,7 +5,7 @@ description: A Python script that converts every PDF in a folder to PNG images b
 pubDate: Mon, 7 December 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2022/dall-e/DALL·E 2022-12-14 22.06.43 - blank book open on the coffee table.png"
+imgSrc: "/imgs/2022/dall-e/dalle-2022-12-14-22-06-43-blank-book-open-on-the-coffee-table.webp"
 ---
 
 ImageMagick is a command-line toolkit for converting and editing images. It can rasterise PDF pages to PNG, which is handy for dropping plots or slides from a PDF into a web page or a document that only takes images. This post shows a small Python script that converts every PDF in a folder.

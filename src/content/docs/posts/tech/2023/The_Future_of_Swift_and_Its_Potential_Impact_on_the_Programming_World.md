@@ -1,6 +1,6 @@
 ---
 description: "Where Swift is heading beyond iOS: compile-time data-race safety, server-side frameworks, Linux, Windows, Android and WebAssembly SDKs, and what happened to Swift for TensorFlow."
-imgSrc: /imgs/2023/945555918.png
+imgSrc: /imgs/2023/945555918.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-21T10:03:09.000Z'
 lastUpdated: 2026-11-14

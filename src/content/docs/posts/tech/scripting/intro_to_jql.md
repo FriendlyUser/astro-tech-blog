@@ -5,7 +5,7 @@ description: Two short JQL queries for finding Jira issues you created in the la
 pubDate: Fri, 14 July 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2466346852.png
+imgSrc: /imgs/2023/2466346852.webp
 ---
 
 Jira is Atlassian's issue and project tracker. JQL (Jira Query Language) is its search syntax: you combine fields, operators, and functions (`project = WEB AND assignee = currentUser()`) to filter issues. It looks a bit like a SQL `WHERE` clause, but it only filters and sorts issues; there are no joins or `SELECT`. You can type JQL in the advanced search view, and save a query as a filter to reuse it on boards and dashboards or share it with your team.

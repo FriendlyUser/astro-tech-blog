@@ -5,7 +5,7 @@ description: A short introduction to Python's origins and common uses, followed 
 pubDate: Fri, 30 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1666734888.png"
+imgSrc: "/imgs/2023/1666734888.webp"
 ---
 
 Python is a high-level, interpreted, dynamically typed language. Guido van Rossum first released it in February 1991 (version 0.9.0). The name comes from the comedy series *Monty Python's Flying Circus*, not the snake. Its design favours readability: indentation marks code blocks, and the standard library covers a lot without extra installs.

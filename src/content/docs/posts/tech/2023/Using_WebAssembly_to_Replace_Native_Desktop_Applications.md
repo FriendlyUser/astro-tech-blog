@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How WebAssembly lets native C++, Rust and .NET code run as web apps, what it does well, and where native desktop apps still have the edge."
 tags: []
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/other
+imgSrc: "/imgs/covers/using-webassembly-to-replace-native-desktop-applications.webp"
 ---
 
 WebAssembly (Wasm) is a portable binary format that C, C++, Rust, C# and other languages compile to. Its main role in "desktop replacement" is not to replace the app shell, but to let an existing native codebase run inside a browser tab, so a product that used to need an installer can ship as a web app instead.

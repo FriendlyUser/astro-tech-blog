@@ -3,7 +3,7 @@ title: "Removing carrier-deactivated numbers with Twilio's Deactivations API and
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3054188082.png
+imgSrc: /imgs/2023/3054188082.webp
 tags: ["Node", "BullMQ", "Twilio"]
 description: "A daily BullMQ job in Node.js that downloads Twilio's list of carrier-deactivated US numbers and removes them from your subscriber list."
 ---

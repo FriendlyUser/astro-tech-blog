@@ -1,6 +1,6 @@
 ---
 description: "Practical conventions for Swift packages: naming, layout, access control including package, DocC comments, tests, semantic versioning and a clean Package.swift."
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/1900267581.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-16T15:57:18.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Rust has no stable yield keyword. Here's how to write generator-style code today with iter::from_fn, async-stream, and the unstable gen blocks."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/387158145.png
+imgSrc: /imgs/2023/387158145.webp
 ---
 
 :::caution

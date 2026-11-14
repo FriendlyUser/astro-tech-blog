@@ -4,7 +4,7 @@ title: SVG wave hero section for an investing homepage with Vue and Vuesax
 description: Generating SVG wave paths in a Vue component, and building an animated wave hero section for an investing blog homepage with Nuxt 2 and Vuesax.
 pubDate: Mon, 5 October 2023
 lastUpdated: 2026-11-14
-imgSrc: /imgs/2023/2094095868.png
+imgSrc: /imgs/2023/2094095868.webp
 ---
 :::caution
 The hero section below uses Nuxt 2 and Vuesax, both built on Vue 2. Vue 2 reached end of life on 31 December 2023 and Nuxt 2 on 30 June 2024. Vuesax 4 was only ever published as an alpha, depends on Vue Router 3 (Vue 2 only), and hasn't had a release since 2022. The SVG and CSS parts carry over to Vue 3 or Nuxt 3+ unchanged; replace `vs-row`/`vs-col` with a CSS grid or another component library.

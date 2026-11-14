@@ -5,7 +5,7 @@ description: How the Tortoise text-to-speech model turns text and a few referenc
 pubDate: Fri, 15 April 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3750534419.png"
+imgSrc: "/imgs/2023/3750534419.webp"
 ---
 
 [Tortoise](https://github.com/neonbjb/tortoise-tts) is an open-source text-to-speech model by James Betker. It can speak in many voices: you give it a few short clips of a speaker, and it generates new speech that imitates that voice. It's known for natural prosody and intonation, and for being slow (hence the name).

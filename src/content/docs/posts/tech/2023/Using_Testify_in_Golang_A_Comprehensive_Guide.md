@@ -1,6 +1,6 @@
 ---
 description: How to use Testify's assert, require, suite, and mock packages in Go tests, with runnable examples and the gotchas that trip people up.
-imgSrc: /imgs/2023/1797349317.png
+imgSrc: /imgs/2023/1797349317.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-29T08:21:13.000Z'
 lastUpdated: 2026-11-14

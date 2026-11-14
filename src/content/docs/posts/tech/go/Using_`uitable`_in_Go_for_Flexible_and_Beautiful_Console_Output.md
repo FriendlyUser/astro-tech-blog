@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use gosuri/uitable to print aligned columns in a Go CLI: building rows, right-aligning numbers, and truncating or wrapping long cells."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [`uitable`](https://github.com/gosuri/uitable) prints rows of values as aligned columns in the terminal. It measures each column's widest cell, pads the rest to match, and can truncate or wrap long cells. There are no borders or box-drawing characters; if you want those, look at a heavier package such as `go-pretty`.

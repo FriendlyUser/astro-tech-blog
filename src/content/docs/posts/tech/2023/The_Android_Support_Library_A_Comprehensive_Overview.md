@@ -6,7 +6,7 @@ description: "What the Android Support Library provided, how its artifacts map t
 tags:
   - android
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3793215953.png
+imgSrc: /imgs/2023/3793215953.webp
 ---
 
 :::caution

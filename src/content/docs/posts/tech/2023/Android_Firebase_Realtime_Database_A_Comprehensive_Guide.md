@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Add Firebase Realtime Database to an Android app with the Firebase BoM, write and listen for data in Java, enable offline persistence, and lock it down with rules."
 tags: ["android", "java", "firebase"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1086816529.png
+imgSrc: /imgs/2023/1086816529.webp
 ---
 
 Firebase Realtime Database is a Google-hosted NoSQL database that stores everything as one big JSON tree. Clients attach listeners to paths in the tree, and any change is pushed to every connected client within moments. That makes it a good fit for chat, presence indicators and small collaborative apps. It's a poor fit for complex queries: you can sort and filter on one child key at a time, with no joins. For richer querying, Google points new projects at Cloud Firestore.

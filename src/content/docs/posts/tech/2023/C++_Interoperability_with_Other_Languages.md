@@ -1,6 +1,6 @@
 ---
 description: How to call C++ from C, Python and Java using extern "C" wrappers, ctypes, pybind11, JNI, JNA, SWIG and Java's Foreign Function and Memory API.
-imgSrc: /imgs/2023/1098832555.png
+imgSrc: /imgs/2023/1098832555.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-14T04:21:24.000Z'
 lastUpdated: 2026-11-14

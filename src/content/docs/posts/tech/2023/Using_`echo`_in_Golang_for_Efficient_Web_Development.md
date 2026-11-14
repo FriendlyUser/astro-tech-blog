@@ -1,6 +1,6 @@
 ---
 description: "Build a small Go web server with the Echo framework: routes, a JSON POST handler with request binding, and the built-in logging and recovery middleware."
-imgSrc: /imgs/2023/3437532028.png
+imgSrc: /imgs/2023/3437532028.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-27T06:04:59.000Z'
 lastUpdated: 2026-11-14

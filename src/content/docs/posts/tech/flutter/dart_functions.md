@@ -5,7 +5,7 @@ description: Three small Dart functions (base64 encoder, HTTPS URL check, email 
 pubDate: Fri, 29 November 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/248665811.png
+imgSrc: /imgs/2023/248665811.webp
 ---
 
 :::caution

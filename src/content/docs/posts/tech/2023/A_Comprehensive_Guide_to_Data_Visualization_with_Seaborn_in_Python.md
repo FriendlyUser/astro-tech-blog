@@ -1,7 +1,7 @@
 ---
 description: How to make scatter, distribution, categorical and correlation plots with
   Seaborn 0.13, plus the figure-level vs axes-level split that trips people up.
-imgSrc: /imgs/2023/2463860355.png
+imgSrc: /imgs/2023/2463860355.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-12-16T08:27:25.000Z'
 lastUpdated: 2026-11-14

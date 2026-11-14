@@ -1,6 +1,6 @@
 ---
 description: 'Write and call a Go Micro v6 service: handlers, mDNS and Consul service discovery, client-side load balancing, retries and timeouts.'
-imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
+imgSrc: /imgs/2023/358691897-blank-card-on-brown-table.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-25T08:00:17.000Z'
 lastUpdated: 2026-11-14

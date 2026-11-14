@@ -1,7 +1,7 @@
 ---
 title: "C++ move semantics: rvalue references, move constructors and std::move"
 description: "How C++11 move semantics work: rvalue references, writing a move constructor and move assignment, what std::move really does, and the common gotchas."
-imgSrc: /imgs/2023/3072838870.png
+imgSrc: /imgs/2023/3072838870.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-04T18:30:25.000Z'
 lastUpdated: 2026-11-14

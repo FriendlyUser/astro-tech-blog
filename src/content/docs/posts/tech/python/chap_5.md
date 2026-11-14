@@ -5,7 +5,7 @@ description: How to define a Python class, create objects from it, use self and 
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3563897667.png
+imgSrc: /imgs/2023/3563897667.webp
 ---
 Object-oriented programming (OOP) groups data (attributes) and the functions that operate on it (methods) into objects. A class is the blueprint; each object created from it is an instance with its own attribute values. In a racing game, for example, a `Car` class might hold each car's speed and position and provide methods to accelerate and brake, and every car on the track would be a separate `Car` object.
 

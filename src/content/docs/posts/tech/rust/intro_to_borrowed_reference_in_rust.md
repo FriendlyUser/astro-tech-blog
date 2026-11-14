@@ -5,7 +5,7 @@ pubDate: Saturday, 24 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 Every value in Rust has one owner. Other code can use the value without taking ownership by *borrowing* it through a reference, and the compiler enforces two rules on those references:

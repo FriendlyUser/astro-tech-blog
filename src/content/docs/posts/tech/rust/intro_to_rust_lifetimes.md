@@ -5,7 +5,7 @@ pubDate: Saturday, 24 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 A lifetime in Rust is the region of code where a reference is valid. Lifetime annotations like `'a` don't make anything live longer. They name a relationship between references so the borrow checker can reject code that might leave a reference pointing at freed memory.

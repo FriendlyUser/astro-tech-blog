@@ -5,7 +5,7 @@ description: Notes from building a rough Tailwind-styled WordPress theme, coveri
 pubDate: Fri, 7 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1444932837.png
+imgSrc: /imgs/2023/1444932837.webp
 ---
 WordPress is an open-source CMS written in PHP that stores content in MySQL (or MariaDB). A theme controls how that content is rendered. These are my notes from building a fairly rough custom theme, [bluey-wordpress-theme](https://github.com/FriendlyUser/bluey-wordpress-theme), styled with Tailwind CSS.
 

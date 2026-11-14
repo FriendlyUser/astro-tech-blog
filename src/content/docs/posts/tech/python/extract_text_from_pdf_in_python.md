@@ -5,7 +5,7 @@ description: A small command-line script that uses pypdf (the successor to PyPDF
 pubDate: Fri, 3 January 2025
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3702590653.png"
+imgSrc: "/imgs/2023/3702590653.webp"
 ---
 
 :::caution

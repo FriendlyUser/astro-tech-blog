@@ -1,6 +1,6 @@
 ---
 description: 'How to make HTTP requests in Python with Requests: GET and POST, query parameters, file uploads and downloads, timeouts, errors, auth and redirects.'
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-15T01:07:52.000Z'
 lastUpdated: 2026-11-14

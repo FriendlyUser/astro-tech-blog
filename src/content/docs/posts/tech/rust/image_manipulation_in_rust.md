@@ -5,7 +5,7 @@ pubDate: Saturday, 24 November 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/2543580613.png'
+imgSrc: '/imgs/2023/2543580613.webp'
 ---
 
 The [`image`](https://crates.io/crates/image) crate is the standard way to read, write and edit raster images in pure Rust. It decodes common formats (PNG, JPEG, GIF, WebP, BMP, TIFF and more) into a `DynamicImage` and has methods for resizing, flipping, 90° rotations, blurring and colour adjustments. For anything beyond that, such as rotation by an arbitrary angle, the companion [`imageproc`](https://crates.io/crates/imageproc) crate adds more operations.

@@ -1,6 +1,6 @@
 ---
 description: Create a Swift package with SwiftPM, tag a semantic version, push it to a public Git repository, and list it on the Swift Package Index so others can depend on it.
-imgSrc: /imgs/2023/1693067648.png
+imgSrc: /imgs/2023/1693067648.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-13T05:37:32.000Z'
 lastUpdated: 2026-11-14

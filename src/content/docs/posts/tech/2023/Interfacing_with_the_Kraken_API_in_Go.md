@@ -1,6 +1,6 @@
 ---
 description: Use the go_kraken library to read your Kraken account balance, place (or just validate) a limit order, and check an order's status from Go.
-imgSrc: /imgs/2023/3847215807.png
+imgSrc: /imgs/2023/3847215807.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-11T12:10:48.000Z'
 lastUpdated: 2026-11-14

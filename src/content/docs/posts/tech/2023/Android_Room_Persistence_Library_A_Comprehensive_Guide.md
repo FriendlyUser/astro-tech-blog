@@ -1,6 +1,6 @@
 ---
 description: How to set up Android's Room library with KSP, define an entity, DAO and database, and read and write data from an Activity with coroutines and Flow.
-imgSrc: /imgs/2023/2627778103.png
+imgSrc: /imgs/2023/2627778103.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-23T06:31:46.000Z'
 lastUpdated: 2026-11-14

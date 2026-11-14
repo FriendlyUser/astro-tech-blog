@@ -5,7 +5,7 @@ description: How LaTeX source is put together, covering commands, special charac
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1836890630.png
+imgSrc: /imgs/2023/1836890630.webp
 ---
 
 LaTeX is a markup language for typesetting documents. You write plain text with commands mixed in, run it through a compiler, and get a PDF. It is the usual choice for papers, theses and anything with a lot of mathematics, because the math typesetting and automatic numbering of sections, equations and references work without manual effort.

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to use mmake, a wrapper around make, to turn Makefile comments into a help command and share targets across Go projects with remote includes."
 tags: ["go", "mmake"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1115596181.png
+imgSrc: /imgs/2023/1115596181.webp
 ---
 
 :::caution

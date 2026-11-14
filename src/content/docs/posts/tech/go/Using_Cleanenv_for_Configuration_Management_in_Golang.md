@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to load a Go app's config from a YAML file with environment variable overrides and defaults using cleanenv's ReadConfig and struct tags."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [cleanenv](https://github.com/ilyakaznacheev/cleanenv) is a small Go library that fills a config struct from a file, environment variables, and defaults declared in struct tags. It reads YAML, JSON, TOML, EDN and `.env` files (picked by file extension), so you can keep sensible values in a file and override them per environment without code changes. The examples use v1.5.0, the latest release at the time of writing.

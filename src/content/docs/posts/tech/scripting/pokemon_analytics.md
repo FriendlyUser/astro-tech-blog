@@ -5,7 +5,7 @@ pubDate: Saturday, 14 May 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["graphql", ".net", "polygot", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the window at a tree.png'
+imgSrc: '/imgs/2023/dalle-2022-12-25-21-48-12-teddy-bear-on-coach-looking-out-the-window-at-a-tree.webp'
 ---
 
 :::caution

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: Which engines and toolchains can ship a game to the browser as WebAssembly, a minimal Emscripten game loop, and the problems you hit when you deploy it.
 tags: ["rust", "cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3431403716.png
+imgSrc: /imgs/2023/3431403716.webp
 ---
 
 WebAssembly (Wasm) is a compact binary instruction format that browsers can compile to machine code. For games it means you can take code written in C, C++, C# or Rust (often an existing engine) and run it in a browser tab instead of rewriting it in JavaScript.

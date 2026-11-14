@@ -1,7 +1,6 @@
 ---
 description: "Set up Celery with Redis, define and call tasks, add retries, route tasks to queues and set priorities, and monitor workers with the CLI and Flower."
-imgSrc: /imgs/2023/DALL·E 2022-12-17 17.59.40 - book being placed into bookshelf in
-  a library.png
+imgSrc: "/imgs/2023/book-placed-into-bookshelf.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T00:20:26.000Z'
 lastUpdated: 2026-11-14

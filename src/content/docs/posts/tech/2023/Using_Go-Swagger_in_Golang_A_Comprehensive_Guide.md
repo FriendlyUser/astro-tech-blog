@@ -1,6 +1,6 @@
 ---
 description: Use go-swagger to validate a Swagger 2.0 spec, generate a Go server and client from it, and wire up a handler for a small todo API.
-imgSrc: /imgs/2023/3063879952.png
+imgSrc: /imgs/2023/3063879952.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-01T19:53:10.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ pubDate: Saturday, 24 November 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/424066448.png'
+imgSrc: '/imgs/2023/424066448.webp'
 ---
 
 Renaming a folder of files by hand (`IMG_0001.jpg` to `holiday_0001.jpg`, stripping a prefix, swapping date formats) is tedious. This post builds a small command-line tool that does it with a regular expression: it matches each file name against a pattern and replaces the match with a replacement string that can reuse capture groups.

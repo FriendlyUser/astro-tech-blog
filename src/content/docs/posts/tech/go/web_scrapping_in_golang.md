@@ -5,7 +5,7 @@ description: Fetch a page with Go's net/http, parse it with goquery's CSS select
 pubDate: Fri, 17 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1797349317.png"
+imgSrc: "/imgs/2023/1797349317.webp"
 ---
 
 Web scraping means fetching a page over HTTP and pulling structured data out of its HTML. In Go the standard library handles the HTTP side, and [goquery](https://github.com/PuerkitoBio/goquery) gives you jQuery-style CSS selectors over the parsed document. This post builds a small scraper that lists the stories on the Hacker News front page.

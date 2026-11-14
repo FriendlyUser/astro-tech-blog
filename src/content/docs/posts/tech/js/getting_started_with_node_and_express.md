@@ -6,7 +6,7 @@ tags: ["js","introToJs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 13 Feb 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/3383398588_Ship_on_the_ocean.png'
+imgSrc: '/imgs/2023/3383398588-ship-on-the-ocean.webp'
 ---
 
 > JavaScript's global scope is like a public toilet. You can't avoid going

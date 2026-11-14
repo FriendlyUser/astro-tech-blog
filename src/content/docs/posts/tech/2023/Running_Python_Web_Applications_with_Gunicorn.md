@@ -1,6 +1,6 @@
 ---
 description: How to serve a Flask (or any WSGI) app with Gunicorn, set workers, bind address and timeouts in gunicorn.conf.py, and put Nginx in front of it.
-imgSrc: /imgs/2023/3893879687.png
+imgSrc: /imgs/2023/3893879687.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-25T10:07:00.000Z'
 lastUpdated: 2026-11-14

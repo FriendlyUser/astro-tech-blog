@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Remix's loaders, actions, and nested routes work, how it compares to Next.js, and how to start the same app today with React Router framework mode."
 tags: ["Remix", "React", "Web Development", "JavaScript", "Frontend Development", "Performance Optimization", "SEO", "Authentication", "State Management", "Styling", "React Router"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2024/2443221186.png"
+imgSrc: "/imgs/2024/2443221186.webp"
 ---
 
 :::caution[Remix v2 is end of life]

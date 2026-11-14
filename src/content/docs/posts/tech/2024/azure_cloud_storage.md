@@ -5,7 +5,7 @@ tags: ["tempfile", "File Storage", "Read-Only Environment", "Azure Function Apps
 pubDate: "2024-03-23T19:17:25.000Z"
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
+imgSrc: "/imgs/2023/3267094508-short-ruler-in-the-grass.webp"
 ---
 
 Many Python libraries want a file path rather than bytes: PDF parsers, `ffmpeg` wrappers, zip tools. In an Azure Function, writing that file next to your code usually fails with a read-only file system error. The fix is to write to the instance's temp directory, and the standard library's `tempfile` module does that for you.

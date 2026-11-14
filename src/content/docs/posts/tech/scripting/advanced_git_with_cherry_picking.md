@@ -6,7 +6,7 @@ pubDate: Saturday, 30 November 2025 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["git", "bash", "devops"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/bear_book_1.png'
+imgSrc: '/imgs/2023/bear-book-1.webp'
 ---
 
 ## Cherry-picking specific commits

@@ -1,6 +1,6 @@
 ---
 description: "Train an MNIST digit classifier with TensorFlow and Keras in Python: load data with tf.data, build, train and evaluate a model, save it, and serve it."
-imgSrc: /imgs/2023/4181036141.png
+imgSrc: /imgs/2023/4181036141.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-02T08:14:57.000Z'
 lastUpdated: 2026-11-14

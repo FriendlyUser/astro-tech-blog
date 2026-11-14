@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How CORS and preflight requests work, and how to set up CORS policies in ASP.NET Core with middleware, endpoint routing, and the [EnableCors] attribute."
 tags: ["aspnet", "csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3752564139.png
+imgSrc: /imgs/2023/3752564139.webp
 ---
 
 Browsers apply the *same-origin policy*: JavaScript on `https://app.example.com` can't read responses from `https://api.example.com` unless that server says it's allowed. Cross-Origin Resource Sharing (CORS) is how the server says so, using `Access-Control-*` response headers. `Microsoft.AspNetCore.Cors` is the ASP.NET Core middleware that sends those headers based on policies you define.

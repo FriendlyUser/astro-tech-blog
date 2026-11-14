@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How RxJava 3 models async work on Android: Observable, Single and friends, common operators, schedulers, Retrofit integration, and disposing subscriptions."
 tags: ["android", "java"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1836890630.png
+imgSrc: /imgs/2023/1836890630.webp
 ---
 
 RxJava is the Java implementation of ReactiveX (Reactive Extensions). It represents asynchronous work, such as a network call, a database query or a stream of click events, as an observable stream that you transform with operators like `map`, `filter` and `flatMap`. On Android it was the standard way to chain background work and hop back to the main thread before Kotlin coroutines took over that role.

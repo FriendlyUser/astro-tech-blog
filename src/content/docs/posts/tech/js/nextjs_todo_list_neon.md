@@ -6,7 +6,7 @@ tags: ["react","js","nextjs","typescript","sql"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 16 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/neon_article.jpeg'
+imgSrc: '/imgs/2023/neon-article.webp'
 ---
 
 This is a walkthrough of a small to-do app I built with Next.js. It is a single page: an MUI frontend that fetches data with SWR, two API routes (`/api/search` and `/api/todo`) built with Next.js API routes, and a Postgres database hosted on [Neon](https://neon.com). Neon is a separate company from Vercel, but it is available as a Vercel Marketplace integration, which makes it easy to wire into a Vercel deployment.

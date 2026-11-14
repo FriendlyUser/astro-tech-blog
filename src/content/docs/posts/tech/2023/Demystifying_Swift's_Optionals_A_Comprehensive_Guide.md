@@ -1,6 +1,6 @@
 ---
 description: How Swift optionals represent missing values, and how to unwrap them safely with if let, guard let, optional chaining, the ?? operator and map.
-imgSrc: /imgs/2023/1312348161.png
+imgSrc: /imgs/2023/1312348161.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-21T21:04:55.000Z'
 lastUpdated: 2026-11-14

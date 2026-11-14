@@ -5,7 +5,7 @@ description: Practical ways to cut image weight on a web page, covering format c
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4252050732.png
+imgSrc: /imgs/2023/4252050732.webp
 ---
 
 Images are usually the heaviest part of a page. Large, unoptimized images slow down the first render, hurt Core Web Vitals such as Largest Contentful Paint (LCP), and waste mobile data. Most of the fix comes down to five things: picking the right format, compressing, serving the right size, loading off-screen images later, and serving from somewhere close to the user.

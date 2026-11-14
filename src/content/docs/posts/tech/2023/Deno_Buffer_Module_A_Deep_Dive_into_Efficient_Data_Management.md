@@ -1,6 +1,6 @@
 ---
 description: 'How the Buffer class from @std/io works in Deno: writing and reading bytes, filling it from a file, and when to use web streams instead.'
-imgSrc: /imgs/2023/4225416985.png
+imgSrc: /imgs/2023/4225416985.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-24T08:06:49.000Z'
 lastUpdated: 2026-11-14

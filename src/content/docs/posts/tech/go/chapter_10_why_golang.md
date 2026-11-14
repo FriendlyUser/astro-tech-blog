@@ -5,7 +5,7 @@ description: "A recap of the Go concepts covered in this series, some habits wor
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3469553751.png
+imgSrc: /imgs/2023/3469553751.webp
 ---
 This is the last chapter of the series. It recaps what the earlier chapters covered and points to the resources worth using next.
 

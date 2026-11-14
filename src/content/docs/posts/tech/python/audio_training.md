@@ -5,7 +5,7 @@ description: A Python script that downloads a YouTube video's audio with yt-dlp 
 pubDate: Fri, 29 November 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1693067648.png
+imgSrc: /imgs/2023/1693067648.webp
 ---
 Voice-cloning models like [Tortoise TTS](https://github.com/neonbjb/tortoise-tts) need a few short, clean recordings of the target voice. Its [voice customization guide](https://github.com/neonbjb/tortoise-tts/blob/main/voice_customization_guide.md) asks for at least three clips of about 10 seconds each, saved as floating-point WAV at 22,050 Hz. This script builds those clips from a YouTube video: it downloads the audio with yt-dlp, then cuts the time ranges listed in a JSON config with ffmpeg.
 

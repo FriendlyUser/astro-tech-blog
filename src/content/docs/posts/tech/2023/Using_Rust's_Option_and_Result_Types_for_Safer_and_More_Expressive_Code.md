@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use Rust's Option and Result types with match, combinators such as map, and_then and unwrap_or, the ? operator, and conversions like ok_or and transpose."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3431403716.png
+imgSrc: /imgs/2023/3431403716.webp
 ---
 
 Rust has no null and no exceptions. Instead, a value that might be missing has type `Option<T>`, and an operation that might fail returns `Result<T, E>`. Because these are ordinary enums, the compiler makes you handle the missing or failed case before you can use the value. This post shows how to work with both without drowning in `match` statements.

@@ -6,7 +6,7 @@ description: "How C++ pointers and references work, how they differ (null, resea
 tags:
   - cpp
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4279596222.png
+imgSrc: /imgs/2023/4279596222.webp
 ---
 
 A pointer is a variable that holds the address of an object. A reference is another name for an existing object. Both let a function work on the caller's data instead of a copy, but they behave differently around null, reassignment and syntax, and picking the right one makes intent clearer.

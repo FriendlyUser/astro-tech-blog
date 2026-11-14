@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Why some blockchains execute smart contracts or runtimes as WebAssembly, which chains do it (NEAR, CosmWasm, Antelope, Arbitrum Stylus, Polkadot), and the catches."
 tags: ['dapp']
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/DALL?E 2023-01-07 13.46.29 - banana spaceship.png
+imgSrc: "/imgs/2023/banana-spaceship.webp"
 ---
 
 A blockchain needs a virtual machine that every node runs identically: given the same transaction and state, every node must produce the same result. Ethereum built its own VM (the EVM) for this. Several other chains chose WebAssembly (Wasm) instead, so contracts can be written in general-purpose languages like Rust, C++ or Go and run on an existing, well-specified VM.

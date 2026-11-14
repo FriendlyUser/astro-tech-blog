@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "A running list of bug fixes that shouldn't have worked but did, starting with a PHP 5.2 session bug fixed by re-uploading the same file to cPanel."
 tags: ["bugfixes", "php"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/14447351.png
+imgSrc: /imgs/2023/14447351.webp
 ---
 
 Here I list the dumb things that were done to fix bugs, and the likely reasons they worked.

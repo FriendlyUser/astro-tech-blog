@@ -1,6 +1,6 @@
 ---
 description: 'Hash, sign and encrypt data in Deno with the built-in Web Crypto API, and use @std/crypto for extra hash algorithms and timing-safe comparison.'
-imgSrc: /imgs/2023/2776175216.png
+imgSrc: /imgs/2023/2776175216.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-16T06:54:24.000Z'
 lastUpdated: 2026-11-14

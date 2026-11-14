@@ -1,6 +1,6 @@
 ---
 description: 'Write and run tests in Deno with Deno.test and @std/assert: async tests, test steps, permissions, filtering, parallel runs and coverage.'
-imgSrc: /imgs/2023/3702590653.png
+imgSrc: /imgs/2023/3702590653.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-04T20:56:50.000Z'
 lastUpdated: 2026-11-14

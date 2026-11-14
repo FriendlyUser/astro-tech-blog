@@ -1,6 +1,6 @@
 ---
 description: How to call Objective-C from Swift with a bridging header, call Swift from Objective-C through the generated -Swift.h header, and how types bridge.
-imgSrc: /imgs/2023/577360463.png
+imgSrc: /imgs/2023/577360463.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-18T16:56:39.000Z'
 lastUpdated: 2026-11-14

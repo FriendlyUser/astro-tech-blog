@@ -5,7 +5,7 @@ description: My pipeline for premarket stock reports, pulling market events, Red
 pubDate: Mon, 20 March 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1678591372_a_blade_in_the_desert_under_the_sun.png"
+imgSrc: "/imgs/2023/1678591372-a-blade-in-the-desert-under-the-sun.webp"
 ---
 
 :::caution

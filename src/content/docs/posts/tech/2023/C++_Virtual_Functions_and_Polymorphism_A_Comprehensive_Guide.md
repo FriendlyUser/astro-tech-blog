@@ -1,6 +1,6 @@
 ---
 description: "How virtual functions give C++ runtime polymorphism, why base classes need virtual destructors, abstract classes, and traps like slicing."
-imgSrc: /imgs/2023/326029388.png
+imgSrc: /imgs/2023/326029388.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-04T17:45:10.000Z'
 lastUpdated: 2026-11-14

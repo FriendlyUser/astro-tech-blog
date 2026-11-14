@@ -1,6 +1,6 @@
 ---
 description: PyTorch basics in one sitting. Create tensors, compute gradients with autograd, define an nn.Module, and train a small network with a standard training loop.
-imgSrc: /imgs/2023/336369522.png
+imgSrc: /imgs/2023/336369522.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-22T20:35:26.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How ExoPlayer is structured and how to play a video or DASH stream with it in an Android app, using the current AndroidX Media3 artifacts."
 tags: ["android", "exoplayer", "media3"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3619698287.png
+imgSrc: /imgs/2023/3619698287.webp
 ---
 
 ExoPlayer is Google's open-source (Apache 2.0) media player library for Android. You'd use it instead of the platform `MediaPlayer` when you need adaptive streaming (DASH, HLS, SmoothStreaming), DRM, playlists, or control over buffering and track selection. It ships as an app library, so its behaviour doesn't change with the device's Android version.

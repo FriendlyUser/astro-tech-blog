@@ -5,7 +5,7 @@ description: Set up a TypeScript project, define commands, arguments and options
 pubDate: Fri, 4 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
+imgSrc: /imgs/2023/358691897-blank-card-on-brown-table.webp
 ---
 
 Command-line tools are a quick way to automate repetitive tasks, and Node.js is a good runtime

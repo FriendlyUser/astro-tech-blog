@@ -5,7 +5,7 @@ description: "The trade-offs between runtime CSS-in-JS and plain CSS or CSS Modu
 pubDate: Fri, 28 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1098832555.png
+imgSrc: /imgs/2023/1098832555.webp
 ---
 :::caution
 In March 2025 the styled-components maintainer announced the project is in maintenance mode: fixes and small improvements continue, but he no longer recommends adopting it, or most other CSS-in-JS libraries, for new projects. See the [announcement on Open Collective](https://opencollective.com/styled-components/updates/thank-you). Existing apps keep working; for new React projects, CSS Modules, Tailwind CSS or a zero-runtime library are the more common choices now.

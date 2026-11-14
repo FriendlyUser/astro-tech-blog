@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Connect to a WebSocket server from Go with sacOO7/gowebsocket: event callbacks, sending text and binary messages, and closing cleanly."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/818001379.png
+imgSrc: /imgs/2023/818001379.webp
 ---
 
 :::caution[Correction]

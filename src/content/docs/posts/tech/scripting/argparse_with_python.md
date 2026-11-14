@@ -6,7 +6,7 @@ tags: ["python", "argparse"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 21 April 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/bear_book_1.png'
+imgSrc: '/imgs/2023/bear-book-1.webp'
 ---
 
 [`argparse`](https://docs.python.org/3/library/argparse.html) is the standard-library module for building command-line interfaces in Python. You declare the arguments your script accepts; `argparse` parses `sys.argv`, converts types, generates `--help` output, and exits with a usage message when the input is invalid.

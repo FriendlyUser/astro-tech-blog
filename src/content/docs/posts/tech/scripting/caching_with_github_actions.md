@@ -6,7 +6,7 @@ tags: ["typescript", "github actions", "astro"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 28 July 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png'
+imgSrc: '/imgs/2023/dalle-2023-01-07-13-47-20-spaceship-paper.webp'
 ---
 
 :::caution

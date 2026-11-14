@@ -1,6 +1,6 @@
 ---
 description: 'Make HTTP requests in Deno with the built-in fetch: GET and POST, error handling, timeouts, streaming a download to disk, and Deno-specific options.'
-imgSrc: /imgs/2023/2581699444.png
+imgSrc: /imgs/2023/2581699444.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-24T14:08:45.000Z'
 lastUpdated: 2026-11-14

@@ -1,6 +1,6 @@
 ---
 description: "Build a gRPC service in Go: define it in Protocol Buffers, generate code with protoc-gen-go and protoc-gen-go-grpc, then write the server and client."
-imgSrc: /imgs/2023/2892583015.png
+imgSrc: /imgs/2023/2892583015.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-01T18:40:54.000Z'
 lastUpdated: 2026-11-14

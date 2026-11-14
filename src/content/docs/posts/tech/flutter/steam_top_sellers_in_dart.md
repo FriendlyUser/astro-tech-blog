@@ -5,7 +5,7 @@ description: Fetch Steam's top sellers search page with the http package, parse 
 pubDate: Fri, 28 Feburary 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/986397498.png"
+imgSrc: "/imgs/2023/986397498.webp"
 ---
 
 This adds a Steam top sellers endpoint to my Dart backend (the same [Alfred server](https://friendlyuser.github.io/posts/tech/flutter/alfred_backend_with_open_food_facts_api/) I used for the Open Food Facts API). The idea is simple: request Steam's search page filtered to top sellers, parse the HTML, and return a list of games as JSON.

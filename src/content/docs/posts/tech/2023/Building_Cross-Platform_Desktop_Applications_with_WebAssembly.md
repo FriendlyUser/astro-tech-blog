@@ -7,7 +7,7 @@ tags:
   - rust
   - javascript
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3708253319.png
+imgSrc: /imgs/2023/3708253319.webp
 ---
 
 WebAssembly (Wasm) is a portable binary instruction format. Rust, C, C++ and other languages compile to it, and it runs in every major browser engine and in standalone runtimes. Wasm doesn't draw windows by itself, so in a desktop app it plays one of two roles: compiled code running inside a webview-based shell such as Tauri or Electron, or a sandboxed plugin format loaded by a native app through a runtime like Wasmtime.

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Create, write, and read a file in Rust by calling CreateFileW, WriteFile, and ReadFile through windows-sys, with correct error handling."
 tags: ["rust", "winapi", "windows"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1020242283.png
+imgSrc: /imgs/2023/1020242283.webp
 ---
 
 This post calls the Win32 file functions `CreateFileW`, `WriteFile`, `ReadFile`, and `CloseHandle` directly from Rust. You rarely need to do this for plain file I/O, but it is the way in when you need a flag or function that the standard library doesn't expose, and it shows what `std::fs` does for you on Windows.

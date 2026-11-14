@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How WebAssembly is used to run ML inference in the browser, with an ONNX Runtime Web example, the TensorFlow.js Wasm backend, and when WebGPU is the better fit."
 tags: ['javascript']
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1834084038_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/1834084038-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 ---
 
 Running a model in the browser means no server round trip, no inference bill, and user data that never leaves the device. The hard part is speed: the numeric kernels behind ML inference (matrix multiplies, convolutions) are slow in plain JavaScript. WebAssembly (Wasm) lets libraries compile those kernels from C++ or Rust and run them in the browser with SIMD instructions and, optionally, multiple threads.

@@ -5,7 +5,7 @@ description: A small Rust CLI that adds up the size of every file under a direct
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4039349639.png
+imgSrc: /imgs/2023/4039349639.webp
 ---
 
 :::caution

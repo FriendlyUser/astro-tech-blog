@@ -5,7 +5,7 @@ description: What data science is, how it differs from data analytics, and three
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1651429035.png
+imgSrc: /imgs/2023/1651429035.webp
 ---
 Data science is the practice of using statistics and programming to answer questions with data. A typical project goes through the same steps: collect the data, clean it, explore it, model or analyze it, and communicate the result. This chapter introduces the idea and then walks through three small Python examples: a chart with matplotlib, a chart from a pandas DataFrame, and loading data from a web API.
 

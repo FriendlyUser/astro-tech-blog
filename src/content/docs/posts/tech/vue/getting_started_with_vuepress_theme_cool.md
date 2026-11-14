@@ -6,7 +6,7 @@ lastUpdated: 2026-11-14
 tags: ["vue", "vuepress"]
 projects: ["vuepress-theme-cool"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/3531615326.png'
+imgSrc: '/imgs/2023/3531615326.webp'
 ---
 
 :::caution

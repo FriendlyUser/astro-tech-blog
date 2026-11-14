@@ -5,7 +5,7 @@ description: "OpenGMK is a Rust rewrite of the GameMaker Classic (GM8) runner wi
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1340975325.png"
+imgSrc: "/imgs/2023/1340975325.webp"
 ---
 
 :::caution

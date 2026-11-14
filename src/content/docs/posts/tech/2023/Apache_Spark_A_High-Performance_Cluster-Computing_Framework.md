@@ -1,6 +1,6 @@
 ---
 description: How Apache Spark runs jobs across a cluster (driver, executors, stages, lazy evaluation), what its libraries do, and a PySpark word count you can run locally.
-imgSrc: /imgs/2023/1856526150.png
+imgSrc: "/imgs/covers/apache-spark-a-high-performance-cluster-computing-framework.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-15T05:31:42.000Z'
 lastUpdated: 2026-11-14

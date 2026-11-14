@@ -6,7 +6,7 @@ tags: ["react","js", "css"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 April 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/342028959_blank_card_on_brown_table.png'
+imgSrc: '/imgs/2023/342028959-blank-card-on-brown-table.webp'
 ---
 
 A plain `<img>` shows nothing while it loads and a broken-image icon if the URL fails. This post builds a small React component that shows a placeholder skeleton while loading and swaps to a fallback image on error.

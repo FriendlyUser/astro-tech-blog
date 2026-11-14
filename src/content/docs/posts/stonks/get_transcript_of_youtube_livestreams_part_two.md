@@ -6,7 +6,7 @@ pubDate: Friday, 20 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["youtube", "whispers", "python"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-15 20.40.00 - blank transcript.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-15-20-40-00-blank-transcript.webp'
 imgAlt: 'rbc stock analyzer'
 ---
 

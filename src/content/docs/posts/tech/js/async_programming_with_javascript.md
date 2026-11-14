@@ -6,7 +6,7 @@ tags: ["js","introToJs","express","javascript"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 Feb 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/2126341537_forest.png'
+imgSrc: '/imgs/2023/2126341537-forest.webp'
 ---
 
 > The only way to learn a new programming language is by writing programs in it.

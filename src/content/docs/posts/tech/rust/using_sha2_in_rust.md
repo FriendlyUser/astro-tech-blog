@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/251520990.png'
+imgSrc: '/imgs/2023/251520990.webp'
 ---
 
 The [`sha2`](https://crates.io/crates/sha2) crate from the RustCrypto project is a pure-Rust implementation of the SHA-2 family: SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224 and SHA-512/256. SHA-2 was designed by the NSA and is standardised by NIST in FIPS 180-4. SHA-256 and SHA-512 are the two you'll see most often, for checksums, content addressing, and as building blocks inside HMAC and signature schemes.

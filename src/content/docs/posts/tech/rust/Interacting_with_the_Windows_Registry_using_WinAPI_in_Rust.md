@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Create, open, read, write and delete Windows Registry keys and values from Rust using raw Win32 calls through the winapi crate, with correct error handling."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 :::caution

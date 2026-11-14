@@ -1,6 +1,6 @@
 ---
 description: How ASP.NET Core authorization works with roles, named policies, custom requirements and handlers, and resource-based checks through IAuthorizationService.
-imgSrc: /imgs/2023/1400635341.png
+imgSrc: /imgs/2023/1400635341.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-09-21T06:51:47.000Z'
 lastUpdated: 2026-11-14

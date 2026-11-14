@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Start tasks as goroutines, wait for them with sync.WaitGroup, collect errors with errgroup and cancel the rest through a context.Context."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1400635341.png
+imgSrc: /imgs/2023/1400635341.webp
 ---
 
 :::caution

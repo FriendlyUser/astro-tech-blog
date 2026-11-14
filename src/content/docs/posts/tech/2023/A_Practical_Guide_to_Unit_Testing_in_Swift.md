@@ -1,6 +1,6 @@
 ---
 description: Set up a test target in Xcode, write unit tests with XCTest assertions, run them, and see the same tests written with the newer Swift Testing framework.
-imgSrc: /imgs/2023/3170249337.png
+imgSrc: /imgs/2023/3170249337.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-05T00:16:03.000Z'
 lastUpdated: 2026-11-14

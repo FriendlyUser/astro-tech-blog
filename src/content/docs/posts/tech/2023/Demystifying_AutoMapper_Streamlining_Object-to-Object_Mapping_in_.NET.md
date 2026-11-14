@@ -1,6 +1,6 @@
 ---
 description: How to install AutoMapper, define mapping profiles, register it with ASP.NET Core dependency injection, and customise member mappings with ForMember.
-imgSrc: /imgs/2023/2921207460.png
+imgSrc: /imgs/2023/2921207460.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-15T23:06:49.000Z'
 lastUpdated: 2026-11-14

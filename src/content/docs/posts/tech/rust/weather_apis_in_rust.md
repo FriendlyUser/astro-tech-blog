@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/251520990.png'
+imgSrc: '/imgs/2023/251520990.webp'
 ---
 
 This post builds a small interactive CLI in Rust: type a city name, get the current temperature and conditions from the [OpenWeatherMap current weather API](https://openweathermap.org/current). It uses [`reqwest`](https://crates.io/crates/reqwest) for HTTP and [`serde`](https://serde.rs/) to deserialize the JSON response into structs.

@@ -1,6 +1,6 @@
 ---
 description: "An overview of the C++ standard containers and when to pick each, plus a runnable example using std::sort, binary search, std::erase_if and std::unordered_map."
-imgSrc: /imgs/2023/4046799380_Scrapping_oil_off_a_painting.png
+imgSrc: /imgs/2023/4046799380-scrapping-oil-off-a-painting.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-17T14:56:26.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ description: Run TerminusDB in Docker, then create a database, add a schema, ins
 pubDate: Fri, 24 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/118660664.png"
+imgSrc: "/imgs/2023/118660664.webp"
 ---
 
 TerminusDB is an open-source (Apache 2.0) document and graph database with git-style version control: every write is a commit, and you can branch, diff, merge, clone and time-travel over your data. It is queried through a JSON document API or WOQL (Web Object Query Language), a Datalog-style query language.

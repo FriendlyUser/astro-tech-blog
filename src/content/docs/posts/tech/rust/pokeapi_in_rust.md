@@ -5,7 +5,7 @@ description: Build a small Rust CLI that looks up a Pokémon on PokeAPI, deseria
 pubDate: Fri, 25 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/262205434.png
+imgSrc: /imgs/2023/262205434.webp
 ---
 
 [PokeAPI](https://pokeapi.co/) is a free, read-only REST API with data on every Pokémon: types, stats, abilities, moves and more. It needs no API key, which makes it a good target for practising HTTP and JSON in Rust.

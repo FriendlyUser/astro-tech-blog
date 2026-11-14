@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Swap std's SipHash-based HashMap for rustc-hash's FxHashMap, benchmark the two with Criterion, and know when the faster non-DoS-resistant hasher is a bad idea."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 `std::collections::HashMap` hashes keys with SipHash 1-3 and a random seed. That makes it

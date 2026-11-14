@@ -4,7 +4,7 @@ title: Summarizing YouTube videos with OpenBB 2.5's Whisper pipeline and Gradio
 description: How I wrapped OpenBB Terminal 2.5.1's transcribe_and_summarize function in a Gradio app that returns a summary and subtitles for a YouTube link.
 pubDate: Sunday, 12 March 2023
 lastUpdated: 2026-11-14
-imgSrc: /imgs/2023/3870845711.png
+imgSrc: /imgs/2023/3870845711.webp
 layout: '@/templates/BasePost.astro'
 ---
 

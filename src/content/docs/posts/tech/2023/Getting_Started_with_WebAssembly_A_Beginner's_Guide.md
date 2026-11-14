@@ -6,7 +6,7 @@ description: "Install Emscripten, compile a small C program to WebAssembly, run 
 tags:
   - javascript
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/945555918.png
+imgSrc: /imgs/2023/945555918.webp
 ---
 
 WebAssembly (wasm) is a compact binary instruction format that browsers (and runtimes such as Node.js and Wasmtime) can compile and run at close to native speed. You don't usually write it by hand: you compile C, C++, Rust or another language to it. It runs alongside JavaScript rather than replacing it. JavaScript still owns the DOM and loads the module, and wasm handles the CPU-heavy parts.

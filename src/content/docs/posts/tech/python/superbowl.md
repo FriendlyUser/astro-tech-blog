@@ -5,7 +5,7 @@ description: Use pandas.read_html to pull ESPN's Super Bowl winners, MVPs and to
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1340975325.png"
+imgSrc: "/imgs/2023/1340975325.webp"
 ---
 
 The Super Bowl is the NFL's championship game, played each February. ESPN keeps simple HTML tables of every Super Bowl result, MVP and the all-time touchdown leaders, which makes them a good target for `pandas.read_html`: no browser automation, no parsing by hand.

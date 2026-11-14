@@ -1,6 +1,6 @@
 ---
 description: 'Set up an NUnit test project for .NET, write tests with Assert.That and [TestCase], and run them with dotnet test or Visual Studio.'
-imgSrc: /imgs/2023/3267094508_short_ruler_in_the_grass.png
+imgSrc: /imgs/2023/3267094508-short-ruler-in-the-grass.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-23T22:59:48.000Z'
 lastUpdated: 2026-11-14

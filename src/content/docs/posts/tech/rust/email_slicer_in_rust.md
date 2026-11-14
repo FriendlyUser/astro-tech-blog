@@ -5,7 +5,7 @@ pubDate: Saturday, 24 November 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "javascript"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 An "email slicer" is a classic beginner exercise: take an address like `john.doe@example.com` and split it into the username (`john.doe`) and the domain (`example.com`). It's a useful excuse to practise string handling in Rust, including how to represent input that doesn't fit the pattern.

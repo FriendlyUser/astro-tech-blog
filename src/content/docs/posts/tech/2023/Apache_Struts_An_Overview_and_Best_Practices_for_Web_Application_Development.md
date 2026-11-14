@@ -1,6 +1,6 @@
 ---
 description: "How Apache Struts 2 handles requests with actions, interceptors and struts.xml, with a small Struts 7 example and the security practices that matter most."
-imgSrc: /imgs/2023/3170249337.png
+imgSrc: /imgs/2023/3170249337.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-29T07:25:32.000Z'
 lastUpdated: 2026-11-14

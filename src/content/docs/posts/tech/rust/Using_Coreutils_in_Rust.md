@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Build minimal versions of the cat, wc and ls coreutils in Rust using only the standard library, and see how uutils does it for real."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/326029388.png
+imgSrc: /imgs/2023/326029388.webp
 ---
 
 Coreutils are the basic Unix command-line tools: `ls`, `cat`, `wc`, `cp`, `mv`, `rm` and friends. They're a

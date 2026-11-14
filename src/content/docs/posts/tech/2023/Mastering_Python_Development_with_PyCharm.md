@@ -1,6 +1,6 @@
 ---
 description: Set up a PyCharm project with a virtual environment, then use its code completion, refactoring shortcuts, debugger and Git tools in daily Python work.
-imgSrc: /imgs/2023/1028024527.png
+imgSrc: /imgs/2023/1028024527.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-11T09:44:06.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ pubDate: Saturday, 16 June 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["flutter", "pokeapi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-29 12.27.48 - ball cartoon on grass red white like pokeball.png'
+imgSrc: '/imgs/2023/dalle-2022-12-29-12-27-48-ball-cartoon-on-grass-red-white-like-pokeball.webp'
 ---
 
 To start the Pokédex app, I used Figma to get a good design and DhiWise to turn it into Flutter

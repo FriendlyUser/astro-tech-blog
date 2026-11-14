@@ -5,7 +5,7 @@ tags: ["Investor Presentation", "Audio Download", "Conference Hosting Software",
 pubDate: "2024-03-19T19:17:25.000Z"
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/14447351.png"
+imgSrc: "/imgs/2023/14447351.webp"
 ---
 
 Investor presentations and earnings calls are often published through webcast platforms that only let you play them in the browser. If you want to listen offline or run the audio through a transcription model, you need the underlying stream. This post walks through doing that for a Scotiabank presentation hosted on gowebcasting.com. Only download recordings you have access to, and check the hosting site's terms.

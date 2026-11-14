@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Go's built-in map type works as a dictionary: creating maps, adding and reading keys, the comma-ok check, deleting, iterating in sorted order, and common gotchas."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 Go doesn't have a type called "dictionary"; its built-in `map` type fills that role. A `map[K]V` stores values of type `V` under unique keys of type `K`, where `K` can be any comparable type (strings, numbers, booleans, pointers, structs of comparable fields, and so on). Lookups, inserts and deletes are average constant time because maps are hash tables.

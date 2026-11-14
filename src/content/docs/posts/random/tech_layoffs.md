@@ -5,7 +5,7 @@ description: "My take in March 2023 on the tech layoffs, why the wider economy s
 pubDate: Mon, 14 March 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/2421950579.png'
+imgSrc: '/imgs/2023/2421950579.webp'
 ---
 
 *This post started as an AI-generated draft in March 2023 and has since been edited for clarity.*

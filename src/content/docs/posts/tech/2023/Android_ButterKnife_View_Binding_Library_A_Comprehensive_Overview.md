@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How ButterKnife's @BindView and @OnClick annotations work, the setup gotchas on current Android Gradle Plugin versions, and the View Binding code that replaces them."
 tags: ["android", "butterknife", "view binding", "java"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2617761522.png
+imgSrc: /imgs/2023/2617761522.webp
 ---
 
 :::caution[ButterKnife is deprecated]

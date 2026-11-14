@@ -5,7 +5,7 @@ description: "A short history of C# and .NET, the dotnet CLI commands you'll use
 pubDate: Fri, 24 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/118660664.png"
+imgSrc: "/imgs/2023/118660664.webp"
 ---
 C# (pronounced "C sharp") is a statically typed, object-oriented language from Microsoft that runs on .NET. This post covers where it came from, what ".NET" means today, the `dotnet` command-line tool, and the three collection types you'll reach for first. It ends with a short comparison with Java.
 

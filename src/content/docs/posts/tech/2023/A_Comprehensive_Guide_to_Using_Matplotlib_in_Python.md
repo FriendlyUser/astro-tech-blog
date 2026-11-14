@@ -1,7 +1,7 @@
 ---
 description: Make line, scatter, bar, histogram, 3D and animated plots with Matplotlib's
   object-oriented API, then label, combine and save them.
-imgSrc: /imgs/2023/1637557246.png
+imgSrc: /imgs/2023/1637557246.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-03T11:06:50.000Z'
 lastUpdated: 2026-11-14

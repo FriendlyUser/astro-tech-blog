@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up OpenCV with CMake, then load, resize, crop and rotate images, play video with VideoCapture, and run a MobileNet-SSD detector in C++."
 tags: ["opencv", "cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2125743054.png
+imgSrc: /imgs/2023/2125743054.webp
 ---
 
 OpenCV is an open-source computer vision library written in C++. The core type is `cv::Mat`, an n-dimensional array that holds images, and the library adds image processing, video I/O, a simple GUI (`highgui`) for debugging, and a `dnn` module that runs trained neural networks.

@@ -1,6 +1,6 @@
 ---
 description: "What Apache Tomcat is, how Catalina, Coyote and Jasper fit together, which config file does what, and how to deploy a Jakarta servlet on Tomcat 11."
-imgSrc: /imgs/2023/522267727.png
+imgSrc: /imgs/2023/522267727.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-10-30T23:17:25.000Z'
 lastUpdated: 2026-11-14

@@ -1,6 +1,6 @@
 ---
 description: "Build a small Django app from scratch: create a project and app, define a model, run migrations, and render it with a view, URLs, a template and static files."
-imgSrc: /imgs/2023/3750534419.png
+imgSrc: /imgs/2023/3750534419.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-31T19:03:01.000Z'
 lastUpdated: 2026-11-14

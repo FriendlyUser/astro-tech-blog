@@ -5,7 +5,7 @@ description: A US-focused checklist for retirement income, insurance, credit, ta
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/226878303.png
+imgSrc: /imgs/2023/226878303.webp
 ---
 
 These are notes on the parts of personal finance that come after budgeting and investing: retirement income, insurance, credit, taxes and side income. The programs and rules named here (Social Security, Medicare, the IRS, US credit bureaus) are US-specific, and this is general information rather than advice for your situation.

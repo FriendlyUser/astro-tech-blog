@@ -1,6 +1,6 @@
 ---
 description: How to cache data in .NET with IMemoryCache, IDistributedCache and Redis, and HybridCache, including expiration, size limits and tag-based invalidation.
-imgSrc: /imgs/2023/549017699.png
+imgSrc: /imgs/2023/549017699.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-16T12:11:06.000Z'
 lastUpdated: 2026-11-14

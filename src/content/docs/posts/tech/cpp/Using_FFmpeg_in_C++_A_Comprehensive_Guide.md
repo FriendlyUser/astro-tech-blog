@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use FFmpeg's libavformat and libavcodec from C++ to decode video frames and copy streams into a new container, using the current send/receive API."
 tags: ["ffmpeg", "cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2112480316.png
+imgSrc: /imgs/2023/2112480316.webp
 ---
 
 The `ffmpeg` command-line tool is a thin front end over a set of C libraries you can call directly. Doing that from C++ makes sense when you need frame-level access inside your own program: feeding frames to a vision model, building a custom player, or writing files without shelling out.

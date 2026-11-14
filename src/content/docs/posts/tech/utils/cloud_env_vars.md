@@ -5,7 +5,7 @@ description: Why multi-line values like PEM keys break in environment variables,
 pubDate: Fri, 30 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1373682361.png
+imgSrc: /imgs/2023/1373682361.webp
 ---
 Environment variables are key/value pairs a process inherits from whatever started it. Cloud platforms (Heroku, Vercel, Netlify, Cloud Run, GitHub Actions secrets and so on) use them to hand configuration to your app: database URLs, API keys, feature flags. Keeping these out of the source code means the same build can run in development, staging and production, and secrets don't end up in git.
 

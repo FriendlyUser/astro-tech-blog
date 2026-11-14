@@ -5,7 +5,7 @@ description: An introduction to Typst, a markup-based typesetting system, by bui
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/1900267581.webp
 ---
 
 Typst is a markup-based typesetting system aimed at the same documents as LaTeX (papers, theses, resumes) but with simpler syntax, readable error messages and near-instant recompiles. It's written in Rust and compiles to PDF. You can use the collaborative web app at [typst.app](https://typst.app/) or the open-source command-line compiler:

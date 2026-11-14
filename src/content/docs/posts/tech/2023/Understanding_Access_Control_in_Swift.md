@@ -1,6 +1,6 @@
 ---
 description: "Swift's six access levels (private, fileprivate, internal, package, public, open), what each one allows, and the defaults and rules that trip people up."
-imgSrc: /imgs/2023/549017699.png
+imgSrc: /imgs/2023/549017699.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-28T21:42:20.000Z'
 lastUpdated: 2026-11-14

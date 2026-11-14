@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Swift closures work: the short syntax forms, trailing closures, how values are captured, @escaping, retain cycles with [weak self], and @autoclosure."
 tags: ["swift"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3613662819.png
+imgSrc: /imgs/2023/3613662819.webp
 ---
 
 A closure in Swift is a block of code you can store in a variable or pass to a function, like a lambda in other languages or a block in Objective-C. Functions are closures too: a global function is a named closure that captures nothing, a nested function can capture values from the function around it, and a closure expression is the unnamed `{ ... in ... }` form.

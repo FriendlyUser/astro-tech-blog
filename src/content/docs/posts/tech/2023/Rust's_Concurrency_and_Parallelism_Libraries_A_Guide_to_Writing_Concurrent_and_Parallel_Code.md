@@ -6,7 +6,7 @@ description: "Working examples of Rust's standard concurrency tools (threads, sc
 tags:
   - rust
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1373682361.png
+imgSrc: /imgs/2023/1373682361.webp
 ---
 
 Rust's selling point for concurrent code is that data races are compile-time errors. You still use threads, locks and channels like in other languages, but the type system (through the `Send` and `Sync` traits and the borrow checker) refuses to compile code that shares data between threads unsafely. This post goes through the standard library's tools and then Rayon for data parallelism.

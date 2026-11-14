@@ -1,6 +1,6 @@
 ---
 description: 'A tour of the deno CLI: running TypeScript with permission flags, then formatting, linting, type-checking, bundling and compiling a small script.'
-imgSrc: /imgs/2023/1096284488.png
+imgSrc: /imgs/2023/1096284488.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-02-08T15:32:23.000Z'
 lastUpdated: 2026-11-14

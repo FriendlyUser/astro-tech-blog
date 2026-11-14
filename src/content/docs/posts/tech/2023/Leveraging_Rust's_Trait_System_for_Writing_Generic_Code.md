@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Define a Rust trait, implement it for your own types, and write generic functions with trait bounds, impl Trait, where clauses and dyn Trait."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1736328419.png
+imgSrc: /imgs/2023/1736328419.webp
 ---
 
 A trait in Rust describes behaviour that several types can share, much like an interface in Java or Go. Combined with generics, traits let you write one function that works with any type that has that behaviour, and the compiler still checks every call at compile time.

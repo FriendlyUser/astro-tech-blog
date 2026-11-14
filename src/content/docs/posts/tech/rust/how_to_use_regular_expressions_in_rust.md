@@ -5,7 +5,7 @@ description: Match, find, capture and replace text in Rust with the regex crate,
 pubDate: Fri, 3 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3702590653.png"
+imgSrc: "/imgs/2023/3702590653.webp"
 ---
 
 Rust's standard library has no regular expressions. The [`regex`](https://docs.rs/regex) crate, maintained by the rust-lang project, is the usual choice. Examples here use regex 1.x (1.13 at the time of writing).

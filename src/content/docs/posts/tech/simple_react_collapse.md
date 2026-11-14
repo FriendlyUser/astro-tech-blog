@@ -6,7 +6,7 @@ layout: '@/templates/BasePost.astro'
 pubDate: Wed, 21 May 2023
 lastUpdated: 2026-11-14
 tags: ["bit", "javascript", "react", "typescript"]
-imgSrc: '/imgs/2023/man_on_horse.png'
+imgSrc: '/imgs/2023/man-on-horse.webp'
 imgAlt: 'Image post 6'
 ---
 

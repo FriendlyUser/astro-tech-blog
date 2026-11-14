@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "A tour of Rust's core data structures, from tuples, arrays and slices to Vec, String, HashMap and HashSet, plus custom structs and enums."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/492664568.png
+imgSrc: /imgs/2023/492664568.webp
 ---
 
 This post walks through the data structures you'll use most in Rust: the primitive compound types built into the language, the main collections in the standard library, and your own structs and enums. Each snippet compiles on stable Rust when placed inside `fn main()`.

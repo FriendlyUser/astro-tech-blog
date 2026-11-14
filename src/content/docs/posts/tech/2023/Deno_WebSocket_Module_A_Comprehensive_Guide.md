@@ -1,6 +1,6 @@
 ---
 description: 'Build a WebSocket echo server in Deno with Deno.serve and Deno.upgradeWebSocket, and connect to it with the built-in WebSocket client.'
-imgSrc: /imgs/2023/2421950579.png
+imgSrc: /imgs/2023/2421950579.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-08T09:48:30.000Z'
 lastUpdated: 2026-11-14

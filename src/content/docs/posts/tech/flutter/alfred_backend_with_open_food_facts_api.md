@@ -5,7 +5,7 @@ description: A small Dart backend built with Alfred that turns query-string para
 pubDate: Mon, 30 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/2421950579.png'
+imgSrc: '/imgs/2023/2421950579.webp'
 ---
 This post follows on from my last post at https://friendlyuser.github.io/posts/tech/flutter/how_to_deploy_dart_to_hs.html. I'm reusing the same Dart backend to wrap the [Open Food Facts](https://world.openfoodfacts.org/data) API, a free, open database of food products with ingredients, allergens and nutrition data. The server uses [Alfred](https://pub.dev/packages/alfred) for HTTP and the official [openfoodfacts](https://pub.dev/packages/openfoodfacts) Dart package for the API calls.
 

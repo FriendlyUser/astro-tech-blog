@@ -6,7 +6,7 @@ pubDate: Friday, 13 April 2023
 lastUpdated: 2026-11-14
 tags: ["investing"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/sample.png'
+imgSrc: '/imgs/sample.webp'
 imgAlt: 'rbc stock analyzer'
 ---
 

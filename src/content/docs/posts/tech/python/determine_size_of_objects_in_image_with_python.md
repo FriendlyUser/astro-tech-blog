@@ -5,7 +5,7 @@ description: Detect objects in an image with YOLOv3 and OpenCV's DNN module, the
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/other/output_1.png
+imgSrc: /imgs/2023/other/output-1.webp
 ---
 
 :::caution

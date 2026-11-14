@@ -5,7 +5,7 @@ description: How vuepress-theme-cool extends the VuePress 1 default theme with M
 pubDate: Fri, 2 March 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3997466131.png"
+imgSrc: "/imgs/2023/3997466131.webp"
 ---
 
 :::caution[VuePress 1 is in maintenance mode]

@@ -6,7 +6,7 @@ tags: ["linkedin"]
 layout: '@/templates/BasePost.astro' 
 pubDate: Monday, 28 August 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 19.18.38 - funny story.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-12-19-18-38-funny-story.webp'
 ---
 
 If you like Pokémon and want something cheerful on your desk, a solar-powered Pikachu bobblehead is hard to beat. I bought mine in Chinatown for $12.99 years ago. When I wrote this in 2023, the same kind of toy was selling on AliExpress for about $5 to $10.

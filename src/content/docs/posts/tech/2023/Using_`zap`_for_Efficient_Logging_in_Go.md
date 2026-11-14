@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up Uber's zap logger in Go: production vs development presets, log levels, structured fields, console output and custom time formats."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3582974242.png
+imgSrc: /imgs/2023/3582974242.webp
 ---
 
 [zap](https://github.com/uber-go/zap) is a structured logging library for Go from Uber. Its main selling point is low overhead: the core `Logger` takes strongly typed fields (`zap.String`, `zap.Int`, ...) instead of `interface{}` values, which avoids reflection and most allocations on the hot path. If you'd rather write `printf`-style calls, it also has a slower but friendlier `SugaredLogger`.

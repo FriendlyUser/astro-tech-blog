@@ -5,7 +5,7 @@ description: My two-step process for logo ideas. I ask GPT-4 (on Poe) for writte
 pubDate: Fri, 21 March 2025
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 
 I generate logos with two AI tools: a chat model writes the logo descriptions, and an image model draws them.

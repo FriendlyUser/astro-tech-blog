@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Package OCRmyPDF, Tesseract and Ghostscript into a custom Azure Functions container and expose an HTTP endpoint that OCRs an uploaded PDF and returns its text."
 tags: ["Azure", "Docker", "OCR", "Python", "Serverless", "Azure Functions", "Cloud Computing", "Web Development", "Containerization", "OCRmypdf"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "https://unsplash.com/photos/a-person-on-a-snowboard-in-front-of-a-colorful-wall-d391zwqXkRI"
+imgSrc: "/imgs/covers/web-scraping-construction-procurement-data.webp"
 ---
 
 [OCRmyPDF](https://ocrmypdf.readthedocs.io/) adds a searchable text layer to scanned PDFs. It's a Python package, but it shells out to Tesseract (for the OCR itself) and optionally Ghostscript, so you can't deploy it as a plain code-only Azure Function: the Functions host image doesn't have those programs. The fix is a custom container built on Microsoft's Functions base image with the extra system packages installed.

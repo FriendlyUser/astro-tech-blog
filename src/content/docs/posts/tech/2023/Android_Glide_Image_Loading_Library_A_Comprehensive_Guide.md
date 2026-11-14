@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to add Glide to an Android project, load images into an ImageView with placeholders, apply built-in and custom transformations, and control caching."
 tags: ["android", "java", "glide"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/803232156.png
+imgSrc: /imgs/2023/803232156.webp
 ---
 
 Glide is an open-source image loading library for Android, maintained by the Bumptech team on GitHub. You give it a URL, file, URI or resource ID and an `ImageView`; it downloads the image off the main thread, decodes it at the size the view needs, caches it in memory and on disk, and cancels the request if the screen goes away. It also plays animated GIFs. If you're displaying images in a `RecyclerView`, Glide saves you from writing that plumbing yourself.

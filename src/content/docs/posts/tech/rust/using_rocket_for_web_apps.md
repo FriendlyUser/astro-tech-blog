@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/251520990.png'
+imgSrc: '/imgs/2023/251520990.webp'
 ---
 
 [Rocket](https://rocket.rs) is a Rust web framework built around attribute macros: you write ordinary functions, annotate them with `#[get("/path")]`, and Rocket generates the routing and request parsing. Since 0.5 it runs on stable Rust and is async, built on Tokio.

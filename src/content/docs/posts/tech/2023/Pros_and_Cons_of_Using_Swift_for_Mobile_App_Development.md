@@ -6,7 +6,7 @@ description: "The practical pros and cons of Swift for mobile development: safet
 tags:
   - swift
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/244959930.png
+imgSrc: /imgs/2023/244959930.webp
 ---
 
 Swift is Apple's language for iOS, iPadOS, macOS, watchOS, tvOS and visionOS. Apple introduced it in 2014 and open-sourced it in 2015, and it is now the default language for new Apple-platform apps. Whether it's the right choice for a mobile project mostly comes down to one question: are you building for Apple devices, Android, or both?

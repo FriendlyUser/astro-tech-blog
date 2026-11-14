@@ -6,7 +6,7 @@ tags: ["flutter", "supabase", "dart"]
 layout: '@/templates/BasePost.astro'
 pubDate: Sun, 7 Feburary 2023
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 19.51.13 - fridge with blank paper on it.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-12-19-51-13-fridge-with-blank-paper-on-it.webp'
 ---
 
 This is a walkthrough of a small todo app I built with Flutter and [Supabase](https://supabase.com/). Todos live in a single Postgres table; the app reads them through the `supabase` Dart client, shows them in a list, and lets you add, complete and delete them. The full project is on [GitHub](https://github.com/FriendlyUser/supabase_flutter_todo).

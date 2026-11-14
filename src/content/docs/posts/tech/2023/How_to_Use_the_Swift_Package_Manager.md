@@ -1,6 +1,6 @@
 ---
 description: Create a Swift package from the command line, add a dependency such as Alamofire to Package.swift, and update, pin or remove dependencies with SwiftPM.
-imgSrc: /imgs/2023/3867963691.png
+imgSrc: /imgs/2023/3867963691.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-26T13:34:45.000Z'
 lastUpdated: 2026-11-14

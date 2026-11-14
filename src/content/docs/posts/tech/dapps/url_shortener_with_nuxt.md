@@ -5,7 +5,7 @@ pubDate: Saturday, 20 June 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["solidity", "dapp", "vue"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/3267094508_short_ruler_in_the_grass.png'
+imgSrc: '/imgs/2023/3267094508-short-ruler-in-the-grass.webp'
 ---
 
 :::caution

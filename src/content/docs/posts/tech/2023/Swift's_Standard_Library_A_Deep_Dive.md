@@ -1,6 +1,6 @@
 ---
 description: "A tour of Swift's standard library: integer and floating-point types, String and Character, Array, Set and Dictionary, and sorted, filter, map and reduce."
-imgSrc: /imgs/2023/117117315.png
+imgSrc: /imgs/2023/117117315.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-12T16:20:28.000Z'
 lastUpdated: 2026-11-14

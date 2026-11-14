@@ -5,7 +5,7 @@ description: "Start goroutines, wait for them with sync.WaitGroup, pass data ove
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/241285989.png
+imgSrc: /imgs/2023/241285989.webp
 ---
 Go builds concurrency into the language: the `go` keyword starts a goroutine, and channels let goroutines pass values to each other. This post covers both, plus `select`, and finishes with a small program that processes requests concurrently.
 

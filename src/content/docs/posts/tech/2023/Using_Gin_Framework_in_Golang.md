@@ -1,6 +1,6 @@
 ---
 description: Build a small in-memory books REST API with Gin in Go, covering routing, route groups, path parameters, JSON binding and status codes.
-imgSrc: /imgs/2023/3053072516.png
+imgSrc: /imgs/2023/3053072516.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-12T02:45:18.000Z'
 lastUpdated: 2026-11-14

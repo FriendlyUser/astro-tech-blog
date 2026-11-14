@@ -5,7 +5,7 @@ description: "Build a minimal async HTTP/1 server with hyper 1.x, hyper-util and
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2459005241.png
+imgSrc: "/imgs/covers/getting-started-with-hyper.webp"
 ---
 
 :::caution

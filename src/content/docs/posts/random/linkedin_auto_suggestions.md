@@ -6,7 +6,7 @@ tags: ["linkedin"]
 layout: '@/templates/BasePost.astro'
 pubDate: Sunday, 13 Feburary 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 19.18.38 - funny story.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-12-19-18-38-funny-story.webp'
 ---
 
 LinkedIn messaging shows a row of suggested replies under each conversation, generated from the recent messages, so you can answer with one click. I was talking to a stranger on LinkedIn and noticed how poor those suggestions were. I've left the stranger unnamed and hidden my own name in the screenshots.

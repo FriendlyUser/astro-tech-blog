@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Rust's match works: exhaustiveness checking, destructuring enums, match guards, range patterns, @ bindings and or-patterns, with runnable examples."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3170249337.png
+imgSrc: /imgs/2023/3170249337.webp
 ---
 
 `match` compares a value against a list of patterns and runs the arm for the first one that matches. Unlike a C `switch`, it is an expression (it returns a value), it can destructure data, and the compiler checks that every possible value is handled.

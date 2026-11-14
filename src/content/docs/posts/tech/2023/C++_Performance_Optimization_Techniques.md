@@ -1,7 +1,7 @@
 ---
 title: "C++ performance optimization: compiler flags, profiling, memory and cache-friendly code"
 description: "Practical ways to make C++ faster: optimization flags and PGO, profiling before changing code, avoiding allocations, cache-friendly layouts and parallel algorithms."
-imgSrc: "/imgs/2023/DALL·E 2022-12-29 12.27.48 - ball cartoon on grass red white like pokeball.png"
+imgSrc: "/imgs/2023/dalle-2022-12-29-12-27-48-ball-cartoon-on-grass-red-white-like-pokeball.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-12-19T10:46:03.000Z'
 lastUpdated: 2026-11-14

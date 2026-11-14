@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Add structured spans and events to a Rust program with tracing and tracing-subscriber, time spans, and inspect async tasks with tokio-console."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [`tracing`](https://docs.rs/tracing) is the Tokio project's library for structured, contextual diagnostics.

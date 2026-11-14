@@ -1,7 +1,7 @@
 ---
 description: Getting started with GORM in Go using SQLite, covering models, AutoMigrate,
   create/read/update/delete, and a one-to-many association, with zero-value gotchas.
-imgSrc: /imgs/2023/3619698287.png
+imgSrc: /imgs/2023/3619698287.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-20T00:38:00.000Z'
 lastUpdated: 2026-11-14

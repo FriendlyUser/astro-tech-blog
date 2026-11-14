@@ -5,7 +5,7 @@ description: How to structure a LaTeX book with \frontmatter, \mainmatter and \b
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2062539924.png
+imgSrc: /imgs/2023/2062539924.webp
 ---
 
 Front matter is everything before the main text: title page, abstract or preface, dedication, table of contents, lists of figures and tables. Back matter comes after it: appendices, bibliography, glossary, index. In LaTeX most of these are one command each. What trips people up is page numbering, getting unnumbered sections into the table of contents, and the extra tool runs that bibliographies, glossaries and indexes need.

@@ -5,7 +5,7 @@ description: "Build a small diff-like command-line tool in Rust that compares tw
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1340975325.png"
+imgSrc: "/imgs/2023/1340975325.webp"
 ---
 
 :::caution

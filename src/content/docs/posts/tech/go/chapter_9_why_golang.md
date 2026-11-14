@@ -5,7 +5,7 @@ description: "Build a small web server with Go's standard library: register hand
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1648720574.png
+imgSrc: /imgs/2023/1648720574.webp
 ---
 Go's standard library is enough to build a working web server: `net/http` handles requests and routing, and `html/template` renders HTML. This post builds a simple server, adds method-aware routes, and renders a page from a template.
 

@@ -3,6 +3,7 @@ title: "Building Afterlight, a 2D-HD JRPG, with Claude Code"
 description: "One long-running Claude Code session, eleven helper agents and a usage limit or two. How a three.js JRPG went from a one-paragraph prompt to a public repo overnight."
 tags: ["Claude Code", "Three.js", "Game Development", "JRPG", "AI Agents", "Vite"]
 pubDate: "2026-11-07T16:10:00.000Z"
+imgSrc: "/imgs/2026/building_afterlight_jrpg_with_claude_code.webp"
 ---
 
 **Afterlight** is a 2D-HD JRPG (pixel-art sprites in lit 3D dioramas) that runs in the browser on three.js. Claude Code (Opus 5.5) built nearly all of it in one session, running over SSH on my WSL machine from the afternoon of November 6, 2026 to the next morning. I wrote the prompt, answered a handful of questions and restarted it when it hit limits.

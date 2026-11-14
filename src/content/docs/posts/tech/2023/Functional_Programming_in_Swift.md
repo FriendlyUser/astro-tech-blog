@@ -1,7 +1,7 @@
 ---
 description: Functional programming in Swift with closures, map/filter/reduce, function
   types, value-type immutability, pattern matching, and recursion, with runnable examples.
-imgSrc: /imgs/2023/2575289368.png
+imgSrc: /imgs/2023/2575289368.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-22T09:17:57.000Z'
 lastUpdated: 2026-11-14

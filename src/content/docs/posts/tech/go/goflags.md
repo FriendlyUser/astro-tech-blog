@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Define CLI options as struct tags with jessevdk/go-flags, parse them, add subcommands, and handle --help and parse errors correctly."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 [go-flags](https://github.com/jessevdk/go-flags) is a command-line parser for Go that reads

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use the Klaxon library to parse JSON into Kotlin data classes, parse JSON arrays into lists, and build JSON with Klaxon's json DSL."
 tags: ["kotlin", "klaxon"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3185275103.png
+imgSrc: /imgs/2023/3185275103.webp
 ---
 :::caution
 Klaxon's last release on Maven Central is 5.6 (March 2022), and the project hasn't shipped a release since. The examples below still work, but for new projects consider [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) (from JetBrains), Moshi, or Jackson's Kotlin module.

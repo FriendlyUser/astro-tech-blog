@@ -6,7 +6,7 @@ tags: ["go","git","flutter"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 7 April 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/dall-e/upload_icon_cloud.png'
+imgSrc: "/imgs/2023/dall-e/upload-icon-cloud.webp"
 ---
 
 Bitrise is a hosted CI/CD service where a build is a list of steps: prebuilt ones from the step library plus your own steps written in Bash or Go. I wanted every Android build of a Flutter app to drop its APKs into a Google Drive folder, so I wrote a small Go step that does that with the Google Drive API and a service account.

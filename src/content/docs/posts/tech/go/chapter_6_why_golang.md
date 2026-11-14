@@ -5,7 +5,7 @@ description: "How Go covers classic OOP ideas without classes: structs and metho
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1452718796.png
+imgSrc: /imgs/2023/1452718796.webp
 ---
 Go has no classes and no inheritance, but it still covers what most people want from OOP: types that bundle data with behaviour, hidden internals, code reuse, and polymorphism. It does this with structs, methods, embedding and interfaces. This post walks through each one.
 

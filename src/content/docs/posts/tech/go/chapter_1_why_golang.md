@@ -5,7 +5,7 @@ description: "Go's origins at Google, the language features that matter day to d
 pubDate: Fri, 14 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4225416985.png
+imgSrc: /imgs/2023/4225416985.webp
 ---
 Go (often called Golang, after its old golang.org domain) is a statically typed, compiled, garbage-collected language from Google. It was built for servers, network services and command-line tools: places where fast builds, simple deployment and easy concurrency matter more than squeezing out every last bit of performance.
 

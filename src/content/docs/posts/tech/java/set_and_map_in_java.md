@@ -5,7 +5,7 @@ description: How to use HashSet and HashMap in Java, when to choose the LinkedHa
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2785394646.png
+imgSrc: /imgs/2023/2785394646.webp
 ---
 
 A `Set` holds unique elements. A `Map` holds key-value pairs with unique keys. Both are interfaces in `java.util`, and `HashSet` and `HashMap` are the implementations you'll reach for by default. In fact, `HashSet` is backed by a `HashMap` internally, with the set's elements stored as the map's keys.

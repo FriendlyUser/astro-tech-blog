@@ -6,7 +6,7 @@ description: "Load, display and save images with OpenCV in Python, then resize, 
 tags:
   - python
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3437532028.png
+imgSrc: /imgs/2023/3437532028.webp
 ---
 
 OpenCV is a C++ computer vision library with official Python bindings (`cv2`). In Python, images are plain NumPy arrays, so you can mix OpenCV calls with NumPy slicing and arithmetic. This post walks through the basics: I/O, simple transforms, thresholding, blurring, edge detection, and face detection with a Haar cascade.

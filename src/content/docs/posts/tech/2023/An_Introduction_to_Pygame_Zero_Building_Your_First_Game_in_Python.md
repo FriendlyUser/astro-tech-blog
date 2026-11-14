@@ -1,6 +1,6 @@
 ---
 description: 'Build a small space shooter with Pygame Zero: actors, keyboard input, shooting, collisions, a score and a game-over screen, in about 70 lines of Python.'
-imgSrc: /imgs/2023/359936451.png
+imgSrc: /imgs/2023/359936451.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-16T23:52:29.000Z'
 lastUpdated: 2026-11-14

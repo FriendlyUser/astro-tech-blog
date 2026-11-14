@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to use 1build to keep a Go project's build, test, fmt and run commands in a single 1build.yaml and run them by name, with before/after hooks."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1091373203.png
+imgSrc: /imgs/2023/1091373203.webp
 ---
 
 [1build](https://github.com/gopinath-langote/1build) is a small command-line tool that stores a project's commands in a `1build.yaml` file and runs them by name. Instead of remembering `go build -o bin/app .` or `go test -race ./...`, everyone on the team runs `1build build` or `1build test`. It is language-agnostic; this post uses a Go project as the example.

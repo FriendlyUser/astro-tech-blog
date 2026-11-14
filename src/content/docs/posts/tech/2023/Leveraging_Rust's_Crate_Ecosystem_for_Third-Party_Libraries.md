@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to find Rust crates on crates.io, add them with cargo add, choose versions and features, and call an async HTTP client (reqwest with tokio)."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/DALL?E 2022-12-29 11.41.51 - stars falling on the moon.png
+imgSrc: "/imgs/2023/stars-falling-on-the-moon.webp"
 ---
 
 Rust's standard library is deliberately small. HTTP clients, async runtimes, serialization and CLI parsing all come from third-party crates, which you pull in with Cargo, Rust's build tool and package manager. This post covers finding a crate, adding it to a project, and using it.

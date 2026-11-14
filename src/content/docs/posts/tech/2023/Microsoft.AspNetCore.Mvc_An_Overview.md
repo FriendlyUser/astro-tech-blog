@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "A short tour of ASP.NET Core MVC: how models, views and controllers fit together, with a working controller showing routing, model binding and validation."
 tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4161054396.png
+imgSrc: /imgs/2023/4161054396.webp
 ---
 
 `Microsoft.AspNetCore.Mvc` is ASP.NET Core's Model-View-Controller framework. Controllers handle HTTP requests, models carry data and validation rules, and Razor views render HTML. It's a good fit for server-rendered sites with many pages and forms; for JSON-only APIs you can use the same controllers without views, or minimal APIs.

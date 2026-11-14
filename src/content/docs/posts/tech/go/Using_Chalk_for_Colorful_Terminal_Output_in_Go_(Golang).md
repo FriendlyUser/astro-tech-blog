@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to color and style terminal text in Go with ttacon/chalk: basic colors, text styles, reusable styles, and its limits compared with fatih/color."
 tags: ["go", "chalk"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1144941208.png
+imgSrc: /imgs/2023/1144941208.webp
 ---
 
 :::caution
