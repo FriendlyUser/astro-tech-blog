@@ -1,7 +1,7 @@
 ---
 description: Train and evaluate a k-nearest neighbours classifier on the Iris dataset
   with scikit-learn, then use a pipeline and cross-validation for a more honest score.
-imgSrc: /imgs/2023/3072838870.png
+imgSrc: /imgs/2023/3072838870.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-02T15:09:55.000Z'
 lastUpdated: 2026-11-14

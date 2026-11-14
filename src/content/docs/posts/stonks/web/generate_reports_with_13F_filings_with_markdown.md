@@ -6,7 +6,7 @@ pubDate: Friday, 14 April 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["sec", "python", "secedgar", "investing"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-10 21.55.07 - magnifying glass on stonks.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-10-21-55-07-magnifying-glass-on-stonks.webp'
 imgAlt: 'rbc stock analyzer'
 ---
 

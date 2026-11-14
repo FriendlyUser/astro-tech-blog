@@ -1,6 +1,6 @@
 ---
 description: Working examples of Apache Commons Lang (StringUtils, NumberUtils), Commons IO (FileUtils) and Commons Collections (MultiValuedMap), with current Maven coordinates.
-imgSrc: /imgs/2023/1113292628.png
+imgSrc: /imgs/2023/1113292628.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-21T20:28:26.000Z'
 lastUpdated: 2026-11-14

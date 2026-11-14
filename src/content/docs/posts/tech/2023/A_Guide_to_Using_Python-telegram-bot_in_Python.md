@@ -1,6 +1,6 @@
 ---
 description: Build a working Telegram echo bot with python-telegram-bot v22, using its asyncio Application API, command handlers and message filters.
-imgSrc: /imgs/2023/945555918.png
+imgSrc: /imgs/2023/945555918.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-17T13:13:00.000Z'
 lastUpdated: 2026-11-14

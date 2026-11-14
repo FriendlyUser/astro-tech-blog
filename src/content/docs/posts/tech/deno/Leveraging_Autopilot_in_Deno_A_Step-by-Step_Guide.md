@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How the autopilot module drives the mouse, keyboard and screen from Deno through Rust FFI, with a working example and its permission flags."
 tags: ["deno", "typescript", "automation"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2896017845.png
+imgSrc: /imgs/2023/2896017845.webp
 ---
 
 :::caution

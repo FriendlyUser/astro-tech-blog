@@ -1,6 +1,6 @@
 ---
 description: How Swift extensions add methods, computed properties, initializers and protocol conformances to existing types, plus what they can't do.
-imgSrc: /imgs/2023/2966567085.png
+imgSrc: /imgs/2023/2966567085.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-15T23:38:52.000Z'
 lastUpdated: 2026-11-14

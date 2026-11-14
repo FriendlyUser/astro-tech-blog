@@ -5,7 +5,7 @@ pubDate: Saturday, 26 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "cpp"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/2886495853.png'
+imgSrc: '/imgs/2023/2886495853.webp'
 ---
 
 The C++ standard library has no CSV parser, but `std::ifstream`, `std::getline` and `std::ofstream` are enough for simple files. This post reads a small CSV of scores, adds a "passed" column, and writes the result to a new file.

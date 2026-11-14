@@ -1,6 +1,6 @@
 ---
 description: How Automatic Reference Counting frees Swift class instances, how to break reference cycles with weak and unowned, and what exclusive access and actors protect against.
-imgSrc: /imgs/2023/music_album.jpg
+imgSrc: /imgs/2023/music-album.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-03-24T02:51:50.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ description: "Write AutoHotkey v2 scripts for Windows: hotkeys, key remaps, hots
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 
 AutoHotkey is a free, open-source scripting language for Windows. You use it to bind

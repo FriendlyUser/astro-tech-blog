@@ -1,6 +1,6 @@
 ---
 description: Using Apache POI 6 to create, style and read Excel workbooks and to generate Word and PowerPoint files from Java, with runnable examples.
-imgSrc: /imgs/2023/1086816529.png
+imgSrc: /imgs/2023/1086816529.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-01T14:36:17.000Z'
 lastUpdated: 2026-11-14

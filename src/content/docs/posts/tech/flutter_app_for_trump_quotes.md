@@ -4,7 +4,7 @@ description: Recently i was updating my flutter quotes trump app to use the late
 pubDate: Saturday, 12 November 2022 13:00:00 GMT
 tags: ["flutter", "dart"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 Recently i was updating my flutter quotes trump app to use the latest version of flutter, here are some of the lessons i learned.

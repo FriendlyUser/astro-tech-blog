@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use OpenCV.js, OpenCV compiled to WebAssembly, to blur an image in the browser, plus where Wasm helps for audio and video and what it costs."
 tags: ['opencv', 'javascript', 'cpp']
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2465919888.png
+imgSrc: /imgs/2023/2465919888.webp
 ---
 
 WebAssembly (Wasm) lets you compile C, C++ or Rust to a bytecode that browsers run at close to native speed. For multimedia that's useful in two ways: heavy per-pixel or per-sample loops run much faster than equivalent JavaScript, and you can reuse existing native libraries (OpenCV, FFmpeg, audio codecs) instead of rewriting them.

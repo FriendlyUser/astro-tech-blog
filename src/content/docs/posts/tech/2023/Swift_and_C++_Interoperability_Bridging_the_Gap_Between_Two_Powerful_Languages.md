@@ -7,7 +7,7 @@ tags:
   - swift
   - cpp
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3972119242.png
+imgSrc: /imgs/2023/3972119242.webp
 ---
 
 :::note

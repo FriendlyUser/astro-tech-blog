@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use fetch() HEAD requests to find links that return 4xx or 5xx errors, remove them from a page in the browser, or check them from Node.js."
 tags: ['javascript', 'web']
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3541980154.png
+imgSrc: /imgs/2023/3541980154.webp
 ---
 
 Broken links are a bad experience for readers and a signal search engines notice. The Fetch API makes it easy to check them: send a `HEAD` request, which returns only the status line and headers, and look at the status code. A 4xx or 5xx means the link is broken; anything else means it works.

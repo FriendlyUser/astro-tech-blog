@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Run Go functions on an interval, at a time of day or on a cron schedule with gocron v2, plus how it maps to the old jasonlvhit/gocron API."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 :::caution

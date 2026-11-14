@@ -5,7 +5,7 @@ pubDate: Saturday, 23 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["flutter", "dart"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.03 - teddy bear on coach looking out the window at a tree.png'
+imgSrc: '/imgs/2023/dalle-2022-12-25-21-48-03-teddy-bear-on-coach-looking-out-the-window-at-a-tree.webp'
 ---
 
 If you earn money from a few different places (freelance work, a part-time job, selling things online), a spreadsheet gets messy fast. This post builds a minimal Flutter app for logging that income: each entry has a source, date, amount and optional notes, entries are stored locally in SQLite, and the whole table can be exported to CSV so you can open it in a spreadsheet at tax time.

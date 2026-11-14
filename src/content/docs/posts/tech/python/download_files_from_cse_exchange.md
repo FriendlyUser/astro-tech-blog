@@ -5,7 +5,7 @@ description: A Python script that uses cad_tickers to find new documents for CSE
 pubDate: Fri, 3 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3702590653.png"
+imgSrc: "/imgs/2023/3702590653.webp"
 ---
 
 The Canadian Securities Exchange (CSE) lists mostly small and early-stage companies, and their press releases and filings are posted on each company's listing page on thecse.com. This post walks through a script from the [cse_file_downloader](https://github.com/dli-invest/cse_file_downloader/blob/main/scrap_cse_releases.py) repo that checks a watchlist of CSE tickers for new documents, downloads them, and posts each one to a Discord channel with a short summary.

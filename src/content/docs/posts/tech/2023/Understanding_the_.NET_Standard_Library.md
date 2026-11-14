@@ -1,6 +1,6 @@
 ---
 description: "What .NET Standard is, how its versions map to .NET Framework and .NET, and when to target netstandard2.0 instead of a .NET 5+ TFM today."
-imgSrc: /imgs/2023/454515535.png
+imgSrc: /imgs/2023/454515535.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-12T13:35:03.000Z'
 lastUpdated: 2026-11-14

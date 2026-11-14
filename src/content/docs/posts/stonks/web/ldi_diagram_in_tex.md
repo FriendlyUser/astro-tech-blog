@@ -4,7 +4,7 @@ title: A TikZ flow chart of liability-driven investing (LDI)
 description: A TikZ diagram of how money flows from a company's pension promise into an LDI fund, and why I don't believe in LDI's use of leverage.
 pubDate: Mon, 13 October 2023
 lastUpdated: 2026-11-14
-imgSrc: /imgs/2023/investing.png
+imgSrc: /imgs/2023/investing.webp
 layout: '@/templates/BasePost.astro'
 ---
 

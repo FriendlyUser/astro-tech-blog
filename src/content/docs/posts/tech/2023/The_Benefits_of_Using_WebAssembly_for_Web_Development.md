@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What WebAssembly gives a web app (fast compute, reuse of C, C++ and Rust code, a sandbox) and what it costs, with a minimal module called from JavaScript."
 tags: ["javascript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1662522246.png
+imgSrc: /imgs/2023/1662522246.webp
 ---
 
 WebAssembly (Wasm) is a compact binary instruction format that browsers compile to machine code and run next to JavaScript. You don't usually write it by hand. You compile C, C++, Rust, Go or another language to a `.wasm` module and call it from JavaScript. It makes sense when a page has CPU-heavy work (codecs, image processing, physics, parsers) or an existing native library you want to reuse.

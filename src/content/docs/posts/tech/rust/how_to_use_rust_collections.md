@@ -5,7 +5,7 @@ pubDate: Saturday, 26 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/117117315.webp'
 ---
 
 Counting how often each word appears in a file is a small program that touches the most-used parts of `std::collections`: `HashMap` for counts, `HashSet` for membership, and `BTreeMap` when you need the keys in order.

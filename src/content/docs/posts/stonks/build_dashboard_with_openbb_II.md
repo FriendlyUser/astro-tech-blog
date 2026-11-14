@@ -6,7 +6,7 @@ pubDate: Friday, 20 March 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["openbb", "streamlit", "python", "pandas"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/sample.png'
+imgSrc: '/imgs/sample.webp'
 imgAlt: 'rbc stock analyzer'
 ---
 

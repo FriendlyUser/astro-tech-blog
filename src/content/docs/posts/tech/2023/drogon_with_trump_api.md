@@ -5,7 +5,7 @@ description: A small C++ program that uses Drogon's HttpClient to fetch a random
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/1900267581.webp
 ---
 
 :::caution

@@ -5,7 +5,7 @@ description: "A short explanation of what people mean by web3, what a smart cont
 pubDate: Fri, 7 August 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3658824416.png
+imgSrc: /imgs/2023/3658824416.webp
 ---
 
 "Web3" is the umbrella term for applications built on public blockchains such as Ethereum. Instead of a company's database holding your account balance or your posts, the state lives on a shared ledger that many independent nodes keep in sync, and the rules for changing it are programs (smart contracts) that anyone can read and call.

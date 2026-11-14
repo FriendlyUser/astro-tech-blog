@@ -1,7 +1,7 @@
 ---
 description: How Entity Framework Core maps C# classes to tables, with a runnable SQLite
   example of a DbContext, saving and querying data, and a note on migrations.
-imgSrc: /imgs/2023/3194903180.png
+imgSrc: /imgs/2023/3194903180.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-08T08:09:42.000Z'
 lastUpdated: 2026-11-14

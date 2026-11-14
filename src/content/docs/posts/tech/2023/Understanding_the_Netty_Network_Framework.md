@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "The core Netty concepts (Channel, ChannelPipeline, handlers, ByteBuf) and a complete echo server and client written against Netty 4.2."
 tags: ["java"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3598219737.png
+imgSrc: /imgs/2023/3598219737.webp
 ---
 
 Netty is an asynchronous, event-driven networking framework for the JVM. Instead of one blocking thread per socket, a small pool of event-loop threads handles I/O for many connections, and your protocol logic lives in handlers that react to events. It's the networking layer under projects like gRPC-Java, Vert.x and many database drivers.

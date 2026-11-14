@@ -5,7 +5,7 @@ description: How to inspect a class at runtime with Java reflection and kotlin-r
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2766162233.png
+imgSrc: /imgs/2023/2766162233.webp
 ---
 
 Reflection lets a program inspect its own classes, properties and functions at runtime. Annotations attach metadata to declarations. Used together, they let a library read your code's structure and behave differently based on it. This is how serializers, dependency-injection frameworks and test runners work.

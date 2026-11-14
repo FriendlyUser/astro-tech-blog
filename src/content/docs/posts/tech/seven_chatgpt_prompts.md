@@ -5,7 +5,7 @@ description: Copy-paste ChatGPT prompts for rewriting code to a style guide, wri
 pubDate: Fri, 7 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2692497695.png
+imgSrc: /imgs/2023/2692497695.webp
 ---
 
 Prompt engineering is just writing the instruction carefully: say what the output should be, what format it should take, and what to leave out. It doesn't change the model (that's fine-tuning); it only changes how much of the answer you have to fix afterwards. These are the prompts I keep reusing. Replace the bracketed parts and paste your code or diff after the prompt.

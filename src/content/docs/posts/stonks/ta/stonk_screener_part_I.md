@@ -5,7 +5,7 @@ description: Part I of my Python stock screener, covering a shared scanner inter
 pubDate: Fri, 11 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1231025858.png
+imgSrc: /imgs/2023/1231025858.webp
 ---
 
 A stock screener filters thousands of listings down to a short list that matches your rules, such as price, market cap, industry or recent price action. I wrote my own in Python, with each screen described by a JSON config and matches posted to Discord. The full code is in [FriendlyUser/stock_screener](https://github.com/FriendlyUser/stock_screener/tree/master).

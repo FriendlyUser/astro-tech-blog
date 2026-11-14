@@ -5,7 +5,7 @@ pubDate: Monday, 7 July 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["flutter", "pokeapi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/music_album.jpg'
+imgSrc: '/imgs/2023/music-album.webp'
 ---
 
 [Part I](/posts/tech/flutter/pokedex_app_partI/) built the list view. This post covers the screen you land on after tapping a Pokémon. It combines two data sources:

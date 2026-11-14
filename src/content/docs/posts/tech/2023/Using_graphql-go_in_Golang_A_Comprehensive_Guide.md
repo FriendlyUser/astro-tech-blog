@@ -1,6 +1,6 @@
 ---
 description: Build a small GraphQL server in Go with graphql-go and graphql-go/handler, with a book type, a query, a mutation and GraphiQL for testing.
-imgSrc: /imgs/2023/1231025858.png
+imgSrc: /imgs/2023/1231025858.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-05-28T04:50:15.000Z'
 lastUpdated: 2026-11-14

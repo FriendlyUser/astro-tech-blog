@@ -5,7 +5,7 @@ description: Notes from porting my ChatGPT blog post generator to EdgeGPT (Bing 
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/other/output_1.png
+imgSrc: /imgs/2023/other/output-1.webp
 ---
 
 :::caution

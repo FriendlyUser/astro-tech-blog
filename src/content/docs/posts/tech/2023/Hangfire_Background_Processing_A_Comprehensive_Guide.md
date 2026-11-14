@@ -1,6 +1,6 @@
 ---
 description: "Set up Hangfire in an ASP.NET Core app with SQL Server storage, then enqueue fire-and-forget, delayed and recurring jobs, configure retries, and secure the dashboard."
-imgSrc: /imgs/2023/2459232016.png
+imgSrc: /imgs/2023/2459232016.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-30T01:44:02.000Z'
 lastUpdated: 2026-11-14

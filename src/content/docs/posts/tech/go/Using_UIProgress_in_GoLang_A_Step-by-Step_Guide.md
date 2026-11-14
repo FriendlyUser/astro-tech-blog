@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to render one or several progress bars in a Go command-line program with gosuri/uiprogress, including custom decorators and bar characters."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1411559119.png
+imgSrc: /imgs/2023/1411559119.webp
 ---
 
 [`uiprogress`](https://github.com/gosuri/uiprogress) is a small Go package that draws progress bars in the terminal. It redraws the bars on a timer (every 10 ms by default) using [`uilive`](https://github.com/gosuri/uilive), so you only call `Incr()` or `Set()` and the package handles the rendering. It is a good fit for CLI tools that download files, process batches, or run several jobs at once.

@@ -1,6 +1,6 @@
 ---
 description: What Apache Maven does, the standard project layout, how the build lifecycle and dependencies work, and how to generate, build and run a project from the command line.
-imgSrc: /imgs/2023/326029388.png
+imgSrc: /imgs/2023/326029388.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-08T00:40:27.000Z'
 lastUpdated: 2026-11-14

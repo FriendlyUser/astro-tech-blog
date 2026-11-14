@@ -5,7 +5,7 @@ description: How to generate random (v4), name-based (v5) and time-ordered (v7) 
 pubDate: Mon, 30 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/2421950579.png'
+imgSrc: '/imgs/2023/2421950579.webp'
 ---
 
 A UUID (Universally Unique Identifier) is a 128-bit value, usually written as 32 hex digits in five hyphenated groups. Because they can be generated independently on any machine with a negligible chance of collision, they're handy as database keys and request IDs in distributed systems. In Rust, the standard choice is the [`uuid`](https://crates.io/crates/uuid) crate.

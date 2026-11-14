@@ -5,7 +5,7 @@ description: How the yield keyword turns a function into a generator, how to con
 pubDate: Fri, 21 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1895495590.png
+imgSrc: "/imgs/covers/yield-functions.webp"
 ---
 
 Any function that contains the `yield` keyword is a generator function. Calling it doesn't run the body; it returns a generator, an iterator that produces values one at a time as you ask for them.

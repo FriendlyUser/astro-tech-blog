@@ -5,7 +5,7 @@ description: Add MUI or React-Bootstrap to a Vite React app, then wire up contro
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2955132952.png
+imgSrc: "/imgs/covers/ui-frameworks-in-react.webp"
 ---
 A UI component library gives you buttons, inputs, dialogs and layout primitives that already look consistent and handle accessibility details, so you can spend your time on the app instead of on CSS. This post shows how to add the two most common ones, MUI (Material UI) and React-Bootstrap, and then covers the other pieces most React apps need: forms, routing, shared state, tests and deployment.
 

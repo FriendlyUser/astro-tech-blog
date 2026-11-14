@@ -1,6 +1,6 @@
 ---
 description: A short tour of C++ (and C) libraries for scientific computing, covering what each one is for, its licence, and an Eigen example that solves a linear system.
-imgSrc: /imgs/2023/1444932837.png
+imgSrc: /imgs/2023/1444932837.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-08T15:59:26.000Z'
 lastUpdated: 2026-11-14

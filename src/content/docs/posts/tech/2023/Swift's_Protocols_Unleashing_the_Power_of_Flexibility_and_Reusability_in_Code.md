@@ -1,6 +1,6 @@
 ---
 description: How to define and adopt Swift protocols, add default implementations with extensions, use associated types, inheritance and composition, and choose between some and any.
-imgSrc: /imgs/2023/1666734888.png
+imgSrc: /imgs/2023/1666734888.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-14T00:11:20.000Z'
 lastUpdated: 2026-11-14

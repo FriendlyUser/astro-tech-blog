@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use a build.rs script and the cc crate to compile C files into a static library, link it into a Rust crate, and call the functions through extern blocks."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 The [`cc`](https://crates.io/crates/cc) crate compiles C (and C++) source files from a Cargo

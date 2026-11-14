@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/117117315.webp'
 ---
 
 When Rust has to work with code in another language, there are three common options, and they sit at very different distances from each other:

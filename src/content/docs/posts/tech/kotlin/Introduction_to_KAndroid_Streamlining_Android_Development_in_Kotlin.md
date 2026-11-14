@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What the KAndroid library offers (text watchers, toasts, intents, threading and logging helpers), how to add it with JitPack, and the AndroidX equivalents."
 tags: ["kotlin", "android"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3131299487.png
+imgSrc: /imgs/2023/3131299487.webp
 ---
 
 :::caution[KAndroid is unmaintained]

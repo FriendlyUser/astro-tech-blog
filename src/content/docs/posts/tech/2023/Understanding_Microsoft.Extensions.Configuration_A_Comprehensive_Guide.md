@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How .NET configuration works: providers and their precedence, environment-specific files, environment variables, and binding sections to classes with IOptions."
 tags: ["dotnet", "csharp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3619698287.png
+imgSrc: /imgs/2023/3619698287.webp
 ---
 
 `Microsoft.Extensions.Configuration` reads settings from JSON files, environment variables, command-line arguments, user secrets and other sources, and merges them into one set of key-value pairs exposed through `IConfiguration`. ASP.NET Core and the generic host set it up for you; you can also use it on its own in any .NET app.

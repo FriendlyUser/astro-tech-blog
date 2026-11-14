@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Add OkHttp 5 to an Android app, make an asynchronous GET request without leaking responses, and write an interceptor for logging or auth headers."
 tags: ["android", "java"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 
 OkHttp is Square's open-source HTTP client for Android and the JVM. It's the HTTP layer underneath Retrofit and many other libraries, so even if you never call it directly, you're probably shipping it. You'd use it directly when you want plain HTTP calls without Retrofit's interface-based API, or when you need to customize the client that those libraries share.

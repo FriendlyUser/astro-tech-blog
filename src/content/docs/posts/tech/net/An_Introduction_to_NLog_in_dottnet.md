@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Install NLog, write an NLog.config with file and console targets, log from C#, add layouts and filters, and plug NLog into ASP.NET Core logging."
 tags: ["dotnet", "csharp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3292707171.png
+imgSrc: /imgs/2023/3292707171.webp
 ---
 [NLog](https://nlog-project.org/) is a logging library for .NET. You write log calls in code, and a config file decides where each message goes (files, the console, databases, and other *targets*) and in what format. Changing where logs go doesn't require a recompile. This post was revised against NLog 6.x (6.2.2 on NuGet at the time of writing).
 

@@ -1,7 +1,7 @@
 ---
 description: Write and run Python tests with pytest, read its assertion output, and use
   fixtures, parametrize, pytest.raises and tmp_path with runnable examples.
-imgSrc: /imgs/2023/3614994253.png
+imgSrc: /imgs/2023/3614994253.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-07T12:11:18.000Z'
 lastUpdated: 2026-11-14

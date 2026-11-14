@@ -5,7 +5,7 @@ pubDate: Saturday, 26 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/3611036737.png'
+imgSrc: '/imgs/2023/3611036737.webp'
 ---
 
 Estimating pi by random sampling is a good first multithreading exercise: the work splits evenly, each chunk is independent, and the only coordination is adding the results at the end. This post builds it with `std::thread`, then shows the `Arc<Mutex<_>>` variant for when threads have to write into shared state.

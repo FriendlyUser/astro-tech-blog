@@ -6,7 +6,7 @@ tags: ["polygot", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 21 December 2024
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/590655340.png'
+imgSrc: '/imgs/2023/590655340.webp'
 ---
 
 :::caution

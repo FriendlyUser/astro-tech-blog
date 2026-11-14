@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "The Cargo commands you use day to day: create a project, add dependencies, build debug and release binaries, run tests, publish to crates.io and cross-compile."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2773787557.png
+imgSrc: /imgs/2023/2773787557.webp
 ---
 
 Cargo is Rust's build tool and package manager. It ships with the toolchain when you install Rust through `rustup`, reads project settings and dependencies from `Cargo.toml`, downloads crates from [crates.io](https://crates.io/), and drives `rustc` for you. Most Rust projects never call `rustc` directly.

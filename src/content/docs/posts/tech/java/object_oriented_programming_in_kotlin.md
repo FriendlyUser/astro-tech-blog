@@ -5,7 +5,7 @@ description: Kotlin classes and objects, companion objects, properties and backi
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3431403716.png
+imgSrc: /imgs/2023/3431403716.webp
 ---
 
 This post walks through the object-oriented parts of Kotlin with small examples you can paste into a `main` function or the [Kotlin Playground](https://play.kotlinlang.org/).

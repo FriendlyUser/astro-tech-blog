@@ -1,6 +1,6 @@
 ---
 description: "Use the <type_traits> header to inspect, compare and transform types at compile time, branch with if constexpr, and write your own trait with partial specialization."
-imgSrc: /imgs/2023/2861854918.png
+imgSrc: /imgs/2023/2861854918.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-17T21:19:07.000Z'
 lastUpdated: 2026-11-14

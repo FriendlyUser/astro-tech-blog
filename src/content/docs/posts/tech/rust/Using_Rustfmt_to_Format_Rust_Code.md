@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Install rustfmt, run cargo fmt locally and in CI, configure it with rustfmt.toml, and set up format-on-save in your editor."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/633020239.png
+imgSrc: /imgs/2023/633020239.webp
 ---
 
 rustfmt is the official formatter for Rust. It rewrites your source to follow the [Rust style guide](https://doc.rust-lang.org/style-guide/), so code reviews don't get bogged down in brace placement and line wrapping. Almost every Rust project runs it, which also means most Rust code you read looks the same.

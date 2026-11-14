@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/117117315.webp'
 ---
 
 Safe Rust rejects any program the compiler can't prove is memory-safe. Some correct programs, such as code that talks to C libraries or implements low-level data structures, can't be proven safe by the compiler. For those, Rust has `unsafe`: a block or function where you promise the compiler that you've checked the invariants it can't.

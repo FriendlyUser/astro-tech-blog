@@ -6,7 +6,7 @@ tags: ["mysql","rust"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 Feb 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/2126341537_forest.png'
+imgSrc: '/imgs/2023/2126341537-forest.webp'
 ---
 
 The [`mysql`](https://docs.rs/mysql) crate is a synchronous MySQL driver written in Rust. It handles connection pooling, prepared statements, and conversion between MySQL values and Rust types. If your application is async, use its sibling [`mysql_async`](https://docs.rs/mysql_async) or [`sqlx`](https://docs.rs/sqlx) instead; the API ideas below carry over.

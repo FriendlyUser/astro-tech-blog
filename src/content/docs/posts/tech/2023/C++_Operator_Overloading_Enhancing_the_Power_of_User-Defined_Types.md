@@ -1,7 +1,7 @@
 ---
 title: "C++ operator overloading: member vs non-member operators and C++20 comparisons"
 description: "How to overload operators for your own C++ types: a complete Vector2 example, which operators must be members, defaulted == in C++20, and pitfalls."
-imgSrc: /imgs/2023/1031426508.png
+imgSrc: /imgs/2023/1031426508.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-30T11:49:17.000Z'
 lastUpdated: 2026-11-14

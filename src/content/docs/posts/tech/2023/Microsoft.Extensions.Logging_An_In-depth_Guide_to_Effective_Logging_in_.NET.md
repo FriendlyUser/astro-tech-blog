@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Microsoft.Extensions.Logging works: ILogger, providers, category filters, appsettings config, message templates and the LoggerMessage generator."
 tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4161054296.png
+imgSrc: "/imgs/covers/microsoft-extensions-logging-an-in-depth-guide-to-effective-logging-in-net.webp"
 ---
 
 `Microsoft.Extensions.Logging` is the standard logging API in .NET. Your code writes to `ILogger`, and one or more *providers* decide where the messages go (console, debug output, Event Log, or a third-party sink like Serilog or Application Insights). ASP.NET Core and the Generic Host set it up for you; console apps can use it with a couple of lines.

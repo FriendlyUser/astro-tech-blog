@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Scaffold an Excel task pane add-in with yo office, then make it ask OpenAI for a stock ticker and show the company overview from Alpha Vantage."
 tags: ["GPT", "Excel", "AI Integration", "Software Development", "JavaScript", "TypeScript", "Excel Add-in", "OpenAI", "Automation", "Productivity"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3292707171.png"
+imgSrc: "/imgs/2023/3292707171.webp"
 ---
 
 :::caution

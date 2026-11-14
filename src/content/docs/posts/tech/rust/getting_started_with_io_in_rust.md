@@ -5,7 +5,7 @@ pubDate: Saturday, 26 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/2886495853.png'
+imgSrc: '/imgs/2023/2886495853.webp'
 ---
 
 This post builds a small Rust program that reads a CSV file, keeps only the rows above an age threshold, sorts them by age, and writes them to a new CSV file. It uses the [`csv`](https://docs.rs/csv) crate for parsing and writing, and [`serde`](https://serde.rs/) to map each row onto a struct so you work with typed fields instead of strings.

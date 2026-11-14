@@ -6,7 +6,7 @@ tags: ["linkedin"]
 layout: '@/templates/BasePost.astro'
 pubDate: Sunday, 13 Feburary 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-12-12 19.18.38 - funny story.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-12-12-19-18-38-funny-story.webp'
 ---
 
 Technical interviews for engineering roles test two things: whether you can solve problems in code, and whether you can explain your thinking while you do it. Both improve with practice, so the best preparation is a few weeks of steady work rather than a cram the night before.

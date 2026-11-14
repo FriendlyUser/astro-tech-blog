@@ -5,7 +5,7 @@ pubDate: Saturday, 14 May 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["powershell"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-25 21.48.12 - teddy bear on coach looking out the window at a tree.png'
+imgSrc: '/imgs/2023/dalle-2022-12-25-21-48-12-teddy-bear-on-coach-looking-out-the-window-at-a-tree.webp'
 ---
 
 Most PowerShell scripts start as a few lines pasted into a console and grow from there. These are the habits that make them easier to read, debug and share once they do. Everything below works in both Windows PowerShell 5.1 and PowerShell 7.

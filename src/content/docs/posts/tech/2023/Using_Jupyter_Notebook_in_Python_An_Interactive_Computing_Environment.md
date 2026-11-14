@@ -1,6 +1,6 @@
 ---
 description: Install and launch Jupyter Notebook, work with code and Markdown cells, use IPython magics, plot inline with Matplotlib, and export or share notebooks.
-imgSrc: /imgs/2023/4279596222.png
+imgSrc: /imgs/2023/4279596222.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-22T06:25:07.000Z'
 lastUpdated: 2026-11-14

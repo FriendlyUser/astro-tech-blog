@@ -1,6 +1,6 @@
 ---
 description: How Apache Kafka stores events in partitioned, replicated logs, how producers and consumer groups use them, and how to run a single KRaft broker locally.
-imgSrc: /imgs/2023/other
+imgSrc: "/imgs/covers/apache-kafka-an-introduction-to-distributed-streaming.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-04T21:22:19.000Z'
 lastUpdated: 2026-11-14

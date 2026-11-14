@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What WebAssembly does and doesn't do for browser AR/VR: how it works with WebXR and WebGL, which engines export to it, and the gotchas to plan for."
 tags: ["javascript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/downsize_images.py
+imgSrc: "/imgs/covers/leveraging-webassembly-for-augmented-and-virtual-reality.webp"
 ---
 
 AR and VR in the browser run on WebXR, the JavaScript API for headsets and phone-based AR. WebAssembly (Wasm) is a compact binary format that browsers can compile ahead of time, so code written in C, C++, Rust or C# (via Unity) can run there. The two work together, but Wasm isn't an XR API in its own right. This post covers what it actually contributes and how the pieces connect.

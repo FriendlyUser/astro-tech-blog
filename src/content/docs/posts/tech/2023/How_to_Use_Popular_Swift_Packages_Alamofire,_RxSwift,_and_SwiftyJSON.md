@@ -1,6 +1,6 @@
 ---
 description: How to add Alamofire, RxSwift and SwiftyJSON with Swift Package Manager, with a working example of each and when Apple's built-in APIs are the better choice.
-imgSrc: /imgs/2023/559850830.png
+imgSrc: /imgs/2023/559850830.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-20T21:42:07.000Z'
 lastUpdated: 2026-11-14

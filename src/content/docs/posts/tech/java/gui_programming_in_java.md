@@ -5,7 +5,7 @@ description: Create a Java Swing window with a label and a button, start it on t
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2785394646.png
+imgSrc: /imgs/2023/2785394646.webp
 ---
 
 Swing is the desktop GUI toolkit that ships with the JDK (the `javax.swing` package, in the `java.desktop` module). It gives you components such as buttons, labels, text fields, tables and trees, layout managers to arrange them, and an event model for reacting to user input. You don't need any extra dependency to use it.

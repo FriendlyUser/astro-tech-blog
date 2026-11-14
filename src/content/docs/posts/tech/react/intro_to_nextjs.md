@@ -5,7 +5,7 @@ description: What Next.js adds on top of React, how to create a TypeScript app w
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2432208319.png
+imgSrc: "/imgs/covers/intro-to-nextjs.webp"
 ---
 
 Next.js is a React framework from Vercel. On top of React it gives you file-based routing, server rendering and static generation, API endpoints, and a build pipeline, so you don't have to wire those together yourself. This post was revised against Next.js 16.4 and React 19.

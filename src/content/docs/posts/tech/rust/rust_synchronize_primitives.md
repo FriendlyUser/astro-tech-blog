@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/117117315.webp'
 ---
 
 When several threads need to change the same data, Rust won't compile the program until you say how that access is coordinated. The standard library gives you a few tools for this in `std::sync`: `Mutex` and `RwLock` for locking, atomic types for single values, and channels (`mpsc`) for passing data instead of sharing it.

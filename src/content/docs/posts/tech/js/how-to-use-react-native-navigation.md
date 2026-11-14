@@ -6,7 +6,7 @@ tags: ["dotnet","git","react-native","js"]
 layout: '@/templates/BasePost.astro'
 pubDate: Saturday, 14 June 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/bear_book_2.png'
+imgSrc: '/imgs/2023/bear-book-2.webp'
 ---
 
 React Native doesn't ship a navigation system. [React Navigation](https://reactnavigation.org/) is the most common library for it: you describe screens inside *navigators* (stack, tabs, drawer), and it handles history, the back button, headers, and deep links.

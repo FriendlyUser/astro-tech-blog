@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Rust frees memory without a garbage collector: ownership and moves, borrowing rules, Box, Rc, Arc, Cell and RefCell, with runnable examples."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3893879687.png
+imgSrc: /imgs/2023/3893879687.webp
 ---
 
 Rust has no garbage collector and no manual `free`. Every value has an owner, and the compiler inserts the cleanup code where the owner goes out of scope. Borrowing rules, also checked at compile time, stop you from using memory after it's freed or mutating data while something else is reading it. The smart pointer types in the standard library cover the cases where one owner isn't enough. All the examples below compile and run on stable Rust.

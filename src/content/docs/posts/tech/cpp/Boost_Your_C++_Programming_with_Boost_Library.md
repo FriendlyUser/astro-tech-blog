@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to install Boost, which libraries are header-only and which need linking, a tour of Asio, Regex, Filesystem, Spirit and Graph, and a Tokenizer example."
 tags: ["cpp", "boost"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1931041591.png
+imgSrc: /imgs/2023/1931041591.webp
 ---
 
 Boost is a collection of peer-reviewed, portable C++ libraries distributed under the Boost

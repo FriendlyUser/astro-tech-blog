@@ -5,7 +5,7 @@ description: A single-file Flask app that turns long URLs into six-character cod
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 ---
 
 A URL shortener maps a short code to a long URL. When someone visits `/<code>`, the server looks up the code and sends back an HTTP redirect to the original address. That lookup is the whole idea. Hosted services add click analytics, custom domains and abuse filtering on top.

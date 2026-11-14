@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Register a window class, create a window and run a message loop using raw Win32 calls from Rust, with notes on the maintained windows-sys crate."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 :::caution
 The `winapi` crate used here has not had a release since 0.3.9 in June 2020. It still builds, but for new code use Microsoft's [`windows-sys`](https://crates.io/crates/windows-sys) (raw bindings, closest to `winapi`) or [`windows`](https://crates.io/crates/windows) (safer wrappers) crates. The Win32 calls and the structure of the program are the same; only the import paths and some types differ.

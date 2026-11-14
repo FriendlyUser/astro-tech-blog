@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Connect to Redis from Python with redis-py and work with strings, hashes, lists, sets, sorted sets, key expiry and pub/sub messaging."
 tags: ["python"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3382720876.png
+imgSrc: /imgs/2023/3382720876.webp
 ---
 
 Redis is an in-memory key-value store whose values can be strings, hashes, lists, sets, sorted sets and more. It's commonly used as a cache, a session store, a rate limiter or a lightweight message broker. This post walks through the official Python client, `redis-py`, against a local Redis server.

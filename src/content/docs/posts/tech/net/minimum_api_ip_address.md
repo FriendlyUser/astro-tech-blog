@@ -5,7 +5,7 @@ pubDate: Saturday, 5 August 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["minimum-api", ".net", "aspnet", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2023-01-08 14.26.14 - mailbox.png'
+imgSrc: '/imgs/2023/dalle-2023-01-08-14-26-14-mailbox.webp'
 ---
 
 :::caution

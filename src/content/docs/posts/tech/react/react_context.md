@@ -5,7 +5,7 @@ description: How to use createContext and useContext to share state without prop
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1212575964.png
+imgSrc: "/imgs/covers/react-context.webp"
 ---
 
 React context lets a parent make a value available to every component below it without passing it as a prop through each level. Put state in a provider component and pass that state, plus the functions that change it, as the context value. Any descendant can then read and update it with `useContext`.

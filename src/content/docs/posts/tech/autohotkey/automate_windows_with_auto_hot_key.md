@@ -5,7 +5,7 @@ description: What AutoHotkey is, what it's good for, and a short AutoHotkey v2 s
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 
 AutoHotkey is a free, open-source (GNU GPLv2) scripting language for Windows. You use it to automate desktop tasks: keyboard and mouse shortcuts, key remapping, text expansion, form filling, auto-clicking and other macros. It's small, needs no setup beyond the installer, and a useful script can be just a few lines.

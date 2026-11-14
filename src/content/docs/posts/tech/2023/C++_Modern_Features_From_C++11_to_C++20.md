@@ -1,6 +1,6 @@
 ---
 description: The C++11, C++14, C++17 and C++20 features you'll use most, from auto, lambdas and move semantics to concepts, ranges and coroutines, each with a compilable example.
-imgSrc: /imgs/2023/986397498.png
+imgSrc: /imgs/2023/986397498.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-18T05:09:30.000Z'
 lastUpdated: 2026-11-14

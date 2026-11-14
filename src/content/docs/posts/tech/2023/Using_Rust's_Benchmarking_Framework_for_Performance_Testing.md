@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up Criterion.rs to benchmark Rust code on stable: a first benchmark, parameterised inputs, throughput, baselines and HTML reports."
 tags: ["rust", "testing"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/nature_0.jpeg
+imgSrc: /imgs/2023/nature-0.webp
 ---
 
 Rust's built-in `#[bench]` attribute and `test::Bencher` are still unstable and only work on nightly. On stable Rust, the usual choice is [Criterion.rs](https://github.com/criterion-rs/criterion.rs), a statistics-driven benchmarking library. It warms up your code, takes many samples, reports a confidence interval, and compares each run against the previous one to tell you whether performance actually changed.

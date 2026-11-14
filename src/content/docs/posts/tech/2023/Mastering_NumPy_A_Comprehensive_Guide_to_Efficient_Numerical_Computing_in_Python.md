@@ -1,6 +1,6 @@
 ---
 description: "NumPy essentials: creating and reshaping arrays, vectorised arithmetic, broadcasting, indexing, aggregations, linear algebra and random numbers with Generator."
-imgSrc: /imgs/2023/1879869613.png
+imgSrc: /imgs/2023/1879869613.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-05-28T20:33:27.000Z'
 lastUpdated: 2026-11-14

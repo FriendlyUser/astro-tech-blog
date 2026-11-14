@@ -5,7 +5,7 @@ description: A Python script that loads a YouTube channel page in a remote Selen
 pubDate: Fri, 10 Feb 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3750534419.png"
+imgSrc: "/imgs/2023/3750534419.webp"
 ---
 
 This script comes from [fdrtt](https://github.com/dli-invest/fdrtt), a project for transcribing finance livestreams (such as Federal Reserve press conferences) in real time. Before transcribing, it needs to know whether a channel is streaming right now, has a stream scheduled, or neither. YouTube's channel pages are rendered with JavaScript, so a plain `requests.get` doesn't return the video list. The script loads the page in a real browser through Selenium and parses the rendered HTML with BeautifulSoup.

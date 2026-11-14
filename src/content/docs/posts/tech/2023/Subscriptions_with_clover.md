@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use Clover's sandbox APIs from PHP to tokenize a card, create a customer with a card on file, look up a tax rate, and subscribe them to a recurring plan."
 tags: ["Clover API", "Payment Integration", "Recurring Payments", "Web Development", "php"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/clover_api.png"
+imgSrc: "/imgs/2023/clover-api.webp"
 ---
 
 Clover's Recurring Payments API charges a saved card on a schedule defined by a *plan*. To put a customer on a plan you need four calls: tokenize the card, create a customer with that card on file, optionally look up a tax rate, and create a subscription under the plan. Once the subscription exists, Clover charges the card automatically; there is no separate "charge" call.

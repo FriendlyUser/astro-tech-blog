@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "std's HashMap is already built on hashbrown. Here is what the crate still offers (no_std, a faster default hasher) and how to benchmark it fairly."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 `hashbrown` is a Rust port of Google's SwissTable hash map. It is worth knowing about, but not for the reason usually given: since Rust 1.36, `std::collections::HashMap` *is* hashbrown internally. Swapping one for the other does not change the table algorithm. What changes is the default hasher, and whether you need the standard library at all.
 

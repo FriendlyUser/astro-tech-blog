@@ -1,6 +1,6 @@
 ---
 description: How to set up Serilog for structured logging in .NET, covering message templates, enrichers, sinks, filters, and keeping logging cheap.
-imgSrc: /imgs/2023/2126341537_forest.png
+imgSrc: /imgs/2023/2126341537-forest.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-06-24T00:59:46.000Z'
 lastUpdated: 2026-11-14

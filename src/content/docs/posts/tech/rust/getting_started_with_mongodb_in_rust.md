@@ -5,7 +5,7 @@ description: "Connect to MongoDB from Rust with the official mongodb 3.x driver,
 pubDate: Fri, 24 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/118660664.png"
+imgSrc: "/imgs/2023/118660664.webp"
 ---
 
 :::note

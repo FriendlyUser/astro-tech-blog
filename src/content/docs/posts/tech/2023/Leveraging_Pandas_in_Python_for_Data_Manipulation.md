@@ -1,6 +1,6 @@
 ---
 description: "Pandas basics in Python: build DataFrames and Series, load a CSV, then select, filter, sort and group rows, with a note on Copy-on-Write and .loc."
-imgSrc: /imgs/2023/481242631.png
+imgSrc: /imgs/2023/481242631.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-12-03T08:17:39.000Z'
 lastUpdated: 2026-11-14

@@ -1,6 +1,6 @@
 ---
 description: Swift's arithmetic, comparison, logical, bitwise, range and assignment operators, the overflow and nil-coalescing operators, and how to define a custom operator.
-imgSrc: /imgs/2023/1460588698.png
+imgSrc: /imgs/2023/1460588698.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-21T05:13:03.000Z'
 lastUpdated: 2026-11-14

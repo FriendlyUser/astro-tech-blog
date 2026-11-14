@@ -5,7 +5,7 @@ description: "Read and write files with the os package, stream large files, and 
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2898315273.png
+imgSrc: /imgs/2023/2898315273.webp
 ---
 File I/O is a good place to learn Go's error handling, because nearly every file operation can fail and returns an `error` you're expected to check. This post covers reading and writing files with the `os` package, then the error-handling patterns you'll use around them.
 

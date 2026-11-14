@@ -1,6 +1,6 @@
 ---
 description: "What Google Guava still adds to modern Java: immutable collections, Multimap, BiMap, Table, LoadingCache, ListenableFuture and Service, with runnable examples."
-imgSrc: /imgs/2023/3582974242.png
+imgSrc: /imgs/2023/3582974242.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-24T12:49:13.000Z'
 lastUpdated: 2026-11-14

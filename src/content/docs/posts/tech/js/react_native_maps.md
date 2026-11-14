@@ -5,7 +5,7 @@ description: "Build a clustered MapView for react-native-maps with supercluster:
 pubDate: Monday, 22 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3793215953.png
+imgSrc: /imgs/2023/3793215953.webp
 ---
 
 When a map has hundreds of markers, they overlap into an unreadable blob and every custom marker view costs render time. Clustering replaces nearby markers with a single bubble showing how many points it holds, and splits the bubble apart as the user zooms in.

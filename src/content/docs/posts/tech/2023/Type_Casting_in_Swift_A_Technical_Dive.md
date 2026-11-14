@@ -1,6 +1,6 @@
 ---
 description: "How Swift's is, as, as? and as! operators work: upcasting, conditional and forced downcasting, casting in switch statements, and casting from Any and to protocols."
-imgSrc: /imgs/2023/2844566079.png
+imgSrc: /imgs/2023/2844566079.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-02-06T15:34:03.000Z'
 lastUpdated: 2026-11-14

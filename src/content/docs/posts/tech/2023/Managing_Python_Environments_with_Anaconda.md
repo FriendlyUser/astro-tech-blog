@@ -1,6 +1,6 @@
 ---
 description: Create, share and remove isolated Python environments with conda, install packages with conda and pip, and avoid Anaconda's licensing trap.
-imgSrc: /imgs/2023/3563897667.png
+imgSrc: /imgs/2023/3563897667.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-06-23T15:04:55.000Z'
 lastUpdated: 2026-11-14

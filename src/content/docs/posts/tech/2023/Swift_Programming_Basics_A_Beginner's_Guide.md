@@ -1,6 +1,6 @@
 ---
 description: "Swift basics for newcomers: let and var, type inference, the core value types, optionals, if, switch, loops and functions with argument labels."
-imgSrc: /imgs/2023/590655340.png
+imgSrc: /imgs/2023/590655340.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-07T16:27:41.000Z'
 lastUpdated: 2026-11-14

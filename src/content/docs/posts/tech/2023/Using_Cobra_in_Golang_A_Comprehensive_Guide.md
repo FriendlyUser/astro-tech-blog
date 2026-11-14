@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Build a command-line app in Go with Cobra: scaffold it with cobra-cli, add commands and subcommands, and define local and persistent flags."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3558128873.png
+imgSrc: /imgs/2023/3558128873.webp
 ---
 
 [Cobra](https://github.com/spf13/cobra) is the Go library behind the CLIs of `kubectl`, `hugo` and `gh`. You describe a tree of commands, and Cobra parses arguments, handles POSIX-style flags (through [pflag](https://github.com/spf13/pflag)), generates `--help` output and shell completions, and suggests a command when the user mistypes one.

@@ -5,7 +5,7 @@ description: How to parse an SVG with usvg, render it with resvg into a tiny-ski
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1340975325.png"
+imgSrc: "/imgs/2023/1340975325.webp"
 ---
 
 [resvg](https://github.com/linebender/resvg) is an SVG renderer written in Rust. It's split into three crates that you use together:

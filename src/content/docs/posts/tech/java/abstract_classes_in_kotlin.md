@@ -5,7 +5,7 @@ description: How abstract classes and interfaces work in Kotlin, when to use eac
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/954954072.png
+imgSrc: /imgs/2023/954954072.webp
 ---
 
 Kotlin gives you two ways to describe behaviour that several classes share: interfaces and abstract classes. Both can declare abstract members and both can contain implemented methods. The difference is state and inheritance: an abstract class can hold state and take constructor parameters, but a class can extend only one; an interface can't store state, but a class can implement as many as it likes.

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use OpenSSL 3's EVP API from C++ to generate an RSA key, sign and verify a message with SHA-256, and encrypt data with AES-256-GCM, tag check included."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2378078723.png
+imgSrc: /imgs/2023/2378078723.webp
 ---
 
 OpenSSL is two libraries: `libssl` implements TLS, and `libcrypto` provides the primitives underneath it (hashes, ciphers, public-key algorithms, random numbers). For signing and encrypting data in your own program you only need `libcrypto`, through its high-level **EVP** interface.

@@ -6,7 +6,7 @@ tags: ["js", "react"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 7 December 2024
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/148139817.png'
+imgSrc: '/imgs/2023/148139817.webp'
 ---
 
 "Above the fold" means visible in the first screenful, before the user scrolls. The fold sits at `window.innerHeight` pixels from the top of the document, so its position depends on the device.

@@ -5,7 +5,7 @@ description: A short introduction to Laravel, the PHP web framework, covering wh
 pubDate: Fri, 14 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/1900267581.webp
 ---
 
 Laravel is a free, open-source web framework for PHP, created by Taylor Otwell in 2011. It follows the Model-View-Controller (MVC) pattern and bundles most of what a typical web app needs: routing, an ORM (Eloquent), database migrations, the Blade templating language, validation, queues, caching and a command-line tool called Artisan. If you're writing a server-rendered site or a JSON API in PHP, it saves you from wiring those pieces together yourself.

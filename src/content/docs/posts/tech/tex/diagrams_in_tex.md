@@ -5,7 +5,7 @@ description: Compilable examples of TikZ flowcharts and mind maps, CircuiTikZ ci
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/403791778.png
+imgSrc: /imgs/2023/403791778.webp
 ---
 
 TikZ is the drawing package most LaTeX diagrams are built on. You describe shapes and paths as code inside a `tikzpicture`, so diagrams use the same fonts as the document, diff cleanly in version control, and scale without blurring. Several packages build on it for specific jobs:

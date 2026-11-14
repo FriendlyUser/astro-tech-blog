@@ -4,7 +4,7 @@ description: Evaluating the new whispers asr text extraction vs current options 
 pubDate: Saturday, 1 October 2022 13:00:00 GMT
 tags: ["whispers", "openai", "python"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-10-01 22.10.49 - transcribing audio to text.png'
+imgSrc: '/imgs/2022/dall-e/dalle-2022-10-01-22-10-49-transcribing-audio-to-text.webp'
 ---
 
 

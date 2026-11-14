@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use Pogo, a hapi-style Deno web framework, to define routes, serve static files with h.directory() and render HTML from JSX."
 tags: ["pogo", "deno", "typescript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/30672838870.png
+imgSrc: "/imgs/covers/using-pogo-in-deno-for-web-development.webp"
 ---
 
 :::caution

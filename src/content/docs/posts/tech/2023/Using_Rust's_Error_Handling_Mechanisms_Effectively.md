@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How Rust handles errors with Result and panic!, how to propagate errors with ?, and how to define a custom error type that wraps other errors."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1678591372_a_blade_in_the_desert_under_the_sun.png
+imgSrc: /imgs/2023/1678591372-a-blade-in-the-desert-under-the-sun.webp
 ---
 
 Rust has no exceptions. A function that can fail says so in its return type with `Result<T, E>`, and the caller has to deal with the error before it can get at the value. For bugs and states the program can't recover from, there's `panic!`. This post covers both, plus the `?` operator and writing your own error type.

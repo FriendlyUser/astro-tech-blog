@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up RxKotlin 3 with RxJava 3, create Observables, use map, filter, merge and zip, handle errors, and move work between threads with schedulers."
 tags: ["kotlin"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3200675184.png
+imgSrc: /imgs/2023/3200675184.webp
 ---
 :::caution
 The original version of this post used RxJava 2 (`io.reactivex.rxjava2`), which reached end-of-life on February 28, 2021. The examples below use RxJava 3 and RxKotlin 3. RxKotlin itself hasn't had a release since 3.0.1 (September 2020). For new Kotlin and Android code, [Kotlin coroutines and Flow](https://kotlinlang.org/docs/flow.html) are the more common choice; Rx is still worth knowing if you maintain a codebase that uses it.

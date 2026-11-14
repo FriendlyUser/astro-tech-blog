@@ -1,6 +1,6 @@
 ---
 description: How C++ lambdas work, covering syntax, value and reference captures, init captures, mutable and generic lambdas, explicit return types, and use with STL algorithms.
-imgSrc: /imgs/2023/3216063167.png
+imgSrc: /imgs/2023/3216063167.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-29T23:14:52.000Z'
 lastUpdated: 2026-11-14

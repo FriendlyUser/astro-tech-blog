@@ -1,6 +1,6 @@
 ---
 description: How to write generic functions and types in Swift, constrain them with protocols and where clauses, and what generics cost at runtime.
-imgSrc: /imgs/2023/4252050732.png
+imgSrc: /imgs/2023/4252050732.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-16T13:30:07.000Z'
 lastUpdated: 2026-11-14

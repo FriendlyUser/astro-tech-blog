@@ -5,7 +5,7 @@ description: "Writing Go functions with multiple return values, splitting code i
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3893879687.png
+imgSrc: /imgs/2023/3893879687.webp
 ---
 Functions and packages are how Go code is split up: functions for individual tasks, packages for groups of related functions and types. This post covers declaring functions, returning multiple values, and creating a package of your own inside a module.
 

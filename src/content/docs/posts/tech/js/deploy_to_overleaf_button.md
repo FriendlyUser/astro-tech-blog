@@ -5,7 +5,7 @@ description: Build a link that opens a public .tex file as a new Overleaf projec
 pubDate: Fri, 7 June 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/1738634340-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 ---
 
 Overleaf is a browser-based LaTeX editor, so readers can compile and edit a document without installing a TeX distribution. If you publish LaTeX examples, a button that opens the file straight in Overleaf saves readers from copying and pasting.

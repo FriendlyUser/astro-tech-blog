@@ -5,7 +5,7 @@ description: "The Phaser 2 browser client for a multiplayer pirate ship game: in
 pubDate: Fri, 15 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2515566937.png
+imgSrc: /imgs/2023/2515566937.webp
 ---
 :::caution
 This client is written against **Phaser 2.6.2** (loaded from cdnjs) and **Socket.IO 2.x**. Phaser 3 and Phaser 4 replaced the `new Phaser.Game(width, height, renderer, parent, state)` constructor and global `game` object with a config object and `Phaser.Scene` classes, so this code won't run on them unchanged. The community-maintained Phaser CE fork keeps the v2 API. For a new game, start from current [Phaser](https://phaser.io/).

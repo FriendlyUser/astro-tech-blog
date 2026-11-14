@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to install and run gaper, a development-only supervisor that rebuilds your Go program when files change and restarts it when it exits."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1230376530.png
+imgSrc: /imgs/2023/1230376530.webp
 ---
 
 [Gaper](https://github.com/maxcnunes/gaper) is a command-line tool that builds your Go program, runs it, and rebuilds and restarts it when a watched file changes or when the program exits. It is the Go equivalent of `nodemon` or `node-supervisor`, and its README says it is aimed at development only. It is not a production process manager: for that, use systemd, a container restart policy, or similar.

@@ -6,7 +6,7 @@ description: "How Swift error handling works: defining Error types, throwing and
 tags:
   - swift
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3847215807.png
+imgSrc: /imgs/2023/3847215807.webp
 ---
 
 Swift handles recoverable errors with values that conform to the `Error` protocol. A function marks itself `throws`, callers must call it with `try`, and the compiler makes sure every thrown error is either handled with `do`/`catch` or passed up to a function that also throws. Unlike exceptions in Java or C++, you can see every call that might fail because it has `try` in front of it.

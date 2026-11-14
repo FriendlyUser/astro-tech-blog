@@ -5,7 +5,7 @@ description: How I moved my LaTeX diagrams site from the Vue-based Saber generat
 pubDate: Fri, 30 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1538101898.png
+imgSrc: "/imgs/covers/porting-static-site-to-nextra.webp"
 ---
 :::caution
 The config below was written for **Nextra 2** (Pages Router). Nextra 4 (current release 4.6.1) removed the `theme`/`themeConfig` options and the `theme.config.tsx` file, and dropped Pages Router support: theme settings are now props on `<Layout>`, `<Navbar>` and `<Footer>` in `app/layout.jsx`. See the [Nextra docs](https://nextra.site/docs) before copying this setup. Saber has had no stable release since 0.11.7 in May 2020.

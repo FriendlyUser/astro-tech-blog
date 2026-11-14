@@ -1,7 +1,7 @@
 ---
 title: "Go kit basics: services, endpoints and HTTP transport in Go"
 description: 'Build a small string service with Go kit: define the service, wrap it in endpoints, expose it over HTTP, and add logging middleware.'
-imgSrc: /imgs/2023/2269624161_forest.png
+imgSrc: /imgs/2023/2269624161-forest.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-16T04:50:20.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ description: How the server for my Phaser pirate-ship game tracks players, bulle
 pubDate: Fri, 14 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2776175216.png
+imgSrc: /imgs/2023/2776175216.webp
 ---
 :::caution
 The original [Pirates-Game](https://github.com/FriendlyUser/Pirates-Game/tree/master) repo was written against Socket.IO 2 and Express 4. Its `require('socket.io').listen(http)` setup was removed in Socket.IO 3, so the code below uses the current `new Server(httpServer)` form. I also dropped the keep-alive pings to a `herokuapp.com` URL: Heroku removed free dynos in November 2022, so there is nothing left to keep awake.

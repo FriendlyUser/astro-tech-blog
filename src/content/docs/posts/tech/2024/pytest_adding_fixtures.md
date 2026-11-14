@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Tag tests that hit a live server with a custom pytest marker, skip them by default, and opt in with -m or an environment variable."
 tags: ["Pytest", "Python", "Software Testing", "Live Server Testing", "Test Automation", "Fixtures", "Markers", "Test Exclusion", "testing"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1992331816.png"
+imgSrc: "/imgs/2023/1992331816.webp"
 ---
 
 Some tests talk to a real server: a staging API, a third-party sandbox, sometimes production. You don't want those running on every `pytest` call, because they're slow, need credentials, and put load on systems you don't own. pytest has two features that handle this cleanly:

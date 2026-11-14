@@ -5,7 +5,7 @@ description: Working examples of the LaTeX classes and packages for CVs (modernc
 pubDate: Fri, 14 December 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2338311710.png
+imgSrc: /imgs/2023/2338311710.webp
 ---
 
 Once you can write an `article`, most "advanced" LaTeX work is choosing the right document

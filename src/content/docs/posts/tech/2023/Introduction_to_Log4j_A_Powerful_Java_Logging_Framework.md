@@ -1,7 +1,7 @@
 ---
 description: How Log4j 2 loggers, appenders and layouts fit together, with a minimal
   log4j2.xml, the Maven dependency, and logging from Java code.
-imgSrc: /imgs/2023/945555918.png
+imgSrc: /imgs/2023/945555918.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-17T08:06:29.000Z'
 lastUpdated: 2026-11-14

@@ -1,7 +1,7 @@
 ---
 description: Write and run JUnit Jupiter tests in Java, covering the Maven dependency,
   lifecycle annotations, assertions, parameterized tests and what changed in JUnit 6.
-imgSrc: /imgs/2023/3053072516.png
+imgSrc: /imgs/2023/3053072516.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-10-10T12:54:08.000Z'
 lastUpdated: 2026-11-14

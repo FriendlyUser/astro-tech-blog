@@ -5,7 +5,7 @@ description: Install OpenCV for Python, see which beginner projects it suits, an
 pubDate: Fri, 10 Feb 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3750534419.png"
+imgSrc: "/imgs/2023/3750534419.webp"
 ---
 
 [OpenCV](https://opencv.org/) is an open-source computer vision library written in C++ with Python bindings. It covers the classic image-processing toolbox (filtering, edge detection, contours, geometric transforms, camera calibration, video I/O) plus a `dnn` module for running pre-trained neural networks. In Python, images are plain NumPy arrays, so OpenCV works well alongside NumPy and the rest of the scientific stack.

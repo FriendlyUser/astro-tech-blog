@@ -5,7 +5,7 @@ description: Opening files with open() and with, file modes, processing lines wi
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1096284488.png
+imgSrc: /imgs/2023/1096284488.webp
 
 ---
 

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up a Maps SDK for Android API key, add the play-services-maps dependency, and show a map with a marker using SupportMapFragment in Java."
 tags: ["android", "java", "googlemaps"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/other
+imgSrc: "/imgs/covers/integrating-google-maps-api-in-android-applications.webp"
 ---
 
 The Maps SDK for Android renders interactive Google Maps inside your app: map types (normal, satellite, terrain, hybrid), markers and info windows, polylines and polygons, camera control, and a "my location" layer. This post walks through getting an API key, adding the SDK, and showing a map with a marker.

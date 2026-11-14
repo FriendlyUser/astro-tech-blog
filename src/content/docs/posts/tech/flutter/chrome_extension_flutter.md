@@ -5,7 +5,7 @@ description: A Flutter web app packaged as a Manifest V3 Chrome extension popup 
 pubDate: Fri, 7 July 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1028024527.png
+imgSrc: /imgs/2023/1028024527.webp
 ---
 I keep my ChatGPT prompts in a markdown README on GitHub. Having them one click away in the browser toolbar is easier than opening the repo every time, so I built a small Chrome extension that fetches the README and renders it. The UI is a Flutter web app.
 

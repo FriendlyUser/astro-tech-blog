@@ -1,6 +1,6 @@
 ---
 description: "Find a Swift package to work on, fork and clone it, build and test with SwiftPM or Xcode, and open a pull request that maintainers can review quickly."
-imgSrc: /imgs/2023/1738634340_A_dream_of_a_distant_galaxy__concept_art__matte_painting__HQ__4k.png
+imgSrc: /imgs/2023/1738634340-a-dream-of-a-distant-galaxy-concept-art-matte-painting-hq-4k.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-04-23T23:13:25.000Z'
 lastUpdated: 2026-11-14

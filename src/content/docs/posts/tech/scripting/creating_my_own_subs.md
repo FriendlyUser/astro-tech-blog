@@ -6,7 +6,7 @@ tags: ["python", "ffmpeg"]
 layout: '@/templates/BasePost.astro'
 pubDate: Wednesday, 14 July 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/dictionary.png'
+imgSrc: '/imgs/2023/dictionary.webp'
 ---
 
 :::caution

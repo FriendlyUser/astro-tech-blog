@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up the Jetpack Navigation component in a fragment-based Android app: a navigation graph, a NavHostFragment, type-safe arguments with Safe Args, and deep links."
 tags: ["android", "kotlin"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/DALL?E 2023-01-07 13.46.29 - banana spaceship.png
+imgSrc: "/imgs/2023/banana-spaceship.webp"
 ---
 
 The Jetpack Navigation component (`androidx.navigation`) handles moving between screens in an Android app. You describe your screens and the paths between them in a navigation graph, and a `NavController` performs the fragment transactions, manages the back stack, wires up the Up button, and resolves deep links for you.

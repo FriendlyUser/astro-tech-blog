@@ -1,6 +1,6 @@
 ---
 description: What Eclipse Jetty is, how its server, connectors and handlers fit together in Jetty 12, and how to embed it in a Java app or run it standalone.
-imgSrc: /imgs/2023/3383398588_Ship_on_the_ocean.png
+imgSrc: /imgs/2023/3383398588-ship-on-the-ocean.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-12-27T08:18:10.000Z'
 lastUpdated: 2026-11-14

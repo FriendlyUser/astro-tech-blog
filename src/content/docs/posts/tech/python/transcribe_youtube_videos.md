@@ -5,7 +5,7 @@ description: A Gradio app that downloads a YouTube video with yt-dlp, transcribe
 pubDate: Fri, 14 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/492664568.png
+imgSrc: /imgs/2023/492664568.webp
 ---
 
 This is the code behind my [YoutubeDownloaderSubber](https://huggingface.co/spaces/FriendlyUser/YoutubeDownloaderSubber) Hugging Face Space. Give it a YouTube URL (or upload an audio file) and it:

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use oxipng as a Rust library to losslessly shrink PNG files on disk or in memory, and tune its presets, filters, metadata stripping and Zopfli."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/549017699.png
+imgSrc: /imgs/2023/549017699.webp
 ---
 
 [oxipng](https://github.com/shssoichiro/oxipng) is a lossless PNG optimizer written in Rust. It tries different color type and bit depth reductions, row filters and DEFLATE settings, then keeps whichever encoding is smallest. The pixels don't change, only the file size. Most people use it as a CLI, but it's also a library, which is handy when your app generates or receives PNGs and you want to shrink them before storing or serving them.

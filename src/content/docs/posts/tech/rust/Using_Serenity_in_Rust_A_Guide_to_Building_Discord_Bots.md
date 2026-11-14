@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Write a minimal Discord bot in Rust with Serenity 0.12 that answers !ping, including gateway intents, the bot token and inviting it to a server."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/733581468.png
+imgSrc: /imgs/2023/733581468.webp
 ---
 
 [Serenity](https://github.com/serenity-rs/serenity) is a Rust library for the Discord API. It handles the gateway WebSocket connection, reconnects, rate limits and the REST API, and hands you events through an async trait. This post builds the smallest useful bot: it replies "Pong!" when someone sends `!ping`.

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use jmoiron/sqlx with PostgreSQL to scan query results into structs, insert with named parameters, run transactions and handle sql.ErrNoRows."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3072838870.png
+imgSrc: /imgs/2023/3072838870.webp
 ---
 
 [sqlx](https://github.com/jmoiron/sqlx) is a thin layer over Go's standard `database/sql` package. It keeps the same connection pool, drivers and plain SQL, and removes the most tedious part: calling `rows.Scan` with a pointer for every column. Its main additions are:

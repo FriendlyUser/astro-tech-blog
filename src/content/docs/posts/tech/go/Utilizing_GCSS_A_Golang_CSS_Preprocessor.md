@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "GCSS syntax (variables, mixins, nesting, &) and how to compile it to CSS from Go code or the command line with yosssi/gcss."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 :::caution

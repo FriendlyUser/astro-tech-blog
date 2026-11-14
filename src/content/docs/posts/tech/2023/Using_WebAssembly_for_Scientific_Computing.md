@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Compile a C dot-product function to WebAssembly with Emscripten, pass Float64Array data through Wasm memory, and see where Wasm fits for scientific code."
 tags: ["javascript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/424066448.png
+imgSrc: /imgs/2023/424066448.webp
 ---
 
 WebAssembly (Wasm) is a compact binary instruction format that C, C++, Rust and other languages can compile to. For scientific code, the appeal is that an existing numerical routine written in C can run in a browser, close to native speed, without being rewritten in JavaScript. Pyodide is a well-known example: it is CPython compiled with Emscripten, and it runs NumPy and SciPy in the browser.

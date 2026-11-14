@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Copy and paste Unicode text through the Win32 clipboard API in Rust: OpenClipboard, GlobalAlloc, SetClipboardData and GetClipboardData, with correct error handling."
 tags: ["rust", "winapi"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/872471039.png
+imgSrc: /imgs/2023/872471039.webp
 ---
 :::caution
 The `winapi` crate used here has not had a release since 0.3.9 in June 2020. It still builds, but for new code prefer Microsoft's [`windows-sys`](https://crates.io/crates/windows-sys) or [`windows`](https://crates.io/crates/windows) crates. The Win32 calls below are the same in either. If you just need clipboard access and not the raw API, the [`arboard`](https://crates.io/crates/arboard) crate wraps it for Windows, macOS and Linux.

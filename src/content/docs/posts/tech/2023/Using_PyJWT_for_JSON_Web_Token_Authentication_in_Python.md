@@ -1,6 +1,6 @@
 ---
 description: How a JSON Web Token is structured, and how to sign, verify and expire JWTs in Python with PyJWT 2.x, including which exceptions to catch.
-imgSrc: /imgs/2023/DALL·E 2023-01-07 13.47.20 - spaceship paper.png
+imgSrc: /imgs/2023/dalle-2023-01-07-13-47-20-spaceship-paper.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-07T00:01:07.000Z'
 lastUpdated: 2026-11-14

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How ASP.NET Core authentication works (schemes, handlers, AuthenticateResult) and how to write and register a custom API key authentication handler."
 tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4181036141.png
+imgSrc: /imgs/2023/4181036141.webp
 ---
 
 `Microsoft.AspNetCore.Authentication` is the part of ASP.NET Core that works out *who* is making a request. You register one or more named authentication schemes (cookies, JWT bearer, OpenID Connect, or your own), and the authentication middleware runs the right handler to turn a request into a `ClaimsPrincipal` on `HttpContext.User`. Authorization (`[Authorize]`, `RequireAuthorization()`) then decides what that user may do.

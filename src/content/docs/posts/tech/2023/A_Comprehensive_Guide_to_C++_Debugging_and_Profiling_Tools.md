@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Which C++ debuggers and profilers to reach for on Linux, macOS and Windows, what each is good at, and the commands to get started with them."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/14447351.png
+imgSrc: /imgs/2023/14447351.webp
 ---
 
 Debuggers answer "why is this value wrong?" and profilers answer "where is the time going?". Which tools you can use depends mostly on your platform and compiler, so this post groups them that way and shows the commands to get started with each.

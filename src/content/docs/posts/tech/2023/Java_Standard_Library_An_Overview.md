@@ -1,6 +1,6 @@
 ---
 description: "A tour of the core Java standard library packages (java.lang, java.util, java.time, java.io, java.nio.file, java.net) and what each one is for, with a runnable example."
-imgSrc: /imgs/2023/1924742632.png
+imgSrc: /imgs/2023/1924742632.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-08-08T15:20:34.000Z'
 lastUpdated: 2026-11-14

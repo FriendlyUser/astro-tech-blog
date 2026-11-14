@@ -5,7 +5,7 @@ description: The YAML and cron syntax you need for GitHub Actions workflows, wit
 pubDate: Mon, 13 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/2543580613.png"
+imgSrc: "/imgs/2023/2543580613.webp"
 ---
 
 GitHub Actions workflows are YAML files in `.github/workflows/` that run jobs when something happens in a repository: a push, a pull request, or a schedule. This post covers the YAML and cron syntax you need to read them, then walks through two workflows I use in [news-alert](https://github.com/FriendlyUser/news-alert).

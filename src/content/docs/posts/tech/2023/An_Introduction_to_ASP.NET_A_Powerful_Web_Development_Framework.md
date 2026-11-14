@@ -1,6 +1,6 @@
 ---
 description: "What ASP.NET is, how classic ASP.NET on .NET Framework differs from ASP.NET Core, which programming models each offers, and a first minimal API to run."
-imgSrc: /imgs/2023/4067359065.png
+imgSrc: /imgs/2023/4067359065.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-04-04T12:12:58.000Z'
 lastUpdated: 2026-11-14

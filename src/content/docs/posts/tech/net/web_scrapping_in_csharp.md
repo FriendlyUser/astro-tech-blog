@@ -5,7 +5,7 @@ description: Fetch a page with HttpClient and pull data out of the HTML with Htm
 pubDate: Tues, 21 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/4067359065.png'
+imgSrc: '/imgs/2023/4067359065.webp'
 ---
 
 Web scraping means fetching a page's HTML from code and extracting the data you want from it. In C# that takes two pieces: `HttpClient` to download the page, and an HTML parser to query it. This post uses [HtmlAgilityPack](https://html-agility-pack.net/), which parses messy real-world HTML into a DOM you can query with XPath.

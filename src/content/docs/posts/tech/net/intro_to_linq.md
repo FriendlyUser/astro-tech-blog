@@ -5,7 +5,7 @@ description: "Query syntax vs method syntax in C# LINQ, the common operators, de
 layout: '@/templates/BasePost.astro'
 pubDate: Mon, 13 September 2023
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/359551664.png'
+imgSrc: '/imgs/2023/359551664.webp'
 ---
 
 LINQ (Language Integrated Query) lets you filter, sort, project, group and join data in C# with

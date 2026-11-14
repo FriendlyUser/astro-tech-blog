@@ -5,7 +5,7 @@ description: A summary of the PyCaret 3.0.0 release, covering the time series mo
 pubDate: Fri, 14 June 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1900267581.png
+imgSrc: /imgs/2023/1900267581.webp
 ---
 
 PyCaret is an open-source, low-code machine learning library for Python that wraps scikit-learn and other libraries behind a few functions such as `setup`, `compare_models` and `tune_model`. Version 3.0.0, released in March 2023, was a major rewrite with breaking changes. The release notes warn that PyCaret 2 code will most likely not run without changes.

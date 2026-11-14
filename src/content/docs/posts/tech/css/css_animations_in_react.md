@@ -5,7 +5,7 @@ description: "Use the useInView hook from react-intersection-observer to add a C
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1492118595.png
+imgSrc: /imgs/2023/1492118595.webp
 ---
 A common effect is to fade content in as the user scrolls down to it. The browser's Intersection Observer API tells you when an element enters the viewport, and a CSS transition does the animation. The `react-intersection-observer` package wraps the observer in a hook, so the React side is a few lines. The examples were checked against `react-intersection-observer` 11.
 

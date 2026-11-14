@@ -3,6 +3,7 @@ title: "Docker and Local Dev Environments"
 description: "How I use Docker and docker-compose for local development, mail capture, test stacks and scraper/OCR services."
 tags: ["Docker", "docker-compose", "DevOps", "Mailpit", "Local Development"]
 pubDate: "2026-11-07T16:40:00.000Z"
+imgSrc: "/imgs/2026/docker_local_dev_environments.webp"
 ---
 
 I have used Docker on almost every contract I've worked on. It gets the legacy YellowSheet PHP site running on my machine and is the base for the YellowSheet scrapers and the PHP 5.6 test stack. At Royal Claims it packaged an OCR function for Azure, and at CSPS it gave me throwaway Postgres for an AI project. Most of it is docker-compose for local work. I rarely needed anything fancier.

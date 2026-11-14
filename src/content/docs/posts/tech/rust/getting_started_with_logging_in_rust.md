@@ -5,7 +5,7 @@ pubDate: Saturday, 2 June 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "log"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-26 21.10.41 - decentralized network diagram simple bobble heads.png'
+imgSrc: '/imgs/2023/dalle-2022-12-26-21-10-41-decentralized-network-diagram-simple-bobble-heads.webp'
 ---
 
 The [`log`](https://docs.rs/log) crate is Rust's standard logging facade. It gives you the `trace!`, `debug!`, `info!`, `warn!` and `error!` macros, but doesn't print anything by itself. A separate logger implementation decides where messages go and which ones are shown. That split is the point: libraries depend only on `log`, and the application picks one logger for everything.

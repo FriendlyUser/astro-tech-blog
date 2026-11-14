@@ -6,7 +6,7 @@ tags: ["js","introToJs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 15 Feb 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/2269624161_forest.png'
+imgSrc: '/imgs/2023/2269624161-forest.webp'
 ---
 
 See my previous post on [Getting started with nodejs and express](https://friendlyuser.github.io/posts/tech/js/getting_started_with_node_and_express/) for the Express app itself. This post packages that app into a Docker image.

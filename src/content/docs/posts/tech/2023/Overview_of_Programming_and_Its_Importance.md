@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "A short explanation of what programming is, and the practical reasons to learn it: automating work, problem solving, careers and understanding the software you use."
 tags: ["programming"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/4042044064.png
+imgSrc: /imgs/2023/4042044064.webp
 ---
 
 Programming is writing precise instructions, called code, that a computer can run. A program reads some input, transforms it, and produces output: a web page, a report, a moved robot arm, a sent email. Everything from spreadsheets to phone apps to the software in a car is built this way.

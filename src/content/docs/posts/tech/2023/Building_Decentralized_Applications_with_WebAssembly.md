@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Which blockchains run WebAssembly smart contracts, and how to write, build and deploy a small Rust key-value contract on NEAR."
 tags: ["rust", "dapp", "web3"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2785952400.png
+imgSrc: /imgs/2023/2785952400.webp
 ---
 
 A decentralized application (dApp) is usually a normal web front end talking to a smart contract: code that runs on a blockchain's nodes and keeps its state on chain. Several chains run that contract code as WebAssembly (Wasm), so you can write it in Rust, C++ or other languages that compile to Wasm instead of a chain-specific language like Solidity.

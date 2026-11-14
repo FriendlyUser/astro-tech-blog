@@ -6,7 +6,7 @@ tags: ["next","svg"]
 layout: '@/templates/BasePost.astro'
 pubDate: Saturday, 2 September 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/DALL·E 2023-01-23 21.47.24 - abstract images.png'
+imgSrc: '/imgs/2023/dalle-2023-01-23-21-47-24-abstract-images.webp'
 ---
 
 I wanted icons in a Next.js app that change colour when clicked. SVG suits this: icons are vector shapes, so they stay sharp at any size, and simple icons are usually smaller than the equivalent PNG. Inline SVG elements can also be styled with CSS like any other DOM node.

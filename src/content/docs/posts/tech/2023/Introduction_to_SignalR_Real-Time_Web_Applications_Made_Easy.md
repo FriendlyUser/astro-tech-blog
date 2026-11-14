@@ -1,7 +1,7 @@
 ---
 description: What ASP.NET Core SignalR does, how it picks a transport, and how to build
   a minimal chat hub with Program.cs and the @microsoft/signalr JavaScript client.
-imgSrc: /imgs/2023/2966567085.png
+imgSrc: /imgs/2023/2966567085.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-04T05:19:15.000Z'
 lastUpdated: 2026-11-14

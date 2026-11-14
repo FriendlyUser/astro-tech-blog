@@ -1,6 +1,6 @@
 ---
 description: "Swift performance tips that hold up: build with -O and whole-module optimization, cut dynamic dispatch, use copy-on-write and inout well, and measure first."
-imgSrc: /imgs/2023/1031426508.png
+imgSrc: /imgs/2023/1031426508.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-03-03T01:10:23.000Z'
 lastUpdated: 2026-11-14

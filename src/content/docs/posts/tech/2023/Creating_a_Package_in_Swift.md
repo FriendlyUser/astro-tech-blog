@@ -1,6 +1,6 @@
 ---
 description: "Create a Swift library with swift package init, understand the Package.swift manifest, add a dependency, build and test it, and publish versions with Git tags."
-imgSrc: /imgs/2023/4161054396.png
+imgSrc: /imgs/2023/4161054396.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2025-01-15T13:22:30.000Z'
 lastUpdated: 2026-11-14

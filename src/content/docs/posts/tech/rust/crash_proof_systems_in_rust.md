@@ -5,7 +5,7 @@ description: "Rust features that remove whole classes of bugs: ownership and bor
 pubDate: Fri, 10 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1246994641.png"
+imgSrc: "/imgs/2023/1246994641.webp"
 ---
 
 Rust is a compiled, statically typed systems language whose compiler rejects several kinds of bugs that C and C++ only catch at runtime, if at all: use-after-free, dangling references, and data races. No language makes a program "crash-proof", but Rust moves a lot of failure modes from production to compile time. This post walks through the features that do that, and ends with the failures Rust still allows.

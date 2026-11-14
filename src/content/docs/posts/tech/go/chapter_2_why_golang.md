@@ -5,7 +5,7 @@ description: "The building blocks of a Go program: package layout, variables and
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/454515535.png
+imgSrc: /imgs/2023/454515535.webp
 ---
 
 This chapter covers the pieces every Go program is made of: how a program is laid out, variables and constants, the basic types, operators, and control flow. Each example is a complete program. Save it as `main.go` and run it with `go run main.go`, or paste it into the [Go Playground](https://go.dev/play/).

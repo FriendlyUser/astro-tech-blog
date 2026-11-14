@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "A short Kotlin example for each of the main Jetpack architecture libraries (ViewModel, LiveData, Room, Data Binding, WorkManager, Navigation) and the gotchas in each."
 tags: ["android", "kotlin"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2223533571.png
+imgSrc: /imgs/2023/2223533571.webp
 ---
 
 Android Architecture Components are the Jetpack libraries Google built for the problems every Android app hits: surviving configuration changes, observing data without leaking an Activity, storing data in SQLite, running background work and moving between screens. Each library is independent, so you can adopt one without the others. This post gives a minimal Kotlin example of each and points out where people usually trip up.

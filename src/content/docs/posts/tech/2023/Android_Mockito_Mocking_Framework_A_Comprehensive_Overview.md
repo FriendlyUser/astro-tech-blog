@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use Mockito 5 in Android unit tests: create mocks, stub return values, verify calls, use argument matchers and answers, and mock final classes."
 tags: ["android", "java", "testing"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3185275103.png
+imgSrc: /imgs/2023/3185275103.webp
 ---
 
 Mockito is an open-source mocking library for Java (and, with some help, Kotlin). A mock stands in for a dependency of the class you're testing, such as a repository, an API client, or an analytics tracker, so the test exercises only that class. You decide what the mock returns, then check how your code called it.

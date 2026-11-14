@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What `unsafe` actually allows in Rust, how unsafe functions and traits differ, how to wrap unsafe code in a safe API, and how to call a C function over FFI."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2223533571.png
+imgSrc: /imgs/2023/2223533571.webp
 ---
 
 `unsafe` in Rust doesn't turn off the borrow checker or type system. It unlocks a small set of extra operations that the compiler can't verify, and makes you responsible for upholding the rules those operations could break. You need it for FFI, for writing data structures the borrow checker can't express, and occasionally to skip a check you've already proven unnecessary (for example `get_unchecked` instead of indexed access).

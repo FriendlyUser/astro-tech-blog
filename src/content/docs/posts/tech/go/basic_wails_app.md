@@ -5,7 +5,7 @@ description: Build a small Wails desktop app with a Vue frontend that fetches a 
 pubDate: Fri, 10 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1246994641.png"
+imgSrc: "/imgs/2023/1246994641.webp"
 ---
 
 :::caution

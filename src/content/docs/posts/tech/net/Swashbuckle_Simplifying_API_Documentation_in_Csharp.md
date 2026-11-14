@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Add Swashbuckle to an ASP.NET Core Web API to generate an OpenAPI document, include XML comments, and serve and customize Swagger UI."
 tags: ["csharp", "dotnet"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/831070838.png
+imgSrc: /imgs/2023/831070838.webp
 ---
 [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) inspects your ASP.NET Core controllers and endpoints, generates an [OpenAPI](https://www.openapis.org/) (formerly Swagger) document describing them, and serves [Swagger UI](https://swagger.io/tools/swagger-ui/), an interactive page where you can read the docs and send test requests. The OpenAPI document is also what client generators such as NSwag or Kiota consume if you want typed API clients.
 

@@ -5,7 +5,7 @@ description: "Four Bash scripts that use git log, git shortlog and git blame to 
 pubDate: Fri, 7 November 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2627778103.png
+imgSrc: /imgs/2023/2627778103.webp
 ---
 
 Commit counts and lines of code are the easiest engineering metrics to compute: Git already records who changed what, and a few lines of Bash turn that history into a ranking. This post shows four scripts that do it.

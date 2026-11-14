@@ -5,7 +5,7 @@ tags: ["AI Training", "Aligner", "Outlier", "Appen", "Remote Work", "Gig Economy
 pubDate: "2025-10-07T19:17:25.000Z"
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
+imgSrc: "/imgs/2023/3267094508-short-ruler-in-the-grass.webp"
 ---
 
 AI labs need people to write, rate and correct model output, and a handful of platforms sell that work to remote contractors. Three names come up most: Outlier, Appen, and the newer Alignerr. Here's how they compare as of late 2025, what changed at Outlier, and why I think Alignerr is the best place to start.

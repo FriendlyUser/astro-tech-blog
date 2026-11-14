@@ -5,7 +5,7 @@ description: "How pointers work in Go (&, *, passing by pointer), how the compil
 pubDate: Fri, 21 October 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3867963691.png
+imgSrc: /imgs/2023/3867963691.webp
 ---
 A pointer in Go holds the memory address of a value. You use pointers when a function needs to modify its caller's variable, or when copying a large struct on every call would be wasteful. Go has pointers but no pointer arithmetic (outside the `unsafe` package), and memory is freed by a garbage collector rather than by hand.
 

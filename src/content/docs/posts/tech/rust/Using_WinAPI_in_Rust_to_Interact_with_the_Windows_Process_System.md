@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Call CreateProcessW, TerminateProcess and WaitForSingleObject from Rust with the winapi crate, plus the equivalent code using Microsoft's windows-sys crate."
 tags: ["rust", "winapi"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1086816529.png
+imgSrc: /imgs/2023/1086816529.webp
 ---
 
 :::caution

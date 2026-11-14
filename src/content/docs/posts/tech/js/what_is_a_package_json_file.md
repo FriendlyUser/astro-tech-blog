@@ -6,7 +6,7 @@ tags: ["javascript","introtojs", "node", "express"]
 layout: '@/templates/BasePost.astro'
 pubDate: Monday, 6 August 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/DALL·E 2023-01-07 17.07.12 - introductory book.png'
+imgSrc: '/imgs/2023/dalle-2023-01-07-17-07-12-introductory-book.webp'
 ---
 
 `package.json` sits in the root of a Node.js project and describes it: its name and version, the commands you run during development, and the packages it depends on. npm, Yarn and pnpm all read it. When you run `npm install`, npm installs what it lists and records the exact resolved versions in `package-lock.json`.

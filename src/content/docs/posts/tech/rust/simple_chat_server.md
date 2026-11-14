@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/176625275.png'
+imgSrc: '/imgs/2023/176625275.webp'
 ---
 
 This post builds a line-based chat program with nothing but the Rust standard library. One binary runs either as a server, which accepts connections and rebroadcasts every line it receives, or as a client, which sends what you type and prints what others send.

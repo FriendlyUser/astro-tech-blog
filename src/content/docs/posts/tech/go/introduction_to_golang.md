@@ -5,7 +5,7 @@ description: "A short history of Go, why teams pick it, and the basics: structs,
 pubDate: Fri, 17 January 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/1797349317.png"
+imgSrc: "/imgs/2023/1797349317.webp"
 ---
 
 Go (often called Golang, after its old website golang.org) is a compiled, statically typed

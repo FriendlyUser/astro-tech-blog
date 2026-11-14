@@ -5,7 +5,7 @@ description: Generate random passwords with Python's secrets module, then wrap t
 pubDate: Fri, 15 April 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3750534419.png"
+imgSrc: "/imgs/2023/3750534419.webp"
 ---
 
 A password generator is a small project that covers two things: picking random characters securely, and building a basic GUI. Everything here uses the standard library. On some Linux distributions, tkinter is a separate package (for example `python3-tk` on Debian/Ubuntu).

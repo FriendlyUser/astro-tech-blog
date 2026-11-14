@@ -1,6 +1,6 @@
 ---
 description: How to parse, edit and write YAML in Deno with @std/yaml from JSR, including typing the parsed result and a couple of YAML gotchas.
-imgSrc: /imgs/2023/248665811.png
+imgSrc: /imgs/2023/248665811.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-07-24T22:28:00.000Z'
 lastUpdated: 2026-11-14

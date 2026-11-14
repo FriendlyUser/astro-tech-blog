@@ -7,7 +7,7 @@ pubDate: Thursday, 15 Feburary 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["python", "web scraping", "selenium", "data extraction", "retail", "automation"]
 imgAlt: 'Python Web Scraping Visualization'
-imgSrc: "/imgs/2023/117117315.png"
+imgSrc: "/imgs/2023/117117315.webp"
 ---
 
 :::caution[undetected-chromedriver is no longer developed]

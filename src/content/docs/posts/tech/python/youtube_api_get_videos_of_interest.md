@@ -5,7 +5,7 @@ description: How my media_nlp script polls YouTube channels for new uploads, fla
 pubDate: Fri, 2 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1113292628.png
+imgSrc: /imgs/2023/1113292628.webp
 ---
 
 This is a walkthrough of the YouTube part of my [media_nlp](https://github.com/dli-invest/media_nlp)

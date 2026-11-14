@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to set up Espresso with AndroidX Test, write a UI test with ActivityScenarioRule, handle background work with idling resources, and verify intents."
 tags: ["android", "testing", "java", "espresso"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3558128873.png
+imgSrc: /imgs/2023/3558128873.webp
 ---
 
 Espresso is Google's framework for UI tests that run on an Android device or emulator, inside your app's process. A test finds a view, does something to it, and checks the result. Espresso waits for the main thread to go idle between steps, so you don't sprinkle `Thread.sleep()` through your tests. It ships as part of [AndroidX Test](https://developer.android.com/training/testing/espresso), which replaced the old Android Testing Support Library.

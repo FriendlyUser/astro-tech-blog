@@ -5,7 +5,7 @@ description: How to write React class components with state, props, event handle
 pubDate: Fri, 29 November 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2459005241.png
+imgSrc: "/imgs/covers/class-components.webp"
 ---
 
 :::caution

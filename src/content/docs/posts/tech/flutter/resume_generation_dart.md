@@ -5,7 +5,7 @@ pubDate: Saturday, 27 June 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["flutter", "resume", "dart"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/DALL·E 2022-12-29 11.41.51 - stars falling on the moon.png'
+imgSrc: '/imgs/2023/dalle-2022-12-29-11-41-51-stars-falling-on-the-moon.webp'
 ---
 
 The [pdf](https://pub.dev/packages/pdf) package creates PDF files from Dart code. It ships its own widget library (`package:pdf/widgets.dart`, usually imported as `pw`) that mirrors Flutter's layout widgets (`Column`, `Row`, `Container`, `Wrap` and so on). It doesn't render real Flutter widgets, though, and it runs in plain Dart as well as inside a Flutter app. This post builds a simple resume with it. The full project is in [flutter_resume](https://github.com/FriendlyUser/flutter_resume).

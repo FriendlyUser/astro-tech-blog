@@ -5,7 +5,7 @@ description: A C# console app that polls Google News RSS search feeds for keywor
 pubDate: Tues, 7 December 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: '/imgs/2023/4067359065.png'
+imgSrc: '/imgs/2023/4067359065.webp'
 ---
 
 :::caution

@@ -5,7 +5,7 @@ description: "The JSON config and two yfinance scanners from my stock screener: 
 pubDate: Fri, 18 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2994756722.png
+imgSrc: /imgs/2023/2994756722.webp
 ---
 [Part I](/posts/stonks/ta/stonk_screener_part_I/) covered how the screener builds its list of ticker symbols from a CSV with pandas. This post covers the scanners: the code that takes those tickers, downloads recent prices, and decides which ones to report. Each screen is described by a JSON config, and the matching scanner class does the filtering.
 

@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Call the Service Control Manager (OpenSCManagerW, OpenServiceW, QueryServiceStatus, StartServiceW, ControlService) from Rust using the windows-sys crate."
 tags: ["rust", "winapi"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1089827583.png
+imgSrc: /imgs/2023/1089827583.webp
 ---
 
 :::caution

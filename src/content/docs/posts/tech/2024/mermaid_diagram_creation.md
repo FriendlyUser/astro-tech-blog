@@ -5,7 +5,7 @@ tags: ["Mermaid", "Diagrams", "Flowcharts", "Gantt Charts", "Documentation", "Vi
 pubDate: "2024-08-29T19:17:25.000Z"
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/3267094508_short_ruler_in_the_grass.png"
+imgSrc: "/imgs/2023/3267094508-short-ruler-in-the-grass.webp"
 ---
 
 [Mermaid](https://mermaid.js.org/) is a JavaScript library that turns a short text description into an SVG diagram. Because the source is plain text, diagrams live next to your code, show up in diffs, and get reviewed like anything else. GitHub and GitLab render `mermaid` code blocks in Markdown natively, and most documentation tools have a plugin (this blog renders them with `astro-mermaid`, so every example below is drawn live from its source).

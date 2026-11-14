@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Three Rust type-system techniques that turn runtime bugs into compile errors: newtypes for units, enums for errors, and traits for shared behaviour."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 ---
 
 Rust checks a lot at compile time: types, exhaustive `match` arms, ownership and borrowing, and whether a value can be sent between threads (`Send`/`Sync`). You can push more of your own rules into that checking by choosing types carefully. This post walks through three common techniques.

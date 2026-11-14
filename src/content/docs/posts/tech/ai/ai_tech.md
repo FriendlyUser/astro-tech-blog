@@ -5,7 +5,7 @@ pubDate: Saturday, 21 May 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/2886495853.png'
+imgSrc: '/imgs/2023/2886495853.webp'
 ---
 
 Software development is about to change because of AI and automation. A lot of the routine work engineers do today, from writing boilerplate to running regression tests, looks like it can be handed to AI tools. Done well, that means faster development and fewer bugs.

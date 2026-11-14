@@ -1,6 +1,6 @@
 ---
 description: What the Deno standard library is, how to install its @std packages from JSR, and examples from @std/fs, @std/http, @std/datetime and @std/uuid.
-imgSrc: /imgs/2023/2785394646.png
+imgSrc: /imgs/2023/2785394646.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-18T14:25:14.000Z'
 lastUpdated: 2026-11-14

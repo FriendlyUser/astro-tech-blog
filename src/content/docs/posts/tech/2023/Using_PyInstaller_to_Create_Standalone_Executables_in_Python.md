@@ -1,6 +1,6 @@
 ---
 description: Package a Python script into a standalone executable with PyInstaller, set an icon, hide the console, bundle data files and fix common build problems.
-imgSrc: /imgs/2023/336369522.png
+imgSrc: /imgs/2023/336369522.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-03T18:16:10.000Z'
 lastUpdated: 2026-11-14

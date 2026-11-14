@@ -5,7 +5,7 @@ description: How Python exceptions work, catching them with try/except/else/fina
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2921207460.png
+imgSrc: /imgs/2023/2921207460.webp
 
 ---
 When something goes wrong at runtime (a missing file, a bad argument, a missing dictionary key), Python raises an exception. An exception is an object: it has a type, a message, and a traceback showing the chain of calls that led to it. If nothing catches it, the program stops and prints that traceback.

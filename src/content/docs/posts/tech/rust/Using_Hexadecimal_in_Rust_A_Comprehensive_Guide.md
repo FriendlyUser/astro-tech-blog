@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Write hex literals, format integers as hex with {:x} and {:#X}, parse hex strings with from_str_radix, and encode or decode bytes with the hex crate."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 Hexadecimal is base 16: digits `0`–`9` then `a`–`f` (or `A`–`F`). One hex digit is exactly four bits, so a

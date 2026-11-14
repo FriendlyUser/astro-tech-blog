@@ -6,7 +6,7 @@ tags: ["react","js","node"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 April 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/342028959_blank_card_on_brown_table.png'
+imgSrc: '/imgs/2023/342028959-blank-card-on-brown-table.webp'
 ---
 
 :::caution

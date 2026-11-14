@@ -1,6 +1,6 @@
 ---
 description: How I used OpenAI's custom GPTs to build one ChatGPT bot for small coding chores like type conversions, string tricks, Base64 and Mermaid diagrams.
-imgSrc: /imgs/2023/progress.png
+imgSrc: /imgs/2023/progress.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-11-09T15:20:34.000Z'
 lastUpdated: 2026-11-14

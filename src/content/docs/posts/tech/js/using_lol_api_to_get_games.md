@@ -5,7 +5,7 @@ description: A Deno script that pages through a player's League of Legends match
 pubDate: Fri, 25 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/262205434.png
+imgSrc: /imgs/2023/262205434.webp
 ---
 
 :::caution[match-v4 has been removed]

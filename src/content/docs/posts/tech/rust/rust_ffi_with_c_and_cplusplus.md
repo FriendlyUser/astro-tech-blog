@@ -5,7 +5,7 @@ pubDate: Saturday, 27 December 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust", "ffi"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/117117315.png'
+imgSrc: '/imgs/2023/117117315.webp'
 ---
 
 Plenty of useful code is written in C and C++: SQLite, zlib, OpenCV, and probably some of your own company's libraries. Rust's foreign function interface (FFI) lets you call that code directly, in the same process, with no more overhead than a normal function call.

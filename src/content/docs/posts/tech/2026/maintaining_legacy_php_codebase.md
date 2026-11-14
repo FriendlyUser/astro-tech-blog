@@ -3,6 +3,7 @@ title: "Maintaining a Legacy PHP Codebase"
 description: "What it takes to keep the YellowSheet PHP site running, including upgrade attempts, Stripe, crons, tests and migrations."
 tags: ["PHP", "Legacy Code", "Stripe", "MySQL", "Testing"]
 pubDate: "2026-11-07T16:30:00.000Z"
+imgSrc: "/imgs/2026/maintaining_legacy_php_codebase.webp"
 ---
 
 I work on the YellowSheet site. It is a construction data subscription, and the site is a large legacy PHP app: hundreds of generated add/list/edit pages, `mysql_*` calls throughout, and a cron script that sends the email campaigns. When I started I took a backup from cPanel and put it in GitHub, and I thought it was PHP 5.3. The Docker image I built for it ran PHP 5.2. Production later moved to PHP 5.6, in an upgrade led by a colleague.

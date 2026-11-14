@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use Fabric to run commands on remote servers over SSH: Connection objects in a script, sudo, file transfers, and fab tasks run from the command line."
 tags: ["python"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3541980154.png
+imgSrc: /imgs/2023/3541980154.webp
 ---
 
 [Fabric](https://www.fabfile.org/) is a Python library for running shell commands on remote machines over SSH. It wraps [Paramiko](https://www.paramiko.org/) (SSH) and [Invoke](https://www.pyinvoke.org/) (task running), so you can script deploys and admin chores in Python instead of shell, and run them against one host or many.

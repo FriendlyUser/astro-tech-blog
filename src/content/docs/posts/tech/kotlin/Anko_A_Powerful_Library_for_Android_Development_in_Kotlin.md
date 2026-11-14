@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How JetBrains' Anko built Android layouts, intents and dialogs in Kotlin code, why it's deprecated, and the Jetpack Compose equivalent."
 tags: ["kotlin", "android"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/318527103.png
+imgSrc: "/imgs/covers/anko-a-powerful-library-for-android-development-in-kotlin.webp"
 ---
 
 :::caution[Anko is deprecated]

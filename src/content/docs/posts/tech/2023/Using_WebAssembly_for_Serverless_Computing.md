@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Why WebAssembly suits serverless functions, which platforms run it (Fastly Compute, Cloudflare Workers, Spin), and how to build a Rust HTTP function with Spin."
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2515566937.png
+imgSrc: /imgs/2023/2515566937.webp
 ---
 
 Serverless platforms run your code per request and scale it for you. Most of them do that with containers or microVMs, which means a cold start has to boot an environment before your handler runs. WebAssembly (Wasm) offers a lighter unit: a sandboxed module that a runtime can instantiate inside an existing process, with no OS to boot.

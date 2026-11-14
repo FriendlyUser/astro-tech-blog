@@ -4,7 +4,7 @@ title: Scraping Indeed job listings with BeautifulSoup and pandas (no longer wor
 description: My old Indeed scraper, which pulled job listings into pandas, tagged skills and degrees with regex, and emailed charts via Mailjet, until Cloudflare blocked it.
 pubDate: Mon, 25 October 2023
 lastUpdated: 2026-11-14
-imgSrc: "/imgs/2023/2378351187.png"
+imgSrc: "/imgs/2023/2378351187.webp"
 ---
 :::caution
 These scripts no longer work. Indeed now sits behind Cloudflare's bot protection, which challenges plain HTTP requests, and the HTML class names used below (`searchCount`, `row`, `company`, `location`) have changed since 2021. The code is kept as a record of the project, which I have since open sourced.

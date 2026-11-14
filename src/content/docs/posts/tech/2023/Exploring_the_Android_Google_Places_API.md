@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Set up the Places SDK for Android with Places API (New), then run a nearby search, fetch place details, show autocomplete predictions, and load place photos in Java."
 tags: ["android", "java"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3582974242.png
+imgSrc: /imgs/2023/3582974242.webp
 ---
 
 :::caution

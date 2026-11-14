@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: Create a Rust project with Cargo, add crates with cargo add, understand Cargo.toml version requirements and Cargo.lock, and the commands you use daily.
 tags: ["rust"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2861854918.png
+imgSrc: /imgs/2023/2861854918.webp
 ---
 
 Cargo is Rust's build tool and package manager. It creates projects, downloads dependencies from [crates.io](https://crates.io), compiles, runs tests and builds documentation. It's installed alongside the compiler when you install Rust with [rustup](https://www.rust-lang.org/tools/install); check it with `cargo --version`.

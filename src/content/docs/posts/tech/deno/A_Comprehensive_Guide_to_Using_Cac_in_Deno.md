@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Use the cac CLI library from npm in Deno to define commands and options, print help and version output, and reject unknown commands."
 tags: ["deno", "typescript"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2679960937.png
+imgSrc: /imgs/2023/2679960937.webp
 ---
 
 [cac](https://github.com/cacjs/cac) ("Command And Conquer") is a small JavaScript library for building command-line apps. You declare commands, arguments and options, and it parses `argv`, dispatches to the matching command and generates `--help` output. It's published to npm, and Deno can import it directly with an `npm:` specifier, so there's nothing to install up front.

@@ -1,6 +1,6 @@
 ---
 description: 'Build a small CRUD API for tasks with Flask-RESTful: Resource classes, URL routing, status codes, and testing each endpoint with curl.'
-imgSrc: /imgs/2023/1144941208.png
+imgSrc: /imgs/2023/1144941208.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-07-01T14:01:55.000Z'
 lastUpdated: 2026-11-14

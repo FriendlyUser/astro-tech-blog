@@ -5,7 +5,7 @@ description: Pull an HTML table into a pandas DataFrame with read_html, parse it
 pubDate: Fri, 14 August 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3325476992.png
+imgSrc: /imgs/2023/3325476992.webp
 ---
 
 If the data you want is already in an HTML `<table>`, you usually don't need a full scraper.

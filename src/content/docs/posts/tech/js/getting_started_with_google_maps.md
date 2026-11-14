@@ -5,7 +5,7 @@ description: Get an API key, load the Google Maps JavaScript API, and render a m
 pubDate: Fri, 15 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/654074938.png
+imgSrc: /imgs/2023/654074938.webp
 ---
 
 The Maps JavaScript API lets you embed an interactive Google Map in a web page and add markers, info windows, and overlays to it. This post covers the minimum to get a map with one marker on screen: an API key, the script tag that loads the API, and a small `initMap` function.

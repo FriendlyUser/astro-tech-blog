@@ -5,7 +5,7 @@ description: Make a car look like it is driving forever by scrolling dashed road
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3054188082.png
+imgSrc: /imgs/2023/3054188082.webp
 ---
 
 This is a small trick for a "your ride is on its way" style status screen: the car image stays still and the dashed line on the road scrolls past it, so the car looks like it is driving forever. The animation is pure CSS; React only renders the markup.

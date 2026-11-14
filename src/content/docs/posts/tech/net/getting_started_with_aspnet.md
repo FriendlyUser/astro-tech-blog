@@ -6,7 +6,7 @@ tags: ["aspnet", "csharp", "dotnet"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 14 December 2024
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/590655340.png'
+imgSrc: '/imgs/2023/590655340.webp'
 ---
 
 ASP.NET Core is Microsoft's cross-platform framework for building web apps and HTTP APIs in C#.

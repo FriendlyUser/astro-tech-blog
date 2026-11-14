@@ -1,6 +1,6 @@
 ---
 description: "How C++ function and class templates work, when to specialise them, variadic templates with fold expressions, and constraining templates with C++20 concepts."
-imgSrc: /imgs/2023/1312348161.png
+imgSrc: /imgs/2023/1312348161.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-08-22T02:43:46.000Z'
 lastUpdated: 2026-11-14

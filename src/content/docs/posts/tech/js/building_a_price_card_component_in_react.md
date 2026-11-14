@@ -5,7 +5,7 @@ description: How I built a React price card with an image, nightly price, host a
 pubDate: Fri, 4 April 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/358691897_blank_card_on_brown_table.png
+imgSrc: /imgs/2023/358691897-blank-card-on-brown-table.webp
 ---
 A price card is a small, self-contained component that shows up on almost every booking or
 pricing page, which makes it a good exercise for practising props and CSS layout. The card I

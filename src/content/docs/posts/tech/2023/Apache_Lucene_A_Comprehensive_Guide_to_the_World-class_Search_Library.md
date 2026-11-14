@@ -1,7 +1,7 @@
 ---
 description: How Apache Lucene indexes and searches text, how BM25 ranks results, and a
   runnable Java example that builds an index and queries it with Lucene 10.
-imgSrc: /imgs/2023/454515535.png
+imgSrc: /imgs/2023/454515535.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-01-23T14:36:34.000Z'
 lastUpdated: 2026-11-14

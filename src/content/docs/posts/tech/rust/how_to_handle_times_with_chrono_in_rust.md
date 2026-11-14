@@ -6,7 +6,7 @@ tags: ["rust"]
 layout: '@/templates/BasePost.astro'
 pubDate: Friday, 17 Feb 2023 13:00:00 GMT
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/335264211.png'
+imgSrc: '/imgs/2023/335264211.webp'
 ---
 
 The Rust standard library has `std::time::Instant` and `SystemTime` for measuring elapsed time, but nothing for calendar dates, time zones or formatting. [chrono](https://docs.rs/chrono) fills that gap and is the most widely used crate for it.

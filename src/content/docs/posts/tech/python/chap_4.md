@@ -5,7 +5,7 @@ description: How to import modules, use the standard library, write your own mod
 pubDate: Fri, 14 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2851628136.png
+imgSrc: /imgs/2023/2851628136.webp
 ---
 A module is a `.py` file containing Python definitions and statements. A package is a directory of modules (and possibly sub-packages). Splitting code into modules and packages lets you reuse it across programs and keep each file focused on one job.
 

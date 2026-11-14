@@ -5,7 +5,7 @@ description: Chapter 8 of my intro to Python book covers pure functions, map, fi
 pubDate: Fri, 30 September 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3280960381.png
+imgSrc: /imgs/2023/3280960381.webp
 
 ---
 Functional programming builds programs out of functions that take input and return output without changing anything outside themselves. Functions are values: you can store them in variables, pass them to other functions and return them from functions.

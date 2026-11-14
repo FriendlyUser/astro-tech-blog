@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Call the Message Passing Interface from Go with the gompi Open MPI wrapper: start MPI, get ranks, broadcast data, reduce partial sums and run with mpirun."
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/186810635.png
+imgSrc: /imgs/2023/186810635.webp
 ---
 
 :::caution

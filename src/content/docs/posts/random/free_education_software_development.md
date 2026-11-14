@@ -5,7 +5,7 @@ description: "The pros and cons of teaching yourself software development with f
 pubDate: Fri, 22 May 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2463860355.png
+imgSrc: /imgs/2023/2463860355.webp
 ---
 
 You can learn enough to get hired as a software developer without paying for a degree or a bootcamp. The material is out there for free. What free resources don't give you is structure, feedback and a credential, so you have to supply those yourself.

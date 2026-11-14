@@ -5,7 +5,7 @@ description: "Build an interactive to-do list in Rust with only the standard lib
 pubDate: Fri, 21 March 2024
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
-imgSrc: "/imgs/2023/267929881.png"
+imgSrc: "/imgs/2023/267929881.webp"
 ---
 
 This post builds a small interactive to-do list that runs in the terminal. It uses only the standard library and covers the basics of a Rust CLI loop: reading lines from stdin, matching on commands, and passing a `Vec` around by shared and mutable reference.

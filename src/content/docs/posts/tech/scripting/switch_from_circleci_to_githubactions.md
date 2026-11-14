@@ -6,7 +6,7 @@ pubDate: Sun, 19 Feb 2023
 lastUpdated: 2026-11-14
 layout: "@/templates/BasePost.astro"
 projects: ['LatexDiagrams']
-imgSrc: "/imgs/2023/1924742632.png"
+imgSrc: "/imgs/2023/1924742632.webp"
 ---
 
 :::caution

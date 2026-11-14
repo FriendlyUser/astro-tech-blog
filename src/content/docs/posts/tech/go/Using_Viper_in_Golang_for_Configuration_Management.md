@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Read a YAML config file with spf13/viper, layer defaults and environment variables on top, decode it into a struct, and reload on change."
 tags: ["viper", "golang", "go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/3111278398.png
+imgSrc: /imgs/2023/3111278398.webp
 ---
 
 [Viper](https://github.com/spf13/viper) is the configuration library from Steve Francia (spf13), the author of Cobra and Hugo. It reads config files (JSON, TOML, YAML, HCL, INI, envfile and Java properties), and merges them with defaults, environment variables, command-line flags and explicit overrides. This post walks through the common setup: a YAML file, defaults, environment overrides, and decoding into a struct.

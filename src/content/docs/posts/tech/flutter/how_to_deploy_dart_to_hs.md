@@ -4,7 +4,7 @@ title: How I deployed a Dart Alfred server to a Hugging Face Docker Space
 description: Compiling a Dart Alfred HTTP server to a native executable and running it on a Hugging Face Docker Space with a multi-stage Dockerfile.
 pubDate: Mon, 13 November 2023
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/656417929.png'
+imgSrc: '/imgs/2023/656417929.webp'
 layout: '@/templates/BasePost.astro'
 ---
 

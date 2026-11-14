@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: How to draw line graphs in the terminal from Go with the asciigraph package, and how to set height, width, captions, colours and multiple series.
 tags: ["go"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1519800630.png
+imgSrc: /imgs/2023/1519800630.webp
 ---
 
 [asciigraph](https://github.com/guptarohit/asciigraph) draws line graphs out of box-drawing characters, so you can print a chart straight to a terminal, a log file or a CI job's output. It has no dependencies outside the standard library and one main function: `Plot`.

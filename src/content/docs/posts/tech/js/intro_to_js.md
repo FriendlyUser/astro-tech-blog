@@ -4,7 +4,7 @@ title: "Introduction to JavaScript: a free ebook on JS, Node.js and promises"
 description: An introductory ebook on JavaScript, Node.js and asynchronous programming, written in LaTeX and published on Amazon KDP, with a free PDF copy.
 pubDate: Sunday, 2 Feburary 2023
 lastUpdated: 2026-11-14
-imgSrc: '/imgs/2023/2075079294_A_dream_of_a_distant_galaxy__concept_art.png'
+imgSrc: '/imgs/2023/2075079294-a-dream-of-a-distant-galaxy-concept-art.webp'
 layout: '@/templates/BasePost.astro'
 ---
 

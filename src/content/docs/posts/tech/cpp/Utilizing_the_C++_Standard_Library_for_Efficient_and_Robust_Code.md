@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Short, runnable examples of std::vector, std::list, std::map, std::sort, std::find, std::transform and file streams, plus the gotchas that trip people up."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/2575289368.png
+imgSrc: /imgs/2023/2575289368.webp
 ---
 
 The C++ Standard Library gives you containers, algorithms that work on any container through iterators, and stream-based I/O. Reaching for it first usually means less code and fewer bugs than hand-rolled arrays and loops. Each example below is a complete program; the map example uses structured bindings, so compile with `-std=c++17` or later.

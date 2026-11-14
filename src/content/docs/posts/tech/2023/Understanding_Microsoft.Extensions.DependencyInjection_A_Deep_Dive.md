@@ -1,6 +1,6 @@
 ---
 description: How the built-in .NET DI container works - registering services, the three lifetimes, scopes, keyed services, and the mistakes scope validation catches.
-imgSrc: /imgs/2023/man_on_horse.png
+imgSrc: /imgs/2023/man-on-horse.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2024-11-26T17:49:54.000Z'
 lastUpdated: 2026-11-14

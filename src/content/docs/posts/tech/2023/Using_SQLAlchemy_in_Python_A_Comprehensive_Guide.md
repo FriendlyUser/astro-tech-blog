@@ -1,7 +1,6 @@
 ---
 description: "Define models, create tables, and insert, query, update and delete rows with the SQLAlchemy 2.x ORM, plus relationships, transactions and inheritance."
-imgSrc: /imgs/2023/DALL·E 2023-01-16 12.01.55 - Two futuristic towers with a skybridge
-  covered in lush foliage, digital art.png
+imgSrc: "/imgs/2023/futuristic-towers-skybridge.webp"
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T03:02:10.000Z'
 lastUpdated: 2026-11-14

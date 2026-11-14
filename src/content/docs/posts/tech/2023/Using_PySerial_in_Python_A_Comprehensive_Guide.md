@@ -1,6 +1,6 @@
 ---
 description: Open a serial port with PySerial, read and write bytes, set timeouts and line settings, handle incoming lines on a background thread, and read sensor data from an Arduino.
-imgSrc: /imgs/2023/818001379.png
+imgSrc: /imgs/2023/818001379.webp
 layout: '@/templates/BasePost.astro'
 pubDate: '2023-10-24T22:56:56.000Z'
 lastUpdated: 2026-11-14

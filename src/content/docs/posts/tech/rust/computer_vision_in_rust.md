@@ -5,7 +5,7 @@ pubDate: Saturday, 24 November 2024 13:00:00 GMT
 lastUpdated: 2026-11-14
 tags: ["rust"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2023/235824961.png'
+imgSrc: '/imgs/2023/235824961.webp'
 ---
 
 Computer vision is about getting structured information out of images: where the edges are, which

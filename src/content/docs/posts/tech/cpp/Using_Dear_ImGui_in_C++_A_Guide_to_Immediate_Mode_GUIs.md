@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "What immediate mode GUIs are, which Dear ImGui files to add to your project, and a complete GLFW + OpenGL 3 program with a window, button and slider."
 tags: ["cpp"]
 layout: "@/templates/BasePost.astro"
-imgSrc: /imgs/2023/1992331816.png
+imgSrc: /imgs/2023/1992331816.webp
 ---
 
 [Dear ImGui](https://github.com/ocornut/imgui) is an MIT-licensed C++ library for building
