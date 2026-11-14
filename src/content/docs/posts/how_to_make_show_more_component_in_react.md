@@ -5,7 +5,7 @@ alt: Tagging in Astro
 pubDate: Sunday, 8 April 2020 13:00:00 GMT
 tags: ["react", "bit"]
 layout: '@/templates/BasePost.astro'
-imgSrc: '/imgs/2022/dall-e/DALL·E 2022-08-11 19.14.04 - A handpalm with a tree growing out of it, digital art.png.jpeg'
+imgSrc: "/imgs/2022/dall-e/DALL·E 2022-08-11 19.14.04 - A handpalm with a tree growing out of it, digital art.png"
 imgAlt: 'Image post 6'
 ---
 

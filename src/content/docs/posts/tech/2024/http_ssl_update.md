@@ -5,7 +5,7 @@ title: "Serve FastAPI over HTTPS on a Google Compute Engine subdomain with Apach
 description: "Point a subdomain at a Compute Engine VM, run FastAPI behind an Apache reverse proxy, and add a free Let's Encrypt certificate with Certbot."
 tags: ["Google Compute Engine", "FastAPI", "Apache", "DNS Configuration", "SSL Certificates", "Web Development", "Proxy Configuration", "python"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark-room-Lhzabp9UrSU"
+imgSrc: "/imgs/covers/getting-started-with-hyper.webp"
 ---
 
 This walks through putting a FastAPI app on a Google Compute Engine (GCE) VM at a subdomain such as `api.example.com`, with Apache in front handling HTTPS. The steps assume a Debian or Ubuntu VM; replace `api.example.com` with your own subdomain throughout.

@@ -5,7 +5,7 @@ title: "Scraping a free proxy list and rotating proxies with Python requests"
 description: "Why scrapers use proxies, how to pull IP:port pairs from a proxy list page with requests and BeautifulSoup, check which ones work, and rotate them."
 tags: ["Web Scraping", "Proxies", "Python", "Data Collection", "Backend Development", "Programming", "Software Development", "BeautifulSoup", "Requests"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "https://images.unsplash.com/photos/a-large-statue-of-a-person-in-a-dark-room-Lhzabp9UrSU"
+imgSrc: "/imgs/2023/dalle-2022-12-26-21-10-41-decentralized-network-diagram-simple-bobble-heads.webp"
 ---
 
 A proxy forwards your requests, so the target site sees the proxy's IP address instead of yours. Scrapers use them for two main reasons:

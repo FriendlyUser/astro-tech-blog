@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "Minimal, working file upload endpoints in FastAPI, Django and Flask: what to install, how to save the file safely, and how to cap upload size."
 tags: ["FastAPI", "Django", "Flask", "Python", "Web Development", "File Uploads", "Backend Development", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "https://unsplash.com/photos/a-room-with-purple-walls-and-a-green-couch-7bVA09G6Whs"
+imgSrc: "/imgs/2023/dall-e/upload-icon-cloud.webp"
 ---
 
 All three frameworks receive uploads the same way underneath: the browser sends a `multipart/form-data` request, and the framework parses the file part into an object you can read or save. The differences are in what you need to install and how each one hands you the file. Each example below saves the upload to an `uploads/` directory.

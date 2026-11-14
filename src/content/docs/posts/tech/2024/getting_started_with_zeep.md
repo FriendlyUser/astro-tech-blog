@@ -5,7 +5,7 @@ lastUpdated: 2026-11-14
 description: "How to call a SOAP web service from Python with Zeep: inspect a WSDL, call operations, build complex types, handle faults and log the raw XML."
 tags: ["Zeep", "SOAP APIs", "Python", "Web Services", "XML", "Web Development", "Backend Development", "Programming", "Software Development"]
 layout: "@/templates/BasePost.astro"
-imgSrc: "https://unsplash.com/photos/a-piece-of-soap-sitting-on-top-of-a-black-plate-nEyRQYS2Jp8"
+imgSrc: "/imgs/covers/apache-thrift-a-comprehensive-introduction-to-cross-language-service-development.webp"
 ---
 
 SOAP is older and wordier than REST, but plenty of enterprise, government and banking systems still expose SOAP services. If you have to call one from Python, [Zeep](https://docs.python-zeep.org/) is the client to use. It reads the service's WSDL, builds the XML envelopes for you and parses responses back into Python objects.
