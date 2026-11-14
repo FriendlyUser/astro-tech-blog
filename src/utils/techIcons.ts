@@ -50,7 +50,6 @@ import {
   faCode,
   faCubes,
   faDatabase,
-  faLanguage,
   faMicrochip,
   faPenNib,
   faRobot,
@@ -102,7 +101,6 @@ const LOGOS: Record<string, Logo> = {
   stripe: logo('Stripe', faStripe, '#6366f1'),
   openai: logo('OpenAI', faOpenai, '#f87171'),
   claude: logo('Claude', faClaude, '#d97757'),
-  nlp: logo('NLP', faLanguage, '#5eead4'),
   markdown: logo('Markdown', faMarkdown, '#ece6da'),
   wordpress: logo('WordPress', faWordpress, '#60a5fa'),
   sql: logo('SQL', faDatabase, '#fdba74'),
@@ -145,8 +143,6 @@ const ALIASES: Record<string, string> = {
   'google cloud run': 'google',
   'openai / azure openai': 'openai',
   'hugging face': 'ai',
-  spacy: 'nlp',
-  nltk: 'nlp',
   apple: 'ios',
 };
 
@@ -162,7 +158,7 @@ export function logoFor(name: string): Logo | undefined {
 export const TOOLBOX = [
   'python', 'typescript', 'javascript', 'php', 'laravel', 'vue', 'react', 'node',
   'go', 'rust', 'java', 'flutter', 'android', 'ios', 'docker', 'aws', 'microsoft', 'powerapps',
-  'google', 'linux', 'git', 'github', 'stripe', 'openai', 'claude', 'nlp', 'tailwind', 'sass',
+  'google', 'linux', 'git', 'github', 'stripe', 'openai', 'claude', 'tailwind', 'sass',
   'html', 'css', 'markdown',
 ].map((k) => LOGOS[k]!);
 
