@@ -1,7 +1,7 @@
 ---
 title: "Measuring C# performance with BenchmarkDotNet"
 description: "Write and read C# microbenchmarks with BenchmarkDotNet: [Benchmark], [Params], baselines, [MemoryDiagnoser], Release builds, and what each results column means."
-tags: ["C#", ".NET", "BenchmarkDotNet", "Performance", "Testing"]
+tags: ["C#", "dotnet", "BenchmarkDotNet", "Performance", "Testing"]
 pubDate: "2026-10-07T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_benchmarkdotnet.webp"
 imgAlt: "A horizontal bar chart comparing string Split and span-based parsing times with error bars"

@@ -1,7 +1,7 @@
 ---
 title: "Resilient HttpClient calls in .NET with Microsoft.Extensions.Http.Resilience"
 description: "Add retries, timeouts and circuit breakers to IHttpClientFactory clients with AddStandardResilienceHandler, what its defaults are, and custom Polly v8 pipelines."
-tags: [".NET", "C#", "HttpClient", "Polly", "Resilience"]
+tags: ["dotnet", "C#", "HttpClient", "Polly", "Resilience"]
 pubDate: "2026-07-25T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_http_resilience.webp"
 imgAlt: "Five nested rings labelled rate limiter, total timeout, retry, circuit breaker and attempt timeout around an HTTP request"

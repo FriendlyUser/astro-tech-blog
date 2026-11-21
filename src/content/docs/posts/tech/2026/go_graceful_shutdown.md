@@ -1,7 +1,7 @@
 ---
 title: "Graceful shutdown for a Go HTTP server"
 description: "Shut down a Go HTTP server without dropping requests: signal.NotifyContext, Server.Shutdown with a timeout, draining workers, BaseContext and a readiness flag."
-tags: ["Go", "net/http", "Graceful Shutdown", "Kubernetes", "Signals"]
+tags: ["Go", "HTTP", "Graceful Shutdown", "Kubernetes", "Signals"]
 pubDate: "2026-12-17T16:00:00.000Z"
 imgSrc: "/imgs/2026/go_graceful_shutdown.webp"
 imgAlt: "A timeline from SIGTERM through readiness off, connection draining and worker drain to exit, inside a 30-second grace period"

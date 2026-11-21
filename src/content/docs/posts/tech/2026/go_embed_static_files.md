@@ -1,7 +1,7 @@
 ---
 title: "Shipping a single Go binary with embed"
 description: "Bundle static files and templates into a Go binary with //go:embed and embed.FS, serve them with http.FileServerFS, and keep a dev mode that reads from disk."
-tags: ["Go", "embed", "net/http", "html/template", "Deployment"]
+tags: ["Go", "embed", "HTTP", "Templates", "Deployment"]
 pubDate: "2026-07-21T16:00:00.000Z"
 imgSrc: "/imgs/2026/go_embed_static_files.webp"
 imgAlt: "A single binary block containing a folder tree of templates, CSS and a VERSION file, with an arrow out to a browser window"

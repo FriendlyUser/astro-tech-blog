@@ -1,7 +1,7 @@
 ---
 title: "Producer/consumer queues in .NET with System.Threading.Channels"
 description: "Use System.Threading.Channels for in-process queues in .NET: bounded vs unbounded, full modes, several consumers, completion, and a background job queue for a web app."
-tags: [".NET", "C#", "Channels", "Concurrency", "ASP.NET Core"]
+tags: ["dotnet", "C#", "Channels", "Concurrency", "ASP.NET Core"]
 pubDate: "2026-02-28T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_channels.webp"
 imgAlt: "A producer feeding a five-slot bounded channel that fans out to three consumers"

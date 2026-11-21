@@ -1,7 +1,7 @@
 ---
 title: "Records and pattern matching in modern C#"
 description: "How C# records work (record class vs struct, with-expressions, value equality) and how to match them with property, relational and list patterns in switch expressions."
-tags: ["C#", ".NET", "Records", "Pattern Matching", "Language Features"]
+tags: ["C#", "dotnet", "Records", "Pattern Matching", "Language Features"]
 pubDate: "2026-06-11T16:00:00.000Z"
 imgSrc: "/imgs/2026/csharp_records_pattern_matching.webp"
 imgAlt: "A switch expression drawn as a decision tree routing order records to shipping prices"

@@ -1,7 +1,7 @@
 ---
 title: "Matrix builds and dependency caching in GitHub Actions"
 description: "Test across operating systems and runtime versions with strategy.matrix, include, exclude and fail-fast, and cache dependencies with setup-* and actions/cache."
-tags: ["GitHub Actions", "CI/CD", "DevOps", "Caching", "Build Matrix"]
+tags: ["GitHub Actions", "CI", "DevOps", "Caching", "Build Matrix"]
 pubDate: "2026-02-16T16:00:00.000Z"
 imgSrc: "/imgs/2026/github_actions_matrix_and_caching.webp"
 imgAlt: "A three by three grid of build jobs by operating system and runtime version, one cell crossed out, one extra cell added, with cache hit and miss badges"

@@ -1,7 +1,7 @@
 ---
 title: "Reusable workflows and composite actions in GitHub Actions"
 description: "Share CI logic across jobs and repositories with workflow_call reusable workflows and composite actions: inputs, secrets, outputs, when to use which, and versioning."
-tags: ["GitHub Actions", "CI/CD", "DevOps", "YAML", "Automation"]
+tags: ["GitHub Actions", "CI", "DevOps", "YAML", "Automation"]
 pubDate: "2026-01-12T16:00:00.000Z"
 imgSrc: "/imgs/2026/github_actions_reusable_workflows.webp"
 imgAlt: "Two caller workflows pointing at one shared reusable workflow, which in turn uses a composite action box made of three stacked steps"

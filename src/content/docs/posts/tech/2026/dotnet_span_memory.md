@@ -1,7 +1,7 @@
 ---
 title: "Span<T> and Memory<T> in C#: parsing without allocations"
 description: "Parse strings and buffers in C# without allocating: ReadOnlySpan<char> slicing, span overloads of Parse, stackalloc, MemoryExtensions.Split, and Memory<T> for async code."
-tags: ["C#", ".NET", "Span", "Performance", "Memory"]
+tags: ["C#", "dotnet", "Span", "Performance", "Memory"]
 pubDate: "2026-05-14T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_span_memory.webp"
 imgAlt: "A string drawn as a row of character cells with highlighted slices pointing into it instead of copies"

@@ -1,7 +1,7 @@
 ---
 title: "Validating requests in ASP.NET Core minimal APIs"
 description: "Validate minimal API requests with DataAnnotations and .NET 10's AddValidation, return ProblemDetails, write endpoint filters for custom rules, or use FluentValidation."
-tags: ["ASP.NET Core", "C#", ".NET 10", "Minimal APIs", "Validation"]
+tags: ["ASP.NET Core", "C#", "dotnet", "Minimal APIs", "Validation"]
 pubDate: "2026-11-05T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_minimal_api_validation.webp"
 imgAlt: "A JSON request passing through a validation gate, with valid requests reaching the handler and invalid ones returning a 400 problem response"

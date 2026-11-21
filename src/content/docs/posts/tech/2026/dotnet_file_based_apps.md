@@ -1,7 +1,7 @@
 ---
 title: "Single-file C# apps with dotnet run app.cs"
 description: ".NET 10 runs a lone .cs file with no project: dotnet run app.cs, #:package, #:sdk and #:property directives, shebang scripts on Unix, and converting to a project."
-tags: [".NET", "C#", ".NET 10", "Scripting", "CLI"]
+tags: ["dotnet", "C#", "Scripting", "CLI"]
 pubDate: "2026-08-22T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_file_based_apps.webp"
 imgAlt: "An app.cs file with #: directive lines above a terminal running dotnet run app.cs"

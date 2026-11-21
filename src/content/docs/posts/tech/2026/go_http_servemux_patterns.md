@@ -1,7 +1,7 @@
 ---
 title: "Routing in Go's net/http with method and wildcard patterns"
 description: "How Go's ServeMux patterns work: methods, {id} and {path...} wildcards, {$}, precedence and conflicts, automatic 405s, and middleware as plain functions."
-tags: ["Go", "net/http", "Routing", "Middleware", "REST API"]
+tags: ["Go", "HTTP", "Routing", "Middleware", "REST API"]
 pubDate: "2026-04-04T16:00:00.000Z"
 imgSrc: "/imgs/2026/go_http_servemux_patterns.webp"
 imgAlt: "A routing tree from a ServeMux to method and wildcard patterns with their status codes, and a DELETE request answered with 405"

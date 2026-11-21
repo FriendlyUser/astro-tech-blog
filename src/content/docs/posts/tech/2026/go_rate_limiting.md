@@ -1,7 +1,7 @@
 ---
 title: "Rate limiting in Go with golang.org/x/time/rate"
 description: "Token-bucket rate limiting in Go: rate.NewLimiter, when to use Allow, Wait or Reserve, per-client limiters with cleanup, and HTTP middleware that returns 429."
-tags: ["Go", "Rate Limiting", "net/http", "Middleware", "golang.org/x/time"]
+tags: ["Go", "Rate Limiting", "HTTP", "Middleware"]
 pubDate: "2026-11-01T16:00:00.000Z"
 imgSrc: "/imgs/2026/go_rate_limiting.webp"
 imgAlt: "A token bucket refilling at a steady rate, with incoming requests either taking a token or bouncing off with a 429"

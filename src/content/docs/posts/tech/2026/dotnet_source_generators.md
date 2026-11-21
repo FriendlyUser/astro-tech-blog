@@ -1,7 +1,7 @@
 ---
 title: "Writing an incremental source generator in C#"
 description: "Build a C# incremental source generator with IIncrementalGenerator and ForAttributeWithMetadataName: project setup, emitting code, referencing it, and testing its output."
-tags: ["C#", ".NET", "Source Generators", "Roslyn", "Testing"]
+tags: ["C#", "dotnet", "Source Generators", "Roslyn", "Testing"]
 pubDate: "2026-04-08T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_source_generators.webp"
 imgAlt: "An incremental pipeline diagram: syntax filter, transform to model, equality check, then emitted .g.cs files"

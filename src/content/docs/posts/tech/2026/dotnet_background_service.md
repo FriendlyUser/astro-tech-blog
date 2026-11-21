@@ -1,7 +1,7 @@
 ---
 title: "Background work in .NET with BackgroundService and PeriodicTimer"
 description: "Run recurring jobs in a .NET host with BackgroundService and PeriodicTimer: scoped services per run, clean shutdown, and what happens when the loop throws."
-tags: [".NET", "C#", "BackgroundService", "Hosted Services", "Async"]
+tags: ["dotnet", "C#", "BackgroundService", "Hosted Services", "Async"]
 pubDate: "2026-01-22T16:00:00.000Z"
 imgSrc: "/imgs/2026/dotnet_background_service.webp"
 imgAlt: "A clock face with five-second tick marks feeding a loop of run, wait and stop states"
