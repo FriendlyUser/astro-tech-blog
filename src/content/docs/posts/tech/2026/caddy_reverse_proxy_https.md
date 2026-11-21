@@ -15,7 +15,7 @@ For putting one or a few apps on the internet, that makes it the shortest path f
 
 Caddy's config file is called `Caddyfile`. This is a complete one:
 
-```caddy
+```text
 example.com {
 	reverse_proxy localhost:3000
 }
@@ -42,7 +42,7 @@ Caddy can only prove it controls a domain if the certificate authority can reach
 
 It's also worth setting an email address, which the CA uses for expiry and account notices:
 
-```caddy
+```text
 {
 	email admin@example.com
 }
@@ -60,7 +60,7 @@ If you can't open port 80 or 443, or you need a wildcard certificate, the altern
 
 Each site gets its own block, and each gets its own certificate:
 
-```caddy
+```text
 {
 	email admin@example.com
 }
@@ -100,7 +100,7 @@ docs.example.com {
 
 You can also route by path within one site. `handle_path` strips the matched prefix before proxying, while `handle` keeps it:
 
-```caddy
+```text
 example.com {
 	handle_path /api/* {
 		reverse_proxy localhost:8000   # /api/users arrives as /users
@@ -121,7 +121,7 @@ By default `reverse_proxy` passes the original `Host` header through and adds `X
 
 `header_up` and `header_down` change headers on the way to and from the upstream:
 
-```caddy
+```text
 example.com {
 	reverse_proxy localhost:3000 {
 		header_up X-Request-Id {http.request.uuid}
@@ -132,7 +132,7 @@ example.com {
 
 Older configs often contain one more `header_up` line, for proxying to an upstream that is itself an HTTPS site with its own hostname, such as an external API or a storage bucket. That upstream expects its own name in `Host`, not yours:
 
-```caddy
+```text
 assets.example.com {
 	reverse_proxy https://my-bucket.s3.amazonaws.com {
 		header_up Host {upstream_hostport}
@@ -148,7 +148,7 @@ If Caddy itself sits behind another proxy or a CDN, it ignores incoming `X-Forwa
 
 List more than one upstream and Caddy balances between them:
 
-```caddy
+```text
 example.com {
 	reverse_proxy app1:3000 app2:3000 app3:3000 {
 		lb_policy least_conn
@@ -203,7 +203,7 @@ volumes:
 
 `Caddyfile`, next to it:
 
-```caddy
+```text
 {
 	skip_install_trust
 }
