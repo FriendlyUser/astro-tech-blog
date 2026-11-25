@@ -35,6 +35,7 @@ export const links = {
   github: 'https://github.com/FriendlyUser',
   linkedin: 'https://www.linkedin.com/in/david-l-b1671a10b/',
   invest: 'https://github.com/dli-invest',
+  googlePlay: 'https://play.google.com/store/apps/developer?id=gfleet',
   store: 'https://TeeMugs3.redbubble.com',
   blog: '/posts/',
   topics: '/topics/',

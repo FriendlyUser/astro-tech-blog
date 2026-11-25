@@ -12,6 +12,7 @@ Last Light Outpost is a top-down zombie base-defense game. You are the last sold
 - **Google Play:** [Last Light Outpost](https://play.google.com/store/apps/details?id=com.friendlyuser.lastlightoutpost)
 - **In the browser:** [friendlyuser.github.io/last-light-outpost](https://friendlyuser.github.io/last-light-outpost/)
 - **Source:** [github.com/FriendlyUser/last-light-outpost](https://github.com/FriendlyUser/last-light-outpost)
+- **More apps and games:** [all of my apps on Google Play](https://play.google.com/store/apps/developer?id=gfleet)
 
 ![The build phase: the HQ in the middle, four turrets and a sandbag arc around it, the armory panel on the right and touch buttons for WALL, TURRET and RELOAD](/assets/posts/last-light-outpost/build-phase.webp)
 

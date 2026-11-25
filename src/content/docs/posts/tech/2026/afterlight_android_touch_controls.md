@@ -7,10 +7,12 @@ imgSrc: "/imgs/2026/afterlight_android_touch_controls.webp"
 imgAlt: "A phone in landscape showing a D-pad on the left and A, B, Y and menu buttons on the right, over a dark pixel-art scene"
 ---
 
-[Afterlight](/posts/tech/2026/building_afterlight_jrpg_with_claude_code/) is a 2D-HD JRPG that runs in the browser on three.js. It was built for a keyboard or gamepad and laid out for a desktop window, so a phone had no way to play it. The November 19 commits add an Android app: on-screen controls, a layout that fits a phone, and a Capacitor project that builds a Google Play bundle. The Play release is still in review; until it's out, the game is playable in the browser.
+[Afterlight](/posts/tech/2026/building_afterlight_jrpg_with_claude_code/) is a 2D-HD JRPG that runs in the browser on three.js. It was built for a keyboard or gamepad and laid out for a desktop window, so a phone had no way to play it. The November 19 commits add an Android app: on-screen controls, a layout that fits a phone, and a Capacitor project that builds a Google Play bundle. It is now on Google Play, and it is still playable in the browser.
 
+- **Google Play:** [Afterlight](https://play.google.com/store/apps/details?id=io.github.friendlyuser.afterlight)
 - **Play in the browser:** [friendlyuser.github.io/afterlight](https://friendlyuser.github.io/afterlight/) (the touch controls work in a phone browser too)
 - **Source:** [github.com/FriendlyUser/afterlight](https://github.com/FriendlyUser/afterlight), with the Android notes in `docs/ANDROID.md`
+- **More apps and games:** [all of my apps on Google Play](https://play.google.com/store/apps/developer?id=gfleet)
 
 ![Afterlight in landscape with the touch controls: a D-pad and L button on the left, A, B, Y, R and menu buttons on the right, and a dialogue box in the middle](/assets/posts/afterlight-android/dialogue.webp)
 
