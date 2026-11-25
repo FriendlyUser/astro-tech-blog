@@ -12,6 +12,7 @@ Meridian is a task list, day planner, calendar, notes app, habit tracker and foc
 - **Google Play:** [Meridian: Tasks, Habits, Focus](https://play.google.com/store/apps/details?id=io.github.friendlyuser.meridian)
 - **In the browser:** [friendlyuser.github.io/meridian](https://friendlyuser.github.io/meridian/)
 - **Source:** [github.com/FriendlyUser/meridian](https://github.com/FriendlyUser/meridian)
+- **More apps and games:** [all of my apps on Google Play](https://play.google.com/store/apps/developer?id=gfleet)
 
 The commits are co-authored with Claude (Fable 5.2), the same way [Afterlight](/posts/tech/2026/building_afterlight_jrpg_with_claude_code/) was built. This post covers what is in the app and how the more interesting parts work, using the code in the repository.
 
